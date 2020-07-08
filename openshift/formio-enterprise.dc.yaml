@@ -1,0 +1,168 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "${REPO_NAME}-formio-enterprise-dc-template"
+metadata:
+  name: "${REPO_NAME}-formio-enterprise-dc"
+objects:
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: "${APP_NAME}-formio-enterprise-${JOB_NAME}"
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-formio-enterprise-${JOB_NAME}"
+        role: formio
+      strategy:
+        type: Rolling
+        resources: {}
+        rollingParams:
+          timeoutSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: "${APP_NAME}-${JOB_NAME}"
+            deploymentconfig: "${APP_NAME}-formio-enterprise-${JOB_NAME}"
+            role: formio
+        spec:
+          containers:
+            - name: formio
+              image: formio/formio-enterprise:latest
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                tcpSocket:
+                  port: 3000
+                failureThreshold: 3
+                # httpGet:
+                #   path: "/"
+                #   port: 3000
+                #   scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 60
+                successThreshold: 1
+                timeoutSeconds: 1
+              ports:
+                - containerPort: 3000
+                  protocol: TCP
+              readinessProbe:
+                tcpSocket:
+                  port: 3000
+                failureThreshold: 3
+                # httpGet:
+                #   path: "/"
+                #   port: 3000
+                #   scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                requests:
+                  cpu: "${CPU_REQUEST}"
+                  memory: "${MEMORY_REQUEST}"
+                limits:
+                  cpu: "${CPU_LIMIT}"
+                  memory: "${MEMORY_LIMIT}"
+              env:
+                - name: NODE_ENV
+                  value: production
+                - name: DEBUG
+                  value: formio.*
+                - name: MONGO
+                  value: "mongodb://app:D8HFi6Gv6PbaXILkVvsYyIvHjFM1jBQ6@mongodb-${JOB_NAME}:27017/app"
+                - name: PORT
+                  value: "3000"
+                - name: PRIMARY
+                  value: "true"
+                - name: LICENSE
+                  valueFrom:
+                    secretKeyRef:
+                      name: "formio-enterprise-license-secret"
+                      key: LICENSE
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+        - type: ConfigChange
+        # - imageChangeParams:
+        #     automatic: true
+        #     containerNames:
+        #       - formio
+        #     from:
+        #       kind: ImageStreamTag
+        #       name: "${REPO_NAME}-formio:latest"
+        #       namespace: "${NAMESPACE}"
+        #   type: ImageChange
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "${APP_NAME}-formio-enterprise-${JOB_NAME}"
+    spec:
+      ports:
+        - name: 3000-tcp
+          port: 3000
+          protocol: TCP
+          targetPort: 3000
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-formio-enterprise-${JOB_NAME}"
+        role: formio
+      sessionAffinity: None
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      name: "${APP_NAME}-formio-enterprise-${JOB_NAME}"
+    spec:
+      host: "${ROUTE_HOST}"
+      port:
+        targetPort: 3000-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: "${APP_NAME}-formio-enterprise-${JOB_NAME}"
+        weight: 100
+      wildcardPolicy: None
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: ROUTE_HOST
+    description: The host the route will use to expose service outside cluster
+    displayName: Route host
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'wfezkf-dev')
+    displayName: Target Namespace
+    required: true
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  - name: CPU_LIMIT
+    description: Limit Peak CPU per pod (in millicores ex. 1000m)
+    displayName: CPU Limit
+    value: 250m
+  - name: CPU_REQUEST
+    description: Requested CPU per pod (in millicores ex. 500m)
+    displayName: CPU Request
+    value: 50m
+  - name: MEMORY_LIMIT
+    description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
+    displayName: Memory Limit
+    value: 1Gi
+  - name: MEMORY_REQUEST
+    description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
+    displayName: Memory Request
+    value: 256Mi
