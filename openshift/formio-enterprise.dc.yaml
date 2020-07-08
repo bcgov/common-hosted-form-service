@@ -32,17 +32,15 @@ objects:
         spec:
           containers:
             - name: formio
-              image: formio/formio-enterprise:latest
+              image: formio/formio-enterprise:${VERSION}
               imagePullPolicy: IfNotPresent
               livenessProbe:
-                tcpSocket:
-                  port: 3000
                 failureThreshold: 3
-                # httpGet:
-                #   path: "/"
-                #   port: 3000
-                #   scheme: HTTP
-                initialDelaySeconds: 10
+                httpGet:
+                  path: "/"
+                  port: 3000
+                  scheme: HTTP
+                initialDelaySeconds: 15
                 periodSeconds: 60
                 successThreshold: 1
                 timeoutSeconds: 1
@@ -50,14 +48,12 @@ objects:
                 - containerPort: 3000
                   protocol: TCP
               readinessProbe:
-                tcpSocket:
-                  port: 3000
                 failureThreshold: 3
-                # httpGet:
-                #   path: "/"
-                #   port: 3000
-                #   scheme: HTTP
-                initialDelaySeconds: 10
+                httpGet:
+                  path: "/"
+                  port: 3000
+                  scheme: HTTP
+                initialDelaySeconds: 15
                 periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
@@ -74,7 +70,12 @@ objects:
                 - name: DEBUG
                   value: formio.*
                 - name: MONGO
-                  value: "mongodb://app:D8HFi6Gv6PbaXILkVvsYyIvHjFM1jBQ6@mongodb-${JOB_NAME}:27017/app"
+                  value: "mongodb://mongodb-${JOB_NAME}:27017/app"
+                - name: MONGO_CONFIG
+                  valueFrom:
+                    secretKeyRef:
+                      name: "mongodb-${JOB_NAME}-secret"
+                      key: mongo-config
                 - name: PORT
                   value: "3000"
                 - name: PRIMARY
@@ -82,22 +83,13 @@ objects:
                 - name: LICENSE
                   valueFrom:
                     secretKeyRef:
-                      name: "formio-enterprise-license-secret"
+                      name: formio-enterprise-license-secret
                       key: LICENSE
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
       test: false
       triggers:
         - type: ConfigChange
-        # - imageChangeParams:
-        #     automatic: true
-        #     containerNames:
-        #       - formio
-        #     from:
-        #       kind: ImageStreamTag
-        #       name: "${REPO_NAME}-formio:latest"
-        #       namespace: "${NAMESPACE}"
-        #   type: ImageChange
   - apiVersion: v1
     kind: Service
     metadata:
@@ -150,10 +142,15 @@ parameters:
     description: Application repository name
     displayName: Repository Name
     required: true
+  - name: VERSION
+    description: Form.io release version
+    displayName: Version
+    required: true
+    value: "6.10.5"
   - name: CPU_LIMIT
     description: Limit Peak CPU per pod (in millicores ex. 1000m)
     displayName: CPU Limit
-    value: 250m
+    value: 500m
   - name: CPU_REQUEST
     description: Requested CPU per pod (in millicores ex. 500m)
     displayName: CPU Request
