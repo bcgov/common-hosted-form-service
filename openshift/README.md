@@ -1,6 +1,10 @@
-# Common Hosted Forms Service on Openshift
+# Common Hosted Form Service on Openshift
+
+Common Hosted Form Service currently consists of a MongoDB and the Form.io Enterprise application.
 
 ## MongoDB (Persistent, non-HA)
+
+Run the following to stand up a Persistent, non HA instance of MongoDB.
 
 ```sh
 export APP_NAME=<appname>
@@ -13,12 +17,15 @@ oc process -n $NAMESPACE -f mongodb.dc.yaml -p APP_NAME=$APP_NAME -p INSTANCE=$I
 
 ## Formio Enterprise
 
+Run the following to stand up a non HA instance of Form.io Enterprise.
+
 ```sh
 export APP_NAME=<appname>
 export INSTANCE=<instance>
 export NAMESPACE=<namespace>
+export VERSION=6.10.5
 
-oc process -n $NAMESPACE -f formio-enterprise.dc.yaml -p APP_NAME=$APP_NAME -p ROUTE_HOST=$APP_NAME-$INSTANCE-$NAMESPACE.pathfinder.gov.bc.ca -p JOB_NAME=$INSTANCE -p NAMESPACE=$NAMESPACE -p REPO_NAME=common-hosted-form-service -o yaml | oc apply -n  -f -
+oc process -n $NAMESPACE -f formio-enterprise.dc.yaml -p APP_NAME=$APP_NAME -p ROUTE_HOST=$APP_NAME-$INSTANCE-$NAMESPACE.pathfinder.gov.bc.ca -p JOB_NAME=$INSTANCE -p NAMESPACE=$NAMESPACE -p REPO_NAME=common-hosted-form-service -p VERSION=$VERSION -o yaml | oc apply -n $NAMESPACE -f -
 ```
 
 ## Formio (Unused)
