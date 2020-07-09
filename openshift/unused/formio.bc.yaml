@@ -1,0 +1,64 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  build: "${REPO_NAME}-formio"
+  template: "${REPO_NAME}-formio-bc-template"
+metadata:
+  name: "${REPO_NAME}-formio-bc"
+objects:
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: "${REPO_NAME}-formio"
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: "${REPO_NAME}-formio-${JOB_NAME}"
+    spec:
+      completionDeadlineSeconds: 600
+      failedBuildsHistoryLimit: 3
+      nodeSelector:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: "${REPO_NAME}-formio:latest"
+      postCommit: {}
+      resources:
+        requests:
+          cpu: 2000m
+          memory: 1Gi
+        limits:
+          cpu: 4000m
+          memory: 4Gi
+      runPolicy: SerialLatestOnly
+      source:
+        contextDir: forms-flow-forms
+        git:
+          ref: "${SOURCE_REPO_REF}"
+          uri: "${SOURCE_REPO_URL}"
+        type: Git
+      strategy:
+        dockerStrategy: {}
+        type: Docker
+      successfulBuildsHistoryLimit: 3
+parameters:
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: SOURCE_REPO_REF
+    description: Git Pull Request Reference (i.e. 'pull/CHANGE_ID/head')
+    displayName: Source Repository Reference
+    required: true
+  - name: SOURCE_REPO_URL
+    description: Git Repository URL
+    displayName: Source Repository URL
+    required: true
