@@ -2,8 +2,8 @@
 
 Common Hosted Form Service currently consists of a MongoDB and the Form.io Enterprise application.
 
-## Prerequesites
-The instructions below assume you have created a scret called **formio-enterprise-license-secret** with a key called **LICENCE** that holds your fomrio enterprise licence key.
+## Prerequisites
+The instructions below assume you have created a secret called **formio-enterprise-license-secret** with a key called **LICENCE** that holds your fomrio enterprise licence key.
 
 Note: the instructions below use APP_NAME (ex "mongodb"/"chefs"/etc) and INSTANCE (ex "master"/"pr-123"/etc) for the name of the deployments.
 
