@@ -113,6 +113,8 @@ Once the button is set up, you need to set up an action for that button. Visit t
 
 The Field Mappings section maps JWT values provided by Keycloak into formio. You will want to set the following map claims and then save the action.
 
+*Note: The Fields on the user resource you want to map your JWT claims to will not show up in the dropdown selection until you have saved the action and revisit it again.*
+
 | Claim | Field |
 | --- | --- |
 | name | Name |
