@@ -1,12 +1,11 @@
 
 # Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-Create, edit and publish forms (powered by form.io)
+Create, edit and publish forms.
 
 ## Directory Structure
 
     .github/                   - PR and Issue templates
-    openshift/                 - OpenShift-deployment and shared pipeline files
     CODE-OF-CONDUCT.md         - Code of Conduct
     COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
     CONTRIBUTING.md            - Contributing Guidelines
