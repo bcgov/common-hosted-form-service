@@ -1,0 +1,9 @@
+{
+  "ignore": [
+    "frontend/node_modules",
+    "frontend/src",
+    "frontend/test",
+    "node_modules/**/node_modules",
+    "test"
+  ]
+}

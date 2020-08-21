@@ -1,0 +1,19 @@
+{
+  "db": {
+    "username": "username",
+    "password": "password"
+  },
+  "server": {
+    "emailRecipients": "foo@bar.com,baz@boo.com",
+    "keycloak": {
+      "clientSecret": "password"
+    },
+    "logLevel": "silent"
+  },
+  "serviceClient": {
+    "commonServices": {
+      "username": "username",
+      "password": "password"
+    }
+  }
+}
