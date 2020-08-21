@@ -1,0 +1,59 @@
+{
+  "name": "vue-skeleton-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test": "npm run test:unit",
+    "test:unit": "vue-cli-service test:unit --verbose --verbose --forceExit --detectOpenHandles --maxWorkers=10",
+    "test:e2e": "vue-cli-service test:e2e",
+    "test:e2e:ci": "vue-cli-service test:e2e --headless --mode production",
+    "lint": "vue-cli-service lint",
+    "lint:fix": "vue-cli-service lint --fix",
+    "pretest": "npm run lint",
+    "clean": "rm -rf coverage dist **/e2e/videos",
+    "purge": "rm -rf node_modules",
+    "rebuild": "npm run clean && npm run build",
+    "reinstall": "npm run purge && npm install"
+  },
+  "dependencies": {
+    "@bcgov/bc-sans": "^1.0.1",
+    "axios": "^0.20.0",
+    "core-js": "^3.6.5",
+    "keycloak-js": "^10.0.2",
+    "nprogress": "^0.2.0",
+    "vue": "^2.6.12",
+    "vue-router": "^3.4.3",
+    "vuetify": "^2.3.9",
+    "vuex": "^3.5.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.5.4",
+    "@vue/cli-plugin-e2e-cypress": "^4.5.4",
+    "@vue/cli-plugin-eslint": "^4.5.4",
+    "@vue/cli-plugin-router": "^4.5.4",
+    "@vue/cli-plugin-unit-jest": "^4.5.4",
+    "@vue/cli-service": "^4.5.4",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/test-utils": "^1.0.4",
+    "axios-mock-adapter": "^1.18.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.7.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-vue": "^6.2.2",
+    "eslint-plugin-vuetify": "^1.0.0-beta.7",
+    "jest-sonar-reporter": "^2.0.0",
+    "node-sass": "^4.14.1",
+    "prettier": "^2.0.5",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.3",
+    "vue-cli-plugin-vuetify": "^2.0.7",
+    "vue-template-compiler": "^2.6.12",
+    "vuetify-loader": "^1.6.0"
+  },
+  "jestSonar": {
+    "reportPath": "coverage"
+  }
+}
