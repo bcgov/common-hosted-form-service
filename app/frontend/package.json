@@ -8,8 +8,6 @@
     "build": "vue-cli-service build",
     "test": "npm run test:unit",
     "test:unit": "vue-cli-service test:unit --verbose --verbose --forceExit --detectOpenHandles --maxWorkers=10",
-    "test:e2e": "vue-cli-service test:e2e",
-    "test:e2e:ci": "vue-cli-service test:e2e --headless --mode production",
     "lint": "vue-cli-service lint",
     "lint:fix": "vue-cli-service lint --fix",
     "pretest": "npm run lint",
@@ -31,7 +29,6 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.4",
-    "@vue/cli-plugin-e2e-cypress": "^4.5.4",
     "@vue/cli-plugin-eslint": "^4.5.4",
     "@vue/cli-plugin-router": "^4.5.4",
     "@vue/cli-plugin-unit-jest": "^4.5.4",

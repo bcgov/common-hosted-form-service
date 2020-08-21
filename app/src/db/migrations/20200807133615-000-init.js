@@ -4,7 +4,10 @@ exports.up = function(knex) {
   return Promise.resolve()
     .then(() => knex.schema.createTable('user', table => {
       table.uuid('id').primary();
-      table.string('externalId').unique().notNullable().index();
+      table.string('keycloakId').unique().notNullable().index();
+      table.string('displayName');
+      table.string('username');
+      table.string('email');
       stamps(knex, table);
     }))
     .then(() => knex.schema.createTable('role', table => {
