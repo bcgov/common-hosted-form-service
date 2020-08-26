@@ -4,6 +4,18 @@ const path = require('path');
 const router = require('express').Router();
 const yaml = require('js-yaml');
 
+const form = require('../forms/form');
+const permission = require('../forms/permission');
+const rbac = require('../forms/rbac');
+const role = require('../forms/role');
+const user = require('../forms/user');
+
+const formPath = form.mount(router);
+const permissionPath = permission.mount(router);
+const rbacPath = rbac.mount(router);
+const rolePath = role.mount(router);
+const userPath = user.mount(router);
+
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../docs/v1.api-spec.yaml'), 'utf8');
   const spec = yaml.safeLoad(rawSpec);
@@ -16,7 +28,12 @@ const getSpec = () => {
 router.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
-      '/docs'
+      '/docs',
+      formPath,
+      permissionPath,
+      rbacPath,
+      rolePath,
+      userPath
     ]
   });
 });
