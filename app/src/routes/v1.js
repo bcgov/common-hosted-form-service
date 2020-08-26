@@ -8,13 +8,11 @@ const form = require('../forms/form');
 const permission = require('../forms/permission');
 const rbac = require('../forms/rbac');
 const role = require('../forms/role');
-const user = require('../forms/user');
 
 const formPath = form.mount(router);
 const permissionPath = permission.mount(router);
 const rbacPath = rbac.mount(router);
 const rolePath = role.mount(router);
-const userPath = user.mount(router);
 
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../docs/v1.api-spec.yaml'), 'utf8');
@@ -32,8 +30,7 @@ router.get('/', (_req, res) => {
       formPath,
       permissionPath,
       rbacPath,
-      rolePath,
-      userPath
+      rolePath
     ]
   });
 });

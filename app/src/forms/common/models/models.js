@@ -49,7 +49,7 @@ class Form extends Timestamps(Model) {
         }
       },
       orderNameAscending(builder) {
-        builder.orderBy('name', 'asc');
+        builder.orderByRaw('lower("name")');
       }
     };
   }
@@ -143,7 +143,7 @@ class Permission extends Timestamps(Model) {
         }
       },
       orderNameAscending(builder) {
-        builder.orderBy('name', 'asc');
+        builder.orderByRaw('lower("name")');
       }
     };
   }
@@ -186,7 +186,7 @@ class Role extends Timestamps(Model) {
         }
       },
       orderNameAscending(builder) {
-        builder.orderBy('name', 'asc');
+        builder.orderByRaw('lower("name")');
       }
     };
   }
@@ -230,7 +230,7 @@ class User extends Timestamps(Model) {
         }
       },
       orderLastFirstAscending(builder) {
-        builder.orderBy(['lastName', 'firstName']);
+        builder.orderByRaw('lower("lastName"), lower("firstName")');
       }
     };
   }
@@ -278,8 +278,94 @@ class FormRoleUser extends Timestamps(Model) {
       orderUpdatedAtDescending(builder) {
         builder.orderBy('updatedAt', 'desc');
       }
-
     };
+  }
+}
+
+
+class UserFormRoles extends Model {
+  static get tableName () {
+    return 'user_form_roles_vw';
+  }
+
+  static get modifiers () {
+    return {
+      filterId(query, value) {
+        if (value) {
+          query.where('id', value);
+        }
+      },
+      filterKeycloakId(query, value) {
+        if (value) {
+          query.where('keycloakId', value);
+        }
+      },
+      filterUsername(query, value) {
+        if (value) {
+          query.where('username', 'ilike', `%${value}%`);
+        }
+      },
+      filterFullName(query, value) {
+        if (value) {
+          query.where('fullName', 'ilike', `%${value}%`);
+        }
+      },
+      filterFirstName(query, value) {
+        if (value) {
+          query.where('firstName', 'ilike', `%${value}%`);
+        }
+      },
+      filterLastName(query, value) {
+        if (value) {
+          query.where('lastName', 'ilike', `%${value}%`);
+        }
+      },
+      filterEmail(query, value) {
+        if (value) {
+          query.where('email', 'ilike', `%${value}%`);
+        }
+      },
+      filterFormId(query, value) {
+        if (value) {
+          query.where('formId', value);
+        }
+      },
+      filterFormName(query, value) {
+        if (value) {
+          query.where('formName', 'ilike', `%${value}%`);
+        }
+      },
+      filterPublic(query, value) {
+        if (value !== undefined) {
+          query.where('public', value);
+        }
+      },
+      filterActive(query, value) {
+        if (value !== undefined) {
+          query.where('active', value);
+        }
+      },
+      filterArray(query, fieldName, value) {
+        if (value) {
+          query.whereRaw(`'${value}' = ANY (${fieldName})`);
+        }
+      },
+      orderFormNameAscending(builder) {
+        builder.orderByRaw('lower("formName")');
+      },
+      orderLastFirstAscending(builder) {
+        builder.orderByRaw('lower("lastName"), lower("firstName")');
+      },
+      orderDefault(builder) {
+        builder.orderByRaw('lower("lastName"), lower("firstName"), lower("formName")');
+      }
+    };
+  }
+}
+
+class UserFormPermissions extends UserFormRoles {
+  static get tableName () {
+    return 'user_form_permissions_vw';
   }
 }
 
@@ -290,5 +376,7 @@ module.exports = {
   FormVersion: FormVersion,
   Permission: Permission,
   Role: Role,
-  User: User
+  User: User,
+  UserFormPermissions: UserFormPermissions,
+  UserFormRoles: UserFormRoles
 };
