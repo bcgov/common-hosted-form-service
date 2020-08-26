@@ -40,6 +40,46 @@ module.exports = {
     } catch (error) {
       next(error);
     }
+  },
+  getCurrentUser:  async (req, res, next) => {
+    try {
+      const response = await service.getCurrentUser(req.kauth.grant.access_token);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getFormUsers:  async (req, res, next) => {
+    try {
+      const response = await service.getFormUsers(req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  setFormUsers:  async (req, res, next) => {
+    try {
+      const response = await service.setFormUsers(req.query.formId, req.query.userId, req.body);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getUserForms:  async (req, res, next) => {
+    try {
+      const response = await service.getUserForms(req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  setUserForms:  async (req, res, next) => {
+    try {
+      const response = await service.setUserForms(req.query.userId, req.query.formId, req.body);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
   }
 
 };

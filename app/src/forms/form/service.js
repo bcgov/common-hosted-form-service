@@ -1,4 +1,4 @@
-const { Form, FormVersion, FormSubmission} = require('../common/models');
+const { Form, FormVersion, FormSubmission } = require('../common/models');
 
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
