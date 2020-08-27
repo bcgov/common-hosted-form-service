@@ -40,7 +40,7 @@ const service = {
       .throwIfNotFound();
   },
 
-  updateRole: async (id, data) => {
+  update: async (id, data) => {
     let trx;
     try {
       const obj = await service.read(id);
