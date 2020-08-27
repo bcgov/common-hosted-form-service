@@ -5,7 +5,9 @@ exports.up = function(knex) {
     .then(() => knex.schema.createTable('user', table => {
       table.uuid('id').primary();
       table.string('keycloakId').unique().notNullable().index();
-      table.string('displayName');
+      table.string('firstName');
+      table.string('fullName');
+      table.string('lastName');
       table.string('username');
       table.string('email');
       stamps(knex, table);
@@ -32,7 +34,7 @@ exports.up = function(knex) {
       table.uuid('id').primary();
       table.string('name').unique().notNullable();
       table.string('description');
-      table.boolean('public').notNullable().defaultTo(true);
+      table.boolean('public').notNullable().defaultTo(false);
       table.boolean('active').notNullable().defaultTo(true);
       table.specificType('labels', 'text ARRAY').comment('Use labels to group forms together, or aid in search. Examples: Ministry name, Branch name, Team name.');
       stamps(knex, table);
@@ -56,7 +58,6 @@ exports.up = function(knex) {
     .then(() => knex.schema.createTable('form_submission', table => {
       table.uuid('id').primary();
       table.uuid('formVersionId').references('id').inTable('form_version').notNullable().index();
-      table.uuid('userId').references('id').inTable('user').nullable().index();
       table.string('confirmationId').notNullable().unique().index();
       table.boolean('draft').notNullable().defaultTo(false);
       table.boolean('deleted').notNullable().defaultTo(false);
