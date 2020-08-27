@@ -249,32 +249,26 @@ const service = {
   },
 
   getCurrentUser: async (access_token) => {
+    const userInfo = {
+      keycloakId: access_token.content.sub.toString(),
+      fullName: access_token.content.name.toString(),
+      username: access_token.content.preferred_username.toString(),
+      firstName: access_token.content.given_name.toString(),
+      lastName: access_token.content.family_name.toString(),
+      email: access_token.content.email.toString()
+    };
     // if this user does not exists, add...
     // return user details including form access...
     let user = await User.query()
       .first()
-      .where('keycloakId', access_token.content.sub.toString());
+      .where('keycloakId', userInfo.keycloakId);
 
     if (!user) {
       // add to the system.
-      user = await service.createUser({
-        keycloakId: access_token.content.sub.toString(),
-        fullName: access_token.content.name.toString(),
-        username: access_token.content.preferred_username.toString(),
-        firstName: access_token.content.given_name.toString(),
-        lastName: access_token.content.family_name.toString(),
-        email: access_token.content.email.toString()
-      });
+      user = await service.createUser(userInfo);
     } else {
       // what if name or email changed?
-      user = await service.updateUser(user.id,{
-        keycloakId: access_token.content.sub.toString(),
-        fullName: access_token.content.name.toString(),
-        username: access_token.content.preferred_username.toString(),
-        firstName: access_token.content.given_name.toString(),
-        lastName: access_token.content.family_name.toString(),
-        email: access_token.content.email.toString()
-      });
+      user = await service.updateUser(user.id,userInfo);
     }
 
     const userFormPermissions = await UserFormPermissions.query()
@@ -389,7 +383,7 @@ const service = {
       await FormRoleUser.query().insert(items);
 
       // return the new mappings
-      const result = await service.getFormUsers(formId, userId);
+      const result = await service.getFormUsers({userId: userId, formId: formId});
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -427,7 +421,7 @@ const service = {
       await FormRoleUser.query().insert(items);
 
       // return the new mappings
-      const result = await service.getUserForms(userId, formId);
+      const result = await service.getUserForms({userId: userId, formId: formId});
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
