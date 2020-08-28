@@ -8,6 +8,9 @@
         <li>
           <router-link :to="{ name: 'Forms' }">My Forms</router-link>
         </li>
+        <li>
+          <router-link :to="{ name: 'User' }">User (TBD)</router-link>
+        </li>
       </ul>
     </div>
   </nav>
