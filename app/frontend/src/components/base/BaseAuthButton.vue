@@ -28,7 +28,8 @@ export default {
   methods: {
     login() {
       if (this.keycloakReady) {
-        window.location.replace(this.createLoginUrl({ idpHint: 'idir' }));
+        window.location.replace(this.createLoginUrl());
+        //window.location.replace(this.createLoginUrl({ idpHint: 'idir' }));
       }
     },
     logout() {
