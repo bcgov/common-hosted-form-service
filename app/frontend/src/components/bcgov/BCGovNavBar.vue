@@ -3,7 +3,10 @@
     <div class="container">
       <ul>
         <li>
-          <router-link :to="{ name: 'Home' }">Home</router-link>
+          <router-link :to="{ name: 'Home' }">About</router-link>
+        </li>
+        <li>
+          <router-link :to="{ name: 'Forms' }">My Forms</router-link>
         </li>
       </ul>
     </div>
