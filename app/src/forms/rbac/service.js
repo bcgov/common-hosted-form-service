@@ -1,142 +1,8 @@
 const { FormRoleUser, User, UserFormRoles, UserFormPermissions } = require('../common/models');
+const Transformer = require('./transformer');
 
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
-
-const toUserForms = (userPerms, userRoles) => {
-  if (!(userPerms || userRoles) && !(userPerms.length || userRoles.length)) {
-    return null;
-  }
-
-  function toUser(item) {
-    return {
-      id: item.id,
-      keycloakId: item.keycloakId,
-      username: item.username,
-      fullName: item.fullName,
-      email: item.email,
-      firstName: item.firstName,
-      lastName: item.lastName,
-      forms: []
-    };
-  }
-
-  function toForm(item) {
-    return {
-      id: item.formId,
-      name: item.formName,
-      public: item.public,
-      active: item.active,
-      formVersionId: item.formVersionId,
-      version: item.version,
-      roles: [],
-      permissions: []
-    };
-  }
-
-  const result = [];
-
-  if (userPerms && userPerms.length) {
-    userPerms.forEach(item => {
-      let user = result.find(u => u.id === item.id);
-      if (!user) {
-        user = toUser(item);
-        result.push(user);
-      }
-      let form = user.forms.find(f => f.id === item.formId);
-      if (!form) {
-        form = toForm(item);
-        user.forms.push(form);
-      }
-      form.permissions = (item.permissions) ? item.permissions.sort() : [];
-    });
-  }
-
-  if (userRoles && userRoles.length) {
-    userRoles.forEach(item => {
-      let user = result.find(u => u.id === item.id);
-      if (!user) {
-        user = toUser(item);
-        result.push(user);
-      }
-      let form = user.forms.find(f => f.id === item.formId);
-      if (!form) {
-        form = toForm(item);
-        user.forms.push(form);
-      }
-      form.roles = (item.roles) ? item.roles.sort() : [];
-    });
-  }
-
-  return result;
-};
-
-const toFormUsers = (userPerms, userRoles) => {
-  if (!(userPerms || userRoles) && !(userPerms.length || userRoles.length)) {
-    return null;
-  }
-
-  function toForm(item) {
-    return {
-      id: item.formId,
-      name: item.formName,
-      public: item.public,
-      active: item.active,
-      formVersionId: item.formVersionId,
-      version: item.version,
-      users: []
-    };
-  }
-  function toUser(item) {
-    return {
-      id: item.id,
-      keycloakId: item.keycloakId,
-      username: item.username,
-      fullName: item.fullName,
-      email: item.email,
-      firstName: item.firstName,
-      lastName: item.lastName,
-      roles: [],
-      permissions: []
-    };
-  }
-
-  const result = [];
-
-  if (userPerms && userPerms.length) {
-    userPerms.forEach(item => {
-      let form = result.find(f => f.id === item.formId);
-      if (!form) {
-        form = toForm(item);
-        result.push(form);
-      }
-      let user = form.users.find(u => u.id === item.id);
-      if (!user) {
-        user = toUser(item);
-        form.users.push(user);
-      }
-      user.permissions = (item.permissions) ? item.permissions.sort() : [];
-    });
-  }
-
-  if (userRoles && userRoles.length) {
-    userRoles.forEach(item => {
-      let form = result.find(f => f.id === item.formId);
-      if (!form) {
-        form = toForm(item);
-        result.push(form);
-      }
-      let user = form.users.find(u => u.id === item.id);
-      if (!user) {
-        user = toUser(item);
-        form.users.push(user);
-      }
-      user.roles = (item.roles) ? item.roles.sort() : [];
-    });
-  }
-
-  return result;
-};
 
 const service = {
 
@@ -248,7 +114,7 @@ const service = {
     }
   },
 
-  getCurrentUser: async (access_token) => {
+  getCurrentUser: async (access_token, params) => {
     const userInfo = {
       keycloakId: access_token.content.sub.toString(),
       fullName: access_token.content.name.toString(),
@@ -271,15 +137,13 @@ const service = {
       user = await service.updateUser(user.id,userInfo);
     }
 
-    const userFormPermissions = await UserFormPermissions.query()
-      .modify('filterId', user.id)
-      .modify('orderDefault');
+    if (!params) {
+      params = {};
+    }
+    params.userId = user.id;
+    const userForms = await service.getUserForms(params);
 
-    const userFormRoles = await UserFormRoles.query()
-      .modify('filterId', user.id)
-      .modify('orderDefault');
-
-    return toUserForms(userFormPermissions, userFormRoles)[0];
+    return userForms.length ? userForms[0] : [];
   },
 
   getFormUsers: async (params) => {
@@ -296,7 +160,6 @@ const service = {
       .modify('filterFormName', params.formName)
       .modify('filterPublic', params.public)
       .modify('filterActive', params.active)
-      .modify('filterArray', 'roles', params.permissions)
       .modify('orderDefault');
 
     const roles = await UserFormRoles.query()
@@ -312,9 +175,8 @@ const service = {
       .modify('filterFormName', params.formName)
       .modify('filterPublic', params.public)
       .modify('filterActive', params.active)
-      .modify('filterArray', 'roles', params.permissions)
       .modify('orderDefault');
-    return toFormUsers(permissions, roles);
+    return Transformer.toFormUsers(permissions, roles, params.permissions, params.roles);
   },
 
   getUserForms: async (params) => {
@@ -331,7 +193,6 @@ const service = {
       .modify('filterFormName', params.formName)
       .modify('filterPublic', params.public)
       .modify('filterActive', params.active)
-      .modify('filterArray', 'roles', params.permissions)
       .modify('orderDefault');
 
     const roles = await UserFormRoles.query()
@@ -347,10 +208,9 @@ const service = {
       .modify('filterFormName', params.formName)
       .modify('filterPublic', params.public)
       .modify('filterActive', params.active)
-      .modify('filterArray', 'roles', params.permissions)
       .modify('orderDefault');
 
-    return toUserForms(permissions, roles);
+    return Transformer.toUserForms(permissions, roles, params.permissions, params.roles);
   },
 
   setFormUsers: async (formId, userId, data) => {
