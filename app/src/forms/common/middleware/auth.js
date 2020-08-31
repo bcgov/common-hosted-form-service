@@ -4,18 +4,29 @@ const DEFAULT_USER = {
   firstName: undefined,
   lastName: undefined,
   fullName: 'public',
-  email: undefined
+  email: undefined,
+  idp: 'public'
 };
 
 const getCurrentUserFromToken = token => {
   try {
-    const {preferred_username: username, given_name: firstName, family_name: lastName, sub: keycloakId, name: fullName, email } = token.content;
+    // identity_provider_* will be undefined if user login is to local keycloak (userid/password)
+    const {
+      identity_provider_identity: identity,
+      identity_provider: idp,
+      preferred_username: username,
+      given_name: firstName,
+      family_name: lastName,
+      sub: keycloakId,
+      name: fullName,
+      email } = token.content;
     return {
       keycloakId: keycloakId,
-      username: username,
+      username: identity ? identity : username,
       firstName: firstName,
       lastName: lastName,
       fullName: fullName,
+      idp: idp ? idp : '',
       email: email};
   } catch (err) {
     return DEFAULT_USER;

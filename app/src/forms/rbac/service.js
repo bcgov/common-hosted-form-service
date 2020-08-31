@@ -1,4 +1,4 @@
-const { FormRoleUser, User, UserFormRoles, UserFormPermissions } = require('../common/models');
+const { FormRoleUser, IdentityProvider, User, UserFormAccess } = require('../common/models');
 const Transformer = require('./transformer');
 
 const {transaction} = require('objection');
@@ -114,15 +114,11 @@ const service = {
     }
   },
 
-  getCurrentUser: async (access_token, params) => {
-    const userInfo = {
-      keycloakId: access_token.content.sub.toString(),
-      fullName: access_token.content.name.toString(),
-      username: access_token.content.preferred_username.toString(),
-      firstName: access_token.content.given_name.toString(),
-      lastName: access_token.content.family_name.toString(),
-      email: access_token.content.email.toString()
-    };
+  getCurrentUser: async (currentUser, params) => {
+    const userInfo = Object.assign({}, currentUser);
+    // we don't want to store the idp with the user, that could change each login...
+    delete userInfo.idp;
+
     // if this user does not exists, add...
     // return user details including form access...
     let user = await User.query()
@@ -134,20 +130,28 @@ const service = {
       user = await service.createUser(userInfo);
     } else {
       // what if name or email changed?
-      user = await service.updateUser(user.id,userInfo);
+      user = await service.updateUser(user.id, userInfo);
     }
 
     if (!params) {
       params = {};
     }
     params.userId = user.id;
+
+    let _idps = [];
+    if (params.idps) {
+      _idps = Array.isArray(params.idps) ? params.idps : [params.idps];
+    }
+    _idps.push(currentUser.idp);
+    params.idps = _idps;
+
     const userForms = await service.getUserForms(params);
 
     return userForms.length ? userForms[0] : [];
   },
 
   getFormUsers: async (params) => {
-    const permissions = await UserFormPermissions.query()
+    const items = await UserFormAccess.query()
       .skipUndefined()
       .modify('filterId', params.userId)
       .modify('filterKeycloakId', params.keycloakId)
@@ -158,29 +162,14 @@ const service = {
       .modify('filterEmail', params.email)
       .modify('filterFormId', params.formId)
       .modify('filterFormName', params.formName)
-      .modify('filterPublic', params.public)
       .modify('filterActive', params.active)
+      .modify('filterByAccess', params.idps, params.roles, params.permissions)
       .modify('orderDefault');
-
-    const roles = await UserFormRoles.query()
-      .skipUndefined()
-      .modify('filterId', params.userId)
-      .modify('filterKeycloakId', params.keycloakId)
-      .modify('filterUsername', params.username)
-      .modify('filterFullName', params.fullName)
-      .modify('filterFirstName', params.firstName)
-      .modify('filterLastName', params.lastName)
-      .modify('filterEmail', params.email)
-      .modify('filterFormId', params.formId)
-      .modify('filterFormName', params.formName)
-      .modify('filterPublic', params.public)
-      .modify('filterActive', params.active)
-      .modify('orderDefault');
-    return Transformer.toFormUsers(permissions, roles, params.permissions, params.roles);
+    return Transformer.toFormAccess(items);
   },
 
   getUserForms: async (params) => {
-    const permissions = await UserFormPermissions.query()
+    const items = await UserFormAccess.query()
       .skipUndefined()
       .modify('filterId', params.userId)
       .modify('filterKeycloakId', params.keycloakId)
@@ -191,26 +180,11 @@ const service = {
       .modify('filterEmail', params.email)
       .modify('filterFormId', params.formId)
       .modify('filterFormName', params.formName)
-      .modify('filterPublic', params.public)
       .modify('filterActive', params.active)
+      .modify('filterByAccess', params.idps, params.roles, params.permissions)
       .modify('orderDefault');
 
-    const roles = await UserFormRoles.query()
-      .skipUndefined()
-      .modify('filterId', params.userId)
-      .modify('filterKeycloakId', params.keycloakId)
-      .modify('filterUsername', params.username)
-      .modify('filterFullName', params.fullName)
-      .modify('filterFirstName', params.firstName)
-      .modify('filterLastName', params.lastName)
-      .modify('filterEmail', params.email)
-      .modify('filterFormId', params.formId)
-      .modify('filterFormName', params.formName)
-      .modify('filterPublic', params.public)
-      .modify('filterActive', params.active)
-      .modify('orderDefault');
-
-    return Transformer.toUserForms(permissions, roles, params.permissions, params.roles);
+    return Transformer.toUserAccess(items);
   },
 
   setFormUsers: async (formId, userId, data) => {
@@ -287,6 +261,13 @@ const service = {
       if (trx) await trx.rollback();
       throw err;
     }
+  },
+
+  getIdentityProviders: async (params) => {
+    return IdentityProvider.query()
+      .skipUndefined()
+      .modify('filterActive', params.active)
+      .modify('orderDefault');
   }
 
 };

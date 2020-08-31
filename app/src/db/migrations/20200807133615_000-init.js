@@ -2,6 +2,13 @@ const stamps = require('../stamps');
 
 exports.up = function(knex) {
   return Promise.resolve()
+    .then(() => knex.schema.createTable('identity_provider', table => {
+      table.string('code').primary();
+      table.string('display').notNullable();
+      table.boolean('active').notNullable().defaultTo(true);
+      table.string('idp');
+      stamps(knex, table);
+    }))
     .then(() => knex.schema.createTable('user', table => {
       table.uuid('id').primary();
       table.string('keycloakId').unique().notNullable().index();
@@ -34,9 +41,15 @@ exports.up = function(knex) {
       table.uuid('id').primary();
       table.string('name').unique().notNullable();
       table.string('description');
-      table.boolean('public').notNullable().defaultTo(false);
+      table.string('shortName', 30).unique().notNullable().comment('shortened name that we can use in urls.');
       table.boolean('active').notNullable().defaultTo(true);
       table.specificType('labels', 'text ARRAY').comment('Use labels to group forms together, or aid in search. Examples: Ministry name, Branch name, Team name.');
+      stamps(knex, table);
+    }))
+    .then(() => knex.schema.createTable('form_identity_provider', table => {
+      table.uuid('id').primary();
+      table.uuid('formId').references('id').inTable('form').notNullable().index();
+      table.string('code').references('code').inTable('identity_provider').notNullable();
       stamps(knex, table);
     }))
     .then(() => knex.schema.createTable('form_role_user', table => {
@@ -50,7 +63,6 @@ exports.up = function(knex) {
       table.uuid('id').primary();
       table.uuid('formId').references('id').inTable('form').notNullable().index();
       table.integer('version').notNullable();
-      table.boolean('draft').notNullable().defaultTo(true);
       table.jsonb('schema');
       stamps(knex, table);
       table.unique(['formId', 'version']);
@@ -68,6 +80,8 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   return Promise.resolve()
+    .then(() => knex.schema.dropTableIfExists('form_identity_provider'))
+    .then(() => knex.schema.dropTableIfExists('identity_provider'))
     .then(() => knex.schema.dropTableIfExists('form_submission'))
     .then(() => knex.schema.dropTableIfExists('form_version'))
     .then(() => knex.schema.dropTableIfExists('form_role_user'))
