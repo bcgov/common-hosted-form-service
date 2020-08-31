@@ -345,11 +345,6 @@ class UserFormRoles extends Model {
           query.where('active', value);
         }
       },
-      filterArray(query, fieldName, value) {
-        if (value) {
-          query.whereRaw(`'${value}' = ANY (${fieldName})`);
-        }
-      },
       orderFormNameAscending(builder) {
         builder.orderByRaw('lower("formName")');
       },
