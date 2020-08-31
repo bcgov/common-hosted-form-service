@@ -1,4 +1,4 @@
-const { Form, FormVersion, FormSubmission } = require('../common/models');
+const { Form, FormIdentityProvider, FormVersion, FormSubmission } = require('../common/models');
 
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
@@ -7,7 +7,8 @@ const service = {
 
   listForms: async () => {
     return Form.query()
-      .allowGraph('[versions]')
+      .allowGraph('[identityProviders,versions]')
+      .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(orderVersionDescending)')
       .modify('orderNameAscending');
   },
@@ -17,10 +18,16 @@ const service = {
     try {
       trx = await transaction.start(Form.knex());
 
-      const obj = Object.assign({}, data);
+      const obj = {};
       obj.id = uuidv4();
+      obj.name = data.name;
+      obj.description = data.description;
+      obj.shortName = data.shortName ? data.shortName : obj.id.substring(0, 8).toUpperCase();
+      obj.active = data.active;
+      obj.labels = data.labels;
 
       await Form.query(trx).insert(obj);
+      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code}; }));
       await trx.commit();
       const result = await service.readForm(obj.id);
       return result;
@@ -36,7 +43,12 @@ const service = {
       const obj = await service.readForm(formId);
       trx = await transaction.start(Form.knex());
 
-      await Form.query(trx).patchAndFetchById(formId, {name: data.name, description: data.description, public: data.public, active: data.active, labels: data.labels});
+      await Form.query(trx).patchAndFetchById(formId, {name: data.name, description: data.description, shortName: data.shortName, active: data.active, labels: data.labels});
+
+      // remove any existing links to identity providers, and the updated ones
+      await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
+      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code}; }));
+
       await trx.commit();
       const result = await service.readForm(obj.id);
       return result;
@@ -49,8 +61,8 @@ const service = {
   readForm: async (formId) => {
     return Form.query()
       .findById(formId)
-      .allowGraph('[versions]')
-      .withGraphFetched('versions(orderVersionDescending)')
+      .allowGraph('[identityProviders,versions]')
+      .withGraphFetched('identityProviders(orderDefault)')
       .throwIfNotFound();
   },
 

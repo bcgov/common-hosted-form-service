@@ -43,7 +43,7 @@ module.exports = {
   },
   getCurrentUser:  async (req, res, next) => {
     try {
-      const response = await service.getCurrentUser(req.kauth.grant.access_token, req.query);
+      const response = await service.getCurrentUser(req.currentUser, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -76,6 +76,14 @@ module.exports = {
   setUserForms:  async (req, res, next) => {
     try {
       const response = await service.setUserForms(req.query.userId, req.query.formId, req.body);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getIdentityProviders:  async (req, res, next) => {
+    try {
+      const response = await service.getIdentityProviders(req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
