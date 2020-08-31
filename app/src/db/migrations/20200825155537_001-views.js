@@ -1,6 +1,28 @@
 
 exports.up = function(knex) {
   return Promise.resolve()
+    .then(() => knex.schema.raw(`create view form_vw as
+SELECT DISTINCT ON ((lower(f.name::text))) f.id,
+                                           f.name,
+                                           f."shortName",
+                                           f.active,
+                                           f.description,
+                                           f.labels,
+                                           f."createdAt",
+                                           f."createdBy",
+                                           f."updatedAt",
+                                           f."updatedBy",
+                                           fv.id               AS "formVersionId",
+                                           fv.version,
+                                           array_agg(fip.code) AS "identityProviders",
+                                           array_agg(ip.idp)   AS idps
+FROM form f
+         JOIN form_version fv ON f.id = fv."formId"
+         JOIN form_identity_provider fip ON f.id = fip."formId"
+         JOIN identity_provider ip ON fip.code::text = ip.code::text
+GROUP BY f.id, f.name, f."shortName", f.active, f.description, f.labels, f."createdAt", f."createdBy", f."updatedAt",
+         f."updatedBy", fv.id, fv.version
+ORDER BY (lower(f.name::text)), fv.version DESC`))
     .then(() => knex.schema.raw(`create view user_form_permissions_vw as 
 select u.id, u."keycloakId", u.username, u."fullName", u."firstName", u."lastName", u.email, f.id as "formId", f.name as "formName", f."shortName", f.labels, f.idps, f.active, f."formVersionId", f.version, array_agg(p.name) as permissions
 from form_role_user fru
@@ -37,5 +59,6 @@ exports.down = function(knex) {
   return Promise.resolve()
     .then(() => knex.schema.raw('DROP VIEW IF EXISTS user_form_access_vw'))
     .then(() => knex.schema.raw('DROP VIEW IF EXISTS user_form_roles_vw'))
-    .then(() => knex.schema.raw('DROP VIEW IF EXISTS user_form_permissions_vw'));
+    .then(() => knex.schema.raw('DROP VIEW IF EXISTS user_form_permissions_vw'))
+    .then(() => knex.schema.raw('DROP VIEW IF EXISTS form_vw'));
 };
