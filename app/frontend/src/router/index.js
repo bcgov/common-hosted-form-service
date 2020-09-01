@@ -59,6 +59,24 @@ export default function getRouter(basePath = '/') {
         }
       },
       {
+        path: '/form/edit',
+        name: 'FormDesign',
+        component: () => import(/* webpackChunkName: "formdesign" */ '@/views/FormDesign.vue'),
+        meta: {
+          requiresAuth: true,
+          hasLogin: true
+        }
+      },
+      {
+        path: '/form/submisions',
+        name: 'FormSubmissions',
+        component: () => import(/* webpackChunkName: "formsubmissions" */ '@/views/FormSubmissions.vue'),
+        meta: {
+          requiresAuth: true,
+          hasLogin: true
+        }
+      },
+      {
         path: '/user',
         name: 'User',
         component: () => import(/* webpackChunkName: "user" */ '@/views/User.vue'),
