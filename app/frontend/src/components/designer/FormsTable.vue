@@ -27,9 +27,10 @@
     >
       <template v-slot:item.actions="{ item }">
         <v-btn color="textLink" text small>
-          <v-icon class="mr-1">note_add</v-icon>
-          <span>SUBMIT</span>
-          {{ item }}
+          <router-link :to="{ name: 'FormSubmit', params: { formId: item.id } }">
+            <v-icon class="mr-1">note_add</v-icon>
+            <span>SUBMIT</span>
+          </router-link>
         </v-btn>
         <v-btn color="textLink" text small>
           <router-link :to="{ name: 'FormSubmissions' }">
