@@ -1,5 +1,4 @@
 const { FormRoleUser, IdentityProvider, User, UserFormAccess } = require('../common/models');
-const Transformer = require('./transformer');
 
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
@@ -145,15 +144,13 @@ const service = {
     _idps.push(currentUser.idp);
     params.idps = _idps;
 
-    const userForms = await service.getUserForms(params);
-
-    return userForms.length ? userForms[0] : [];
+    return service.getUserForms(params);
   },
 
   getFormUsers: async (params) => {
     const items = await UserFormAccess.query()
       .skipUndefined()
-      .modify('filterId', params.userId)
+      .modify('filterUserId', params.userId)
       .modify('filterKeycloakId', params.keycloakId)
       .modify('filterUsername', params.username)
       .modify('filterFullName', params.fullName)
@@ -165,13 +162,13 @@ const service = {
       .modify('filterActive', params.active)
       .modify('filterByAccess', params.idps, params.roles, params.permissions)
       .modify('orderDefault');
-    return Transformer.toFormAccess(items);
+    return items;//Transformer.toFormAccess(items);
   },
 
   getUserForms: async (params) => {
     const items = await UserFormAccess.query()
       .skipUndefined()
-      .modify('filterId', params.userId)
+      .modify('filterUserId', params.userId)
       .modify('filterKeycloakId', params.keycloakId)
       .modify('filterUsername', params.username)
       .modify('filterFullName', params.fullName)
@@ -184,7 +181,7 @@ const service = {
       .modify('filterByAccess', params.idps, params.roles, params.permissions)
       .modify('orderDefault');
 
-    return Transformer.toUserAccess(items);
+    return items;//Transformer.toUserAccess(items);
   },
 
   setFormUsers: async (formId, userId, data) => {
@@ -216,9 +213,7 @@ const service = {
       const items = data.map(d => { return {id: uuidv4(), ...d}; });
       await FormRoleUser.query().insert(items);
 
-      // return the new mappings
-      const result = await service.getFormUsers({userId: userId, formId: formId});
-      return result;
+      return service.getFormUsers({userId: userId, formId: formId});
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

@@ -41,7 +41,6 @@ exports.up = function(knex) {
       table.uuid('id').primary();
       table.string('name').unique().notNullable();
       table.string('description');
-      table.string('shortName', 30).unique().notNullable().comment('shortened name that we can use in urls.');
       table.boolean('active').notNullable().defaultTo(true);
       table.specificType('labels', 'text ARRAY').comment('Use labels to group forms together, or aid in search. Examples: Ministry name, Branch name, Team name.');
       stamps(knex, table);

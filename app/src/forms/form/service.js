@@ -22,7 +22,6 @@ const service = {
       obj.id = uuidv4();
       obj.name = data.name;
       obj.description = data.description;
-      obj.shortName = data.shortName ? data.shortName : obj.id.substring(0, 8).toUpperCase();
       obj.active = data.active;
       obj.labels = data.labels;
 
@@ -43,7 +42,7 @@ const service = {
       const obj = await service.readForm(formId);
       trx = await transaction.start(Form.knex());
 
-      await Form.query(trx).patchAndFetchById(formId, {name: data.name, description: data.description, shortName: data.shortName, active: data.active, labels: data.labels});
+      await Form.query(trx).patchAndFetchById(formId, {name: data.name, description: data.description, active: data.active, labels: data.labels});
 
       // remove any existing links to identity providers, and the updated ones
       await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
