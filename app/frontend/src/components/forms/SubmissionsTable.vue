@@ -20,26 +20,17 @@
       class="submissions-table"
       :headers="headers"
       item-key="title"
-      :items="forms"
+      :items="submissions"
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template v-slot:item.actions="{ item }">
-        <v-btn color="textLink" text small>
-          <v-icon class="mr-1">note_add</v-icon>
-          <span>SUBMIT</span>
-          {{ item }}
-        </v-btn>
+      <template v-slot:item.actions>
         <v-btn color="textLink" text small>
           <router-link :to="{ name: 'FormSubmissions' }">
             <v-icon class="mr-1">remove_red_eye</v-icon>
-            <span>VIEW SUBMISSIONS</span>
+            <span>VIEW</span>
           </router-link>
-        </v-btn>
-        <v-btn color="textLink" text small>
-          <v-icon class="mr-1">build_circle</v-icon>
-          <span>MANAGE</span>
         </v-btn>
       </template>
     </v-data-table>
@@ -47,17 +38,17 @@
 </template>
 
 <script>
-import userService from '@/services/userService';
-
 export default {
-  name: 'FormsTable',
+  name: 'SubmissionsTable',
   data() {
     return {
       alertMessage: '',
       alertShow: false,
       alertType: null,
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name' },
+        { text: 'Submission Date', align: 'start', value: 'date' },
+        { text: 'Submitter', align: 'start', value: 'submitter' },
+        { text: 'Assigned To', align: 'start', value: 'asignee' },
         {
           text: 'Actions',
           align: 'end',
@@ -66,32 +57,26 @@ export default {
           sortable: false,
         },
       ],
-      forms: [],
+      submissions: [],
       loading: true,
       search: '',
     };
   },
   methods: {
-    async populateFormTable() {
+    async populateSubmissionsTable() {
       try {
-        // Get this user's permissions
-        const response = await await userService.getCurrentUser();
-        const data = response.data;
-        // Build up the list of forms for the table
-        const forms = data.forms.map((f) => {
-          return {
-            id: f.id,
-            name: f.name,
-            permissions: f.permissions,
-          };
-        });
-        if (!forms.length) {
-          this.showTableAlert('info', 'No Forms found for this user');
+        const submissions = [
+          { date: 'August 1, 2020', submitter: 'Sarah Smith', asignee: 'Tim' },
+          { date: 'July 21, 2020', submitter: 'Levar Smith', asignee: 'Jason' },
+          { date: 'July 11, 2020', submitter: 'Joe Smith', asignee: 'Tim' },
+        ];
+        if (!submissions.length) {
+          this.showTableAlert('info', 'No Submissions found for this form');
         }
-        this.forms = forms;
+        this.submissions = submissions;
       } catch (error) {
-        console.error(`Error getting user data: ${error}`); // eslint-disable-line no-console
-        this.showTableAlert('error', 'Error getting user data');
+        console.error(`Error getting submissions: ${error}`); // eslint-disable-line no-console
+        this.showTableAlert('error', 'Error getting submissions');
       } finally {
         this.loading = false;
       }
@@ -104,7 +89,7 @@ export default {
     },
   },
   mounted() {
-    this.populateFormTable();
+    this.populateSubmissionsTable();
   },
 };
 </script>

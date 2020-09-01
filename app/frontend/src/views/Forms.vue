@@ -2,7 +2,9 @@
   <v-container>
     <h1 class="text-center">My Forms</h1>
     <div class="text-right">
-      <strong><a href="">Create a New Form</a></strong>
+      <strong>
+        <router-link :to="{ name: 'FormDesign' }">Create a New Form</router-link>
+      </strong>
     </div>
     <FormsTable />
   </v-container>
