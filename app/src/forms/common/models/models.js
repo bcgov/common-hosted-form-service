@@ -296,9 +296,9 @@ class UserFormAccess extends Model {
 
   static get modifiers () {
     return {
-      filterId(query, value) {
+      filterUserId(query, value) {
         if (value) {
-          query.where('id', value);
+          query.where('userId', value);
         }
       },
       filterKeycloakId(query, value) {
