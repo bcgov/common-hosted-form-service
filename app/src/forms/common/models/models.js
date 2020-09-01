@@ -8,6 +8,18 @@ class Form extends Timestamps(Model) {
 
   static get relationMappings () {
     return {
+      identityProviders: {
+        relation: Model.ManyToManyRelation,
+        modelClass: IdentityProvider,
+        join: {
+          from: 'form.id',
+          through: {
+            from: 'form_identity_provider.formId',
+            to: 'form_identity_provider.code'
+          },
+          to: 'identity_provider.code'
+        }
+      },
       versions: {
         relation: Model.HasManyRelation,
         modelClass: FormVersion,
@@ -31,11 +43,6 @@ class Form extends Timestamps(Model) {
         if (value) {
           // ilike is postrges case insensitive like
           query.where('description', 'ilike', `%${value}%`);
-        }
-      },
-      filterPublic(query, value) {
-        if (value !== undefined) {
-          query.where('public', value);
         }
       },
       filterActive(query, value) {
@@ -282,17 +289,16 @@ class FormRoleUser extends Timestamps(Model) {
   }
 }
 
-
-class UserFormRoles extends Model {
-  static get tableName () {
-    return 'user_form_roles_vw';
+class UserFormAccess extends Model {
+  static get tableName() {
+    return 'user_form_access_vw';
   }
 
   static get modifiers () {
     return {
-      filterId(query, value) {
+      filterUserId(query, value) {
         if (value) {
-          query.where('id', value);
+          query.where('userId', value);
         }
       },
       filterKeycloakId(query, value) {
@@ -335,14 +341,42 @@ class UserFormRoles extends Model {
           query.where('formName', 'ilike', `%${value}%`);
         }
       },
-      filterPublic(query, value) {
-        if (value !== undefined) {
-          query.where('public', value);
-        }
-      },
       filterActive(query, value) {
         if (value !== undefined) {
           query.where('active', value);
+        }
+      },
+      filterByAccess(query, idps, roles, permissions) {
+        if (idps || roles || permissions) {
+          const toArray = (values) => {
+            if (values) {
+              return Array.isArray(values) ? values.filter(p => p && p.trim().length > 0) : [values].filter(p => p && p.trim().length > 0);
+            }
+            return [];
+          };
+          const inArrayClause = (column, values) => {
+            return values.map(p =>`'${p}' = ANY("${column}")`).join(' or ');
+          };
+          const _idps = toArray(idps);
+          const _roles = toArray(roles);
+          const _permissions = toArray(permissions);
+          let clauses = [];
+
+          if (_idps.length) {
+            clauses.push(`('{}'::varchar[] = "roles" and (${inArrayClause('idps', _idps)}))`);
+          }
+
+          if (_roles.length) {
+            clauses.push(`(array_length("roles", 1) > 0 and (${inArrayClause('roles', _roles)}))`);
+          }
+
+          if (_permissions.length) {
+            clauses.push(`(array_length("permissions", 1) > 0 and (${inArrayClause('permissions', _permissions)}))`);
+          }
+
+          if (clauses.length) {
+            query.whereRaw(`(${clauses.join(' or ')})`);
+          }
         }
       },
       orderFormNameAscending(builder) {
@@ -358,20 +392,44 @@ class UserFormRoles extends Model {
   }
 }
 
-class UserFormPermissions extends UserFormRoles {
+class IdentityProvider extends Timestamps(Model) {
   static get tableName () {
-    return 'user_form_permissions_vw';
+    return 'identity_provider';
+  }
+
+  static get idColumn () {
+    return 'code';
+  }
+
+  static get modifiers () {
+    return {
+      filterActive(query, value) {
+        if (value !== undefined) {
+          query.where('active', value);
+        }
+      },
+      orderDefault(builder) {
+        builder.orderByRaw('lower("identity_provider"."code")');
+      }
+    };
+  }
+}
+
+class FormIdentityProvider extends Timestamps(Model) {
+  static get tableName () {
+    return 'form_identity_provider';
   }
 }
 
 module.exports = {
   Form: Form,
+  FormIdentityProvider: FormIdentityProvider,
   FormSubmission: FormSubmission,
   FormRoleUser: FormRoleUser,
   FormVersion: FormVersion,
+  IdentityProvider: IdentityProvider,
   Permission: Permission,
   Role: Role,
   User: User,
-  UserFormPermissions: UserFormPermissions,
-  UserFormRoles: UserFormRoles
+  UserFormAccess: UserFormAccess
 };

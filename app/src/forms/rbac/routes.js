@@ -1,10 +1,15 @@
 const routes = require('express').Router();
 const keycloak = require('../../components/keycloak');
+const currentUser = require('../common/middleware').currentUser;
 
 const controller = require('./controller');
 
-routes.get('/current', keycloak.protect(), async (req, res, next) => {
+routes.get('/current', keycloak.protect(), currentUser, async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);
+});
+
+routes.get('/idps', async (req, res, next) => {
+  await controller.getIdentityProviders(req, res, next);
 });
 
 routes.get('/forms', async (req, res, next) => {
