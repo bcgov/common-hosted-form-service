@@ -46,6 +46,7 @@ export default {
       alertShow: false,
       alertType: null,
       headers: [
+        { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
         { text: 'Assigned To', align: 'start', value: 'asignee' },
@@ -66,9 +67,9 @@ export default {
     async populateSubmissionsTable() {
       try {
         const submissions = [
-          { date: 'August 1, 2020', submitter: 'Sarah Smith', asignee: 'Tim' },
-          { date: 'July 21, 2020', submitter: 'Levar Smith', asignee: 'Jason' },
-          { date: 'July 11, 2020', submitter: 'Joe Smith', asignee: 'Tim' },
+          { confirmationId: '2F6A9B2', date: 'August 1, 2020', submitter: 'Sarah Smith', asignee: 'Tim' },
+          { confirmationId: 'ABC1234', date: 'July 21, 2020', submitter: 'Levar Smith', asignee: 'Jason' },
+          { confirmationId: '98711BB', date: 'July 11, 2020', submitter: 'Joe Smith', asignee: 'Tim' },
         ];
         if (!submissions.length) {
           this.showTableAlert('info', 'No Submissions found for this form');

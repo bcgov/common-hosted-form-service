@@ -5,18 +5,13 @@ export default {
   //
   // Form Designer calls
   //
-
   /**
-   * @function getMyForms
-   * Get the forms that the user has access to
+   * @function getForm
+   * Get a specific form definition
    * @returns {Promise} An axios response
    */
-  getMyForms() {
-    return [{
-
-    }];
-    // TBD
-    // return appAxios().get('/forms');
+  getForm(id) {
+    return appAxios().get(`/forms/${id}`);
   },
 
   /**
