@@ -6,13 +6,28 @@ Create, edit and publish forms.
 ## Directory Structure
 
     .github/                   - PR and Issue templates
+    app/                       - Application Root
+    ├── frontend/              - Frontend Root
+    │   ├── src/               - Vue.js frontend web application
+    │   └── tests/             - Vue.js frontend web application tests
+    ├── src/                   - Node.js backend web application
+    │   ├── db/migrations      - data migration scripts
+    │   ├── docs/              - OpenAPI 3.0 Specification
+    │   └── forms/             - Models, Controllers, Routes for the forms
+    └── tests/                 - Node.js backend web application tests
+    openshift/                 - OpenShift-deployment and shared pipeline files
     CODE-OF-CONDUCT.md         - Code of Conduct
     COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
     CONTRIBUTING.md            - Contributing Guidelines
+    Jenkinsfile                - Top-level Pipeline
+    Jenkinsfile.cicd           - Pull-Request Pipeline
     LICENSE                    - License
+    sonar-project.properties   - SonarQube configuration
 
 ## Documentation
 
+* [Application Readme](app/README.md)
+* [Frontend Readme](app/frontend/README.md)
 * [Openshift Readme](openshift/README.md)
 * [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
 * [Showcase Team Roadmap](https://github.com/bcgov/nr-get-token/wiki/Product-Roadmap)
