@@ -80,10 +80,10 @@ export default {
         const response = await await userService.getCurrentUser();
         const data = response.data;
         // Build up the list of forms for the table
-        const forms = data.forms.map((f) => {
+        const forms = data.map((f) => {
           return {
-            id: f.id,
-            name: f.name,
+            id: f.formId,
+            name: f.formName,
             permissions: f.permissions,
           };
         });
