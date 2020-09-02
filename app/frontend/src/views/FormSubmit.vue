@@ -11,7 +11,7 @@
 import formService from '@/services/formService';
 
 export default {
-  name: 'Form Submit',
+  name: 'FormSubmit',
   components: {},
   props: ['formId'],
   data() {
