@@ -29,6 +29,16 @@ export default function getRouter(basePath = '/') {
         }
       },
       {
+        path: '/editor',
+        name: 'Editor',
+        component: () => import(/* webpackChunkName: "editor" */ '@/views/Editor.vue'),
+        children: [/* TODO: Add children paths to handle existing forms and versions */],
+        meta: {
+          requiresAuth: true,
+          hasLogin: true
+        }
+      },
+      {
         path: '/forms',
         name: 'Forms',
         component: () => import(/* webpackChunkName: "forms" */ '@/views/Forms.vue'),
