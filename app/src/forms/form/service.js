@@ -100,10 +100,9 @@ const service = {
 
       // check if in draft mode?
 
-      await FormVersion.query(trx).patchAndFetchById(formVersionId, {draft: data.draft, schema: data.schema});
+      await FormVersion.query(trx).patchAndFetchById(formVersionId, {schema: data.schema});
       await trx.commit();
-      const result = await service.readVersion(obj.id);
-      return result;
+      return await service.readVersion(obj.id);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
