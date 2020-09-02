@@ -472,7 +472,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /permissions/{permissionId}:
+  /permissions/{code}:
     get:
       summary: Get a Permission
       operationId: getPermission
@@ -480,12 +480,11 @@ paths:
         - permission
       parameters:
         - in: path
-          name: permissionId
+          name: code
           schema:
             type: string
-            format: uuid
           required: true
-          description: id of the permission to fetch
+          description: code of the permission to fetch
       responses:
         '200':
           description: 'Success'
@@ -506,12 +505,11 @@ paths:
         - permission
       parameters:
         - in: path
-          name: permissionId
+          name: code
           schema:
             type: string
-            format: uuid
           required: true
-          description: id of the permission to update
+          description: code of the permission to update
       requestBody:
         required: true
         content:
@@ -578,7 +576,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /roles/{roleId}:
+  /roles/{code}:
     get:
       summary: Get a Role
       operationId: getRole
@@ -586,12 +584,11 @@ paths:
         - role
       parameters:
         - in: path
-          name: roleId
+          name: code
           schema:
             type: string
-            format: uuid
           required: true
-          description: id of the role to fetch
+          description: code of the role to fetch
       responses:
         '200':
           description: 'Success'
@@ -612,12 +609,11 @@ paths:
         - role
       parameters:
         - in: path
-          name: roleId
+          name: code
           schema:
             type: string
-            format: uuid
           required: true
-          description: id of the role to update
+          description: code of the role to update
       requestBody:
         required: true
         content:
@@ -674,12 +670,12 @@ paths:
           name: roles
           schema:
             type: string
-          description: roles (name field) user has on form
+          description: roles (code field) user has on form
         - in: query
           name: permissions
           schema:
             type: string
-          description: permissions (name field) user has on form
+          description: permissions (code field) user has on form
       responses:
         '200':
           description: 'Success'
@@ -791,12 +787,12 @@ paths:
           name: roles
           schema:
             type: string
-          description: roles (name field) user has on form
+          description: roles (code field) user has on form
         - in: query
           name: permissions
           schema:
             type: string
-          description: permissions (name field) user has on form
+          description: permissions (code field) user has on form
       responses:
         '200':
           description: 'Success'
@@ -932,12 +928,12 @@ paths:
           name: roles
           schema:
             type: string
-          description: roles (name field) user has on form
+          description: roles (code field) user has on form
         - in: query
           name: permissions
           schema:
             type: string
-          description: permissions (name field) user has on form
+          description: permissions (code field) user has on form
       responses:
         '200':
           description: 'Success'
@@ -1059,10 +1055,10 @@ components:
           type: string
           description: ID of form
           example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
-        roleId:
+        role:
           type: string
-          description: ID of role
-          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+          description: code of role
+          example: team_manager
         userId:
           type: string
           description: ID of user
@@ -1120,14 +1116,14 @@ components:
           properties:
             code:
               type: string
-              example: PUBLIC
+              example: idir
             display:
               type: string
-              example: Public
+              example: IDIR
             idp:
               type: string
               description: The identity_provider a user logs in with.  Allows us to determine what source authenticated the user.
-              example: public
+              example: idir
             active:
               type: boolean
               example: true
@@ -1143,17 +1139,20 @@ components:
       allOf:
         - type: object
           properties:
-            id:
+            code:
               type: string
-              example: b19be52b-1939-45a3-95dc-7958080cdc04
-            name:
+              example: design_update
+            display:
               type: string
               description: The permission name
-              example: designForm
+              example: 'Design Update'
             description:
               type: string
               example: >-
-                The designForm permission means the user can design this form.
+                'Can edit/update the form design'
+            active:
+              type: boolean
+              example: true
             roles:
               type: array
               items:
@@ -1163,18 +1162,20 @@ components:
       allOf:
         - type: object
           properties:
-            id:
+            code:
               type: string
-              example: b19be52b-1939-45a3-95dc-7958080cdc04
-            name:
+              example: form_designer
+            display:
               type: string
               description: The role name
-              example: reviewer
+              example: 'Form Designer'
             description:
               type: string
               example: >-
-                Form Reviewers have all the permissions of Form Viewer. Elevated
-                permissions include adding notes and assignments to a submission.
+                'Designs the form'
+            active:
+              type: boolean
+              example: true
             permissions:
               type: array
               items:
@@ -1254,6 +1255,14 @@ components:
         active:
           type: boolean
           example: true
+        identityProviders:
+          type: array
+          description: the Identity Provider code associated with this form
+          example:
+            - bceid
+            - idir
+          items:
+            type: string
         idps:
           type: array
           description: the Identity Provider idps associated with this form
@@ -1272,18 +1281,18 @@ components:
           example: 1
         roles:
           type: array
-          description: the role names this user has on this form
+          description: the role codes this user has on this form
           example:
-            - Owner
-            - Manager
+            - owner
+            - team_manager
           items:
             type: string
         permissions:
           type: array
-          description: the permission names this user has on this form
+          description: the permission codes this user has on this form
           example:
-            - designForm
-            - manageTeam
+            - design_update
+            - submission_create
           items:
             type: string
     BadRequest:
