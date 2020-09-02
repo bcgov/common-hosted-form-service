@@ -8,8 +8,8 @@ const service = {
   list: async () => {
     return Role.query()
       .allowGraph('[permissions]')
-      .withGraphFetched('permissions(orderNameAscending)')
-      .modify('orderNameAscending');
+      .withGraphFetched('permissions(orderDefault)')
+      .modify('orderDefault');
   },
 
   create: async (data) => {
@@ -17,14 +17,11 @@ const service = {
     try {
       trx = await transaction.start(Role.knex());
 
-      const obj = {};
-      obj.id = uuidv4();
-      obj.name = data.name; // validate unique...
-      obj.description = data.description;
+      // validate data... (code is unique)
 
-      await Role.query(trx).insert(obj);
+      await Role.query(trx).insert(data);
       await trx.commit();
-      const result = await service.read(obj.id);
+      const result = await service.read(data.code);
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -32,31 +29,31 @@ const service = {
     }
   },
 
-  read: async (id) => {
+  read: async (code) => {
     return Role.query()
-      .findById(id)
+      .findById(code)
       .allowGraph('[permissions]')
       .withGraphFetched('permissions(orderNameAscending)')
       .throwIfNotFound();
   },
 
-  update: async (id, data) => {
+  update: async (code, data) => {
     let trx;
     try {
-      const obj = await service.read(id);
+      const obj = await service.read(code);
       await transaction(Role.knex(), async (trx) => {
-        if (obj.name !== data.name || obj.description != data.description) {
+        if (obj.display !== data.display || obj.description != data.description || obj.active != data.active) {
           // update name/description...
-          await Role.query().patchAndFetchById(obj.id, {name: data.name, description: data.description});
+          await Role.query().patchAndFetchById(obj.code, {display: data.display, description: data.description, active: data.active});
         }
         // clean out existing permissions...
-        await trx.raw(`delete from role_permission where "roleId" = '${obj.id}'`);
+        await trx.raw(`delete from role_permission where "role" = '${obj.code}'`);
         // set to specified permissions...
         for (const p of data.permissions) {
-          await trx.raw(`insert into role_permission (id, "roleId", "permissionId") values ('${uuidv4()}', '${obj.id}', '${p.id}');`);
+          await trx.raw(`insert into role_permission (id, "role", "permission") values ('${uuidv4()}', '${obj.code}', '${p.code}');`);
         }
       });
-      const result = await service.read(obj.id);
+      const result = await service.read(obj.code);
       return result;
     } catch (err) {
       if (trx) await trx.rollback();

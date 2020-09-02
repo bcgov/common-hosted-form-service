@@ -38,7 +38,7 @@ const service = {
 
       const update = {
         formId: data.formId,
-        roleId: data.roleId,
+        role: data.role,
         userId: data.userId};
 
       await FormRoleUser.query(trx).patchAndFetchById(obj.id, update);

@@ -19,7 +19,7 @@ module.exports = {
   },
   read:  async (req, res, next) => {
     try {
-      const response = await service.read(req.params.id);
+      const response = await service.read(req.params.code);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -27,7 +27,7 @@ module.exports = {
   },
   update: async (req, res, next) => {
     try {
-      const response = await service.update(req.params.id, req.body);
+      const response = await service.update(req.params.code, req.body);
       res.status(200).json(response);
     } catch (error) {
       next(error);
