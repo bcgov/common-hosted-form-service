@@ -124,12 +124,12 @@ class Permission extends Timestamps(Model) {
         relation: Model.ManyToManyRelation,
         modelClass: Role,
         join: {
-          from: 'permission.id',
+          from: 'permission.code',
           through: {
-            from: 'role_permission.permissionId',
-            to: 'role_permission.roleId'
+            from: 'role_permission.permission',
+            to: 'role_permission.role'
           },
-          to: 'role.id'
+          to: 'role.code'
         }
       }
     };
@@ -137,10 +137,16 @@ class Permission extends Timestamps(Model) {
 
   static get modifiers () {
     return {
-      filterName(query, value) {
+      filterCode(query, value) {
         if (value) {
           // ilike is postrges case insensitive like
-          query.where('name', 'ilike', `%${value}%`);
+          query.where('code', 'ilike', `%${value}%`);
+        }
+      },
+      filterDisplay(query, value) {
+        if (value) {
+          // ilike is postrges case insensitive like
+          query.where('display', 'ilike', `%${value}%`);
         }
       },
       filterDescription(query, value) {
@@ -149,8 +155,13 @@ class Permission extends Timestamps(Model) {
           query.where('description', 'ilike', `%${value}%`);
         }
       },
-      orderNameAscending(builder) {
-        builder.orderByRaw('lower("name")');
+      filterActive(query, value) {
+        if (value !== undefined) {
+          query.where('active', value);
+        }
+      },
+      orderDefault(builder) {
+        builder.orderByRaw('lower("display")');
       }
     };
   }
@@ -167,12 +178,12 @@ class Role extends Timestamps(Model) {
         relation: Model.ManyToManyRelation,
         modelClass: Permission,
         join: {
-          from: 'role.id',
+          from: 'role.code',
           through: {
-            from: 'role_permission.roleId',
-            to: 'role_permission.permissionId'
+            from: 'role_permission.role',
+            to: 'role_permission.permission'
           },
-          to: 'permission.id'
+          to: 'permission.code'
         }
       }
     };
@@ -180,10 +191,16 @@ class Role extends Timestamps(Model) {
 
   static get modifiers () {
     return {
-      filterName(query, value) {
+      filterCode(query, value) {
         if (value) {
           // ilike is postrges case insensitive like
-          query.where('name', 'ilike', `%${value}%`);
+          query.where('code', 'ilike', `%${value}%`);
+        }
+      },
+      filterDisplay(query, value) {
+        if (value) {
+          // ilike is postrges case insensitive like
+          query.where('display', 'ilike', `%${value}%`);
         }
       },
       filterDescription(query, value) {
@@ -192,8 +209,13 @@ class Role extends Timestamps(Model) {
           query.where('description', 'ilike', `%${value}%`);
         }
       },
-      orderNameAscending(builder) {
-        builder.orderByRaw('lower("name")');
+      filterActive(query, value) {
+        if (value !== undefined) {
+          query.where('active', value);
+        }
+      },
+      orderDefault(builder) {
+        builder.orderByRaw('lower("display")');
       }
     };
   }
@@ -262,8 +284,8 @@ class FormRoleUser extends Timestamps(Model) {
         relation: Model.HasOneRelation,
         modelClass: Role,
         join: {
-          from: 'form_role_user.roleId',
-          to: 'role.id'
+          from: 'form_role_user.role',
+          to: 'role.code'
         }
       },
       user: {

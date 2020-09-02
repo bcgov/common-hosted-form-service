@@ -20,21 +20,23 @@ exports.up = function(knex) {
       stamps(knex, table);
     }))
     .then(() => knex.schema.createTable('role', table => {
-      table.uuid('id').primary();
-      table.string('name').unique().notNullable().index();
+      table.string('code').primary();
+      table.string('display').notNullable();
+      table.boolean('active').notNullable().defaultTo(true);
       table.string('description');
       stamps(knex, table);
     }))
     .then(() => knex.schema.createTable('permission', table => {
-      table.uuid('id').primary();
-      table.string('name').unique().notNullable().index();
+      table.string('code').primary();
+      table.string('display').notNullable();
+      table.boolean('active').notNullable().defaultTo(true);
       table.string('description');
       stamps(knex, table);
     }))
     .then(() => knex.schema.createTable('role_permission', table => {
       table.uuid('id').primary();
-      table.uuid('roleId').references('id').inTable('role').notNullable().index();
-      table.uuid('permissionId').references('id').inTable('permission').notNullable().index();
+      table.string('role').references('code').inTable('role').notNullable().index();
+      table.string('permission').references('code').inTable('permission').notNullable().index();
       stamps(knex, table);
     }))
     .then(() => knex.schema.createTable('form', table => {
@@ -53,7 +55,7 @@ exports.up = function(knex) {
     }))
     .then(() => knex.schema.createTable('form_role_user', table => {
       table.uuid('id').primary();
-      table.uuid('roleId').references('id').inTable('role').notNullable();
+      table.string('role').references('code').inTable('role').notNullable();
       table.uuid('formId').references('id').inTable('form').notNullable().index();
       table.uuid('userId').references('id').inTable('user').notNullable().index();
       stamps(knex, table);
