@@ -29,6 +29,27 @@ export default function getRouter(basePath = '/') {
         }
       },
       {
+        path: '/editor',
+        component: () => import(/* webpackChunkName: "editor" */ '@/views/Editor.vue'),
+        children: [
+          {
+            path: '',
+            name: 'NewDesigner',
+            component: () => import(/* webpackChunkName: "designer" */ '@/views/designer/Root.vue')
+          },
+          {
+            path: ':formId/versions/:formVersionId',
+            name: 'VersionDesigner',
+            component: () => import(/* webpackChunkName: "designer" */ '@/views/designer/Root.vue'),
+            props: true
+          },
+        ],
+        meta: {
+          requiresAuth: true,
+          hasLogin: true
+        }
+      },
+      {
         path: '/forms',
         name: 'Forms',
         component: () => import(/* webpackChunkName: "forms" */ '@/views/Forms.vue'),
