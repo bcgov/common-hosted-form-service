@@ -1,7 +1,10 @@
 <template>
   <v-container>
     <h1 class="my-6 text-center">Form Designer</h1>
-    <h2>TBD</h2>
+    <div style="border: 1px solid">FormIO designer incoming
+      <br>
+      <br>
+    </div>
   </v-container>
 </template>
 

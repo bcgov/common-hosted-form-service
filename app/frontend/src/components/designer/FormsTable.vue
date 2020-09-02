@@ -14,7 +14,6 @@
         class="pb-5"
       />
     </div>
-
     <!-- table header -->
     <v-data-table
       class="submissions-table"
@@ -32,15 +31,17 @@
             <span>SUBMIT</span>
           </router-link>
         </v-btn>
-        <v-btn color="textLink" text small>
+        <v-btn v-if="item.permissions.includes('viewForm')" color="textLink" text small>
           <router-link :to="{ name: 'FormSubmissions' }">
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW SUBMISSIONS</span>
           </router-link>
         </v-btn>
-        <v-btn color="textLink" text small>
-          <v-icon class="mr-1">build_circle</v-icon>
-          <span>MANAGE</span>
+        <v-btn v-if="item.permissions.includes('manageTeam')" color="textLink" text small>
+          <router-link :to="{ name: 'FormManage', params: { formId: item.id } }">
+            <v-icon class="mr-1">build_circle</v-icon>
+            <span>MANAGE</span>
+          </router-link>
         </v-btn>
       </template>
     </v-data-table>
