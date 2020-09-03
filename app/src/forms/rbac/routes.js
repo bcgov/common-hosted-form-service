@@ -1,10 +1,11 @@
 const routes = require('express').Router();
-const keycloak = require('../../components/keycloak');
-const currentUser = require('../common/middleware').currentUser;
+const currentUser = require('../auth/middleware/userAccess').currentUser;
 
 const controller = require('./controller');
 
-routes.get('/current', keycloak.protect(), currentUser, async (req, res, next) => {
+routes.use(currentUser);
+
+routes.get('/current', async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);
 });
 
