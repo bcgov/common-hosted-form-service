@@ -1,0 +1,292 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "${REPO_NAME}-app-dc-template"
+metadata:
+  name: "${REPO_NAME}-app-dc"
+objects:
+  # - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+  #   kind: NetworkSecurityPolicy
+  #   metadata:
+  #     name: "${APP_NAME}-${JOB_NAME}-sa-deployer-to-k8s-api-${NAMESPACE}"
+  #   spec:
+  #     description: |
+  #       Allow deployer pods to talk to the internal K8S api
+  #     source:
+  #       - - "$namespace=${NAMESPACE}"
+  #         - "@app:k8s:serviceaccountname=deployer"
+  #     destination:
+  #       - - int:network=internal-cluster-api-endpoint
+  # - kind: NetworkSecurityPolicy
+  #   apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+  #   metadata:
+  #     name: "${APP_NAME}-app-${JOB_NAME}-pods-to-egress-${NAMESPACE}"
+  #   spec:
+  #     description: |
+  #       Allow pods to open connections to the internet
+  #     source:
+  #       - - "$namespace=${NAMESPACE}"
+  #         - "app=${APP_NAME}-${JOB_NAME}"
+  #         - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
+  #         - role=app
+  #     destination:
+  #       - - ext:network=any
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      replicas: 2
+      revisionHistoryLimit: 10
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
+      strategy:
+        type: Rolling
+        resources: {}
+        rollingParams:
+          timeoutSeconds: 600
+          pre:
+            failurePolicy: Abort
+            execNewPod:
+              command:
+                - npm
+                - run
+                - migrate
+              containerName: "app"
+              env:
+                - name: NODE_ENV
+                  value: production
+                - name: DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: app-db-name
+                      name: "patroni-${JOB_NAME}-secret"
+                - name: DB_HOST
+                  value: "patroni-${JOB_NAME}"
+                - name: DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: app-db-username
+                      name: "patroni-${JOB_NAME}-secret"
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: app-db-password
+                      name: "patroni-${JOB_NAME}-secret"
+                - name: SERVER_BASEPATH
+                  value: "${ROUTE_PATH}"
+      template:
+        metadata:
+          labels:
+            app: "${APP_NAME}-${JOB_NAME}"
+            deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+            role: app
+        spec:
+          containers:
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: "${ROUTE_PATH}/api"
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 60
+                successThreshold: 1
+                timeoutSeconds: 1
+              name: "app"
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: "${ROUTE_PATH}/api"
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                requests:
+                  cpu: "${CPU_REQUEST}"
+                  memory: "${MEMORY_REQUEST}"
+                limits:
+                  cpu: "${CPU_LIMIT}"
+                  memory: "${MEMORY_LIMIT}"
+              env:
+                - name: NODE_ENV
+                  value: production
+                - name: DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: app-db-name
+                      name: "patroni-${JOB_NAME}-secret"
+                - name: DB_HOST
+                  value: "patroni-${JOB_NAME}"
+                - name: DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: app-db-username
+                      name: "patroni-${JOB_NAME}-secret"
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: app-db-password
+                      name: "patroni-${JOB_NAME}-secret"
+                - name: FRONTEND_BASEPATH
+                  value: "${ROUTE_PATH}"
+                - name: SERVER_BASEPATH
+                  value: "${ROUTE_PATH}"
+                - name: SERVER_KC_CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: "${APP_NAME}-keycloak-secret"
+                - name: SERVER_KC_CLIENTSECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: "${APP_NAME}-keycloak-secret"
+                - name: SC_CS_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: "${APP_NAME}-sc-cs-secret"
+                - name: SC_CS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: "${APP_NAME}-sc-cs-secret"
+              envFrom:
+                - configMapRef:
+                    name: "${APP_NAME}-frontend-config"
+                - configMapRef:
+                    name: "${APP_NAME}-sc-config"
+                - configMapRef:
+                    name: "${APP_NAME}-server-config"
+              volumeMounts:
+                - mountPath: "${DATA_DIR}"
+                  name: app-data
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - name: app-data
+              persistentVolumeClaim:
+                claimName: "${APP_NAME}-data-${JOB_NAME}"
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - app
+            from:
+              kind: ImageStreamTag
+              name: "${REPO_NAME}-app:${JOB_NAME}"
+              namespace: "${NAMESPACE}"
+          type: ImageChange
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: "${APP_NAME}-data-${JOB_NAME}"
+    spec:
+      accessModes:
+        - ReadWriteMany
+      storageClassName: "${DATA_PERSISTENT_VOLUME_CLASS}"
+      resources:
+        requests:
+          storage: "${DATA_VOLUME_CAPACITY}"
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
+      sessionAffinity: None
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      host: "${ROUTE_HOST}"
+      path: "${ROUTE_PATH}"
+      port:
+        targetPort: 8080-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: "${APP_NAME}-app-${JOB_NAME}"
+        weight: 100
+      wildcardPolicy: None
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: ROUTE_HOST
+    description: The host the route will use to expose service outside cluster
+    displayName: Route host
+    required: true
+  - name: ROUTE_PATH
+    description: Configure the route path (ex. /pr-5 or /app), also used for FRONTEND_BASEPATH
+    displayName: Route path
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'wfezkf-dev')
+    displayName: Target Namespace
+    required: true
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  - name: CPU_LIMIT
+    description: Limit Peak CPU per pod (in millicores ex. 1000m)
+    displayName: CPU Limit
+    value: 250m
+  - name: CPU_REQUEST
+    description: Requested CPU per pod (in millicores ex. 500m)
+    displayName: CPU Request
+    value: 50m
+  - name: MEMORY_LIMIT
+    description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
+    displayName: Memory Limit
+    value: 1Gi
+  - name: MEMORY_REQUEST
+    description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
+    displayName: Memory Request
+    value: 256Mi
+  - name: DATA_DIR
+    description: Path to data directory
+    displayName: Directory to mount for data files
+    required: true
+    value: "/mnt/app/data"
+  - name: DATA_VOLUME_CAPACITY
+    description: Volume space available for Data
+    displayName: Data Volume Capacity (use M or G, not Mi or Gi)
+    required: true
+    value: 21M
+  - name: DATA_PERSISTENT_VOLUME_CLASS
+    description: The storage class of the volume
+    displayName: Persistent Volume Class name
+    value: netapp-file-standard
