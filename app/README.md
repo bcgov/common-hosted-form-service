@@ -23,7 +23,7 @@ npm run migrate
 Seed Database with Example Data
 
 ``` sh
-./node_modules/.bin/knex seed:run
+npm run seed:run
 ```
 
 ### Production Build and Run
