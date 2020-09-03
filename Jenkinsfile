@@ -160,50 +160,50 @@ pipeline {
       }
     }
 
-    stage('Deploy - Test') {
-      agent any
-      steps {
-        script {
-          commonPipeline.runStageDeploy('Test', TEST_PROJECT, TEST_HOST, PATH_ROOT)
-        }
-      }
-      post {
-        success {
-          script {
-            commonPipeline.createDeploymentStatus(TEST_PROJECT, 'SUCCESS', JOB_NAME, TEST_HOST, PATH_ROOT)
-            commonPipeline.notifyStageStatus('Deploy - Test', 'SUCCESS')
-          }
-        }
-        unsuccessful {
-          script {
-            commonPipeline.createDeploymentStatus(TEST_PROJECT, 'FAILURE', JOB_NAME, TEST_HOST, PATH_ROOT)
-            commonPipeline.notifyStageStatus('Deploy - Test', 'FAILURE')
-          }
-        }
-      }
-    }
+    // stage('Deploy - Test') {
+    //   agent any
+    //   steps {
+    //     script {
+    //       commonPipeline.runStageDeploy('Test', TEST_PROJECT, TEST_HOST, PATH_ROOT)
+    //     }
+    //   }
+    //   post {
+    //     success {
+    //       script {
+    //         commonPipeline.createDeploymentStatus(TEST_PROJECT, 'SUCCESS', JOB_NAME, TEST_HOST, PATH_ROOT)
+    //         commonPipeline.notifyStageStatus('Deploy - Test', 'SUCCESS')
+    //       }
+    //     }
+    //     unsuccessful {
+    //       script {
+    //         commonPipeline.createDeploymentStatus(TEST_PROJECT, 'FAILURE', JOB_NAME, TEST_HOST, PATH_ROOT)
+    //         commonPipeline.notifyStageStatus('Deploy - Test', 'FAILURE')
+    //       }
+    //     }
+    //   }
+    // }
 
-    stage('Deploy - Prod') {
-      agent any
-      steps {
-        script {
-          commonPipeline.runStageDeploy('Prod', PROD_PROJECT, PROD_HOST, PATH_ROOT)
-        }
-      }
-      post {
-        success {
-          script {
-            commonPipeline.createDeploymentStatus(PROD_PROJECT, 'SUCCESS', JOB_NAME, PROD_HOST, PATH_ROOT)
-            commonPipeline.notifyStageStatus('Deploy - Prod', 'SUCCESS')
-          }
-        }
-        unsuccessful {
-          script {
-            commonPipeline.createDeploymentStatus(PROD_PROJECT, 'FAILURE', JOB_NAME, PROD_HOST, PATH_ROOT)
-            commonPipeline.notifyStageStatus('Deploy - Prod', 'FAILURE')
-          }
-        }
-      }
-    }
+    // stage('Deploy - Prod') {
+    //   agent any
+    //   steps {
+    //     script {
+    //       commonPipeline.runStageDeploy('Prod', PROD_PROJECT, PROD_HOST, PATH_ROOT)
+    //     }
+    //   }
+    //   post {
+    //     success {
+    //       script {
+    //         commonPipeline.createDeploymentStatus(PROD_PROJECT, 'SUCCESS', JOB_NAME, PROD_HOST, PATH_ROOT)
+    //         commonPipeline.notifyStageStatus('Deploy - Prod', 'SUCCESS')
+    //       }
+    //     }
+    //     unsuccessful {
+    //       script {
+    //         commonPipeline.createDeploymentStatus(PROD_PROJECT, 'FAILURE', JOB_NAME, PROD_HOST, PATH_ROOT)
+    //         commonPipeline.notifyStageStatus('Deploy - Prod', 'FAILURE')
+    //       }
+    //     }
+    //   }
+    // }
   }
 }
