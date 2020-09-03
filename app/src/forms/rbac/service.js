@@ -3,6 +3,8 @@ const { FormRoleUser, IdentityProvider, User, UserFormAccess } = require('../com
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
 
+const authService = require('../auth/service');
+
 const service = {
 
   list: async () => {
@@ -114,37 +116,18 @@ const service = {
   },
 
   getCurrentUser: async (currentUser, params) => {
-    const userInfo = Object.assign({}, currentUser);
-    // we don't want to store the idp with the user, that could change each login...
-    delete userInfo.idp;
-
-    // if this user does not exists, add...
-    // return user details including form access...
-    let user = await User.query()
-      .first()
-      .where('keycloakId', userInfo.keycloakId);
-
-    if (!user) {
-      // add to the system.
-      user = await service.createUser(userInfo);
+    const user = Object.assign({}, currentUser);
+    const accessLevels = [];
+    if (user.public) {
+      accessLevels.push('public');
     } else {
-      // what if name or email changed?
-      user = await service.updateUser(user.id, userInfo);
+      if (params.public) accessLevels.push('public');
+      if (params.idp) accessLevels.push('idp');
+      if (params.team) accessLevels.push('team');
     }
-
-    if (!params) {
-      params = {};
-    }
-    params.userId = user.id;
-
-    let _idps = [];
-    if (params.idps) {
-      _idps = Array.isArray(params.idps) ? params.idps : [params.idps];
-    }
-    _idps.push(currentUser.idp);
-    params.idps = _idps;
-
-    return service.getUserForms(params);
+    const filteredForms = authService.filterForms(user, user.forms, accessLevels);
+    user.forms = filteredForms;
+    return user;
   },
 
   getFormUsers: async (params) => {
