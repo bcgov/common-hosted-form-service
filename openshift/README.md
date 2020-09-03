@@ -188,7 +188,7 @@ There will be instances where this application will need supporting modification
 
 Refer to the `mongodb.dc.yaml` and `mongodb.secret.yaml` files found below for a simple persistent MongoDB deployment:
 
-- [Templates](https://github.com/bcgov/common-hosted-form-service/tree/feature/octemplates/openshift)
+- [Templates](https://github.com/jujaga/common-hosted-form-service/tree/formio-mongodb/openshift)
 
 ### Patroni (HA Postgres)
 
