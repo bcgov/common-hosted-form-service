@@ -1,18 +1,40 @@
 
-# Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+# Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Quality Gate](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/gate?key=common-hosted-form-service-master)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
+
+[![Bugs](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=bugs)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
+[![Vulnerabilities](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=vulnerabilities)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
+[![Code Smells](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=code_smells)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
+[![Coverage](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=coverage)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
+[![Lines](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=lines)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
+[![Duplication](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=duplicated_lines_density)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
 
 Create, edit and publish forms.
 
 ## Directory Structure
 
     .github/                   - PR and Issue templates
+    app/                       - Application Root
+    ├── frontend/              - Frontend Root
+    │   ├── src/               - Vue.js frontend web application
+    │   └── tests/             - Vue.js frontend web application tests
+    ├── src/                   - Node.js backend web application
+    │   ├── db/migrations      - data migration scripts
+    │   ├── docs/              - OpenAPI 3.0 Specification
+    │   └── forms/             - Models, Controllers, Routes for the forms
+    └── tests/                 - Node.js backend web application tests
+    openshift/                 - OpenShift-deployment and shared pipeline files
     CODE-OF-CONDUCT.md         - Code of Conduct
     COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
     CONTRIBUTING.md            - Contributing Guidelines
+    Jenkinsfile                - Top-level Pipeline
+    Jenkinsfile.cicd           - Pull-Request Pipeline
     LICENSE                    - License
+    sonar-project.properties   - SonarQube configuration
 
 ## Documentation
 
+* [Application Readme](app/README.md)
+* [Frontend Readme](app/frontend/README.md)
 * [Openshift Readme](openshift/README.md)
 * [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
 * [Showcase Team Roadmap](https://github.com/bcgov/nr-get-token/wiki/Product-Roadmap)

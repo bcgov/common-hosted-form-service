@@ -12,6 +12,20 @@ Ensure that you have filled in all the appropriate configurations following [con
 
 In general, most of these npm run scripts can be prepended with `all:` in order to run the same operation on both the application and the frontend sequentially.
 
+### Database Tasks
+
+Migrate Database
+
+``` sh
+npm run migrate
+```
+
+Seed Database with Example Data
+
+``` sh
+npm run seed:run
+```
+
 ### Production Build and Run
 
 ``` sh

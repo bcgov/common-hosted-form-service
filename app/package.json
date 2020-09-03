@@ -30,12 +30,13 @@
     "all:fresh-start": "npm run all:reinstall && npm run all:rebuild && npm run all:start",
     "frontend:purge": "cd frontend && npm run purge",
     "migrate": "npm run migrate:latest",
-    "migrate:down": "./node_modules/.bin/knex migrate:down",
-    "migrate:latest": "./node_modules/.bin/knex migrate:latest",
-    "migrate:make": "./node_modules/.bin/knex migrate:make",
-    "migrate:rollback": "./node_modules/.bin/knex migrate:rollback",
-    "migrate:rollback:all": "./node_modules/.bin/knex migrate:rollback --all",
-    "migrate:up": "./node_modules/.bin/knex migrate:up"
+    "migrate:down": "knex migrate:down",
+    "migrate:latest": "knex migrate:latest",
+    "migrate:make": "knex migrate:make",
+    "migrate:rollback": "knex migrate:rollback",
+    "migrate:rollback:all": "knex migrate:rollback --all",
+    "migrate:up": "knex migrate:up",
+    "seed:run": "knex seed:run"
   },
   "dependencies": {
     "api-problem": "^6.1.4",
