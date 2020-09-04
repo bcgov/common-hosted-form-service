@@ -33,6 +33,14 @@ module.exports = {
       next(error);
     }
   },
+  listFormSubmissions: async (req, res, next) => {
+    try {
+      const response = await service.listFormSubmissions(req.params.formId, req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   listVersions: async (req, res, next) => {
     try {
       const response = await service.listVersions(req.params.formId);

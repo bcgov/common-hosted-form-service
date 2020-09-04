@@ -277,17 +277,19 @@ exports.seed = function(knex) {
       return knex('form_role_user').insert(items).returning('id');
     })
     .then(() => {
-      const sid = uuidv4();
-      const submission = {
-        id: sid,
-        createdBy: CREATED_BY,
-        formVersionId: ID.versions[5],
-        confirmationId: sid.substring(0, 8).toUpperCase(),
-        draft: false,
-        deleted: false,
-        // eslint-disable-next-line
-        submission: {"data": {"email": "admin@react.org", "submit": true, "hostedFormApi": false, "feedbackOnFormIoTool": "My feedback was entered here", "embeddingTheFormIntoACustomApp": true}}
-      };
-      return knex('form_submission').insert(submission);
+      const items = ['abc@def.com','123@456.com','qwerty@asdfg.com'].map(item => {
+        const sid = uuidv4();
+        return {
+          id: sid,
+          createdBy: CREATED_BY,
+          formVersionId: ID.versions[5],
+          confirmationId: sid.substring(0, 8).toUpperCase(),
+          draft: false,
+          deleted: false,
+          // eslint-disable-next-line
+          submission: {"data": {"email": `${item}`, "submit": true, "hostedFormApi": false, "feedbackOnFormIoTool": `My (${item}) feedback was entered here`, "embeddingTheFormIntoACustomApp": true}}
+        };
+      });
+      return knex('form_submission').insert(items);
     });
 };

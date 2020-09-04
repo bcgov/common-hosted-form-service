@@ -1,4 +1,4 @@
-const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormSubmission } = require('../common/models');
+const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormSubmission, SubmissionMetadata } = require('../common/models');
 
 const Roles = require('../common/constants').Roles;
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
@@ -85,6 +85,19 @@ const service = {
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .throwIfNotFound();
+  },
+
+  listFormSubmissions: async (formId, params) => {
+    return SubmissionMetadata.query()
+      .where('formId', formId)
+      .modify('filterSubmissionId', params.submissionId)
+      .modify('filterConfirmationId', params.confirmationId)
+      .modify('filterDraft', params.draft)
+      .modify('filterDeleted', params.deleted)
+      .modify('filterCreatedBy', params.createdBy)
+      .modify('filterFormVersionId', params.formVersionId)
+      .modify('filterVersion', params.version)
+      .modify('orderDefault');
   },
 
   listVersions: async (formId) => {
