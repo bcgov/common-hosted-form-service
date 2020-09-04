@@ -1,5 +1,7 @@
 <template>
   <v-container>
+    <v-alert v-if="alertShow" :type="alertType" tile dense>{{ alertMessage }}</v-alert>
+
     <Formio :form="formSchema" :options="{ readOnly: false }" />
   </v-container>
 </template>
@@ -16,7 +18,9 @@ export default {
   props: ['formId', 'versionId'],
   data() {
     return {
-      placeholder: '',
+      alertMessage: '',
+      alertShow: false,
+      alertType: null,
       formSchema: {},
       submission: {
         data: {},
@@ -30,10 +34,20 @@ export default {
           this.formId,
           this.versionId
         );
+        if(!response.data || ! response.data.schema) {
+          throw new Error(`No schema in response. VersionId: ${this.versionId}`);
+        }
         this.formSchema = response.data.schema;
       } catch (error) {
         console.error(`Error getting form schema: ${error}`); // eslint-disable-line no-console
+        this.showTableAlert('error', 'An error occurred fetching this form');
       }
+    },
+    showTableAlert(typ, msg) {
+      this.alertShow = true;
+      this.alertType = typ;
+      this.alertMessage = msg;
+      this.loading = false;
     },
   },
   mounted() {
