@@ -1,5 +1,6 @@
 const Problem = require('api-problem');
 const service = require('../service');
+const keycloak = require('../../../components/keycloak');
 
 const getToken = req => {
   try {
@@ -9,10 +10,23 @@ const getToken = req => {
   }
 };
 
-const currentUser = async (req, res, next) => {
-  const token = getToken(req);
-  req.currentUser = await service.login(token);
-  next();
+const currentUser = async (request, response, next) => {
+
+  const setUser = async (req, res, next) => {
+    const token = getToken(req);
+    req.currentUser = await service.login(token);
+    next();
+  };
+
+  if (request.headers && request.headers.authorization) {
+    // need to check keycloak, ensure the authorization header is valid
+    const token = request.headers.authorization.substring(7);
+    const ok = await keycloak.grantManager.validateAccessToken(token);
+    if (!ok) {
+      return next(new Problem(403, {detail: 'Authorization token is invalid.'}));
+    }
+  }
+  return setUser(request, response, next);
 };
 
 const hasFormPermissions = (permissions) => {

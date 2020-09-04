@@ -23,6 +23,10 @@ routes.put('/:formId', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (
   await controller.updateForm(req, res, next);
 });
 
+routes.get('/:formId/submissions', hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.listFormSubmissions(req, res, next);
+});
+
 routes.get('/:formId/versions', hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
   await controller.listVersions(req, res, next);
 });

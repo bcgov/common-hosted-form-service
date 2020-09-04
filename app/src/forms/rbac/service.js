@@ -9,8 +9,8 @@ const service = {
 
   list: async () => {
     return FormRoleUser.query()
-      .allowGraph('[form, role, user]')
-      .withGraphFetched('[form, role, user]')
+      .allowGraph('[form, userRole, user]')
+      .withGraphFetched('[form, userRole, user]')
       .modify('orderCreatedAtDescending');
   },
 
@@ -56,8 +56,8 @@ const service = {
   read: async (id) => {
     return FormRoleUser.query()
       .findById(id)
-      .allowGraph('[form, role, user]')
-      .withGraphFetched('[form, role, user]')
+      .allowGraph('[form, userRole, user]')
+      .withGraphFetched('[form, userRole, user]')
       .throwIfNotFound();
   },
 
@@ -145,7 +145,7 @@ const service = {
       .modify('filterActive', params.active)
       .modify('filterByAccess', params.idps, params.roles, params.permissions)
       .modify('orderDefault');
-    return items;//Transformer.toFormAccess(items);
+    return items;
   },
 
   getUserForms: async (params) => {
@@ -164,10 +164,10 @@ const service = {
       .modify('filterByAccess', params.idps, params.roles, params.permissions)
       .modify('orderDefault');
 
-    return items;//Transformer.toUserAccess(items);
+    return items;
   },
 
-  setFormUsers: async (formId, userId, data) => {
+  setFormUsers: async (formId, userId, data, currentUser) => {
     // check this in middleware? 422 in valid params
     if (!formId || 0 === formId.length) {
       throw new Error();
@@ -193,9 +193,9 @@ const service = {
         data = data.filter(d => d.userId === userId);
       }
       // add an id and save them
-      const items = data.map(d => { return {id: uuidv4(), ...d}; });
+      const items = data.map(d => { return {id: uuidv4(), createdBy: currentUser.username, ...d}; });
       await FormRoleUser.query().insert(items);
-
+      await trx.commit();
       return service.getFormUsers({userId: userId, formId: formId});
     } catch (err) {
       if (trx) await trx.rollback();
@@ -203,7 +203,7 @@ const service = {
     }
   },
 
-  setUserForms: async (userId, formId, data) => {
+  setUserForms: async (userId, formId, data, currentUser) => {
     // check this in middleware? 422 in valid params
     if (!userId || 0 === userId.length) {
       throw new Error();
@@ -229,9 +229,9 @@ const service = {
         data = data.filter(d => d.formId === formId);
       }
       // add an id and save them
-      const items = data.map(d => { return {id: uuidv4(), ...d}; });
+      const items = data.map(d => { return {id: uuidv4(), createdBy: currentUser.username, ...d}; });
       await FormRoleUser.query().insert(items);
-
+      await trx.commit();
       // return the new mappings
       const result = await service.getUserForms({userId: userId, formId: formId});
       return result;
