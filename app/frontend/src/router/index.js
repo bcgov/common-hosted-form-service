@@ -28,6 +28,7 @@ export default function getRouter(basePath = '/') {
           hasLogin: true
         }
       },
+      // FormIO Editor
       {
         path: '/editor',
         component: () => import(/* webpackChunkName: "editor" */ '@/views/Editor.vue'),
@@ -49,49 +50,52 @@ export default function getRouter(basePath = '/') {
           hasLogin: true
         }
       },
+      // Actions for a specific form
       {
-        path: '/forms',
-        name: 'Forms',
-        component: () => import(/* webpackChunkName: "forms" */ '@/views/Forms.vue'),
-        meta: {
-          requiresAuth: true,
-          hasLogin: true
-        }
-      },
-      {
-        path: '/form/create',
-        name: 'FormDesign',
-        component: () => import(/* webpackChunkName: "formdesign" */ '@/views/FormDesign.vue'),
-        meta: {
-          requiresAuth: true,
-          hasLogin: true
-        }
-      },
-      {
-        path: '/form/submit/:formId',
-        name: 'FormSubmit',
-        component: () => import(/* webpackChunkName: "formsubmit" */ '@/views/FormSubmit.vue'),
+        path: '/form/:formId',
+        component: () => import(/* webpackChunkName: "form" */ '@/views/Form.vue'),
         props: true,
+        children: [
+          {
+            path: '/manage',
+            name: 'FormManage',
+            component: () => import(/* webpackChunkName: "formmanage" */ '@/views/form/FormManage.vue'),
+            props: true,
+            meta: {
+              requiresAuth: true,
+              hasLogin: true
+            }
+          },
+          {
+            path: '/submissions',
+            name: 'FormSubmissions',
+            component: () => import(/* webpackChunkName: "formsubmissions" */ '@/views/form/FormSubmissions.vue'),
+            props: true,
+            meta: {
+              requiresAuth: true,
+              hasLogin: true
+            }
+          },
+          {
+            path: '/submit',
+            name: 'FormSubmit',
+            component: () => import(/* webpackChunkName: "formsubmit" */ '@/views/form/FormSubmit.vue'),
+            props: true,
+            meta: {
+              requiresAuth: true,
+              hasLogin: true
+            }
+          },
+        ],
         meta: {
           requiresAuth: true,
           hasLogin: true
         }
       },
       {
-        path: '/form/:formId/version/:versionId/submisions',
-        name: 'FormSubmissions',
-        component: () => import(/* webpackChunkName: "formsubmissions" */ '@/views/FormSubmissions.vue'),
-        props: true,
-        meta: {
-          requiresAuth: true,
-          hasLogin: true
-        }
-      },
-      {
-        path: '/form/manage/:formId',
-        name: 'FormManage',
-        component: () => import(/* webpackChunkName: "formmanage" */ '@/views/FormManage.vue'),
-        props: true,
+        path: '/myForms',
+        name: 'MyForms',
+        component: () => import(/* webpackChunkName: "myforms" */ '@/views/MyForms.vue'),
         meta: {
           requiresAuth: true,
           hasLogin: true

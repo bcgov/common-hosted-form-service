@@ -25,6 +25,8 @@
       loading-text="Loading... Please wait"
     >
       <template v-slot:item.actions="{ item }">
+        f: {{ item.id }}
+        v: {{ item.currentVersionId }}
         <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
           <router-link :to="{ name: 'FormSubmit', params: { formId: item.id } }">
             <v-icon class="mr-1">note_add</v-icon>
@@ -32,7 +34,7 @@
           </router-link>
         </v-btn>
         <v-btn v-if="checkSubmissionView(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmissions', params: { formId: item.id, versionId: item.currentVersionId }}">
+          <router-link :to="{ name: 'FormSubmissions', params: { formId: item.id }}">
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW SUBMISSIONS</span>
           </router-link>

@@ -44,8 +44,7 @@ export default {
    * @param {string} formId The form uuid
    * @returns {Promise} An axios response
    */
-  listSubmissions(formId, versionId) {
-    // TODO: need an API endpoint for this that isn't version based.
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`);
+  listSubmissions(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/submissions`);
   },
 };
