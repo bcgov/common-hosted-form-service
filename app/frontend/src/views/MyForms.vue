@@ -14,7 +14,7 @@
 import FormsTable from '@/components/designer/FormsTable.vue';
 
 export default {
-  name: 'Forms',
+  name: 'MyForms',
   components: {
     FormsTable,
   },

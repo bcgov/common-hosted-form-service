@@ -6,7 +6,10 @@
           <router-link :to="{ name: 'Home' }">About</router-link>
         </li>
         <li>
-          <router-link :to="{ name: 'Forms' }">My Forms</router-link>
+          <router-link :to="{ name: 'MyForms' }">My Forms</router-link>
+        </li>
+        <li>
+          <router-link :to="{ name: 'NewDesigner' }">Create a New Form</router-link>
         </li>
         <li>
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>

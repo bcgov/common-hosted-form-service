@@ -42,7 +42,12 @@ import formService from '@/services/formService';
 
 export default {
   name: 'SubmissionsTable',
-  props: ['formId', 'versionId'],
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    }
+  },
   data() {
     return {
       alertMessage: '',
@@ -70,7 +75,7 @@ export default {
     async populateSubmissionsTable() {
       try {
         // Get the submissions for this form
-        const response = await await formService.listSubmissions(this.formId, this.versionId);
+        const response = await await formService.listSubmissions(this.formId);
         const data = response.data;
         alert(JSON.stringify(data));
         // Build up the list of forms for the table
@@ -79,7 +84,7 @@ export default {
             confirmationId: s.confirmationId,
             date: s.createdAt,
             id: s.id,
-            submitter: s.createdBy
+            submitter: s.createdBy,
           };
         });
         if (!submissions.length) {
