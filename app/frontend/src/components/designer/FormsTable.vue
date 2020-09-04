@@ -25,10 +25,8 @@
       loading-text="Loading... Please wait"
     >
       <template v-slot:item.actions="{ item }">
-        f: {{ item.id }}
-        v: {{ item.currentVersionId }}
         <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmit', params: { formId: item.id } }">
+          <router-link :to="{ name: 'FormSubmit', params: { formId: item.id, versionId: item.currentVersionId } }">
             <v-icon class="mr-1">note_add</v-icon>
             <span>SUBMIT</span>
           </router-link>
@@ -83,7 +81,7 @@ export default {
     async populateFormTable() {
       try {
         // Get this user's permissions
-        const response = await await userService.getCurrentUser();
+        const response = await userService.getCurrentUser();
         const data = response.data;
         // Build up the list of forms for the table
         const forms = data.forms.map((f) => {

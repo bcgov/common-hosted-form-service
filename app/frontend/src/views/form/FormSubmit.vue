@@ -1,32 +1,38 @@
 <template>
   <v-container>
-    <div style="border: 1px solid">
-      <h2>FormIO-designed form rendered here</h2>
-      {{ JSON.stringify(placeholder, 0, 2) }}
-    </div>
+    <Formio :form="formSchema" :options="{ readOnly: false }" />
   </v-container>
 </template>
 
 <script>
+import { Form } from 'vue-formio';
 import formService from '@/services/formService';
 
 export default {
   name: 'FormSubmit',
-  components: {},
-  props: ['formId'],
+  components: {
+    Formio: Form,
+  },
+  props: ['formId', 'versionId'],
   data() {
     return {
       placeholder: '',
+      formSchema: {},
+      submission: {
+        data: {},
+      },
     };
   },
   methods: {
     async getFormDefinition() {
       try {
-        // Get the form definition from the api
-        const response = await await formService.getForm(this.formId);
-        this.placeholder = response.data;
+        const response = await formService.readVersion(
+          this.formId,
+          this.versionId
+        );
+        this.formSchema = response.data.schema;
       } catch (error) {
-        console.error(`Error getting form: ${error}`); // eslint-disable-line no-console
+        console.error(`Error getting form schema: ${error}`); // eslint-disable-line no-console
       }
     },
   },

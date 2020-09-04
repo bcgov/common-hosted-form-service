@@ -25,9 +25,9 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template v-slot:item.actions>
+      <template v-slot:item.actions="{ item }">
         <v-btn color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmissions' }">
+          <router-link :to="{ name: 'FormSubmissionView', params: { formId: item.formId, versionId: item.versionId, submissionId: item.submissionId } }">
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW</span>
           </router-link>
@@ -77,14 +77,16 @@ export default {
         // Get the submissions for this form
         const response = await await formService.listSubmissions(this.formId);
         const data = response.data;
-        alert(JSON.stringify(data));
+        //alert(JSON.stringify(data));
         // Build up the list of forms for the table
         const submissions = data.map((s) => {
           return {
             confirmationId: s.confirmationId,
             date: s.createdAt,
-            id: s.id,
+            formId: s.formId,
+            submissionId: s.submissionId,
             submitter: s.createdBy,
+            versionId: s.formVersionId
           };
         });
         if (!submissions.length) {
