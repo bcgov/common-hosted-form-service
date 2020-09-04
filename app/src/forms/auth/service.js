@@ -21,7 +21,7 @@ const service = {
 
       await User.query(trx).insert(obj);
       await trx.commit();
-      const result = await service.read(obj.id);
+      const result = await service.readUser(obj.id);
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -143,8 +143,13 @@ const service = {
 
   filterForms: (userInfo, items, accessLevels = []) => {
     let forms = [];
+    // we always remove idp only access forms that do not match our idp.
+    let idpFiltered = items.filter(x => {
+      return x.roles.length || (!x.roles.length && (x.idps.includes('public') || x.idps.includes(userInfo.idp)));
+    });
+
     if (accessLevels && accessLevels.length) {
-      items.forEach(item => {
+      idpFiltered.forEach(item => {
         let hasPublic = false;
         let hasIdp = false;
         let hasTeam = false;
@@ -164,7 +169,7 @@ const service = {
         }
       });
     } else {
-      forms = items.map(item => service.formAccessToForm(item));
+      forms = idpFiltered.map(item => service.formAccessToForm(item));
     }
     return forms;
   },

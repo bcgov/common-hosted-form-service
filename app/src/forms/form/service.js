@@ -1,4 +1,7 @@
-const { Form, FormIdentityProvider, FormVersion, FormSubmission } = require('../common/models');
+const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormSubmission } = require('../common/models');
+
+const Roles = require('../common/constants').Roles;
+const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
@@ -13,20 +16,28 @@ const service = {
       .modify('orderNameAscending');
   },
 
-  createForm: async (data) => {
+  createForm: async (data, currentUser) => {
     let trx;
     try {
       trx = await transaction.start(Form.knex());
-
+      // TODO: verify name is unique
       const obj = {};
       obj.id = uuidv4();
       obj.name = data.name;
       obj.description = data.description;
       obj.active = data.active;
       obj.labels = data.labels;
+      obj.createdBy = currentUser.username;
 
       await Form.query(trx).insert(obj);
-      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code}; }));
+      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username}; }));
+
+      // make this user have ALL the roles...
+      const userRoles = Rolenames.map(r => {
+        return {id: uuidv4(), createdBy: currentUser.username, userId: currentUser.id, formId: obj.id, role: r};
+      });
+      await FormRoleUser.query().insert(userRoles);
+
       await trx.commit();
       const result = await service.readForm(obj.id);
       return result;
@@ -36,17 +47,17 @@ const service = {
     }
   },
 
-  updateForm: async (formId, data) => {
+  updateForm: async (formId, data, currentUser) => {
     let trx;
     try {
       const obj = await service.readForm(formId);
       trx = await transaction.start(Form.knex());
-
-      await Form.query(trx).patchAndFetchById(formId, {name: data.name, description: data.description, active: data.active, labels: data.labels});
+      // TODO: verify name is unique
+      await Form.query(trx).patchAndFetchById(formId, {name: data.name, description: data.description, active: data.active, labels: data.labels, updatedBy: currentUser.username});
 
       // remove any existing links to identity providers, and the updated ones
       await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
-      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code}; }));
+      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username}; }));
 
       await trx.commit();
       const result = await service.readForm(obj.id);
@@ -71,7 +82,7 @@ const service = {
       .modify('orderVersionDescending');
   },
 
-  createVersion: async (formId, data) => {
+  createVersion: async (formId, data, currentUser) => {
     let trx;
     try {
       const form = await service.readForm(formId);
@@ -81,6 +92,7 @@ const service = {
       obj.id =  uuidv4();
       obj.formId = form.id;
       obj.version = form.versions.length ? form.versions[0].version + 1 : 1;
+      obj.createdBy = currentUser.username;
 
       await FormVersion.query(trx).insert(obj);
       await trx.commit();
@@ -92,15 +104,15 @@ const service = {
     }
   },
 
-  updateVersion: async (formVersionId, data) => {
+  updateVersion: async (formVersionId, data, currentUser) => {
     let trx;
     try {
       const obj = await service.readVersion(formVersionId);
       trx = await transaction.start(FormVersion.knex());
 
-      // check if in draft mode?
+      //TODO: check if we can update the version (no submissions)
 
-      await FormVersion.query(trx).patchAndFetchById(formVersionId, {schema: data.schema});
+      await FormVersion.query(trx).patchAndFetchById(formVersionId, {schema: data.schema, updatedBy: currentUser.username});
       await trx.commit();
       return await service.readVersion(obj.id);
     } catch (err) {
@@ -121,7 +133,7 @@ const service = {
       .modify('orderDescending');
   },
 
-  createSubmission: async (formVersionId, data) => {
+  createSubmission: async (formVersionId, data, currentUser) => {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
@@ -131,6 +143,7 @@ const service = {
       obj.id = uuidv4();
       obj.formVersionId = formVersion.id;
       obj.confirmationId = obj.id.substring(0, 8).toUpperCase();
+      obj.createdBy = currentUser.username;
 
       await FormSubmission.query(trx).insert(obj);
       await trx.commit();
@@ -142,15 +155,15 @@ const service = {
     }
   },
 
-  updateSubmission: async (formSubmissionId, data) => {
+  updateSubmission: async (formSubmissionId, data, currentUser) => {
     let trx;
     try {
       const obj = await service.readSubmission(formSubmissionId);
       trx = await transaction.start(FormSubmission.knex());
 
-      // check if in draft mode?
+      // TODO: check if we can update this submission
 
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {draft: data.draft, submission: data.submission});
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {draft: data.draft, submission: data.submission, updatedBy: currentUser.username});
       await trx.commit();
       const result = await service.readSubmission(obj.id);
       return result;

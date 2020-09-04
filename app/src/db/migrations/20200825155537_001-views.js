@@ -13,8 +13,8 @@ SELECT DISTINCT ON ((lower(f.name::text))) f.id,
                                            f."updatedBy",
                                            fv.id               AS "formVersionId",
                                            fv.version,
-                                           array_agg(fip.code) AS "identityProviders",
-                                           array_agg(ip.idp)   AS idps
+                                           array_agg(distinct(fip.code)) AS "identityProviders",
+                                           array_agg(distinct(ip.idp))   AS idps
 FROM form f
          JOIN form_version fv ON f.id = fv."formId"
          JOIN form_identity_provider fip ON f.id = fip."formId"
@@ -23,7 +23,7 @@ GROUP BY f.id, f.name, f.active, f.description, f.labels, f."createdAt", f."crea
          f."updatedBy", fv.id, fv.version
 ORDER BY (lower(f.name::text)), fv.version DESC`))
     .then(() => knex.schema.raw(`create view user_form_permissions_vw as 
-select fru."userId", fru."formId", array_agg(p.code) as permissions
+select fru."userId", fru."formId", array_agg(distinct(p.code)) as permissions
 from form_role_user fru
 inner join role r on fru.role = r.code
 inner join role_permission rp on r.code = rp.role
@@ -34,7 +34,7 @@ select u2.id as "userId", f2.id as "formId", '{submission_create,form_read}'::va
 from form_vw f2, "user" u2
 where not exists (select * from form_role_user fru2 where fru2."formId"= f2.id and fru2."userId" = u2.id)`))
     .then(() => knex.schema.raw(`create view user_form_roles_vw as 
-select fru."userId", fru."formId", array_agg(r.code) as roles
+select fru."userId", fru."formId", array_agg(distinct(r.code)) as roles
 from form_role_user fru
 inner join role r on fru.role = r.code
 group by fru."userId", fru."formId"

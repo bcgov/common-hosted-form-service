@@ -280,7 +280,7 @@ class FormRoleUser extends Timestamps(Model) {
           to: 'form.id'
         }
       },
-      role: {
+      userRole: {
         relation: Model.HasOneRelation,
         modelClass: Role,
         join: {
