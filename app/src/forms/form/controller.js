@@ -11,7 +11,7 @@ module.exports = {
   },
   createForm:  async (req, res, next) => {
     try {
-      const response = await service.createForm(req.body);
+      const response = await service.createForm(req.body, req.currentUser);
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -27,7 +27,15 @@ module.exports = {
   },
   updateForm:  async (req, res, next) => {
     try {
-      const response = await service.updateForm(req.params.formId, req.body);
+      const response = await service.updateForm(req.params.formId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  listFormSubmissions: async (req, res, next) => {
+    try {
+      const response = await service.listFormSubmissions(req.params.formId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -43,7 +51,7 @@ module.exports = {
   },
   createVersion:  async (req, res, next) => {
     try {
-      const response = await service.createVersion(req.params.formId, req.body);
+      const response = await service.createVersion(req.params.formId, req.body, req.currentUser);
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -59,7 +67,7 @@ module.exports = {
   },
   updateVersion:  async (req, res, next) => {
     try {
-      const response = await service.updateVersion(req.params.formVersionId, req.body);
+      const response = await service.updateVersion(req.params.formVersionId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -75,7 +83,7 @@ module.exports = {
   },
   createSubmission:  async (req, res, next) => {
     try {
-      const response = await service.createSubmission(req.params.formVersionId, req.body);
+      const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -91,7 +99,7 @@ module.exports = {
   },
   updateSubmission:  async (req, res, next) => {
     try {
-      const response = await service.updateSubmission(req.params.formSubmissionId, req.body);
+      const response = await service.updateSubmission(req.params.formSubmissionId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);

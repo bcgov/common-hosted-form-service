@@ -4,11 +4,13 @@ const path = require('path');
 const router = require('express').Router();
 const yaml = require('js-yaml');
 
+const admin = require('../forms/admin');
 const form = require('../forms/form');
 const permission = require('../forms/permission');
 const rbac = require('../forms/rbac');
 const role = require('../forms/role');
 
+admin.mount(router);
 const formPath = form.mount(router);
 const permissionPath = permission.mount(router);
 const rbacPath = rbac.mount(router);

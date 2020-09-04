@@ -11,7 +11,7 @@ module.exports = {
   },
   create:  async (req, res, next) => {
     try {
-      const response = await service.create(req.body);
+      const response = await service.create(req.body, req.currentUser);
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -27,7 +27,7 @@ module.exports = {
   },
   update: async (req, res, next) => {
     try {
-      const response = await service.update(req.params.code, req.body);
+      const response = await service.update(req.params.code, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
