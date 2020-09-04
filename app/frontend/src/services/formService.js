@@ -6,15 +6,6 @@ export default {
   // Form Designer calls
   //
   /**
-   * @function getForm
-   * Get a specific form definition
-   * @returns {Promise} An axios response
-   */
-  getForm(id) {
-    return appAxios().get(`/forms/${id}`);
-  },
-
-  /**
    * @function readForm
    * Get the baseline form metadata
    * @param {string} formId The form uuid
@@ -45,5 +36,16 @@ export default {
    */
   updateVersion(formId, formVersionId, data) {
     return appAxios().put(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`, data);
+  },
+
+  /**
+   * @function listSubmissions
+   * Get the submissions for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  listSubmissions(formId, versionId) {
+    // TODO: need an API endpoint for this that isn't version based.
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`);
   },
 };

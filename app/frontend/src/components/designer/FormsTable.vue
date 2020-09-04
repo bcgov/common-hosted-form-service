@@ -25,19 +25,19 @@
       loading-text="Loading... Please wait"
     >
       <template v-slot:item.actions="{ item }">
-        <v-btn color="textLink" text small>
+        <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
           <router-link :to="{ name: 'FormSubmit', params: { formId: item.id } }">
             <v-icon class="mr-1">note_add</v-icon>
             <span>SUBMIT</span>
           </router-link>
         </v-btn>
-        <v-btn v-if="item.permissions.includes('viewForm')" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmissions' }">
+        <v-btn v-if="checkSubmissionView(item)" color="textLink" text small>
+          <router-link :to="{ name: 'FormSubmissions', params: { formId: item.id, versionId: item.currentVersionId }}">
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW SUBMISSIONS</span>
           </router-link>
         </v-btn>
-        <v-btn v-if="item.permissions.includes('manageTeam')" color="textLink" text small>
+        <v-btn v-if="checkFormManage(item)" color="textLink" text small>
           <router-link :to="{ name: 'FormManage', params: { formId: item.id } }">
             <v-icon class="mr-1">build_circle</v-icon>
             <span>MANAGE</span>
@@ -50,6 +50,7 @@
 
 <script>
 import userService from '@/services/userService';
+import { checkFormManage, checkFormSubmit, checkSubmissionView } from '@/utils/permissionUtils';
 
 export default {
   name: 'FormsTable',
@@ -74,17 +75,22 @@ export default {
     };
   },
   methods: {
+    checkFormManage: checkFormManage,
+    checkFormSubmit: checkFormSubmit,
+    checkSubmissionView: checkSubmissionView,
     async populateFormTable() {
       try {
         // Get this user's permissions
         const response = await await userService.getCurrentUser();
         const data = response.data;
         // Build up the list of forms for the table
-        const forms = data.map((f) => {
+        const forms = data.forms.map((f) => {
           return {
+            currentVersionId: f.formVersionId,
             id: f.formId,
+            idps: f.idps,
             name: f.formName,
-            permissions: f.permissions,
+            permissions: f.permissions
           };
         });
         if (!forms.length) {

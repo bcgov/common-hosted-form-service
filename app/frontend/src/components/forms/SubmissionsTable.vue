@@ -38,8 +38,11 @@
 </template>
 
 <script>
+import formService from '@/services/formService';
+
 export default {
   name: 'SubmissionsTable',
+  props: ['formId', 'versionId'],
   data() {
     return {
       alertMessage: '',
@@ -66,11 +69,19 @@ export default {
   methods: {
     async populateSubmissionsTable() {
       try {
-        const submissions = [
-          { confirmationId: '2F6A9B2', date: 'August 1, 2020', submitter: 'Sarah Smith', asignee: 'Tim' },
-          { confirmationId: 'ABC1234', date: 'July 21, 2020', submitter: 'Levar Smith', asignee: 'Jason' },
-          { confirmationId: '98711BB', date: 'July 11, 2020', submitter: 'Joe Smith', asignee: 'Tim' },
-        ];
+        // Get the submissions for this form
+        const response = await await formService.listSubmissions(this.formId, this.versionId);
+        const data = response.data;
+        alert(JSON.stringify(data));
+        // Build up the list of forms for the table
+        const submissions = data.map((s) => {
+          return {
+            confirmationId: s.confirmationId,
+            date: s.createdAt,
+            id: s.id,
+            submitter: s.createdBy
+          };
+        });
         if (!submissions.length) {
           this.showTableAlert('info', 'No Submissions found for this form');
         }
