@@ -11,14 +11,14 @@ SELECT DISTINCT ON ((lower(f.name::text))) f.id,
                                            f."createdBy",
                                            f."updatedAt",
                                            f."updatedBy",
-                                           fv.id               AS "formVersionId",
+                                           fv.id AS "formVersionId",
                                            fv.version,
-                                           array_agg(distinct(fip.code)) AS "identityProviders",
-                                           array_agg(distinct(ip.idp))   AS idps
+                                           case when count(fip.code) = 0 then '{}'::varchar[] else array_agg(distinct(fip.code)) end AS "identityProviders",
+                                           case when count(ip.idp) = 0 then '{}'::varchar[] else array_agg(distinct(ip.idp)) end AS idps
 FROM form f
          JOIN form_version fv ON f.id = fv."formId"
-         JOIN form_identity_provider fip ON f.id = fip."formId"
-         JOIN identity_provider ip ON fip.code::text = ip.code::text
+         LEFT OUTER JOIN form_identity_provider fip ON f.id = fip."formId"
+         LEFT OUTER JOIN identity_provider ip ON fip.code::text = ip.code::text
 GROUP BY f.id, f.name, f.active, f.description, f.labels, f."createdAt", f."createdBy", f."updatedAt",
          f."updatedBy", fv.id, fv.version
 ORDER BY (lower(f.name::text)), fv.version DESC`))
