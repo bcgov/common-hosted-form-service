@@ -59,7 +59,7 @@ module.exports = {
   },
   setFormUsers:  async (req, res, next) => {
     try {
-      const response = await service.setFormUsers(req.query.formId, req.query.userId, req.body);
+      const response = await service.setFormUsers(req.query.formId, req.query.userId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -75,7 +75,7 @@ module.exports = {
   },
   setUserForms:  async (req, res, next) => {
     try {
-      const response = await service.setUserForms(req.query.userId, req.query.formId, req.body);
+      const response = await service.setUserForms(req.query.userId, req.query.formId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
