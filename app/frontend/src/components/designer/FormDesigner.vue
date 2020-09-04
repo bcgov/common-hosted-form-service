@@ -3,13 +3,7 @@
     <v-form>
       <v-row>
         <v-col cols="12" xl="4">
-          <v-text-field
-            dense
-            flat
-            label="Name"
-            data-test="text-formName"
-            v-model="formName"
-          />
+          <v-text-field dense flat label="Name" data-test="text-formName" v-model="formName" />
         </v-col>
         <v-col cols="12" xl="8">
           <v-text-field
@@ -36,16 +30,17 @@ import formService from '@/services/formService';
 export default {
   name: 'FormDesigner',
   components: {
-    FormBuilder
+    FormBuilder,
+  },
+  props: {
+    formId: String,
+    formVersionId: String,
   },
   data: () => ({
     formName: '',
     formDescription: '',
-    formSchema: {}
+    formSchema: {},
   }),
-  created() {
-    this.getFormSchema();
-  },
   methods: {
     async getFormSchema() {
       this.formSchema = {};
@@ -56,7 +51,10 @@ export default {
           this.formDescription = form.data.description;
 
           if (this.formVersionId) {
-            const response = await formService.readVersion(this.formId, this.formVersionId);
+            const response = await formService.readVersion(
+              this.formId,
+              this.formVersionId
+            );
             this.formSchema = response.data.schema;
           }
         }
@@ -67,9 +65,13 @@ export default {
     async submitFormSchema() {
       if (this.formId && this.formVersionId) {
         try {
-          const response = await formService.updateVersion(this.formId, this.formVersionId, {
-            schema: this.formSchema
-          });
+          const response = await formService.updateVersion(
+            this.formId,
+            this.formVersionId,
+            {
+              schema: this.formSchema,
+            }
+          );
           const data = response.data;
           this.formSchema = data.schema;
         } catch (error) {
@@ -95,11 +97,10 @@ export default {
     onChangeMethod(schema) {
       if (!this.formSchema) this.formSchema = {};
       this.formSchema = Object.assign(this.formSchema, schema);
-    }
+    },
+    created() {
+      this.getFormSchema();
+    },
   },
-  props: {
-    formId: String,
-    formVersionId: String
-  }
 };
 </script>

@@ -57,31 +57,45 @@ export default function getRouter(basePath = '/') {
         props: true,
         children: [
           {
-            path: '/manage',
+            path: '/form/:formId/manage',
             name: 'FormManage',
             component: () => import(/* webpackChunkName: "formmanage" */ '@/views/form/FormManage.vue'),
             props: true,
             meta: {
+              breadcrumbTitle: 'Manage Form',
               requiresAuth: true,
               hasLogin: true
             }
           },
           {
-            path: '/submissions',
+            path: '/form/:formId/submissions',
             name: 'FormSubmissions',
             component: () => import(/* webpackChunkName: "formsubmissions" */ '@/views/form/FormSubmissions.vue'),
             props: true,
             meta: {
+              breadcrumbTitle: 'Submissions',
               requiresAuth: true,
               hasLogin: true
             }
           },
           {
-            path: '/submit',
+            path: '/form/:formId/submissions/:versionId/:submissionId',
+            name: 'FormSubmissionView',
+            component: () => import(/* webpackChunkName: "formsubmissionview" */ '@/views/form/FormSubmissionView.vue'),
+            props: true,
+            meta: {
+              breadcrumbTitle: 'View Submission',
+              requiresAuth: true,
+              hasLogin: true
+            }
+          },
+          {
+            path: '/form/:formId/versions/:versionId/submit',
             name: 'FormSubmit',
             component: () => import(/* webpackChunkName: "formsubmit" */ '@/views/form/FormSubmit.vue'),
             props: true,
             meta: {
+              breadcrumbTitle: 'Submit Form',
               requiresAuth: true,
               hasLogin: true
             }
