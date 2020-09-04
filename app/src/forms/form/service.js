@@ -30,13 +30,24 @@ const service = {
       obj.createdBy = currentUser.username;
 
       await Form.query(trx).insert(obj);
-      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username}; }));
+      if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
+        await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username}; }));
+      }
 
       // make this user have ALL the roles...
       const userRoles = Rolenames.map(r => {
         return {id: uuidv4(), createdBy: currentUser.username, userId: currentUser.id, formId: obj.id, role: r};
       });
-      await FormRoleUser.query().insert(userRoles);
+      await FormRoleUser.query(trx).insert(userRoles);
+
+      // create a default version 1
+      const version = {
+        id: uuidv4(),
+        formId: obj.id,
+        version: 1,
+        createdBy: currentUser.username
+      };
+      await FormVersion.query(trx).insert(version);
 
       await trx.commit();
       const result = await service.readForm(obj.id);
