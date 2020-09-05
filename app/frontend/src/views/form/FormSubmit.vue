@@ -2,7 +2,13 @@
   <v-container>
     <v-alert v-if="alertShow" :type="alertType" tile dense>{{ alertMessage }}</v-alert>
 
-    <Formio :form="formSchema" :options="{ readOnly: false }" />
+    <Formio
+      :form="formSchema"
+      :submission="submission"
+      @change="onChangeMethod"
+      @submit="onSubmitMethod"
+      :options="{}"
+    />
   </v-container>
 </template>
 
@@ -34,16 +40,43 @@ export default {
           this.formId,
           this.versionId
         );
-        if(!response.data || ! response.data.schema) {
-          throw new Error(`No schema in response. VersionId: ${this.versionId}`);
+        if (!response.data || !response.data.schema) {
+          throw new Error(
+            `No schema in response. VersionId: ${this.versionId}`
+          );
         }
         this.formSchema = response.data.schema;
       } catch (error) {
         console.error(`Error getting form schema: ${error}`); // eslint-disable-line no-console
-        this.showTableAlert('error', 'An error occurred fetching this form');
+        this.showAlert('error', 'An error occurred fetching this form');
       }
     },
-    showTableAlert(typ, msg) {
+    onChangeMethod(change) {
+      const changed = change.changed;
+      if (changed) {
+        this.submission.data[changed.instance.path] = changed.value;
+      }
+    },
+    async onSubmitMethod() {
+      try {
+        const response = await formService.createSubmission(
+          this.formId,
+          this.versionId,
+          this.submission.data
+        );
+        if (response.status === 201) {
+          this.showAlert(
+            'success',
+            'Your form has been successfully submitted (UX here TBD)'
+          );
+        }
+      } catch (error) {
+        console.error(`Error creating new submission: ${error}`); // eslint-disable-line no-console
+        this.showAlert('error', 'An error occurred submitting this form');
+        throw error;
+      }
+    },
+    showAlert(typ, msg) {
       this.alertShow = true;
       this.alertType = typ;
       this.alertMessage = msg;

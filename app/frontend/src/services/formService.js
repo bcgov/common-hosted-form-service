@@ -5,6 +5,19 @@ export default {
   //
   // Form Designer calls
   //
+
+  /**
+   * @function createSubmission
+   * Submit the form data
+   * @param {string} formId The form uuid
+   * @param {string} versionId The form uuid
+   * @param {Object} submissionData The form data for the submission
+   * @returns {Promise} An axios response
+   */
+  createSubmission(formId, versionId, submissionData) {
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`, submissionData);
+  },
+
   /**
    * @function readForm
    * Get the baseline form metadata
