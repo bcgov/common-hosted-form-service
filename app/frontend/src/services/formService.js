@@ -11,11 +11,23 @@ export default {
    * Submit the form data
    * @param {string} formId The form uuid
    * @param {string} versionId The form uuid
-   * @param {Object} submissionData The form data for the submission
+   * @param {Object} requestBody The form data for the submission
    * @returns {Promise} An axios response
    */
-  createSubmission(formId, versionId, submissionData) {
-    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`, submissionData);
+  createSubmission(formId, versionId, requestBody) {
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`, requestBody);
+  },
+
+  /**
+  * @function getSubmission
+  * Get the form data
+  * @param {string} formId The form uuid
+  * @param {string} versionId The form version uuid
+  * @param {string} submission The form submission identifier
+  * @returns {Promise} An axios response
+  */
+  getSubmission(formId, versionId, submissionId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions/${submissionId}`);
   },
 
   /**
