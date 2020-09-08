@@ -45,18 +45,16 @@ export default {
     async getFormSchema() {
       this.formSchema = {};
       try {
-        if (this.formId) {
-          const form = await formService.readForm(this.formId);
-          this.formName = form.data.name;
-          this.formDescription = form.data.description;
+        const form = await formService.readForm(this.formId);
+        this.formName = form.data.name;
+        this.formDescription = form.data.description;
 
-          if (this.formVersionId) {
-            const response = await formService.readVersion(
-              this.formId,
-              this.formVersionId
-            );
-            this.formSchema = response.data.schema;
-          }
+        if (this.formVersionId) {
+          const response = await formService.readVersion(
+            this.formId,
+            this.formVersionId
+          );
+          this.formSchema = response.data.schema;
         }
       } catch (error) {
         console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
@@ -64,6 +62,7 @@ export default {
     },
     async submitFormSchema() {
       if (this.formId && this.formVersionId) {
+        // If editing a form, update the version
         try {
           const response = await formService.updateVersion(
             this.formId,
@@ -77,29 +76,33 @@ export default {
         } catch (error) {
           console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
         }
+      } else {
+        // If creating a new form, add the form and then a version
+        try {
+          const form = {
+            name: this.formName,
+            description: this.formDescription,
+            schema: this.formSchema
+          };
+          const response = await formService.createForm(form);
+          // Add the schema to the newly created default version
+          if(!response.data.versions || !response.data.versions[0]) {
+            throw new Error(`createForm response does not include a form version: ${response.data.versions}`);
+          }
+          alert(`Form ${response.data.id} created successfully. UX TBD`);
+        } catch (error) {
+          console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
+        }
       }
-      // TODO: Implement logic for creating a new form
-      // } else {
-      //   try {
-      //     const form = {
-      //       name: this.formName,
-      //       description: this.formDescription,
-      //       schema: this.formSchema
-      //     };
-      //     const response = await formService.createForm(form);
-      //     const data = response.data;
-      //     this.formSchema = data.schema;
-      //   } catch (error) {
-      //     console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
-      //   }
-      // }
     },
     onChangeMethod(schema) {
       if (!this.formSchema) this.formSchema = {};
       this.formSchema = Object.assign(this.formSchema, schema);
     },
     created() {
-      this.getFormSchema();
+      if (this.formId) {
+        this.getFormSchema();
+      }
     },
   },
 };

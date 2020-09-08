@@ -7,6 +7,33 @@ export default {
   //
 
   /**
+   * @function createForm
+   * Create a new Form
+   * @param {Object} formData An object containing the form details
+   * @returns {Promise} An axios response
+   */
+  createForm(formData) {
+    return appAxios().post(`${ApiRoutes.FORMS}`, formData);
+  },
+
+  /**
+   * @function readVersion
+   * Updates a specific form version schema
+   * @param {string} formId The form uuid
+   * @param {string} formVersionId The form version uuid
+   * @param {Object} data An object containing an updated schema object attribute
+   * @returns {Promise} An axios response
+   */
+  updateVersion(formId, formVersionId, data) {
+    return appAxios().put(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`, data);
+  },
+
+
+  //
+  // Form Submission calls
+  //
+
+  /**
    * @function createSubmission
    * Submit the form data
    * @param {string} formId The form uuid
@@ -49,18 +76,6 @@ export default {
    */
   readVersion(formId, formVersionId) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
-  },
-
-  /**
-   * @function readVersion
-   * Updates a specific form version schema
-   * @param {string} formId The form uuid
-   * @param {string} formVersionId The form version uuid
-   * @param {Object} data An object containing an updated schema object attribute
-   * @returns {Promise} An axios response
-   */
-  updateVersion(formId, formVersionId, data) {
-    return appAxios().put(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`, data);
   },
 
   /**

@@ -62,9 +62,7 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "formmanage" */ '@/views/form/FormManage.vue'),
             props: true,
             meta: {
-              breadcrumbTitle: 'Manage Form',
-              requiresAuth: true,
-              hasLogin: true
+              breadcrumbTitle: 'Manage Form'
             }
           },
           {
@@ -73,9 +71,7 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "formsubmissions" */ '@/views/form/FormSubmissions.vue'),
             props: true,
             meta: {
-              breadcrumbTitle: 'Submissions',
-              requiresAuth: true,
-              hasLogin: true
+              breadcrumbTitle: 'Submissions'
             }
           },
           {
@@ -84,9 +80,7 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "formsubmissionview" */ '@/views/form/FormSubmissionView.vue'),
             props: true,
             meta: {
-              breadcrumbTitle: 'View Submission',
-              requiresAuth: true,
-              hasLogin: true
+              breadcrumbTitle: 'View Submission'
             }
           },
           {
@@ -95,9 +89,7 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "formsubmit" */ '@/views/form/FormSubmit.vue'),
             props: true,
             meta: {
-              breadcrumbTitle: 'Submit Form',
-              requiresAuth: true,
-              hasLogin: true
+              breadcrumbTitle: 'Submit Form'
             }
           },
         ],
