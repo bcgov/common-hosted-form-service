@@ -35,7 +35,7 @@ routes.post('/:formId/versions', hasFormPermissions([P.FORM_READ, P.DESIGN_CREAT
   await controller.createVersion(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId', hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
+routes.get('/:formId/versions/:formVersionId', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readVersion(req, res, next);
 });
 
