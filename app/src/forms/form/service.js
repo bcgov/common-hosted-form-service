@@ -84,6 +84,7 @@ const service = {
       .findById(formId)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('versions(orderVersionDescending)')
       .throwIfNotFound();
   },
 
