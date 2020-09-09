@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="my-6 text-center">Editor</h1>
+    <h1 class="my-6 text-center">Form Editor</h1>
     <transition name="component-fade" mode="out-in">
       <router-view />
     </transition>

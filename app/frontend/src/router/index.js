@@ -28,6 +28,7 @@ export default function getRouter(basePath = '/') {
           hasLogin: true
         }
       },
+      // FormIO Editor
       {
         path: '/editor',
         component: () => import(/* webpackChunkName: "editor" */ '@/views/Editor.vue'),
@@ -49,10 +50,58 @@ export default function getRouter(basePath = '/') {
           hasLogin: true
         }
       },
+      // Actions for a specific form
       {
-        path: '/forms',
-        name: 'Forms',
-        component: () => import(/* webpackChunkName: "forms" */ '@/views/Forms.vue'),
+        path: '/form/:formId',
+        component: () => import(/* webpackChunkName: "form" */ '@/views/Form.vue'),
+        props: true,
+        children: [
+          {
+            path: '/form/:formId/manage',
+            name: 'FormManage',
+            component: () => import(/* webpackChunkName: "formmanage" */ '@/views/form/FormManage.vue'),
+            props: true,
+            meta: {
+              breadcrumbTitle: 'Manage Form'
+            }
+          },
+          {
+            path: '/form/:formId/submissions',
+            name: 'FormSubmissions',
+            component: () => import(/* webpackChunkName: "formsubmissions" */ '@/views/form/FormSubmissions.vue'),
+            props: true,
+            meta: {
+              breadcrumbTitle: 'Submissions'
+            }
+          },
+          {
+            path: '/form/:formId/submissions/:versionId/:submissionId',
+            name: 'FormSubmissionView',
+            component: () => import(/* webpackChunkName: "formsubmissionview" */ '@/views/form/FormSubmissionView.vue'),
+            props: true,
+            meta: {
+              breadcrumbTitle: 'View Submission'
+            }
+          },
+          {
+            path: '/form/:formId/versions/:versionId/submit',
+            name: 'FormSubmit',
+            component: () => import(/* webpackChunkName: "formsubmit" */ '@/views/form/FormSubmit.vue'),
+            props: true,
+            meta: {
+              breadcrumbTitle: 'Submit Form'
+            }
+          },
+        ],
+        meta: {
+          requiresAuth: true,
+          hasLogin: true
+        }
+      },
+      {
+        path: '/myForms',
+        name: 'MyForms',
+        component: () => import(/* webpackChunkName: "myforms" */ '@/views/MyForms.vue'),
         meta: {
           requiresAuth: true,
           hasLogin: true

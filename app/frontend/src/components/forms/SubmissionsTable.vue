@@ -14,33 +14,22 @@
         class="pb-5"
       />
     </div>
+
     <!-- table header -->
     <v-data-table
       class="submissions-table"
       :headers="headers"
       item-key="title"
-      :items="forms"
+      :items="submissions"
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
     >
       <template v-slot:item.actions="{ item }">
-        <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmit', params: { formId: item.id, versionId: item.currentVersionId } }">
-            <v-icon class="mr-1">note_add</v-icon>
-            <span>SUBMIT</span>
-          </router-link>
-        </v-btn>
-        <v-btn v-if="checkSubmissionView(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmissions', params: { formId: item.id }}">
+        <v-btn color="textLink" text small>
+          <router-link :to="{ name: 'FormSubmissionView', params: { formId: item.formId, versionId: item.versionId, submissionId: item.submissionId } }">
             <v-icon class="mr-1">remove_red_eye</v-icon>
-            <span>VIEW SUBMISSIONS</span>
-          </router-link>
-        </v-btn>
-        <v-btn v-if="checkFormManage(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormManage', params: { formId: item.id } }">
-            <v-icon class="mr-1">build_circle</v-icon>
-            <span>MANAGE</span>
+            <span>VIEW</span>
           </router-link>
         </v-btn>
       </template>
@@ -49,18 +38,26 @@
 </template>
 
 <script>
-import userService from '@/services/userService';
-import { checkFormManage, checkFormSubmit, checkSubmissionView } from '@/utils/permissionUtils';
+import formService from '@/services/formService';
 
 export default {
-  name: 'FormsTable',
+  name: 'SubmissionsTable',
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    }
+  },
   data() {
     return {
       alertMessage: '',
       alertShow: false,
       alertType: null,
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name' },
+        { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
+        { text: 'Submission Date', align: 'start', value: 'date' },
+        { text: 'Submitter', align: 'start', value: 'submitter' },
+        { text: 'Assigned To', align: 'start', value: 'asignee' },
         {
           text: 'Actions',
           align: 'end',
@@ -69,37 +66,36 @@ export default {
           sortable: false,
         },
       ],
-      forms: [],
+      submissions: [],
       loading: true,
       search: '',
     };
   },
   methods: {
-    checkFormManage: checkFormManage,
-    checkFormSubmit: checkFormSubmit,
-    checkSubmissionView: checkSubmissionView,
-    async populateFormTable() {
+    async populateSubmissionsTable() {
       try {
-        // Get this user's permissions
-        const response = await userService.getCurrentUser();
+        // Get the submissions for this form
+        const response = await await formService.listSubmissions(this.formId);
         const data = response.data;
+        //alert(JSON.stringify(data));
         // Build up the list of forms for the table
-        const forms = data.forms.map((f) => {
+        const submissions = data.map((s) => {
           return {
-            currentVersionId: f.formVersionId,
-            id: f.formId,
-            idps: f.idps,
-            name: f.formName,
-            permissions: f.permissions
+            confirmationId: s.confirmationId,
+            date: s.createdAt,
+            formId: s.formId,
+            submissionId: s.submissionId,
+            submitter: s.createdBy,
+            versionId: s.formVersionId
           };
         });
-        if (!forms.length) {
-          this.showTableAlert('info', 'No Forms found for this user');
+        if (!submissions.length) {
+          this.showTableAlert('info', 'No Submissions found for this form');
         }
-        this.forms = forms;
+        this.submissions = submissions;
       } catch (error) {
-        console.error(`Error getting user data: ${error}`); // eslint-disable-line no-console
-        this.showTableAlert('error', 'Error getting user data');
+        console.error(`Error getting submissions: ${error}`); // eslint-disable-line no-console
+        this.showTableAlert('error', 'Error getting submissions');
       } finally {
         this.loading = false;
       }
@@ -112,7 +108,7 @@ export default {
     },
   },
   mounted() {
-    this.populateFormTable();
+    this.populateSubmissionsTable();
   },
 };
 </script>
