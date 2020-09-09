@@ -33,7 +33,6 @@ const service = {
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
         await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username}; }));
       }
-
       // make this user have ALL the roles...
       const userRoles = Rolenames.map(r => {
         return {id: uuidv4(), createdBy: currentUser.username, userId: currentUser.id, formId: obj.id, role: r};
@@ -45,7 +44,8 @@ const service = {
         id: uuidv4(),
         formId: obj.id,
         version: 1,
-        createdBy: currentUser.username
+        createdBy: currentUser.username,
+        schema: data.schema
       };
       await FormVersion.query(trx).insert(version);
 
@@ -84,6 +84,7 @@ const service = {
       .findById(formId)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('versions(orderVersionDescending)')
       .throwIfNotFound();
   },
 
