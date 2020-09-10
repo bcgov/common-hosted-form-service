@@ -1,14 +1,14 @@
 <template>
-  <FormDesigner :formId="formId" :formVersionId="formVersionId" />
+  <Formeo />
 </template>
 
 <script>
-import FormDesigner from '@/components/designer/FormDesigner.vue';
+import Formeo from '@/components/designer/Formeo.vue';
 
 export default {
   name: 'Editor',
   components: {
-    FormDesigner
+    Formeo
   },
   props: {
     formId: String,

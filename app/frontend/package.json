@@ -20,6 +20,7 @@
     "@bcgov/bc-sans": "^1.0.1",
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
+    "formeo": "^1.6.0",
     "keycloak-js": "^10.0.2",
     "nprogress": "^0.2.0",
     "vue": "^2.6.12",
