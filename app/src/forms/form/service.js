@@ -1,8 +1,9 @@
-const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormSubmission, SubmissionMetadata } = require('../common/models');
+const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormSubmission, IdentityProvider, SubmissionMetadata } = require('../common/models');
 
 const Roles = require('../common/constants').Roles;
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
+const Problem = require('api-problem');
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
 
@@ -20,7 +21,6 @@ const service = {
     let trx;
     try {
       trx = await transaction.start(Form.knex());
-      // TODO: verify name is unique
       const obj = {};
       obj.id = uuidv4();
       obj.name = data.name;
@@ -31,7 +31,15 @@ const service = {
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
-        await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username}; }));
+        const fips = [];
+        for (const p of data.identityProviders) {
+          const exists = await IdentityProvider.query(trx).where('code', p.code).where('active', true).first();
+          if (!exists) {
+            throw new Problem(422, `${p.code} is not a valid Identity Provider code`);
+          }
+          fips.push({id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username});
+        }
+        await FormIdentityProvider.query(trx).insert(fips);
       }
       // make this user have ALL the roles...
       const userRoles = Rolenames.map(r => {
