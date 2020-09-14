@@ -41,7 +41,7 @@ exports.up = function(knex) {
     }))
     .then(() => knex.schema.createTable('form', table => {
       table.uuid('id').primary();
-      table.string('name').unique().notNullable();
+      table.string('name').notNullable();
       table.string('description');
       table.boolean('active').notNullable().defaultTo(true);
       table.specificType('labels', 'text ARRAY').comment('Use labels to group forms together, or aid in search. Examples: Ministry name, Branch name, Team name.');
