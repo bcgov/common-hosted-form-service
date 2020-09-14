@@ -1,5 +1,7 @@
 const { Model } = require('objection');
 const { Timestamps } = require('./mixins');
+const Regex = require('../constants').Regex;
+const stamps = require('./jsonSchema').stamps;
 
 class Form extends Timestamps(Model) {
   static get tableName () {
@@ -60,6 +62,29 @@ class Form extends Timestamps(Model) {
       }
     };
   }
+
+  // exclude labels array from explicit JSON conversion
+  // encounter malformed array literal
+  static get jsonAttributes() {
+    return ['id', 'name', 'description', 'active', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['name'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        name: { type: 'string', minLength: 1, maxLength: 255 },
+        description: { type: 'string', minLength: 1, maxLength: 255 },
+        active: { type: 'boolean' },
+        labels: { type: 'array', items: { type: 'string'}},
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
 }
 
 class FormVersion extends Timestamps(Model) {
@@ -92,6 +117,22 @@ class FormVersion extends Timestamps(Model) {
       }
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['formId', 'version', 'schema'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        formId: { type: 'string', pattern: Regex.UUID },
+        version: { type: 'integer' },
+        schema: { type: 'jsonb' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
 }
 
 class FormSubmission extends Timestamps(Model) {
@@ -111,6 +152,24 @@ class FormSubmission extends Timestamps(Model) {
       }
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['formVersionId', 'confirmationId', 'submission'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        formVersionId: { type: 'string', pattern: Regex.UUID },
+        confirmationId: { type: 'string', pattern: Regex.CONFIRMATION_ID },
+        draft: { type: 'boolean' },
+        deleted: { type: 'boolean' },
+        submission: { type: 'jsonb' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
 }
 
 class Permission extends Timestamps(Model) {
@@ -149,12 +208,6 @@ class Permission extends Timestamps(Model) {
           query.where('display', 'ilike', `%${value}%`);
         }
       },
-      filterDescription(query, value) {
-        if (value) {
-          // ilike is postrges case insensitive like
-          query.where('description', 'ilike', `%${value}%`);
-        }
-      },
       filterActive(query, value) {
         if (value !== undefined) {
           query.where('active', value);
@@ -165,6 +218,21 @@ class Permission extends Timestamps(Model) {
       }
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['code', 'display'],
+      properties: {
+        code: { type: 'string', minLength: 1, maxLength: 255},
+        display: { type: 'string', minLength: 1, maxLength: 255},
+        active: { type: 'boolean' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
 }
 
 class Role extends Timestamps(Model) {
@@ -203,12 +271,6 @@ class Role extends Timestamps(Model) {
           query.where('display', 'ilike', `%${value}%`);
         }
       },
-      filterDescription(query, value) {
-        if (value) {
-          // ilike is postrges case insensitive like
-          query.where('description', 'ilike', `%${value}%`);
-        }
-      },
       filterActive(query, value) {
         if (value !== undefined) {
           query.where('active', value);
@@ -219,6 +281,21 @@ class Role extends Timestamps(Model) {
       }
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['code', 'display'],
+      properties: {
+        code: { type: 'string', minLength: 1, maxLength: 255},
+        display: { type: 'string', minLength: 1, maxLength: 255},
+        active: { type: 'boolean' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
 }
 
 class User extends Timestamps(Model) {
@@ -249,7 +326,7 @@ class User extends Timestamps(Model) {
       filterFullName(query, value) {
         if (value) {
           // ilike is postrges case insensitive like
-          query.where('displayName', 'ilike', `%${value}%`);
+          query.where('fullName', 'ilike', `%${value}%`);
         }
       },
       filterEmail(query, value) {
@@ -263,6 +340,25 @@ class User extends Timestamps(Model) {
       }
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['keycloakId'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        keycloakId: { type: 'string', pattern: Regex.UUID },
+        username: { type: ['string', 'null'], maxLength: 255 },
+        firstName: { type: ['string', 'null'], maxLength: 255 },
+        lastName: { type: ['string', 'null'], maxLength: 255 },
+        fullName: { type: ['string', 'null'], maxLength: 255 },
+        email: { type: ['string', 'null'], maxLength: 255 },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
 }
 
 class FormRoleUser extends Timestamps(Model) {
@@ -309,6 +405,22 @@ class FormRoleUser extends Timestamps(Model) {
       }
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['role', 'formId', 'userId'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        formId: { type: 'string', pattern: Regex.UUID },
+        userId: { type: 'string', pattern: Regex.UUID },
+        role: { type: 'string', minLength: 1, maxLength: 255  },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
 }
 
 class UserFormAccess extends Model {
@@ -454,6 +566,22 @@ class IdentityProvider extends Timestamps(Model) {
       }
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['code', 'display', 'idp'],
+      properties: {
+        code: { type: 'string', minLength: 1, maxLength: 255},
+        display: { type: 'string', minLength: 1, maxLength: 255},
+        idp: { type: 'string', minLength: 1, maxLength: 255},
+        active: { type: 'boolean' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
 }
 
 class FormIdentityProvider extends Timestamps(Model) {

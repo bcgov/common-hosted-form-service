@@ -20,5 +20,9 @@ module.exports = Object.freeze({
     FORM_DESIGNER: 'form_designer',
     SUBMISSION_REVIEWER: 'submission_reviewer',
     FORM_SUBMITTER: 'form_submitter'
+  },
+  Regex: {
+    CONFIRMATION_ID: '^[0-9A-Fa-f]{8}$',
+    UUID: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$'
   }
 });
