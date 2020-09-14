@@ -39,7 +39,7 @@ const service = {
           }
           fips.push({id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username});
         }
-        await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username}; }));
+        await FormIdentityProvider.query(trx).insert(fips);
       }
       // make this user have ALL the roles...
       const userRoles = Rolenames.map(r => {
