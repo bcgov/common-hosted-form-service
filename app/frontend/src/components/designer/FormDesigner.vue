@@ -31,20 +31,32 @@
             </v-row>
             <p>Select which type of user can fill out out this form once published</p>
             <v-radio-group v-model="userType" :mandatory="false" :rules="loginRequiredRules">
-              <v-radio disabled label="Public (annonymous)" value="public"></v-radio>
+              <v-radio disabled label="Public (annonymous)" :value="ID_PROVIDERS.PUBLIC"></v-radio>
               <v-radio label="Log-in Required" value="login"></v-radio>
               <div v-if="userType === 'login'" class="pl-5 mb-5">
                 <v-row>
-                  <v-checkbox v-model="idps" class="mx-4" label="IDIR" value="idir"></v-checkbox>
-                  <v-checkbox disabled v-model="idps" class="mx-4" label="BCeID" value="bceid"></v-checkbox>
+                  <v-checkbox v-model="idps" class="mx-4" label="IDIR" :value="ID_PROVIDERS.IDIR"></v-checkbox>
+                  <v-checkbox
+                    disabled
+                    v-model="idps"
+                    class="mx-4"
+                    label="BCeID"
+                    :value="ID_PROVIDERS.BCEID"
+                  ></v-checkbox>
                   <v-checkbox
                     disabled
                     v-model="idps"
                     class="mx-4"
                     label="BC Services Card"
-                    value="bcsc"
+                    :value="ID_PROVIDERS.BCSC"
                   ></v-checkbox>
-                  <v-checkbox disabled v-model="idps" class="mx-4" label="Github" value="github"></v-checkbox>
+                  <v-checkbox
+                    disabled
+                    v-model="idps"
+                    class="mx-4"
+                    label="Github"
+                    :value="ID_PROVIDERS.GITHUB"
+                  ></v-checkbox>
                 </v-row>
               </div>
               <v-radio label="Specific Team Members" value="team"></v-radio>
@@ -54,8 +66,7 @@
               >You can specify users on the form's management screen once created.</div>
             </v-radio-group>
             <p>
-              <v-icon color="primary">info</v-icon>
-              Build your form with the designer below then hit the SAVE FORM DESIGN button to continue.
+              <v-icon color="primary">info</v-icon>Build your form with the designer below then hit the SAVE FORM DESIGN button to continue.
             </p>
             <v-btn color="primary" @click="submitFormSchema">
               <span>Save Form Design</span>
@@ -70,6 +81,7 @@
 </template>
 
 <script>
+import { IdentityProviders } from '@/utils/constants';
 import { FormBuilder } from 'vue-formio';
 import formService from '@/services/formService';
 
@@ -84,7 +96,8 @@ export default {
   },
   data() {
     return {
-      idps: ['idir'],
+      ID_PROVIDERS: IdentityProviders,
+      idps: [IdentityProviders.IDIR],
       formName: '',
       formDescription: '',
       formSchema: {},
@@ -149,10 +162,10 @@ export default {
           // If creating a new form, add the form and then a version
           try {
             let identityProviders = [];
-            if(this.userType === 'login') {
+            if (this.userType === 'login') {
               identityProviders = this.idps.map((i) => ({ code: i }));
-            } else if(this.userType === 'public') {
-              identityProviders = ['public'];
+            } else if (this.userType === this.ID_PROVIDERS.PUBLIC) {
+              identityProviders = [this.ID_PROVIDERS.PUBLIC];
             }
             const form = {
               name: this.formName,
