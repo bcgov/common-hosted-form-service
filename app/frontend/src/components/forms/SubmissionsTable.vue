@@ -25,6 +25,9 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
+      <template v-slot:item.date="{ item }">
+        {{ item.date | formatDate}}
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-btn color="textLink" text small>
           <router-link :to="{ name: 'FormSubmissionView', params: { formId: item.formId, versionId: item.versionId, submissionId: item.submissionId } }">
@@ -57,7 +60,6 @@ export default {
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
-        { text: 'Assigned To', align: 'start', value: 'asignee' },
         {
           text: 'Actions',
           align: 'end',
