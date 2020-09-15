@@ -6,7 +6,9 @@
       <strong>Description:</strong>
       {{ form.description }}
       <br />
-      <strong>Labels:</strong>
+      <strong>Created:</strong>
+      {{ form.createdAt | formatDate }} ({{ form.createdBy }})
+      <!-- <strong>Labels:</strong>
       <v-chip
         class="ma-1"
         v-for="label in form.labels"
@@ -17,8 +19,7 @@
       <v-btn color="blue" text small>
         <v-icon class="mr-1">add</v-icon>
         <span>Add</span>
-      </v-btn>
-      <br />
+      </v-btn>-->
     </p>
     <v-row>
       <v-col cols="6">
@@ -51,10 +52,12 @@
           <v-card-text>
             <div class="overline mb-4">Form Design</div>
             <p>
-              <strong>Current Version:</strong> 1
-            </p>
-            <p>
-              <strong>Last Updated:</strong> July 31, 2020 (Lucas O'Neil)
+              <strong>Current Version:</strong>
+              {{ currentVersion.version }}
+              <br>
+              <strong>Last Updated:</strong>
+              {{ currentVersion.updatedAt | formatDateLong }}
+              <span v-if="currentVersion.updatedBy">({{ currentVersion.updatedBy }})</span>
             </p>
             <v-btn color="blue" text small>
               <v-icon class="mr-1">edit</v-icon>
@@ -68,7 +71,7 @@
             </v-btn>
           </v-card-text>
         </v-card>
-        <br>
+        <br />
         <v-card outlined>
           <v-card-text>
             <div class="overline mb-4">Status Workflow</div>
@@ -96,11 +99,16 @@ export default {
       form: {},
     };
   },
+  computed: {
+    currentVersion() {
+      return this.form.versions ? this.form.versions[0] : {};
+    },
+  },
   methods: {
     async getFormDefinition() {
       try {
         // Get the form definition from the api
-        const response = await await formService.readForm(this.formId);
+        const response = await formService.readForm(this.formId);
         this.form = response.data;
       } catch (error) {
         console.error(`Error getting form: ${error}`); // eslint-disable-line no-console
