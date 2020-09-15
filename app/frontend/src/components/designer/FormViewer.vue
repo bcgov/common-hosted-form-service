@@ -2,10 +2,15 @@
   <div>
     <v-alert v-if="alertShow" :type="alertType" tile dense>{{ alertMessage }}</v-alert>
     <div v-if="success" class="mb-5">
-      <h1><v-icon large color="success">check_circle</v-icon> Your form has been submitted successfully</h1>
-      <h3>Please keep the following Confirmation ID for your records: <strong>{{ confId }}</strong></h3>
+      <h1>
+        <v-icon large color="success">check_circle</v-icon>Your form has been submitted successfully
+      </h1>
+      <h3>
+        Please keep the following Confirmation ID for your records:
+        <strong>{{ confId }}</strong>
+      </h3>
+      <hr />
     </div>
-    <hr>
     <Form
       :form="formSchema"
       :submission="submission"
