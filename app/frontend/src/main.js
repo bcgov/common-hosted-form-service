@@ -6,6 +6,9 @@ import axios from 'axios';
 import NProgress from 'nprogress';
 import Vue from 'vue';
 
+import jQuery from 'jquery';
+import 'jquery-ui-sortable';
+
 import App from '@/App.vue';
 import auth from '@/store/modules/auth.js';
 import getRouter from '@/router';
@@ -30,6 +33,7 @@ requireComponent.keys().forEach(fileName => {
   Vue.component(componentName, componentConfig.default || componentConfig);
 });
 
+window.jQuery = jQuery;
 loadConfig();
 
 /**

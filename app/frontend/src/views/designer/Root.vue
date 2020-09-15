@@ -1,14 +1,14 @@
 <template>
-  <FormDesigner :formId="formId" :formVersionId="formVersionId" />
+  <JFormDesigner :formId="formId" :formVersionId="formVersionId" />
 </template>
 
 <script>
-import FormDesigner from '@/components/designer/FormDesigner.vue';
+import JFormDesigner from '@/components/designer/JFormDesigner.vue';
 
 export default {
   name: 'Editor',
   components: {
-    FormDesigner
+    JFormDesigner
   },
   props: {
     formId: String,
