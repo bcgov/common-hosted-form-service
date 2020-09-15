@@ -65,12 +65,10 @@
                 class="pl-5 mb-5"
               >You can specify users on the form's management screen once created.</div>
             </v-radio-group>
-            <p>
-              <v-icon color="primary">info</v-icon>Build your form with the designer below then hit the SAVE FORM DESIGN button to continue.
-            </p>
-            <v-btn color="primary" @click="submitFormSchema">
+            <v-btn color="primary" class="mr-5" @click="submitFormSchema">
               <span>Save Form Design</span>
             </v-btn>
+            <v-icon color="primary">info</v-icon>Build your form with the designer below then hit the SAVE FORM DESIGN button to continue.
           </v-container>
         </v-form>
       </v-card-text>
@@ -180,7 +178,7 @@ export default {
                 `createForm response does not include a form version: ${response.data.versions}`
               );
             }
-            alert(`Form ${response.data.id} created successfully. UX TBD`);
+            this.$router.push({ name: 'FormManage', params: { formId: response.data.id }  });
           } catch (error) {
             console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
           }
