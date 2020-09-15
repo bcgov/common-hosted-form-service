@@ -13,6 +13,10 @@ import store from '@/store';
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
 
+import BcGovFormioComponents from '@/lib';
+import { Formio } from 'vue-formio';
+Formio.use(BcGovFormioComponents);
+
 Vue.config.productionTip = false;
 
 NProgress.configure({ showSpinner: false });
