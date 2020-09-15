@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "preserveConstEnums": true,
+    "outDir": "lib",
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "declaration": true,
+    "rootDir": "src",
+    "module": "es6",
+    "moduleResolution": "node",
+    "lib": [
+      "es2015",
+      "dom"
+    ]
+  },
+  "include": [
+    "src/*.ts",
+    "src/*.ejs",
+    "src/**/*.ts",
+    "src/**/*.ejs"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}
