@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <FormViewer :formId="formId" :versionId="versionId" :submissionId="submissionId" />
+    <FormViewer :formId="formId" :versionId="versionId" :submissionId="submissionId" :success="formSuccess"/>
   </v-container>
 </template>
 
@@ -12,6 +12,11 @@ export default {
   props: ['formId', 'versionId', 'submissionId'],
   components: {
     FormViewer,
+  },
+  computed: {
+    formSuccess() {
+      return this.$route.query.success;
+    }
   },
 };
 </script>

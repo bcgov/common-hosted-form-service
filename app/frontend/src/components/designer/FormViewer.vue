@@ -1,7 +1,11 @@
 <template>
   <div>
     <v-alert v-if="alertShow" :type="alertType" tile dense>{{ alertMessage }}</v-alert>
-
+    <div v-if="success" class="mb-5">
+      <h1><v-icon large color="success">check_circle</v-icon> Your form has been submitted successfully</h1>
+      <h3>Please keep the following Confirmation ID for your records: <strong>{{ confId }}</strong></h3>
+    </div>
+    <hr>
     <Form
       :form="formSchema"
       :submission="submission"
@@ -27,6 +31,10 @@ export default {
       required: true,
     },
     submissionId: String,
+    success: {
+      type: Boolean,
+      default: false,
+    },
     versionId: {
       type: String,
       required: true,
@@ -37,6 +45,7 @@ export default {
       alertMessage: '',
       alertShow: false,
       alertType: null,
+      confId: '',
       formSchema: {},
       submission: {
         data: {},
@@ -58,6 +67,7 @@ export default {
           this.submissionId
         );
         this.submission = response.data.submission;
+        this.confId = response.data.confirmationId;
       } catch (error) {
         console.error(`Error getting form data: ${error}`); // eslint-disable-line no-console
         this.showAlert(
@@ -104,10 +114,15 @@ export default {
           body
         );
         if (response.status === 201) {
-          this.showAlert(
-            'success',
-            'Your form has been successfully submitted (UX here TBD)'
-          );
+          this.$router.push({
+            name: 'FormSubmissionView',
+            params: {
+              formId: this.formId,
+              versionId: response.data.formVersionId,
+              submissionId: response.data.id,
+            },
+            query: { success: true },
+          });
         }
       } catch (error) {
         console.error(`Error creating new submission: ${error}`); // eslint-disable-line no-console
