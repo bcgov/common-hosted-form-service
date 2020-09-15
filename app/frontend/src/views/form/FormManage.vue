@@ -100,7 +100,7 @@ export default {
     async getFormDefinition() {
       try {
         // Get the form definition from the api
-        const response = await await formService.getForm(this.formId);
+        const response = await await formService.readForm(this.formId);
         this.form = response.data;
       } catch (error) {
         console.error(`Error getting form: ${error}`); // eslint-disable-line no-console
