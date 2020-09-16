@@ -12,6 +12,7 @@ import getRouter from '@/router';
 import store from '@/store';
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
+import './filters';
 
 import BcGovFormioComponents from '@/lib';
 import { Formio } from 'vue-formio';

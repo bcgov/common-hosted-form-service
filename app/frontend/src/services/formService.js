@@ -87,4 +87,14 @@ export default {
   listSubmissions(formId) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/submissions`);
   },
+
+  /**
+   * @function listVersions
+   * Get the versions for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  listVersions(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions`);
+  },
 };
