@@ -94,7 +94,6 @@ export default {
   },
   data() {
     return {
-      ID_PROVIDERS: IdentityProviders,
       idps: [IdentityProviders.IDIR],
       formName: '',
       formDescription: '',
@@ -119,6 +118,11 @@ export default {
         (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
       ],
     };
+  },
+  computed: {
+    ID_PROVIDERS() {
+      return IdentityProviders;
+    }
   },
   methods: {
     async getFormSchema() {
