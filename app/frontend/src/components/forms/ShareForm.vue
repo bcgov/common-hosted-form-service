@@ -14,7 +14,15 @@
         <v-card-text>
           <v-icon class="mr-1 my-5" color="primary">info</v-icon>
           <span>Use the link below to share with the users you wish to fill out this form (TEXT TBD)</span>
-          <v-text-field readonly dense flat outlined label="URL" data-test="text-shareUrl" :value="formLink">
+          <v-text-field
+            readonly
+            dense
+            flat
+            outlined
+            label="URL"
+            data-test="text-shareUrl"
+            :value="formLink"
+          >
             <template v-slot:prepend>
               <v-icon v-on="on">link</v-icon>
             </template>
@@ -33,7 +41,16 @@
 
 <script>
 export default {
-  props: ['formId', 'versionId'],
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
+    versionId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       dialog: false,
@@ -41,7 +58,7 @@ export default {
   },
   computed: {
     formLink() {
-      return `${process.env.BASE_URL}form/${this.formId}/versions/${this.versionId}`;
+      return `${window.location.origin}/${process.env.BASE_URL}form/${this.formId}/versions/${this.versionId}`;
     },
   },
 };
