@@ -23,7 +23,7 @@
     </p>
     <p>
       <strong>Share this form:</strong>
-      <ShareForm :formId="formId" :versionId="currentVersion.id"/>
+      <ShareForm :formId="formId" :versionId="currentVersion.id" />
     </p>
     <v-row>
       <v-col cols="6">

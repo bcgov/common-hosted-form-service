@@ -13,7 +13,7 @@
 
         <v-card-text>
           <v-icon class="mr-1 my-5" color="primary">info</v-icon>
-          <span>Use the link below to share with the users you wish to fill out this form (TEXT TBD)</span>
+          <span>Use the link below to share with the users you wish to fill out this form</span>
           <v-text-field
             readonly
             dense
@@ -24,16 +24,19 @@
             :value="formLink"
           >
             <template v-slot:prepend>
-              <v-icon v-on="on">link</v-icon>
+              <v-icon>link</v-icon>
             </template>
           </v-text-field>
           <p class="text-right">
-            <v-btn color="blue" text small>
-              <v-icon class="mr-1">share</v-icon>
-              <span>Copy to clipboard</span>
-            </v-btn>
+            <BaseCopyToClipboard :copyText="formLink" />
           </p>
         </v-card-text>
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="dialog = false">Close</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </span>
@@ -58,7 +61,7 @@ export default {
   },
   computed: {
     formLink() {
-      return `${window.location.origin}/${process.env.BASE_URL}form/${this.formId}/versions/${this.versionId}`;
+      return `${window.location.origin}${process.env.BASE_URL}form/${this.formId}/versions/${this.versionId}/submit`;
     },
   },
 };
