@@ -21,6 +21,10 @@
         <span>Add</span>
       </v-btn>-->
     </p>
+    <p>
+      <strong>Share this form:</strong>
+      <ShareForm :formId="formId" :versionId="currentVersion.id" />
+    </p>
     <v-row>
       <v-col cols="6">
         <v-card outlined>
@@ -54,10 +58,12 @@
             <p>
               <strong>Current Version:</strong>
               {{ currentVersion.version }}
-              <br>
+              <br />
               <strong>Last Updated:</strong>
               {{ currentVersion.updatedAt | formatDateLong }}
-              <span v-if="currentVersion.updatedBy">({{ currentVersion.updatedBy }})</span>
+              <span
+                v-if="currentVersion.updatedBy"
+              >({{ currentVersion.updatedBy }})</span>
             </p>
             <v-btn color="blue" text small>
               <v-icon class="mr-1">edit</v-icon>
@@ -89,10 +95,11 @@
 
 <script>
 import formService from '@/services/formService';
+import ShareForm from '@/components/forms/ShareForm.vue';
 
 export default {
   name: 'FormManage',
-  components: {},
+  components: { ShareForm },
   props: ['formId'],
   data() {
     return {

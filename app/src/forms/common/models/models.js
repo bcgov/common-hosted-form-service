@@ -4,11 +4,11 @@ const Regex = require('../constants').Regex;
 const stamps = require('./jsonSchema').stamps;
 
 class Form extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'form';
   }
 
-  static get relationMappings () {
+  static get relationMappings() {
     return {
       identityProviders: {
         relation: Model.ManyToManyRelation,
@@ -33,7 +33,7 @@ class Form extends Timestamps(Model) {
     };
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterName(query, value) {
         if (value) {
@@ -76,9 +76,9 @@ class Form extends Timestamps(Model) {
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         name: { type: 'string', minLength: 1, maxLength: 255 },
-        description: { type: 'string', minLength: 1, maxLength: 255 },
+        description: { type: ['string', 'null'], maxLength: 255 },
         active: { type: 'boolean' },
-        labels: { type: 'array', items: { type: 'string'}},
+        labels: { type: 'array', items: { type: 'string' } },
         ...stamps
       },
       additionalProperties: false
@@ -88,11 +88,11 @@ class Form extends Timestamps(Model) {
 }
 
 class FormVersion extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'form_version';
   }
 
-  static get relationMappings () {
+  static get relationMappings() {
     return {
       submissions: {
         relation: Model.HasManyRelation,
@@ -105,7 +105,7 @@ class FormVersion extends Timestamps(Model) {
     };
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterFormId(query, value) {
         if (value !== undefined) {
@@ -136,11 +136,11 @@ class FormVersion extends Timestamps(Model) {
 }
 
 class FormSubmission extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'form_submission';
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterFormVersionId(query, value) {
         if (value !== undefined) {
@@ -173,11 +173,11 @@ class FormSubmission extends Timestamps(Model) {
 }
 
 class Permission extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'permission';
   }
 
-  static get relationMappings () {
+  static get relationMappings() {
     return {
       roles: {
         relation: Model.ManyToManyRelation,
@@ -194,7 +194,7 @@ class Permission extends Timestamps(Model) {
     };
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterCode(query, value) {
         if (value) {
@@ -224,8 +224,8 @@ class Permission extends Timestamps(Model) {
       type: 'object',
       required: ['code', 'display'],
       properties: {
-        code: { type: 'string', minLength: 1, maxLength: 255},
-        display: { type: 'string', minLength: 1, maxLength: 255},
+        code: { type: 'string', minLength: 1, maxLength: 255 },
+        display: { type: 'string', minLength: 1, maxLength: 255 },
         active: { type: 'boolean' },
         ...stamps
       },
@@ -236,11 +236,11 @@ class Permission extends Timestamps(Model) {
 }
 
 class Role extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'role';
   }
 
-  static get relationMappings () {
+  static get relationMappings() {
     return {
       permissions: {
         relation: Model.ManyToManyRelation,
@@ -257,7 +257,7 @@ class Role extends Timestamps(Model) {
     };
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterCode(query, value) {
         if (value) {
@@ -287,8 +287,8 @@ class Role extends Timestamps(Model) {
       type: 'object',
       required: ['code', 'display'],
       properties: {
-        code: { type: 'string', minLength: 1, maxLength: 255},
-        display: { type: 'string', minLength: 1, maxLength: 255},
+        code: { type: 'string', minLength: 1, maxLength: 255 },
+        display: { type: 'string', minLength: 1, maxLength: 255 },
         active: { type: 'boolean' },
         ...stamps
       },
@@ -299,11 +299,11 @@ class Role extends Timestamps(Model) {
 }
 
 class User extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'user';
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterUsername(query, value) {
         if (value) {
@@ -362,11 +362,11 @@ class User extends Timestamps(Model) {
 }
 
 class FormRoleUser extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'form_role_user';
   }
 
-  static get relationMappings () {
+  static get relationMappings() {
     return {
       form: {
         relation: Model.HasOneRelation,
@@ -395,7 +395,7 @@ class FormRoleUser extends Timestamps(Model) {
     };
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       orderCreatedAtDescending(builder) {
         builder.orderBy('createdAt', 'desc');
@@ -414,7 +414,7 @@ class FormRoleUser extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         userId: { type: 'string', pattern: Regex.UUID },
-        role: { type: 'string', minLength: 1, maxLength: 255  },
+        role: { type: 'string', minLength: 1, maxLength: 255 },
         ...stamps
       },
       additionalProperties: false
@@ -428,7 +428,7 @@ class UserFormAccess extends Model {
     return 'user_form_access_vw';
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterUserId(query, value) {
         if (value) {
@@ -489,7 +489,7 @@ class UserFormAccess extends Model {
             return [];
           };
           const inArrayClause = (column, values) => {
-            return values.map(p =>`'${p}' = ANY("${column}")`).join(' or ');
+            return values.map(p => `'${p}' = ANY("${column}")`).join(' or ');
           };
           const _idps = toArray(idps);
           const _roles = toArray(roles);
@@ -531,7 +531,7 @@ class PublicFormAccess extends Model {
     return 'public_form_access_vw';
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterActive(query, value) {
         if (value !== undefined) {
@@ -546,15 +546,15 @@ class PublicFormAccess extends Model {
 }
 
 class IdentityProvider extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'identity_provider';
   }
 
-  static get idColumn () {
+  static get idColumn() {
     return 'code';
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterActive(query, value) {
         if (value !== undefined) {
@@ -572,9 +572,9 @@ class IdentityProvider extends Timestamps(Model) {
       type: 'object',
       required: ['code', 'display', 'idp'],
       properties: {
-        code: { type: 'string', minLength: 1, maxLength: 255},
-        display: { type: 'string', minLength: 1, maxLength: 255},
-        idp: { type: 'string', minLength: 1, maxLength: 255},
+        code: { type: 'string', minLength: 1, maxLength: 255 },
+        display: { type: 'string', minLength: 1, maxLength: 255 },
+        idp: { type: 'string', minLength: 1, maxLength: 255 },
         active: { type: 'boolean' },
         ...stamps
       },
@@ -585,7 +585,7 @@ class IdentityProvider extends Timestamps(Model) {
 }
 
 class FormIdentityProvider extends Timestamps(Model) {
-  static get tableName () {
+  static get tableName() {
     return 'form_identity_provider';
   }
 }
@@ -595,7 +595,7 @@ class SubmissionMetadata extends Model {
     return 'submissions_vw';
   }
 
-  static get modifiers () {
+  static get modifiers() {
     return {
       filterSubmissionId(query, value) {
         if (value) {

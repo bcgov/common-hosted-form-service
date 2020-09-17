@@ -73,6 +73,7 @@
         </v-form>
       </v-card-text>
     </v-card>
+
     <FormBuilder :form="formSchema" @change="onChangeMethod" :options="designerOptions" />
   </div>
 </template>
@@ -109,7 +110,6 @@ export default {
           'Please select at least 1 log-in type',
       ],
       formDescriptionRules: [
-        (v) => !!v || 'Description is required',
         (v) =>
           !v || v.length <= 255 || 'Description must be 255 characters or less',
       ],
@@ -217,7 +217,10 @@ export default {
                 `createForm response does not include a form version: ${response.data.versions}`
               );
             }
-            this.$router.push({ name: 'FormManage', params: { formId: response.data.id }  });
+            this.$router.push({
+              name: 'FormManage',
+              params: { formId: response.data.id },
+            });
           } catch (error) {
             console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
           }
