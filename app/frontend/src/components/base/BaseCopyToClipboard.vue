@@ -8,7 +8,7 @@
       v-clipboard:success="clipboardSuccessHandler"
       v-clipboard:error="clipboardErrorHandler"
     >
-      <v-icon class="mr-1">share</v-icon>
+      <v-icon class="mr-1">file_copy</v-icon>
       <span>Copy to clipboard</span>
     </v-btn>
     <v-snackbar v-model="clipSnackbar.on" right top :timeout="6000" :color="clipSnackbar.color">
