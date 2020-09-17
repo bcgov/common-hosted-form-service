@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import userService from '@/services/userService';
+import rbacService from '@/services/rbacService';
 import { checkFormManage, checkFormSubmit, checkSubmissionView } from '@/utils/permissionUtils';
 
 export default {
@@ -81,7 +81,7 @@ export default {
     async populateFormTable() {
       try {
         // Get this user's permissions
-        const response = await userService.getCurrentUser();
+        const response = await rbacService.getCurrentUser();
         const data = response.data;
         // Build up the list of forms for the table
         const forms = data.forms.map((f) => {

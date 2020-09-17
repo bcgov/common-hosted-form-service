@@ -35,7 +35,7 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import userService from '@/services/userService';
+import rbacService from '@/services/rbacService';
 
 export default {
   name: 'User',
@@ -56,7 +56,7 @@ export default {
   methods: {
     async getUser() {
       try {
-        const user = await userService.getCurrentUser();
+        const user = await rbacService.getCurrentUser();
         this.apiRes = user.data;
       } catch (error) {
         alert('Failed to get user from RBAC, see console');

@@ -77,7 +77,7 @@ export default {
     async populateSubmissionsTable() {
       try {
         // Get the submissions for this form
-        const response = await await formService.listSubmissions(this.formId);
+        const response = await formService.listSubmissions(this.formId);
         const data = response.data;
         //alert(JSON.stringify(data));
         // Build up the list of forms for the table
