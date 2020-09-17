@@ -73,8 +73,7 @@
         </v-form>
       </v-card-text>
     </v-card>
-
-    <FormBuilder :form="formSchema" @change="onChangeMethod" :options="{}" />
+    <FormBuilder :form="formSchema" @change="onChangeMethod" :options="designerOptions" />
   </div>
 </template>
 
@@ -99,6 +98,7 @@ export default {
       formDescription: '',
       formSchema: {},
       userType: 'team',
+      designerType: 'simple',
       valid: false,
 
       // Validation
@@ -122,6 +122,41 @@ export default {
   computed: {
     ID_PROVIDERS() {
       return IdentityProviders;
+    },
+    designerOptions() {
+      if (this.designerType === 'simple') {
+        return {
+          builder: {
+            basic: false,
+            advanced: false,
+            data: false,
+            premium: false,
+            simple: {
+              title: 'Simple',
+              weight: 20,
+              default: true,
+              components: {
+                simpleheading: true
+              },
+            },
+            custom: {
+              title: 'Custom',
+              weight: 30,
+              default: false,
+              components: {
+                orgbook: true
+              },
+            },
+            layout: false
+          }
+        };
+      } else {
+        return {
+          builder: {
+            premium: false,
+          }
+        };
+      }
     }
   },
   methods: {

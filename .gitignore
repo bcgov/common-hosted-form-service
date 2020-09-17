@@ -51,3 +51,4 @@ build
 
 !app/frontend/.env
 !local-infrastructure/.env
+components.sh
