@@ -4,7 +4,9 @@
 
 // API Route paths
 const ApiRoutes = Object.freeze({
-  FORMS: '/forms'
+  FORMS: '/forms',
+  RBAC: '/rbac',
+  ROLES: '/roles'
 });
 
 // Permissions a user can have on a form. These are defined in the DB and sent from the API
@@ -22,7 +24,7 @@ const FormPermissions = Object.freeze({
   DESIGN_READ: 'design_read',
   DESIGN_UPDATE: 'design_update',
   DESIGN_DELETE: 'design_delete',
-  
+
   TEAM_READ: 'team_read',
   TEAM_UPDATE: 'team_update'
 });

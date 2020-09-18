@@ -27,12 +27,13 @@
     </p>
     <v-row>
       <v-col cols="6">
+        <!-- TODO: Change this card to potentially use TeamManagement component -->
         <v-card outlined>
           <v-list-item three-line>
             <v-list-item-content>
               <div class="overline mb-4">
                 TEAM MANGEMENT
-                <v-btn color="blue" text small>
+                <v-btn color="blue" text small @click="editTeams">
                   <v-icon class="mr-1">edit</v-icon>
                   <span>Edit</span>
                 </v-btn>
@@ -100,7 +101,12 @@ import ShareForm from '@/components/forms/ShareForm.vue';
 export default {
   name: 'FormManage',
   components: { ShareForm },
-  props: ['formId'],
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       form: {},
@@ -112,6 +118,14 @@ export default {
     },
   },
   methods: {
+    editTeams() {
+      this.$router.push({
+        name: 'FormTeamManagement',
+        params: {
+          formId: this.formId,
+        },
+      });
+    },
     async getFormDefinition() {
       try {
         // Get the form definition from the api

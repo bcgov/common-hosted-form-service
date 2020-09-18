@@ -75,12 +75,22 @@ export default function getRouter(basePath = '/') {
             }
           },
           {
+            // TODO: Consider better way of representing path with version in it
             path: '/form/:formId/submissions/:versionId/:submissionId',
             name: 'FormSubmissionView',
             component: () => import(/* webpackChunkName: "formsubmissionview" */ '@/views/form/FormSubmissionView.vue'),
             props: true,
             meta: {
               breadcrumbTitle: 'View Submission'
+            }
+          },
+          {
+            path: '/form/:formId/teams',
+            name: 'FormTeamManagement',
+            component: () => import(/* webpackChunkName: "formmanage" */ '@/views/form/FormTeams.vue'),
+            props: true,
+            meta: {
+              breadcrumbTitle: 'Manage Teams'
             }
           },
           {
