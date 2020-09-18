@@ -6,7 +6,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
-import EditDisplay from './editForm/SimpleHeading.edit.display';
+import EditDisplay from './editForm/Component.edit.display';
 export default function () {
     var extend = [];
     for (var _i = 0; _i < arguments.length; _i++) {

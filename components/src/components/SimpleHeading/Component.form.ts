@@ -1,6 +1,6 @@
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
 
-import EditDisplay from './editForm/SimpleHeading.edit.display';
+import EditDisplay from './editForm/Component.edit.display';
 
 export default function(...extend) {
     return baseEditForm([
@@ -23,6 +23,10 @@ export default function(...extend) {
         },
         {
             key: 'conditional',
+            ignore: true
+        },
+        {
+            key: 'layout',
             ignore: true
         }
     ], ...extend);

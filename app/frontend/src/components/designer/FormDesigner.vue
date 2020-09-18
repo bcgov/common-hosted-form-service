@@ -130,24 +130,39 @@ export default {
             basic: false,
             advanced: false,
             data: false,
+            layout: false,
             premium: false,
-            simple: {
-              title: 'Simple',
+            dataentry: {
+              title: 'User Data Entry',
               weight: 20,
               default: true,
               components: {
-                simpleheading: true
-              },
-            },
-            custom: {
-              title: 'Custom',
-              weight: 30,
-              default: false,
-              components: {
+                simpletextfield: true,
+                simpletextarea: true,
+                simpleselect: true,
                 orgbook: true
               },
             },
-            layout: false
+            staticcontent: {
+              title: 'Boilerplate Content',
+              weight: 20,
+              components: {
+                simpleheading: true,
+                simpleparagraph: true,
+                content: true
+              },
+            },
+            customlayout: {
+              title: 'Form Layout',
+              weight: 30,
+              components: {
+                columns: true,
+                fieldset: true,
+                panel: true,
+                tabs: true,
+                well: true,
+              },
+            }
           }
         };
       } else {

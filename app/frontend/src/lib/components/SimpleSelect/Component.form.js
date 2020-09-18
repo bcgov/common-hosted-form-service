@@ -6,7 +6,10 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
-import EditDisplay from './editForm/SimpleHeading.edit.display';
+import EditDisplay from './editForm/Component.edit.display';
+import EditData from './editForm/Component.edit.data';
+import SimpleConditional from '../Common/Simple.edit.conditional';
+import SimpleValidation from '../Common/Simple.edit.validation';
 export default function () {
     var extend = [];
     for (var _i = 0; _i < arguments.length; _i++) {
@@ -22,11 +25,11 @@ export default function () {
                 ignore: true
             },
             {
-                key: 'validation',
+                key: 'api',
                 ignore: true
             },
             {
-                key: 'api',
+                key: 'layout',
                 ignore: true
             },
             {
@@ -34,8 +37,30 @@ export default function () {
                 ignore: true
             },
             {
-                key: 'layout',
+                key: 'validation',
                 ignore: true
+            },
+            {
+                key: 'logic',
+                ignore: true
+            },
+            {
+                label: 'Data',
+                key: 'customData',
+                weight: 10,
+                components: EditData
+            },
+            {
+                label: 'Validation',
+                key: 'customValidation',
+                weight: 20,
+                components: SimpleValidation
+            },
+            {
+                label: 'Conditional',
+                key: 'customConditional',
+                weight: 40,
+                components: SimpleConditional
             }
         ]], extend));
 }

@@ -1,16 +1,18 @@
 /* tslint:disable */
 import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.htmlelement;
-import editForm from './SimpleHeading.form';
+import editForm from './Component.form';
 
-export default class OrgBook extends (ParentComponent as any) {
+const ID = 'simpleparagraph';
+const DISPLAY = 'Paragraph';
+
+export default class Component extends (ParentComponent as any) {
     static schema(...extend) {
         return ParentComponent.schema({
-            type: 'simpleheading',
-            label: 'Heading',
-            key: 'simpleheading',
-            tag: 'h1',
-            headingSize: 'h1',
+            type: ID,
+            label: DISPLAY,
+            key: ID,
+            tag: 'p',
             attrs: [],
             content: '',
             input: false,
@@ -22,12 +24,12 @@ export default class OrgBook extends (ParentComponent as any) {
 
     static get builderInfo() {
         return {
-            title: 'Heading',
+            title: DISPLAY,
             group: 'simple',
-            icon: 'code',
-            weight: 70,
-            documentation: 'http://help.form.io/userguide/#html-element-component',
-            schema: OrgBook.schema()
+            icon: 'paragraph',
+            weight: 2,
+            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            schema: Component.schema()
         };
     }
 }
