@@ -54,18 +54,18 @@
     "js-yaml": "^3.14.0",
     "keycloak-connect": "^10.0.2",
     "knex": "^0.21.5",
-    "moment": "^2.27.0",
+    "moment": "^2.28.0",
     "morgan": "^1.10.0",
     "npmlog": "^4.1.2",
     "objection": "^2.2.3",
-    "pg": "^8.3.2",
+    "pg": "^8.3.3",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "eslint": "^7.7.0",
+    "eslint": "^7.9.0",
     "eslint-config-recommended": "^4.1.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "jest": "^26.4.1",
+    "jest": "^26.4.2",
     "jest-sonar-reporter": "^2.0.0",
     "nodemon": "^2.0.4",
     "supertest": "^4.0.2"
