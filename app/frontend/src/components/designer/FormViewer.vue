@@ -1,16 +1,16 @@
 <template>
   <div>
-    <v-alert v-if="alertShow" :type="alertType" tile dense>{{ alertMessage }}</v-alert>
-    <div v-if="success" class="mb-5">
-      <h1>
-        <v-icon large color="success">check_circle</v-icon>Your form has been submitted successfully
-      </h1>
-      <h3>
-        Please keep the following Confirmation ID for your records:
-        <strong>{{ confId }}</strong>
-      </h3>
-      <hr />
-    </div>
+    <p v-if="submissionId">
+      <strong>Confirmation ID:</strong>
+      {{ submission.confirmationId }}
+      <br />
+      <strong>Submitted By:</strong>
+      {{ submission.createdBy }}
+      <br />
+      <strong>Submitted Date:</strong>
+      {{ submission.createdAt | formatDateLong }}
+    </p>
+
     <Form
       :form="formSchema"
       :submission="submission"
@@ -20,10 +20,19 @@
       @submitError="onSubmitError"
       :options="viewerOptions"
     />
+    {{ formioSubmissionData }}
+    <br />Submission
+    <br />
+    {{ submission }}
+    <br />
+    <br />Version
+    <br />
+    <pre>{{ version }}</pre>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import { Form } from 'vue-formio';
 import formService from '@/services/formService';
 
@@ -38,10 +47,6 @@ export default {
       required: true,
     },
     submissionId: String,
-    success: {
-      type: Boolean,
-      default: false,
-    },
     versionId: {
       type: String,
       required: true,
@@ -62,6 +67,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('form', ['submission', 'version']),
     viewerOptions() {
       return {
         readOnly: this.submissionId !== undefined,
@@ -131,6 +137,23 @@ export default {
         const body = {
           draft: false,
           submission: submission,
+    viewerReady() {
+      if (this.submissionId) {
+        return this.version && this.version.schema && this.submission;
+      } else {
+        return this.version && this.version.schema;
+      }
+    },
+  },
+  methods: {
+    ...mapActions('form', ['fetchSubmission', 'fetchVersion']),
+    async onSubmitMethod() {
+      try {
+        const body = {
+          draft: false,
+          submission: {
+            data: this.formioSubmissionData,
+          },
         };
 
         const response = await formService.createSubmission(
@@ -150,8 +173,8 @@ export default {
           errors.push('An error occurred submitting this form');
         }
       } catch (error) {
-        // console.error(error); // eslint-disable-line no-console
-        errors.push('An error occurred submitting this form');
+        console.error(`Error creating new submission: ${error}`); // eslint-disable-line no-console
+        throw error;
       }
 
       if (errors.length) {
@@ -181,17 +204,18 @@ export default {
         query: { success: true },
       });
     },
-    showAlert(typ, msg) {
-      this.alertShow = true;
-      this.alertType = typ;
-      this.alertMessage = msg;
-      this.loading = false;
-    },
   },
-  mounted() {
-    this.getFormDefinition();
+  async mounted() {
+    this.fetchVersion({ formId: this.formId, versionId: this.versionId });
     if (this.submissionId) {
-      this.getFormData();
+      await this.fetchSubmission({
+        formId: this.formId,
+        versionId: this.versionId,
+        submissionId: this.submissionId,
+      });
+      if(this.submission) {
+        this.formioSubmissionData = this.submission.submission;
+      }
     }
   },
 };

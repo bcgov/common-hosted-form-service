@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import formService from '@/services/formService';
+import { mapGetters, mapActions } from 'vuex';
 import ShareForm from '@/components/forms/ShareForm.vue';
 
 export default {
@@ -107,17 +107,14 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      form: {},
-    };
-  },
   computed: {
+    ...mapGetters('form', ['form']),
     currentVersion() {
       return this.form.versions ? this.form.versions[0] : {};
     },
   },
   methods: {
+    ...mapActions('form', ['fetchForm']),
     editTeams() {
       this.$router.push({
         name: 'FormTeamManagement',
@@ -125,19 +122,10 @@ export default {
           formId: this.formId,
         },
       });
-    },
-    async getFormDefinition() {
-      try {
-        // Get the form definition from the api
-        const response = await formService.readForm(this.formId);
-        this.form = response.data;
-      } catch (error) {
-        console.error(`Error getting form: ${error}`); // eslint-disable-line no-console
-      }
-    },
+    }
   },
   mounted() {
-    this.getFormDefinition();
+    this.fetchForm(this.formId);
   },
 };
 </script>
