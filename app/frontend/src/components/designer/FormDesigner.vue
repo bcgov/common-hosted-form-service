@@ -74,7 +74,7 @@
       </v-card-text>
     </v-card>
 
-    <FormBuilder :form="formSchema" @change="onChangeMethod" :options="{}" />
+    <FormBuilder :form="() => formSchema" @change="onChangeMethod" :options="{}" />
   </div>
 </template>
 
@@ -82,6 +82,8 @@
 import { IdentityProviders } from '@/utils/constants';
 import { FormBuilder } from 'vue-formio';
 import formService from '@/services/formService';
+
+let formSchema = {};
 
 export default {
   name: 'FormDesigner',
@@ -92,12 +94,16 @@ export default {
     formId: String,
     formVersionId: String,
   },
+  computed: {
+    ID_PROVIDERS() {
+      return IdentityProviders;
+    },
+  },
   data() {
     return {
       idps: [IdentityProviders.IDIR],
       formName: '',
       formDescription: '',
-      formSchema: {},
       userType: 'team',
       valid: false,
 
@@ -118,14 +124,9 @@ export default {
       ],
     };
   },
-  computed: {
-    ID_PROVIDERS() {
-      return IdentityProviders;
-    },
-  },
   methods: {
     async getFormSchema() {
-      this.formSchema = {};
+      formSchema = {};
       try {
         const form = await formService.readForm(this.formId);
         this.formName = form.data.name;
@@ -136,7 +137,7 @@ export default {
             this.formId,
             this.formVersionId
           );
-          this.formSchema = response.data.schema;
+          formSchema = response.data.schema;
         }
       } catch (error) {
         console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
@@ -151,11 +152,11 @@ export default {
               this.formId,
               this.formVersionId,
               {
-                schema: this.formSchema,
+                schema: formSchema,
               }
             );
             const data = response.data;
-            this.formSchema = data.schema;
+            formSchema = data.schema;
           } catch (error) {
             console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
           }
@@ -171,7 +172,7 @@ export default {
             const form = {
               name: this.formName,
               description: this.formDescription,
-              schema: this.formSchema,
+              schema: formSchema,
               identityProviders: identityProviders,
             };
             const response = await formService.createForm(form);
@@ -192,8 +193,8 @@ export default {
       }
     },
     onChangeMethod(schema) {
-      if (!this.formSchema) this.formSchema = {};
-      this.formSchema = Object.assign(this.formSchema, schema);
+      if (!formSchema) formSchema = {};
+      formSchema = Object.assign(formSchema, schema);
     },
     created() {
       if (this.formId) {
