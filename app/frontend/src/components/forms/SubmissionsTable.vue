@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- table alert -->
-    <v-alert v-if="alertShow" :type="alertType" tile dense>{{ alertMessage }}</v-alert>
-
     <!-- search input -->
     <div class="submissions-search mt-6 mt-sm-0">
       <v-text-field
@@ -20,17 +17,17 @@
       class="submissions-table"
       :headers="headers"
       item-key="title"
-      :items="submissions"
+      :items="submissionTable"
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template v-slot:item.date="{ item }">
-        {{ item.date | formatDate}}
-      </template>
+      <template v-slot:item.date="{ item }">{{ item.date | formatDate }}</template>
       <template v-slot:item.actions="{ item }">
         <v-btn color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmissionView', params: { formId: item.formId, versionId: item.versionId, submissionId: item.submissionId } }">
+          <router-link
+            :to="{ name: 'FormSubmissionView', params: { formId: item.formId, versionId: item.versionId, submissionId: item.submissionId } }"
+          >
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW</span>
           </router-link>
@@ -41,7 +38,7 @@
 </template>
 
 <script>
-import formService from '@/services/formService';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'SubmissionsTable',
@@ -49,7 +46,7 @@ export default {
     formId: {
       type: String,
       required: true,
-    }
+    },
   },
   data() {
     return {
@@ -68,46 +65,40 @@ export default {
           sortable: false,
         },
       ],
-      submissions: [],
+      submissionTable: [],
       loading: true,
       search: '',
     };
   },
+  computed: {
+    ...mapGetters('form', ['submissionList']),
+  },
   methods: {
+    ...mapActions('form', ['fetchSubmissions']),
     async populateSubmissionsTable() {
       try {
         // Get the submissions for this form
-        const response = await formService.listSubmissions(this.formId);
-        const data = response.data;
-        //alert(JSON.stringify(data));
+        await this.fetchSubmissions(this.formId);
         // Build up the list of forms for the table
-        const submissions = data.map((s) => {
-          return {
-            confirmationId: s.confirmationId,
-            date: s.createdAt,
-            formId: s.formId,
-            submissionId: s.submissionId,
-            submitter: s.createdBy,
-            versionId: s.formVersionId
-          };
-        });
-        if (!submissions.length) {
-          this.showTableAlert('info', 'No Submissions found for this form');
+        if (this.submissionList) {
+          const tableRows = this.submissionList.map((s) => {
+            return {
+              confirmationId: s.confirmationId,
+              date: s.createdAt,
+              formId: s.formId,
+              submissionId: s.submissionId,
+              submitter: s.createdBy,
+              versionId: s.formVersionId,
+            };
+          });
+          this.submissionTable = tableRows;
         }
-        this.submissions = submissions;
       } catch (error) {
         console.error(`Error getting submissions: ${error}`); // eslint-disable-line no-console
-        this.showTableAlert('error', 'Error getting submissions');
       } finally {
         this.loading = false;
       }
-    },
-    showTableAlert(typ, msg) {
-      this.alertShow = true;
-      this.alertType = typ;
-      this.alertMessage = msg;
-      this.loading = false;
-    },
+    }
   },
   mounted() {
     this.populateSubmissionsTable();
