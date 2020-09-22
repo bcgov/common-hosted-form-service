@@ -177,7 +177,7 @@ const service = {
     try {
       trx = await transaction.start(FormRoleUser.knex());
       // remove existing mappings...
-      await FormRoleUser.query()
+      await FormRoleUser.query(trx)
         .skipUndefined()
         .delete()
         .where('formId', formId)
@@ -194,7 +194,7 @@ const service = {
       }
       // add an id and save them
       const items = data.map(d => { return {id: uuidv4(), createdBy: currentUser.username, ...d}; });
-      await FormRoleUser.query().insert(items);
+      await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       return service.getFormUsers({userId: userId, formId: formId});
     } catch (err) {
@@ -213,7 +213,7 @@ const service = {
     try {
       trx = await transaction.start(FormRoleUser.knex());
       // remove existing mappings...
-      await FormRoleUser.query()
+      await FormRoleUser.query(trx)
         .skipUndefined()
         .delete()
         .where('userId', userId)
@@ -230,7 +230,7 @@ const service = {
       }
       // add an id and save them
       const items = data.map(d => { return {id: uuidv4(), createdBy: currentUser.username, ...d}; });
-      await FormRoleUser.query().insert(items);
+      await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       // return the new mappings
       const result = await service.getUserForms({userId: userId, formId: formId});
