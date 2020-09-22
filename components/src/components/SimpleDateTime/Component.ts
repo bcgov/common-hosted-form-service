@@ -1,0 +1,60 @@
+/* tslint:disable */
+import { Components } from 'formiojs';
+const ParentComponent = (Components as any).components.datetime;
+import editForm from './Component.form';
+
+const ID = 'simpledatetime';
+const DISPLAY = 'Date / Time';
+
+export default class Component extends (ParentComponent as any) {
+    static schema(...extend) {
+        return ParentComponent.schema({
+            type: ID,
+            label: DISPLAY,
+            key: ID,
+            format: 'yyyy-MM-dd hh:mm a',
+            useLocaleSettings: false,
+            allowInput: true,
+            enableDate: true,
+            enableTime: true,
+            defaultValue: '',
+            defaultDate: '',
+            displayInTimezone: 'viewer',
+            timezone: '',
+            datepickerMode: 'day',
+            datePicker: {
+                showWeeks: true,
+                startingDay: 0,
+                initDate: '',
+                minMode: 'day',
+                maxMode: 'year',
+                yearRows: 4,
+                yearColumns: 5,
+                minDate: null,
+                maxDate: null
+            },
+            timePicker: {
+                hourStep: 1,
+                minuteStep: 1,
+                showMeridian: true,
+                readonlyInput: false,
+                mousewheel: true,
+                arrowkeys: true
+            },
+            customOptions: {},
+        }, ...extend);
+    }
+
+    public static editForm = editForm;
+
+    static get builderInfo() {
+        return {
+            title: DISPLAY,
+            group: 'simple',
+            icon: 'calendar',
+            weight: 20,
+            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            schema: Component.schema()
+        };
+    }
+}

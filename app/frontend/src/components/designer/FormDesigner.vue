@@ -74,7 +74,7 @@
       </v-card-text>
     </v-card>
 
-    <FormBuilder :form="formSchema" @change="onChangeMethod" :options="designerOptions" />
+    <FormBuilder :form="() => formSchema" @change="onChangeMethod" :options="designerOptions" />
   </div>
 </template>
 
@@ -82,6 +82,8 @@
 import { IdentityProviders } from '@/utils/constants';
 import { FormBuilder } from 'vue-formio';
 import formService from '@/services/formService';
+
+let formSchema = {};
 
 export default {
   name: 'FormDesigner',
@@ -91,33 +93,6 @@ export default {
   props: {
     formId: String,
     formVersionId: String,
-  },
-  data() {
-    return {
-      idps: [IdentityProviders.IDIR],
-      formName: '',
-      formDescription: '',
-      formSchema: {},
-      userType: 'team',
-      designerType: 'simple',
-      valid: false,
-
-      // Validation
-      loginRequiredRules: [
-        (v) =>
-          v != 'login' ||
-          this.idps.length > 0 ||
-          'Please select at least 1 log-in type',
-      ],
-      formDescriptionRules: [
-        (v) =>
-          !v || v.length <= 255 || 'Description must be 255 characters or less',
-      ],
-      formNameRules: [
-        (v) => !!v || 'Name is required',
-        (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
-      ],
-    };
   },
   computed: {
     ID_PROVIDERS() {
@@ -140,6 +115,15 @@ export default {
                 simpletextfield: true,
                 simpletextarea: true,
                 simpleselect: true,
+                simplenumber: true,
+                simplephonenumber: true,
+                simpleemail: true,
+                simpledatetime: true,
+                simpleday: true,
+                simpletime: true,
+                simplecheckbox: true,
+                simplecheckboxes: true,
+                simpleradios: true,
                 orgbook: true
               },
             },
@@ -174,9 +158,35 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      idps: [IdentityProviders.IDIR],
+      designerType: 'simple',
+      formName: '',
+      formDescription: '',
+      userType: 'team',
+      valid: false,
+
+      // Validation
+      loginRequiredRules: [
+        (v) =>
+          v != 'login' ||
+          this.idps.length > 0 ||
+          'Please select at least 1 log-in type',
+      ],
+      formDescriptionRules: [
+        (v) =>
+          !v || v.length <= 255 || 'Description must be 255 characters or less',
+      ],
+      formNameRules: [
+        (v) => !!v || 'Name is required',
+        (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
+      ],
+    };
+  },
   methods: {
     async getFormSchema() {
-      this.formSchema = {};
+      formSchema = {};
       try {
         const form = await formService.readForm(this.formId);
         this.formName = form.data.name;
@@ -187,7 +197,7 @@ export default {
             this.formId,
             this.formVersionId
           );
-          this.formSchema = response.data.schema;
+          formSchema = response.data.schema;
         }
       } catch (error) {
         console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
@@ -202,11 +212,11 @@ export default {
               this.formId,
               this.formVersionId,
               {
-                schema: this.formSchema,
+                schema: formSchema,
               }
             );
             const data = response.data;
-            this.formSchema = data.schema;
+            formSchema = data.schema;
           } catch (error) {
             console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
           }
@@ -222,7 +232,7 @@ export default {
             const form = {
               name: this.formName,
               description: this.formDescription,
-              schema: this.formSchema,
+              schema: formSchema,
               identityProviders: identityProviders,
             };
             const response = await formService.createForm(form);
@@ -243,8 +253,8 @@ export default {
       }
     },
     onChangeMethod(schema) {
-      if (!this.formSchema) this.formSchema = {};
-      this.formSchema = Object.assign(this.formSchema, schema);
+      if (!formSchema) formSchema = {};
+      formSchema = Object.assign(formSchema, schema);
     },
     created() {
       if (this.formId) {

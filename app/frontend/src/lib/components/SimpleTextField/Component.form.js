@@ -6,9 +6,10 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
-import EditDisplay from './editForm/Component.edit.display';
 import EditData from './editForm/Component.edit.data';
+import EditDisplay from './editForm/Component.edit.display';
 import EditValidation from './editForm/Component.edit.validation';
+import SimpleApi from '../Common/Simple.edit.api';
 import SimpleConditional from '../Common/Simple.edit.conditional';
 export default function () {
     var extend = [];
@@ -55,6 +56,12 @@ export default function () {
                 key: 'customValidation',
                 weight: 20,
                 components: EditValidation
+            },
+            {
+                label: 'API',
+                key: 'customAPI',
+                weight: 30,
+                components: SimpleApi
             },
             {
                 label: 'Conditional',

@@ -9,14 +9,6 @@ export default [
         input: true
     },
     {
-        weight: 100,
-        type: 'checkbox',
-        label: 'Unique',
-        tooltip: 'Makes sure the data submitted for this field is unique, and has not been submitted before.',
-        key: 'unique',
-        input: true
-    },
-    {
         weight: 0,
         type: 'select',
         key: 'validateOn',
