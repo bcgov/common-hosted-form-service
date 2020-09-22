@@ -11,14 +11,14 @@ export default class Component extends (ParentComponent as any) {
         return ParentComponent.schema({
             type: ID,
             label: 'Submit',
-            key: ID,
+            key: 'submit',
             size: 'md',
             leftIcon: '',
             rightIcon: '',
             block: false,
             action: 'submit',
             persistent: false,
-            disableOnInvalid: false,
+            disableOnInvalid: true,
             theme: 'primary',
             dataGridLabel: true
         }, ...extend);

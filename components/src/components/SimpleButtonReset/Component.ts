@@ -11,7 +11,7 @@ export default class Component extends (ParentComponent as any) {
         return ParentComponent.schema({
             type: ID,
             label: 'Reset',
-            key: ID,
+            key: 'submit',
             size: 'md',
             leftIcon: '',
             rightIcon: '',

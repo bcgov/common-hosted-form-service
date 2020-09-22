@@ -37,7 +37,7 @@ var Component = /** @class */ (function (_super) {
         return ParentComponent.schema.apply(ParentComponent, __spreadArrays([{
                 type: ID,
                 label: 'Reset',
-                key: ID,
+                key: 'submit',
                 size: 'md',
                 leftIcon: '',
                 rightIcon: '',

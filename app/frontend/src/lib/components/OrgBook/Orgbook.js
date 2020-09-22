@@ -142,7 +142,7 @@ var OrgBook = /** @class */ (function (_super) {
     Object.defineProperty(OrgBook, "builderInfo", {
         get: function () {
             return {
-                title: 'Registered Business Search',
+                title: 'Business Name Search',
                 group: 'advanced',
                 icon: 'database',
                 weight: 70,

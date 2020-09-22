@@ -118,7 +118,7 @@ export default class OrgBook extends (SelectComponent as any) {
 
     static get builderInfo() {
         return {
-            title: 'Registered Business Search',
+            title: 'Business Name Search',
             group: 'advanced',
             icon: 'database',
             weight: 70,

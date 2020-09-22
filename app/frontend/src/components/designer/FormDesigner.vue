@@ -101,13 +101,14 @@ export default {
     designerOptions() {
       if (this.designerType === 'simple') {
         return {
+          noDefaultSubmitButton: false,
           builder: {
             basic: false,
             advanced: false,
             data: false,
             layout: false,
             premium: false,
-            dataentry: {
+            entryControls: {
               title: 'Form fields',
               weight: 20,
               default: true,
@@ -124,17 +125,33 @@ export default {
                 simplecheckbox: true,
                 simplecheckboxes: true,
                 simpleradios: true,
-                simplebtnsubmit: true,
-                simplebtnreset: true,
+              },
+            },
+            layoutControls: {
+              title: 'Layout',
+              weight: 30,
+              components: {
                 simplecols2: true,
                 simplecols3: true,
                 simplecols4: true,
                 simplefieldset: true,
+                simplepanel: true,
+                simpletabs: true
+              },
+            },
+            staticControls: {
+              title: 'Static Content',
+              weight: 40,
+              components: {
                 simpleheading: true,
                 simpleparagraph: true,
-                simplepanel: true,
-                simpletabs: true,
-                simplecontent: true,
+                simplecontent: true
+              },
+            },
+            customControls: {
+              title: 'BC Gov.',
+              weight: 50,
+              components: {
                 orgbook: true
               },
             }

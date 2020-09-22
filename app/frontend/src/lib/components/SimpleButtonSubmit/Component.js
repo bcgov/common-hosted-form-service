@@ -37,14 +37,14 @@ var Component = /** @class */ (function (_super) {
         return ParentComponent.schema.apply(ParentComponent, __spreadArrays([{
                 type: ID,
                 label: 'Submit',
-                key: ID,
+                key: 'submit',
                 size: 'md',
                 leftIcon: '',
                 rightIcon: '',
                 block: false,
                 action: 'submit',
                 persistent: false,
-                disableOnInvalid: false,
+                disableOnInvalid: true,
                 theme: 'primary',
                 dataGridLabel: true
             }], extend));
