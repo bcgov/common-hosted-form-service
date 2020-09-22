@@ -28,7 +28,7 @@ export default class Component extends (ParentComponent as any) {
             title: DISPLAY,
             group: 'simple',
             icon: 'header',
-            weight: 1,
+            weight: 41,
             documentation: 'https://en.wikipedia.org/wiki/Special:Random',
             schema: Component.schema()
         };

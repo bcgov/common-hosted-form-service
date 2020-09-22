@@ -108,7 +108,7 @@ export default {
             layout: false,
             premium: false,
             dataentry: {
-              title: 'User Data Entry',
+              title: 'Form fields',
               weight: 20,
               default: true,
               components: {
@@ -124,27 +124,18 @@ export default {
                 simplecheckbox: true,
                 simplecheckboxes: true,
                 simpleradios: true,
-                orgbook: true
-              },
-            },
-            staticcontent: {
-              title: 'Boilerplate Content',
-              weight: 20,
-              components: {
+                simplebtnsubmit: true,
+                simplebtnreset: true,
+                simplecols2: true,
+                simplecols3: true,
+                simplecols4: true,
+                simplefieldset: true,
                 simpleheading: true,
                 simpleparagraph: true,
-                content: true
-              },
-            },
-            customlayout: {
-              title: 'Form Layout',
-              weight: 30,
-              components: {
-                columns: true,
-                fieldset: true,
-                panel: true,
-                tabs: true,
-                well: true,
+                simplepanel: true,
+                simpletabs: true,
+                simplecontent: true,
+                orgbook: true
               },
             }
           }

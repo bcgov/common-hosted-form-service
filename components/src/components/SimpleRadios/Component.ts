@@ -25,7 +25,7 @@ export default class Component extends (ParentComponent as any) {
             title: DISPLAY,
             group: 'simple',
             icon: 'dot-circle-o',
-            weight: 2,
+            weight: 6,
             documentation: 'https://en.wikipedia.org/wiki/Special:Random',
             schema: Component.schema()
         };

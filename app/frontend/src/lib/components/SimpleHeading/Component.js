@@ -52,7 +52,7 @@ var Component = /** @class */ (function (_super) {
                 title: DISPLAY,
                 group: 'simple',
                 icon: 'header',
-                weight: 1,
+                weight: 41,
                 documentation: 'https://en.wikipedia.org/wiki/Special:Random',
                 schema: Component.schema()
             };

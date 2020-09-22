@@ -22,6 +22,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 import { Components } from 'formiojs';
 var SelectComponent = Components.components.select;
 import editForm from './OrgBook.form';
+var ID = 'orgbook';
 var OrgBook = /** @class */ (function (_super) {
     __extends(OrgBook, _super);
     function OrgBook() {
@@ -33,9 +34,9 @@ var OrgBook = /** @class */ (function (_super) {
             extend[_i] = arguments[_i];
         }
         return SelectComponent.schema.apply(SelectComponent, __spreadArrays([{
-                type: 'orgbook',
+                type: ID,
                 label: 'Registered Business Name',
-                key: 'orgbook',
+                key: ID,
                 idPath: 'id',
                 dataSrc: 'url',
                 data: {
@@ -50,7 +51,7 @@ var OrgBook = /** @class */ (function (_super) {
                 filter: 'latest=true&inactive=false&revoked=false',
                 dataType: 'string',
                 template: '{{ item.names[0].text }}',
-                placeholder: 'Start typing to search the OrgBook database',
+                placeholder: 'Start typing to search BC Registered Businesses database',
                 searchField: 'q',
                 selectValues: 'results',
                 valueProperty: 'names[0].text',
@@ -141,7 +142,7 @@ var OrgBook = /** @class */ (function (_super) {
     Object.defineProperty(OrgBook, "builderInfo", {
         get: function () {
             return {
-                title: 'Org. Book',
+                title: 'Registered Business Search',
                 group: 'advanced',
                 icon: 'database',
                 weight: 70,

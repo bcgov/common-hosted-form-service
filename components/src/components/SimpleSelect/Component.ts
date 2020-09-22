@@ -4,7 +4,7 @@ const ParentComponent = (Components as any).components.select;
 import editForm from './Component.form';
 
 const ID = 'simpleselect';
-const DISPLAY = 'Select';
+const DISPLAY = 'Select List';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {
@@ -53,7 +53,7 @@ export default class Component extends (ParentComponent as any) {
             title: DISPLAY,
             group: 'simple',
             icon: 'list',
-            weight: 2,
+            weight: 3,
             documentation: 'https://en.wikipedia.org/wiki/Special:Random',
             schema: Component.schema()
         };

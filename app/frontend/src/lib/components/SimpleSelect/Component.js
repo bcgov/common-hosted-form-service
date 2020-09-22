@@ -23,7 +23,7 @@ import { Components } from 'formiojs';
 var ParentComponent = Components.components.select;
 import editForm from './Component.form';
 var ID = 'simpleselect';
-var DISPLAY = 'Select';
+var DISPLAY = 'Select List';
 var Component = /** @class */ (function (_super) {
     __extends(Component, _super);
     function Component() {
@@ -77,7 +77,7 @@ var Component = /** @class */ (function (_super) {
                 title: DISPLAY,
                 group: 'simple',
                 icon: 'list',
-                weight: 2,
+                weight: 3,
                 documentation: 'https://en.wikipedia.org/wiki/Special:Random',
                 schema: Component.schema()
             };
