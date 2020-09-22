@@ -2,13 +2,13 @@
   <div>
     <p v-if="submissionId">
       <strong>Confirmation ID:</strong>
-      {{ submission.confirmationId }}
+      {{ formSubmission.confirmationId }}
       <br />
       <strong>Submitted By:</strong>
-      {{ submission.createdBy }}
+      {{ formSubmission.createdBy }}
       <br />
       <strong>Submitted Date:</strong>
-      {{ submission.createdAt | formatDateLong }}
+      {{ formSubmission.createdAt | formatDateLong }}
     </p>
 
     <Form
@@ -20,10 +20,10 @@
       @submitError="onSubmitError"
       :options="viewerOptions"
     />
-    {{ formioSubmissionData }}
+
     <br />Submission
     <br />
-    {{ submission }}
+    <pre>{{ formSubmission }}</pre>
     <br />
     <br />Version
     <br />
@@ -67,7 +67,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['submission', 'version']),
+    ...mapGetters('form', ['formSubmission', 'version']),
     viewerOptions() {
       return {
         readOnly: this.submissionId !== undefined,
@@ -139,7 +139,7 @@ export default {
           submission: submission,
     viewerReady() {
       if (this.submissionId) {
-        return this.version && this.version.schema && this.submission;
+        return this.version && this.version.schema && this.formSubmission.submission;
       } else {
         return this.version && this.version.schema;
       }
@@ -151,9 +151,7 @@ export default {
       try {
         const body = {
           draft: false,
-          submission: {
-            data: this.formioSubmissionData,
-          },
+          submission: this.formSubmission.submission,
         };
 
         const response = await formService.createSubmission(
@@ -213,9 +211,6 @@ export default {
         versionId: this.versionId,
         submissionId: this.submissionId,
       });
-      if(this.submission) {
-        this.formioSubmissionData = this.submission.submission;
-      }
     }
   },
 };

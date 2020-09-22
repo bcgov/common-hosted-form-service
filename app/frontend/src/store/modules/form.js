@@ -10,7 +10,7 @@ export default {
       name: '',
     },
     formList: [],
-    submission: {
+    formSubmission: {
       confirmationId: '',
       submission: {
         data: {}
@@ -22,7 +22,7 @@ export default {
   getters: {
     form: state => state.form,
     formList: state => state.formList,
-    submission: state => state.submission,
+    formSubmission: state => state.formSubmission,
     submissionList: state => state.submissionList,
     version: state => state.version
   },
@@ -40,7 +40,7 @@ export default {
       state.formList = forms;
     },
     SET_SUBMISSION(state, submission) {
-      state.submission = submission;
+      state.formSubmission = submission;
     },
     SET_SUBMISSIONLIST(state, submissions) {
       state.submissionList = submissions;
