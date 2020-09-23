@@ -23,5 +23,16 @@ export default {
    */
   getFormUsers(params = {}) {
     return appAxios().get(`${ApiRoutes.RBAC}/forms`, { params });
+  },
+
+  /**
+   * @function setFormUsers
+   * Set relationships between forms, roles, users
+   * @param {Object} requestBody The request body for the relationships
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  setFormUsers(requestBody, params = {}) {
+    return appAxios().put(`${ApiRoutes.RBAC}/forms`, requestBody, { params });
   }
 };
