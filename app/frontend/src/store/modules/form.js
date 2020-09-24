@@ -39,7 +39,7 @@ export default {
     SET_FORMLIST(state, forms) {
       state.formList = forms;
     },
-    SET_SUBMISSION(state, submission) {
+    SET_FORMSUBMISSION(state, submission) {
       state.formSubmission = submission;
     },
     SET_SUBMISSIONLIST(state, submissions) {
@@ -67,7 +67,7 @@ export default {
           versionId,
           submissionId
         );
-        commit('SET_SUBMISSION', response.data);
+        commit('SET_FORMSUBMISSION', response.data);
       } catch (error) {
         console.error(`Error getting submission ${submissionId}: ${error}`); // eslint-disable-line no-console
       }
@@ -84,6 +84,12 @@ export default {
     },
     async fetchVersion({ commit }, { formId, versionId }) {
       try {
+        // TODO: need a better 'set back to initial state' ability
+        commit('SET_FORMSUBMISSION', {
+          submission: {
+            data: {}
+          }
+        });
         // Get details about the sepecific form version
         const response = await formService.readVersion(
           formId,
