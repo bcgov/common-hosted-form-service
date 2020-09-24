@@ -74,7 +74,7 @@
       </v-card-text>
     </v-card>
 
-    <FormBuilder :form="() => formSchema" @change="onChangeMethod" :options="{}" />
+    <FormBuilder :form="formSchema" :options="{}" />
   </div>
 </template>
 
@@ -82,8 +82,6 @@
 import { IdentityProviders } from '@/utils/constants';
 import { FormBuilder } from 'vue-formio';
 import formService from '@/services/formService';
-
-let formSchema = {};
 
 export default {
   name: 'FormDesigner',
@@ -102,11 +100,15 @@ export default {
   data() {
     return {
       idps: [IdentityProviders.IDIR],
+      formSchema: {
+        display: 'form',
+        type: 'form',
+        components: []
+      },
       formName: '',
       formDescription: '',
       userType: 'team',
       valid: false,
-
       // Validation
       loginRequiredRules: [
         (v) =>
@@ -126,7 +128,6 @@ export default {
   },
   methods: {
     async getFormSchema() {
-      formSchema = {};
       try {
         const form = await formService.readForm(this.formId);
         this.formName = form.data.name;
@@ -137,7 +138,7 @@ export default {
             this.formId,
             this.formVersionId
           );
-          formSchema = response.data.schema;
+          this.formSchema = {...this.formSchema, ...response.data.schema};
         }
       } catch (error) {
         console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
@@ -152,11 +153,11 @@ export default {
               this.formId,
               this.formVersionId,
               {
-                schema: formSchema,
+                schema: this.formSchema,
               }
             );
             const data = response.data;
-            formSchema = data.schema;
+            this.formSchema = data.schema;
           } catch (error) {
             console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
           }
@@ -172,7 +173,7 @@ export default {
             const form = {
               name: this.formName,
               description: this.formDescription,
-              schema: formSchema,
+              schema: this.formSchema,
               identityProviders: identityProviders,
             };
             const response = await formService.createForm(form);
@@ -191,10 +192,6 @@ export default {
           }
         }
       }
-    },
-    onChangeMethod(schema) {
-      if (!formSchema) formSchema = {};
-      formSchema = Object.assign(formSchema, schema);
     },
     created() {
       if (this.formId) {
