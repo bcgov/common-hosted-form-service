@@ -43,7 +43,7 @@
           </td>
         </tr>
         <tr v-else>
-          <td v-for="header in headers" :key="header.value">
+          <td v-for="header in headers" :key="header.value" :class="{'role-col': typeof item[header.value] === 'boolean'}">
             <v-checkbox
               v-if="typeof item[header.value] === 'boolean'"
               v-model="item[header.value]"
@@ -104,8 +104,8 @@ export default {
   methods: {
     createHeaders() {
       const headers = [
-        { text: 'Full Name', value: 'fullName' },
-        { text: 'Username', value: 'username' },
+        { text: 'Full Name', value: 'fullName', className: '' },
+        { text: 'Username', value: 'username', className: '' },
       ];
       this.headers = headers.concat(
         this.roleList
@@ -200,6 +200,11 @@ export default {
 .team-search {
   width: 100%;
 }
+
+.role-col {
+  width: 12%;
+}
+
 @media (min-width: 600px) {
   .team-search {
     max-width: 20em;
