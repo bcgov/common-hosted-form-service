@@ -2,15 +2,15 @@
   <div>
     <v-stepper v-model="designerStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-0">Set up Form</v-stepper-step>
+        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1">Set up Form</v-stepper-step>
 
         <v-divider></v-divider>
 
-        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-0">Design Form</v-stepper-step>
+        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1">Design Form</v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
-        <v-stepper-content step="1" class="pa-0">
+        <v-stepper-content step="1" class="pa-1">
           <h2>Set your Form Options</h2>
           <v-form ref="step1Form" v-model="valid" lazy-validation>
             <v-container class="px-0">
@@ -40,8 +40,21 @@
                   />
                 </v-col>
               </v-row>
+
+              <p>Choose whether to use the basic form designer or the advanced developer version</p>
+              <v-switch
+                class="pl-5"
+                v-model="advancedForm"
+                label="Enable advanced designer features"
+              ></v-switch>
+
               <p>Select which type of user can fill out out this form once published</p>
-              <v-radio-group v-model="userType" :mandatory="false" :rules="loginRequiredRules">
+              <v-radio-group
+                class="pl-5"
+                v-model="userType"
+                :mandatory="false"
+                :rules="loginRequiredRules"
+              >
                 <v-radio disabled label="Public (annonymous)" :value="ID_PROVIDERS.PUBLIC"></v-radio>
                 <v-radio label="Log-in Required" value="login"></v-radio>
                 <div v-if="userType === 'login'" class="pl-5 mb-5">
@@ -99,7 +112,9 @@
             <br />
             <v-icon color="primary">info</v-icon>Use this SAVE button when you are done building your form. The SUBMIT button below is for your users to submit the form once published.
           </div>
-          <FormBuilder :form="formSchema" :options="{}" />
+          <div v-if="designerStep == 2">
+            <FormBuilder :form="formSchema" :options="designerOptions" />
+          </div>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
@@ -124,9 +139,77 @@ export default {
     ID_PROVIDERS() {
       return IdentityProviders;
     },
+    designerOptions() {
+      if (!this.advancedForm) {
+        return {
+          noDefaultSubmitButton: false,
+          builder: {
+            basic: false,
+            advanced: false,
+            data: false,
+            layout: false,
+            premium: false,
+            entryControls: {
+              title: 'Form fields',
+              weight: 20,
+              default: true,
+              components: {
+                // simpletextfield: true,
+                // simpletextarea: true,
+                // simpleselect: true,
+                // simplenumber: true,
+                // simplephonenumber: true,
+                // simpleemail: true,
+                // simpledatetime: true,
+                // simpleday: true,
+                // simpletime: true,
+                // simplecheckbox: true,
+                // simplecheckboxes: true,
+                // simpleradios: true,
+              },
+            },
+            layoutControls: {
+              title: 'Layout',
+              weight: 30,
+              components: {
+                // simplecols2: true,
+                // simplecols3: true,
+                // simplecols4: true,
+                // simplefieldset: true,
+                // simplepanel: true,
+                // simpletabs: true,
+              },
+            },
+            staticControls: {
+              title: 'Static Content',
+              weight: 40,
+              components: {
+                // simpleheading: true,
+                // simpleparagraph: true,
+                // simplecontent: true,
+              },
+            },
+            customControls: {
+              title: 'BC Gov.',
+              weight: 50,
+              components: {
+                orgbook: true,
+              },
+            },
+          },
+        };
+      } else {
+        return {
+          builder: {
+            premium: false,
+          },
+        };
+      }
+    },
   },
   data() {
     return {
+      advancedForm: false,
       designerStep: 1,
       idps: [IdentityProviders.IDIR],
       formSchema: {
@@ -179,51 +262,49 @@ export default {
       }
     },
     async submitFormSchema() {
-      if (this.$refs.form.validate()) {
-        if (this.formId && this.formVersionId) {
-          // If editing a form, update the version
-          try {
-            const response = await formService.updateVersion(
-              this.formId,
-              this.formVersionId,
-              {
-                schema: this.formSchema,
-              }
-            );
-            const data = response.data;
-            this.formSchema = data.schema;
-          } catch (error) {
-            console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
-          }
-        } else {
-          // If creating a new form, add the form and then a version
-          try {
-            let identityProviders = [];
-            if (this.userType === 'login') {
-              identityProviders = this.idps.map((i) => ({ code: i }));
-            } else if (this.userType === this.ID_PROVIDERS.PUBLIC) {
-              identityProviders = [this.ID_PROVIDERS.PUBLIC];
-            }
-            const form = {
-              name: this.formName,
-              description: this.formDescription,
+      if (this.formId && this.formVersionId) {
+        // If editing a form, update the version
+        try {
+          const response = await formService.updateVersion(
+            this.formId,
+            this.formVersionId,
+            {
               schema: this.formSchema,
-              identityProviders: identityProviders,
-            };
-            const response = await formService.createForm(form);
-            // Add the schema to the newly created default version
-            if (!response.data.versions || !response.data.versions[0]) {
-              throw new Error(
-                `createForm response does not include a form version: ${response.data.versions}`
-              );
             }
-            this.$router.push({
-              name: 'FormManage',
-              params: { formId: response.data.id },
-            });
-          } catch (error) {
-            console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
+          );
+          const data = response.data;
+          this.formSchema = data.schema;
+        } catch (error) {
+          console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
+        }
+      } else {
+        // If creating a new form, add the form and then a version
+        try {
+          let identityProviders = [];
+          if (this.userType === 'login') {
+            identityProviders = this.idps.map((i) => ({ code: i }));
+          } else if (this.userType === this.ID_PROVIDERS.PUBLIC) {
+            identityProviders = [this.ID_PROVIDERS.PUBLIC];
           }
+          const form = {
+            name: this.formName,
+            description: this.formDescription,
+            schema: this.formSchema,
+            identityProviders: identityProviders,
+          };
+          const response = await formService.createForm(form);
+          // Add the schema to the newly created default version
+          if (!response.data.versions || !response.data.versions[0]) {
+            throw new Error(
+              `createForm response does not include a form version: ${response.data.versions}`
+            );
+          }
+          this.$router.push({
+            name: 'FormManage',
+            params: { formId: response.data.id },
+          });
+        } catch (error) {
+          console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
         }
       }
     },
