@@ -112,7 +112,6 @@ export default {
           this.roleList
             .map((role) => ({
               filterable: false,
-              sortable: false,
               text: role.display,
               value: role.code,
             }))
