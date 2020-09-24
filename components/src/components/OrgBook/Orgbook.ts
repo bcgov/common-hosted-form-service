@@ -3,12 +3,14 @@ import { Components } from 'formiojs';
 const SelectComponent = (Components as any).components.select;
 import editForm from './OrgBook.form';
 
+const ID = 'orgbook';
+
 export default class OrgBook extends (SelectComponent as any) {
     static schema(...extend) {
         return SelectComponent.schema({
-            type: 'orgbook',
+            type: ID,
             label: 'Registered Business Name',
-            key: 'orgbook',
+            key: ID,
             idPath: 'id',
             dataSrc: 'url',
             data: {
@@ -23,7 +25,7 @@ export default class OrgBook extends (SelectComponent as any) {
             filter: 'latest=true&inactive=false&revoked=false',
             dataType: 'string',
             template: '{{ item.names[0].text }}',
-            placeholder: 'Start typing to search the OrgBook database',
+            placeholder: 'Start typing to search BC Registered Businesses database',
             searchField: 'q',
             selectValues: 'results',
             valueProperty: 'names[0].text',
@@ -116,7 +118,7 @@ export default class OrgBook extends (SelectComponent as any) {
 
     static get builderInfo() {
         return {
-            title: 'Org. Book',
+            title: 'Business Name Search',
             group: 'advanced',
             icon: 'database',
             weight: 70,
