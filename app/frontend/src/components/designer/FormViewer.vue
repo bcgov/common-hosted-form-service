@@ -20,14 +20,6 @@
       @submitError="onSubmitError"
       :options="viewerOptions"
     />
-
-    <br />Submission
-    <br />
-    <pre>{{ formSubmission }}</pre>
-    <br />
-    <br />Version
-    <br />
-    <pre>{{ version }}</pre>
   </div>
 </template>
 
