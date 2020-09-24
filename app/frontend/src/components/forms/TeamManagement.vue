@@ -43,7 +43,7 @@
           </td>
         </tr>
         <tr v-else>
-          <td v-for="header in headers" :key="header.value" class="text-start">
+          <td v-for="header in headers" :key="header.value">
             <v-checkbox
               v-if="typeof item[header.value] === 'boolean'"
               v-model="item[header.value]"
@@ -107,24 +107,19 @@ export default {
         { text: 'Full Name', value: 'fullName' },
         { text: 'Username', value: 'username' },
       ];
-      this.headers = headers
-        .concat(
-          this.roleList
-            .map((role) => ({
-              filterable: false,
-              text: role.display,
-              value: role.code,
-            }))
-            .sort((a, b) =>
-              this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
-                ? 1
-                : -1
-            )
-        )
-        .map((header) => ({
-          ...header,
-          align: 'start',
-        }));
+      this.headers = headers.concat(
+        this.roleList
+          .map((role) => ({
+            filterable: false,
+            text: role.display,
+            value: role.code,
+          }))
+          .sort((a, b) =>
+            this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
+              ? 1
+              : -1
+          )
+      );
     },
     createTableData() {
       this.tableData = this.formUsers.map((user) => {
