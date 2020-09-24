@@ -22,17 +22,34 @@
       no-data-text="Failed to load team role data"
       :search="search"
     >
-      <template v-slot:item="{ item, index }">
-        <tr>
-          <td>{{ item.fullName }}</td>
-          <td>{{ item.username }}</td>
+      <template v-slot:item="{ item, isMobile, headers }">
+        <tr v-if="isMobile" class="v-data-table__mobile-table-row">
           <td
-            v-for="role in Object.keys(item.roles).sort((a, b) =>
-              roleOrder.indexOf(a) > roleOrder.indexOf(b) ? 1 : -1
-            )"
-            :key="role"
+            v-for="header in headers"
+            :key="header.value"
+            class="v-data-table__mobile-row"
           >
-            <v-checkbox v-model="tableData[index].roles[role]" @click="edited = true" />
+            <div class="v-data-table__mobile-row__header">
+              {{ header.text }}
+            </div>
+            <div class="v-data-table__mobile-row__cell">
+              <v-checkbox
+                v-if="typeof item[header.value] === 'boolean'"
+                v-model="item[header.value]"
+                @click="edited = true"
+              />
+              <div v-else>{{ item[header.value] }}</div>
+            </div>
+          </td>
+        </tr>
+        <tr v-else>
+          <td v-for="header in headers" :key="header.value" class="text-start">
+            <v-checkbox
+              v-if="typeof item[header.value] === 'boolean'"
+              v-model="item[header.value]"
+              @click="edited = true"
+            />
+            <div v-else>{{ item[header.value] }}</div>
           </td>
         </tr>
       </template>
@@ -46,7 +63,12 @@
     >
       <span>UPDATE</span>
     </v-btn>
-    <v-btn color="secondary" class="my-2 ml-2" :disabled="!edited" @click="createTableData">
+    <v-btn
+      color="secondary"
+      class="my-2 ml-2"
+      :disabled="!edited"
+      @click="createTableData"
+    >
       <span>ROLLBACK</span>
     </v-btn>
   </div>
@@ -89,7 +111,6 @@ export default {
         .concat(
           this.roleList
             .map((role) => ({
-              align: 'start',
               filterable: false,
               sortable: false,
               text: role.display,
@@ -100,12 +121,10 @@ export default {
                 ? 1
                 : -1
             )
-            .map((role) => ({ ...role, value: `roles.${role.value}` }))
         )
         .map((header) => ({
           ...header,
           align: 'start',
-          sortable: false,
         }));
     },
     createTableData() {
@@ -113,15 +132,12 @@ export default {
         const row = {
           formId: this.formId,
           fullName: user.fullName,
-          roles: {},
           userId: user.userId,
           username: user.username,
         };
         this.roleList
           .map((role) => role.code)
-          .forEach((role) => {
-            row.roles[role] = user.roles.includes(role);
-          });
+          .forEach((role) => (row[role] = user.roles.includes(role)));
         return row;
       });
       this.edited = false;
@@ -129,15 +145,17 @@ export default {
     generateUserRoles() {
       const body = [];
       this.tableData.forEach((user) => {
-        Object.keys(user.roles).forEach((role) => {
-          if (user.roles[role]) {
-            body.push({
-              formId: user.formId,
-              role: role,
-              userId: user.userId,
-            });
-          }
-        });
+        Object.keys(user)
+          .filter((role) => this.roleOrder.includes(role))
+          .forEach((role) => {
+            if (user[role]) {
+              body.push({
+                formId: user.formId,
+                role: role,
+                userId: user.userId,
+              });
+            }
+          });
       });
       return body;
     },
