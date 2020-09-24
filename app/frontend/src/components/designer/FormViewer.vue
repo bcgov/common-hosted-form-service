@@ -14,8 +14,10 @@
     <Form
       :form="formSchema"
       :submission="submission"
-      @change="onChangeMethod"
-      @submit="onSubmitMethod"
+      @submit="onSubmit"
+      @submitDone="onSubmitDone"
+      @submitButton="onSubmitButton"
+      @submitError="onSubmitError"
       :options="viewerOptions"
     />
   </div>
@@ -53,13 +55,20 @@ export default {
       confId: '',
       formSchema: {},
       submission: {
-        data: {},
+        data: {}
       },
+      currentForm: {},
+      submissionRecord: {}
     };
   },
   computed: {
     viewerOptions() {
-      return { readOnly: this.submissionId !== undefined };
+      return {
+        readOnly: this.submissionId !== undefined,
+        hooks: {
+          beforeSubmit: this.onBeforeSubmit
+        }
+      };
     },
   },
   methods: {
@@ -71,8 +80,9 @@ export default {
           this.versionId,
           this.submissionId
         );
-        this.submission = response.data.submission;
-        this.confId = response.data.confirmationId;
+        this.submissionRecord = Object.assign({}, response.data);
+        this.submission = this.submissionRecord.submission;
+        this.confId = this.submissionRecord.confirmationId;
       } catch (error) {
         console.error(`Error getting form data: ${error}`); // eslint-disable-line no-console
         this.showAlert(
@@ -99,41 +109,77 @@ export default {
         this.showAlert('error', 'An error occurred fetching this form');
       }
     },
-    onChangeMethod(change) {
-      const changed = change.changed;
-      if (changed) {
-        this.submission.data[changed.instance.path] = changed.value;
-      }
+    // event order is:
+    // onSubmitButton
+    // onBeforeSubmit
+    // if no errors: onSubmit -> onSubmitDone
+    // else onSubmitError
+    onSubmitButton(event) {
+      // this is our first event in the submission chain.
+      // most important thing here is ensuring that the formio form does not have an action, or else it POSTs to that action.
+      // console.info('onSubmitButton()') ; // eslint-disable-line no-console
+      this.currentForm = event.instance.parent.root;
+      this.currentForm.form.action = undefined;
     },
-    async onSubmitMethod() {
+    async onBeforeSubmit(submission, next) {
+      // console.info(`onBeforeSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
+      // since we are not using formio api
+      // we should do the actual submit here, and return next or parse our errors and show with next(errors)
+
+      const errors = [];
       try {
         const body = {
           draft: false,
-          submission: {
-            data: this.submission.data,
-          },
+          submission: submission,
         };
+
         const response = await formService.createSubmission(
           this.formId,
           this.versionId,
           body
         );
+
         if (response.status === 201) {
-          this.$router.push({
-            name: 'FormSubmissionView',
-            params: {
-              formId: this.formId,
-              versionId: response.data.formVersionId,
-              submissionId: response.data.id,
-            },
-            query: { success: true },
-          });
+          // all is good, let's just call next() and carry on...
+          // store our submission result...
+          this.submissionRecord = Object.assign({}, response.data);
+          // console.info(`onBeforeSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
+          next();
+        } else {
+          // console.error(response); // eslint-disable-line no-console
+          errors.push('An error occurred submitting this form');
         }
       } catch (error) {
-        console.error(`Error creating new submission: ${error}`); // eslint-disable-line no-console
-        this.showAlert('error', 'An error occurred submitting this form');
-        throw error;
+        // console.error(error); // eslint-disable-line no-console
+        errors.push('An error occurred submitting this form');
       }
+
+      if (errors.length) {
+        next(errors);
+      }
+    },
+    // eslint-disable-next-line no-unused-vars
+    async onSubmit(submission) {
+      // if we are here, the submission has been saved to our db
+      // the passed in submission is the formio submission, not our db persisted submission record...
+      // fire off the submitDone event.
+      // console.info(`onSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
+      this.currentForm.events.emit('formio.submitDone');
+    },
+    onSubmitDone() {
+      // huzzah!
+      // really nothing to do, the formio button has consumed the event and updated its display
+      // is there anything here for us to do?
+      // console.info('onSubmitDone()') ; // eslint-disable-line no-console
+      this.$router.push({
+        name: 'FormSubmissionView',
+        params: {
+          formId: this.formId,
+          versionId: this.versionId,
+          submissionId: this.submissionRecord.id,
+        },
+        query: { success: true },
+      });
     },
     showAlert(typ, msg) {
       this.alertShow = true;
