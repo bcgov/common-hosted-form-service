@@ -138,10 +138,7 @@ export default {
             this.formId,
             this.formVersionId
           );
-          // console.info('getFormSchema()'); // eslint-disable-line no-console
-          // console.info(`response.data.schema = ${JSON.stringify(response.data.schema)}`); // eslint-disable-line no-console
           this.formSchema = {...this.formSchema, ...response.data.schema};
-          // console.info(`this.formSchema = ${JSON.stringify(this.formSchema)}`); // eslint-disable-line no-console
         }
       } catch (error) {
         console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
@@ -150,7 +147,6 @@ export default {
     async submitFormSchema() {
       if (this.$refs.form.validate()) {
         if (this.formId && this.formVersionId) {
-          // console.info('submitFormSchema(1)'); // eslint-disable-line no-console
           // If editing a form, update the version
           try {
             const response = await formService.updateVersion(
@@ -161,15 +157,12 @@ export default {
               }
             );
             const data = response.data;
-            // console.info(`response.data.schema = ${JSON.stringify(data.schema)}`); // eslint-disable-line no-console
             this.formSchema = data.schema;
-            // console.info(`this.form = ${JSON.stringify(this.formSchema)}`); // eslint-disable-line no-console
           } catch (error) {
             console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
           }
         } else {
           // If creating a new form, add the form and then a version
-          // console.info('submitFormSchema(2)'); // eslint-disable-line no-console
           try {
             let identityProviders = [];
             if (this.userType === 'login') {
@@ -184,7 +177,6 @@ export default {
               identityProviders: identityProviders,
             };
             const response = await formService.createForm(form);
-            // console.info(`response = ${JSON.stringify(response)}`); // eslint-disable-line no-console
             // Add the schema to the newly created default version
             if (!response.data.versions || !response.data.versions[0]) {
               throw new Error(
