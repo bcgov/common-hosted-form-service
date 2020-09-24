@@ -1,5 +1,8 @@
 <template>
-  <TeamManagement :formId="formId" />
+  <div>
+    <h1 class="my-6 text-center">Team Management</h1>
+    <TeamManagement :formId="formId" />
+  </div>
 </template>
 
 <script>

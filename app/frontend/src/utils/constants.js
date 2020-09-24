@@ -2,14 +2,24 @@
 // Constants
 //
 
-// API Route paths
+/** API Route paths */
 const ApiRoutes = Object.freeze({
   FORMS: '/forms',
   RBAC: '/rbac',
   ROLES: '/roles'
 });
 
-// Permissions a user can have on a form. These are defined in the DB and sent from the API
+/** Roles a user can have on a form. These are defined in the DB and sent from the API */
+// Note: values are sorted in descending order for accessibility
+const FormRoleCodes = Object.freeze({
+  OWNER: 'owner',
+  TEAM_MANAGER: 'team_manager',
+  FORM_DESIGNER: 'form_designer',
+  SUBMISSION_REVIEWER: 'submission_reviewer',
+  FORM_SUBMITTER: 'form_submitter',
+});
+
+/** Permissions a user can have on a form. These are defined in the DB and sent from the API */
 const FormPermissions = Object.freeze({
   FORM_READ: 'form_read',
   FORM_UPDATE: 'form_update',
@@ -29,7 +39,7 @@ const FormPermissions = Object.freeze({
   TEAM_UPDATE: 'team_update'
 });
 
-// Identitiy Providers a user can log in as and a form can be allowed for
+/** Identitiy Providers a user can log in as and a form can be allowed for */
 const IdentityProviders = Object.freeze({
   BCEID: 'bceid', // BCeID
   BCSC: 'bcsc', // Services Card
@@ -38,4 +48,4 @@ const IdentityProviders = Object.freeze({
   PUBLIC: 'public' // Anonymous
 });
 
-export { ApiRoutes, FormPermissions, IdentityProviders };
+export { ApiRoutes, FormRoleCodes, FormPermissions, IdentityProviders };

@@ -25,10 +25,10 @@
       loading-text="Loading... Please wait"
     >
       <template v-slot:item.actions="{ item }">
-        <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmit', params: { formId: item.id, versionId: item.currentVersionId } }">
-            <v-icon class="mr-1">note_add</v-icon>
-            <span>SUBMIT</span>
+        <v-btn v-if="checkFormManage(item)" color="textLink" text small>
+          <router-link :to="{ name: 'FormManage', params: { formId: item.id } }">
+            <v-icon class="mr-1">build_circle</v-icon>
+            <span>MANAGE</span>
           </router-link>
         </v-btn>
         <v-btn v-if="checkSubmissionView(item)" color="textLink" text small>
@@ -37,10 +37,10 @@
             <span>VIEW SUBMISSIONS</span>
           </router-link>
         </v-btn>
-        <v-btn v-if="checkFormManage(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormManage', params: { formId: item.id } }">
-            <v-icon class="mr-1">build_circle</v-icon>
-            <span>MANAGE</span>
+        <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
+          <router-link :to="{ name: 'FormSubmit', params: { formId: item.id, versionId: item.currentVersionId } }">
+            <v-icon class="mr-1">note_add</v-icon>
+            <span>SUBMIT</span>
           </router-link>
         </v-btn>
       </template>
