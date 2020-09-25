@@ -96,6 +96,7 @@
 
         <v-stepper-content step="2" class="pa-0">
           <h2>Design your Form</h2>
+          <p>Drag and Drop form fields in the designer below.</p>
           <div class="my-5">
             <v-btn
               class="mr-3"
@@ -221,6 +222,7 @@ export default {
       formDescription: '',
       userType: 'team',
       valid: false,
+
       // Validation
       loginRequiredRules: [
         (v) =>
