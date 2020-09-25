@@ -104,7 +104,7 @@ export default {
   methods: {
     downloadQr() {
       var link = document.createElement('a');
-      link.download = 'filename.png';
+      link.download = 'qrcode.png';
       link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
       link.click();
     },
