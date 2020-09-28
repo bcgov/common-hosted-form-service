@@ -3,13 +3,13 @@
     <v-stepper v-model="designerStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
         <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1"
-          >Set up Form</v-stepper-step
+        >Set up Form</v-stepper-step
         >
 
         <v-divider></v-divider>
 
         <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1"
-          >Design Form</v-stepper-step
+        >Design Form</v-stepper-step
         >
       </v-stepper-header>
 
@@ -110,7 +110,7 @@
               </v-radio-group>
             </v-container>
             <v-btn color="primary" @click="setFormDetails"
-              ><span>Continue</span></v-btn
+            ><span>Continue</span></v-btn
             >
           </v-form>
         </v-stepper-content>
