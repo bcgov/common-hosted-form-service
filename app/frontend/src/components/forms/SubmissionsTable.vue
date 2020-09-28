@@ -50,9 +50,6 @@ export default {
   },
   data() {
     return {
-      alertMessage: '',
-      alertShow: false,
-      alertType: null,
       headers: [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
