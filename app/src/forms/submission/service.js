@@ -13,23 +13,25 @@ const service = {
       .first()
       .throwIfNotFound();
 
-    const submission = await FormSubmission.query()
-      .findById(meta.submissionId)
-      .throwIfNotFound();
-    const version = await FormVersion.query()
-      .findById(meta.formVersionId)
-      .throwIfNotFound();
-    const form = await Form.query()
-      .findById(meta.formId)
-      .allowGraph('identityProviders')
-      .withGraphFetched('identityProviders(orderDefault)')
-      .throwIfNotFound();
-
-    return {
-      form: form,
-      version: version,
-      submission: submission
-    };
+    return await Promise.all([
+      FormSubmission.query()
+        .findById(meta.submissionId)
+        .throwIfNotFound(),
+      FormVersion.query()
+        .findById(meta.formVersionId)
+        .throwIfNotFound(),
+      Form.query()
+        .findById(meta.formId)
+        .allowGraph('identityProviders')
+        .withGraphFetched('identityProviders(orderDefault)')
+        .throwIfNotFound()
+    ]).then(data => {
+      return {
+        submission: data[0],
+        version: data[1],
+        form: data[2]
+      };
+    });
   },
 
   read: async (formSubmissionId, currentUser, permissions = [Permissions.SUBMISSION_READ]) => {
@@ -57,18 +59,20 @@ const service = {
     const isDraft = result.submission.draft;
     const publicAllowed = result.form.identityProviders.find(p => p.code === 'public');
     const idpAllowed = result.form.identityProviders.find(p => p.code === currentUser.idp);
-    const formSubmissionsPermission = await checkFormSubmissionsPermission();
-    const submissionPermission = await checkSubmissionPermission();
 
+    // check against the public and user's identity provider permissions...
     if (!isDraft && !isDeleted) {
-      if (publicAllowed || idpAllowed || formSubmissionsPermission || submissionPermission) return result;
+      if (publicAllowed || idpAllowed) return result;
     }
-    if (isDraft) {
-      if (formSubmissionsPermission || submissionPermission) return result;
-    }
-    if (isDeleted) {
-      if (submissionPermission) return result;
-    }
+
+    // check against the form level permissions assigned to the user...
+    const formSubmissionsPermission = await checkFormSubmissionsPermission();
+    if (!isDeleted && formSubmissionsPermission) return result;
+
+    // check against the submission level permissions assigned to the user...
+    const submissionPermission = await checkSubmissionPermission();
+    if (submissionPermission) return result;
+
     // no access to this submission...
 
     throw new Problem(401, 'You do not have access to this submission.');
