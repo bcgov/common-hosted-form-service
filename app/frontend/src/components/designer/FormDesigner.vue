@@ -90,7 +90,7 @@
                 >You can specify users on the form's management screen once created.</div>
               </v-radio-group>
             </v-container>
-            <v-btn color="primary" @click="setFormDetails">Continue</v-btn>
+            <v-btn color="primary" @click="setFormDetails"><span>Continue</span></v-btn>
           </v-form>
         </v-stepper-content>
 
