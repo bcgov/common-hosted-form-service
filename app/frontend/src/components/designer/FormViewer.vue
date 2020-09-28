@@ -17,7 +17,6 @@
       @submit="onSubmit"
       @submitDone="onSubmitDone"
       @submitButton="onSubmitButton"
-      @submitError="onSubmitError"
       :options="viewerOptions"
     />
   </div>

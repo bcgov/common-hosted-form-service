@@ -37,7 +37,7 @@
     "migrate:rollback:all": "knex migrate:rollback --all",
     "migrate:up": "knex migrate:up",
     "seed:run": "knex seed:run",
-    "dev:reset-db": "npm run migrate:rollback:all && npm run migrate && npm run seed:run"
+    "dev:reset-db": "npm run migrate:rollback:all && npm run migrate"
   },
   "dependencies": {
     "api-problem": "^6.1.4",
