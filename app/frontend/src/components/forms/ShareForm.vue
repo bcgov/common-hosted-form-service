@@ -30,6 +30,35 @@
           <p class="text-right">
             <BaseCopyToClipboard :copyText="formLink" />
           </p>
+          <p class="text-right">
+            <v-btn color="blue" text small @click="qrShow = true">
+              <v-icon class="mr-1">qr_code</v-icon>
+              <span>Generate a QR Code</span>
+            </v-btn>
+          </p>
+          <div v-if="qrShow" class="qrCodeContainer text-center">
+            <qrcode-vue :value="formLink" :size="qrSize" renderAs="canvas" level="M"></qrcode-vue>
+            <v-container>
+              <v-row>
+                <v-col cols="12" lg="6" offset-lg="3">
+                  <v-slider
+                    v-model="qrSize"
+                    label="Size"
+                    :tick-labels="ticksLabels"
+                    :min="200"
+                    :max="600"
+                    step="200"
+                    ticks="always"
+                    tick-size="4"
+                  ></v-slider>
+                </v-col>
+              </v-row>
+              <v-btn color="blue" text small @click="downloadQr">
+                <v-icon class="mr-1">cloud_download</v-icon>
+                <span>Download Image</span>
+              </v-btn>
+            </v-container>
+          </div>
         </v-card-text>
         <v-divider></v-divider>
 
@@ -43,7 +72,12 @@
 </template>
 
 <script>
+import QrcodeVue from 'qrcode.vue';
+
 export default {
+  components: {
+    QrcodeVue,
+  },
   props: {
     formId: {
       type: String,
@@ -57,11 +91,22 @@ export default {
   data() {
     return {
       dialog: false,
+      qrShow: false,
+      qrSize: 400,
+      ticksLabels: ['Small', 'Medium', 'Large'],
     };
   },
   computed: {
     formLink() {
       return `${window.location.origin}${process.env.BASE_URL}form/${this.formId}/versions/${this.versionId}/submit`;
+    },
+  },
+  methods: {
+    downloadQr() {
+      var link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
+      link.click();
     },
   },
 };
