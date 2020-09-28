@@ -2,11 +2,15 @@
   <div>
     <v-stepper v-model="designerStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1">Set up Form</v-stepper-step>
+        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1"
+          >Set up Form</v-stepper-step
+        >
 
         <v-divider></v-divider>
 
-        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1">Design Form</v-stepper-step>
+        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1"
+          >Design Form</v-stepper-step
+        >
       </v-stepper-header>
 
       <v-stepper-items>
@@ -41,25 +45,40 @@
                 </v-col>
               </v-row>
 
-              <p>Choose whether to use the basic form designer or the advanced developer version</p>
+              <p>
+                Choose whether to use the basic form designer or the advanced
+                developer version
+              </p>
               <v-switch
                 class="pl-5"
                 v-model="advancedForm"
                 label="Enable advanced designer features"
               ></v-switch>
 
-              <p>Select which type of user can fill out out this form once published</p>
+              <p>
+                Select which type of user can fill out out this form once
+                published
+              </p>
               <v-radio-group
                 class="pl-5"
                 v-model="userType"
                 :mandatory="false"
                 :rules="loginRequiredRules"
               >
-                <v-radio disabled label="Public (annonymous)" :value="ID_PROVIDERS.PUBLIC"></v-radio>
+                <v-radio
+                  disabled
+                  label="Public (annonymous)"
+                  :value="ID_PROVIDERS.PUBLIC"
+                ></v-radio>
                 <v-radio label="Log-in Required" value="login"></v-radio>
                 <div v-if="userType === 'login'" class="pl-5 mb-5">
                   <v-row>
-                    <v-checkbox v-model="idps" class="mx-4" label="IDIR" :value="ID_PROVIDERS.IDIR"></v-checkbox>
+                    <v-checkbox
+                      v-model="idps"
+                      class="mx-4"
+                      label="IDIR"
+                      :value="ID_PROVIDERS.IDIR"
+                    ></v-checkbox>
                     <v-checkbox
                       disabled
                       v-model="idps"
@@ -84,13 +103,15 @@
                   </v-row>
                 </div>
                 <v-radio label="Specific Team Members" value="team"></v-radio>
-                <div
-                  v-if="userType === 'team'"
-                  class="pl-5 mb-5"
-                >You can specify users on the form's management screen once created.</div>
+                <div v-if="userType === 'team'" class="pl-5 mb-5">
+                  You can specify users on the form's management screen once
+                  created.
+                </div>
               </v-radio-group>
             </v-container>
-            <v-btn color="primary" @click="setFormDetails"><span>Continue</span></v-btn>
+            <v-btn color="primary" @click="setFormDetails"
+              ><span>Continue</span></v-btn
+            >
           </v-form>
         </v-stepper-content>
 
@@ -106,12 +127,18 @@
             >
               <span>Save Design</span>
             </v-btn>
-            <v-btn outlined @click="designerStep = 1" data-test="btn-form-to-previous-step">
+            <v-btn
+              outlined
+              @click="designerStep = 1"
+              data-test="btn-form-to-previous-step"
+            >
               <span>Back</span>
             </v-btn>
             <br />
             <br />
-            <v-icon color="primary">info</v-icon>Use this SAVE button when you are done building your form. The SUBMIT button below is for your users to submit the form once published.
+            <v-icon color="primary">info</v-icon>Use the SAVE DESIGN button when
+            you are done building this form. The SUBMIT button below is for your
+            users to submit this form when published.
           </div>
           <div v-if="designerStep == 2">
             <FormBuilder :form="formSchema" :options="designerOptions" />
