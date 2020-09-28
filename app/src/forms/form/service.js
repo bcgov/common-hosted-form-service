@@ -1,5 +1,6 @@
-const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormSubmission, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 
+const Permissions = require('../common/constants').Permissions;
 const Roles = require('../common/constants').Roles;
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
@@ -179,6 +180,19 @@ const service = {
       obj.createdBy = currentUser.username;
 
       await FormSubmission.query(trx).insert(obj);
+
+      if (!currentUser.public) {
+        // add specific permissions to this submission...
+        // this is the submission creator, we will know by having the submission_create permission...
+        const items = [
+          { id: uuidv4(), userId: currentUser.id, formSubmissionId: obj.id, permission: Permissions.SUBMISSION_CREATE, createdBy: currentUser.username },
+          { id: uuidv4(), userId: currentUser.id, formSubmissionId: obj.id, permission: Permissions.SUBMISSION_DELETE, createdBy: currentUser.username },
+          { id: uuidv4(), userId: currentUser.id, formSubmissionId: obj.id, permission: Permissions.SUBMISSION_READ, createdBy: currentUser.username },
+          { id: uuidv4(), userId: currentUser.id, formSubmissionId: obj.id, permission: Permissions.SUBMISSION_UPDATE, createdBy: currentUser.username },
+        ];
+        await FormSubmissionUser.query(trx).insert(items);
+      }
+
       await trx.commit();
       const result = await service.readSubmission(obj.id);
       return result;
@@ -195,6 +209,7 @@ const service = {
       trx = await transaction.start(FormSubmission.knex());
 
       // TODO: check if we can update this submission
+      // TODO: we may have to update permissions for users (draft = false, then no delete?)
 
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {draft: data.draft, submission: data.submission, updatedBy: currentUser.username});
       await trx.commit();
