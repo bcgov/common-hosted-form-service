@@ -1,80 +1,151 @@
 <template>
   <div>
-    <v-card class="mb-5">
-      <v-toolbar flat color="grey lighten-3">
-        <v-card-title>Form Settings</v-card-title>
-      </v-toolbar>
-      <v-card-text>
-        <v-form ref="form" v-model="valid" lazy-validation>
-          <v-container>
-            <v-row>
-              <v-col cols="12" xl="4">
-                <v-text-field
-                  dense
-                  flat
-                  label="Name"
-                  data-test="text-formName"
-                  v-model="formName"
-                  :rules="formNameRules"
-                />
-              </v-col>
-              <v-col cols="12" xl="8">
-                <v-text-field
-                  dense
-                  flat
-                  label="Description"
-                  data-test="text-formDescription"
-                  v-model="formDescription"
-                  :rules="formDescriptionRules"
-                />
-              </v-col>
-            </v-row>
-            <p>Select which type of user can fill out out this form once published</p>
-            <v-radio-group v-model="userType" :mandatory="false" :rules="loginRequiredRules">
-              <v-radio disabled label="Public (annonymous)" :value="ID_PROVIDERS.PUBLIC"></v-radio>
-              <v-radio label="Log-in Required" value="login"></v-radio>
-              <div v-if="userType === 'login'" class="pl-5 mb-5">
-                <v-row>
-                  <v-checkbox v-model="idps" class="mx-4" label="IDIR" :value="ID_PROVIDERS.IDIR"></v-checkbox>
-                  <v-checkbox
-                    disabled
-                    v-model="idps"
-                    class="mx-4"
-                    label="BCeID"
-                    :value="ID_PROVIDERS.BCEID"
-                  ></v-checkbox>
-                  <v-checkbox
-                    disabled
-                    v-model="idps"
-                    class="mx-4"
-                    label="BC Services Card"
-                    :value="ID_PROVIDERS.BCSC"
-                  ></v-checkbox>
-                  <v-checkbox
-                    disabled
-                    v-model="idps"
-                    class="mx-4"
-                    label="Github"
-                    :value="ID_PROVIDERS.GITHUB"
-                  ></v-checkbox>
-                </v-row>
-              </div>
-              <v-radio label="Specific Team Members" value="team"></v-radio>
-              <div
-                v-if="userType === 'team'"
-                class="pl-5 mb-5"
-              >You can specify users on the form's management screen once created.</div>
-            </v-radio-group>
-            <v-btn color="primary" class="mr-5" @click="submitFormSchema">
-              <span>Save Form Design</span>
-            </v-btn>
-            <v-icon color="primary">info</v-icon>Build your form with the designer below then hit the SAVE FORM DESIGN button to continue.
-          </v-container>
-        </v-form>
-      </v-card-text>
-    </v-card>
+    <v-stepper v-model="designerStep" class="elevation-0">
+      <v-stepper-header class="elevation-0 px-0">
+        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1"
+        >Set up Form</v-stepper-step
+        >
 
-    <FormBuilder :form="formSchema" :options="{}" />
+        <v-divider></v-divider>
+
+        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1"
+        >Design Form</v-stepper-step
+        >
+      </v-stepper-header>
+
+      <v-stepper-items>
+        <v-stepper-content step="1" class="pa-1">
+          <h2>Set your Form Options</h2>
+          <v-form ref="step1Form" v-model="valid" lazy-validation>
+            <v-container class="px-0">
+              <v-row>
+                <v-col cols="12" lg="4">
+                  <v-text-field
+                    dense
+                    flat
+                    solid
+                    outlined
+                    label="Name"
+                    data-test="text-formName"
+                    v-model="formName"
+                    :rules="formNameRules"
+                  />
+                </v-col>
+                <v-col cols="12" lg="8">
+                  <v-text-field
+                    dense
+                    flat
+                    solid
+                    outlined
+                    label="Description"
+                    data-test="text-formDescription"
+                    v-model="formDescription"
+                    :rules="formDescriptionRules"
+                  />
+                </v-col>
+              </v-row>
+
+              <p>
+                Choose whether to use the basic form designer or the advanced
+                developer version
+              </p>
+              <v-switch
+                class="pl-5"
+                v-model="advancedForm"
+                label="Enable advanced designer features"
+              ></v-switch>
+
+              <p>
+                Select which type of user can fill out out this form once
+                published
+              </p>
+              <v-radio-group
+                class="pl-5"
+                v-model="userType"
+                :mandatory="false"
+                :rules="loginRequiredRules"
+              >
+                <v-radio
+                  disabled
+                  label="Public (annonymous)"
+                  :value="ID_PROVIDERS.PUBLIC"
+                ></v-radio>
+                <v-radio label="Log-in Required" value="login"></v-radio>
+                <div v-if="userType === 'login'" class="pl-5 mb-5">
+                  <v-row>
+                    <v-checkbox
+                      v-model="idps"
+                      class="mx-4"
+                      label="IDIR"
+                      :value="ID_PROVIDERS.IDIR"
+                    ></v-checkbox>
+                    <v-checkbox
+                      disabled
+                      v-model="idps"
+                      class="mx-4"
+                      label="BCeID"
+                      :value="ID_PROVIDERS.BCEID"
+                    ></v-checkbox>
+                    <v-checkbox
+                      disabled
+                      v-model="idps"
+                      class="mx-4"
+                      label="BC Services Card"
+                      :value="ID_PROVIDERS.BCSC"
+                    ></v-checkbox>
+                    <v-checkbox
+                      disabled
+                      v-model="idps"
+                      class="mx-4"
+                      label="Github"
+                      :value="ID_PROVIDERS.GITHUB"
+                    ></v-checkbox>
+                  </v-row>
+                </div>
+                <v-radio label="Specific Team Members" value="team"></v-radio>
+                <div v-if="userType === 'team'" class="pl-5 mb-5">
+                  You can specify users on the form's management screen once
+                  created.
+                </div>
+              </v-radio-group>
+            </v-container>
+            <v-btn color="primary" @click="setFormDetails"
+            ><span>Continue</span></v-btn
+            >
+          </v-form>
+        </v-stepper-content>
+
+        <v-stepper-content step="2" class="pa-0">
+          <h2>Design your Form</h2>
+          <p>Drag and Drop form fields in the designer below.</p>
+          <div class="my-5">
+            <v-btn
+              class="mr-3"
+              color="primary"
+              @click="submitFormSchema"
+              data-test="btn-form-to-next-step"
+            >
+              <span>Save Design</span>
+            </v-btn>
+            <v-btn
+              outlined
+              @click="designerStep = 1"
+              data-test="btn-form-to-previous-step"
+            >
+              <span>Back</span>
+            </v-btn>
+            <br />
+            <br />
+            <v-icon color="primary">info</v-icon>Use the SAVE DESIGN button when
+            you are done building this form. The SUBMIT button below is for your
+            users to submit this form when published.
+          </div>
+          <div v-if="designerStep == 2">
+            <FormBuilder :form="formSchema" :options="designerOptions" />
+          </div>
+        </v-stepper-content>
+      </v-stepper-items>
+    </v-stepper>
   </div>
 </template>
 
@@ -96,19 +167,89 @@ export default {
     ID_PROVIDERS() {
       return IdentityProviders;
     },
+    designerOptions() {
+      if (!this.advancedForm) {
+        return {
+          noDefaultSubmitButton: false,
+          builder: {
+            basic: false,
+            advanced: false,
+            data: false,
+            layout: false,
+            premium: false,
+            entryControls: {
+              title: 'Form fields',
+              weight: 20,
+              default: true,
+              components: {
+                simpletextfield: true,
+                simpletextarea: true,
+                simpleselect: true,
+                simplenumber: true,
+                simplephonenumber: true,
+                simpleemail: true,
+                simpledatetime: true,
+                simpleday: true,
+                simpletime: true,
+                simplecheckbox: true,
+                simplecheckboxes: true,
+                simpleradios: true,
+              },
+            },
+            layoutControls: {
+              title: 'Layout',
+              weight: 30,
+              components: {
+                simplecols2: true,
+                simplecols3: true,
+                simplecols4: true,
+                simplefieldset: true,
+                simplepanel: true,
+                simpletabs: true,
+              },
+            },
+            staticControls: {
+              title: 'Static Content',
+              weight: 40,
+              components: {
+                simpleheading: true,
+                simpleparagraph: true,
+                simplecontent: true,
+              },
+            },
+            customControls: {
+              title: 'BC Gov.',
+              weight: 50,
+              components: {
+                orgbook: true,
+              },
+            },
+          },
+        };
+      } else {
+        return {
+          builder: {
+            premium: false,
+          },
+        };
+      }
+    },
   },
   data() {
     return {
+      advancedForm: false,
+      designerStep: 1,
       idps: [IdentityProviders.IDIR],
       formSchema: {
         display: 'form',
         type: 'form',
-        components: []
+        components: [],
       },
       formName: '',
       formDescription: '',
       userType: 'team',
       valid: false,
+
       // Validation
       loginRequiredRules: [
         (v) =>
@@ -138,58 +279,61 @@ export default {
             this.formId,
             this.formVersionId
           );
-          this.formSchema = {...this.formSchema, ...response.data.schema};
+          this.formSchema = { ...this.formSchema, ...response.data.schema };
         }
       } catch (error) {
         console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
       }
     },
+    async setFormDetails() {
+      if (this.$refs.step1Form.validate()) {
+        this.designerStep = 2;
+      }
+    },
     async submitFormSchema() {
-      if (this.$refs.form.validate()) {
-        if (this.formId && this.formVersionId) {
-          // If editing a form, update the version
-          try {
-            const response = await formService.updateVersion(
-              this.formId,
-              this.formVersionId,
-              {
-                schema: this.formSchema,
-              }
-            );
-            const data = response.data;
-            this.formSchema = data.schema;
-          } catch (error) {
-            console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
-          }
-        } else {
-          // If creating a new form, add the form and then a version
-          try {
-            let identityProviders = [];
-            if (this.userType === 'login') {
-              identityProviders = this.idps.map((i) => ({ code: i }));
-            } else if (this.userType === this.ID_PROVIDERS.PUBLIC) {
-              identityProviders = [this.ID_PROVIDERS.PUBLIC];
-            }
-            const form = {
-              name: this.formName,
-              description: this.formDescription,
+      if (this.formId && this.formVersionId) {
+        // If editing a form, update the version
+        try {
+          const response = await formService.updateVersion(
+            this.formId,
+            this.formVersionId,
+            {
               schema: this.formSchema,
-              identityProviders: identityProviders,
-            };
-            const response = await formService.createForm(form);
-            // Add the schema to the newly created default version
-            if (!response.data.versions || !response.data.versions[0]) {
-              throw new Error(
-                `createForm response does not include a form version: ${response.data.versions}`
-              );
             }
-            this.$router.push({
-              name: 'FormManage',
-              params: { formId: response.data.id },
-            });
-          } catch (error) {
-            console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
+          );
+          const data = response.data;
+          this.formSchema = data.schema;
+        } catch (error) {
+          console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
+        }
+      } else {
+        // If creating a new form, add the form and then a version
+        try {
+          let identityProviders = [];
+          if (this.userType === 'login') {
+            identityProviders = this.idps.map((i) => ({ code: i }));
+          } else if (this.userType === this.ID_PROVIDERS.PUBLIC) {
+            identityProviders = [this.ID_PROVIDERS.PUBLIC];
           }
+          const form = {
+            name: this.formName,
+            description: this.formDescription,
+            schema: this.formSchema,
+            identityProviders: identityProviders,
+          };
+          const response = await formService.createForm(form);
+          // Add the schema to the newly created default version
+          if (!response.data.versions || !response.data.versions[0]) {
+            throw new Error(
+              `createForm response does not include a form version: ${response.data.versions}`
+            );
+          }
+          this.$router.push({
+            name: 'FormManage',
+            params: { formId: response.data.id },
+          });
+        } catch (error) {
+          console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
         }
       }
     },

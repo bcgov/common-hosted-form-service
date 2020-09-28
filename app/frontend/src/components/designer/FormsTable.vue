@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- table alert -->
-    <v-alert v-if="alertShow" :type="alertType" tile dense>{{ alertMessage }}</v-alert>
-
     <!-- search input -->
     <div class="submissions-search mt-6 mt-sm-0">
       <v-text-field
@@ -93,23 +90,13 @@ export default {
             permissions: f.permissions
           };
         });
-        if (!forms.length) {
-          this.showTableAlert('info', 'No Forms found for this user');
-        }
         this.forms = forms;
       } catch (error) {
         console.error(`Error getting user data: ${error}`); // eslint-disable-line no-console
-        this.showTableAlert('error', 'Error getting user data');
       } finally {
         this.loading = false;
       }
-    },
-    showTableAlert(typ, msg) {
-      this.alertShow = true;
-      this.alertType = typ;
-      this.alertMessage = msg;
-      this.loading = false;
-    },
+    }
   },
   mounted() {
     this.populateFormTable();
