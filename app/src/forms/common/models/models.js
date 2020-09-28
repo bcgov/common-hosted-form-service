@@ -3,6 +3,8 @@ const { Timestamps } = require('./mixins');
 const Regex = require('../constants').Regex;
 const stamps = require('./jsonSchema').stamps;
 
+const utils = require('./utils');
+
 class Form extends Timestamps(Model) {
   static get tableName() {
     return 'form';
@@ -482,30 +484,21 @@ class UserFormAccess extends Model {
       },
       filterByAccess(query, idps, roles, permissions) {
         if (idps || roles || permissions) {
-          const toArray = (values) => {
-            if (values) {
-              return Array.isArray(values) ? values.filter(p => p && p.trim().length > 0) : [values].filter(p => p && p.trim().length > 0);
-            }
-            return [];
-          };
-          const inArrayClause = (column, values) => {
-            return values.map(p => `'${p}' = ANY("${column}")`).join(' or ');
-          };
-          const _idps = toArray(idps);
-          const _roles = toArray(roles);
-          const _permissions = toArray(permissions);
+          const _idps = utils.toArray(idps);
+          const _roles = utils.toArray(roles);
+          const _permissions = utils.toArray(permissions);
           let clauses = [];
 
           if (_idps.length) {
-            clauses.push(`('{}'::varchar[] = "roles" and (${inArrayClause('idps', _idps)}))`);
+            clauses.push(`('{}'::varchar[] = "roles" and (${utils.inArrayClause('idps', _idps)}))`);
           }
 
           if (_roles.length) {
-            clauses.push(`(array_length("roles", 1) > 0 and (${inArrayClause('roles', _roles)}))`);
+            clauses.push(utils.inArrayFilter('roles', _roles));
           }
 
           if (_permissions.length) {
-            clauses.push(`(array_length("permissions", 1) > 0 and (${inArrayClause('permissions', _permissions)}))`);
+            clauses.push(utils.inArrayFilter('permissions', _permissions));
           }
 
           if (clauses.length) {
@@ -649,11 +642,110 @@ class SubmissionMetadata extends Model {
   }
 }
 
+class FormSubmissionUser extends Timestamps(Model) {
+  static get tableName() {
+    return 'form_submission_user';
+  }
+
+  static get relationMappings() {
+    return {
+      submission: {
+        relation: Model.HasOneRelation,
+        modelClass: FormSubmission,
+        join: {
+          from: 'form_submission_user.submissionId',
+          to: 'form_submission.id'
+        }
+      },
+      userPermission: {
+        relation: Model.HasOneRelation,
+        modelClass: Permission,
+        join: {
+          from: 'form_submission_user.permission',
+          to: 'permission.code'
+        }
+      },
+      user: {
+        relation: Model.HasOneRelation,
+        modelClass: User,
+        join: {
+          from: 'form_submission_user.userId',
+          to: 'user.id'
+        }
+      },
+    };
+  }
+
+  static get modifiers() {
+    return {
+      orderCreatedAtDescending(builder) {
+        builder.orderBy('createdAt', 'desc');
+      },
+      orderUpdatedAtDescending(builder) {
+        builder.orderBy('updatedAt', 'desc');
+      }
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['permission', 'formSubmissionId', 'userId'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        formSubmissionId: { type: 'string', pattern: Regex.UUID },
+        userId: { type: 'string', pattern: Regex.UUID },
+        permission: { type: 'string', minLength: 1, maxLength: 255 },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
+}
+
+class FormSubmissionUserPermissions extends Model {
+  static get tableName() {
+    return 'form_submission_users_vw';
+  }
+
+  static get modifiers() {
+    return {
+      filterSubmissionId(query, value) {
+        if (value) {
+          query.where('formSubmissionId', value);
+        }
+      },
+      filterUserId(query, value) {
+        if (value) {
+          query.where('userId', value);
+        }
+      },
+      filterByPermissions(query, permissions) {
+        if (permissions) {
+
+          const _permissions = utils.toArray(permissions);
+          let clauses = [];
+
+          if (_permissions.length) {
+            clauses.push(utils.inArrayFilter('permissions', _permissions));
+          }
+
+          if (clauses.length) {
+            query.whereRaw(`(${clauses.join(' or ')})`);
+          }
+        }
+      }
+    };
+  }
+}
 
 module.exports = {
   Form: Form,
   FormIdentityProvider: FormIdentityProvider,
   FormSubmission: FormSubmission,
+  FormSubmissionUser: FormSubmissionUser,
+  FormSubmissionUserPermissions: FormSubmissionUserPermissions,
   FormRoleUser: FormRoleUser,
   FormVersion: FormVersion,
   IdentityProvider: IdentityProvider,
