@@ -33,9 +33,9 @@ requireComponent.keys().forEach(fileName => {
 
 // IE11 Detection (https://stackoverflow.com/a/21825207)
 if (!!window.MSInputMethodContext && !!document.documentMode) {
-  document.write(`<div style="text-align: center;">
-    <h1>We're sorry but ${process.env.VUE_APP_TITLE} is not supported in IE.</h1>
-    <h1>Please use an alternative modern browser instead.</h1>
+  document.write(`<div style="padding-top: 5em; text-align: center;">
+    <h1>We're sorry but ${process.env.VUE_APP_TITLE} is not supported in Internet Explorer.</h1>
+    <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
   </div>`);
   NProgress.done();
 } else {
