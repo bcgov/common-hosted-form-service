@@ -7,15 +7,15 @@ import NProgress from 'nprogress';
 import Vue from 'vue';
 
 import App from '@/App.vue';
+import '@/filters';
 import auth from '@/store/modules/auth.js';
 import getRouter from '@/router';
 import store from '@/store';
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
-import './filters';
 
-import BcGovFormioComponents from '@/lib';
 import { Formio } from 'vue-formio';
+import BcGovFormioComponents from '@/lib';
 Formio.use(BcGovFormioComponents);
 
 Vue.config.productionTip = false;
@@ -31,7 +31,16 @@ requireComponent.keys().forEach(fileName => {
   Vue.component(componentName, componentConfig.default || componentConfig);
 });
 
-loadConfig();
+// IE11 Detection (https://stackoverflow.com/a/21825207)
+if (!!window.MSInputMethodContext && !!document.documentMode) {
+  document.write(`<div style="text-align: center;">
+    <h1>We're sorry but ${process.env.VUE_APP_TITLE} is not supported in IE.</h1>
+    <h1>Please use an alternative modern browser instead.</h1>
+  </div>`);
+  NProgress.done();
+} else {
+  loadConfig();
+}
 
 /**
  * @function initializeApp
