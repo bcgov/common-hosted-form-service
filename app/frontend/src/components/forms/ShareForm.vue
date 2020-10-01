@@ -98,7 +98,8 @@ export default {
   },
   computed: {
     formLink() {
-      return `${window.location.origin}${process.env.BASE_URL}form/${this.formId}/versions/${this.versionId}/submit`;
+      // TODO: Consider using vue-router to generate this url string instead
+      return `${window.location.origin}${process.env.BASE_URL}form/submit?formId=${this.formId}&versionId=${this.versionId}`;
     },
   },
   methods: {

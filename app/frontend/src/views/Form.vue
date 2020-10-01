@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
+    <v-breadcrumbs :items="breadcrumbs" />
     <transition name="component-fade" mode="out-in">
       <router-view />
     </transition>
@@ -15,19 +15,21 @@ export default {
   props: ['formId'],
   data() {
     return {
-      formName: ''
+      formName: '',
     };
   },
   computed: {
     breadcrumbs() {
       const path = [
         {
-          text: 'My Forms',
-        },
-        {
-          text: this.formName,
+          text: 'Form',
         },
       ];
+      if (this.formName) {
+        path.push({
+          text: this.formName,
+        });
+      }
       if (this.$route.meta.breadcrumbTitle) {
         path.push({
           text: this.$route.meta.breadcrumbTitle,
@@ -38,17 +40,18 @@ export default {
   },
   methods: {
     async getForm() {
-      try {
-        // Get this form
-        const response = await formService.readForm(this.formId);
-        const data = response.data;
-        this.formName = data.name;
-      } catch (error) {
-        console.error(`Error getting form data: ${error}`); // eslint-disable-line no-console
+      if (this.formId) {
+        try {
+          // Get this form
+          const response = await formService.readForm(this.formId);
+          this.formName = response.data.name;
+        } catch (error) {
+          console.error(`Error getting form data: ${error}`); // eslint-disable-line no-console
+        }
       }
     },
   },
-  created() {
+  mounted() {
     this.getForm();
   },
 };

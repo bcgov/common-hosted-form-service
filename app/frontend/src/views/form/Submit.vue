@@ -1,10 +1,10 @@
 <template>
-  <v-container>
+  <div>
     <FormViewer
       :formId="formId"
       :versionId="versionId"
     />
-  </v-container>
+  </div>
 </template>
 
 <script>

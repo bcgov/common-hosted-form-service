@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <h2>{{ form.name }}</h2>
     <br />
     <p>
@@ -33,21 +33,15 @@
             <v-list-item-content>
               <div class="overline mb-4">
                 TEAM MANGEMENT
-                <v-btn color="blue" text small @click="editTeams">
-                  <v-icon class="mr-1">edit</v-icon>
-                  <span>Edit</span>
-                </v-btn>
+                <router-link
+                  :to="{ name: 'FormTeams', query: { formId: formId } }"
+                >
+                  <v-btn color="blue" text small>
+                    <v-icon class="mr-1">edit</v-icon>
+                    <span>Edit</span>
+                  </v-btn>
+                </router-link>
               </div>
-              <v-list-item-title class="headline mb-2">Form Admins</v-list-item-title>
-              <ul>
-                <li>Lucas O'Neil (owner)</li>
-                <li>Jeremy Ho</li>
-                <li>Matthew Hall</li>
-              </ul>
-              <v-list-item-title class="headline mb-2 mt-5">Allowed Submitters</v-list-item-title>
-              <ul>
-                <li>TBD</li>
-              </ul>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -62,14 +56,16 @@
               <br />
               <strong>Last Updated:</strong>
               {{ currentVersion.updatedAt | formatDateLong }}
-              <span
-                v-if="currentVersion.updatedBy"
-              >({{ currentVersion.updatedBy }})</span>
+              <span v-if="currentVersion.updatedBy">
+                ({{ currentVersion.updatedBy }})
+              </span>
             </p>
-            <v-btn color="blue" text small>
-              <v-icon class="mr-1">edit</v-icon>
-              <span>Edit Current Form</span>
-            </v-btn>
+            <router-link :to="{ name: 'FormDesigner', query: { formId: formId, versionId: currentVersion.id } }">
+              <v-btn color="blue" text small>
+                <v-icon class="mr-1">edit</v-icon>
+                <span>Edit Current Form</span>
+              </v-btn>
+            </router-link>
             <br />
             <br />
             <v-btn color="blue" text small>
@@ -91,7 +87,7 @@
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -99,7 +95,7 @@ import { mapGetters, mapActions } from 'vuex';
 import ShareForm from '@/components/forms/ShareForm.vue';
 
 export default {
-  name: 'FormManage',
+  name: 'Manage',
   components: { ShareForm },
   props: {
     formId: {
@@ -115,14 +111,6 @@ export default {
   },
   methods: {
     ...mapActions('form', ['fetchForm']),
-    editTeams() {
-      this.$router.push({
-        name: 'FormTeamManagement',
-        params: {
-          formId: this.formId,
-        },
-      });
-    }
   },
   mounted() {
     this.fetchForm(this.formId);
