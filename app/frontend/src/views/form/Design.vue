@@ -1,0 +1,21 @@
+<template>
+  <div>
+    <h1 class="my-6 text-center">Form Designer</h1>
+    <FormDesigner :formId="formId" :versionId="formVersionId" />
+  </div>
+</template>
+
+<script>
+import FormDesigner from '@/components/designer/FormDesigner.vue';
+
+export default {
+  name: 'Designer',
+  components: {
+    FormDesigner,
+  },
+  props: {
+    formId: String,
+    versionId: String,
+  },
+};
+</script>

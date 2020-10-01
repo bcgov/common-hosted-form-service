@@ -1,20 +1,20 @@
 <template>
-  <v-container>
+  <div>
     <h1 class="text-center">My Forms</h1>
     <div class="text-right">
       <strong>
-        <router-link :to="{ name: 'NewDesigner' }">Create a New Form</router-link>
+        <router-link :to="{ name: 'FormDesigner' }">Create a New Form</router-link>
       </strong>
     </div>
     <FormsTable />
-  </v-container>
+  </div>
 </template>
 
 <script>
 import FormsTable from '@/components/designer/FormsTable.vue';
 
 export default {
-  name: 'MyForms',
+  name: 'UserForms',
   components: {
     FormsTable,
   },

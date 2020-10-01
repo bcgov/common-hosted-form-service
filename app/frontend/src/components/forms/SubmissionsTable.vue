@@ -26,7 +26,7 @@
       <template v-slot:item.actions="{ item }">
         <v-btn color="textLink" text small>
           <router-link
-            :to="{ name: 'FormSubmissionView', params: { formId: item.formId, versionId: item.versionId, submissionId: item.submissionId } }"
+            :to="{ name: 'FormView', query: { formId: item.formId, versionId: item.versionId, submissionId: item.submissionId } }"
           >
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW</span>

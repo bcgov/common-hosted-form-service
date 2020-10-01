@@ -1,14 +1,14 @@
 <template>
-  <v-container>
+  <div>
     <FormViewer :formId="formId" :versionId="versionId" :submissionId="submissionId" :success="formSuccess"/>
-  </v-container>
+  </div>
 </template>
 
 <script>
 import FormViewer from '@/components/designer/FormViewer.vue';
 
 export default {
-  name: 'FormSubmissionView',
+  name: 'FormViewSubmission',
   props: ['formId', 'versionId', 'submissionId'],
   components: {
     FormViewer,

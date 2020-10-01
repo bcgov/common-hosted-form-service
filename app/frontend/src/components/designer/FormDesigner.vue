@@ -182,7 +182,7 @@ export default {
   },
   props: {
     formId: String,
-    formVersionId: String,
+    versionId: String,
   },
   data() {
     return {
@@ -296,10 +296,10 @@ export default {
         this.formName = form.data.name;
         this.formDescription = form.data.description;
 
-        if (this.formVersionId) {
+        if (this.versionId) {
           const response = await formService.readVersion(
             this.formId,
-            this.formVersionId
+            this.versionId
           );
           this.formSchema = { ...this.formSchema, ...response.data.schema };
         }
@@ -331,12 +331,12 @@ export default {
       }
     },
     async submitFormSchema() {
-      if (this.formId && this.formVersionId) {
+      if (this.formId && this.versionId) {
         // If editing a form, update the version
         try {
           const response = await formService.updateVersion(
             this.formId,
-            this.formVersionId,
+            this.versionId,
             {
               schema: this.formSchema,
             }

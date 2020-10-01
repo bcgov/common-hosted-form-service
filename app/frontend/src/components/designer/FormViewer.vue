@@ -171,13 +171,13 @@ export default {
       // is there anything here for us to do?
       // console.info('onSubmitDone()') ; // eslint-disable-line no-console
       this.$router.push({
-        name: 'FormSubmissionView',
-        params: {
+        name: 'FormView',
+        query: {
           formId: this.formId,
           versionId: this.versionId,
           submissionId: this.submissionRecord.id,
+          success: true
         },
-        query: { success: true },
       });
     },
     showAlert(typ, msg) {

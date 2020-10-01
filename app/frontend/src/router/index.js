@@ -7,6 +7,15 @@ Vue.use(VueRouter);
 let isFirstTransition = true;
 
 /**
+ * @function createProps
+ * Parses the route query and params to generate vue props
+ * @param {object} route The route object
+ * @returns {object} a Vue props object
+ */
+const createProps = route => ({ ...route.query, ...route.params });
+
+/**
+ * @function getRouter
  * Constructs and returns a Vue Router object
  * @param {string} [basePath='/'] the base server path
  * @returns {object} a Vue Router object
@@ -18,89 +27,73 @@ export default function getRouter(basePath = '/') {
     routes: [
       {
         path: '/',
-        redirect: { name: 'Home' }
+        redirect: { name: 'About' }
       },
       {
         path: '/',
-        name: 'Home',
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
+        name: 'About',
+        component: () => import(/* webpackChunkName: "about" */ '@/views/About.vue'),
         meta: {
           hasLogin: true
         }
       },
-      // FormIO Editor
       {
-        path: '/editor',
-        component: () => import(/* webpackChunkName: "editor" */ '@/views/Editor.vue'),
-        children: [
-          {
-            path: '',
-            name: 'NewDesigner',
-            component: () => import(/* webpackChunkName: "designer" */ '@/views/designer/Root.vue')
-          },
-          {
-            path: ':formId/versions/:formVersionId',
-            name: 'VersionDesigner',
-            component: () => import(/* webpackChunkName: "designer" */ '@/views/designer/Root.vue'),
-            props: true
-          },
-        ],
-        meta: {
-          requiresAuth: true,
-          hasLogin: true
-        }
-      },
-      // Actions for a specific form
-      {
-        path: '/form/:formId',
+        path: '/form',
         component: () => import(/* webpackChunkName: "form" */ '@/views/Form.vue'),
-        props: true,
         children: [
           {
-            path: '/form/:formId/manage',
+            path: 'design',
+            name: 'FormDesigner',
+            component: () => import(/* webpackChunkName: "designer" */ '@/views/form/Design.vue'),
+            meta: {
+              breadcrumbTitle: 'Form Designer'
+            },
+            props: createProps
+          },
+          {
+            path: 'manage',
             name: 'FormManage',
-            component: () => import(/* webpackChunkName: "formmanage" */ '@/views/form/FormManage.vue'),
-            props: true,
+            component: () => import(/* webpackChunkName: "manage" */ '@/views/form/Manage.vue'),
             meta: {
               breadcrumbTitle: 'Manage Form'
-            }
+            },
+            props: createProps
           },
           {
-            path: '/form/:formId/submissions',
+            path: 'submissions',
             name: 'FormSubmissions',
-            component: () => import(/* webpackChunkName: "formsubmissions" */ '@/views/form/FormSubmissions.vue'),
-            props: true,
+            component: () => import(/* webpackChunkName: "submissions" */ '@/views/form/Submissions.vue'),
             meta: {
               breadcrumbTitle: 'Submissions'
-            }
+            },
+            props: createProps
           },
           {
-            // TODO: Consider better way of representing path with version in it
-            path: '/form/:formId/submissions/:versionId/:submissionId',
-            name: 'FormSubmissionView',
-            component: () => import(/* webpackChunkName: "formsubmissionview" */ '@/views/form/FormSubmissionView.vue'),
-            props: true,
-            meta: {
-              breadcrumbTitle: 'View Submission'
-            }
-          },
-          {
-            path: '/form/:formId/teams',
-            name: 'FormTeamManagement',
-            component: () => import(/* webpackChunkName: "formmanage" */ '@/views/form/FormTeams.vue'),
-            props: true,
+            path: 'teams',
+            name: 'FormTeams',
+            component: () => import(/* webpackChunkName: "teams" */ '@/views/form/Teams.vue'),
             meta: {
               breadcrumbTitle: 'Manage Teams'
-            }
+            },
+            props: createProps
           },
           {
-            path: '/form/:formId/versions/:versionId/submit',
+            path: 'submit',
             name: 'FormSubmit',
-            component: () => import(/* webpackChunkName: "formsubmit" */ '@/views/form/FormSubmit.vue'),
-            props: true,
+            component: () => import(/* webpackChunkName: "submit" */ '@/views/form/Submit.vue'),
             meta: {
               breadcrumbTitle: 'Submit Form'
-            }
+            },
+            props: createProps
+          },
+          {
+            path: 'view',
+            name: 'FormView',
+            component: () => import(/* webpackChunkName: "viewsubmission" */ '@/views/form/ViewSubmission.vue'),
+            meta: {
+              breadcrumbTitle: 'View Submission'
+            },
+            props: createProps
           },
         ],
         meta: {
@@ -109,18 +102,39 @@ export default function getRouter(basePath = '/') {
         }
       },
       {
-        path: '/myForms',
-        name: 'MyForms',
-        component: () => import(/* webpackChunkName: "myforms" */ '@/views/MyForms.vue'),
+        path: '/search',
+        name: 'Search',
+        component: () => import(/* webpackChunkName: "search" */ '@/views/Search.vue'),
         meta: {
-          requiresAuth: true,
           hasLogin: true
         }
       },
       {
         path: '/user',
-        name: 'User',
         component: () => import(/* webpackChunkName: "user" */ '@/views/User.vue'),
+        children: [
+          {
+            path: '',
+            name: 'User',
+            component: () => import(/* webpackChunkName: "designer" */ '@/views/user/Root.vue')
+          },
+          {
+            path: 'forms',
+            name: 'UserForms',
+            component: () => import(/* webpackChunkName: "userforms" */ '@/views/user/Forms.vue'),
+            meta: {
+              breadcrumbTitle: 'My Forms'
+            }
+          },
+          {
+            path: 'history',
+            name: 'UserHistory',
+            component: () => import(/* webpackChunkName: "history" */ '@/views/user/History.vue'),
+            meta: {
+              breadcrumbTitle: 'History'
+            }
+          },
+        ],
         meta: {
           requiresAuth: true,
           hasLogin: true
