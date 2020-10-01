@@ -11,7 +11,7 @@
     "keycloak": {
       "clientId": "chefs-frontend",
       "realm": "cp1qly2d",
-      "serverUrl": "https://sso-dev.pathfinder.gov.bc.ca/auth"
+      "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
     }
   },
   "server": {
@@ -21,7 +21,7 @@
     "keycloak": {
       "clientId": "chefs",
       "realm": "cp1qly2d",
-      "serverUrl": "https://sso-dev.pathfinder.gov.bc.ca/auth"
+      "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
     },
     "logLevel": "debug",
     "morganFormat": "combined",
