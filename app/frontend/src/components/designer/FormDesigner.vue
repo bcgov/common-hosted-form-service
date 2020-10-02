@@ -157,11 +157,12 @@
           <div v-if="designerStep == 2">
             <FormBuilder :form="formSchema" :options="designerOptions" :key="reRenderFormIo"/>
 
-            <BaseDownloadFile
-              buttonText="Export Design"
-              defaultName="formDesign.json"
-              :fileContent="JSON.stringify(formSchema)"
-            />
+            <span>
+              <v-btn text color="primary" @click="downloadFile">
+                <v-icon class="mr-1">cloud_download</v-icon>
+                <span>Export Design</span>
+              </v-btn>
+            </span>
           </div>
         </v-stepper-content>
       </v-stepper-items>
@@ -305,6 +306,18 @@ export default {
       } catch (error) {
         console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
       }
+    },
+    downloadFile() {
+      var a = document.createElement('a');
+      a.href = `data:text/plain;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(this.formSchema)
+      )}`;
+      a.download = 'formDesign.json';
+      a.style.display = 'none';
+      a.classList.add('hiddenDownloadTextElement');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     },
     async loadFile(file) {
       let text = await file.text();
