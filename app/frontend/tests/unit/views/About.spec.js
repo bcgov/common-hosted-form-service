@@ -1,9 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 
-import Home from '@/views/Home.vue';
+import About from '@/views/About.vue';
 
-describe('Home.vue', () => {
+describe('About.vue', () => {
   let vuetify;
 
   beforeEach(() => {
@@ -11,9 +11,8 @@ describe('Home.vue', () => {
   });
 
   it('renders', () => {
-    const wrapper = shallowMount(Home, {
-      vuetify,
-      stubs: ['HelloWorld']
+    const wrapper = shallowMount(About, {
+      vuetify
     });
 
     expect(wrapper.html()).toMatch('Welcome to CHEFS');
