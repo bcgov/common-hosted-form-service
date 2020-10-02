@@ -2,15 +2,11 @@
   <div>
     <v-stepper v-model="designerStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1"
-        >Set up Form</v-stepper-step
-        >
+        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1">Set up Form</v-stepper-step>
 
         <v-divider></v-divider>
 
-        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1"
-        >Design Form</v-stepper-step
-        >
+        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1">Design Form</v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -108,9 +104,27 @@
                   created.
                 </div>
               </v-radio-group>
+
+              <v-row class="mb-4">
+                <v-col cols="12" md="6" lg="4">
+                  <v-expansion-panels popout>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header>Import existing form design (BETA)</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <v-file-input
+                          @change="loadFile"
+                          accept=".json"
+                          outlined
+                          show-size
+                          label="Upload exported JSON"
+                        ></v-file-input>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-col></v-row>
             </v-container>
-            <v-btn color="primary" @click="setFormDetails"
-            ><span>Continue</span></v-btn
+            <v-btn color="primary" @click="setFormDetails">
+              <span>Continue</span></v-btn
             >
           </v-form>
         </v-stepper-content>
@@ -141,7 +155,13 @@
             users to submit this form when published.
           </div>
           <div v-if="designerStep == 2">
-            <FormBuilder :form="formSchema" :options="designerOptions" />
+            <FormBuilder :form="formSchema" :options="designerOptions" :key="reRenderFormIo"/>
+
+            <BaseDownloadFile
+              buttonText="Export Design"
+              defaultName="formDesign.json"
+              :fileContent="JSON.stringify(formSchema)"
+            />
           </div>
         </v-stepper-content>
       </v-stepper-items>
@@ -162,6 +182,39 @@ export default {
   props: {
     formId: String,
     formVersionId: String,
+  },
+  data() {
+    return {
+      advancedForm: false,
+      designerStep: 1,
+      idps: [IdentityProviders.IDIR],
+      formSchema: {
+        display: 'form',
+        type: 'form',
+        components: [],
+      },
+      formName: '',
+      formDescription: '',
+      reRenderFormIo: 0,
+      userType: 'team',
+      valid: false,
+
+      // Validation
+      loginRequiredRules: [
+        (v) =>
+          v != 'login' ||
+          this.idps.length > 0 ||
+          'Please select at least 1 log-in type',
+      ],
+      formDescriptionRules: [
+        (v) =>
+          !v || v.length <= 255 || 'Description must be 255 characters or less',
+      ],
+      formNameRules: [
+        (v) => !!v || 'Name is required',
+        (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
+      ],
+    };
   },
   computed: {
     ID_PROVIDERS() {
@@ -235,38 +288,6 @@ export default {
       }
     },
   },
-  data() {
-    return {
-      advancedForm: false,
-      designerStep: 1,
-      idps: [IdentityProviders.IDIR],
-      formSchema: {
-        display: 'form',
-        type: 'form',
-        components: [],
-      },
-      formName: '',
-      formDescription: '',
-      userType: 'team',
-      valid: false,
-
-      // Validation
-      loginRequiredRules: [
-        (v) =>
-          v != 'login' ||
-          this.idps.length > 0 ||
-          'Please select at least 1 log-in type',
-      ],
-      formDescriptionRules: [
-        (v) =>
-          !v || v.length <= 255 || 'Description must be 255 characters or less',
-      ],
-      formNameRules: [
-        (v) => !!v || 'Name is required',
-        (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
-      ],
-    };
-  },
   methods: {
     async getFormSchema() {
       try {
@@ -284,6 +305,12 @@ export default {
       } catch (error) {
         console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
       }
+    },
+    async loadFile(file) {
+      let text = await file.text();
+      this.formSchema = JSON.parse(text);
+      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
+      this.reRenderFormIo += 1;
     },
     async setFormDetails() {
       if (this.$refs.step1Form.validate()) {
