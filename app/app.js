@@ -93,7 +93,7 @@ app.use((req, res) => {
     }).send(res);
   } else {
     // Redirect any non-API requests to static frontend with redirect breadcrumb
-    const query = querystring.stringify({ r: req.path });
+    const query = querystring.stringify({ ...req.query, r: req.path });
     res.redirect(`${staticFilesPath}/?${query}`);
   }
 });
