@@ -67,7 +67,7 @@ function initializeApp(kcSuccess = false, basePath = '/') {
  */
 async function loadConfig() {
   // App publicPath is ./ - so use relative path here, will hit the backend server using relative path to root.
-  const configUrl = process.env.NODE_ENV === 'production' ? 'config' : 'app/config';
+  const configUrl = process.env.NODE_ENV === 'production' ? 'config' : '/app/config';
   const storageKey = 'config';
 
   try {

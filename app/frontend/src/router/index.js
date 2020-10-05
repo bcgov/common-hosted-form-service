@@ -158,7 +158,7 @@ export default function getRouter(basePath = '/') {
       && router.app.$keycloak
       && router.app.$keycloak.ready
       && !router.app.$keycloak.authenticated) {
-      const redirect = location.origin + basePath + to.path;
+      const redirect = location.origin + basePath + to.path + location.search;
       const loginUrl = router.app.$keycloak.createLoginUrl({
         //idpHint: 'idir',
         redirectUri: redirect
@@ -167,7 +167,10 @@ export default function getRouter(basePath = '/') {
     } else {
       document.title = to.meta.title ? to.meta.title : process.env.VUE_APP_TITLE;
       if (to.query.r && isFirstTransition) {
-        router.replace({ path: to.query.r.replace(basePath, '') });
+        router.replace({
+          path: to.query.r.replace(basePath, ''),
+          query: (({ r, ...q }) => q)(to.query) // eslint-disable-line no-unused-vars
+        });
       }
       next();
     }
