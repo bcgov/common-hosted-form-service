@@ -82,7 +82,8 @@ export default function getRouter(basePath = '/') {
             name: 'FormSubmit',
             component: () => import(/* webpackChunkName: "submit" */ '@/views/form/Submit.vue'),
             meta: {
-              breadcrumbTitle: 'Submit Form'
+              breadcrumbTitle: 'Submit Form',
+              hideNavBar: true
             },
             props: createProps
           },
