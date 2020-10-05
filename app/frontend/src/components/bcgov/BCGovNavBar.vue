@@ -1,5 +1,5 @@
 <template>
-  <nav class="navigation-main">
+  <nav v-if="!hideNavBar" class="navigation-main">
     <div class="container">
       <ul>
         <li>
@@ -21,7 +21,12 @@
 
 <script>
 export default {
-  name: 'BCGovNavBar'
+  name: 'BCGovNavBar',
+  computed: {
+    hideNavBar() {
+      return this.$route.meta.hideNavBar;
+    }
+  }
 };
 </script>
 

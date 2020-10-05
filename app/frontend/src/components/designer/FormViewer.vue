@@ -1,9 +1,13 @@
 <template>
   <div>
-    <v-alert v-if="alertShow" :type="alertType" tile dense>{{ alertMessage }}</v-alert>
+    <h1 class="text-center">{{ formName }}</h1>
+    <v-alert v-if="alertShow" :type="alertType" tile dense>{{
+      alertMessage
+    }}</v-alert>
     <div v-if="success" class="mb-5">
       <h1>
-        <v-icon large color="success">check_circle</v-icon>Your form has been submitted successfully
+        <v-icon large color="success">check_circle</v-icon>Your form has been
+        submitted successfully
       </h1>
       <h3>
         Please keep the following Confirmation ID for your records:
@@ -52,12 +56,13 @@ export default {
       alertShow: false,
       alertType: null,
       confId: '',
+      formName: '',
       formSchema: {},
       submission: {
-        data: {}
+        data: {},
       },
       currentForm: {},
-      submissionRecord: {}
+      submissionRecord: {},
     };
   },
   computed: {
@@ -65,8 +70,8 @@ export default {
       return {
         readOnly: this.submissionId !== undefined,
         hooks: {
-          beforeSubmit: this.onBeforeSubmit
-        }
+          beforeSubmit: this.onBeforeSubmit,
+        },
       };
     },
   },
@@ -90,8 +95,21 @@ export default {
         );
       }
     },
+    // Get form name
+    async getFormName() {
+      try {
+        const response = await formService.readForm(this.formId);
+        if (!response.data) {
+          throw new Error(`No data in response. FormId: ${this.formId}`);
+        }
+        this.formName = response.data.name;
+      } catch (error) {
+        console.error(`Error getting form data: ${error}`); // eslint-disable-line no-console
+        this.showAlert('error', 'An error occurred fetching this form');
+      }
+    },
     // Get the form definition/schema
-    async getFormDefinition() {
+    async getFormSchema() {
       try {
         const response = await formService.readVersion(
           this.formId,
@@ -176,7 +194,7 @@ export default {
           formId: this.formId,
           versionId: this.versionId,
           submissionId: this.submissionRecord.id,
-          success: true
+          success: true,
         },
       });
     },
@@ -188,7 +206,8 @@ export default {
     },
   },
   mounted() {
-    this.getFormDefinition();
+    this.getFormName();
+    this.getFormSchema();
     if (this.submissionId) {
       this.getFormData();
     }
