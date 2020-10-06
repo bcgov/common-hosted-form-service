@@ -24,7 +24,7 @@ export default {
   name: 'BCGovNavBar',
   computed: {
     hideNavBar() {
-      return this.$route.meta.hideNavBar;
+      return this.$route && this.$route.meta && this.$route.meta.hideNavBar;
     }
   }
 };
