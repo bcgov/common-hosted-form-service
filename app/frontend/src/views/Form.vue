@@ -1,6 +1,5 @@
 <template>
   <v-container>
-    <v-breadcrumbs :items="breadcrumbs" />
     <transition name="component-fade" mode="out-in">
       <router-view />
     </transition>
@@ -17,26 +16,6 @@ export default {
     return {
       formName: '',
     };
-  },
-  computed: {
-    breadcrumbs() {
-      const path = [
-        {
-          text: 'Form',
-        },
-      ];
-      if (this.formName) {
-        path.push({
-          text: this.formName,
-        });
-      }
-      if (this.$route.meta.breadcrumbTitle) {
-        path.push({
-          text: this.$route.meta.breadcrumbTitle,
-        });
-      }
-      return path;
-    },
   },
   methods: {
     async getForm() {
