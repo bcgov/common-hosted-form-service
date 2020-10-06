@@ -1,25 +1,29 @@
 import { shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
-import VueRouter from 'vue-router';
 
 import BCGovNavBar from '@/components/bcgov/BCGovNavBar.vue';
 
 describe('BCGovNavBar.vue', () => {
-  let router;
   let vuetify;
 
   beforeEach(() => {
-    router = new VueRouter();
     vuetify = new Vuetify();
   });
 
   it('renders', () => {
     const wrapper = shallowMount(BCGovNavBar, {
-      vuetify,
-      router,
-      stubs: ['router-link', 'router-view']
+      mocks: {
+        $route: {
+          meta: {}
+        }
+      },
+      stubs: ['router-link'],
+      vuetify
     });
 
     expect(wrapper.text()).toContain('About');
+    expect(wrapper.text()).toContain('My Forms');
+    expect(wrapper.text()).toContain('Create a New Form');
+    expect(wrapper.text()).toContain('User');
   });
 });

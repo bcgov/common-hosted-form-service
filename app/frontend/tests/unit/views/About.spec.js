@@ -12,6 +12,7 @@ describe('About.vue', () => {
 
   it('renders', () => {
     const wrapper = shallowMount(About, {
+      stubs: ['router-link'],
       vuetify
     });
 
