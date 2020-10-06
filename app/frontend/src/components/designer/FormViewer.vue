@@ -184,6 +184,9 @@ export default {
       this.currentForm.events.emit('formio.submitDone');
     },
     onSubmitDone() {
+      // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
+      window.onbeforeunload = null;
+
       // huzzah!
       // really nothing to do, the formio button has consumed the event and updated its display
       // is there anything here for us to do?
@@ -206,10 +209,15 @@ export default {
     },
   },
   mounted() {
+    console.log('here');
     this.getFormName();
     this.getFormSchema();
     if (this.submissionId) {
       this.getFormData();
+    } else {
+      console.log('here2');
+      // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
+      window.onbeforeunload = () => true;
     }
   },
 };
