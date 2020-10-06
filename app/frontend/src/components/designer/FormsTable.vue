@@ -25,19 +25,25 @@
         <v-btn v-if="checkFormManage(item)" color="textLink" text small>
           <router-link :to="{ name: 'FormManage', query: { f: item.id } }">
             <v-icon class="mr-1">build_circle</v-icon>
-            <span>MANAGE</span>
+            <span>Manage</span>
           </router-link>
         </v-btn>
         <v-btn v-if="checkSubmissionView(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmissions', query: { f: item.id }}">
+          <router-link :to="{ name: 'FormSubmissions', query: { f: item.id } }">
             <v-icon class="mr-1">remove_red_eye</v-icon>
-            <span>VIEW SUBMISSIONS</span>
+            <span>View Submissions</span>
           </router-link>
         </v-btn>
         <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmit', query: { f: item.id, v: item.currentVersionId } }">
+          <router-link
+            :to="{
+              name: 'FormSubmit',
+              query: { f: item.id, v: item.currentVersionId },
+            }"
+            target="_blank"
+          >
             <v-icon class="mr-1">note_add</v-icon>
-            <span>SUBMIT</span>
+            <span>Launch</span>
           </router-link>
         </v-btn>
       </template>
@@ -47,7 +53,11 @@
 
 <script>
 import rbacService from '@/services/rbacService';
-import { checkFormManage, checkFormSubmit, checkSubmissionView } from '@/utils/permissionUtils';
+import {
+  checkFormManage,
+  checkFormSubmit,
+  checkSubmissionView,
+} from '@/utils/permissionUtils';
 
 export default {
   name: 'FormsTable',
@@ -87,7 +97,7 @@ export default {
             id: f.formId,
             idps: f.idps,
             name: f.formName,
-            permissions: f.permissions
+            permissions: f.permissions,
           };
         });
         this.forms = forms;
@@ -96,7 +106,7 @@ export default {
       } finally {
         this.loading = false;
       }
-    }
+    },
   },
   mounted() {
     this.populateFormTable();
