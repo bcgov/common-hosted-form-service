@@ -1,14 +1,13 @@
 <template>
   <div>
-    <h2>{{ form.name }}</h2>
-    <br />
+    <h1 class="text-center">{{ form.name }}</h1>
+    <p><strong>Description: </strong>{{ form.description }}</p>
     <p>
-      <strong>Description:</strong>
-      {{ form.description }}
-      <br />
-      <strong>Created:</strong>
-      {{ form.createdAt | formatDate }} ({{ form.createdBy }})
-      <!-- <strong>Labels:</strong>
+      <strong>Created: </strong>{{ form.createdAt | formatDate }} ({{
+        form.createdBy
+      }})
+    </p>
+    <!-- <strong>Labels:</strong>
       <v-chip
         class="ma-1"
         v-for="label in form.labels"
@@ -20,10 +19,9 @@
         <v-icon class="mr-1">add</v-icon>
         <span>Add</span>
       </v-btn>-->
-    </p>
     <p>
       <strong>Share this form:</strong>
-      <ShareForm :formId="formId" :versionId="currentVersion.id" />
+      <ShareForm :formId="f" :versionId="currentVersion.id" />
     </p>
     <v-row>
       <v-col cols="6">
@@ -33,9 +31,7 @@
             <v-list-item-content>
               <div class="overline mb-4">
                 TEAM MANGEMENT
-                <router-link
-                  :to="{ name: 'FormTeams', query: { formId: formId } }"
-                >
+                <router-link :to="{ name: 'FormTeams', query: { f: f } }">
                   <v-btn color="blue" text small>
                     <v-icon class="mr-1">edit</v-icon>
                     <span>Edit</span>
@@ -60,7 +56,12 @@
                 ({{ currentVersion.updatedBy }})
               </span>
             </p>
-            <router-link :to="{ name: 'FormDesigner', query: { formId: formId, versionId: currentVersion.id } }">
+            <router-link
+              :to="{
+                name: 'FormDesigner',
+                query: { f: f, v: currentVersion.id },
+              }"
+            >
               <v-btn color="blue" text small>
                 <v-icon class="mr-1">edit</v-icon>
                 <span>Edit Current Form</span>
@@ -98,7 +99,7 @@ export default {
   name: 'Manage',
   components: { ShareForm },
   props: {
-    formId: {
+    f: {
       type: String,
       required: true,
     },
@@ -113,7 +114,7 @@ export default {
     ...mapActions('form', ['fetchForm']),
   },
   mounted() {
-    this.fetchForm(this.formId);
+    this.fetchForm(this.f);
   },
 };
 </script>

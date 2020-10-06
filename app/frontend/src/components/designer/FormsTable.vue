@@ -23,19 +23,19 @@
     >
       <template v-slot:item.actions="{ item }">
         <v-btn v-if="checkFormManage(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormManage', query: { formId: item.id } }">
+          <router-link :to="{ name: 'FormManage', query: { f: item.id } }">
             <v-icon class="mr-1">build_circle</v-icon>
             <span>MANAGE</span>
           </router-link>
         </v-btn>
         <v-btn v-if="checkSubmissionView(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmissions', query: { formId: item.id }}">
+          <router-link :to="{ name: 'FormSubmissions', query: { f: item.id }}">
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW SUBMISSIONS</span>
           </router-link>
         </v-btn>
         <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmit', query: { formId: item.id, versionId: item.currentVersionId } }">
+          <router-link :to="{ name: 'FormSubmit', query: { f: item.id, v: item.currentVersionId } }">
             <v-icon class="mr-1">note_add</v-icon>
             <span>SUBMIT</span>
           </router-link>

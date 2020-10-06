@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="my-6 text-center">Form Designer</h1>
-    <FormDesigner :formId="formId" :versionId="formVersionId" />
+    <FormDesigner :formId="f" :versionId="v" />
   </div>
 </template>
 
@@ -14,8 +14,8 @@ export default {
     FormDesigner,
   },
   props: {
-    formId: String,
-    versionId: String,
+    f: String,
+    v: String,
   },
 };
 </script>
