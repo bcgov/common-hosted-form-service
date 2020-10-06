@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-center">{{ formName }}</h1>
+    <h1 class="my-6 text-center">{{ formName }}</h1>
     <v-alert v-if="alertShow" :type="alertType" tile dense>{{
       alertMessage
     }}</v-alert>

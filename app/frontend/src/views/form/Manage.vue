@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h1 class="text-center">{{ form.name }}</h1>
+    <v-breadcrumbs :items="breadcrumbs" />
+    <h1 class="my-6 text-center">{{ form.name }}</h1>
     <p><strong>Description: </strong>{{ form.description }}</p>
     <p>
       <strong>Created: </strong>{{ form.createdAt | formatDate }} ({{
@@ -106,6 +107,19 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['form']),
+    breadcrumbs() {
+      const path = [
+        {
+          text: 'Form',
+        },
+      ];
+      if (this.$route.meta.breadcrumbTitle) {
+        path.push({
+          text: this.$route.meta.breadcrumbTitle,
+        });
+      }
+      return path;
+    },
     currentVersion() {
       return this.form.versions ? this.form.versions[0] : {};
     },

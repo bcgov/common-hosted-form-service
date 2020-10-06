@@ -73,7 +73,7 @@ export default function getRouter(basePath = '/') {
             name: 'FormTeams',
             component: () => import(/* webpackChunkName: "teams" */ '@/views/form/Teams.vue'),
             meta: {
-              breadcrumbTitle: 'Manage Teams'
+              breadcrumbTitle: 'Team Management'
             },
             props: createProps
           },

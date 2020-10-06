@@ -1,5 +1,6 @@
 <template>
   <div>
+    <v-breadcrumbs v-if="!success" :items="breadcrumbs" />
     <FormViewer
       :formId="f"
       :versionId="v"
@@ -22,6 +23,24 @@ export default {
   },
   components: {
     FormViewer,
+  },
+  computed: {
+    breadcrumbs() {
+      const path = [
+        {
+          text: 'Form',
+        },
+        {
+          text: 'Submissions'
+        }
+      ];
+      if (this.$route.meta.breadcrumbTitle) {
+        path.push({
+          text: this.$route.meta.breadcrumbTitle,
+        });
+      }
+      return path;
+    },
   },
 };
 </script>
