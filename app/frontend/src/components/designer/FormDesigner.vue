@@ -379,7 +379,7 @@ export default {
               `createForm response does not include a form version: ${response.data.versions}`
             );
           }
-          
+
           // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
           window.onbeforeunload = null;
 
@@ -399,9 +399,12 @@ export default {
         this.getFormSchema();
       }
     },
+    beforeDestroy() {
+      window.onbeforeunload = null;
+    }
   },
   watch: {
-    designerStep: function (newValue) {
+    designerStep(newValue) {
       if (newValue === 2) {
         // Once they go to the design step, enable the typical "leave site" native browser warning
         window.onbeforeunload = () => true;

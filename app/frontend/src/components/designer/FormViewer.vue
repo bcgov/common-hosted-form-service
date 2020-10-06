@@ -209,16 +209,17 @@ export default {
     },
   },
   mounted() {
-    console.log('here');
     this.getFormName();
     this.getFormSchema();
     if (this.submissionId) {
       this.getFormData();
     } else {
-      console.log('here2');
       // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
       window.onbeforeunload = () => true;
     }
+  },
+  beforeDestroy() {
+    window.onbeforeunload = null;
   },
 };
 </script>
