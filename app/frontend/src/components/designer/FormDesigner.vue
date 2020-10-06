@@ -398,9 +398,6 @@ export default {
       if (this.formId) {
         this.getFormSchema();
       }
-    },
-    beforeDestroy() {
-      window.onbeforeunload = null;
     }
   },
   watch: {

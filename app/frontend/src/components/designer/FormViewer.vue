@@ -217,9 +217,6 @@ export default {
       // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
       window.onbeforeunload = () => true;
     }
-  },
-  beforeDestroy() {
-    window.onbeforeunload = null;
-  },
+  }
 };
 </script>
