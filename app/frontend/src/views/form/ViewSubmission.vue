@@ -1,6 +1,11 @@
 <template>
   <div>
-    <FormViewer :formId="formId" :versionId="versionId" :submissionId="submissionId" :success="formSuccess"/>
+    <FormViewer
+      :formId="f"
+      :versionId="v"
+      :submissionId="s"
+      :success="success"
+    />
   </div>
 </template>
 
@@ -9,14 +14,14 @@ import FormViewer from '@/components/designer/FormViewer.vue';
 
 export default {
   name: 'FormViewSubmission',
-  props: ['formId', 'versionId', 'submissionId'],
+  props: {
+    f: String,
+    v: String,
+    s: String,
+    success: Boolean,
+  },
   components: {
     FormViewer,
-  },
-  computed: {
-    formSuccess() {
-      return this.$route.query.success;
-    }
   },
 };
 </script>

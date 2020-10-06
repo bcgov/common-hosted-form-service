@@ -191,9 +191,9 @@ export default {
       this.$router.push({
         name: 'FormView',
         query: {
-          formId: this.formId,
-          versionId: this.versionId,
-          submissionId: this.submissionRecord.id,
+          f: this.formId,
+          v: this.versionId,
+          s: this.submissionRecord.id,
           success: true,
         },
       });

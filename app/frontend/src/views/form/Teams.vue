@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="my-6 text-center">Team Management</h1>
-    <TeamManagement :formId="formId" />
+    <TeamManagement :formId="f" />
   </div>
 </template>
 
@@ -14,7 +14,7 @@ export default {
     TeamManagement
   },
   props: {
-    formId: {
+    f: {
       type: String,
       required: true
     }

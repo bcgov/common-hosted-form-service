@@ -1,9 +1,6 @@
 <template>
   <div>
-    <FormViewer
-      :formId="formId"
-      :versionId="versionId"
-    />
+    <FormViewer :formId="f" :versionId="v" />
   </div>
 </template>
 
@@ -15,6 +12,9 @@ export default {
   components: {
     FormViewer,
   },
-  props: ['formId', 'versionId'],
+  props: {
+    f: String,
+    v: String,
+  },
 };
 </script>
