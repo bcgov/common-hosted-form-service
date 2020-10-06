@@ -1,15 +1,15 @@
 <template>
-  <nav class="navigation-main">
+  <nav v-if="!hideNavBar" class="navigation-main">
     <div class="container">
       <ul>
         <li>
-          <router-link :to="{ name: 'Home' }">About</router-link>
+          <router-link :to="{ name: 'About' }">About</router-link>
         </li>
         <li>
-          <router-link :to="{ name: 'MyForms' }">My Forms</router-link>
+          <router-link :to="{ name: 'UserForms' }">My Forms</router-link>
         </li>
         <li>
-          <router-link :to="{ name: 'NewDesigner' }">Create a New Form</router-link>
+          <router-link :to="{ name: 'FormDesigner' }">Create a New Form</router-link>
         </li>
         <li>
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
@@ -21,7 +21,12 @@
 
 <script>
 export default {
-  name: 'BCGovNavBar'
+  name: 'BCGovNavBar',
+  computed: {
+    hideNavBar() {
+      return this.$route && this.$route.meta && this.$route.meta.hideNavBar;
+    }
+  }
 };
 </script>
 
