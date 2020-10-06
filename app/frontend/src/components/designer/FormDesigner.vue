@@ -2,11 +2,15 @@
   <div>
     <v-stepper v-model="designerStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1">Set up Form</v-stepper-step>
+        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1">
+          Set up Form
+        </v-stepper-step>
 
         <v-divider></v-divider>
 
-        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1">Design Form</v-stepper-step>
+        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1">
+          Design Form
+        </v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -109,7 +113,9 @@
                 <v-col cols="12" md="6" lg="4">
                   <v-expansion-panels popout>
                     <v-expansion-panel>
-                      <v-expansion-panel-header>Import existing form design (BETA)</v-expansion-panel-header>
+                      <v-expansion-panel-header>
+                        Import existing form design (BETA)
+                      </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <v-file-input
                           @change="loadFile"
@@ -121,7 +127,8 @@
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                   </v-expansion-panels>
-                </v-col></v-row>
+                </v-col>
+              </v-row>
             </v-container>
             <v-btn color="primary" @click="setFormDetails">
               <span>Continue</span></v-btn
@@ -155,7 +162,11 @@
             users to submit this form when published.
           </div>
           <div v-if="designerStep == 2">
-            <FormBuilder :form="formSchema" :options="designerOptions" :key="reRenderFormIo"/>
+            <FormBuilder
+              :form="formSchema"
+              :options="designerOptions"
+              :key="reRenderFormIo"
+            />
 
             <span>
               <v-btn text color="primary" @click="downloadFile">
@@ -368,9 +379,15 @@ export default {
               `createForm response does not include a form version: ${response.data.versions}`
             );
           }
+
+          // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
+          window.onbeforeunload = null;
+
           this.$router.push({
             name: 'FormManage',
-            params: { formId: response.data.id },
+            query: {
+              f: response.data.id,
+            },
           });
         } catch (error) {
           console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
@@ -380,6 +397,14 @@ export default {
     created() {
       if (this.formId) {
         this.getFormSchema();
+      }
+    }
+  },
+  watch: {
+    designerStep(newValue) {
+      if (newValue === 2) {
+        // Once they go to the design step, enable the typical "leave site" native browser warning
+        window.onbeforeunload = () => true;
       }
     },
   },
