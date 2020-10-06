@@ -1,10 +1,7 @@
 <template>
-  <v-container>
-    <FormViewer
-      :formId="formId"
-      :versionId="versionId"
-    />
-  </v-container>
+  <div>
+    <FormViewer :formId="f" :versionId="v" />
+  </div>
 </template>
 
 <script>
@@ -15,6 +12,9 @@ export default {
   components: {
     FormViewer,
   },
-  props: ['formId', 'versionId'],
+  props: {
+    f: String,
+    v: String,
+  },
 };
 </script>
