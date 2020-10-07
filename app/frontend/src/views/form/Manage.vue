@@ -97,7 +97,7 @@ import { mapGetters, mapActions } from 'vuex';
 import ShareForm from '@/components/forms/ShareForm.vue';
 
 export default {
-  name: 'Manage',
+  name: 'FormManage',
   components: { ShareForm },
   props: {
     f: {
