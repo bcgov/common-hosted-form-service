@@ -1,6 +1,18 @@
 const service = require('./service');
+const exportService = require('./exportService');
 
 module.exports = {
+  export: async (req, res, next) => {
+    try {
+      const result = await exportService.export(req.params.formId, req.query, req.currentUser);
+      ['Content-Disposition','Content-Type'].forEach(h => {
+        res.setHeader(h, result.headers[h.toLowerCase()]);
+      });
+      return res.send(result.data);
+    } catch (error) {
+      next(error);
+    }
+  },
   listForms: async (req, res, next) => {
     try {
       const response = await service.listForms();
