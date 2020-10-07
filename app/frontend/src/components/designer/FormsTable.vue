@@ -21,7 +21,7 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template v-slot:item.actions="{ item }">
+      <template #[`item.actions`]="{ item }">
         <v-btn v-if="checkFormManage(item)" color="textLink" text small>
           <router-link :to="{ name: 'FormManage', query: { f: item.id } }">
             <v-icon class="mr-1">build_circle</v-icon>

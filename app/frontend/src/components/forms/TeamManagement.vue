@@ -22,7 +22,7 @@
       no-data-text="Failed to load team role data"
       :search="search"
     >
-      <template v-slot:item="{ item, isMobile, headers }">
+      <template #item="{ item, isMobile, headers }">
         <tr v-if="isMobile" class="v-data-table__mobile-table-row">
           <td
             v-for="header in headers"
