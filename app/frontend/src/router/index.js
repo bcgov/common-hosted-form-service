@@ -51,6 +51,15 @@ export default function getRouter(basePath = '/') {
             props: createProps
           },
           {
+            path: 'edit',
+            name: 'FormEditor',
+            component: () => import(/* webpackChunkName: "edit" */ '@/views/form/Edit.vue'),
+            meta: {
+              breadcrumbTitle: 'Form Designer'
+            },
+            props: createProps
+          },
+          {
             path: 'manage',
             name: 'FormManage',
             component: () => import(/* webpackChunkName: "manage" */ '@/views/form/Manage.vue'),
