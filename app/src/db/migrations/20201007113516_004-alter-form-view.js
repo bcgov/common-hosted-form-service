@@ -48,5 +48,4 @@ exports.down = function (knex) {
       GROUP BY f.id, f.name, f.active, f.description, f.labels, f."createdAt", f."createdBy", f."updatedAt",
             f."updatedBy", fv.id, fv.version
       ORDER BY (lower(f.name::text)), fv.version DESC`));
-
 };
