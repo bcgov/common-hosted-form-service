@@ -1,5 +1,5 @@
 <template>
-  <v-skeleton-loader :loading="loading" type="heading, paragraph@3, button">
+  <v-skeleton-loader :loading="loading" type="article">
     <h2>Set your Form Options</h2>
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-container class="px-0">
@@ -30,11 +30,7 @@
           </v-col>
         </v-row>
 
-        <p>Choose which form designer mode to use</p>
-        <v-radio-group class="pl-5" row v-model="advancedForm">
-          <v-radio label="Basic Form Designer" :value="false" />
-          <v-radio label="Advanced Form Designer" :value="true" />
-        </v-radio-group>
+
 
         <p>Select which type of users can launch this form when published</p>
         <v-radio-group
@@ -109,7 +105,6 @@ export default {
   },
   data() {
     return {
-      advancedForm: false,
       loading: true,
       submitting: false,
       valid: false,

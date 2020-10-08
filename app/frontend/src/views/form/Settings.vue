@@ -1,17 +1,17 @@
 <template>
   <div>
     <h1 class="my-6 text-center">Form Edit</h1>
-    <FormEditor :formId="f" />
+    <FormSettings :formId="f" />
   </div>
 </template>
 
 <script>
-import FormEditor from '@/components/designer/FormEditor.vue';
+import FormSettings from '@/components/designer/FormSettings.vue';
 
 export default {
-  name: 'FormEdit',
+  name: 'FormSettings',
   components: {
-    FormEditor,
+    FormSettings,
   },
   props: {
     f: String
