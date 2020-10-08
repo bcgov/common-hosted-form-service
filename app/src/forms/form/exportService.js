@@ -92,6 +92,7 @@ const service = {
     // possible params for this export include minDate and maxDate (full timestamp dates).
     return SubmissionData.query()
       .column(service._submissionsColumns(params))
+      .where('formId', formId)
       .modify('filterCreatedAt', params.minDate, params.maxDate);
   },
 
@@ -150,6 +151,8 @@ const service = {
 
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, formId, params, currentUser);
+    console.log('*****************');
+    console.log(JSON.stringify(data));
     const result = await service._formatData(exportFormat, exportType, form, data);
 
     return { data: result.data, headers: result.headers };

@@ -97,4 +97,16 @@ export default {
   listVersions(formId) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions`);
   },
+
+  /**
+   * @function exportSubmissions
+   * Get the export file for a range of form submittions
+   * @param {string} minDate The form uuid
+   * @param {string} maxDate The form uuid
+   * @returns {Promise} An axios response
+   */
+  exportSubmissions(formId, minDate, maxDate) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export?format=csv&type=submissions${minDate ? `&minDate=${minDate}` : ''}${maxDate ? `&maxDate=${maxDate}` : ''}`, { responseType: 'blob', });
+  },
+
 };
