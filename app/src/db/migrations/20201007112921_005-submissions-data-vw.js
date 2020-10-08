@@ -10,7 +10,7 @@ from submissions_vw s
     inner join form_submission fs on s."submissionId" = fs.id
     inner join form_submission_user fsu on s."submissionId" = fsu."formSubmissionId" and fsu.permission = 'submission_create'
     inner join "user" u on fsu."userId" = u.id
-order by s."formName", s.version, s."createdAt"`));
+order by s."createdAt", s."formName", s.version`));
 };
 
 exports.down = function(knex) {
