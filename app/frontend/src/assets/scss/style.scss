@@ -1,15 +1,14 @@
 /*
  * BCGov Style
  * This globally extends the base Vuetify style
+ * Includes icons css
  */
+@import "~material-design-icons-iconfont/dist/material-design-icons.css";
+@import "~font-awesome/css/font-awesome.css";
 @import '~vuetify/src/styles/styles.sass';
+@import './variables.scss';
 
-// Variables
-$bcgov-blue: #003366;
-$bcgov-blue-secondary: #38598a;
-$bcgov-orange: #fcba19;
-$bcgov-grey: #efefef;
-$bcgov-font: #494949;
+
 
 // Sticky Footer
 body {

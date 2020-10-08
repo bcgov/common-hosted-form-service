@@ -161,7 +161,7 @@
             you are done building this form. The SUBMIT button below is for your
             users to submit this form when published.
           </div>
-          <div v-if="designerStep == 2">
+          <div v-if="designerStep == 2" class="form-builder-wrapper">
             <FormBuilder
               :form="formSchema"
               :options="designerOptions"
@@ -410,3 +410,16 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+ @import '~bootstrap/dist/css/bootstrap.min.css';
+ @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
+
+// override formio form builder styles here
+ .form-builder-wrapper ::v-deep .formbuilder{
+   .btn-primary{
+     background-color: #003366;
+   }
+ }
+
+</style>
