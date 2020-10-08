@@ -84,7 +84,7 @@
         color="primary"
         :disabled="!valid"
         :loading="submitting"
-        @click="submitForm"
+        @click="submit"
       >
         <span>Save</span>
       </v-btn>
@@ -99,7 +99,7 @@ import { IdentityProviders } from '@/utils/constants';
 
 
 export default {
-  name: 'FormEditor',
+  name: 'FormSettings',
   props: {
     formId: String,
   },
@@ -139,22 +139,16 @@ export default {
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'updateForm']),
-    async getForm() {
-      this.fetchForm(this.id);
-    },
-    async submitForm() {
+    async submit() {
       this.submitting = true;
-      if (this.id) {
-        // Editing existing form
-        this.updateForm();
-      }
+      if (this.id) this.updateForm();
       this.submitting = false;
     },
   },
   async created() {
     if (this.formId) {
       this.id = this.formId;
-      await this.getForm();
+      await this.fetchForm(this.id);
     }
     this.loading = false;
   },

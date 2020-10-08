@@ -1,3 +1,4 @@
+<!-- TODO: Remove this temporary scaffold view -->
 <template>
   <div>
     <h1 class="my-6 text-center">Form Edit</h1>
@@ -9,7 +10,7 @@
 import FormSettings from '@/components/designer/FormSettings.vue';
 
 export default {
-  name: 'FormSettings',
+  name: 'Settings',
   components: {
     FormSettings,
   },

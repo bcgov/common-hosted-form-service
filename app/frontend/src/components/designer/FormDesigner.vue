@@ -1,190 +1,67 @@
 <template>
   <div>
-    <v-stepper v-model="designerStep" class="elevation-0">
-      <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="designerStep > 1" step="1" class="pl-1">
-          Set up Form
-        </v-stepper-step>
+    <h2>Design your Form</h2>
+    <p>Drag and Drop form fields in the designer below.</p>
+    <div class="my-4">
+      <v-btn
+        color="primary"
+        @click="submitFormSchema"
+        data-test="btn-form-to-next-step"
+      >
+        <span>Save Design</span>
+      </v-btn>
+      <v-btn
+        class="ml-2"
+        outlined
+        @click="$router.go(-1)"
+        data-test="btn-form-to-previous-step"
+      >
+        <span>Back</span>
+      </v-btn>
+      <v-btn text color="primary" @click="downloadFile">
+        <v-icon class="ml-2" left>cloud_download</v-icon>
+        <span>Export Design</span>
+      </v-btn>
+      <v-btn text color="primary" @click="downloadFile">
+        <v-icon class="ml-2" left>cloud_upload</v-icon>
+        <span>Import Design</span>
+      </v-btn>
 
-        <v-divider></v-divider>
-
-        <v-stepper-step :complete="designerStep > 2" step="2" class="pr-1">
-          Design Form
-        </v-stepper-step>
-      </v-stepper-header>
-
-      <v-stepper-items>
-        <v-stepper-content step="1" class="pa-1">
-          <h2>Set your Form Options</h2>
-          <v-form ref="step1Form" v-model="valid" lazy-validation>
-            <v-container class="px-0">
-              <v-row>
-                <v-col cols="12" lg="4">
-                  <v-text-field
-                    dense
-                    flat
-                    solid
-                    outlined
-                    label="Name"
-                    data-test="text-formName"
-                    v-model="formName"
-                    :rules="formNameRules"
-                  />
-                </v-col>
-                <v-col cols="12" lg="8">
-                  <v-text-field
-                    dense
-                    flat
-                    solid
-                    outlined
-                    label="Description"
-                    data-test="text-formDescription"
-                    v-model="formDescription"
-                    :rules="formDescriptionRules"
-                  />
-                </v-col>
-              </v-row>
-
-              <p>
-                Choose whether to use the basic form designer or the advanced
-                developer version
-              </p>
-              <v-switch
-                class="pl-5"
-                v-model="advancedForm"
-                label="Enable advanced designer features"
-              ></v-switch>
-
-              <p>
-                Select which type of user can fill out out this form once
-                published
-              </p>
-              <v-radio-group
-                class="pl-5"
-                v-model="userType"
-                :mandatory="false"
-                :rules="loginRequiredRules"
-              >
-                <v-radio
-                  disabled
-                  label="Public (annonymous)"
-                  :value="ID_PROVIDERS.PUBLIC"
-                ></v-radio>
-                <v-radio label="Log-in Required" value="login"></v-radio>
-                <div v-if="userType === 'login'" class="pl-5 mb-5">
-                  <v-row>
-                    <v-checkbox
-                      v-model="idps"
-                      class="mx-4"
-                      label="IDIR"
-                      :value="ID_PROVIDERS.IDIR"
-                    ></v-checkbox>
-                    <v-checkbox
-                      disabled
-                      v-model="idps"
-                      class="mx-4"
-                      label="BCeID"
-                      :value="ID_PROVIDERS.BCEID"
-                    ></v-checkbox>
-                    <v-checkbox
-                      disabled
-                      v-model="idps"
-                      class="mx-4"
-                      label="BC Services Card"
-                      :value="ID_PROVIDERS.BCSC"
-                    ></v-checkbox>
-                    <v-checkbox
-                      disabled
-                      v-model="idps"
-                      class="mx-4"
-                      label="Github"
-                      :value="ID_PROVIDERS.GITHUB"
-                    ></v-checkbox>
-                  </v-row>
-                </div>
-                <v-radio label="Specific Team Members" value="team"></v-radio>
-                <div v-if="userType === 'team'" class="pl-5 mb-5">
-                  You can specify users on the form's management screen once
-                  created.
-                </div>
-              </v-radio-group>
-
-              <v-row class="mb-4">
-                <v-col cols="12" md="6" lg="4">
-                  <v-expansion-panels popout>
-                    <v-expansion-panel>
-                      <v-expansion-panel-header>
-                        Import existing form design (BETA)
-                      </v-expansion-panel-header>
-                      <v-expansion-panel-content>
-                        <v-file-input
-                          @change="loadFile"
-                          accept=".json"
-                          outlined
-                          show-size
-                          label="Upload exported JSON"
-                        ></v-file-input>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels>
-                </v-col>
-              </v-row>
-            </v-container>
-            <v-btn color="primary" @click="setFormDetails">
-              <span>Continue</span></v-btn
-            >
-          </v-form>
-        </v-stepper-content>
-
-        <v-stepper-content step="2" class="pa-0">
-          <h2>Design your Form</h2>
-          <p>Drag and Drop form fields in the designer below.</p>
-          <div class="my-5">
-            <v-btn
-              class="mr-3"
-              color="primary"
-              @click="submitFormSchema"
-              data-test="btn-form-to-next-step"
-            >
-              <span>Save Design</span>
-            </v-btn>
-            <v-btn
+      <v-expansion-panels popout>
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            Import existing form design (BETA)
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-file-input
+              @change="loadFile"
+              accept=".json"
               outlined
-              @click="designerStep = 1"
-              data-test="btn-form-to-previous-step"
-            >
-              <span>Back</span>
-            </v-btn>
-            <br />
-            <br />
-            <v-icon color="primary">info</v-icon>Use the SAVE DESIGN button when
-            you are done building this form. The SUBMIT button below is for your
-            users to submit this form when published.
-          </div>
-          <div v-if="designerStep == 2">
-            <FormBuilder
-              :form="formSchema"
-              :options="designerOptions"
-              :key="reRenderFormIo"
-            />
-
-            <span>
-              <v-btn text color="primary" @click="downloadFile">
-                <v-icon class="mr-1">cloud_download</v-icon>
-                <span>Export Design</span>
-              </v-btn>
-            </span>
-          </div>
-        </v-stepper-content>
-      </v-stepper-items>
-    </v-stepper>
+              show-size
+              label="Upload exported JSON"
+            ></v-file-input>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+      <p>Choose which form designer mode to use</p>
+      <v-switch v-model="advancedForm" label="Enable Advanced Form Designer" />
+      <br />
+      <v-icon color="primary">info</v-icon>Use the SAVE DESIGN button when you
+      are done building this form. The SUBMIT button below is for your users to
+      submit this form when published.
+    </div>
+    <FormBuilder
+      :form="formSchema"
+      :key="reRenderFormIo"
+      :options="designerOptions"
+    />
   </div>
 </template>
 
 <script>
 import { IdentityProviders } from '@/utils/constants';
 import { FormBuilder } from 'vue-formio';
-import formService from '@/services/formService';
+import { formService } from '@/services';
 
 export default {
   name: 'FormDesigner',
@@ -338,7 +215,7 @@ export default {
     },
     async setFormDetails() {
       if (this.$refs.step1Form.validate()) {
-        this.designerStep = 2;
+        // this.designerStep = 2;
       }
     },
     async submitFormSchema() {
@@ -394,13 +271,16 @@ export default {
         }
       }
     },
-    created() {
-      if (this.formId) {
-        this.getFormSchema();
-      }
+  },
+  created() {
+    if (this.formId) {
+      this.getFormSchema();
     }
   },
   watch: {
+    advancedForm() {
+      this.reRenderFormIo += 1;
+    },
     designerStep(newValue) {
       if (newValue === 2) {
         // Once they go to the design step, enable the typical "leave site" native browser warning
