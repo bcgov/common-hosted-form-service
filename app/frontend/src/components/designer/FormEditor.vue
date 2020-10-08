@@ -11,9 +11,9 @@
               solid
               outlined
               label="Name"
-              data-test="text-formName"
-              v-model="formName"
-              :rules="formNameRules"
+              data-test="text-name"
+              v-model="name"
+              :rules="nameRules"
             />
           </v-col>
           <v-col cols="12" lg="8">
@@ -23,9 +23,9 @@
               solid
               outlined
               label="Description"
-              data-test="text-formDescription"
-              v-model="formDescription"
-              :rules="formDescriptionRules"
+              data-test="text-description"
+              v-model="description"
+              :rules="descriptionRules"
             />
           </v-col>
         </v-row>
@@ -97,8 +97,10 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import { mapFields } from 'vuex-map-fields';
 import { IdentityProviders } from '@/utils/constants';
-import { formService } from '@/services';
+
 
 export default {
   name: 'FormEditor',
@@ -108,12 +110,8 @@ export default {
   data() {
     return {
       advancedForm: false,
-      idps: [IdentityProviders.IDIR],
-      formName: '',
-      formDescription: '',
       loading: true,
       submitting: false,
-      userType: 'login',
       valid: false,
       // Validation
       loginRequiredRules: [
@@ -122,114 +120,52 @@ export default {
           this.idps.length > 0 ||
           'Please select at least 1 log-in type',
       ],
-      formDescriptionRules: [
+      descriptionRules: [
         (v) =>
           !v || v.length <= 255 || 'Description must be 255 characters or less',
       ],
-      formNameRules: [
+      nameRules: [
         (v) => !!v || 'Name is required',
         (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
       ],
     };
   },
   computed: {
+    ...mapFields('form', [
+      'form.description',
+      'form.id',
+      'form.idps',
+      'form.name',
+      'form.userType',
+    ]),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
   },
   methods: {
-    generateIdps({ idps, userType }) {
-      const identityProviders = [];
-      if (userType === 'login') {
-        identityProviders.concat(idps.map((i) => ({ code: i })));
-      } else if (userType === this.ID_PROVIDERS.PUBLIC) {
-        identityProviders.push(this.ID_PROVIDERS.PUBLIC);
-      }
-      return identityProviders;
-    },
-    parseIdps(identityProviders) {
-      const result = {
-        idps: [],
-        userType: 'team',
-      };
-      if (identityProviders.length) {
-        if (identityProviders[0] === this.ID_PROVIDERS.PUBLIC) {
-          result.userType = this.ID_PROVIDERS.PUBLIC;
-        } else {
-          result.userType = 'login';
-          result.idps = identityProviders.map((ip) => ip.code);
-        }
-      }
-      return result;
-    },
+    ...mapActions('form', ['fetchForm', 'updateForm']),
     async getForm() {
-      try {
-        const form = await formService.readForm(this.formId);
-        this.formName = form.data.name;
-        this.formDescription = form.data.description;
-        const identityProviders = this.parseIdps(form.data.identityProviders);
-        this.idps = identityProviders.idps;
-        this.userType = identityProviders.userType;
-      } catch (error) {
-        console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
-      }
+      this.fetchForm(this.id);
     },
     async submitForm() {
       this.submitting = true;
-      if (this.formId) {
+      if (this.id) {
         // Editing existing form
-        try {
-          formService.updateForm(this.formId, {
-            name: this.formName,
-            description: this.formDescription,
-            identityProviders: this.generateIdps({
-              idps: this.idps,
-              userType: this.userType,
-            }),
-          });
-        } catch (error) {
-          console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
-        }
-      } else {
-        // Creating new form
-        try {
-          const response = await formService.createForm({
-            name: this.formName,
-            description: this.formDescription,
-            identityProviders: this.generateIdps({
-              idps: this.idps,
-              userType: this.userType,
-            }),
-            schema: {}, // TODO: May want to remove this from being mandatory
-          });
-          // Add the schema to the newly created default version
-          if (!response.data.versions || !response.data.versions[0]) {
-            throw new Error(
-              `createForm response does not include a form version: ${response.data.versions}`
-            );
-          }
-          // this.$router.push({
-          //   name: 'FormManage',
-          //   query: {
-          //     f: response.data.id,
-          //   },
-          // });
-        } catch (error) {
-          console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
-        }
+        this.updateForm();
       }
       this.submitting = false;
     },
   },
   async created() {
     if (this.formId) {
+      this.id = this.formId;
       await this.getForm();
     }
     this.loading = false;
   },
   watch: {
     idps() {
-      if(this.$refs.form) this.$refs.form.validate();
+      if (this.$refs.form) this.$refs.form.validate();
     },
   },
 };
