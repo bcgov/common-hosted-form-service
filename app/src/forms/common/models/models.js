@@ -740,6 +740,7 @@ class FormSubmissionUserPermissions extends Model {
   }
 }
 
+
 module.exports = {
   Form: Form,
   FormIdentityProvider: FormIdentityProvider,
