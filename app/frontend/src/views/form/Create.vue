@@ -1,17 +1,18 @@
 <template>
   <div>
     <h1 class="my-6 text-center">Create New Form</h1>
-    <FormSettings />
+    <!-- TODO: Lift stepper logic here and use newer separated components! -->
+    <FormCreator />
   </div>
 </template>
 
 <script>
-import FormSettings from '@/components/designer/FormSettings.vue';
+import FormCreator from '@/components/designer/FormCreator.vue';
 
 export default {
   name: 'FormCreate',
   components: {
-    FormSettings,
+    FormCreator,
   },
 };
 </script>
