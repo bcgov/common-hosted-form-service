@@ -1,16 +1,23 @@
 <template>
   <div>
-    <!-- search input -->
-    <div class="submissions-search mt-6 mt-sm-0">
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        class="pb-5"
-      />
-    </div>
+    <v-row>
+      <v-col cols="12" sm="6">
+        <ExportSubmissions />
+      </v-col>
+      <v-col cols="12" sm="6">
+        <!-- search input -->
+        <div class="submissions-search">
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+            class="pb-5 pt-0 mt-0"
+          />
+        </div>
+      </v-col>
+    </v-row>
 
     <!-- table header -->
     <v-data-table
@@ -22,11 +29,20 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template v-slot:item.date="{ item }">{{ item.date | formatDate }}</template>
+      <template v-slot:item.date="{ item }">
+        {{ item.date | formatDate }}
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-btn color="textLink" text small>
           <router-link
-            :to="{ name: 'FormView', query: { f: item.formId, v: item.versionId, s: item.submissionId } }"
+            :to="{
+              name: 'FormView',
+              query: {
+                f: item.formId,
+                v: item.versionId,
+                s: item.submissionId,
+              },
+            }"
           >
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW</span>
@@ -39,9 +55,13 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
 export default {
   name: 'SubmissionsTable',
+  components: {
+    ExportSubmissions,
+  },
   props: {
     formId: {
       type: String,
@@ -71,7 +91,7 @@ export default {
     ...mapGetters('form', ['submissionList']),
   },
   methods: {
-    ...mapActions('form', ['fetchSubmissions']),
+    ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
     async populateSubmissionsTable() {
       try {
         // Get the submissions for this form
@@ -95,9 +115,10 @@ export default {
       } finally {
         this.loading = false;
       }
-    }
+    },
   },
   mounted() {
+    this.fetchForm(this.formId);
     this.populateSubmissionsTable();
   },
 };
