@@ -1,13 +1,20 @@
 /*
  * BCGov Style
- * This globally extends the base Vuetify style
- * Includes icons css
+ * This globally extends the base Vuetify style and includes the icons
  */
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Material+Icons');
 @import "~material-design-icons-iconfont/dist/material-design-icons.css";
 @import "~font-awesome/css/font-awesome.css";
 @import '~vuetify/src/styles/styles.sass';
-@import './variables.scss';
 
+// Variables
+$bcgov-blue: #003366;
+$bcgov-blue-secondary: #38598a;
+$bcgov-orange: #fcba19;
+$bcgov-grey: #efefef;
+$bcgov-font: #494949;
+$bcgov-error: #D8292F;
 
 
 // Sticky Footer
@@ -112,4 +119,74 @@ a, .v-tab {
       }
     }
   }
+}
+
+
+
+
+
+
+// override formio form builder
+.formbuilder,
+// override form viewer
+.form-wrapper,
+// override preview panel in form builder component editor modal
+.component-preview{
+
+  .btn-primary{
+    background-color: $bcgov-blue;
+  }
+
+  label:not(.form-check-label) {
+    &:after {
+      content: " (optional)";
+      color: inherit;
+    }
+
+    &.field-required:after {
+      content: "";
+    }
+  }
+
+  // validatoin message
+  .form-text.error {
+    background: none !important;
+    color: $bcgov-error;
+  }
+
+  // buttons
+  .btn {
+    @extend .v-btn;
+  }
+
+  // form submit button
+  // curretnly unable to extend selectors in other stylesheets (??) like '.primary'
+  .btn-primary {
+    //@extend .primary ;
+    border: none;
+
+    &:hover{
+       background-color: $bcgov-blue;
+       text-decoration: underline;
+    }
+
+    &:disabled,
+    &[disabled="disabled"],
+    &[disabled="disabled"] &:hover{
+      @extend .v-btn--disabled;
+      cursor: default;
+      text-decoration: none;
+      opacity: 1;
+    }
+  }
+
+
+  .drag-and-drop-alert.alert-info {
+    border: 2px dashed grey;
+    background-color: transparent;
+    color: grey;
+    padding: 30px;
+    z-index: 50;
+  }
+
 }

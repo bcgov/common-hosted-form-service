@@ -393,11 +393,11 @@ export default {
           console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
         }
       }
-    },
-    created() {
-      if (this.formId) {
-        this.getFormSchema();
-      }
+    }
+  },
+  created() {
+    if (this.formId) {
+      this.getFormSchema();
     }
   },
   watch: {
@@ -412,14 +412,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
- @import '~bootstrap/dist/css/bootstrap.min.css';
- @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
-
-// override formio form builder styles here
- .form-builder-wrapper ::v-deep .formbuilder{
-   .btn-primary{
-     background-color: #003366;
-   }
- }
-
+// include bootstrap and formio styles for the form builder
+@import '~bootstrap/dist/css/bootstrap.min.css';
+@import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
 </style>

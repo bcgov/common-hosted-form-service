@@ -222,11 +222,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
- .form-wrapper ::v-deep .formio-form{
-   .form-control{
-     border: 1px solid gray;
-   }
- }
-
+@import '~bootstrap/dist/css/bootstrap.min.css';
+@import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
 </style>

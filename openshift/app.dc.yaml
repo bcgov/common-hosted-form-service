@@ -171,15 +171,15 @@ objects:
                     name: "${APP_NAME}-sc-config"
                 - configMapRef:
                     name: "${APP_NAME}-server-config"
-              volumeMounts:
-                - mountPath: "${DATA_DIR}"
-                  name: app-data
+              # volumeMounts:
+              #   - mountPath: "${DATA_DIR}"
+              #     name: app-data
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
-          volumes:
-            - name: app-data
-              persistentVolumeClaim:
-                claimName: "${APP_NAME}-data-${JOB_NAME}"
+          # volumes:
+          #   - name: app-data
+          #     persistentVolumeClaim:
+          #       claimName: "${APP_NAME}-data-${JOB_NAME}"
       test: false
       triggers:
         - type: ConfigChange
@@ -192,17 +192,17 @@ objects:
               name: "${REPO_NAME}-app:${JOB_NAME}"
               namespace: "${NAMESPACE}"
           type: ImageChange
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: "${APP_NAME}-data-${JOB_NAME}"
-    spec:
-      accessModes:
-        - ReadWriteMany
-      storageClassName: "${DATA_PERSISTENT_VOLUME_CLASS}"
-      resources:
-        requests:
-          storage: "${DATA_VOLUME_CAPACITY}"
+  # - apiVersion: v1
+  #   kind: PersistentVolumeClaim
+  #   metadata:
+  #     name: "${APP_NAME}-data-${JOB_NAME}"
+  #   spec:
+  #     accessModes:
+  #       - ReadWriteMany
+  #     storageClassName: "${DATA_PERSISTENT_VOLUME_CLASS}"
+  #     resources:
+  #       requests:
+  #         storage: "${DATA_VOLUME_CAPACITY}"
   - apiVersion: v1
     kind: Service
     metadata:
