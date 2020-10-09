@@ -29,10 +29,10 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template v-slot:item.date="{ item }">
+      <template #[`item.date`]="{ item }">
         {{ item.date | formatDate }}
       </template>
-      <template v-slot:item.actions="{ item }">
+      <template #[`item.actions`]="{ item }">
         <v-btn color="textLink" text small>
           <router-link
             :to="{

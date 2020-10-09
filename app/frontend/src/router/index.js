@@ -42,6 +42,14 @@ export default function getRouter(basePath = '/') {
         component: () => import(/* webpackChunkName: "form" */ '@/views/Form.vue'),
         children: [
           {
+            path: 'create',
+            name: 'FormCreate',
+            component: () => import(/* webpackChunkName: "create" */ '@/views/form/Create.vue'),
+            meta: {
+              breadcrumbTitle: 'Form Designer'
+            },
+          },
+          {
             path: 'design',
             name: 'FormDesigner',
             component: () => import(/* webpackChunkName: "designer" */ '@/views/form/Design.vue'),
@@ -56,6 +64,15 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "manage" */ '@/views/form/Manage.vue'),
             meta: {
               breadcrumbTitle: 'Manage Form'
+            },
+            props: createProps
+          },
+          {
+            path: 'settings',
+            name: 'FormSettings',
+            component: () => import(/* webpackChunkName: "settings" */ '@/views/form/Settings.vue'),
+            meta: {
+              breadcrumbTitle: 'Form Settings'
             },
             props: createProps
           },
