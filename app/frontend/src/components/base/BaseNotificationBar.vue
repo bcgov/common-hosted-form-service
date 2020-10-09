@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <v-alert
-      :type="notification.type"
-      prominent
-      dismissible
-      @input="alertClosed"
-      transition="slide-y-transition"
-    >
-      {{ notification.message }}
-    </v-alert>
-  </div>
+  <v-alert
+    :type="notification.type"
+    prominent
+    dismissible
+    @input="alertClosed"
+    transition="slide-y-transition"
+  >
+    {{ notification.message }}
+  </v-alert>
 </template>
 
 <script>
