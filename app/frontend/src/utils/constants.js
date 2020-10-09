@@ -48,4 +48,10 @@ const IdentityProviders = Object.freeze({
   PUBLIC: 'public' // Anonymous
 });
 
-export { ApiRoutes, FormRoleCodes, FormPermissions, IdentityProviders };
+/** Corresponds to vuetfy alert classes for notification types */
+const NotificationTypes = Object.freeze({
+  ERROR: 'error',
+  SUCCESS: 'success'
+});
+
+export { ApiRoutes, FormRoleCodes, FormPermissions, IdentityProviders, NotificationTypes };

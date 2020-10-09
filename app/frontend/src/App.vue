@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <BaseNotificationContainer />
     <BCGovHeader />
     <BCGovNavBar />
 
@@ -23,8 +24,8 @@ export default {
   components: {
     BCGovHeader,
     BCGovFooter,
-    BCGovNavBar
-  }
+    BCGovNavBar,
+  },
 };
 </script>
 

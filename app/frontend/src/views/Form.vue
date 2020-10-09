@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import formService from '@/services/formService';
+import { formService } from '@/services';
 
 export default {
   name: 'Form',

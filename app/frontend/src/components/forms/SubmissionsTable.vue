@@ -111,7 +111,7 @@ export default {
           this.submissionTable = tableRows;
         }
       } catch (error) {
-        console.error(`Error getting submissions: ${error}`); // eslint-disable-line no-console
+        // Handled in state fetchSubmissions
       } finally {
         this.loading = false;
       }
