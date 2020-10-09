@@ -1,7 +1,7 @@
 <template>
   <span>
     <v-dialog v-model="dialog" width="900">
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn color="blue" text small v-bind="attrs" v-on="on">
           <v-icon class="mr-1">share</v-icon>
           <span>Share</span>
@@ -23,7 +23,7 @@
             data-test="text-shareUrl"
             :value="formLink"
           >
-            <template v-slot:prepend>
+            <template #prepend>
               <v-icon>link</v-icon>
             </template>
           </v-text-field>

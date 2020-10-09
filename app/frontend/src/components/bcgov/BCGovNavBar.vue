@@ -9,7 +9,7 @@
           <router-link :to="{ name: 'UserForms' }">My Forms</router-link>
         </li>
         <li>
-          <router-link :to="{ name: 'FormDesigner' }">Create a New Form</router-link>
+          <router-link :to="{ name: 'FormCreate' }">Create a New Form</router-link>
         </li>
         <li>
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>

@@ -8,7 +8,10 @@ localVue.use(Vuetify);
 
 describe('BaseDialog.vue', () => {
   it('renders with ok button', async () => {
-    const wrapper = shallowMount(BaseDialog, { localVue });
+    const wrapper = shallowMount(BaseDialog, {
+      localVue,
+      propsData: { show: true }
+    });
     await wrapper.vm.closeDialog();
     await localVue.nextTick();
 
@@ -18,7 +21,7 @@ describe('BaseDialog.vue', () => {
   it('renders with continue button', async () => {
     const wrapper = shallowMount(BaseDialog, {
       localVue,
-      propsData: { type: 'CONTINUE' }
+      propsData: { show: true, type: 'CONTINUE' }
     });
     await wrapper.vm.continueDialog();
     await localVue.nextTick();

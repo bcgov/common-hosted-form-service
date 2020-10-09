@@ -9,7 +9,7 @@
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 
 export default {
-  name: 'Designer',
+  name: 'FormDesign',
   components: {
     FormDesigner,
   },
