@@ -3,7 +3,7 @@
     <h1 class="my-6 text-center">My Forms</h1>
     <div class="text-right">
       <strong>
-        <router-link :to="{ name: 'FormDesigner' }">Create a New Form</router-link>
+        <router-link :to="{ name: 'FormCreate' }">Create a New Form</router-link>
       </strong>
     </div>
     <FormsTable />
