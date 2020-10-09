@@ -16,7 +16,7 @@
       class="submissions-table"
       :headers="headers"
       item-key="title"
-      :items="forms"
+      :items="formList"
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import rbacService from '@/services/rbacService';
+import { mapActions, mapGetters } from 'vuex';
 import {
   checkFormManage,
   checkFormSubmit,
@@ -63,9 +63,6 @@ export default {
   name: 'FormsTable',
   data() {
     return {
-      alertMessage: '',
-      alertShow: false,
-      alertType: null,
       headers: [
         { text: 'Form Title', align: 'start', value: 'name' },
         {
@@ -76,40 +73,20 @@ export default {
           sortable: false,
         },
       ],
-      forms: [],
       loading: true,
       search: '',
     };
   },
+  computed: mapGetters('form', ['formList']),
   methods: {
+    ...mapActions('form', ['getFormsForCurrentUser']),
     checkFormManage: checkFormManage,
     checkFormSubmit: checkFormSubmit,
     checkSubmissionView: checkSubmissionView,
-    async populateFormTable() {
-      try {
-        // Get this user's permissions
-        const response = await rbacService.getCurrentUser();
-        const data = response.data;
-        // Build up the list of forms for the table
-        const forms = data.forms.map((f) => {
-          return {
-            currentVersionId: f.formVersionId,
-            id: f.formId,
-            idps: f.idps,
-            name: f.formName,
-            permissions: f.permissions,
-          };
-        });
-        this.forms = forms;
-      } catch (error) {
-        console.error(`Error getting user data: ${error}`); // eslint-disable-line no-console
-      } finally {
-        this.loading = false;
-      }
-    },
   },
-  mounted() {
-    this.populateFormTable();
+  async mounted() {
+    await this.getFormsForCurrentUser();
+    this.loading = false;
   },
 };
 </script>

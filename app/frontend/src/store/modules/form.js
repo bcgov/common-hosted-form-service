@@ -1,7 +1,7 @@
 import { getField, updateField } from 'vuex-map-fields';
 
 import { IdentityProviders } from '@/utils/constants';
-import { formService } from '@/services';
+import { formService, rbacService } from '@/services';
 
 // TODO: Consider moving or folding these bidirectional transformation functions somewhere else?
 /**
@@ -100,9 +100,37 @@ export default {
   },
   actions: {
     //
+    // User-specific form stuff
+    //
+    async getFormsForCurrentUser({ commit, dispatch }) {
+      try {
+        // Get the forms based on the user's permissions
+        const response = await rbacService.getCurrentUser();
+        const data = response.data;
+        // Build up the list of forms for the table
+        const forms = data.forms.map((f) => {
+          return {
+            currentVersionId: f.formVersionId,
+            id: f.formId,
+            idps: f.idps,
+            name: f.formName,
+            permissions: f.permissions
+          };
+        });
+        commit('SET_FORMLIST', forms);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while fetching your forms.',
+          consoleError: `Error getting user data: ${error}`,
+        }, { root: true });
+      }
+    },
+
+    //
     // Form
     //
-    async fetchForm({ commit }, formId) {
+    async fetchForm({ commit, dispatch }, formId) {
       try {
         // Get the form definition from the api
         const { data } = await formService.readForm(formId);
@@ -111,7 +139,11 @@ export default {
         data.userType = identityProviders.userType;
         commit('SET_FORM', data);
       } catch (error) {
-        console.error(`Error getting form ${formId}: ${error}`); // eslint-disable-line no-console
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while fetching this form.',
+          consoleError: `Error getting form ${formId}: ${error}`,
+        }, { root: true });
       }
     },
     async updateForm({ state }) {
@@ -132,7 +164,7 @@ export default {
     //
     // Submission
     //
-    async fetchSubmission({ commit }, { formId, versionId, submissionId }) {
+    async fetchSubmission({ commit, dispatch }, { formId, versionId, submissionId }) {
       try {
         // Get this submission
         const response = await formService.getSubmission(
@@ -142,20 +174,28 @@ export default {
         );
         commit('SET_FORMSUBMISSION', response.data);
       } catch (error) {
-        console.error(`Error getting submission ${submissionId}: ${error}`); // eslint-disable-line no-console
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while fetching this submission.',
+          consoleError: `Error getting submission ${submissionId}: ${error}`,
+        }, { root: true });
       }
     },
-    async fetchSubmissions({ commit }, formId) {
+    async fetchSubmissions({ commit, dispatch }, formId) {
       try {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of submissions for this form
         const response = await formService.listSubmissions(formId);
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
-        console.error(`Error getting submissions for ${formId}: ${error}`); // eslint-disable-line no-console
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while fetching submissions for this form.',
+          consoleError: `Error getting submissions for ${formId}: ${error}`,
+        }, { root: true });
       }
     },
-    async fetchVersion({ commit }, { formId, versionId }) {
+    async fetchVersion({ commit, dispatch }, { formId, versionId }) {
       try {
         // TODO: need a better 'set back to initial state' ability
         commit('SET_FORMSUBMISSION', {
@@ -170,7 +210,11 @@ export default {
         );
         commit('SET_VERSION', response.data);
       } catch (error) {
-        console.error(`Error getting version for ${formId}: ${error}`); // eslint-disable-line no-console
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while fetching this form.',
+          consoleError: `Error getting version ${versionId} for form ${formId}: ${error}`,
+        }, { root: true });
       }
     }
   },
