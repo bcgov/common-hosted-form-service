@@ -3,8 +3,18 @@ import { ApiRoutes } from '@/utils/constants';
 
 export default {
   //
-  // Form Designer calls
+  // Form calls
   //
+
+  /**
+   * @function readForm
+   * Get the baseline form metadata
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readForm(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}`);
+  },
 
   /**
    * @function createForm
@@ -17,7 +27,43 @@ export default {
   },
 
   /**
+   * @function updateForm
+   * Update a Form
+   * @param {string} formId The form uuid
+   * @param {Object} formData An object containing the form details
+   * @returns {Promise} An axios response
+   */
+  updateForm(formId, formData) {
+    return appAxios().put(`${ApiRoutes.FORMS}/${formId}`, formData);
+  },
+
+  //
+  // Form version calls
+  //
+
+  /**
    * @function readVersion
+   * Get a specific form version schema
+   * @param {string} formId The form uuid
+   * @param {string} formVersionId The form version uuid
+   * @returns {Promise} An axios response
+   */
+  readVersion(formId, formVersionId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
+  },
+
+  /**
+   * @function listVersions
+   * Get the versions for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  listVersions(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions`);
+  },
+
+  /**
+   * @function updateVersion
    * Updates a specific form version schema
    * @param {string} formId The form uuid
    * @param {string} formVersionId The form version uuid
@@ -30,7 +76,7 @@ export default {
 
 
   //
-  // Form Submission calls
+  // Form submission calls
   //
 
   /**
@@ -58,27 +104,6 @@ export default {
   },
 
   /**
-   * @function readForm
-   * Get the baseline form metadata
-   * @param {string} formId The form uuid
-   * @returns {Promise} An axios response
-   */
-  readForm(formId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}`);
-  },
-
-  /**
-   * @function readVersion
-   * Get a specific form version schema
-   * @param {string} formId The form uuid
-   * @param {string} formVersionId The form version uuid
-   * @returns {Promise} An axios response
-   */
-  readVersion(formId, formVersionId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
-  },
-
-  /**
    * @function listSubmissions
    * Get the submissions for a form
    * @param {string} formId The form uuid
@@ -86,16 +111,6 @@ export default {
    */
   listSubmissions(formId) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/submissions`);
-  },
-
-  /**
-   * @function listVersions
-   * Get the versions for a form
-   * @param {string} formId The form uuid
-   * @returns {Promise} An axios response
-   */
-  listVersions(formId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions`);
   },
 
   /**
@@ -108,5 +123,4 @@ export default {
   exportSubmissions(formId, minDate, maxDate) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export?format=csv&type=submissions${minDate ? `&minDate=${minDate}` : ''}${maxDate ? `&maxDate=${maxDate}` : ''}`, { responseType: 'blob', });
   },
-
 };
