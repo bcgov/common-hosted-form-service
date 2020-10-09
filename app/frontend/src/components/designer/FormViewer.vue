@@ -28,7 +28,7 @@
 
 <script>
 import { Form } from 'vue-formio';
-import formService from '@/services/formService';
+import { formService } from '@/services';
 
 export default {
   name: 'FormViewer',
@@ -217,6 +217,6 @@ export default {
       // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
       window.onbeforeunload = () => true;
     }
-  }
+  },
 };
 </script>

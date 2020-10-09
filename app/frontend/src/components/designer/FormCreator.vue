@@ -186,7 +186,7 @@
 import { mapActions } from 'vuex';
 import { IdentityProviders } from '@/utils/constants';
 import { FormBuilder } from 'vue-formio';
-import formService from '@/services/formService';
+import { formService } from '@/services';
 
 export default {
   name: 'FormCreator',
