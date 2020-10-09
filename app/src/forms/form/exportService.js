@@ -55,6 +55,10 @@ const service = {
     return result ? result : EXPORT_FORMATS.default;
   },
 
+  _exportFilename: (form, type, format) => {
+    return `${form.snake()}_${type}.${format}`.toLowerCase();
+  },
+
   _submissionsColumns: (params = {}) => {
     if (params.columns) {
       return params.columns;
@@ -96,15 +100,11 @@ const service = {
       .modify('filterCreatedAt', params.minDate, params.maxDate);
   },
 
-  _submissionsFilename: (form, ext) => {
-    return `${form.name.replace(/\s+/g, '_').replace(/[^-_0-9a-z]/gi, '')}.${ext}`.toLowerCase();
-  },
-
   _formatSubmissionsJson: async (form, data) => {
     return {
       data: data,
       headers: {
-        'content-disposition': `attachment; filename="${service._submissionsFilename(form, 'json')}"`,
+        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.json)}"`,
         'content-type':'text/json'
       }
     };
@@ -132,7 +132,7 @@ const service = {
       return {
         data: csv,
         headers: {
-          'content-disposition': `attachment; filename="${service._submissionsFilename(form, 'csv')}"`,
+          'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
           'content-type':'text/csv'
         }
       };

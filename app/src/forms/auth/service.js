@@ -183,6 +183,8 @@ const service = {
       active: item.active,
       formVersionId: item.formVersionId,
       version: item.version,
+      published: item.published,
+      versionUpdatedAt: item.versionUpdatedAt,
       roles: item.roles,
       permissions: item.permissions
     };

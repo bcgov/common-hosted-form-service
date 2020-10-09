@@ -1,9 +1,10 @@
-const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 
 const Permissions = require('../common/constants').Permissions;
 const Roles = require('../common/constants').Roles;
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
+const falsey = require('falsey');
 const Problem = require('api-problem');
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
@@ -97,6 +98,15 @@ const service = {
       .throwIfNotFound();
   },
 
+  readPublishedForm: async (formId) => {
+    return Form.query()
+      .findById(formId)
+      .allowGraph('[identityProviders,versions]')
+      .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('versions(onlyPublished)')
+      .throwIfNotFound();
+  },
+
   listFormSubmissions: async (formId, params) => {
     return SubmissionMetadata.query()
       .where('formId', formId)
@@ -110,45 +120,41 @@ const service = {
       .modify('orderDefault');
   },
 
-  listVersions: async (formId) => {
+  listVersions: async (formId, params) => {
     return FormVersion.query()
       .where('formId', formId)
+      .modify('filterPublished', params.published)
       .modify('orderVersionDescending');
   },
 
-  createVersion: async (formId, data, currentUser) => {
+  publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
     let trx;
     try {
+      // allow an unpublish if they pass in unpublish parameter with an affirmative
+      const publish = params.unpublish ? falsey(params.unpublish) : true;
       const form = await service.readForm(formId);
       trx = await transaction.start(FormVersion.knex());
 
-      const obj = Object.assign({}, data);
-      obj.id =  uuidv4();
-      obj.formId = form.id;
-      obj.version = form.versions.length ? form.versions[0].version + 1 : 1;
-      obj.createdBy = currentUser.username;
+      await FormVersion.query(trx)
+        .patch({
+          published: false,
+          updatedBy: currentUser.username
+        })
+        .where('formId', form.id)
+        .where('published', publish);
 
-      await FormVersion.query(trx).insert(obj);
+      await FormVersion.query(trx)
+        .findById(formVersionId)
+        .patch({
+          published: publish,
+          updatedBy: currentUser.username
+        });
+
       await trx.commit();
-      const result = await service.readVersion(obj.id);
-      return result;
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
-  },
 
-  updateVersion: async (formVersionId, data, currentUser) => {
-    let trx;
-    try {
-      const obj = await service.readVersion(formVersionId);
-      trx = await transaction.start(FormVersion.knex());
+      // return the published form/version...
+      return await service.readPublishedForm(formId);
 
-      //TODO: check if we can update the version (no submissions)
-
-      await FormVersion.query(trx).patchAndFetchById(formVersionId, {schema: data.schema, updatedBy: currentUser.username});
-      await trx.commit();
-      return await service.readVersion(obj.id);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
@@ -225,7 +231,103 @@ const service = {
     return FormSubmission.query()
       .findById(id)
       .throwIfNotFound();
-  }
+  },
+
+  listDrafts: async (formId, params) => {
+    return FormVersionDraft.query()
+      .where('formId', formId)
+      .modify('filterFormVersionId', params.formVersionId)
+      .modify('orderDescending');
+  },
+
+  createDraft: async (formId, data, currentUser) => {
+    let trx;
+    try {
+      const form = await service.readForm(formId);
+      trx = await transaction.start(FormVersionDraft.knex());
+
+      // data.schema, maybe data.formVersionId
+      const obj = Object.assign({}, data);
+      obj.id =  uuidv4();
+      obj.formId = form.id;
+      obj.createdBy = currentUser.username;
+
+      await FormVersionDraft.query(trx).insert(obj);
+      await trx.commit();
+      const result = await service.readDraft(obj.id);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  updateDraft: async (formVersionDraftId, data, currentUser) => {
+    let trx;
+    try {
+      const obj = await service.readDraft(formVersionDraftId);
+      trx = await transaction.start(FormVersionDraft.knex());
+      await FormVersionDraft.query(trx).patchAndFetchById(formVersionDraftId, {
+        schema: data.schema,
+        formVersionId: data.formVersionId,
+        updatedBy: currentUser.username
+      });
+      await trx.commit();
+      return await service.readDraft(obj.id);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  readDraft: async (formVersionDraftId) => {
+    return FormVersionDraft.query()
+      .findById(formVersionDraftId)
+      .throwIfNotFound();
+  },
+
+  deleteDraft: async (formVersionDraftId) => {
+    return FormVersionDraft.query()
+      .deleteById(formVersionDraftId)
+      .throwIfNotFound();
+  },
+
+  publishDraft: async (formId, formVersionDraftId, currentUser) => {
+    let trx;
+    try {
+      const form = await service.readForm(formId);
+      const draft = await service.readDraft(formVersionDraftId);
+      trx = await transaction.start(FormVersionDraft.knex());
+
+      const version = {
+        id: uuidv4(),
+        formId: form.id,
+        version: form.versions.length ? form.versions[0].version + 1 : 1,
+        createdBy: currentUser.username,
+        schema: draft.schema,
+        published: true
+      };
+
+      // this is where we create change the version data.
+      // mark all published as not published.
+      await FormVersion.query(trx)
+        .patch({ published: false })
+        .where('formId', form.id);
+
+      // add a record using this schema, mark as published and increment the version number
+      await FormVersion.query(trx).insert(version);
+
+      // delete the draft...
+      await FormVersionDraft.query().deleteById(formVersionDraftId);
+      await trx.commit();
+
+      // return the published version...
+      return await service.readVersion(version.id);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
 
 };
 
