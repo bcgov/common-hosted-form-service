@@ -37,6 +37,14 @@ module.exports = {
       next(error);
     }
   },
+  readPublishedForm:  async (req, res, next) => {
+    try {
+      const response = await service.readPublishedForm(req.params.formId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   updateForm:  async (req, res, next) => {
     try {
       const response = await service.updateForm(req.params.formId, req.body, req.currentUser);
@@ -55,16 +63,8 @@ module.exports = {
   },
   listVersions: async (req, res, next) => {
     try {
-      const response = await service.listVersions(req.params.formId);
+      const response = await service.listVersions(req.params.formId, req.query);
       res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
-  createVersion:  async (req, res, next) => {
-    try {
-      const response = await service.createVersion(req.params.formId, req.body, req.currentUser);
-      res.status(201).json(response);
     } catch (error) {
       next(error);
     }
@@ -77,9 +77,9 @@ module.exports = {
       next(error);
     }
   },
-  updateVersion:  async (req, res, next) => {
+  publishVersion:  async (req, res, next) => {
     try {
-      const response = await service.updateVersion(req.params.formVersionId, req.body, req.currentUser);
+      const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.query, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -112,6 +112,54 @@ module.exports = {
   updateSubmission:  async (req, res, next) => {
     try {
       const response = await service.updateSubmission(req.params.formSubmissionId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  listDrafts: async (req, res, next) => {
+    try {
+      const response = await service.listDrafts(req.params.formId, req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  createDraft:  async (req, res, next) => {
+    try {
+      const response = await service.createDraft(req.params.formId, req.body, req.currentUser);
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  readDraft:  async (req, res, next) => {
+    try {
+      const response = await service.readDraft(req.params.formVersionDraftId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  updateDraft:  async (req, res, next) => {
+    try {
+      const response = await service.updateDraft(req.params.formVersionDraftId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteDraft:  async (req, res, next) => {
+    try {
+      const response = await service.deleteDraft(req.params.formVersionDraftId);
+      res.status(204).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  publishDraft:  async (req, res, next) => {
+    try {
+      const response = await service.publishDraft(req.params.formId, req.params.formVersionDraftId, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
