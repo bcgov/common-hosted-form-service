@@ -50,12 +50,15 @@ const service = {
       await FormRoleUser.query(trx).insert(userRoles);
 
       // create a default version 1
+      // for now, we will set this version to published.
+      // we will address this later.
       const version = {
         id: uuidv4(),
         formId: obj.id,
         version: 1,
         createdBy: currentUser.username,
-        schema: data.schema
+        schema: data.schema,
+        published: true
       };
       await FormVersion.query(trx).insert(version);
 
