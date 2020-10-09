@@ -10,8 +10,26 @@ class Form extends Timestamps(Model) {
     return 'form';
   }
 
+  snake() {
+    // like a slug, but not guaranteed to be unique (as names are not unique).
+    // use this for file names or any other instances we want a standardized name without punctuation etc.
+    return this.name.replace(/\s+/g, '_').replace(/[^-_0-9a-z]/gi, '').toLowerCase();
+  }
+
+  static get virtualAttributes() {
+    return ['snake'];
+  }
+
   static get relationMappings() {
     return {
+      drafts: {
+        relation: Model.HasManyRelation,
+        modelClass: FormVersionDraft,
+        join: {
+          from: 'form.id',
+          to: 'form_version_draft.formId'
+        }
+      },
       identityProviders: {
         relation: Model.ManyToManyRelation,
         modelClass: IdentityProvider,
@@ -114,6 +132,14 @@ class FormVersion extends Timestamps(Model) {
           query.where('formId', value);
         }
       },
+      filterPublished(query, value) {
+        if (value !== undefined) {
+          query.where('published', value);
+        }
+      },
+      onlyPublished(query) {
+        query.where('published', true);
+      },
       orderVersionDescending(builder) {
         builder.orderBy('version', 'desc');
       }
@@ -128,6 +154,60 @@ class FormVersion extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         version: { type: 'integer' },
+        schema: { type: 'jsonb' },
+        published: { type: 'boolean' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
+}
+
+class FormVersionDraft extends Timestamps(Model) {
+  static get tableName() {
+    return 'form_version_draft';
+  }
+
+  static get relationMappings() {
+    return {
+      version: {
+        relation: Model.HasManyRelation,
+        modelClass: FormVersion,
+        join: {
+          from: 'form_version_draft.formVersionId',
+          to: 'form_version.id'
+        }
+      }
+    };
+  }
+
+  static get modifiers() {
+    return {
+      filterFormId(query, value) {
+        if (value !== undefined) {
+          query.where('formId', value);
+        }
+      },
+      filterFormVersionId(query, value) {
+        if (value !== undefined) {
+          query.where('formVersionId', value);
+        }
+      },
+      orderDescending(builder) {
+        builder.orderBy('updatedAt', 'desc');
+      }
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['formId', 'schema'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        formId: { type: 'string', pattern: Regex.UUID },
+        formVersionId: { type: ['string', 'null'], pattern: Regex.UUID },
         schema: { type: 'jsonb' },
         ...stamps
       },
@@ -749,6 +829,7 @@ module.exports = {
   FormSubmissionUserPermissions: FormSubmissionUserPermissions,
   FormRoleUser: FormRoleUser,
   FormVersion: FormVersion,
+  FormVersionDraft: FormVersionDraft,
   IdentityProvider: IdentityProvider,
   Permission: Permission,
   PublicFormAccess: PublicFormAccess,
