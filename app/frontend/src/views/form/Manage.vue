@@ -24,6 +24,13 @@
       <strong>Share this form:</strong>
       <ShareForm :formId="f" :versionId="currentVersion.id" />
     </p>
+    <!-- TODO: Change this from temporary button to actually embedded in Manage page -->
+    <router-link :to="{ name: 'FormSettings', query: { f: f } }">
+      <v-btn color="blue" text small>
+        <v-icon class="mr-1">edit</v-icon>
+        <span>Edit Settings</span>
+      </v-btn>
+    </router-link>
     <v-row>
       <v-col cols="6">
         <!-- TODO: Change this card to potentially use TeamManagement component -->
@@ -97,7 +104,7 @@ import { mapGetters, mapActions } from 'vuex';
 import ShareForm from '@/components/forms/ShareForm.vue';
 
 export default {
-  name: 'Manage',
+  name: 'FormManage',
   components: { ShareForm },
   props: {
     f: {
