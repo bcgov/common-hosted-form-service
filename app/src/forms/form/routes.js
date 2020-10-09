@@ -19,6 +19,10 @@ routes.get('/:formId', hasFormPermissions(P.FORM_READ), async (req, res, next) =
   await controller.readForm(req, res, next);
 });
 
+routes.get('/:formId/export', hasFormPermissions(P.FORM_READ), async (req, res, next) => {
+  await controller.export(req, res, next);
+});
+
 routes.put('/:formId', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
   await controller.updateForm(req, res, next);
 });
