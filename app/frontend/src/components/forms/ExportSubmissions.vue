@@ -117,7 +117,7 @@
 
 <script>
 import moment from 'moment';
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
 
 export default {
@@ -136,6 +136,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions('notifications', ['addNotification']),
     async callExport() {
       try {
         const from =
@@ -165,8 +166,11 @@ export default {
           throw new Error('No data in response from exportSubmissions call');
         }
       } catch (error) {
-        // Todo: error notifiation here
-        console.error(`Error getting submissions: ${error}`); // eslint-disable-line no-console
+        this.addNotification({
+          message:
+            'An error occurred while attempting to export submissions for this form.',
+          consoleError: `Error export submissions for ${this.form.id}: ${error}`,
+        });
       }
     },
   },

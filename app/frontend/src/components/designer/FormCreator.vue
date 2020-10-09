@@ -183,6 +183,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import { IdentityProviders } from '@/utils/constants';
 import { FormBuilder } from 'vue-formio';
 import formService from '@/services/formService';
@@ -302,6 +303,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions('notifications', ['addNotification']),
     async getFormSchema() {
       try {
         const form = await formService.readForm(this.formId);
@@ -356,7 +358,11 @@ export default {
           const data = response.data;
           this.formSchema = data.schema;
         } catch (error) {
-          console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
+          this.addNotification({
+            message:
+              'An error occurred while attempting to update this form. If you need to refresh or leave to try again later you can Export the existing design on the page to save for later.',
+            consoleError: `Error updating form ${this.formId} schema version ${this.versionId}: ${error}`,
+          });
         }
       } else {
         // If creating a new form, add the form and then a version
@@ -391,7 +397,11 @@ export default {
             },
           });
         } catch (error) {
-          console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
+          this.addNotification({
+            message:
+              'An error occurred while attempting to create this form. If you need to refresh or leave to try again later you can Export the existing design on the page to save for later.',
+            consoleError: `Error creating new form : ${error}`,
+          });
         }
       }
     },
