@@ -92,6 +92,7 @@ const service = {
     // possible params for this export include minDate and maxDate (full timestamp dates).
     return SubmissionData.query()
       .column(service._submissionsColumns(params))
+      .where('formId', formId)
       .modify('filterCreatedAt', params.minDate, params.maxDate);
   },
 

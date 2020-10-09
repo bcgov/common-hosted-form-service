@@ -1,3 +1,4 @@
+import { getField, updateField } from 'vuex-map-fields';
 import formService from '@/services/formService.js';
 
 export default {
@@ -20,6 +21,7 @@ export default {
     version: {}
   },
   getters: {
+    getField, // vuex-map-fields
     form: state => state.form,
     formList: state => state.formList,
     formSubmission: state => state.formSubmission,
@@ -27,6 +29,7 @@ export default {
     version: state => state.version
   },
   mutations: {
+    updateField, // vuex-map-fields
     ADD_FORM_TO_LIST(state, form) {
       state.formList.push(form);
     },
