@@ -93,14 +93,12 @@ export default {
 
   /**
   * @function getSubmission
-  * Get the form data
-  * @param {string} formId The form uuid
-  * @param {string} versionId The form version uuid
+  * Get the form data + version + submission data
   * @param {string} submission The form submission identifier
   * @returns {Promise} An axios response
   */
-  getSubmission(formId, versionId, submissionId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions/${submissionId}`);
+  getSubmission(submissionId) {
+    return appAxios().get(`/submissions/${submissionId}`);
   },
 
   /**
