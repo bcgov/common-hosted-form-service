@@ -80,11 +80,9 @@ export default {
     async getFormData() {
       try {
         const response = await formService.getSubmission(
-          this.formId,
-          this.versionId,
           this.submissionId
         );
-        this.submissionRecord = Object.assign({}, response.data);
+        this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
         this.confId = this.submissionRecord.confirmationId;
       } catch (error) {
