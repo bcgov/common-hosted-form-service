@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="form-wrapper">
     <h1 class="my-6 text-center">{{ formName }}</h1>
     <v-alert v-if="alertShow" :type="alertType" tile dense>{{
       alertMessage
@@ -222,3 +222,10 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+// include bootstrap and formio styles for the form builder
+@import '~bootstrap/dist/css/bootstrap.min.css';
+@import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
+</style>
+
