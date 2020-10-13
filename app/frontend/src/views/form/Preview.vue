@@ -14,7 +14,7 @@
 import FormViewer from '@/components/designer/FormViewer.vue';
 
 export default {
-  name: 'FormViewSubmission',
+  name: 'FormPreview',
   props: {
     f: String,
     v: String,
@@ -30,9 +30,6 @@ export default {
         {
           text: 'Form',
         },
-        {
-          text: 'Submissions'
-        }
       ];
       if (this.$route.meta.breadcrumbTitle) {
         path.push({
