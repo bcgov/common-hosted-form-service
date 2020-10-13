@@ -59,8 +59,10 @@
 </template>
 
 <script>
-import { IdentityProviders } from '@/utils/constants';
+import { mapActions } from 'vuex';
 import { FormBuilder } from 'vue-formio';
+
+import { IdentityProviders } from '@/utils/constants';
 import { formService } from '@/services';
 
 export default {
@@ -76,6 +78,7 @@ export default {
     return {
       advancedForm: false,
       designerStep: 1,
+      draftId: '',
       idps: [IdentityProviders.IDIR],
       formSchema: {
         display: 'form',
@@ -178,6 +181,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions('notifications', ['addNotification']),
     async getFormSchema() {
       try {
         const form = await formService.readForm(this.formId);
@@ -213,26 +217,55 @@ export default {
       // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
       this.reRenderFormIo += 1;
     },
-    async setFormDetails() {
-      if (this.$refs.step1Form.validate()) {
-        // this.designerStep = 2;
+    async publishFormSchema() {
+      if (this.draftId) {
+        // If editing a form, add a new draft and then publish immediately
+        try {
+          await formService.publishDraft(this.formId, this.draftId);
+        } catch (error) {
+          this.addNotification({
+            message:
+              'An error occurred while attempting to publish this form. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
+            consoleError: `Error publishing form ${this.formId} schema version ${this.draftId}: ${error}`,
+          });
+        }
       }
     },
+    // async setFormDetails() {
+    //   if (this.$refs.step1Form.validate()) {
+    //     this.designerStep = 2;
+    //   }
+    // },
     async submitFormSchema() {
-      if (this.formId && this.versionId) {
-        // If editing a form, update the version
+      if (this.formId) {
+        // If editing a form, add a new draft and then publish immediately
         try {
-          const response = await formService.updateVersion(
-            this.formId,
-            this.versionId,
-            {
-              schema: this.formSchema,
-            }
-          );
-          const data = response.data;
+          const { data } = await formService.createDraft(this.formId, {
+            schema: this.formSchema,
+          });
+          this.draftId = data.id;
           this.formSchema = data.schema;
+
+          // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
+          window.onbeforeunload = null;
+
+          // TODO: Automatically publishing for now - remove this when draft/publish UI flow is implemented
+          this.publishFormSchema();
+
+          // Draft version is now the latest - update route to reflect that
+          this.$router.push({
+            name: 'FormDesigner',
+            query: {
+              f: this.formId,
+              v: this.draftId
+            },
+          });
         } catch (error) {
-          console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
+          this.addNotification({
+            message:
+              'An error occurred while attempting to update this form. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
+            consoleError: `Error updating form ${this.formId} schema version ${this.versionId}: ${error}`,
+          });
         }
       } else {
         // If creating a new form, add the form and then a version
@@ -267,7 +300,11 @@ export default {
             },
           });
         } catch (error) {
-          console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
+          this.addNotification({
+            message:
+              'An error occurred while attempting to create this form. If you need to refresh or leave to try again later you can Export the existing design on the page to save for later.',
+            consoleError: `Error creating new form : ${error}`,
+          });
         }
       }
     },
@@ -281,12 +318,10 @@ export default {
     advancedForm() {
       this.reRenderFormIo += 1;
     },
-    designerStep(newValue) {
-      if (newValue === 2) {
-        // Once they go to the design step, enable the typical "leave site" native browser warning
-        window.onbeforeunload = () => true;
-      }
-    },
+    formSchema() {
+      // Once they reach the designer, enable the typical "leave site" native browser warning
+      window.onbeforeunload = () => true;
+    }
   },
 };
 </script>
