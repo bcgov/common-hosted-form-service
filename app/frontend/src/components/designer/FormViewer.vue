@@ -85,6 +85,10 @@ export default {
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
         this.confId = this.submissionRecord.confirmationId;
+        // simulate getFormName()
+        this.formName = response.data.form.name;
+        // simulate getFormSchema()
+        this.formSchema = response.data.version.schema;
       } catch (error) {
         console.error(`Error getting form data: ${error}`); // eslint-disable-line no-console
         this.showAlert(
@@ -206,12 +210,12 @@ export default {
       this.loading = false;
     },
   },
-  mounted() {
-    this.getFormName();
-    this.getFormSchema();
+  created() {
     if (this.submissionId) {
       this.getFormData();
     } else {
+      this.getFormName();
+      this.getFormSchema();
       // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
       window.onbeforeunload = () => true;
     }
