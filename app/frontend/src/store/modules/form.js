@@ -164,15 +164,13 @@ export default {
     //
     // Submission
     //
-    async fetchSubmission({ commit, dispatch }, { formId, versionId, submissionId }) {
+    async fetchSubmission({ commit, dispatch }, { submissionId }) {
       try {
         // Get this submission
         const response = await formService.getSubmission(
-          formId,
-          versionId,
           submissionId
         );
-        commit('SET_FORMSUBMISSION', response.data);
+        commit('SET_FORMSUBMISSION', response.data.submission);
       } catch (error) {
         dispatch('notifications/addNotification', {
           message:
