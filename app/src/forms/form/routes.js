@@ -41,16 +41,16 @@ routes.get('/:formId/versions', hasFormPermissions([P.FORM_READ, P.DESIGN_READ])
   await controller.listVersions(req, res, next);
 });
 
-routes.post('/:formId/versions', hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
-  next(new Problem(410, {detail: 'This method is deprecated, use /drafts to create form versions.'}));
+routes.post('/:formId/versions', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  next(new Problem(410, {detail: 'This method is deprecated, use /forms/id/drafts to create form versions.'}));
 });
 
 routes.get('/:formId/versions/:formVersionId', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readVersion(req, res, next);
 });
 
-routes.put('/:formId/versions/:formVersionId', hasFormPermissions([P.FORM_READ, P.DESIGN_UPDATE]), async (req, res, next) => {
-  next(new Problem(410, {detail: 'This method is deprecated, use /drafts to modify form versions.'}));
+routes.put('/:formId/versions/:formVersionId', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  next(new Problem(410, {detail: 'This method is deprecated, use /forms/id/drafts to modify form versions.'}));
 });
 
 routes.post('/:formId/versions/:formVersionId/publish', hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
@@ -65,12 +65,12 @@ routes.post('/:formId/versions/:formVersionId/submissions', hasFormPermissions([
   await controller.createSubmission(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/submissions/:formSubmissionId', hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
-  await controller.readSubmission(req, res, next);
+routes.get('/:formId/versions/:formVersionId/submissions/:formSubmissionId', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  next(new Problem(410, {detail: 'This method is deprecated, use /submissions to read a submission.'}));
 });
 
-routes.put('/:formId/versions/:formVersionId/submissions/:formSubmissionId', hasFormPermissions([P.FORM_READ, P.SUBMISSION_UPDATE]), async (req, res, next) => {
-  await controller.updateSubmission(req, res, next);
+routes.put('/:formId/versions/:formVersionId/submissions/:formSubmissionId', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  next(new Problem(410, {detail: 'This method is deprecated, use /submissions to modify a submission.'}));
 });
 
 routes.get('/:formId/drafts', hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
