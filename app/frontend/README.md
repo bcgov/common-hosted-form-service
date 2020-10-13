@@ -1,10 +1,10 @@
-# Vue Skeleton Frontend
+# CHEFS Frontend
 
-This is the Vue Skeleton frontend. It implements a Vue frontend with Keycloak authentication support.
+This is the CHEFS frontend. It implements a Vue frontend with Keycloak authentication support.
 
 ## Configuration
 
-The Vue Skeleton frontend will require some configuration. The API it invokes will be locked down and require a valid JWT Token to access. We will need to configure the application to authenticate using the same Keycloak realm as the [app](../). Note that the Vue Skeleton frontend is currently designed to expect all associated resources to be relative to the original access path.
+The CHEFS frontend will require some configuration. The API it invokes will be locked down and require a valid JWT Token to access. We will need to configure the application to authenticate using the same Keycloak realm as the [app](../). Note that the Vue Skeleton frontend is currently designed to expect all associated resources to be relative to the original access path.
 
 ## Super Quickstart
 
