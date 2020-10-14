@@ -5,17 +5,23 @@
         <h1>Manage Form</h1>
       </v-col>
       <v-col cols="12" sm="4" class="text-sm-right">
-        <ShareForm :formId="f" :versionId="currentVersion.id" />
+        <span class="ml-5">
+          <ShareForm :formId="f" :versionId="currentVersion.id" />
+        </span>
 
-        <router-link :to="{ name: 'FormTeams', query: { f: f } }">
-          <v-btn icon color="primary">
-            <v-icon>group</v-icon>
+        <span class="ml-5">
+          <router-link :to="{ name: 'FormTeams', query: { f: f } }">
+            <v-btn icon color="primary">
+              <v-icon>group</v-icon>
+            </v-btn>
+          </router-link>
+        </span>
+
+        <span class="ml-5">
+          <v-btn icon color="red">
+            <v-icon>delete</v-icon>
           </v-btn>
-        </router-link>
-
-        <v-btn icon color="red">
-          <v-icon>delete</v-icon>
-        </v-btn>
+        </span>
       </v-col>
     </v-row>
 
@@ -115,6 +121,12 @@
               </v-btn>
             </router-link>
           </p>
+
+          <BaseInfoCard>
+            Editing this form and saving the changes will create and publish a
+            new version. Any submissions made to previous versions will maintain
+            the design of the form at the time of that submission.
+          </BaseInfoCard>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
