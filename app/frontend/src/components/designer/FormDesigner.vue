@@ -1,55 +1,94 @@
 <template>
   <div>
-    <h2>Design your Form</h2>
-    <p>Drag and Drop form fields in the designer below.</p>
-    <div class="my-4">
-      <v-btn
-        color="primary"
-        @click="submitFormSchema"
-        data-test="btn-form-to-next-step"
-      >
-        <span>Save Design</span>
-      </v-btn>
-      <v-btn
-        class="ml-2"
-        outlined
-        @click="$router.go(-1)"
-        data-test="btn-form-to-previous-step"
-      >
-        <span>Back</span>
-      </v-btn>
-      <v-btn text color="primary" @click="downloadFile">
-        <v-icon class="ml-2" left>cloud_download</v-icon>
-        <span>Export Design</span>
-      </v-btn>
-      <v-btn text color="primary" @click="downloadFile">
-        <v-icon class="ml-2" left>cloud_upload</v-icon>
-        <span>Import Design</span>
-      </v-btn>
-
-      <v-expansion-panels popout>
-        <v-expansion-panel>
-          <v-expansion-panel-header>
-            Import existing form design (BETA)
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-file-input
-              @change="loadFile"
-              accept=".json"
-              outlined
-              show-size
-              label="Upload exported JSON"
-            ></v-file-input>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-      <p>Choose which form designer mode to use</p>
-      <v-switch v-model="advancedForm" label="Enable Advanced Form Designer" />
-      <br />
-      <v-icon color="primary">info</v-icon>Use the SAVE DESIGN button when you
-      are done building this form. The SUBMIT button below is for your users to
-      submit this form when published.
-    </div>
+    <v-row no-gutters>
+      <v-col cols="12" sm="4">
+        <h1>Form Design</h1>
+        <h3 v-if="name">{{ name }}</h3>
+      </v-col>
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="4">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="submitFormSchema"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>save</v-icon>
+            </v-btn>
+          </template>
+          <span>Save Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="onExportClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>get_app</v-icon>
+            </v-btn>
+          </template>
+          <span>Export Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="$refs.uploader.click()"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>publish</v-icon>
+              <input
+                class="d-none"
+                @change="loadFile"
+                ref="uploader"
+                type="file"
+                accept=".json"
+              />
+            </v-btn>
+          </template>
+          <span>Import Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+              <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                <v-icon>settings</v-icon>
+              </v-btn>
+            </router-link>
+          </template>
+          <span>Form Settings</span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
+    <BaseInfoCard class="my-6">
+      <p class="my-0">
+        Use the SAVE DESIGN (<v-icon small>save</v-icon>) button when you are
+        done building this form.
+      </p>
+      <p class="my-0">
+        The SUBMIT button is provided for your user to submit this form
+        and will be activated after it is saved.
+      </p>
+    </BaseInfoCard>
+    <v-row class="mt-4" no-gutters>
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="3" >
+        <v-select
+          dense
+          :items="advancedItems"
+          outlined
+          v-model="advancedForm"
+        />
+      </v-col>
+    </v-row>
     <FormBuilder
       :form="formSchema"
       :key="reRenderFormIo"
@@ -61,6 +100,7 @@
 <script>
 import { mapActions } from 'vuex';
 import { FormBuilder } from 'vue-formio';
+import { mapFields } from 'vuex-map-fields';
 
 import { IdentityProviders } from '@/utils/constants';
 import { formService } from '@/services';
@@ -77,6 +117,10 @@ export default {
   data() {
     return {
       advancedForm: false,
+      advancedItems: [
+        { text: 'Basic Mode', value: false },
+        { text: 'Advanced Mode', value: true },
+      ],
       designerStep: 1,
       draftId: '',
       idps: [IdentityProviders.IDIR],
@@ -85,12 +129,8 @@ export default {
         type: 'form',
         components: [],
       },
-      formName: '',
-      formDescription: '',
       reRenderFormIo: 0,
       userType: 'team',
-      valid: false,
-
       // Validation
       loginRequiredRules: [
         (v) =>
@@ -109,6 +149,7 @@ export default {
     };
   },
   computed: {
+    ...mapFields('form', ['form.description', 'form.name']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
@@ -181,27 +222,36 @@ export default {
     },
   },
   methods: {
+    ...mapActions('form', ['fetchForm']),
     ...mapActions('notifications', ['addNotification']),
+    // TODO: Put this into vuex form module
     async getFormSchema() {
-      try {
-        const form = await formService.readForm(this.formId);
-        this.formName = form.data.name;
-        this.formDescription = form.data.description;
-
-        if (this.versionId) {
+      if (this.versionId) {
+        try {
           const response = await formService.readVersion(
             this.formId,
             this.versionId
           );
           this.formSchema = { ...this.formSchema, ...response.data.schema };
+        } catch (error) {
+          this.addNotification({
+            message: 'An error occurred while loading the form schema.',
+            consoleError: `Error loading form ${this.formId} schema version ${this.versionId}: ${error}`,
+          });
         }
-      } catch (error) {
-        console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
       }
     },
-    downloadFile() {
-      var a = document.createElement('a');
-      a.href = `data:text/plain;charset=utf-8,${encodeURIComponent(
+    async loadFile(event) {
+      // TODO: Add try/catch and error notify on failure?
+      const file = event.target.files[0];
+      const text = await file.text();
+      this.formSchema = JSON.parse(text);
+      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
+      this.reRenderFormIo += 1;
+    },
+    onExportClick() {
+      const a = document.createElement('a');
+      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
         JSON.stringify(this.formSchema)
       )}`;
       a.download = 'formDesign.json';
@@ -210,12 +260,6 @@ export default {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    },
-    async loadFile(file) {
-      let text = await file.text();
-      this.formSchema = JSON.parse(text);
-      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
-      this.reRenderFormIo += 1;
     },
     async publishFormSchema() {
       if (this.draftId) {
@@ -231,11 +275,6 @@ export default {
         }
       }
     },
-    // async setFormDetails() {
-    //   if (this.$refs.step1Form.validate()) {
-    //     this.designerStep = 2;
-    //   }
-    // },
     async submitFormSchema() {
       if (this.formId) {
         // If editing a form, add a new draft and then publish immediately
@@ -257,7 +296,7 @@ export default {
             name: 'FormDesigner',
             query: {
               f: this.formId,
-              v: this.draftId
+              v: this.draftId,
             },
           });
         } catch (error) {
@@ -277,8 +316,8 @@ export default {
             identityProviders = [this.ID_PROVIDERS.PUBLIC];
           }
           const form = {
-            name: this.formName,
-            description: this.formDescription,
+            name: this.name,
+            description: this.description,
             schema: this.formSchema,
             identityProviders: identityProviders,
           };
@@ -312,6 +351,7 @@ export default {
   created() {
     if (this.formId) {
       this.getFormSchema();
+      this.fetchForm(this.formId);
     }
   },
   watch: {
@@ -321,7 +361,7 @@ export default {
     formSchema() {
       // Once they reach the designer, enable the typical "leave site" native browser warning
       window.onbeforeunload = () => true;
-    }
+    },
   },
 };
 </script>
