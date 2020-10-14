@@ -43,19 +43,21 @@ function parseIdps(identityProviders) {
   return result;
 }
 
+const initialForm = {
+  description: '',
+  id: '',
+  idps: [],
+  name: '',
+  userType: 'team'
+};
+
 /**
  * Form Module
  */
 export default {
   namespaced: true,
   state: {
-    form: {
-      description: '',
-      id: '',
-      idps: [],
-      name: '',
-      userType: 'team'
-    },
+    form: initialForm,
     formList: [],
     formSubmission: {
       confirmationId: '',
@@ -145,6 +147,9 @@ export default {
           consoleError: `Error getting form ${formId}: ${error}`,
         }, { root: true });
       }
+    },
+    resetForm({ commit }) {
+      commit('SET_FORM', initialForm);
     },
     async updateForm({ state }) {
       try {

@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 
 import FormCreator from '@/components/designer/FormCreator.vue';
@@ -60,6 +61,10 @@ export default {
       creatorStep: 1,
       settingsFormValid: false,
     };
+  },
+  methods: mapActions('form', ['resetForm']),
+  created() {
+    this.resetForm();
   },
   watch: {
     idps() {
