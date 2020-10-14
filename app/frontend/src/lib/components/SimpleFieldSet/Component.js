@@ -22,6 +22,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 import { Components } from 'formiojs';
 var ParentComponent = Components.components.fieldset;
 import editForm from './Component.form';
+import { Constants } from '../Common/Constants';
 var ID = 'simplefieldset';
 var DISPLAY = 'Field Set';
 var Component = /** @class */ (function (_super) {
@@ -51,7 +52,7 @@ var Component = /** @class */ (function (_super) {
                 group: 'simple',
                 icon: 'th-large',
                 weight: 55,
-                documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+                documentation: Constants.DEFAULT_HELP_LINK,
                 schema: Component.schema()
             };
         },

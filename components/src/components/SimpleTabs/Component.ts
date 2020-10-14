@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.tabs;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simpletabs';
 const DISPLAY = 'Tabs';
 
@@ -32,7 +34,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'folder-o',
             weight: 53,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }

@@ -22,6 +22,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 import { Components } from 'formiojs';
 var SelectComponent = Components.components.select;
 import editForm from './OrgBook.form';
+import { Constants } from '../Common/Constants';
 var ID = 'orgbook';
 var OrgBook = /** @class */ (function (_super) {
     __extends(OrgBook, _super);
@@ -146,7 +147,7 @@ var OrgBook = /** @class */ (function (_super) {
                 group: 'advanced',
                 icon: 'database',
                 weight: 70,
-                documentation: 'http://help.form.io/userguide/#select',
+                documentation: Constants.DEFAULT_HELP_LINK,
                 schema: OrgBook.schema()
             };
         },

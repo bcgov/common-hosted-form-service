@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.content;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simplecontent';
 const DISPLAY = 'Static Text';
 
@@ -25,7 +27,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'pencil-square-o',
             weight: 40,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }
