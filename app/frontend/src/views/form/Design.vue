@@ -1,7 +1,6 @@
 <template>
   <div>
-    <h1 class="my-6 text-center">Form Designer</h1>
-    <FormDesigner :formId="f" :versionId="v" />
+    <FormDesigner class="mt-6" :formId="f" :versionId="v" />
   </div>
 </template>
 
