@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.panel;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simplepanel';
 const DISPLAY = 'Panel';
 
@@ -33,7 +35,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'list-alt',
             weight: 54,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }

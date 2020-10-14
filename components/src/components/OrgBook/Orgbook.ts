@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const SelectComponent = (Components as any).components.select;
 import editForm from './OrgBook.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'orgbook';
 
 export default class OrgBook extends (SelectComponent as any) {
@@ -122,7 +124,7 @@ export default class OrgBook extends (SelectComponent as any) {
             group: 'advanced',
             icon: 'database',
             weight: 70,
-            documentation: 'http://help.form.io/userguide/#select',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: OrgBook.schema()
         };
     }

@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.fieldset;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simplefieldset';
 const DISPLAY = 'Field Set';
 
@@ -27,7 +29,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'th-large',
             weight: 55,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }
