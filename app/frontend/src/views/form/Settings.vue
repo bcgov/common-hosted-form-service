@@ -2,13 +2,12 @@
 <template>
   <div>
     <h1 class="my-6 text-center">Form Edit</h1>
-    <v-form ref="settingsForm" v-model="settingsFormValid" lazy-validation>
+    <v-form ref="settingsForm" v-model="settingsFormValid">
       <FormSettings :formId="f" />
     </v-form>
     <v-btn
       color="primary"
       :disabled="!settingsFormValid"
-      :loading="submitting"
       @click="updateForm"
     >
       <span>Save</span>
