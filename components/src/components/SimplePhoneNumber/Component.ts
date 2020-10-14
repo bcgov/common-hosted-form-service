@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.phoneNumber;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simplephonenumber';
 const DISPLAY = 'Phone Number';
 
@@ -26,7 +28,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'phone-square',
             weight: 11,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }

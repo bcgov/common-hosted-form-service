@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.selectboxes;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simplecheckboxes';
 const DISPLAY = 'Checkbox Group';
 
@@ -26,7 +28,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'plus-square',
             weight: 5,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }

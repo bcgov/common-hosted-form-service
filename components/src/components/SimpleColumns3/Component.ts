@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.columns;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simplecols3';
 const DISPLAY = 'Columns - 3';
 
@@ -34,7 +36,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'columns',
             weight: 51,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }
