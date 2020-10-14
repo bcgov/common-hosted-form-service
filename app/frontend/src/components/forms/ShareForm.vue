@@ -2,9 +2,8 @@
   <span>
     <v-dialog v-model="dialog" width="900">
       <template #activator="{ on, attrs }">
-        <v-btn color="blue" text small v-bind="attrs" v-on="on">
+        <v-btn color="primary" icon v-bind="attrs" v-on="on">
           <v-icon class="mr-1">share</v-icon>
-          <span>Share</span>
         </v-btn>
       </template>
 
