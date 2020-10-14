@@ -22,6 +22,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 import { Components } from 'formiojs';
 var ParentComponent = Components.components.time;
 import editForm from './Component.form';
+import { Constants } from '../Common/Constants';
 var ID = 'simpletime';
 var DISPLAY = 'Time';
 var defaultDataFormat = 'HH:mm:ss';
@@ -51,7 +52,7 @@ var Component = /** @class */ (function (_super) {
                 group: 'simple',
                 icon: 'clock-o',
                 weight: 22,
-                documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+                documentation: Constants.DEFAULT_HELP_LINK,
                 schema: Component.schema()
             };
         },

@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.time;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simpletime';
 const DISPLAY = 'Time';
 
@@ -28,7 +30,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'clock-o',
             weight: 22,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }

@@ -22,6 +22,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 import { Components } from 'formiojs';
 var ParentComponent = Components.components.columns;
 import editForm from './Component.form';
+import { Constants } from '../Common/Constants';
 var ID = 'simplecols4';
 var DISPLAY = 'Columns - 4';
 var Component = /** @class */ (function (_super) {
@@ -59,7 +60,7 @@ var Component = /** @class */ (function (_super) {
                 group: 'simple',
                 icon: 'columns',
                 weight: 52,
-                documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+                documentation: Constants.DEFAULT_HELP_LINK,
                 schema: Component.schema()
             };
         },

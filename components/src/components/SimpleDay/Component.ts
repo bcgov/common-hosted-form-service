@@ -3,6 +3,8 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.day;
 import editForm from './Component.form';
 
+import { Constants } from '../Common/Constants';
+
 const ID = 'simpleday';
 const DISPLAY = 'Day';
 
@@ -41,7 +43,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'calendar',
             weight: 21,
-            documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+            documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
     }

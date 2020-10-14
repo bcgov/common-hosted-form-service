@@ -22,6 +22,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 import { Components } from 'formiojs';
 var ParentComponent = Components.components.phoneNumber;
 import editForm from './Component.form';
+import { Constants } from '../Common/Constants';
 var ID = 'simplephonenumber';
 var DISPLAY = 'Phone Number';
 var Component = /** @class */ (function (_super) {
@@ -50,7 +51,7 @@ var Component = /** @class */ (function (_super) {
                 group: 'simple',
                 icon: 'phone-square',
                 weight: 11,
-                documentation: 'https://en.wikipedia.org/wiki/Special:Random',
+                documentation: Constants.DEFAULT_HELP_LINK,
                 schema: Component.schema()
             };
         },
