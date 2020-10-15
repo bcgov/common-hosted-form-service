@@ -108,8 +108,9 @@ import { mapActions } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
 
-import { IdentityMode, IdentityProviders } from '@/utils/constants';
 import { formService } from '@/services';
+import { IdentityMode, IdentityProviders } from '@/utils/constants';
+import { generateIdps } from '@/utils/transformUtils';
 
 export default {
   name: 'FormDesigner',
@@ -135,11 +136,15 @@ export default {
         components: [],
       },
       reRenderFormIo: 0,
-      userType: 'team',
     };
   },
   computed: {
-    ...mapFields('form', ['form.description', 'form.idps', 'form.name']),
+    ...mapFields('form', [
+      'form.description',
+      'form.idps',
+      'form.name',
+      'form.userType',
+    ]),
     ID_MODE() {
       return IdentityMode;
     },
@@ -310,18 +315,14 @@ export default {
       } else {
         // If creating a new form, add the form and then a version
         try {
-          let identityProviders = [];
-          if (this.userType === this.ID_MODE.LOGIN) {
-            identityProviders = this.idps.map((i) => ({ code: i }));
-          } else if (this.userType === this.ID_MODE.PUBLIC) {
-            identityProviders = [this.ID_MODE.PUBLIC];
-          }
-
           const response = await formService.createForm({
             name: this.name,
             description: this.description,
             schema: this.formSchema,
-            identityProviders: identityProviders,
+            identityProviders: generateIdps({
+              idps: this.idps,
+              userType: this.userType,
+            }),
           });
           // Add the schema to the newly created default version
           if (!response.data.versions || !response.data.versions[0]) {
