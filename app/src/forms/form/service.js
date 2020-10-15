@@ -6,8 +6,8 @@ const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.S
 
 const falsey = require('falsey');
 const Problem = require('api-problem');
-const {transaction} = require('objection');
-const {v4: uuidv4} = require('uuid');
+const { transaction } = require('objection');
+const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
@@ -15,7 +15,7 @@ const service = {
     return Form.query()
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
-      .withGraphFetched('versions(orderVersionDescending)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .modify('orderNameAscending');
   },
 
@@ -39,13 +39,13 @@ const service = {
           if (!exists) {
             throw new Problem(422, `${p.code} is not a valid Identity Provider code`);
           }
-          fips.push({id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username});
+          fips.push({ id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username });
         }
         await FormIdentityProvider.query(trx).insert(fips);
       }
       // make this user have ALL the roles...
       const userRoles = Rolenames.map(r => {
-        return {id: uuidv4(), createdBy: currentUser.username, userId: currentUser.id, formId: obj.id, role: r};
+        return { id: uuidv4(), createdBy: currentUser.username, userId: currentUser.id, formId: obj.id, role: r };
       });
       await FormRoleUser.query(trx).insert(userRoles);
 
@@ -77,11 +77,11 @@ const service = {
       const obj = await service.readForm(formId);
       trx = await transaction.start(Form.knex());
       // TODO: verify name is unique
-      await Form.query(trx).patchAndFetchById(formId, {name: data.name, description: data.description, active: data.active, labels: data.labels, updatedBy: currentUser.username});
+      await Form.query(trx).patchAndFetchById(formId, { name: data.name, description: data.description, active: data.active, labels: data.labels, updatedBy: currentUser.username });
 
       // remove any existing links to identity providers, and the updated ones
       await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
-      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return {id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username}; }));
+      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return { id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username }; }));
 
       await trx.commit();
       const result = await service.readForm(obj.id);
@@ -97,7 +97,7 @@ const service = {
       .findById(formId)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
-      .withGraphFetched('versions(orderVersionDescending)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
   },
 
@@ -220,7 +220,7 @@ const service = {
       // TODO: check if we can update this submission
       // TODO: we may have to update permissions for users (draft = false, then no delete?)
 
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {draft: data.draft, submission: data.submission, updatedBy: currentUser.username});
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
       await trx.commit();
       const result = await service.readSubmission(obj.id);
       return result;
@@ -251,7 +251,7 @@ const service = {
 
       // data.schema, maybe data.formVersionId
       const obj = Object.assign({}, data);
-      obj.id =  uuidv4();
+      obj.id = uuidv4();
       obj.formId = form.id;
       obj.createdBy = currentUser.username;
 
