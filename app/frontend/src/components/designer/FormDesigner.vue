@@ -58,11 +58,17 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-              <v-btn color="primary" icon v-bind="attrs" v-on="on">
+            <v-btn
+              color="primary"
+              :disabled="!formId"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
                 <v-icon>settings</v-icon>
-              </v-btn>
-            </router-link>
+              </router-link>
+            </v-btn>
           </template>
           <span>Form Settings</span>
         </v-tooltip>
@@ -74,13 +80,13 @@
         done building this form.
       </p>
       <p class="my-0">
-        The SUBMIT button is provided for your user to submit this form
-        and will be activated after it is saved.
+        The SUBMIT button is provided for your user to submit this form and will
+        be activated after it is saved.
       </p>
     </BaseInfoCard>
     <v-row class="mt-4" no-gutters>
       <v-spacer />
-      <v-col class="text-sm-right" cols="12" sm="3" >
+      <v-col class="text-sm-right" cols="12" sm="3">
         <v-select
           dense
           :items="advancedItems"
@@ -131,25 +137,10 @@ export default {
       },
       reRenderFormIo: 0,
       userType: 'team',
-      // Validation
-      loginRequiredRules: [
-        (v) =>
-          v != 'login' ||
-          this.idps.length > 0 ||
-          'Please select at least 1 log-in type',
-      ],
-      formDescriptionRules: [
-        (v) =>
-          !v || v.length <= 255 || 'Description must be 255 characters or less',
-      ],
-      formNameRules: [
-        (v) => !!v || 'Name is required',
-        (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
-      ],
     };
   },
   computed: {
-    ...mapFields('form', ['form.description', 'form.name']),
+    ...mapFields('form', ['form.description', 'form.idps', 'form.name']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
@@ -291,14 +282,22 @@ export default {
           // TODO: Automatically publishing for now - remove this when draft/publish UI flow is implemented
           this.publishFormSchema();
 
-          // Draft version is now the latest - update route to reflect that
+          // Navigate back to navigation page on success
           this.$router.push({
-            name: 'FormDesigner',
+            name: 'FormManage',
             query: {
               f: this.formId,
-              v: this.draftId,
             },
           });
+
+          // Draft version is now the latest - update route to reflect that
+          // this.$router.push({
+          //   name: 'FormDesigner',
+          //   query: {
+          //     f: this.formId,
+          //     v: this.draftId,
+          //   },
+          // });
         } catch (error) {
           this.addNotification({
             message:
@@ -315,13 +314,13 @@ export default {
           } else if (this.userType === this.ID_PROVIDERS.PUBLIC) {
             identityProviders = [this.ID_PROVIDERS.PUBLIC];
           }
-          const form = {
+
+          const response = await formService.createForm({
             name: this.name,
             description: this.description,
             schema: this.formSchema,
             identityProviders: identityProviders,
-          };
-          const response = await formService.createForm(form);
+          });
           // Add the schema to the newly created default version
           if (!response.data.versions || !response.data.versions[0]) {
             throw new Error(
@@ -332,6 +331,7 @@ export default {
           // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
           window.onbeforeunload = null;
 
+          // Navigate back to navigation page on success
           this.$router.push({
             name: 'FormManage',
             query: {
