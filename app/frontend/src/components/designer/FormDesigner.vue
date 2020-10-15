@@ -143,6 +143,7 @@ export default {
       'form.description',
       'form.idps',
       'form.name',
+      'form.snake',
       'form.userType',
     ]),
     ID_MODE() {
@@ -248,11 +249,19 @@ export default {
       this.reRenderFormIo += 1;
     },
     onExportClick() {
+      let snek = this.snake;
+      if (!this.snake) {
+        snek = this.name
+          .replace(/\s+/g, '_')
+          .replace(/[^-_0-9a-z]/gi, '')
+          .toLowerCase();
+      }
+
       const a = document.createElement('a');
       a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
         JSON.stringify(this.formSchema)
       )}`;
-      a.download = 'formDesign.json';
+      a.download = `${snek}_schema.json`;
       a.style.display = 'none';
       a.classList.add('hiddenDownloadTextElement');
       document.body.appendChild(a);
