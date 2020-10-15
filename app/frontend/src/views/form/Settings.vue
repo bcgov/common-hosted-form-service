@@ -5,11 +5,7 @@
     <v-form ref="settingsForm" v-model="settingsFormValid">
       <FormSettings :formId="f" />
     </v-form>
-    <v-btn
-      color="primary"
-      :disabled="!settingsFormValid"
-      @click="updateForm"
-    >
+    <v-btn color="primary" :disabled="!settingsFormValid" @click="updateForm">
       <span>Save</span>
     </v-btn>
   </div>
@@ -20,6 +16,7 @@ import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 
 import FormSettings from '@/components/designer/FormSettings.vue';
+import { IdentityMode } from '@/utils/constants';
 
 export default {
   name: 'Settings',
@@ -29,7 +26,7 @@ export default {
   props: {
     f: String,
   },
-  computed: mapFields('form', ['form.idps']),
+  computed: mapFields('form', ['form.idps', 'form.userType']),
   data() {
     return {
       settingsFormValid: false,
@@ -38,7 +35,8 @@ export default {
   methods: mapActions('form', ['updateForm']),
   watch: {
     idps() {
-      if (this.$refs.settingsForm) this.$refs.settingsForm.validate();
+      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
+        this.$refs.settingsForm.validate();
     },
   },
 };

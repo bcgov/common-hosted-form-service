@@ -45,6 +45,7 @@ import { mapFields } from 'vuex-map-fields';
 
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
+import { IdentityMode } from '@/utils/constants';
 
 export default {
   name: 'FormCreate',
@@ -52,7 +53,7 @@ export default {
     FormDesigner,
     FormSettings,
   },
-  computed: mapFields('form', ['form.idps']),
+  computed: mapFields('form', ['form.idps', 'form.userType']),
   data() {
     return {
       creatorStep: 1,
@@ -65,7 +66,8 @@ export default {
   },
   watch: {
     idps() {
-      if (this.$refs.settingsForm) this.$refs.settingsForm.validate();
+      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
+        this.$refs.settingsForm.validate();
     },
   },
 };
