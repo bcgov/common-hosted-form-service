@@ -2,12 +2,21 @@
 <template>
   <div>
     <h1 class="my-6 text-center">Form Edit</h1>
-    <FormSettings :formId="f" />
+    <v-form ref="settingsForm" v-model="settingsFormValid">
+      <FormSettings :formId="f" />
+    </v-form>
+    <v-btn color="primary" :disabled="!settingsFormValid" @click="updateForm">
+      <span>Save</span>
+    </v-btn>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import { mapFields } from 'vuex-map-fields';
+
 import FormSettings from '@/components/designer/FormSettings.vue';
+import { IdentityMode } from '@/utils/constants';
 
 export default {
   name: 'Settings',
@@ -15,7 +24,20 @@ export default {
     FormSettings,
   },
   props: {
-    f: String
+    f: String,
+  },
+  computed: mapFields('form', ['form.idps', 'form.userType']),
+  data() {
+    return {
+      settingsFormValid: false,
+    };
+  },
+  methods: mapActions('form', ['updateForm']),
+  watch: {
+    idps() {
+      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
+        this.$refs.settingsForm.validate();
+    },
   },
 };
 </script>

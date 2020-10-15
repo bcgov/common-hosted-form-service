@@ -1,55 +1,100 @@
 <template>
   <div>
-    <h2>Design your Form</h2>
-    <p>Drag and Drop form fields in the designer below.</p>
-    <div class="my-4">
-      <v-btn
-        color="primary"
-        @click="submitFormSchema"
-        data-test="btn-form-to-next-step"
-      >
-        <span>Save Design</span>
-      </v-btn>
-      <v-btn
-        class="ml-2"
-        outlined
-        @click="$router.go(-1)"
-        data-test="btn-form-to-previous-step"
-      >
-        <span>Back</span>
-      </v-btn>
-      <v-btn text color="primary" @click="downloadFile">
-        <v-icon class="ml-2" left>cloud_download</v-icon>
-        <span>Export Design</span>
-      </v-btn>
-      <v-btn text color="primary" @click="downloadFile">
-        <v-icon class="ml-2" left>cloud_upload</v-icon>
-        <span>Import Design</span>
-      </v-btn>
-
-      <v-expansion-panels popout>
-        <v-expansion-panel>
-          <v-expansion-panel-header>
-            Import existing form design (BETA)
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-file-input
-              @change="loadFile"
-              accept=".json"
-              outlined
-              show-size
-              label="Upload exported JSON"
-            ></v-file-input>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-      <p>Choose which form designer mode to use</p>
-      <v-switch v-model="advancedForm" label="Enable Advanced Form Designer" />
-      <br />
-      <v-icon color="primary">info</v-icon>Use the SAVE DESIGN button when you
-      are done building this form. The SUBMIT button below is for your users to
-      submit this form when published.
-    </div>
+    <v-row no-gutters>
+      <v-col cols="12" sm="4">
+        <h1>Form Design</h1>
+        <h3 v-if="name">{{ name }}</h3>
+      </v-col>
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="4">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="submitFormSchema"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>save</v-icon>
+            </v-btn>
+          </template>
+          <span>Save Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="onExportClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>get_app</v-icon>
+            </v-btn>
+          </template>
+          <span>Export Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="$refs.uploader.click()"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>publish</v-icon>
+              <input
+                class="d-none"
+                @change="loadFile"
+                ref="uploader"
+                type="file"
+                accept=".json"
+              />
+            </v-btn>
+          </template>
+          <span>Import Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              :disabled="!formId"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+                <v-icon>settings</v-icon>
+              </router-link>
+            </v-btn>
+          </template>
+          <span>Form Settings</span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
+    <BaseInfoCard class="my-6">
+      <p class="my-0">
+        Use the SAVE DESIGN (<v-icon small>save</v-icon>) button when you are
+        done building this form.
+      </p>
+      <p class="my-0">
+        The SUBMIT button is provided for your user to submit this form and will
+        be activated after it is saved.
+      </p>
+    </BaseInfoCard>
+    <v-row class="mt-4" no-gutters>
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="3">
+        <v-select
+          dense
+          :items="advancedItems"
+          outlined
+          v-model="advancedForm"
+        />
+      </v-col>
+    </v-row>
     <FormBuilder
       :form="formSchema"
       :key="reRenderFormIo"
@@ -59,9 +104,13 @@
 </template>
 
 <script>
-import { IdentityProviders } from '@/utils/constants';
+import { mapActions } from 'vuex';
 import { FormBuilder } from 'vue-formio';
+import { mapFields } from 'vuex-map-fields';
+
 import { formService } from '@/services';
+import { IdentityMode, IdentityProviders } from '@/utils/constants';
+import { generateIdps } from '@/utils/transformUtils';
 
 export default {
   name: 'FormDesigner',
@@ -75,37 +124,31 @@ export default {
   data() {
     return {
       advancedForm: false,
+      advancedItems: [
+        { text: 'Basic Mode', value: false },
+        { text: 'Advanced Mode', value: true },
+      ],
       designerStep: 1,
-      idps: [IdentityProviders.IDIR],
+      draftId: '',
       formSchema: {
         display: 'form',
         type: 'form',
         components: [],
       },
-      formName: '',
-      formDescription: '',
       reRenderFormIo: 0,
-      userType: 'team',
-      valid: false,
-
-      // Validation
-      loginRequiredRules: [
-        (v) =>
-          v != 'login' ||
-          this.idps.length > 0 ||
-          'Please select at least 1 log-in type',
-      ],
-      formDescriptionRules: [
-        (v) =>
-          !v || v.length <= 255 || 'Description must be 255 characters or less',
-      ],
-      formNameRules: [
-        (v) => !!v || 'Name is required',
-        (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
-      ],
     };
   },
   computed: {
+    ...mapFields('form', [
+      'form.description',
+      'form.idps',
+      'form.name',
+      'form.snake',
+      'form.userType',
+    ]),
+    ID_MODE() {
+      return IdentityMode;
+    },
     ID_PROVIDERS() {
       return IdentityProviders;
     },
@@ -178,78 +221,118 @@ export default {
     },
   },
   methods: {
+    ...mapActions('form', ['fetchForm']),
+    ...mapActions('notifications', ['addNotification']),
+    // TODO: Put this into vuex form module
     async getFormSchema() {
-      try {
-        const form = await formService.readForm(this.formId);
-        this.formName = form.data.name;
-        this.formDescription = form.data.description;
-
-        if (this.versionId) {
+      if (this.versionId) {
+        try {
           const response = await formService.readVersion(
             this.formId,
             this.versionId
           );
           this.formSchema = { ...this.formSchema, ...response.data.schema };
+        } catch (error) {
+          this.addNotification({
+            message: 'An error occurred while loading the form schema.',
+            consoleError: `Error loading form ${this.formId} schema version ${this.versionId}: ${error}`,
+          });
         }
-      } catch (error) {
-        console.error(`Error loading form schema: ${error}`); // eslint-disable-line no-console
       }
     },
-    downloadFile() {
-      var a = document.createElement('a');
-      a.href = `data:text/plain;charset=utf-8,${encodeURIComponent(
+    async loadFile(event) {
+      // TODO: Add try/catch and error notify on failure?
+      const file = event.target.files[0];
+      const text = await file.text();
+      this.formSchema = JSON.parse(text);
+      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
+      this.reRenderFormIo += 1;
+    },
+    onExportClick() {
+      let snek = this.snake;
+      if (!this.snake) {
+        snek = this.name
+          .replace(/\s+/g, '_')
+          .replace(/[^-_0-9a-z]/gi, '')
+          .toLowerCase();
+      }
+
+      const a = document.createElement('a');
+      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
         JSON.stringify(this.formSchema)
       )}`;
-      a.download = 'formDesign.json';
+      a.download = `${snek}_schema.json`;
       a.style.display = 'none';
       a.classList.add('hiddenDownloadTextElement');
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
     },
-    async loadFile(file) {
-      let text = await file.text();
-      this.formSchema = JSON.parse(text);
-      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
-      this.reRenderFormIo += 1;
-    },
-    async setFormDetails() {
-      if (this.$refs.step1Form.validate()) {
-        // this.designerStep = 2;
+    async publishFormSchema() {
+      if (this.draftId) {
+        // If editing a form, add a new draft and then publish immediately
+        try {
+          await formService.publishDraft(this.formId, this.draftId);
+        } catch (error) {
+          this.addNotification({
+            message:
+              'An error occurred while attempting to publish this form. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
+            consoleError: `Error publishing form ${this.formId} schema version ${this.draftId}: ${error}`,
+          });
+        }
       }
     },
     async submitFormSchema() {
-      if (this.formId && this.versionId) {
-        // If editing a form, update the version
+      if (this.formId) {
+        // If editing a form, add a new draft and then publish immediately
         try {
-          const response = await formService.updateVersion(
-            this.formId,
-            this.versionId,
-            {
-              schema: this.formSchema,
-            }
-          );
-          const data = response.data;
+          const { data } = await formService.createDraft(this.formId, {
+            schema: this.formSchema,
+          });
+          this.draftId = data.id;
           this.formSchema = data.schema;
+
+          // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
+          window.onbeforeunload = null;
+
+          // TODO: Automatically publishing for now - remove this when draft/publish UI flow is implemented
+          this.publishFormSchema();
+
+          // Navigate back to navigation page on success
+          this.$router.push({
+            name: 'FormManage',
+            query: {
+              f: this.formId,
+            },
+          });
+
+          // Draft version is now the latest - update route to reflect that
+          // this.$router.push({
+          //   name: 'FormDesigner',
+          //   query: {
+          //     f: this.formId,
+          //     v: this.draftId,
+          //   },
+          // });
         } catch (error) {
-          console.error(`Error updating form schema version: ${error}`); // eslint-disable-line no-console
+          this.addNotification({
+            message:
+              'An error occurred while attempting to update this form. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
+            consoleError: `Error updating form ${this.formId} schema version ${this.versionId}: ${error}`,
+          });
         }
       } else {
         // If creating a new form, add the form and then a version
         try {
-          let identityProviders = [];
-          if (this.userType === 'login') {
-            identityProviders = this.idps.map((i) => ({ code: i }));
-          } else if (this.userType === this.ID_PROVIDERS.PUBLIC) {
-            identityProviders = [this.ID_PROVIDERS.PUBLIC];
-          }
-          const form = {
-            name: this.formName,
-            description: this.formDescription,
+          const response = await formService.createForm({
+            name: this.name,
+            description: this.description,
             schema: this.formSchema,
-            identityProviders: identityProviders,
-          };
-          const response = await formService.createForm(form);
+            identityProviders: generateIdps({
+              idps: this.idps,
+              userType: this.userType,
+            }),
+          });
           // Add the schema to the newly created default version
           if (!response.data.versions || !response.data.versions[0]) {
             throw new Error(
@@ -260,6 +343,7 @@ export default {
           // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
           window.onbeforeunload = null;
 
+          // Navigate back to navigation page on success
           this.$router.push({
             name: 'FormManage',
             query: {
@@ -267,7 +351,11 @@ export default {
             },
           });
         } catch (error) {
-          console.error(`Error creating new form : ${error}`); // eslint-disable-line no-console
+          this.addNotification({
+            message:
+              'An error occurred while attempting to create this form. If you need to refresh or leave to try again later you can Export the existing design on the page to save for later.',
+            consoleError: `Error creating new form : ${error}`,
+          });
         }
       }
     },
@@ -275,17 +363,16 @@ export default {
   created() {
     if (this.formId) {
       this.getFormSchema();
+      this.fetchForm(this.formId);
     }
   },
   watch: {
     advancedForm() {
       this.reRenderFormIo += 1;
     },
-    designerStep(newValue) {
-      if (newValue === 2) {
-        // Once they go to the design step, enable the typical "leave site" native browser warning
-        window.onbeforeunload = () => true;
-      }
+    formSchema() {
+      // Once they reach the designer, enable the typical "leave site" native browser warning
+      window.onbeforeunload = () => true;
     },
   },
 };
@@ -294,6 +381,6 @@ export default {
 <style lang="scss" scoped>
 // include bootstrap and formio styles for the form builder
 @import '~bootstrap/dist/css/bootstrap.min.css';
-@import "~font-awesome/css/font-awesome.css";
+@import "~font-awesome/css/font-awesome.min.css";
 @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
 </style>

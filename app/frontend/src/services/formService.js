@@ -38,6 +38,32 @@ export default {
   },
 
   //
+  // Form draft calls
+  //
+
+  /**
+   * @function createDraft
+   * Create a new Form draft
+   * @param {string} formId The form uuid
+   * @param {Object} data An object containing an updated schema object attribute
+   * @returns {Promise} An axios response
+   */
+  createDraft(formId, data) {
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/drafts`, data);
+  },
+
+  /**
+   * @function publishDraft
+   * Publishes a specific form draft
+   * @param {string} formId The form uuid
+   * @param {string} formVersionDraftId The form version draft uuid
+   * @returns {Promise} An axios response
+   */
+  publishDraft(formId, formVersionDraftId) {
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}/publish`);
+  },
+
+  //
   // Form version calls
   //
 
@@ -73,7 +99,6 @@ export default {
   updateVersion(formId, formVersionId, data) {
     return appAxios().put(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`, data);
   },
-
 
   //
   // Form submission calls
