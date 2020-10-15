@@ -82,7 +82,7 @@
 <script>
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { IdentityProviders } from '@/utils/constants';
+import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormSettings',
