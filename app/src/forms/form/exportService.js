@@ -39,7 +39,7 @@ const EXPORT_FORMATS = Object.freeze({
 
 const service = {
   _checkPermission: (currentUser, formId, permission, exportType) => {
-    const form = currentUser.forms.find(x => x.formId = formId);
+    const form = currentUser.forms.find(x => x.formId === formId);
     if (!form || !form.permissions.includes(permission)) {
       throw new Problem(401, {detail: `Current user does not have required permission(s) to export ${exportType} data for this form.`});
     }
