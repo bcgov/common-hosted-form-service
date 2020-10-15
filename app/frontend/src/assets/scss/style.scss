@@ -14,10 +14,8 @@ $bcgov-orange: #fcba19;
 $bcgov-grey: #efefef;
 $bcgov-font: #313132;
 $bcgov-error: #d8292f;
-
 $bcgov-link: #1a5a96;
 $bcgov-link-hover: #3b99fc;
-
 $bcgov-input-placeholder: #606060;
 
 // Sticky Footer
@@ -34,7 +32,6 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial, sans-serif !important;
   line-height: 1.4;
   font-size: 0.875rem;
-  color: $bcgov-font !important;
 }
 
 h1 {
@@ -176,7 +173,7 @@ a,
     }
   }
 
-  // tabs
+  // tabs component
   .formio-component-simpletabs {
     & > .card {
       border: 0;
@@ -185,7 +182,7 @@ a,
         border-style: solid;
         border-color: rgba(0, 0, 0, 0.125);
         border-width: 0 1px 1px 1px;
-        border-radius: 0 0px 0 0px;
+        border-radius: 0;
       }
     }
     & > .card > .card-header {
@@ -260,6 +257,7 @@ a,
     }
   }
 
+  // tooltips
   .tooltip-inner {
     background-color: #606060;
     border-radius: 3px;
