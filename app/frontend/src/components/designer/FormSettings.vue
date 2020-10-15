@@ -38,10 +38,10 @@
         <v-radio
           disabled
           label="Public (annonymous)"
-          :value="ID_PROVIDERS.PUBLIC"
+          :value="ID_MODE.PUBLIC"
         />
         <v-radio label="Log-in Required" value="login"></v-radio>
-        <v-row v-if="userType === 'login'" class="pl-6 mb-2">
+        <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6 mb-2">
           <v-checkbox
             v-model="idps"
             class="mx-4"
@@ -71,7 +71,7 @@
           />
         </v-row>
         <v-radio label="Specific Team Members" value="team" />
-        <v-row v-if="userType === 'team'" class="pl-6 mb-2">
+        <v-row v-if="userType === ID_MODE.TEAM" class="pl-6 mb-2">
           You can specify users on the form's management screen once created.
         </v-row>
       </v-radio-group>
@@ -82,7 +82,7 @@
 <script>
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { IdentityProviders } from '@/utils/constants';
+import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormSettings',
@@ -118,6 +118,9 @@ export default {
       'form.name',
       'form.userType',
     ]),
+    ID_MODE() {
+      return IdentityMode;
+    },
     ID_PROVIDERS() {
       return IdentityProviders;
     },

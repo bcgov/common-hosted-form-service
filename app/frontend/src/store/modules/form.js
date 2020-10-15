@@ -1,7 +1,7 @@
 import { getField, updateField } from 'vuex-map-fields';
 
-import { IdentityProviders } from '@/utils/constants';
 import { formService, rbacService } from '@/services';
+import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 // TODO: Consider moving or folding these bidirectional transformation functions somewhere else?
 /**
@@ -13,7 +13,7 @@ import { formService, rbacService } from '@/services';
  */
 function generateIdps({ idps, userType }) {
   let identityProviders = [];
-  if (userType === 'login') {
+  if (userType === IdentityMode.LOGIN) {
     identityProviders = identityProviders.concat(idps.map((i) => ({ code: i })));
   } else if (userType === IdentityProviders.PUBLIC) {
     identityProviders.push(IdentityProviders.PUBLIC);
@@ -33,23 +33,23 @@ function parseIdps(identityProviders) {
     userType: 'team',
   };
   if (identityProviders.length) {
-    if (identityProviders[0] === IdentityProviders.PUBLIC) {
-      result.userType = IdentityProviders.PUBLIC;
+    if (identityProviders[0] === IdentityMode.PUBLIC) {
+      result.userType = IdentityMode.PUBLIC;
     } else {
-      result.userType = 'login';
+      result.userType = IdentityMode.LOGIN;
       result.idps = identityProviders.map((ip) => ip.code);
     }
   }
   return result;
 }
 
-const initialForm = {
+const genInitialForm = () => ({
   description: '',
   id: '',
   idps: [],
   name: '',
   userType: 'team'
-};
+});
 
 /**
  * Form Module
@@ -57,7 +57,7 @@ const initialForm = {
 export default {
   namespaced: true,
   state: {
-    form: initialForm,
+    form: genInitialForm(),
     formList: [],
     formSubmission: {
       confirmationId: '',
@@ -149,7 +149,7 @@ export default {
       }
     },
     resetForm({ commit }) {
-      commit('SET_FORM', initialForm);
+      commit('SET_FORM', genInitialForm());
     },
     async updateForm({ state }) {
       try {

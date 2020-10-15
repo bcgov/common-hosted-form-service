@@ -108,7 +108,7 @@ import { mapActions } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
 
-import { IdentityProviders } from '@/utils/constants';
+import { IdentityMode, IdentityProviders } from '@/utils/constants';
 import { formService } from '@/services';
 
 export default {
@@ -129,7 +129,6 @@ export default {
       ],
       designerStep: 1,
       draftId: '',
-      idps: [IdentityProviders.IDIR],
       formSchema: {
         display: 'form',
         type: 'form',
@@ -141,6 +140,9 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.description', 'form.idps', 'form.name']),
+    ID_MODE() {
+      return IdentityMode;
+    },
     ID_PROVIDERS() {
       return IdentityProviders;
     },
@@ -309,10 +311,10 @@ export default {
         // If creating a new form, add the form and then a version
         try {
           let identityProviders = [];
-          if (this.userType === 'login') {
+          if (this.userType === this.ID_MODE.LOGIN) {
             identityProviders = this.idps.map((i) => ({ code: i }));
-          } else if (this.userType === this.ID_PROVIDERS.PUBLIC) {
-            identityProviders = [this.ID_PROVIDERS.PUBLIC];
+          } else if (this.userType === this.ID_MODE.PUBLIC) {
+            identityProviders = [this.ID_MODE.PUBLIC];
           }
 
           const response = await formService.createForm({
