@@ -68,6 +68,15 @@ export default function getRouter(basePath = '/') {
             props: createProps
           },
           {
+            path: 'preview',
+            name: 'FormPreview',
+            component: () => import(/* webpackChunkName: "viewsubmission" */ '@/views/form/Preview.vue'),
+            meta: {
+              breadcrumbTitle: 'Preview Form'
+            },
+            props: createProps
+          },
+          {
             path: 'settings',
             name: 'FormSettings',
             component: () => import(/* webpackChunkName: "settings" */ '@/views/form/Settings.vue'),
@@ -86,15 +95,6 @@ export default function getRouter(basePath = '/') {
             props: createProps
           },
           {
-            path: 'teams',
-            name: 'FormTeams',
-            component: () => import(/* webpackChunkName: "teams" */ '@/views/form/Teams.vue'),
-            meta: {
-              breadcrumbTitle: 'Team Management'
-            },
-            props: createProps
-          },
-          {
             path: 'submit',
             name: 'FormSubmit',
             component: () => import(/* webpackChunkName: "submit" */ '@/views/form/Submit.vue'),
@@ -105,9 +105,18 @@ export default function getRouter(basePath = '/') {
             props: createProps
           },
           {
+            path: 'teams',
+            name: 'FormTeams',
+            component: () => import(/* webpackChunkName: "teams" */ '@/views/form/Teams.vue'),
+            meta: {
+              breadcrumbTitle: 'Team Management'
+            },
+            props: createProps
+          },
+          {
             path: 'view',
             name: 'FormView',
-            component: () => import(/* webpackChunkName: "viewsubmission" */ '@/views/form/ViewSubmission.vue'),
+            component: () => import(/* webpackChunkName: "viewsubmission" */ '@/views/form/View.vue'),
             meta: {
               breadcrumbTitle: 'View Submission'
             },

@@ -39,13 +39,19 @@ const FormPermissions = Object.freeze({
   TEAM_UPDATE: 'team_update'
 });
 
+/** Identity modes that a form can operate in regards to user identification */
+const IdentityMode = Object.freeze({
+  LOGIN: 'login', // Requires Login
+  PUBLIC: 'public', // Anonymous
+  TEAM: 'team' // Specific People
+});
+
 /** Identitiy Providers a user can log in as and a form can be allowed for */
 const IdentityProviders = Object.freeze({
   BCEID: 'bceid', // BCeID
   BCSC: 'bcsc', // Services Card
   GITHUB: 'github', // Github
-  IDIR: 'idir', // IDIR
-  PUBLIC: 'public' // Anonymous
+  IDIR: 'idir' // IDIR
 });
 
 /** Corresponds to vuetfy alert classes for notification types */
@@ -54,4 +60,4 @@ const NotificationTypes = Object.freeze({
   SUCCESS: 'success'
 });
 
-export { ApiRoutes, FormRoleCodes, FormPermissions, IdentityProviders, NotificationTypes };
+export { ApiRoutes, FormRoleCodes, FormPermissions, IdentityMode, IdentityProviders, NotificationTypes };

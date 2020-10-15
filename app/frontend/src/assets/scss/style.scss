@@ -106,7 +106,8 @@ a,
   }
 
   &.v-btn--disabled {
-    background-color: #eee;
+    // TODO: Determine if we actually need this background-color in global style
+    // background-color: #eee;
     color: #777;
   }
 
