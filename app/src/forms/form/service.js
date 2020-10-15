@@ -15,7 +15,7 @@ const service = {
     return Form.query()
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
-      .withGraphFetched('versions(orderVersionDescending)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .modify('orderNameAscending');
   },
 
@@ -97,7 +97,7 @@ const service = {
       .findById(formId)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
-      .withGraphFetched('versions(orderVersionDescending)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
   },
 
