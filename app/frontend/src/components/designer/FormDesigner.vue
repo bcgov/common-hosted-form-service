@@ -381,6 +381,6 @@ export default {
 <style lang="scss" scoped>
 // include bootstrap and formio styles for the form builder
 @import '~bootstrap/dist/css/bootstrap.min.css';
-@import "~font-awesome/css/font-awesome.css";
+@import "~font-awesome/css/font-awesome.min.css";
 @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
 </style>
