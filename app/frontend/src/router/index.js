@@ -105,6 +105,16 @@ export default function getRouter(basePath = '/') {
             props: createProps
           },
           {
+            path: 'success',
+            name: 'FormSuccess',
+            component: () => import(/* webpackChunkName: "submit" */ '@/views/form/Success.vue'),
+            meta: {
+              breadcrumbTitle: 'Submit Success',
+              hideNavBar: true
+            },
+            props: createProps
+          },
+          {
             path: 'teams',
             name: 'FormTeams',
             component: () => import(/* webpackChunkName: "teams" */ '@/views/form/Teams.vue'),

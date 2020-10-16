@@ -38,8 +38,6 @@
             :to="{
               name: 'FormView',
               query: {
-                f: item.formId,
-                v: item.versionId,
                 s: item.submissionId,
               },
             }"

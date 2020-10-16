@@ -1,20 +1,7 @@
 <template>
   <div class="form-wrapper">
     <h1 class="my-6 text-center">{{ formName }}</h1>
-    <v-alert v-if="alertShow" :type="alertType" tile dense>{{
-      alertMessage
-    }}</v-alert>
-    <div v-if="success" class="mb-5">
-      <h1>
-        <v-icon large color="success">check_circle</v-icon>Your form has been
-        submitted successfully
-      </h1>
-      <h3>
-        Please keep the following Confirmation ID for your records:
-        <strong>{{ confId }}</strong>
-      </h3>
-      <hr />
-    </div>
+    <slot name="alert" />
     <Form
       :form="formSchema"
       :submission="submission"
@@ -23,11 +10,14 @@
       @submitButton="onSubmitButton"
       :options="viewerOptions"
     />
+    <p v-if="version" class="text-right">Version: {{ version }}</p>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import { Form } from 'vue-formio';
+
 import { formService } from '@/services';
 
 export default {
@@ -36,26 +26,13 @@ export default {
     Form,
   },
   props: {
-    formId: {
-      type: String,
-      required: true,
-    },
+    formId: String,
+    readOnly: Boolean,
     submissionId: String,
-    success: {
-      type: Boolean,
-      default: false,
-    },
-    versionId: {
-      type: String,
-      required: true,
-    },
+    versionId: String,
   },
   data() {
     return {
-      alertMessage: '',
-      alertShow: false,
-      alertType: null,
-      confId: '',
       formName: '',
       formSchema: {},
       submission: {
@@ -63,12 +40,13 @@ export default {
       },
       currentForm: {},
       submissionRecord: {},
+      version: 0,
     };
   },
   computed: {
     viewerOptions() {
       return {
-        readOnly: this.submissionId !== undefined,
+        readOnly: this.readOnly || this.submissionId !== undefined,
         hooks: {
           beforeSubmit: this.onBeforeSubmit,
         },
@@ -76,25 +54,23 @@ export default {
     },
   },
   methods: {
+    ...mapActions('notifications', ['addNotification']),
     // Get the data for a form submission
     async getFormData() {
       try {
-        const response = await formService.getSubmission(
-          this.submissionId
-        );
+        const response = await formService.getSubmission(this.submissionId);
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
-        this.confId = this.submissionRecord.confirmationId;
         // simulate getFormName()
         this.formName = response.data.form.name;
         // simulate getFormSchema()
         this.formSchema = response.data.version.schema;
+        // this.version = response.data.version.version;
       } catch (error) {
-        console.error(`Error getting form data: ${error}`); // eslint-disable-line no-console
-        this.showAlert(
-          'error',
-          'An error occurred fetching the submission for this form'
-        );
+        this.addNotification({
+          message: 'An error occurred fetching the submission for this form',
+          consoleError: `Error loading form submission data ${this.submissionId}: ${error}`,
+        });
       }
     },
     // Get form name
@@ -106,8 +82,10 @@ export default {
         }
         this.formName = response.data.name;
       } catch (error) {
-        console.error(`Error getting form data: ${error}`); // eslint-disable-line no-console
-        this.showAlert('error', 'An error occurred fetching this form');
+        this.addNotification({
+          message: 'An error occurred fetching this form',
+          consoleError: `Error loading form ${this.formId}: ${error}`,
+        });
       }
     },
     // Get the form definition/schema
@@ -124,8 +102,10 @@ export default {
         }
         this.formSchema = response.data.schema;
       } catch (error) {
-        console.error(`Error getting form schema: ${error}`); // eslint-disable-line no-console
-        this.showAlert('error', 'An error occurred fetching this form');
+        this.addNotification({
+          message: 'An error occurred fetching this form',
+          consoleError: `Error loading form schema ${this.versionId}: ${error}`,
+        });
       }
     },
     // event order is:
@@ -194,20 +174,11 @@ export default {
       // is there anything here for us to do?
       // console.info('onSubmitDone()') ; // eslint-disable-line no-console
       this.$router.push({
-        name: 'FormView',
+        name: 'FormSuccess',
         query: {
-          f: this.formId,
-          v: this.versionId,
           s: this.submissionRecord.id,
-          success: true,
         },
       });
-    },
-    showAlert(typ, msg) {
-      this.alertShow = true;
-      this.alertType = typ;
-      this.alertMessage = msg;
-      this.loading = false;
     },
   },
   created() {
@@ -224,6 +195,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "~font-awesome/css/font-awesome.min.css";
+@import '~font-awesome/css/font-awesome.min.css';
 @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
 </style>
