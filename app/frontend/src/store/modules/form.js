@@ -25,6 +25,7 @@ export default {
         data: {}
       }
     },
+    permissions: [],
     submissionList: [],
     version: {}
   },
@@ -33,6 +34,7 @@ export default {
     form: state => state.form,
     formList: state => state.formList,
     formSubmission: state => state.formSubmission,
+    permissions: state => state.permissions,
     submissionList: state => state.submissionList,
     version: state => state.version
   },
@@ -46,6 +48,9 @@ export default {
     },
     SET_FORM(state, form) {
       state.form = form;
+    },
+    SET_FORM_PERMISSIONS(state, permissions) {
+      state.permissions = permissions;
     },
     SET_FORMLIST(state, forms) {
       state.formList = forms;
@@ -85,6 +90,25 @@ export default {
           message:
             'An error occurred while fetching your forms.',
           consoleError: `Error getting user data: ${error}`,
+        }, { root: true });
+      }
+    },
+    async getFormPermissionsForUser({ commit, dispatch }, formId) {
+      try {
+        commit('SET_FORM_PERMISSIONS', []);
+        // Get the forms based on the user's permissions
+        const response = await rbacService.getCurrentUser({ formId: formId });
+        const data = response.data;
+        if (data.forms[0]) {
+          commit('SET_FORM_PERMISSIONS', data.forms[0].permissions);
+        } else {
+          throw new Error('No form found');
+        }
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while fetching your user data for this form.',
+          consoleError: `Error getting user data using formID ${formId}: ${error}`,
         }, { root: true });
       }
     },

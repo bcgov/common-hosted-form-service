@@ -7,8 +7,8 @@ export default {
    * Get the current user details from the rbac endpoint
    * @returns {Promise} An axios response
    */
-  getCurrentUser() {
-    return appAxios().get(`${ApiRoutes.RBAC}/current`);
+  getCurrentUser(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/current`, { params });
   },
 
   //
