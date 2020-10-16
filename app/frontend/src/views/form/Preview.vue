@@ -1,12 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs v-if="!success" :items="breadcrumbs" />
-    <FormViewer
-      :formId="f"
-      :versionId="v"
-      :submissionId="s"
-      :success="success"
-    />
+    <FormViewer :formId="f" readOnly :versionId="v" />
   </div>
 </template>
 
@@ -18,8 +13,6 @@ export default {
   props: {
     f: String,
     v: String,
-    s: String,
-    success: Boolean,
   },
   components: {
     FormViewer,
