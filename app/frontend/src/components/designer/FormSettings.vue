@@ -87,10 +87,6 @@ import { IdentityMode, IdentityProviders } from '@/utils/constants';
 export default {
   name: 'FormSettings',
   props: {
-    disabled: {
-      default: false,
-      type: Boolean,
-    },
     formId: String,
   },
   data() {
