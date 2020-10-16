@@ -2,7 +2,7 @@
   <div>
     <v-row no-gutters class="mb-5">
       <v-col cols="12" sm="8">
-        <h1>Manage Form {{ isAdmin }}</h1>
+        <h1>Manage Form</h1>
       </v-col>
       <v-col cols="12" sm="4" class="text-sm-right">
         <span class="ml-5">
