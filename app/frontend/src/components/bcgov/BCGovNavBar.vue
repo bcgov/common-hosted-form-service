@@ -8,10 +8,10 @@
         <li>
           <router-link :to="{ name: 'UserForms' }">My Forms</router-link>
         </li>
-        <li>
+        <li v-if="isAdmin">
           <router-link :to="{ name: 'FormCreate' }">Create a New Form</router-link>
         </li>
-        <li>
+        <li v-if="isAdmin">
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li>
       </ul>
@@ -20,9 +20,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'BCGovNavBar',
   computed: {
+    ...mapGetters('auth', ['isAdmin']),
     hideNavBar() {
       return this.$route && this.$route.meta && this.$route.meta.hideNavBar;
     }

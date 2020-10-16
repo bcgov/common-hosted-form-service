@@ -13,6 +13,7 @@
 <script>
 import { mapActions } from 'vuex';
 export default {
+  name: 'BaseNotificationBar',
   props: {
     notification: {
       type: Object,

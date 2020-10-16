@@ -28,6 +28,7 @@ export default {
       }
       return false; // There are roles to check, but nothing in token to check against
     },
+    isAdmin: (_state, getters) => getters.hasResourceRoles('chefs', ['admin']),
     keycloakReady: () => Vue.prototype.$keycloak.ready,
     keycloakSubject: () => Vue.prototype.$keycloak.subject,
     moduleLoaded: () => !!Vue.prototype.$keycloak,
