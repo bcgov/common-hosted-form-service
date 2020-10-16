@@ -64,10 +64,10 @@ export default {
     //
     // User-specific form stuff
     //
-    async getFormsForCurrentUser({ commit, dispatch }) {
+    async getFormsForCurrentUser({ commit, dispatch }, params = {}) {
       try {
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser();
+        const response = await rbacService.getCurrentUser(params);
         const data = response.data;
         // Build up the list of forms for the table
         const forms = data.forms.map((f) => {
