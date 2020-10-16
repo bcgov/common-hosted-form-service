@@ -126,15 +126,17 @@ const service = {
       // if the user is 'public', then we can only fetch public accessible forms...
       items = await PublicFormAccess.query()
         .skipUndefined()
+        .modify('filterFormId', params.formId)
         .modify('filterActive', params.active)
         .modify('orderDefault');
       // ignore any passed in accessLevel params, only return public
       return service.filterForms(userInfo, items, ['public']);
     } else {
-      // if user has an id, then we fetch whatever forms match the access levels provided...
+      // if user has an id, then we fetch whatever forms match the query params
       items = await UserFormAccess.query()
         .skipUndefined()
         .modify('filterUserId', userInfo.id)
+        .modify('filterFormId', params.formId)
         .modify('filterActive', params.active)
         .modify('orderDefault');
       return service.filterForms(userInfo, items, params.accessLevels);
@@ -190,10 +192,10 @@ const service = {
     };
   },
 
-  login: async (token) => {
+  login: async (token, params = {}) => {
     const userInfo = service.parseToken(token);
     const user = await service.getUserId(userInfo);
-    const forms = await service.getUserForms(user, {}); // get all forms for user...
+    const forms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
     return Object.assign({}, {...user, forms: forms});
   }
 

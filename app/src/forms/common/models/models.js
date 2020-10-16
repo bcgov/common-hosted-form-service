@@ -611,6 +611,11 @@ class PublicFormAccess extends Model {
           query.where('active', value);
         }
       },
+      filterFormId(query, value) {
+        if (value) {
+          query.where('formId', value);
+        }
+      },
       orderDefault(builder) {
         builder.orderByRaw('lower("formName")');
       }
