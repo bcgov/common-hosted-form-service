@@ -13,8 +13,7 @@ export default {
     FormViewer,
   },
   props: {
-    f: String,
-    v: String,
+    f: String
   },
 };
 </script>
