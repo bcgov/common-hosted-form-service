@@ -18,7 +18,7 @@
         </span>
 
         <span v-if="canDeleteForm" class="ml-5">
-          <v-btn icon color="red">
+          <v-btn icon color="red" @click="showDeleteDialog">
             <v-icon>delete</v-icon>
           </v-btn>
         </span>
@@ -152,6 +152,7 @@ export default {
   },
   data() {
     return {
+      deleteDialog: false,
       formSettingsDisabled: true,
       settingsFormValid: false,
       settingsPanel: 0,
@@ -198,6 +199,9 @@ export default {
     enableSettingsEdit() {
       if (this.settingsPanel === undefined) this.settingsPanel = 0;
       this.formSettingsDisabled = false;
+    },
+    showDeleteDialog() {
+      alert('Not implemented. Button only shows for Showcase Admins right now.');
     },
     updateSettings() {
       try {
