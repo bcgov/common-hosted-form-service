@@ -652,30 +652,15 @@ paths:
             type: string
           description: form id
         - in: query
-          name: formName
-          schema:
-            type: string
-          description: form name
-        - in: query
           name: active
           schema:
             type: boolean
           description: is the form active flag
         - in: query
-          name: idps
+          name: accessLevels
           schema:
             type: string
-          description: identity provider (idp field) associated with form
-        - in: query
-          name: roles
-          schema:
-            type: string
-          description: roles (code field) user has on form
-        - in: query
-          name: permissions
-          schema:
-            type: string
-          description: permissions (code field) user has on form
+          description: filter on the user access level for the form (public, idp, team)
       responses:
         '200':
           description: 'Success'

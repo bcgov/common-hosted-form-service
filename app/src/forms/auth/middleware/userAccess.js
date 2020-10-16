@@ -14,7 +14,11 @@ const currentUser = async (request, response, next) => {
 
   const setUser = async (req, res, next) => {
     const token = getToken(req);
-    req.currentUser = await service.login(token);
+    // we can limit the form list from query string or url params.  Url params override query params
+    // ex. /forms/:formId=ABC/version?formId=123
+    // the ABC in the url will be used... so don't do that.
+    const params = Object.assign({}, req.query, req.params);
+    req.currentUser = await service.login(token, params);
     next();
   };
 
