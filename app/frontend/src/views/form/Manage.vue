@@ -1,54 +1,8 @@
 <template>
   <div>
-    <v-breadcrumbs :items="breadcrumbs" />
-    <h1 class="my-6 text-center">{{ form.name }}</h1>
-    <p><strong>Description: </strong>{{ form.description }}</p>
-    <p>
-      <strong>Created: </strong>{{ form.createdAt | formatDate }} ({{
-        form.createdBy
-      }})
-    </p>
-    <!-- <strong>Labels:</strong>
-      <v-chip
-        class="ma-1"
-        v-for="label in form.labels"
-        :key="label"
-        close
-        @click:close="chip1 = false"
-      >{{ label }}</v-chip>
-      <v-btn color="blue" text small>
-        <v-icon class="mr-1">add</v-icon>
-        <span>Add</span>
-      </v-btn>-->
-    <p>
-      <strong>Share this form:</strong>
-      <ShareForm :formId="f" />
-    </p>
-    <!-- TODO: Change this from temporary button to actually embedded in Manage page -->
-    <router-link :to="{ name: 'FormSettings', query: { f: f } }">
-      <v-btn color="blue" text small>
-        <v-icon class="mr-1">edit</v-icon>
-        <span>Edit Settings</span>
-      </v-btn>
-    </router-link>
-    <v-row>
-      <v-col cols="6">
-        <!-- TODO: Change this card to potentially use TeamManagement component -->
-        <v-card outlined>
-          <v-list-item three-line>
-            <v-list-item-content>
-              <div class="overline mb-4">
-                TEAM MANGEMENT
-                <router-link :to="{ name: 'FormTeams', query: { f: f } }">
-                  <v-btn color="blue" text small>
-                    <v-icon class="mr-1">edit</v-icon>
-                    <span>Edit</span>
-                  </v-btn>
-                </router-link>
-              </div>
-            </v-list-item-content>
-          </v-list-item>
-        </v-card>
+    <v-row no-gutters class="mb-5">
+      <v-col cols="12" sm="8">
+        <h1>Manage Form</h1>
       </v-col>
       <v-col cols="12" sm="4" class="text-sm-right">
         <span class="ml-5">
@@ -247,7 +201,9 @@ export default {
       this.formSettingsDisabled = false;
     },
     showDeleteDialog() {
-      alert('Not implemented. Button only shows for Showcase Admins right now.');
+      alert(
+        'Not implemented. Button only shows for Showcase Admins right now.'
+      );
     },
     updateSettings() {
       try {
