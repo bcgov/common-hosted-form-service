@@ -95,13 +95,12 @@
         />
       </v-col>
     </v-row>
-    <div class="form-designer">
-      <FormBuilder
-        :form="formSchema"
-        :key="reRenderFormIo"
-        :options="designerOptions"
-      />
-    </div>
+    <FormBuilder
+      :form="formSchema"
+      :key="reRenderFormIo"
+      :options="designerOptions"
+      class="form-designer"
+    />
   </div>
 </template>
 
@@ -381,6 +380,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '~font-awesome/css/font-awesome.min.css';
-  @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
+@import '~font-awesome/css/font-awesome.min.css';
+@import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
 </style>
