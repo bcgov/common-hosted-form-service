@@ -2,14 +2,14 @@
   <div>
     <v-row no-gutters class="mb-5">
       <v-col cols="12" sm="8">
-        <h1>Manage Form</h1>
+        <h1>Manage Form {{ isAdmin }}</h1>
       </v-col>
       <v-col cols="12" sm="4" class="text-sm-right">
         <span class="ml-5">
           <ShareForm :formId="f" :versionId="currentVersion.id" />
         </span>
 
-        <span class="ml-5">
+        <span v-if="canManageTeam" class="ml-5">
           <router-link :to="{ name: 'FormTeams', query: { f: f } }">
             <v-btn icon color="primary">
               <v-icon>group</v-icon>
@@ -17,7 +17,7 @@
           </router-link>
         </span>
 
-        <span class="ml-5">
+        <span v-if="canDeleteForm" class="ml-5">
           <v-btn icon color="red">
             <v-icon>delete</v-icon>
           </v-btn>
@@ -44,6 +44,7 @@
                 }})
               </small>
               <v-btn
+                v-if="canEditForm"
                 small
                 icon
                 color="primary"
@@ -115,7 +116,7 @@
                 query: { f: f, v: currentVersion.id },
               }"
             >
-              <v-btn color="primary" text small>
+              <v-btn v-if="canCreateDesign" color="primary" text small>
                 <v-icon class="mr-1 ml-5">edit</v-icon>
                 <span>Edit Current Form</span>
               </v-btn>
@@ -136,7 +137,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import { NotificationTypes } from '@/utils/constants';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import ShareForm from '@/components/forms/ShareForm.vue';
 
@@ -158,26 +159,37 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form']),
-    breadcrumbs() {
-      const path = [
-        {
-          text: 'Form',
-        },
-      ];
-      if (this.$route.meta.breadcrumbTitle) {
-        path.push({
-          text: this.$route.meta.breadcrumbTitle,
-        });
-      }
-      return path;
+    ...mapGetters('auth', ['isAdmin']),
+    ...mapGetters('form', ['form', 'permissions']),
+
+    // Permission checks, for right now some of these are restriced to app admins only until a later release
+    canCreateDesign() {
+      return (
+        this.isAdmin && this.permissions.includes(FormPermissions.DESIGN_CREATE)
+      );
     },
+    canDeleteForm() {
+      return (
+        this.isAdmin && this.permissions.includes(FormPermissions.FORM_DELETE)
+      );
+    },
+    canEditForm() {
+      return (
+        this.isAdmin && this.permissions.includes(FormPermissions.FORM_UPDATE)
+      );
+    },
+    canManageTeam() {
+      return (
+        this.isAdmin && this.permissions.includes(FormPermissions.TEAM_READ)
+      );
+    },
+
     currentVersion() {
       return this.form.versions ? this.form.versions[0] : {};
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm']),
+    ...mapActions('form', ['getFormPermissionsForUser', 'fetchForm']),
     ...mapActions('notifications', ['addNotification']),
     cancelSettingsEdit() {
       this.formSettingsDisabled = true;
@@ -207,7 +219,10 @@ export default {
     },
   },
   mounted() {
+    // Get the form for this management page
     this.fetchForm(this.f);
+    // Get the permissions for this form
+    this.getFormPermissionsForUser(this.f);
   },
 };
 </script>
