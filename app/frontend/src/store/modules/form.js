@@ -135,9 +135,9 @@ export default {
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
     },
-    async updateForm({ state }) {
+    async updateForm({ state, dispatch }) {
       try {
-        formService.updateForm(state.form.id, {
+        await formService.updateForm(state.form.id, {
           name: state.form.name,
           description: state.form.description,
           identityProviders: generateIdps({
@@ -146,7 +146,11 @@ export default {
           })
         });
       } catch (error) {
-        console.error(`Error updating form: ${error}`); // eslint-disable-line no-console
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while updating the settings for this form.',
+          consoleError: `Error updating form ${state.form.id}: ${error}`,
+        }, { root: true });
       }
     },
 

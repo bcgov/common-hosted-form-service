@@ -190,7 +190,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['getFormPermissionsForUser', 'fetchForm']),
+    ...mapActions('form', ['getFormPermissionsForUser', 'fetchForm', 'updateForm']),
     ...mapActions('notifications', ['addNotification']),
     cancelSettingsEdit() {
       this.formSettingsDisabled = true;
@@ -205,9 +205,10 @@ export default {
         'Not implemented. Button only shows for Showcase Admins right now.'
       );
     },
-    updateSettings() {
+    async updateSettings() {
       try {
         if (this.$refs.settingsForm.validate()) {
+          await this.updateForm();
           this.formSettingsDisabled = true;
           this.addNotification({
             type: NotificationTypes.SUCCESS,
