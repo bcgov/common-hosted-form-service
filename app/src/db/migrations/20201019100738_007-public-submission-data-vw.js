@@ -14,7 +14,7 @@ order by s."createdAt", s."formName", s.version`));
 };
 
 exports.down = function (knex) {
-  // Restore original definition of this view from 001-views
+  // Restore original definition of this view from 005
   return Promise.resolve()
     .then(() => knex.schema.raw(`create or replace view submissions_data_vw as  
 select s."confirmationId", s."formName", s.version, s."createdAt",
