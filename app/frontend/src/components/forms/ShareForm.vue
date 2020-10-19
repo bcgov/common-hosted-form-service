@@ -81,11 +81,7 @@ export default {
     formId: {
       type: String,
       required: true,
-    },
-    versionId: {
-      type: String,
-      required: true,
-    },
+    }
   },
   data() {
     return {
@@ -98,7 +94,7 @@ export default {
   computed: {
     formLink() {
       // TODO: Consider using vue-router to generate this url string instead
-      return `${window.location.origin}${process.env.BASE_URL}form/submit?f=${this.formId}&v=${this.versionId}`;
+      return `${window.location.origin}${process.env.BASE_URL}form/submit?f=${this.formId}`;
     },
   },
   methods: {

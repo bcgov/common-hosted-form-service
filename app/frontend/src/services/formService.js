@@ -68,6 +68,16 @@ export default {
   //
 
   /**
+   * @function readPublished
+   * Get the most recently published form version schema
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readPublished(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/version`);
+  },
+
+  /**
    * @function readVersion
    * Get a specific form version schema
    * @param {string} formId The form uuid
