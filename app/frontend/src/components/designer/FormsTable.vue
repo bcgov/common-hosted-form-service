@@ -1,16 +1,30 @@
 <template>
   <div>
-    <!-- search input -->
-    <div class="submissions-search mt-6 mt-sm-0">
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        class="pb-5"
-      />
-    </div>
+    <v-row>
+      <v-col cols="12" sm="6">
+        <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
+          <v-btn color="primary" text small v-bind="attrs" v-on="on">
+            <v-icon class="mr-1">add_circle</v-icon>
+            <span>Create a New Form</span>
+          </v-btn>
+        </router-link>
+      </v-col>
+
+      <v-col cols="12" sm="6">
+        <!-- search input -->
+        <div class="submissions-search">
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+            class="pb-5"
+          />
+        </div>
+      </v-col>
+    </v-row>
+
     <!-- table header -->
     <v-data-table
       class="submissions-table"
@@ -77,7 +91,10 @@ export default {
       search: '',
     };
   },
-  computed: mapGetters('form', ['formList']),
+  computed: {
+    ...mapGetters('form', ['formList']),
+    ...mapGetters('auth', ['isAdmin']),
+  },
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),
     checkFormManage: checkFormManage,
