@@ -105,6 +105,10 @@
 </template>
 
 <script>
+import { Formio } from 'vue-formio';
+import BcGovFormioComponents from '@/lib';
+Formio.use(BcGovFormioComponents);
+
 import { mapActions } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';

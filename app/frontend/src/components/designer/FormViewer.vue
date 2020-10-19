@@ -15,6 +15,10 @@
 </template>
 
 <script>
+import { Formio } from 'vue-formio';
+import BcGovFormioComponents from '@/lib';
+Formio.use(BcGovFormioComponents);
+
 import { mapActions } from 'vuex';
 import { Form } from 'vue-formio';
 
