@@ -35,8 +35,8 @@ const checkFormManage = userForm => {
     return false;
 
   if (userForm && userForm.permissions && userForm.permissions.includes(
-    FormPermissions.FORM_READ, FormPermissions.FORM_UPDATE, FormPermissions.FORM_DELETE,
-    FormPermissions.DESIGN_READ, FormPermissions.DESIGN_UPDATE, FormPermissions.DESIGN_DELETE)) {
+    FormPermissions.FORM_UPDATE, FormPermissions.FORM_DELETE,
+    FormPermissions.DESIGN_UPDATE, FormPermissions.DESIGN_DELETE)) {
     return true;
   }
 

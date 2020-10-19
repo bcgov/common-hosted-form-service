@@ -41,6 +41,7 @@ export default {
       currentForm: {},
       submissionRecord: {},
       version: 0,
+      versionIdToSubmitTo: this.versionId
     };
   },
   computed: {
@@ -61,11 +62,9 @@ export default {
         const response = await formService.getSubmission(this.submissionId);
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
-        // simulate getFormName()
         this.formName = response.data.form.name;
-        // simulate getFormSchema()
         this.formSchema = response.data.version.schema;
-        // this.version = response.data.version.version;
+        this.version = response.data.version.version;
       } catch (error) {
         this.addNotification({
           message: 'An error occurred fetching the submission for this form',
@@ -73,34 +72,38 @@ export default {
         });
       }
     },
-    // Get form name
-    async getFormName() {
-      try {
-        const response = await formService.readForm(this.formId);
-        if (!response.data) {
-          throw new Error(`No data in response. FormId: ${this.formId}`);
-        }
-        this.formName = response.data.name;
-      } catch (error) {
-        this.addNotification({
-          message: 'An error occurred fetching this form',
-          consoleError: `Error loading form ${this.formId}: ${error}`,
-        });
-      }
-    },
     // Get the form definition/schema
     async getFormSchema() {
       try {
-        const response = await formService.readVersion(
-          this.formId,
-          this.versionId
-        );
-        if (!response.data || !response.data.schema) {
-          throw new Error(
-            `No schema in response. VersionId: ${this.versionId}`
-          );
+        let response = undefined;
+        if (this.versionId) {
+          this.versionIdToSubmitTo = this.versionId;
+          // If getting for a specific older version of the form
+          response = await formService.readVersion(this.formId, this.versionId);
+          if (!response.data || !response.data.schema) {
+            throw new Error(
+              `No schema in response. VersionId: ${this.versionId}`
+            );
+          }
+          this.formName = response.data.name;
+          this.formSchema = response.data.schema;
+        } else {
+          // If getting the HEAD form version (IE making a new submission)
+          response = await formService.readPublished(this.formId);
+          if (
+            !response.data ||
+            !response.data.versions ||
+            !response.data.versions[0]
+          ) {
+            throw new Error(
+              `No published version found in response. FormID: ${this.formId}`
+            );
+          }
+          this.formName = response.data.name;
+          this.version = response.data.versions[0].version;
+          this.versionIdToSubmitTo = response.data.versions[0].id;
+          this.formSchema = response.data.versions[0].schema;
         }
-        this.formSchema = response.data.schema;
       } catch (error) {
         this.addNotification({
           message: 'An error occurred fetching this form',
@@ -134,7 +137,7 @@ export default {
 
         const response = await formService.createSubmission(
           this.formId,
-          this.versionId,
+          this.versionIdToSubmitTo,
           body
         );
 
@@ -185,7 +188,6 @@ export default {
     if (this.submissionId) {
       this.getFormData();
     } else {
-      this.getFormName();
       this.getFormSchema();
       // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
       window.onbeforeunload = () => true;

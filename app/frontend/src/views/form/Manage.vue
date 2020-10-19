@@ -118,13 +118,13 @@
             >
               <v-btn v-if="canCreateDesign" color="primary" text small>
                 <v-icon class="mr-1 ml-5">edit</v-icon>
-                <span>Edit Current Form</span>
+                <span>Edit Current Design</span>
               </v-btn>
             </router-link>
           </p>
 
           <BaseInfoCard>
-            Editing this form and saving the changes will create and publish a
+            Editing this form design and saving the changes will create and publish a
             new version. Any submissions made to previous versions will maintain
             the design of the form at the time of that submission.
           </BaseInfoCard>
@@ -190,7 +190,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['getFormPermissionsForUser', 'fetchForm']),
+    ...mapActions('form', ['getFormPermissionsForUser', 'fetchForm', 'updateForm']),
     ...mapActions('notifications', ['addNotification']),
     cancelSettingsEdit() {
       this.formSettingsDisabled = true;
@@ -201,11 +201,14 @@ export default {
       this.formSettingsDisabled = false;
     },
     showDeleteDialog() {
-      alert('Not implemented. Button only shows for Showcase Admins right now.');
+      alert(
+        'Not implemented. Button only shows for Showcase Admins right now.'
+      );
     },
-    updateSettings() {
+    async updateSettings() {
       try {
         if (this.$refs.settingsForm.validate()) {
+          await this.updateForm();
           this.formSettingsDisabled = true;
           this.addNotification({
             type: NotificationTypes.SUCCESS,

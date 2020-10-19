@@ -2,7 +2,7 @@
   <span>
     <v-dialog v-model="dialog" width="900">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn color="blue" text small v-bind="attrs" v-on="on">
+        <v-btn color="primary" text small v-bind="attrs" v-on="on">
           <v-icon class="mr-1">cloud_download</v-icon>
           <span>Export CSV</span>
         </v-btn>
