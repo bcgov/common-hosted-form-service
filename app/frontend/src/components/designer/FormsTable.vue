@@ -52,7 +52,7 @@
           <router-link
             :to="{
               name: 'FormSubmit',
-              query: { f: item.id, v: item.currentVersionId },
+              query: { f: item.id },
             }"
             target="_blank"
           >
