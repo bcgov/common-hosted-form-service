@@ -1,28 +1,30 @@
 <template>
-  <v-toolbar color="#003366" flat class="gov-header">
-    <!-- Navbar content -->
-    <a href="https://www2.gov.bc.ca" data-test="btn-header-logo">
-      <v-img
-        alt="B.C. Government Logo"
-        class="d-none d-sm-flex d-md-none"
-        contain
-        height="3.5rem"
-        src="@/assets/images/bc_logo_square.svg"
-        width="3.5rem"
-      />
-      <v-img
-        alt="B.C. Government Logo"
-        class="d-none d-md-flex"
-        contain
-        height="3.5rem"
-        src="@/assets/images/bc_logo.svg"
-        width="10rem"
-      />
-    </a>
-    <h1 data-test="btn-header-title" class="font-weight-bold title">{{ appTitle }}</h1>
-    <v-spacer />
-    <BaseAuthButton />
-  </v-toolbar>
+  <header class="gov-header">
+    <v-toolbar color="#003366" flat>
+      <!-- Navbar content -->
+      <a href="https://www2.gov.bc.ca" data-test="btn-header-logo">
+        <v-img
+          alt="B.C. Government Logo"
+          class="d-none d-sm-flex d-md-none"
+          contain
+          height="3.5rem"
+          src="@/assets/images/bc_logo_square.svg"
+          width="3.5rem"
+        />
+        <v-img
+          alt="B.C. Government Logo"
+          class="d-none d-md-flex"
+          contain
+          height="3.5rem"
+          src="@/assets/images/bc_logo.svg"
+          width="10rem"
+        />
+      </a>
+      <h1 data-test="btn-header-title" class="font-weight-bold title">{{ appTitle }}</h1>
+      <v-spacer />
+      <BaseAuthButton />
+    </v-toolbar>
+  </header>
 </template>
 
 <script>

@@ -178,7 +178,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 
 .export-submissions-dlg {
   // vuetify radio button labels need alignment help

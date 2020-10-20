@@ -126,7 +126,7 @@ export default {
     return {
       advancedForm: false,
       advancedItems: [
-        { text: 'Basic Mode', value: false },
+        { text: 'Simple Mode', value: false },
         { text: 'Advanced Mode', value: true },
       ],
       designerStep: 1,
