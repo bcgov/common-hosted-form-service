@@ -2,6 +2,10 @@ import 'nprogress/nprogress.css';
 import '@bcgov/bc-sans/css/BCSans.css';
 import '@/assets/scss/style.scss';
 
+import { Formio } from 'vue-formio';
+import BcGovFormioComponents from '@/lib';
+Formio.use(BcGovFormioComponents);
+
 import axios from 'axios';
 import NProgress from 'nprogress';
 import Vue from 'vue';
@@ -13,10 +17,6 @@ import getRouter from '@/router';
 import store from '@/store';
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
-
-import { Formio } from 'vue-formio';
-import BcGovFormioComponents from '@/lib';
-Formio.use(BcGovFormioComponents);
 
 Vue.config.productionTip = false;
 
