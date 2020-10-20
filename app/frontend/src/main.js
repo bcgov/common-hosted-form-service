@@ -11,13 +11,17 @@ import '@/filters';
 import auth from '@/store/modules/auth.js';
 import getRouter from '@/router';
 import store from '@/store';
-import VueKeycloakJs from '@/plugins/keycloak';
-import vuetify from '@/plugins/vuetify';
 
+// Add our custom components to the formio instance
+// importing the main formio dependency (whether through vue-formio or directly)
+// has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
+// No idea why, probably a polyfill clash
 import { Formio } from 'vue-formio';
 import BcGovFormioComponents from '@/lib';
 Formio.use(BcGovFormioComponents);
 
+import VueKeycloakJs from '@/plugins/keycloak';
+import vuetify from '@/plugins/vuetify';
 Vue.config.productionTip = false;
 
 NProgress.configure({ showSpinner: false });
