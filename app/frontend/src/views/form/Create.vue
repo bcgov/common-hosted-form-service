@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <BaseSecure>
     <h1 class="my-6 text-center">Create New Form</h1>
     <v-stepper v-model="creatorStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
@@ -36,7 +36,7 @@
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
-  </div>
+  </BaseSecure>
 </template>
 
 <script>

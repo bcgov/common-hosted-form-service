@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <BaseSecure>
     <FormDesigner class="mt-6" :formId="f" :versionId="v" />
-  </div>
+  </BaseSecure>
 </template>
 
 <script>
