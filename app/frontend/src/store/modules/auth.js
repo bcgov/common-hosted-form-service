@@ -23,12 +23,13 @@ export default {
       if (!getters.authenticated) return false;
       if (!roles.length) return true; // No roles to check against
 
-      if (getters.resourceAccess[resource]) {
+      if (getters.resourceAccess && getters.resourceAccess[resource]) {
         return hasRoles(getters.resourceAccess[resource].roles, roles);
       }
       return false; // There are roles to check, but nothing in token to check against
     },
     isAdmin: (_state, getters) => getters.hasResourceRoles('chefs', ['admin']),
+    isUser: (_state, getters) => getters.hasResourceRoles('chefs', ['user']),
     keycloakReady: () => Vue.prototype.$keycloak.ready,
     keycloakSubject: () => Vue.prototype.$keycloak.subject,
     moduleLoaded: () => !!Vue.prototype.$keycloak,
