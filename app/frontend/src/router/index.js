@@ -77,15 +77,6 @@ export default function getRouter(basePath = '/') {
             props: createProps
           },
           {
-            path: 'settings',
-            name: 'FormSettings',
-            component: () => import(/* webpackChunkName: "settings" */ '@/views/form/Settings.vue'),
-            meta: {
-              breadcrumbTitle: 'Form Settings'
-            },
-            props: createProps
-          },
-          {
             path: 'submissions',
             name: 'FormSubmissions',
             component: () => import(/* webpackChunkName: "submissions" */ '@/views/form/Submissions.vue'),
