@@ -10,6 +10,15 @@ class Form extends Timestamps(Model) {
     return 'form';
   }
 
+  $parseDatabaseJson(json) {
+    json = super.$parseDatabaseJson(json);
+    // Need to make sure that name is a string (could be a number)
+    if (json.name !== undefined) {
+      json.name = json.name.toString();
+    }
+    return json;
+  }
+
   snake() {
     // like a slug, but not guaranteed to be unique (as names are not unique).
     // use this for file names or any other instances we want a standardized name without punctuation etc.
