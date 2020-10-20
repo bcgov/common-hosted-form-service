@@ -39,9 +39,7 @@
                       readonly
                       v-on="on"
                       dense
-                      flat
                       outlined
-                      solo
                     ></v-text-field>
                   </template>
                   <v-date-picker
@@ -72,9 +70,7 @@
                       readonly
                       v-on="on"
                       dense
-                      flat
                       outlined
-                      solo
                     ></v-text-field>
                   </template>
                   <v-date-picker

@@ -199,4 +199,13 @@ export default {
 <style lang="scss" scoped>
 @import '~font-awesome/css/font-awesome.min.css';
 @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
+
+.form-wrapper ::v-deep .formio-form {
+  &.formio-read-only{
+    // make readonly formio select boxes grey
+    .form-control{
+      background-color: #e9ecef;
+    }
+  }
+}
 </style>
