@@ -2,33 +2,33 @@
   <div class="form-wrapper">
     <h1 class="my-6 text-center">{{ formName }}</h1>
     <slot name="alert" />
-    <Form
+    <!-- <Form
       :form="formSchema"
       :submission="submission"
       @submit="onSubmit"
       @submitDone="onSubmitDone"
       @submitButton="onSubmitButton"
       :options="viewerOptions"
-    />
+    /> -->
     <p v-if="version" class="text-right">Version: {{ version }}</p>
   </div>
 </template>
 
 <script>
-import { Formio } from 'vue-formio';
-import BcGovFormioComponents from '@/lib';
-Formio.use(BcGovFormioComponents);
+// import { Formio } from 'vue-formio';
+// import BcGovFormioComponents from '@/lib';
+// Formio.use(BcGovFormioComponents);
 
 import { mapActions } from 'vuex';
-import { Form } from 'vue-formio';
+// import { Form } from 'vue-formio';
 
 import { formService } from '@/services';
 
 export default {
   name: 'FormViewer',
-  components: {
-    Form,
-  },
+  // components: {
+  //   Form,
+  // },
   props: {
     formId: String,
     readOnly: Boolean,

@@ -10,6 +10,9 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import FormioFormBuilder from 'formiojs/FormBuilder';
+
 export default {
   name: 'About',
 };

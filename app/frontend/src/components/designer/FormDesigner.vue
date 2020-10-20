@@ -95,7 +95,7 @@
         />
       </v-col>
     </v-row>
-    <FormBuilder
+    <FormIoBuilder
       :form="formSchema"
       :key="reRenderFormIo"
       :options="designerOptions"
@@ -105,12 +105,12 @@
 </template>
 
 <script>
-import { Formio } from 'vue-formio';
-import BcGovFormioComponents from '@/lib';
-Formio.use(BcGovFormioComponents);
+// import { Formio } from 'vue-formio';
+// import BcGovFormioComponents from '@/lib';
+// Formio.use(BcGovFormioComponents);
 
 import { mapActions } from 'vuex';
-import { FormBuilder } from 'vue-formio';
+import FormIoBuilder from '@/components/designer/FormIoBuilder.vue';
 import { mapFields } from 'vuex-map-fields';
 
 import { formService } from '@/services';
@@ -120,7 +120,7 @@ import { generateIdps } from '@/utils/transformUtils';
 export default {
   name: 'FormDesigner',
   components: {
-    FormBuilder,
+    FormIoBuilder,
   },
   props: {
     formId: String,
@@ -158,71 +158,7 @@ export default {
       return IdentityProviders;
     },
     designerOptions() {
-      if (!this.advancedForm) {
-        return {
-          noDefaultSubmitButton: false,
-          builder: {
-            basic: false,
-            advanced: false,
-            data: false,
-            layout: false,
-            premium: false,
-            entryControls: {
-              title: 'Form fields',
-              weight: 20,
-              default: true,
-              components: {
-                simpletextfield: true,
-                simpletextarea: true,
-                simpleselect: true,
-                simplenumber: true,
-                simplephonenumber: true,
-                simpleemail: true,
-                simpledatetime: true,
-                simpleday: true,
-                simpletime: true,
-                simplecheckbox: true,
-                simplecheckboxes: true,
-                simpleradios: true,
-              },
-            },
-            layoutControls: {
-              title: 'Layout',
-              weight: 30,
-              components: {
-                simplecols2: true,
-                simplecols3: true,
-                simplecols4: true,
-                simplefieldset: true,
-                simplepanel: true,
-                simpletabs: true,
-              },
-            },
-            staticControls: {
-              title: 'Static Content',
-              weight: 40,
-              components: {
-                simpleheading: true,
-                simpleparagraph: true,
-                simplecontent: true,
-              },
-            },
-            customControls: {
-              title: 'BC Gov.',
-              weight: 50,
-              components: {
-                orgbook: true,
-              },
-            },
-          },
-        };
-      } else {
-        return {
-          builder: {
-            premium: false,
-          },
-        };
-      }
+      return {};
     },
   },
   methods: {
