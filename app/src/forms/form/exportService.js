@@ -21,6 +21,9 @@ class SubmissionData extends Model {
         } else if (maxDate) {
           query.where('createdAt', '<=', maxDate);
         }
+      },
+      orderDefault(builder) {
+        builder.orderBy('createdAt', 'DESC');
       }
     };
   }
@@ -97,7 +100,8 @@ const service = {
     return SubmissionData.query()
       .column(service._submissionsColumns(params))
       .where('formId', formId)
-      .modify('filterCreatedAt', params.minDate, params.maxDate);
+      .modify('filterCreatedAt', params.minDate, params.maxDate)
+      .modify('orderDefault');
   },
 
   _formatSubmissionsJson: async (form, data) => {
