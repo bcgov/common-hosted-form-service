@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-dialog v-model="dialog" width="900">
+    <v-dialog v-model="dialog" width="900" content-class="export-submissions-dlg">
       <template v-slot:activator="{ on, attrs }">
         <v-btn color="primary" text small v-bind="attrs" v-on="on">
           <v-icon class="mr-1">cloud_download</v-icon>
@@ -48,7 +48,6 @@
                     v-model="startDate"
                     data-test="picker-form-startDate"
                     @input="startDateMenu = false"
-                    :readonly="reviewMode"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -82,7 +81,6 @@
                     v-model="endDate"
                     data-test="picker-form-endDate"
                     @input="endDateMenu = false"
-                    :readonly="reviewMode"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -132,7 +130,7 @@ export default {
   computed: {
     ...mapGetters('form', ['form']),
     fileName() {
-      return `${this.form.name}_submissions.csv`;
+      return `${this.form.snake}_submissions.csv`;
     },
   },
   methods: {
@@ -154,10 +152,13 @@ export default {
           to
         );
         if (response && response.data) {
-          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const blob = new Blob([response.data], {type: response.headers['content-type']});
+          const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.setAttribute('download', this.fileName); //or any other extension
+          a.download = this.fileName;
+          a.style.display = 'none';
+          a.classList.add('hiddenDownloadTextElement');
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -176,3 +177,22 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+
+.export-submissions-dlg {
+  // vuetify radio button labels need alignment help
+  .v-radio {
+    > label {
+      margin-bottom: 0;
+    }
+  }
+
+  // legend with no text breaks outline on date picker
+  .v-input__slot {
+    > fieldset > legend {
+      display: none
+    }
+  }
+}
+</style>
