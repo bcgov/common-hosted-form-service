@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <BaseSecure>
     <h1 class="my-6 text-center">Your Submission History (TBD)</h1>
-  </div>
+  </BaseSecure>
 </template>
 
 <script>
