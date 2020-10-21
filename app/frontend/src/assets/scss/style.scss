@@ -305,10 +305,6 @@ a,
     padding: 8px 16px;
     line-height: 21px;
     font-weight: 700;
-
-    &:disabled:hover {
-      background-color: rgba(0, 0, 0, 0.12);
-    }
   }
 
   // labels
@@ -400,11 +396,15 @@ a,
   }
 }
 
-// override just form designer
+/////////////////////////////////
+// override Formio form designer
+/////////////////////////////////
+
 .form-designer {
-  //submit button component
-  .formio-component-button .btn.btn-primary {
-    @extend .btn, .btn-primary, :disabled;
+  .formio-component-submit .btn.btn-primary,
+  .formio-component-submit .btn.btn-primary:hover {
+    @extend :disabled;
+    background-color: rgba(0, 0, 0, 0.12);
   }
 }
 
