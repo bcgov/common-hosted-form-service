@@ -372,3 +372,10 @@ a,
     padding-top: 8px;
   }
 }
+
+// vuetify radio button and checkbox labels need alignment help
+.v-input--selection-controls__input {
+  ~ .v-label {
+    margin-bottom: 0 !important;
+  }
+}

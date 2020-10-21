@@ -182,12 +182,6 @@ export default {
 <style lang="scss">
 
 .export-submissions-dlg {
-  // vuetify radio button labels need alignment help
-  .v-radio {
-    > label {
-      margin-bottom: 0;
-    }
-  }
 
   // legend with no text breaks outline on date picker
   .v-input__slot {
