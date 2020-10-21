@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <BaseSecure>
     <router-link :to="{ name: 'UserForms' }">
       <v-btn color="primary" class="mr-2">
         <span>MY FORMS</span>
@@ -37,7 +37,7 @@
         </pre>
       </v-col>
     </v-row>
-  </div>
+  </BaseSecure>
 </template>
 
 <script>

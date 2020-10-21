@@ -34,7 +34,7 @@ describe('auth getters', () => {
           tokenParsed: {
             realm_access: {},
             resource_access: {
-              app: {
+              chefs: {
                 roles: roles
               }
             }
@@ -116,6 +116,38 @@ describe('auth getters', () => {
 
     expect(store.getters.authenticated).toBeTruthy();
     expect(store.getters.hasResourceRoles('app', roles)).toBeFalsy();
+  });
+
+  it('isAdmin should return false if no admin role', () => {
+    authenticated = true;
+    roles = [];
+
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.isAdmin).toBeFalsy();
+  });
+
+  it('isAdmin should return true if admin role', () => {
+    authenticated = true;
+    roles = ['admin'];
+
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.isAdmin).toBeTruthy();
+  });
+
+  it('isUser should return false if no user role', () => {
+    authenticated = true;
+    roles = [];
+
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.isUser).toBeFalsy();
+  });
+
+  it('isUser should return true if user role', () => {
+    authenticated = true;
+    roles = ['user'];
+
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.isUser).toBeTruthy();
   });
 
   it('keycloakReady should return a boolean', () => {

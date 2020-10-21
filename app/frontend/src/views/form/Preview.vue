@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <BaseSecure>
     <FormViewer :formId="f" readOnly :versionId="v" />
-  </div>
+  </BaseSecure>
 </template>
 
 <script>
