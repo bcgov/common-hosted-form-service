@@ -37,7 +37,7 @@
       >
         <v-radio
           disabled
-          label="Public (annonymous)"
+          label="Public (anonymous)"
           :value="ID_MODE.PUBLIC"
         />
         <v-radio label="Log-in Required" value="login"></v-radio>
