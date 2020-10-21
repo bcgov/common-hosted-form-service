@@ -382,14 +382,4 @@ export default {
 <style lang="scss" scoped>
 @import '~font-awesome/css/font-awesome.min.css';
 @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
-
-.form-designer ::v-deep .formbuilder {
-  .formcomponents {
-    // formio component buttons
-    .btn-primary.formcomponent {
-      background-color: #E4F2FF;
-      color: #003366
-    }
-  }
-}
 </style>
