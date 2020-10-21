@@ -8,9 +8,9 @@
           </h1>
           <p>
             The Common Hosted Form Service is available to BC Government
-            employees and contractors. Sign in now to try it out
+            employees and contractors.
+            <a :href="createLoginUrl()">Sign in</a> now to try it out
           </p>
-          <h2>(IMAGES TEMPORARY)</h2>
           <v-img
             alt="Drag and Drop demo"
             src="@/assets/images/drag-drop-demo.gif"
@@ -91,8 +91,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'About',
+  computed: mapGetters('auth', ['createLoginUrl']),
 };
 </script>
 
