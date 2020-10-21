@@ -30,7 +30,7 @@
       loading-text="Loading... Please wait"
     >
       <template #[`item.date`]="{ item }">
-        {{ item.date | formatDate }}
+        {{ item.date | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
         <v-btn color="textLink" text small>
@@ -70,7 +70,10 @@ export default {
     return {
       headers: [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
-        { text: 'Submission Date', align: 'start', value: 'date' },
+        { text: 'Submission Date',
+          align: 'start',
+          value: 'date'
+        },
         { text: 'Submitter', align: 'start', value: 'submitter' },
         {
           text: 'Actions',
