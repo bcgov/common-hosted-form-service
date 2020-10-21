@@ -10,11 +10,6 @@
         <span>HISTORY</span>
       </v-btn>
     </router-link>
-    <router-link :to="{ name: 'Search' }">
-      <v-btn color="primary" class="mr-2">
-        <span>SEARCH</span>
-      </v-btn>
-    </router-link>
     <h1 class="text-center">User</h1>
     <h2>Design TBD (dev only stuff??)</h2>
     <v-row no-gutters>

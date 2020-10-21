@@ -130,14 +130,6 @@ export default function getRouter(basePath = '/') {
         }
       },
       {
-        path: '/search',
-        name: 'Search',
-        component: () => import(/* webpackChunkName: "search" */ '@/views/Search.vue'),
-        meta: {
-          hasLogin: true
-        }
-      },
-      {
         path: '/user',
         component: () => import(/* webpackChunkName: "user" */ '@/views/User.vue'),
         children: [
