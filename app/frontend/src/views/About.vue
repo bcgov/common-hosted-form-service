@@ -45,9 +45,8 @@
       <v-col cols="12" lg="4">
         <h2>Export and import your form design templates</h2>
         <p>
-          Learn how to export and import your form design template. Export to
-          save the design to your computer as a backup or template and import to
-          easily start from where you left off.
+          Export to save the design to your computer as a backup or template and
+          import to easily start from where you left off.
         </p>
       </v-col>
       <v-col cols="12" lg="4">
