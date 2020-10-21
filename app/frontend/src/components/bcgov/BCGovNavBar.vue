@@ -1,6 +1,6 @@
 <template>
   <nav v-if="!hideNavBar" class="navigation-main">
-    <div class="container">
+    <div class="nav-holder">
       <ul>
         <li>
           <router-link :to="{ name: 'About' }">About</router-link>
@@ -43,7 +43,7 @@ export default {
   -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
   -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
 
-  .container {
+  .nav-holder {
     padding: 0;
     ul {
       display: flex;
