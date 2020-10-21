@@ -31,9 +31,8 @@
         </p>
       </v-col>
       <v-col cols="12" lg="4">
-        <v-img
+        <BaseImagePopout
           alt="Drag and Drop demo"
-          contain
           src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/drag_drop.png"
           width="600px"
         />
@@ -50,9 +49,8 @@
         </p>
       </v-col>
       <v-col cols="12" lg="4">
-        <v-img
-          alt="Drag and Drop demo"
-          contain
+        <BaseImagePopout
+          alt="Export demo"
           src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/export.png"
           width="600px"
         />
