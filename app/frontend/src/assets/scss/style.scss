@@ -298,12 +298,18 @@ a,
       color: rgba(0, 0, 0, 0.26) !important;
     }
   }
+
   // formio submit buttons
-  .formio-component-submit .btn {
+  .formio-component-button .btn {
     text-transform: uppercase;
+    padding: 8px 16px;
+    line-height: 21px;
+    font-weight: 700;
+
+    &:disabled:hover {
+      background-color: rgba(0, 0, 0, 0.12);
+    }
   }
-
-
 
   // labels
   label:not(.form-check-label) {
