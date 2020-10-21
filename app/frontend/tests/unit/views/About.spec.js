@@ -16,6 +16,6 @@ describe('About.vue', () => {
       vuetify
     });
 
-    expect(wrapper.html()).toMatch('Welcome to CHEFS');
+    expect(wrapper.html()).toMatch('Create and publish forms');
   });
 });
