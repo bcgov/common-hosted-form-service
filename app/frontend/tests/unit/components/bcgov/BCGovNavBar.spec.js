@@ -1,25 +1,64 @@
-import { shallowMount } from '@vue/test-utils';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
+import Vuex from 'vuex';
 
 import BCGovNavBar from '@/components/bcgov/BCGovNavBar.vue';
 
+const localVue = createLocalVue();
+localVue.use(Vuex);
+
 describe('BCGovNavBar.vue', () => {
-  let vuetify;
+  let store;
+  const vuetify = new Vuetify();
 
   beforeEach(() => {
-    vuetify = new Vuetify();
+    store = new Vuex.Store();
   });
 
-  // Skip this while the navbar depends on the admin flag
-  // Tried everything correctly in Mocking with Modules here https://vue-test-utils.vuejs.org/guides/using-with-vuex.html
-  // Might be the nonstandard dynamic registration of the module?
-  it.skip('renders', () => {
+  it('renders as non-admin', () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isAdmin: () => false,
+        keycloakReady: () => true
+      }
+    });
+
     const wrapper = shallowMount(BCGovNavBar, {
+      localVue,
       mocks: {
         $route: {
           meta: {}
         }
       },
+      store,
+      stubs: ['router-link'],
+      vuetify
+    });
+
+    expect(wrapper.text()).toContain('About');
+    expect(wrapper.text()).toContain('My Forms');
+  });
+
+  it('renders as admin', () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isAdmin: () => true,
+        keycloakReady: () => true
+      }
+    });
+
+    const wrapper = shallowMount(BCGovNavBar, {
+      localVue,
+      mocks: {
+        $route: {
+          meta: {}
+        }
+      },
+      store,
       stubs: ['router-link'],
       vuetify
     });
