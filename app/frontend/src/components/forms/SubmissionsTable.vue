@@ -29,6 +29,9 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
+      <template #[`item.date`]="{ item }">
+        {{ item.date | formatDateLong }}
+      </template>
       <template #[`item.actions`]="{ item }">
         <v-btn color="textLink" text small>
           <router-link
@@ -90,9 +93,6 @@ export default {
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
-    formatDate(date) {
-      return date ? new Date(date).toLocaleString() : 'N/A';
-    },
     async populateSubmissionsTable() {
       try {
         // Get the submissions for this form
@@ -102,7 +102,7 @@ export default {
           const tableRows = this.submissionList.map((s) => {
             return {
               confirmationId: s.confirmationId,
-              date: this.formatDate(s.createdAt),
+              date: s.createdAt,
               formId: s.formId,
               submissionId: s.submissionId,
               submitter: s.createdBy,
