@@ -24,17 +24,17 @@
       <v-col cols="12" lg="4">
         <h2>Drag and Drop form components onto your form</h2>
         <p>
-          Members of the public service are the politically impartial government
-          employees who are responsible for carrying out the day-to-day
-          activities of government and for delivering public services to the
-          citizens of B.C.
+          Easily create forms with an intuitive drag-and-drop interface. Add new
+          form components, re-arrange them, and drop them into formatting
+          objects like columns and panels. Creating a Web form has never been so
+          simple.
         </p>
       </v-col>
       <v-col cols="12" lg="4">
         <v-img
           alt="Drag and Drop demo"
           contain
-          src="@/assets/images/drag-drop-demo.gif"
+          src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/drag_drop.png"
           width="600px"
         />
       </v-col>
@@ -44,17 +44,16 @@
       <v-col cols="12" lg="4">
         <h2>Export and import your form design templates</h2>
         <p>
-          Members of the public service are the politically impartial government
-          employees who are responsible for carrying out the day-to-day
-          activities of government and for delivering public services to the
-          citizens of B.C.
+          Learn how to export and import your form design template. Export to
+          save the design to your computer as a backup or template and import to
+          easily start from where you left off.
         </p>
       </v-col>
       <v-col cols="12" lg="4">
         <v-img
           alt="Drag and Drop demo"
           contain
-          src="@/assets/images/drag-drop-demo.gif"
+          src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/export.png"
           width="600px"
         />
       </v-col>
