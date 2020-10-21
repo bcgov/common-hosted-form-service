@@ -64,7 +64,7 @@
       <span>UPDATE</span>
     </v-btn>
     <v-btn
-      color="secondary"
+      outlined
       class="my-2 ml-2"
       :disabled="!edited"
       @click="createTableData"

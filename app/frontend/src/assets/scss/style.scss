@@ -119,6 +119,25 @@ a,
     &.theme--dark {
       border: 2px solid #fff;
     }
+    &.v-btn--disabled {
+      border-color: rgba(0, 0, 0, 0.26);
+    }
+  }
+  // align links with icons (shown in My Forms in table)
+  a > i ~ span {
+    vertical-align: middle;
+  }
+}
+
+// buttons in v-card
+.v-card__actions > .v-btn {
+  padding: 0 16px !important;
+}
+
+// vuetify radio button and checkbox labels need alignment help
+.v-input--selection-controls__input {
+  ~ .v-label {
+    margin-bottom: 0 !important;
   }
 }
 
@@ -144,6 +163,37 @@ a,
     }
   }
 }
+
+// Customized expand/collapse section
+.nrmc-expand-collapse {
+  min-height: 50px;
+  .v-expansion-panel--active > .v-expansion-panel-header {
+    min-height: 50px;
+  }
+
+  .v-expansion-panel-header {
+    padding: 10px;
+    background-color: $bcgov-grey;
+    .icon {
+      order: 0;
+    }
+
+    .header {
+      order: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .v-expansion-panel-content__wrap {
+    padding-top: 8px;
+  }
+}
+
+/////////////////////////////////
+///  override formio styles:
+/////////////////////////////////
 
 // override formio form designer
 .form-designer,
@@ -248,6 +298,12 @@ a,
       color: rgba(0, 0, 0, 0.26) !important;
     }
   }
+  // formio submit buttons
+  .formio-component-submit .btn {
+    text-transform: uppercase;
+  }
+
+
 
   // labels
   label:not(.form-check-label) {
@@ -346,36 +402,17 @@ a,
   }
 }
 
-// Customized expand/collapse section
-.nrmc-expand-collapse {
-  min-height: 50px;
-  .v-expansion-panel--active > .v-expansion-panel-header {
-    min-height: 50px;
-  }
-
-  .v-expansion-panel-header {
-    padding: 10px;
-    background-color: $bcgov-grey;
-    .icon {
-      order: 0;
-    }
-
-    .header {
-      order: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-  }
-
-  .v-expansion-panel-content__wrap {
-    padding-top: 8px;
-  }
+// formio component buttons
+.btn-primary.formcomponent.drag-copy,
+.btn-primary.formcomponent.drag-copy:hover,
+.formcomponent.drag-copy:active {
+  background-color: #e4f2ff;
+  color: #003366;
+  font-size: 0.8rem;
+  border: none;
 }
-
-// vuetify radio button and checkbox labels need alignment help
-.v-input--selection-controls__input {
-  ~ .v-label {
-    margin-bottom: 0 !important;
-  }
+.drag-container .btn-primary.formcomponent.drag-copy {
+  opacity: 0.3;
+  color: white;
+  background: $bcgov-blue;
 }
