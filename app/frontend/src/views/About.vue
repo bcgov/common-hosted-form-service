@@ -113,7 +113,6 @@ export default {
     padding: 0 5px;
   }
 
-  // TBD, placeholder images for now. Not sure what styles needed for video elements etc
   .main-video {
     margin-top: 40px;
     margin-bottom: 20px;
