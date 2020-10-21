@@ -82,7 +82,7 @@ describe('BaseSecure.vue', () => {
       stubs: ['router-link']
     });
 
-    expect(wrapper.text()).toMatch('Your account is not set up correctly. Please contact support.');
+    expect(wrapper.text()).toMatch('Your account is not set up correctly.');
   });
 
   it('renders a message with login button if unauthenticated', () => {
