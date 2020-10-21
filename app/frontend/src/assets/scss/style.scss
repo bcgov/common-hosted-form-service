@@ -164,6 +164,33 @@ a,
   }
 }
 
+// Customized expand/collapse section
+.nrmc-expand-collapse {
+  min-height: 50px;
+  .v-expansion-panel--active > .v-expansion-panel-header {
+    min-height: 50px;
+  }
+
+  .v-expansion-panel-header {
+    padding: 10px;
+    background-color: $bcgov-grey;
+    .icon {
+      order: 0;
+    }
+
+    .header {
+      order: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .v-expansion-panel-content__wrap {
+    padding-top: 8px;
+  }
+}
+
 /////////////////////////////////
 ///  override formio styles:
 /////////////////////////////////
@@ -271,6 +298,12 @@ a,
       color: rgba(0, 0, 0, 0.26) !important;
     }
   }
+  // formio submit buttons
+  .formio-component-submit .btn {
+    text-transform: uppercase;
+  }
+
+
 
   // labels
   label:not(.form-check-label) {
@@ -375,37 +408,11 @@ a,
 .formcomponent.drag-copy:active {
   background-color: #e4f2ff;
   color: #003366;
-  font-weight: bold;
   font-size: 0.8rem;
   border: none;
 }
 .drag-container .btn-primary.formcomponent.drag-copy {
-  opacity: 0.75;
-}
-
-// Customized expand/collapse section
-.nrmc-expand-collapse {
-  min-height: 50px;
-  .v-expansion-panel--active > .v-expansion-panel-header {
-    min-height: 50px;
-  }
-
-  .v-expansion-panel-header {
-    padding: 10px;
-    background-color: $bcgov-grey;
-    .icon {
-      order: 0;
-    }
-
-    .header {
-      order: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-  }
-
-  .v-expansion-panel-content__wrap {
-    padding-top: 8px;
-  }
+  opacity: 0.3;
+  color: white;
+  background: $bcgov-blue;
 }
