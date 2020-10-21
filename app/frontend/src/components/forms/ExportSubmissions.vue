@@ -13,7 +13,7 @@
         <v-card-text>
           <hr />
           <p>Select the submission date</p>
-          <v-radio-group v-model="dateRange" hide-details="auto">
+          <v-radio-group v-model="dateRange" hide-details="auto" class="export-radios">
             <v-radio label="All" :value="false"></v-radio>
             <v-radio label="Select Date range" :value="true"></v-radio>
           </v-radio-group>
@@ -173,17 +173,3 @@ export default {
     },
   },
 };
-</script>
-
-<style lang="scss">
-
-.export-submissions-dlg {
-
-  // legend with no text breaks outline on date picker
-  .v-input__slot {
-    > fieldset > legend {
-      display: none
-    }
-  }
-}
-</style>
