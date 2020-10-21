@@ -137,15 +137,16 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     async callExport() {
       try {
+        // UTC start of selected start date...
         const from =
           this.dateRange && this.startDate
-            ? moment.utc(this.startDate).format()
+            ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format()
             : undefined;
+        // UTC end of selected end date...
         const to =
           this.dateRange && this.endDate
-            ? moment.utc(this.endDate).format()
+            ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss').utc().format()
             : undefined;
-
         const response = await formService.exportSubmissions(
           this.form.id,
           from,
