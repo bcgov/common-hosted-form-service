@@ -11,16 +11,18 @@
             employees and contractors.
             <a :href="createLoginUrl()">Sign in</a> now to try it out
           </p>
-          <v-img
-            alt="Drag and Drop demo"
-            src="@/assets/images/drag-drop-demo.gif"
-            width="100%"
-          />
+          <video class="main-video" width="100%" controls>
+            <source
+              src="https://github.com/bcgov/common-hosted-form-service/wiki/videos/drag_drop.mp4"
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+          </video>
         </v-col>
       </v-row>
     </v-sheet>
 
-    <v-row justify="center" class="my-5 px-5">
+    <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
         <h2>Drag and Drop form components onto your form</h2>
         <p>
@@ -39,7 +41,7 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center" class="my-5 px-5">
+    <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
         <h2>Export and import your form design templates</h2>
         <p>
@@ -106,8 +108,15 @@ export default {
     background-color: #f1f8ff;
   }
 
+  .example-text {
+    margin: 80px 0;
+    padding: 0 5px;
+  }
+
   // TBD, placeholder images for now. Not sure what styles needed for video elements etc
   .main-video {
+    margin-top: 40px;
+    margin-bottom: 20px;
   }
 }
 </style>
