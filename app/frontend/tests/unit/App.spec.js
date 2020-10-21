@@ -1,9 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 
-import Secure from '@/App.vue';
+import App from '@/App.vue';
 
-describe('Secure.vue', () => {
+describe('App.vue', () => {
   let vuetify;
 
   beforeEach(() => {
@@ -11,9 +11,9 @@ describe('Secure.vue', () => {
   });
 
   it('renders', () => {
-    const wrapper = shallowMount(Secure, {
+    const wrapper = shallowMount(App, {
       vuetify,
-      stubs: ['BaseSecure', 'BCGovFooter', 'BCGovHeader', 'BCGovNavBar', 'router-view']
+      stubs: ['BaseNotificationContainer', 'BaseSecure', 'BCGovFooter', 'BCGovHeader', 'BCGovNavBar', 'router-view']
     });
 
     expect(wrapper.text()).toMatch('');
