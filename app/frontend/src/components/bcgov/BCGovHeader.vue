@@ -50,6 +50,7 @@ export default {
     color: #ffffff;
     overflow: hidden;
     padding: 1rem;
+    margin-bottom: 0;
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
       font-size: 1rem !important;
     }
