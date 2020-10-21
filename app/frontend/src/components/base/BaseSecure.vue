@@ -17,7 +17,8 @@
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
       <h1 class="my-8">
-        Your account is not set up correctly. Please contact support.
+        Your account is not set up correctly. Please contact
+        <a :href="mailToLink">NR.CommonServiceShowcase@gov.bc.ca</a>.
       </h1>
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" large>
@@ -54,6 +55,11 @@ export default {
       'isUser',
       'keycloakReady',
     ]),
+    mailToLink() {
+      return `mailto:NR.CommonServiceShowcase@gov.bc.ca?subject=CHEFS%20Account%20Issue%20(${encodeURIComponent(
+        location
+      )})`;
+    },
   },
   methods: {
     login() {
