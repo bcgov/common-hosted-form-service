@@ -39,9 +39,7 @@
                       readonly
                       v-on="on"
                       dense
-                      flat
                       outlined
-                      solo
                     ></v-text-field>
                   </template>
                   <v-date-picker
@@ -72,9 +70,7 @@
                       readonly
                       v-on="on"
                       dense
-                      flat
                       outlined
-                      solo
                     ></v-text-field>
                   </template>
                   <v-date-picker
@@ -178,16 +174,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-
-.export-submissions-dlg {
-
-  // legend with no text breaks outline on date picker
-  .v-input__slot {
-    > fieldset > legend {
-      display: none
-    }
-  }
-}
-</style>
