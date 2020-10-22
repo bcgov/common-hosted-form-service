@@ -264,13 +264,21 @@ a,
   }
 
   // form inputs
-  .form-control {
+  .form-control:not(.is-invalid) {
+    // input borders
     border: 1px solid $bcgov-input-placeholder;
+
+    // placeholder text
     &::placeholder,
     .choices__placeholder {
       color: $bcgov-input-placeholder;
       opacity: inherit;
     }
+  }
+
+  .form-control.is-invalid,
+  .was-validated .form-control:invalid {
+    background-image: none;
   }
 
   // buttons
@@ -306,8 +314,8 @@ a,
     padding: 8px 16px;
     line-height: 21px;
     font-weight: 700;
-    letter-spacing: .0892857143em;
-    font-size: .875rem;
+    letter-spacing: 0.0892857143em;
+    font-size: 0.875rem;
   }
 
   // labels
