@@ -124,9 +124,10 @@ a,
     }
   }
   // align links with icons (shown in My Forms in table)
-  a > i ~ span {
-    vertical-align: middle;
-  }
+  // causes underline issues in firefox
+  // a > i ~ span {
+  //   vertical-align: middle;
+  // }
 }
 
 // buttons in v-card
