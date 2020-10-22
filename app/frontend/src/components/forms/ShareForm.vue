@@ -8,9 +8,9 @@
       </template>
 
       <v-card>
-        <v-card-title class="headline grey lighten-2">Get sharing link for this form</v-card-title>
-
+        <v-card-title class="headline pb-0">Get sharing link for this form</v-card-title>
         <v-card-text>
+          <hr />
           <v-icon class="mr-1 my-5" color="primary">info</v-icon>
           <span>Use the link below to share with the users you wish to fill out this form</span>
           <v-text-field
@@ -59,11 +59,10 @@
             </v-container>
           </div>
         </v-card-text>
-        <v-divider></v-divider>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="dialog = false">Close</v-btn>
+        <v-card-actions class="justify-center">
+          <v-btn class="mb-5" color="primary" @click="dialog = false">
+            <span>Close</span>
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
