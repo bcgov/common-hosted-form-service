@@ -202,9 +202,14 @@ export default {
 
 .form-wrapper ::v-deep .formio-form {
   &.formio-read-only{
-    // make readonly formio select boxes grey
-    .form-control{
-      background-color: #e9ecef;
+    // in submission review mode, make readonly formio fields consistently greyed-out
+    .form-control,
+    .formio-component-simpletextarea .card-body.bg-light,
+    .choices.is-disabled .choices__input {
+      background-color: #e9ecef !important;
+    }
+    .formio-component-simpletextarea .card-body.bg-light {
+      border: 1px solid #606060;
     }
   }
 }

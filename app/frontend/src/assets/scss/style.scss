@@ -124,9 +124,10 @@ a,
     }
   }
   // align links with icons (shown in My Forms in table)
-  a > i ~ span {
-    vertical-align: middle;
-  }
+  // causes underline issues in firefox
+  // a > i ~ span {
+  //   vertical-align: middle;
+  // }
 }
 
 // buttons in v-card
@@ -298,12 +299,16 @@ a,
       color: rgba(0, 0, 0, 0.26) !important;
     }
   }
+
   // formio submit buttons
-  .formio-component-submit .btn {
+  .formio-component-button .btn {
     text-transform: uppercase;
+    padding: 8px 16px;
+    line-height: 21px;
+    font-weight: 700;
+    letter-spacing: .0892857143em;
+    font-size: .875rem;
   }
-
-
 
   // labels
   label:not(.form-check-label) {
@@ -394,11 +399,15 @@ a,
   }
 }
 
-// override just form designer
+/////////////////////////////////
+// override Formio form designer
+/////////////////////////////////
+
 .form-designer {
-  //submit button component
-  .formio-component-button .btn.btn-primary {
-    @extend .btn, .btn-primary, :disabled;
+  .formio-component-submit .btn.btn-primary,
+  .formio-component-submit .btn.btn-primary:hover {
+    @extend :disabled;
+    background-color: rgba(0, 0, 0, 0.12);
   }
 }
 
