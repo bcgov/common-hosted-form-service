@@ -70,5 +70,13 @@ export default {
         this.$refs.settingsForm.validate();
     },
   },
+  beforeRouteLeave(to, from, next) {
+    const answer = window.confirm('Do you really want to leave this page?');
+    if (answer) {
+      next();
+    } else {
+      next(false);
+    }
+  },
 };
 </script>

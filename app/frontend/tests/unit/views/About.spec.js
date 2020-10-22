@@ -1,18 +1,35 @@
-import { shallowMount } from '@vue/test-utils';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
+import Vuex from 'vuex';
 
 import About from '@/views/About.vue';
 
+const localVue = createLocalVue();
+localVue.use(Vuex);
+
 describe('About.vue', () => {
-  let vuetify;
+  let store;
+  const vuetify = new Vuetify();
 
   beforeEach(() => {
-    vuetify = new Vuetify();
+    store = new Vuex.Store();
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isAdmin: () => false,
+        keycloakReady: () => true,
+        // eslint-disable-next-line no-unused-vars
+        createLoginUrl: () => () => 'testurl'
+      }
+    });
   });
 
   it('renders', () => {
     const wrapper = shallowMount(About, {
-      stubs: ['router-link'],
+      localVue,
+      store,
+      stubs: ['router-link', 'BaseImagePopout'],
       vuetify
     });
 
