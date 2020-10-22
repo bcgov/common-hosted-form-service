@@ -71,12 +71,9 @@ export default {
     },
   },
   beforeRouteLeave(to, from, next) {
-    const answer = window.confirm('Do you really want to leave this page?');
-    if (answer) {
-      next();
-    } else {
-      next(false);
-    }
+    window.confirm('Do you really want to leave this page?')
+      ? next()
+      : next(false);
   },
 };
 </script>
