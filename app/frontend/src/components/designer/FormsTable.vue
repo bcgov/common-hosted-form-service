@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12" sm="6">
         <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
-          <v-btn color="primary" text small v-bind="attrs" v-on="on">
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">add_circle</v-icon>
             <span>Create a New Form</span>
           </v-btn>

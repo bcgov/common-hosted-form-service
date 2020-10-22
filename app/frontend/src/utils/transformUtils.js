@@ -11,15 +11,15 @@ import { IdentityMode } from '@/utils/constants';
  * @param {String} userType The type of users
  * @returns {Object[]} An object array of identity providers
  */
-const generateIdps = ({ idps, userType }) => {
+export function generateIdps({ idps, userType }) {
   let identityProviders = [];
-  if (userType === IdentityMode.LOGIN) {
+  if (userType === IdentityMode.LOGIN && idps && idps.length) {
     identityProviders = identityProviders.concat(idps.map((i) => ({ code: i })));
   } else if (userType === IdentityMode.PUBLIC) {
     identityProviders.push(IdentityMode.PUBLIC);
   }
   return identityProviders;
-};
+}
 
 /**
  * @function parseIdps
@@ -27,12 +27,12 @@ const generateIdps = ({ idps, userType }) => {
  * @param {Object[]} identityProviders An object array of identity providers
  * @returns {Object} An object containing idps and userType
  */
-const parseIdps = (identityProviders) => {
+export function parseIdps(identityProviders) {
   const result = {
     idps: [],
-    userType: 'team',
+    userType: IdentityMode.TEAM,
   };
-  if (identityProviders.length) {
+  if (identityProviders && identityProviders.length) {
     if (identityProviders[0] === IdentityMode.PUBLIC) {
       result.userType = IdentityMode.PUBLIC;
     } else {
@@ -41,6 +41,4 @@ const parseIdps = (identityProviders) => {
     }
   }
   return result;
-};
-
-export { generateIdps, parseIdps };
+}

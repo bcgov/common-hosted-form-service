@@ -3,7 +3,7 @@
 //
 
 /** API Route paths */
-const ApiRoutes = Object.freeze({
+export const ApiRoutes = Object.freeze({
   FORMS: '/forms',
   RBAC: '/rbac',
   ROLES: '/roles'
@@ -11,7 +11,7 @@ const ApiRoutes = Object.freeze({
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */
 // Note: values are sorted in descending order for accessibility
-const FormRoleCodes = Object.freeze({
+export const FormRoleCodes = Object.freeze({
   OWNER: 'owner',
   TEAM_MANAGER: 'team_manager',
   FORM_DESIGNER: 'form_designer',
@@ -20,7 +20,7 @@ const FormRoleCodes = Object.freeze({
 });
 
 /** Permissions a user can have on a form. These are defined in the DB and sent from the API */
-const FormPermissions = Object.freeze({
+export const FormPermissions = Object.freeze({
   FORM_READ: 'form_read',
   FORM_UPDATE: 'form_update',
   FORM_DELETE: 'form_delete',
@@ -40,14 +40,14 @@ const FormPermissions = Object.freeze({
 });
 
 /** Identity modes that a form can operate in regards to user identification */
-const IdentityMode = Object.freeze({
+export const IdentityMode = Object.freeze({
   LOGIN: 'login', // Requires Login
   PUBLIC: 'public', // Anonymous
   TEAM: 'team' // Specific People
 });
 
 /** Identitiy Providers a user can log in as and a form can be allowed for */
-const IdentityProviders = Object.freeze({
+export const IdentityProviders = Object.freeze({
   BCEID: 'bceid', // BCeID
   BCSC: 'bcsc', // Services Card
   GITHUB: 'github', // Github
@@ -55,9 +55,7 @@ const IdentityProviders = Object.freeze({
 });
 
 /** Corresponds to vuetfy alert classes for notification types */
-const NotificationTypes = Object.freeze({
+export const NotificationTypes = Object.freeze({
   ERROR: 'error',
   SUCCESS: 'success'
 });
-
-export { ApiRoutes, FormRoleCodes, FormPermissions, IdentityMode, IdentityProviders, NotificationTypes };
