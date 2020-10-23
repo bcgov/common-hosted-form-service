@@ -140,8 +140,8 @@ export default {
       commit('SET_FORM', genInitialForm());
     },
     async setDirtyFlag({ commit, state }, isDirty) {
-      // When the form is deteced to be dirty set the browser gaurds for closing the tab etc
-      // There are also Vue route-specific gaurds so that we can ask before navigating away with the links
+      // When the form is detected to be dirty set the browser guards for closing the tab etc
+      // There are also Vue route-specific guards so that we can ask before navigating away with the links
       // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
       if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       window.onbeforeunload = isDirty ? () => true : null;
