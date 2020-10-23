@@ -53,7 +53,7 @@ export default {
     FormDesigner,
     FormSettings,
   },
-  computed: mapFields('form', ['form.idps', 'form.userType']),
+  computed: mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
   data() {
     return {
       creatorStep: 1,
@@ -71,9 +71,9 @@ export default {
     },
   },
   beforeRouteLeave(to, from, next) {
-    window.confirm('Do you really want to leave this page?')
-      ? next()
-      : next(false);
+    this.isDirty
+      ? next(window.confirm('Do you really want to leave this page? Changes you made will not be saved.'))
+      : next();
   },
 };
 </script>

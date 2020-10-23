@@ -41,7 +41,7 @@ export default {
       currentForm: {},
       submissionRecord: {},
       version: 0,
-      versionIdToSubmitTo: this.versionId
+      versionIdToSubmitTo: this.versionId,
     };
   },
   computed: {
@@ -56,6 +56,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('form', ['setDirtyFlag']),
     // Get the data for a form submission
     async getFormData() {
       try {
@@ -168,10 +169,7 @@ export default {
       // console.info(`onSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
       this.currentForm.events.emit('formio.submitDone');
     },
-    onSubmitDone() {
-      // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
-      window.onbeforeunload = null;
-
+    async onSubmitDone() {
       // huzzah!
       // really nothing to do, the formio button has consumed the event and updated its display
       // is there anything here for us to do?
@@ -201,7 +199,7 @@ export default {
 @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
 
 .form-wrapper ::v-deep .formio-form {
-  &.formio-read-only{
+  &.formio-read-only {
     // in submission review mode, make readonly formio fields consistently greyed-out
     .form-control,
     .formio-component-simpletextarea .card-body.bg-light,
