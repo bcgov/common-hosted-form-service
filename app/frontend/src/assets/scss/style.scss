@@ -278,13 +278,9 @@ a,
     }
   }
 
-  // remove red alert icon on invalid dropdowns
-  .form-control.dropdown.is-invalid {
-    background-image: none;
-  }
-  // make dropdown arrow red
+  // move dropdown arrow to left of the alert icon
   .has-error .choices[data-type*="select-one"]::after {
-    border-color: #dc3545 transparent transparent;
+    right: 2.5em;
   }
 
   // buttons
