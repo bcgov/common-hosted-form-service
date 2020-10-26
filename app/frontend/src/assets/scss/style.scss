@@ -278,9 +278,10 @@ a,
     }
   }
 
-  // move dropdown arrow to left of the alert icon
-  .has-error .choices[data-type*="select-one"]::after {
-    right: 2.5em;
+  // remove alert icons from invalid fields
+  .form-control.is-invalid,
+  .was-validated .form-control:invalid {
+    background-image: none;
   }
 
   // buttons
