@@ -7,6 +7,7 @@ const genInitialForm = () => ({
   description: '',
   id: '',
   idps: [],
+  isDirty: false,
   name: '',
   userType: 'team'
 });
@@ -48,6 +49,9 @@ export default {
     },
     SET_FORM(state, form) {
       state.form = form;
+    },
+    SET_FORM_DIRTY(state, isDirty) {
+      state.form.isDirty = isDirty;
     },
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
@@ -134,6 +138,14 @@ export default {
     },
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
+    },
+    async setDirtyFlag({ commit, state }, isDirty) {
+      // When the form is detected to be dirty set the browser guards for closing the tab etc
+      // There are also Vue route-specific guards so that we can ask before navigating away with the links
+      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
+      if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
+      window.onbeforeunload = isDirty ? () => true : null;
+      commit('SET_FORM_DIRTY', isDirty);
     },
     async updateForm({ state, dispatch }) {
       try {
