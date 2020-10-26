@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 
 export default {
@@ -15,6 +16,12 @@ export default {
   props: {
     f: String,
     v: String,
+  },
+  computed: mapGetters('form', ['form']),
+  beforeRouteLeave(to, from, next) {
+    this.form.isDirty
+      ? next(window.confirm('Do you really want to leave this page? Changes you made will not be saved.'))
+      : next();
   },
 };
 </script>

@@ -99,6 +99,7 @@
       :form="formSchema"
       :key="reRenderFormIo"
       :options="designerOptions"
+      @change="onChangeMethod"
       class="form-designer"
     />
   </div>
@@ -143,6 +144,7 @@ export default {
     ...mapFields('form', [
       'form.description',
       'form.idps',
+      'form.isDirty',
       'form.name',
       'form.snake',
       'form.userType',
@@ -222,7 +224,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm']),
+    ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -248,6 +250,10 @@ export default {
       this.formSchema = JSON.parse(text);
       // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
       this.reRenderFormIo += 1;
+    },
+    onChangeMethod() {
+      // Don't call an unnessary action if already dirty
+      if (!this.isDirty) this.setDirtyFlag(true);
     },
     onExportClick() {
       let snek = this.snake;
@@ -293,11 +299,11 @@ export default {
           this.draftId = data.id;
           this.formSchema = data.schema;
 
-          // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
-          window.onbeforeunload = null;
-
           // TODO: Automatically publishing for now - remove this when draft/publish UI flow is implemented
           this.publishFormSchema();
+
+          // Once the form is done disable the native browser "leave site/page" message so they can quit without getting whined at
+          await this.setDirtyFlag(false);
 
           // Navigate back to navigation page on success
           this.$router.push({
@@ -341,8 +347,8 @@ export default {
             );
           }
 
-          // Once the form is done disable the native browser "leave site" message so they can quit without getting whined at
-          window.onbeforeunload = null;
+          // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
+          await this.setDirtyFlag(false);
 
           // Navigate back to navigation page on success
           this.$router.push({
@@ -370,10 +376,6 @@ export default {
   watch: {
     advancedForm() {
       this.reRenderFormIo += 1;
-    },
-    formSchema() {
-      // Once they reach the designer, enable the typical "leave site" native browser warning
-      window.onbeforeunload = () => true;
     },
   },
 };
