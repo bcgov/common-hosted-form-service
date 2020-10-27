@@ -244,15 +244,24 @@ export default {
       }
     },
     async loadFile(event) {
-      // TODO: Add try/catch and error notify on failure?
-      const file = event.target.files[0];
-      const text = await file.text();
-      this.formSchema = JSON.parse(text);
-      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
-      this.reRenderFormIo += 1;
+      try {
+        const file = event.target.files[0];
+        const fileReader = new FileReader();
+        fileReader.addEventListener('load', () => {
+          this.formSchema = JSON.parse(fileReader.result);
+          // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
+          this.reRenderFormIo += 1;
+        });
+        fileReader.readAsText(file);
+      } catch (error) {
+        this.addNotification({
+          message: 'An error occurred while importing the form schema.',
+          consoleError: `Error importing form schema : ${error}`,
+        });
+      }
     },
     onChangeMethod() {
-      // Don't call an unnessary action if already dirty
+      // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
     },
     onExportClick() {
