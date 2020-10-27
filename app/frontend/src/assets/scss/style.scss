@@ -284,6 +284,30 @@ a,
     background-image: none;
   }
 
+  // add rounded corners to Date / Time Component input groups and red border if invalid
+  .input-group > .flatpickr-input.form-control {
+    & + .form-control.input {
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
+    }
+    & ~ .input-group-append {
+      border: 1px solid $bcgov-input-placeholder;
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
+
+    // if validation error make borders red;
+    &.is-invalid + .form-control.input {
+      border: 1px solid #dc3545;
+      border-right: 1px solid $bcgov-input-placeholder;
+    }
+    &.is-invalid ~ .input-group-append {
+      border: 1px solid #dc3545;
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
+  }
+
   // buttons
   .btn {
     @extend .v-btn;
