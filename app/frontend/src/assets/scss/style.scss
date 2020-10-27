@@ -265,11 +265,40 @@ a,
 
   // form inputs
   .form-control {
-    border: 1px solid $bcgov-input-placeholder;
+    // placeholder text to match bcgov
     &::placeholder,
     .choices__placeholder {
       color: $bcgov-input-placeholder;
       opacity: inherit;
+    }
+
+    &:not(.is-invalid) {
+      // input borders to match bcgov (exclude invalid fields that should be red)
+      border: 1px solid $bcgov-input-placeholder;
+    }
+  }
+
+  // remove alert icons from invalid fields
+  .form-control.is-invalid,
+  .was-validated .form-control:invalid {
+    background-image: none;
+  }
+
+  // add rounded corners to Date / Time Component input groups and red border if invalid
+  .input-group > .flatpickr-input.form-control {
+    & + .form-control.input {
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
+    }
+    // if validation error make borders red;
+    &.is-invalid + .form-control.input {
+      border: 1px solid #dc3545;
+
+      &:focus {
+        border-color: #dc3545;
+        -webkit-box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
     }
   }
 
@@ -306,8 +335,8 @@ a,
     padding: 8px 16px;
     line-height: 21px;
     font-weight: 700;
-    letter-spacing: .0892857143em;
-    font-size: .875rem;
+    letter-spacing: 0.0892857143em;
+    font-size: 0.875rem;
   }
 
   // labels
@@ -371,6 +400,11 @@ a,
         color: white;
       }
     }
+  }
+
+  // hide 'X' (button that removes selected option) on dropdown, when placeholder exists and no selectiuon has been made
+  .choices__placeholder button {
+    display: none;
   }
 
   // radio buttons and checkboxes
