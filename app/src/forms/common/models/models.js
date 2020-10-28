@@ -107,7 +107,7 @@ class Form extends Timestamps(Model) {
         name: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: ['string', 'null'], maxLength: 255 },
         active: { type: 'boolean' },
-        labels: { type: 'array', items: { type: 'string' } },
+        labels: { type: ['array', 'null'], items: { type: 'string' } },
         ...stamps
       },
       additionalProperties: false

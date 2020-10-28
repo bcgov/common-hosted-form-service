@@ -77,7 +77,16 @@ const service = {
       const obj = await service.readForm(formId);
       trx = await transaction.start(Form.knex());
       // do not update the active flag, that should be done via DELETE
-      await Form.query(trx).patchAndFetchById(formId, { name: data.name, description: data.description, labels: data.labels, updatedBy: currentUser.username });
+      const upd = {
+        name: data.name,
+        description: data.description,
+        labels: data.labels,
+        updatedBy: currentUser.username
+      };
+      // allow setting the active flag to true if currently inactive.
+      if (!obj.active && data.active) upd.active = true;
+
+      await Form.query(trx).patchAndFetchById(formId, upd);
 
       // remove any existing links to identity providers, and the updated ones
       await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
