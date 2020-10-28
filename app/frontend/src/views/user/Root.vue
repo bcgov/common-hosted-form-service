@@ -42,7 +42,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import rbacService from '@/services/rbacService';
+import { rbacService } from '@/services';
 
 export default {
   name: 'User',
@@ -53,11 +53,10 @@ export default {
   },
   computed: {
     ...mapGetters('auth', [
-      'hasResourceRoles',
-      'userName',
+      'fullName',
       'token',
       'tokenParsed',
-      'fullName',
+      'userName'
     ]),
   },
   created() {
