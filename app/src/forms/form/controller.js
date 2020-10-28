@@ -53,6 +53,14 @@ module.exports = {
       next(error);
     }
   },
+  deleteForm:  async (req, res, next) => {
+    try {
+      const response = await service.deleteForm(req.params.formId, req.query, req.currentUser);
+      res.status(204).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   listFormSubmissions: async (req, res, next) => {
     try {
       const response = await service.listFormSubmissions(req.params.formId, req.query);
