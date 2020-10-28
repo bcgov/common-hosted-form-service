@@ -8,35 +8,50 @@
       </template>
 
       <v-card>
-        <v-card-title class="headline pb-0">Get sharing link for this form</v-card-title>
+        <v-card-title class="headline pb-0">
+          Get sharing link for this form
+        </v-card-title>
         <v-card-text>
           <hr />
-          <v-icon class="mr-1 my-5" color="primary">info</v-icon>
-          <span>Use the link below to share with the users you wish to fill out this form</span>
-          <v-text-field
-            readonly
-            dense
-            flat
-            outlined
-            label="URL"
-            data-test="text-shareUrl"
-            :value="formLink"
-          >
-            <template #prepend>
-              <v-icon>link</v-icon>
-            </template>
-          </v-text-field>
-          <p class="text-right">
-            <BaseCopyToClipboard :copyText="formLink" />
-          </p>
+          <span>
+            Use the link below to share with the users you wish to fill out this
+            form
+          </span>
+          <v-row no-gutters class="mt-5">
+            <v-col cols="11">
+              <v-text-field
+                readonly
+                dense
+                flat
+                outlined
+                label="URL"
+                data-test="text-shareUrl"
+                :value="formLink"
+              >
+                <template #prepend>
+                  <v-icon>link</v-icon>
+                </template>
+              </v-text-field></v-col
+            >
+            <v-col cols="1" class="pt-1">
+              <BaseCopyToClipboard
+                :copyText="formLink"
+                tooltipText="Copy URL to clipboard"
+              />
+            </v-col>
+          </v-row>
           <p class="text-right">
             <v-btn color="blue" text small @click="qrShow = true">
               <v-icon class="mr-1">qr_code</v-icon>
-              <span>Generate a QR Code</span>
             </v-btn>
           </p>
           <div v-if="qrShow" class="qrCodeContainer text-center">
-            <qrcode-vue :value="formLink" :size="qrSize" renderAs="canvas" level="M"></qrcode-vue>
+            <qrcode-vue
+              :value="formLink"
+              :size="qrSize"
+              renderAs="canvas"
+              level="M"
+            ></qrcode-vue>
             <v-container>
               <v-row>
                 <v-col cols="12" lg="6" offset-lg="3">
@@ -80,7 +95,7 @@ export default {
     formId: {
       type: String,
       required: true,
-    }
+    },
   },
   data() {
     return {
