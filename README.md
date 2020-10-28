@@ -22,6 +22,8 @@ Create, edit and publish forms.
     │   ├── docs/              - OpenAPI 3.0 Specification
     │   └── forms/             - Models, Controllers, Routes for the forms
     └── tests/                 - Node.js backend web application tests
+    components/                - Form.io Custom Components Library
+    load-test/                 - Standalone CHEFS load testing utility
     openshift/                 - OpenShift-deployment and shared pipeline files
     CODE-OF-CONDUCT.md         - Code of Conduct
     COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
