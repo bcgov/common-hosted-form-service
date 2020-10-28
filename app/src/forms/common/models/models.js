@@ -399,6 +399,11 @@ class User extends Timestamps(Model) {
 
   static get modifiers() {
     return {
+      filterKeycloakId(query, value) {
+        if (value) {
+          query.where('keycloakId', value);
+        }
+      },
       filterUsername(query, value) {
         if (value) {
           // ilike is postrges case insensitive like
