@@ -76,8 +76,8 @@ const service = {
     try {
       const obj = await service.readForm(formId);
       trx = await transaction.start(Form.knex());
-      // TODO: verify name is unique
-      await Form.query(trx).patchAndFetchById(formId, { name: data.name, description: data.description, active: data.active, labels: data.labels, updatedBy: currentUser.username });
+      // do not update the active flag, that should be done via DELETE
+      await Form.query(trx).patchAndFetchById(formId, { name: data.name, description: data.description, labels: data.labels, updatedBy: currentUser.username });
 
       // remove any existing links to identity providers, and the updated ones
       await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
@@ -86,6 +86,22 @@ const service = {
       await trx.commit();
       const result = await service.readForm(obj.id);
       return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  deleteForm: async (formId, params, currentUser) => {
+    let trx;
+    try {
+      const obj = await service.readForm(formId);
+      trx = await transaction.start(Form.knex());
+      // for now, only handle a soft delete, we could pass in a param to do a hard delete later
+      await Form.query(trx).patchAndFetchById(formId, { active: false, updatedBy: currentUser.username });
+
+      await trx.commit();
+      return await service.readForm(obj.id);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
