@@ -11,8 +11,10 @@ const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
-  listForms: async () => {
+  listForms: async (params) => {
     return Form.query()
+      .skipUndefined()
+      .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
