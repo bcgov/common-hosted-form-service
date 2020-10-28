@@ -20,7 +20,9 @@
           width="10rem"
         />
       </a>
-      <h1 data-test="btn-header-title" class="font-weight-bold title">{{ appTitle }}</h1>
+      <h1 data-test="btn-header-title" class="font-weight-bold title">
+        {{ appTitle }}
+      </h1>
       <v-spacer />
       <BaseAuthButton />
     </v-toolbar>
@@ -35,8 +37,8 @@ export default {
       return this.$route && this.$route.meta && this.$route.meta.title
         ? this.$route.meta.title
         : process.env.VUE_APP_TITLE;
-    }
-  }
+    },
+  },
 };
 </script>
 
