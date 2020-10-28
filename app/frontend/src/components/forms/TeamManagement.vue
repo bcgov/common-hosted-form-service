@@ -157,6 +157,7 @@ export default {
       try {
         const response = await rbacService.getFormUsers({
           formId: this.formId,
+          roles: '*'
         });
         this.formUsers = response.data;
       } catch (error) {
