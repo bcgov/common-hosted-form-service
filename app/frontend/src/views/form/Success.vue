@@ -8,7 +8,8 @@
             Your form has been submitted successfully
           </h1>
           <h3>
-            Please keep the following Confirmation ID for your records:
+            If you wish to keep a record of this submission, you can keep the
+            following Confirmation ID:
             <strong>{{ s.substring(0, 8).toUpperCase() }}</strong>
           </h3>
           <hr />
