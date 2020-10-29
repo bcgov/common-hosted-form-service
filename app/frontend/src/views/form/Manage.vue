@@ -30,8 +30,9 @@
           >
             <template #title>Confirm Deletion</template>
             <template #text>
-              Are you sure you wish to delete <strong>{{ form.name }}</strong
-              >? This form will no longer be accessible.
+              Are you sure you wish to delete
+              <strong>{{ form.name }}</strong>?
+              This form will no longer be accessible.
             </template>
             <template #button-text-continue>
               <span>DELETE</span>
