@@ -15,7 +15,7 @@ module.exports = {
   },
   listForms: async (req, res, next) => {
     try {
-      const response = await service.listForms();
+      const response = await service.listForms(req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -31,7 +31,7 @@ module.exports = {
   },
   readForm:  async (req, res, next) => {
     try {
-      const response = await service.readForm(req.params.formId);
+      const response = await service.readForm(req.params.formId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -39,7 +39,7 @@ module.exports = {
   },
   readPublishedForm:  async (req, res, next) => {
     try {
-      const response = await service.readPublishedForm(req.params.formId);
+      const response = await service.readPublishedForm(req.params.formId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -49,6 +49,14 @@ module.exports = {
     try {
       const response = await service.updateForm(req.params.formId, req.body, req.currentUser);
       res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteForm:  async (req, res, next) => {
+    try {
+      const response = await service.deleteForm(req.params.formId, req.query, req.currentUser);
+      res.status(204).json(response);
     } catch (error) {
       next(error);
     }

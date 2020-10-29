@@ -1,4 +1,5 @@
 const { PublicFormAccess, User, UserFormAccess } = require('../common/models');
+const { queryUtils } = require('../common/utils');
 
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
@@ -121,6 +122,7 @@ const service = {
   },
 
   getUserForms: async (userInfo, params = {}) => {
+    params = queryUtils.defaultActiveOnly(params);
     let items = [];
     if (userInfo && userInfo.public) {
       // if the user is 'public', then we can only fetch public accessible forms...
@@ -196,7 +198,9 @@ const service = {
     const userInfo = service.parseToken(token);
     const user = await service.getUserId(userInfo);
     const forms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
-    return Object.assign({}, {...user, forms: forms});
+    params.active = false;
+    const deletedForms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
+    return Object.assign({}, {...user, forms: forms, deletedForms: deletedForms});
   }
 
 };

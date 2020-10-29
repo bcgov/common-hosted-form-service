@@ -1,18 +1,21 @@
 const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { falsey, queryUtils } = require('../common/utils');
 
 const Permissions = require('../common/constants').Permissions;
 const Roles = require('../common/constants').Roles;
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
-const falsey = require('falsey');
 const Problem = require('api-problem');
 const { transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
-  listForms: async () => {
+  listForms: async (params) => {
+    params = queryUtils.defaultActiveOnly(params);
     return Form.query()
+      .skipUndefined()
+      .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
@@ -27,7 +30,7 @@ const service = {
       obj.id = uuidv4();
       obj.name = data.name;
       obj.description = data.description;
-      obj.active = data.active;
+      obj.active = true;
       obj.labels = data.labels;
       obj.createdBy = currentUser.username;
 
@@ -76,8 +79,15 @@ const service = {
     try {
       const obj = await service.readForm(formId);
       trx = await transaction.start(Form.knex());
-      // TODO: verify name is unique
-      await Form.query(trx).patchAndFetchById(formId, { name: data.name, description: data.description, active: data.active, labels: data.labels, updatedBy: currentUser.username });
+      // do not update the active flag, that should be done via DELETE
+      const upd = {
+        name: data.name,
+        description: data.description,
+        labels: data.labels ? data.labels : [],
+        updatedBy: currentUser.username
+      };
+
+      await Form.query(trx).patchAndFetchById(formId, upd);
 
       // remove any existing links to identity providers, and the updated ones
       await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
@@ -92,18 +102,38 @@ const service = {
     }
   },
 
-  readForm: async (formId) => {
+  deleteForm: async (formId, params, currentUser) => {
+    let trx;
+    try {
+      const obj = await service.readForm(formId);
+      trx = await transaction.start(Form.knex());
+      // for now, only handle a soft delete, we could pass in a param to do a hard delete later
+      await Form.query(trx).patchAndFetchById(formId, { active: false, updatedBy: currentUser.username });
+
+      await trx.commit();
+      return await service.readForm(obj.id, { active: false });
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  readForm: async (formId, params ={}) => {
+    params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .findById(formId)
+      .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
   },
 
-  readPublishedForm: async (formId) => {
+  readPublishedForm: async (formId, params ={}) => {
+    params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .findById(formId)
+      .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(onlyPublished)')
@@ -111,6 +141,7 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params) => {
+    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
     return SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -124,6 +155,7 @@ const service = {
   },
 
   listVersions: async (formId, params) => {
+    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
     return FormVersion.query()
       .where('formId', formId)
       .modify('filterPublished', params.published)
@@ -237,6 +269,7 @@ const service = {
   },
 
   listDrafts: async (formId, params) => {
+    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
     return FormVersionDraft.query()
       .where('formId', formId)
       .modify('filterFormVersionId', params.formVersionId)

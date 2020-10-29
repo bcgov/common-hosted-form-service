@@ -1,4 +1,5 @@
 const { FormRoleUser, IdentityProvider, User, UserFormAccess } = require('../common/models');
+const { queryUtils } = require('../common/utils');
 
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
@@ -131,6 +132,7 @@ const service = {
   },
 
   getFormUsers: async (params) => {
+    params = queryUtils.defaultActiveOnly(params);
     const items = await UserFormAccess.query()
       .skipUndefined()
       .modify('filterUserId', params.userId)
@@ -149,6 +151,7 @@ const service = {
   },
 
   getUserForms: async (params) => {
+    params = queryUtils.defaultActiveOnly(params);
     const items = await UserFormAccess.query()
       .skipUndefined()
       .modify('filterUserId', params.userId)
