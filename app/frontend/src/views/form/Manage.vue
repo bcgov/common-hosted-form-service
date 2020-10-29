@@ -26,13 +26,12 @@
             v-model="showDeleteDialog"
             type="CONTINUE"
             @close-dialog="showDeleteDialog = false"
-            @continue-dialog="showDeleteDialog = false"
+            @continue-dialog="deleteForm"
           >
-            <template v-slot:icon>
-              <v-icon large color="primary">email</v-icon>
-            </template>
+            <template #title>Confirm Deletion</template>
             <template #text>
-              Are you sure? This form will no longer be accessible.
+              Are you sure you wish to delete <strong>{{ form.name }}</strong
+              >? This form will no longer be accessible.
             </template>
             <template #button-text-continue>
               <span>DELETE</span>
@@ -208,6 +207,7 @@ export default {
   },
   methods: {
     ...mapActions('form', [
+      'deleteCurrentForm',
       'getFormPermissionsForUser',
       'fetchForm',
       'updateForm',
@@ -216,6 +216,10 @@ export default {
     cancelSettingsEdit() {
       this.formSettingsDisabled = true;
       this.fetchForm(this.f);
+    },
+    deleteForm() {
+      this.showDeleteDialog = false;
+      this.deleteCurrentForm();
     },
     enableSettingsEdit() {
       if (this.settingsPanel === undefined) this.settingsPanel = 0;
