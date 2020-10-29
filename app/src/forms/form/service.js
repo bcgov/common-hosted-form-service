@@ -30,7 +30,7 @@ const service = {
       obj.id = uuidv4();
       obj.name = data.name;
       obj.description = data.description;
-      obj.active = data.active;
+      obj.active = true;
       obj.labels = data.labels;
       obj.createdBy = currentUser.username;
 
@@ -141,6 +141,7 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params) => {
+    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
     return SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -154,6 +155,7 @@ const service = {
   },
 
   listVersions: async (formId, params) => {
+    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
     return FormVersion.query()
       .where('formId', formId)
       .modify('filterPublished', params.published)
@@ -186,7 +188,7 @@ const service = {
       await trx.commit();
 
       // return the published form/version...
-      return await service.readPublishedForm(formId, params);
+      return await service.readPublishedForm(formId);
 
     } catch (err) {
       if (trx) await trx.rollback();
@@ -267,6 +269,7 @@ const service = {
   },
 
   listDrafts: async (formId, params) => {
+    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
     return FormVersionDraft.query()
       .where('formId', formId)
       .modify('filterFormVersionId', params.formVersionId)
