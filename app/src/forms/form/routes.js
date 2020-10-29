@@ -33,6 +33,10 @@ routes.put('/:formId', currentUser, hasFormPermissions([P.FORM_READ, P.FORM_UPDA
   await controller.updateForm(req, res, next);
 });
 
+routes.delete('/:formId', currentUser, hasFormPermissions([P.FORM_READ, P.FORM_DELETE]), async (req, res, next) => {
+  await controller.deleteForm(req, res, next);
+});
+
 routes.get('/:formId/submissions', currentUser, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.listFormSubmissions(req, res, next);
 });
