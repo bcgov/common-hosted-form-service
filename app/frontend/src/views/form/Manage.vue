@@ -220,6 +220,9 @@ export default {
     deleteForm() {
       this.showDeleteDialog = false;
       this.deleteCurrentForm();
+      this.$router.push({
+        name: 'UserForms',
+      });
     },
     enableSettingsEdit() {
       if (this.settingsPanel === undefined) this.settingsPanel = 0;
