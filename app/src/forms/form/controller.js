@@ -31,7 +31,7 @@ module.exports = {
   },
   readForm:  async (req, res, next) => {
     try {
-      const response = await service.readForm(req.params.formId);
+      const response = await service.readForm(req.params.formId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -39,7 +39,7 @@ module.exports = {
   },
   readPublishedForm:  async (req, res, next) => {
     try {
-      const response = await service.readPublishedForm(req.params.formId);
+      const response = await service.readPublishedForm(req.params.formId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);

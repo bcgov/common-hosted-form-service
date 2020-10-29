@@ -1,10 +1,10 @@
 const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { falsey, queryUtils } = require('../common/utils');
 
 const Permissions = require('../common/constants').Permissions;
 const Roles = require('../common/constants').Roles;
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
-const falsey = require('falsey');
 const Problem = require('api-problem');
 const { transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
@@ -12,6 +12,7 @@ const { v4: uuidv4 } = require('uuid');
 const service = {
 
   listForms: async (params) => {
+    params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .skipUndefined()
       .modify('filterActive', params.active)
@@ -82,11 +83,9 @@ const service = {
       const upd = {
         name: data.name,
         description: data.description,
-        labels: data.labels,
+        labels: data.labels ? data.labels : [],
         updatedBy: currentUser.username
       };
-      // allow setting the active flag to true if currently inactive.
-      if (!obj.active && data.active) upd.active = true;
 
       await Form.query(trx).patchAndFetchById(formId, upd);
 
@@ -112,25 +111,29 @@ const service = {
       await Form.query(trx).patchAndFetchById(formId, { active: false, updatedBy: currentUser.username });
 
       await trx.commit();
-      return await service.readForm(obj.id);
+      return await service.readForm(obj.id, { active: false });
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
     }
   },
 
-  readForm: async (formId) => {
+  readForm: async (formId, params ={}) => {
+    params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .findById(formId)
+      .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
   },
 
-  readPublishedForm: async (formId) => {
+  readPublishedForm: async (formId, params ={}) => {
+    params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .findById(formId)
+      .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(onlyPublished)')
@@ -183,7 +186,7 @@ const service = {
       await trx.commit();
 
       // return the published form/version...
-      return await service.readPublishedForm(formId);
+      return await service.readPublishedForm(formId, params);
 
     } catch (err) {
       if (trx) await trx.rollback();
