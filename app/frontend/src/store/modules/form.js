@@ -1,5 +1,6 @@
 import { getField, updateField } from 'vuex-map-fields';
 
+import { NotificationTypes } from '@/utils/constants';
 import { formService, rbacService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
@@ -120,6 +121,22 @@ export default {
     //
     // Form
     //
+    async deleteCurrentForm({ state, dispatch }) {
+      try {
+        await formService.deleteForm(state.form.id);
+        dispatch('notifications/addNotification', {
+          message:
+            `Form "${state.form.name}" has been deleted successfully.`,
+          type: NotificationTypes.SUCCESS
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            `An error occurred while attempting to delete "${state.form.name}".`,
+          consoleError: `Error deleting form ${state.form.id}: ${error}`,
+        }, { root: true });
+      }
+    },
     async fetchForm({ commit, dispatch }, formId) {
       try {
         // Get the form definition from the api
