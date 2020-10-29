@@ -8,15 +8,11 @@
       </template>
 
       <v-card>
-        <v-card-title class="headline pb-0">
-          Get sharing link for this form
-        </v-card-title>
+        <v-card-title class="headline pb-0"> Share Link </v-card-title>
         <v-card-text>
           <hr />
-          <span>
-            Use the link below to share with the users you wish to fill out this
-            form
-          </span>
+          <p class="pb-5">Copy the link below or download the QR code.</p>
+
           <v-row no-gutters class="mt-5">
             <v-col cols="11">
               <v-text-field
@@ -40,42 +36,39 @@
               />
             </v-col>
           </v-row>
-          <p class="text-right">
-            <v-btn color="blue" text small @click="qrShow = true">
-              <v-icon class="mr-1">qr_code</v-icon>
-            </v-btn>
-          </p>
-          <div v-if="qrShow" class="qrCodeContainer text-center">
-            <qrcode-vue
-              :value="formLink"
-              :size="qrSize"
-              renderAs="canvas"
-              level="M"
-            ></qrcode-vue>
-            <v-container>
-              <v-row>
-                <v-col cols="12" lg="6" offset-lg="3">
-                  <v-slider
-                    v-model="qrSize"
-                    label="Size"
-                    :tick-labels="ticksLabels"
-                    :min="200"
-                    :max="600"
-                    step="200"
-                    ticks="always"
-                    tick-size="4"
-                  ></v-slider>
-                </v-col>
-              </v-row>
-              <v-btn color="blue" text small @click="downloadQr">
-                <v-icon class="mr-1">cloud_download</v-icon>
-                <span>Download Image</span>
-              </v-btn>
-            </v-container>
-          </div>
+
+          <v-row no-gutters align="end" justify="center">
+            <v-col cols="auto">
+              <div class="qrCodeContainer">
+                <qrcode-vue
+                  :value="formLink"
+                  :size="900"
+                  renderAs="canvas"
+                  :level="qrLevel"
+                />
+              </div>
+            </v-col>
+            <v-col cols="1" class="text-center">
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    icon
+                    @click="downloadQr"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon>get_app</v-icon>
+                  </v-btn>
+                </template>
+                <span>Download QR Code</span>
+              </v-tooltip>
+            </v-col>
+          </v-row>
         </v-card-text>
+
         <v-card-actions class="justify-center">
-          <v-btn class="mb-5" color="primary" @click="dialog = false">
+          <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
             <span>Close</span>
           </v-btn>
         </v-card-actions>
@@ -100,9 +93,8 @@ export default {
   data() {
     return {
       dialog: false,
-      qrShow: false,
-      qrSize: 400,
-      ticksLabels: ['Small', 'Medium', 'Large'],
+      qrLevel: 'M',
+      qrSize: 900,
     };
   },
   computed: {
@@ -122,5 +114,22 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
+@import '~vuetify/src/styles/settings/_variables';
+
+.qrCodeContainer {
+  @media #{map-get($display-breakpoints, 'sm-and-up')} {
+    padding-left: 75px;
+  }
+
+  ::v-deep canvas {
+    margin-top: 50px;
+    max-width: 250px;
+    max-height: 250px;
+  }
+}
+
+.close-dlg {
+  margin-top: 50px;
+}
 </style>
