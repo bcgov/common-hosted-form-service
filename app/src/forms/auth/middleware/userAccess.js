@@ -45,10 +45,14 @@ const hasFormPermissions = (permissions) => {
       // cannot find the currentUser... guess we don't have access... FAIL!
       return next(new Problem(401, {detail: 'Form Id not found on request.'}));
     }
-    const form = req.currentUser.forms.find(f => f.formId === formId);
+    let form = req.currentUser.forms.find(f => f.formId === formId);
     if (!form) {
-      // cannot find the form... guess we don't have access... FAIL!
-      return next(new Problem(401, {detail: 'Current user has no access to form.'}));
+      // check deleted... (this allows 404 on other queries later)
+      form = req.currentUser.deletedForms.find(f => f.formId === formId);
+      if (!form) {
+        // cannot find the form... guess we don't have access... FAIL!
+        return next(new Problem(401, {detail: 'Current user has no access to form.'}));
+      }
     }
 
     if (!Array.isArray(permissions)) {
