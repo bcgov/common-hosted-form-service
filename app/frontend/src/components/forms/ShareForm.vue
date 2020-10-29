@@ -8,7 +8,7 @@
       </template>
 
       <v-card>
-        <v-card-title class="headline pb-0"> Share Link </v-card-title>
+        <v-card-title class="headline pb-0">Share Link</v-card-title>
         <v-card-text>
           <hr />
           <p class="pb-5">Copy the link below or download the QR code.</p>
@@ -42,7 +42,7 @@
               <div class="qrCodeContainer">
                 <qrcode-vue
                   :value="formLink"
-                  :size="900"
+                  :size="qrSize"
                   renderAs="canvas"
                   :level="qrLevel"
                 />
