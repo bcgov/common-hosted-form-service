@@ -399,6 +399,11 @@ class User extends Timestamps(Model) {
 
   static get modifiers() {
     return {
+      filterKeycloakId(query, value) {
+        if (value) {
+          query.where('keycloakId', value);
+        }
+      },
       filterUsername(query, value) {
         if (value) {
           // ilike is postrges case insensitive like
@@ -582,15 +587,27 @@ class UserFormAccess extends Model {
           let clauses = [];
 
           if (_idps.length) {
-            clauses.push(`('{}'::varchar[] = "roles" and (${utils.inArrayClause('idps', _idps)}))`);
+            if (_idps.length === 1 && _idps[0] === '*') {
+              clauses.push('(\'{}\'::varchar[] = "roles" and array_length("idps", 1) > 0)');
+            } else {
+              clauses.push(`('{}'::varchar[] = "roles" and (${utils.inArrayClause('idps', _idps)}))`);
+            }
           }
 
           if (_roles.length) {
-            clauses.push(utils.inArrayFilter('roles', _roles));
+            if (_roles.length === 1 && _roles[0] === '*') {
+              clauses.push('array_length("roles", 1) > 0');
+            } else {
+              clauses.push(utils.inArrayFilter('roles', _roles));
+            }
           }
 
           if (_permissions.length) {
-            clauses.push(utils.inArrayFilter('permissions', _permissions));
+            if (_permissions.length === 1 && _permissions[0] === '*') {
+              clauses.push('array_length("permissions", 1) > 0');
+            } else {
+              clauses.push(utils.inArrayFilter('permissions', _permissions));
+            }
           }
 
           if (clauses.length) {

@@ -64,21 +64,24 @@
           >
             <FormSettings :disabled="formSettingsDisabled" />
           </v-form>
-          <v-btn
-            :disabled="formSettingsDisabled"
-            class="mr-5"
-            color="primary"
-            @click="updateSettings"
-          >
-            <span>Update</span>
-          </v-btn>
-          <v-btn
-            :disabled="formSettingsDisabled"
-            outlined
-            @click="cancelSettingsEdit"
-          >
-            <span>Cancel</span>
-          </v-btn>
+
+          <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
+            <v-btn
+              :disabled="formSettingsDisabled"
+              class="mr-5"
+              color="primary"
+              @click="updateSettings"
+            >
+              <span>Update</span>
+            </v-btn>
+            <v-btn
+              :disabled="formSettingsDisabled"
+              outlined
+              @click="cancelSettingsEdit"
+            >
+              <span>Cancel</span>
+            </v-btn>
+          </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -86,7 +89,7 @@
     <v-expansion-panels
       v-model="versionsPanel"
       flat
-      class="nrmc-expand-collapse mt-5"
+      class="nrmc-expand-collapse"
     >
       <v-expansion-panel flat>
         <v-expansion-panel-header>
@@ -166,7 +169,7 @@ export default {
     // Permission checks, for right now some of these are restriced to app admins only until a later release
     canCreateDesign() {
       return (
-        this.isAdmin && this.permissions.includes(FormPermissions.DESIGN_CREATE)
+        this.permissions.includes(FormPermissions.DESIGN_CREATE)
       );
     },
     canDeleteForm() {
@@ -176,7 +179,7 @@ export default {
     },
     canEditForm() {
       return (
-        this.isAdmin && this.permissions.includes(FormPermissions.FORM_UPDATE)
+        this.permissions.includes(FormPermissions.FORM_UPDATE)
       );
     },
     canManageTeam() {

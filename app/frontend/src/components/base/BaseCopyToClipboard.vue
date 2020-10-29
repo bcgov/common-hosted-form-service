@@ -1,18 +1,31 @@
 <template>
   <span>
-    <v-btn
-      color="blue"
-      text
-      small
-      v-clipboard:copy="copyText"
-      v-clipboard:success="clipboardSuccessHandler"
-      v-clipboard:error="clipboardErrorHandler"
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          color="primary"
+          text
+          small
+          v-clipboard:copy="copyText"
+          v-clipboard:success="clipboardSuccessHandler"
+          v-clipboard:error="clipboardErrorHandler"
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon class="mr-1">file_copy</v-icon>
+          <span v-if="buttonText">{{ buttonText }}</span>
+        </v-btn>
+      </template>
+      <span>{{ tooltipText }}</span>
+    </v-tooltip>
+    <v-snackbar
+      v-model="clipSnackbar.on"
+      right
+      top
+      :timeout="6000"
+      :color="clipSnackbar.color"
     >
-      <v-icon class="mr-1">file_copy</v-icon>
-      <span>Copy to clipboard</span>
-    </v-btn>
-    <v-snackbar v-model="clipSnackbar.on" right top :timeout="6000" :color="clipSnackbar.color">
-      {{clipSnackbar.text}}
+      {{ clipSnackbar.text }}
       <v-btn color="white" text @click="clipSnackbar.on = false">
         <v-icon>close</v-icon>
       </v-btn>
@@ -32,6 +45,13 @@ export default {
   props: {
     copyText: {
       required: true,
+      type: String,
+    },
+    tooltipText: {
+      type: String,
+      default: 'Copy to Clipboard',
+    },
+    buttonText: {
       type: String,
     },
   },
