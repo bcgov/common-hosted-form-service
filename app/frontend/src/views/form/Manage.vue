@@ -18,9 +18,26 @@
         </span>
 
         <span v-if="canDeleteForm" class="ml-5">
-          <v-btn icon color="red" @click="showDeleteDialog">
+          <v-btn icon color="red" @click="showDeleteDialog = true">
             <v-icon>delete</v-icon>
           </v-btn>
+
+          <BaseDialog
+            v-model="showDeleteDialog"
+            type="CONTINUE"
+            @close-dialog="showDeleteDialog = false"
+            @continue-dialog="showDeleteDialog = false"
+          >
+            <template v-slot:icon>
+              <v-icon large color="primary">email</v-icon>
+            </template>
+            <template #text>
+              Are you sure? This form will no longer be accessible.
+            </template>
+            <template #button-text-continue>
+              <span>DELETE</span>
+            </template>
+          </BaseDialog>
         </span>
       </v-col>
     </v-row>
@@ -157,6 +174,7 @@ export default {
     return {
       deleteDialog: false,
       formSettingsDisabled: true,
+      showDeleteDialog: false,
       settingsFormValid: false,
       settingsPanel: 0,
       versionsPanel: 0,
@@ -168,9 +186,7 @@ export default {
 
     // Permission checks, for right now some of these are restriced to app admins only until a later release
     canCreateDesign() {
-      return (
-        this.permissions.includes(FormPermissions.DESIGN_CREATE)
-      );
+      return this.permissions.includes(FormPermissions.DESIGN_CREATE);
     },
     canDeleteForm() {
       return (
@@ -178,9 +194,7 @@ export default {
       );
     },
     canEditForm() {
-      return (
-        this.permissions.includes(FormPermissions.FORM_UPDATE)
-      );
+      return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
     canManageTeam() {
       return (
@@ -206,11 +220,6 @@ export default {
     enableSettingsEdit() {
       if (this.settingsPanel === undefined) this.settingsPanel = 0;
       this.formSettingsDisabled = false;
-    },
-    showDeleteDialog() {
-      alert(
-        'Not implemented. Button only shows for Showcase Admins right now.'
-      );
     },
     async updateSettings() {
       try {
