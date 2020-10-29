@@ -13,7 +13,7 @@ describe('BaseCopyToClipboard.vue', () => {
       propsData: { copyText: 'test' }
     });
 
-    expect(wrapper.text()).toMatch('Copy to clipboard');
+    expect(wrapper.text()).toMatch('Copy to Clipboard');
   });
 
   it('clipboardSuccessHandler behaves correctly', () => {
