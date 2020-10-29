@@ -32,6 +32,8 @@ const service = {
       obj.description = data.description;
       obj.active = true;
       obj.labels = data.labels;
+      obj.showSubmissionConfirmation = data.showSubmissionConfirmation;
+      obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.createdBy = currentUser.username;
 
       await Form.query(trx).insert(obj);
@@ -84,6 +86,8 @@ const service = {
         name: data.name,
         description: data.description,
         labels: data.labels ? data.labels : [],
+        showSubmissionConfirmation: data.showSubmissionConfirmation,
+        submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         updatedBy: currentUser.username
       };
 
@@ -131,13 +135,17 @@ const service = {
 
   readPublishedForm: async (formId, params ={}) => {
     params = queryUtils.defaultActiveOnly(params);
-    return Form.query()
+    const form = await Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(onlyPublished)')
       .throwIfNotFound();
+
+    // there are some configs that we don't want returned here...
+    delete form.submissionReceivedEmails;
+    return form;
   },
 
   listFormSubmissions: async (formId, params) => {
