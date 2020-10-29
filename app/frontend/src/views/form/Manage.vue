@@ -189,7 +189,7 @@ export default {
     },
     canDeleteForm() {
       return (
-        this.isAdmin && this.permissions.includes(FormPermissions.FORM_DELETE)
+        this.permissions.includes(FormPermissions.FORM_DELETE)
       );
     },
     canEditForm() {
