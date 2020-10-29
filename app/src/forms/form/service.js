@@ -135,13 +135,17 @@ const service = {
 
   readPublishedForm: async (formId, params ={}) => {
     params = queryUtils.defaultActiveOnly(params);
-    return Form.query()
+    const form = await Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(onlyPublished)')
       .throwIfNotFound();
+
+    // there are some configs that we don't want returned here...
+    delete form.submissionReceivedEmails;
+    return form;
   },
 
   listFormSubmissions: async (formId, params) => {
