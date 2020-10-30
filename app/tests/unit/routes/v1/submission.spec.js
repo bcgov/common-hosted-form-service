@@ -14,8 +14,8 @@ userAccess.currentUser = jest.fn((req, res, next) => {
 //
 // we will mock the underlying data service calls...
 //
+const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
-
 
 //
 // mocks are in place, create the router
@@ -96,4 +96,54 @@ describe(`PUT ${basePath}/ID`, () => {
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
+});
+
+
+describe(`POST ${basePath}/ID/email`, () => {
+
+  const submissionResult = { form: { id: '' }, submission: { id: ''}, version: { id: '' } };
+  it('should return 202', async () => {
+    // mock a success return value...
+    service.read = jest.fn().mockReturnValue(submissionResult);
+    emailService.submissionConfirmation = jest.fn().mockReturnValue(true);
+
+    const response = await request(app).post(`${basePath}/ID/email`, {to:'account@fake.com'});
+
+    expect(response.statusCode).toBe(202);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.read = jest.fn(() => { throw new Problem(401); });
+    emailService.submissionConfirmation = jest.fn().mockReturnValue(true);
+
+    const response = await request(app).post(`${basePath}/ID/email`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error.
+    service.read = jest.fn(() => { throw new Error(); });
+    emailService.submissionConfirmation = jest.fn().mockReturnValue(true);
+
+    const response = await request(app).post(`${basePath}/ID/email`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle error from email service gracefully', async () => {
+    // mock an unexpected error from email.
+    service.read = jest.fn().mockReturnValue(submissionResult);
+    emailService._sendSubmissionConfirmation = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).post(`${basePath}/ID/email`);
+
+    expect(response.statusCode).toBe(202);
+    expect(response.body).toBeTruthy();
+  });
+
 });
