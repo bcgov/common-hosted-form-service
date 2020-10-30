@@ -12,7 +12,8 @@ module.exports = Object.freeze({
     DESIGN_UPDATE: 'design_update',
     DESIGN_DELETE: 'design_delete',
     TEAM_READ: 'team_read',
-    TEAM_UPDATE: 'team_update'
+    TEAM_UPDATE: 'team_update',
+    FORM_SUBMITTER: ['form_read', 'submission_create']
   },
   Roles: {
     OWNER: 'owner',
