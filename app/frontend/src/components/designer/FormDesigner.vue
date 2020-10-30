@@ -146,6 +146,7 @@ export default {
       'form.idps',
       'form.isDirty',
       'form.name',
+      'form.showSubmissionConfirmation',
       'form.snake',
       'form.userType',
     ]),
@@ -348,6 +349,7 @@ export default {
               idps: this.idps,
               userType: this.userType,
             }),
+            showSubmissionConfirmation: this.showSubmissionConfirmation,
           });
           // Add the schema to the newly created default version
           if (!response.data.versions || !response.data.versions[0]) {
