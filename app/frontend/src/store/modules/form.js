@@ -10,6 +10,7 @@ const genInitialForm = () => ({
   idps: [],
   isDirty: false,
   name: '',
+  showSubmissionConfirmation: true,
   userType: 'team'
 });
 
@@ -172,7 +173,8 @@ export default {
           identityProviders: generateIdps({
             idps: state.form.idps,
             userType: state.form.userType,
-          })
+          }),
+          showSubmissionConfirmation: state.form.showSubmissionConfirmation
         });
       } catch (error) {
         dispatch('notifications/addNotification', {

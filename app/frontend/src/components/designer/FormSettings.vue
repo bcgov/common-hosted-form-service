@@ -35,11 +35,7 @@
         :mandatory="false"
         :rules="loginRequiredRules"
       >
-        <v-radio
-          disabled
-          label="Public (anonymous)"
-          :value="ID_MODE.PUBLIC"
-        />
+        <v-radio disabled label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
         <v-radio label="Log-in Required" value="login"></v-radio>
         <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6 mb-2">
           <v-checkbox
@@ -75,6 +71,31 @@
           You can specify users on the form's management screen once created.
         </v-row>
       </v-radio-group>
+
+      <v-checkbox v-model="showSubmissionConfirmation">
+        <template #label>
+          Show the submission confirmation details
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                help_outline
+              </v-icon>
+            </template>
+            <span>
+              Selecting this option controls what the submitting user of this
+              form will see on successful submission. <br />
+              If checked, it will display
+              <ul>
+                <li>the Confirmation ID</li>
+                <li>
+                  the option for the user to email themselves a submission
+                  confirmation
+                </li>
+              </ul>
+            </span>
+          </v-tooltip>
+        </template>
+      </v-checkbox>
     </v-container>
   </v-skeleton-loader>
 </template>
@@ -116,6 +137,7 @@ export default {
       'form.id',
       'form.idps',
       'form.name',
+      'form.showSubmissionConfirmation',
       'form.userType',
     ]),
     ID_MODE() {
