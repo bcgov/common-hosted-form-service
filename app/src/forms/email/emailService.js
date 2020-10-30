@@ -117,10 +117,10 @@ const service = {
       const submission = await formService.readSubmission(submissionId);
       return service._sendSubmissionConfirmation(form, submission, body, referer);
     } catch (e) {
-      // only want logging for failed notifications
       log.error('submissionConfirmation', `formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(body)}, referer: ${referer}`);
       log.error('submissionConfirmation', e.message);
       log.error(e);
+      throw e;
     }
   },
 
@@ -130,10 +130,10 @@ const service = {
       const submission = await formService.readSubmission(submissionId);
       return service._sendSubmissionReceived(form, submission, referer);
     } catch (e) {
-      // only want logging for failed notifications
       log.error('submissionReceived', `formId: ${formId}, submissionId: ${submissionId}, referer: ${referer}`);
       log.error('submissionReceived', e.message);
       log.error(e);
+      throw e;
     }
   }
 

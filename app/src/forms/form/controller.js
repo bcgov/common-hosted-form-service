@@ -105,7 +105,7 @@ module.exports = {
   createSubmission:  async (req, res, next) => {
     try {
       const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
-      emailService.submissionReceived(req.params.formId, response.id, req.headers.referer);
+      emailService.submissionReceived(req.params.formId, response.id, req.headers.referer).catch(() => {});
       res.status(201).json(response);
     } catch (error) {
       next(error);

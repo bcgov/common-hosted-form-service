@@ -102,14 +102,14 @@ describe(`PUT ${basePath}/ID`, () => {
 describe(`POST ${basePath}/ID/email`, () => {
 
   const submissionResult = { form: { id: '' }, submission: { id: ''}, version: { id: '' } };
-  it('should return 202', async () => {
+  it('should return 200', async () => {
     // mock a success return value...
     service.read = jest.fn().mockReturnValue(submissionResult);
     emailService.submissionConfirmation = jest.fn().mockReturnValue(true);
 
     const response = await request(app).post(`${basePath}/ID/email`, {to:'account@fake.com'});
 
-    expect(response.statusCode).toBe(202);
+    expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
   });
 
@@ -135,14 +135,14 @@ describe(`POST ${basePath}/ID/email`, () => {
     expect(response.body).toBeTruthy();
   });
 
-  it('should handle error from email service gracefully', async () => {
+  it('should handle 500 from email service', async () => {
     // mock an unexpected error from email.
     service.read = jest.fn().mockReturnValue(submissionResult);
-    emailService._sendSubmissionConfirmation = jest.fn(() => { throw new Error(); });
+    emailService.submissionConfirmation = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).post(`${basePath}/ID/email`);
 
-    expect(response.statusCode).toBe(202);
+    expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
 
