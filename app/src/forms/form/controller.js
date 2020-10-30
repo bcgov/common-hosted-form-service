@@ -1,5 +1,6 @@
-const service = require('./service');
+const emailService = require('../email/emailService');
 const exportService = require('./exportService');
+const service = require('./service');
 
 module.exports = {
   export: async (req, res, next) => {
@@ -104,6 +105,7 @@ module.exports = {
   createSubmission:  async (req, res, next) => {
     try {
       const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
+      emailService.submissionReceived(req.params.formId, response.id, req.headers.referer);
       res.status(201).json(response);
     } catch (error) {
       next(error);

@@ -29,7 +29,10 @@ userAccess.hasFormPermissions = jest.fn(() => {
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/form/service');
+
 const exportService = require('../../../../src/forms/form/exportService');
+
+const emailService = require('../../../../src/forms/email/emailService');
 
 
 //
@@ -451,9 +454,11 @@ describe(`GET ${basePath}/formId/versions/formVersionId/submissions`, () => {
 
 describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
 
+  const createSubmissionResult = {id: 'id'};
   it('should return 201', async () => {
     // mock a success return value...
-    service.createSubmission = jest.fn().mockReturnValue({});
+    service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
+    emailService.submissionReceived = jest.fn().mockReturnValue(true);
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
@@ -464,6 +469,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
     service.createSubmission = jest.fn(() => { throw new Problem(401); });
+    emailService.submissionReceived = jest.fn().mockReturnValue(true);
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
@@ -474,10 +480,21 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
   it('should handle 500', async () => {
     // mock an unexpected error...
     service.createSubmission = jest.fn(() => { throw new Error(); });
+    emailService.submissionReceived = jest.fn().mockReturnValue(true);
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
     expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle error from email service gracefully', async () => {
+    service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
+    emailService._sendSubmissionReceived = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
+
+    expect(response.statusCode).toBe(201);
     expect(response.body).toBeTruthy();
   });
 

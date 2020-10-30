@@ -14,4 +14,8 @@ routes.put('/:formSubmissionId', async (req, res, next) => {
   await controller.update(req, res, next);
 });
 
+routes.post('/:formSubmissionId/email', async (req, res, next) => {
+  await controller.email(req, res, next);
+});
+
 module.exports = routes;
