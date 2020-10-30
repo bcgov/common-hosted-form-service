@@ -458,7 +458,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
   it('should return 201', async () => {
     // mock a success return value...
     service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
-    emailService.submissionReceived = jest.fn().mockReturnValue(true);
+    emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
@@ -490,7 +490,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
 
   it('should handle error from email service gracefully', async () => {
     service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
-    emailService._sendSubmissionReceived = jest.fn(() => { throw new Error(); });
+    emailService.submissionReceived = jest.fn(() => Promise.reject({}));
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
