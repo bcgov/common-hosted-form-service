@@ -2,12 +2,12 @@
   <div>
     <v-row>
       <v-col cols="12" sm="6">
-        <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
-          <v-btn color="primary" text small>
+        <v-btn color="primary" text small>
+          <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
             <v-icon class="mr-1">add_circle</v-icon>
             <span>Create a New Form</span>
-          </v-btn>
-        </router-link>
+          </router-link>
+        </v-btn>
       </v-col>
 
       <v-col cols="12" sm="6">

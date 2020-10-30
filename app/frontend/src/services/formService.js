@@ -37,6 +37,16 @@ export default {
     return appAxios().put(`${ApiRoutes.FORMS}/${formId}`, formData);
   },
 
+  /**
+   * @function deleteForm
+   * Soft delete a Form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  deleteForm(formId) {
+    return appAxios().delete(`${ApiRoutes.FORMS}/${formId}`);
+  },
+
   //
   // Form draft calls
   //
