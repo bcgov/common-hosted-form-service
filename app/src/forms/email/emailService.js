@@ -45,7 +45,7 @@ const service = {
               confirmationNumber: submission.confirmationId,
               title: config.title,
               messageLinkText: config.messageLinkText,
-              messageLinkUrl: `${config.messageLinkUrl}${submission.submission.id}`
+              messageLinkUrl: `${config.messageLinkUrl}${submission.id}`
             },
             to: [body.to]
           }
