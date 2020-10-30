@@ -1,6 +1,8 @@
 const { PublicFormAccess, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
+const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
+
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
 
@@ -153,7 +155,13 @@ const service = {
 
     let filtered = items.filter(x => {
       // include if user has idp, or form is public, or user has an explicit role.
-      return x.idps.includes(userInfo.idp) || x.idps.includes('public') || x.roles.length;
+      if (x.idps.includes(userInfo.idp) || x.idps.includes('public')) {
+        // always give submitter permissions to launch by idp and public
+        x.permissions = Array.from(new Set([...x.permissions, ...FORM_SUBMITTER]))
+        return true;
+      }
+      // user has permissions solely through their assigned roles...
+      return x.roles.length;
     });
 
     if (accessLevels && accessLevels.length) {
