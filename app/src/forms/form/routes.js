@@ -14,6 +14,7 @@ routes.get('/', currentUser, async (req, res, next) => {
 });
 
 routes.post('/', currentUser, keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
+  console.log(JSON.stringify(req, null, 2));
   await controller.createForm(req, res, next);
 });
 
