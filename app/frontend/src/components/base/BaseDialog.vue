@@ -2,7 +2,7 @@
   <v-dialog
     :max-width="width"
     persistent
-    v-if="show"
+    v-bind:value="value"
     @click:outside="closeDialog"
     @keydown.esc="closeDialog"
   >
@@ -31,14 +31,19 @@
           </v-btn>
         </div>
         <div v-else-if="type === 'CONTINUE'">
-          <v-btn class="mb-5 mr-5" outlined @click="closeDialog">
-            <slot name="button-text-cancel">
-              <span>Cancel</span>
-            </slot>
-          </v-btn>
-          <v-btn class="mb-5" color="primary" depressed @click="continueDialog">
+          <v-btn
+            class="mb-5 mr-5"
+            color="primary"
+            depressed
+            @click="continueDialog"
+          >
             <slot name="button-text-continue">
               <span>Continue</span>
+            </slot>
+          </v-btn>
+          <v-btn class="mb-5" outlined @click="closeDialog">
+            <slot name="button-text-cancel">
+              <span>Cancel</span>
             </slot>
           </v-btn>
         </div>
@@ -56,22 +61,22 @@ export default {
     },
     continueDialog() {
       this.$emit('continue-dialog');
-    }
+    },
   },
   props: {
-    show: {
+    value: {
       default: false,
-      type: Boolean
+      type: Boolean,
     },
     type: {
       default: 'OK',
-      type: String
+      type: String,
     },
     width: {
       default: '500',
-      type: String
-    }
-  }
+      type: String,
+    },
+  },
 };
 </script>
 

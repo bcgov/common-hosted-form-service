@@ -18,9 +18,26 @@
         </span>
 
         <span v-if="canDeleteForm" class="ml-5">
-          <v-btn icon color="red" @click="showDeleteDialog">
+          <v-btn icon color="red" @click="showDeleteDialog = true">
             <v-icon>delete</v-icon>
           </v-btn>
+
+          <BaseDialog
+            v-model="showDeleteDialog"
+            type="CONTINUE"
+            @close-dialog="showDeleteDialog = false"
+            @continue-dialog="deleteForm"
+          >
+            <template #title>Confirm Deletion</template>
+            <template #text>
+              Are you sure you wish to delete
+              <strong>{{ form.name }}</strong>?
+              This form will no longer be accessible.
+            </template>
+            <template #button-text-continue>
+              <span>DELETE</span>
+            </template>
+          </BaseDialog>
         </span>
       </v-col>
     </v-row>
@@ -157,6 +174,7 @@ export default {
     return {
       deleteDialog: false,
       formSettingsDisabled: true,
+      showDeleteDialog: false,
       settingsFormValid: false,
       settingsPanel: 0,
       versionsPanel: 0,
@@ -168,19 +186,15 @@ export default {
 
     // Permission checks, for right now some of these are restriced to app admins only until a later release
     canCreateDesign() {
-      return (
-        this.permissions.includes(FormPermissions.DESIGN_CREATE)
-      );
+      return this.permissions.includes(FormPermissions.DESIGN_CREATE);
     },
     canDeleteForm() {
       return (
-        this.isAdmin && this.permissions.includes(FormPermissions.FORM_DELETE)
+        this.permissions.includes(FormPermissions.FORM_DELETE)
       );
     },
     canEditForm() {
-      return (
-        this.permissions.includes(FormPermissions.FORM_UPDATE)
-      );
+      return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
     canManageTeam() {
       return (
@@ -194,6 +208,7 @@ export default {
   },
   methods: {
     ...mapActions('form', [
+      'deleteCurrentForm',
       'getFormPermissionsForUser',
       'fetchForm',
       'updateForm',
@@ -203,14 +218,16 @@ export default {
       this.formSettingsDisabled = true;
       this.fetchForm(this.f);
     },
+    deleteForm() {
+      this.showDeleteDialog = false;
+      this.deleteCurrentForm();
+      this.$router.push({
+        name: 'UserForms',
+      });
+    },
     enableSettingsEdit() {
       if (this.settingsPanel === undefined) this.settingsPanel = 0;
       this.formSettingsDisabled = false;
-    },
-    showDeleteDialog() {
-      alert(
-        'Not implemented. Button only shows for Showcase Admins right now.'
-      );
     },
     async updateSettings() {
       try {
