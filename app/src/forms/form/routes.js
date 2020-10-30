@@ -14,7 +14,7 @@ routes.get('/', currentUser, async (req, res, next) => {
 });
 
 routes.post('/', currentUser, keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
-  try { console.log(JSON.stringify(req, null, 2)) } catch (e) {console.error(e);}; //eslint-disable-line
+  try { console.log(JSON.stringify(req.headers, null, 2)) } catch (e) {console.error(e);}; //eslint-disable-line
   await controller.createForm(req, res, next);
 });
 
