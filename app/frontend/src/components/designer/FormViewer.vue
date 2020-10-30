@@ -1,7 +1,7 @@
 <template>
   <div class="form-wrapper">
-    <h1 class="my-6 text-center">{{ formName }}</h1>
-    <slot name="alert" />
+    <h1 class="my-6 text-center">{{ form.name }}</h1>
+    <slot name="alert" v-bind:form="form"/>
     <Form
       :form="formSchema"
       :submission="submission"
@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      formName: '',
+      form: {},
       formSchema: {},
       submission: {
         data: {},
@@ -63,7 +63,7 @@ export default {
         const response = await formService.getSubmission(this.submissionId);
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
-        this.formName = response.data.form.name;
+        this.form = response.data.form;
         this.formSchema = response.data.version.schema;
         this.version = response.data.version.version;
       } catch (error) {
@@ -86,7 +86,7 @@ export default {
               `No schema in response. VersionId: ${this.versionId}`
             );
           }
-          this.formName = response.data.name;
+          this.form = response.data;
           this.formSchema = response.data.schema;
         } else {
           // If getting the HEAD form version (IE making a new submission)
@@ -100,7 +100,7 @@ export default {
               `No published version found in response. FormID: ${this.formId}`
             );
           }
-          this.formName = response.data.name;
+          this.form = response.data;
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
