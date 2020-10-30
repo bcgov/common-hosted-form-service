@@ -157,7 +157,7 @@ const service = {
       // include if user has idp, or form is public, or user has an explicit role.
       if (x.idps.includes(userInfo.idp) || x.idps.includes('public')) {
         // always give submitter permissions to launch by idp and public
-        x.permissions = Array.from(new Set([...x.permissions, ...FORM_SUBMITTER]))
+        x.permissions = Array.from(new Set([...x.permissions, ...FORM_SUBMITTER]));
         return true;
       }
       // user has permissions solely through their assigned roles...
