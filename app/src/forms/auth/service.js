@@ -1,6 +1,8 @@
 const { PublicFormAccess, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
+const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
+
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
 
@@ -146,34 +148,43 @@ const service = {
   },
 
   filterForms: (userInfo, items, accessLevels = []) => {
+    // note that the user form access query returns submitter roles for everyone
+    // we need to filter out the true access level here.
+    // so we need a role, or a valid idp from login, or form needs to be public.
     let forms = [];
-    // we always remove idp only access forms that do not match our idp.
-    let idpFiltered = items.filter(x => {
-      return x.roles.length || (!x.roles.length && (x.idps.includes('public') || x.idps.includes(userInfo.idp)));
+
+    let filtered = items.filter(x => {
+      // include if user has idp, or form is public, or user has an explicit role.
+      if (x.idps.includes(userInfo.idp) || x.idps.includes('public')) {
+        // always give submitter permissions to launch by idp and public
+        x.permissions = Array.from(new Set([...x.permissions, ...FORM_SUBMITTER]));
+        return true;
+      }
+      // user has permissions solely through their assigned roles...
+      return x.roles.length;
     });
 
     if (accessLevels && accessLevels.length) {
-      idpFiltered.forEach(item => {
+      filtered.forEach(item => {
         let hasPublic = false;
         let hasIdp = false;
         let hasTeam = false;
-        let hasElevated = false;
         if (accessLevels.includes('public')) {
-          // must have public in form idps and must not have any roles...
-          hasPublic = item.idps.includes('public') && !item.roles.length;
+          // must have public in form idps...
+          hasPublic = item.idps.includes('public');
         } else if (accessLevels.includes('idp')) {
-          // must have user's idp in idps and not have any roles...
-          hasIdp = item.idps.includes(userInfo.idp) && !item.roles.length;
+          // must have user's idp in idps...
+          hasIdp = item.idps.includes(userInfo.idp);
         } else if (accessLevels.includes('team')) {
           // must have a role...
           hasTeam = item.roles.length;
         }
-        if (hasPublic || hasIdp || hasTeam || hasElevated) {
+        if (hasPublic || hasIdp || hasTeam) {
           forms.push(service.formAccessToForm(item));
         }
       });
     } else {
-      forms = idpFiltered.map(item => service.formAccessToForm(item));
+      forms = filtered.map(item => service.formAccessToForm(item));
     }
     return forms;
   },

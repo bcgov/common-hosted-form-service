@@ -32,9 +32,9 @@ const service = {
 
   read: async (code) => {
     return Role.query()
-      .findById(code)
+      .findOne('code', code)
       .allowGraph('[permissions]')
-      .withGraphFetched('permissions(orderNameAscending)')
+      .withGraphFetched('permissions(orderDefault)')
       .throwIfNotFound();
   },
 
