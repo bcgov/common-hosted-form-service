@@ -96,6 +96,51 @@
           </v-tooltip>
         </template>
       </v-checkbox>
+
+      <v-checkbox v-model="sendNotificationEmail">
+        <template #label>
+          Send my team a notification email when a user submits our form
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                help_outline
+              </v-icon>
+            </template>
+            <span>
+              Send a notification to your specified email address when any user
+              submits this form
+            </span>
+          </v-tooltip>
+        </template>
+      </v-checkbox>
+
+      <v-combobox
+        v-if="sendNotificationEmail"
+        dense
+        flat
+        solid
+        outlined
+        v-model="notificationEmails"
+        hide-selected
+        clearable
+        hint="Add one or more valid email addresses"
+        label="Notification Email Addresses"
+        multiple
+        small-chips
+        deletable-chips
+        :delimiters="[' ', ',']"
+      >
+        <template v-slot:no-data>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>
+                Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to
+                add multiple email addresses
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+      </v-combobox>
     </v-container>
   </v-skeleton-loader>
 </template>
@@ -112,6 +157,8 @@ export default {
   },
   data() {
     return {
+      sendNotificationEmail: false,
+      notificationEmails: [],
       loading: true,
       valid: false,
       // Validation
