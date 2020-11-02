@@ -129,6 +129,7 @@
         small-chips
         deletable-chips
         :delimiters="[' ', ',']"
+        append-icon=""
       >
         <template v-slot:no-data>
           <v-list-item>
