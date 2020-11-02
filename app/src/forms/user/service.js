@@ -11,6 +11,7 @@ const service = {
       .modify('filterFirstName', params.firstName)
       .modify('filterLastName', params.lastName)
       .modify('filterEmail', params.email)
+      .modify('filterSearch', params.search)
       .modify('orderLastFirstAscending');
   },
 

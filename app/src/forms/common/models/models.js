@@ -436,6 +436,14 @@ class User extends Timestamps(Model) {
           query.where('email', 'ilike', `%${value}%`);
         }
       },
+      filterSearch(query, value) {
+        // use this field 'search' to OR across many fields
+        if (value) {
+          query.where('username', 'ilike', `%${value}%`)
+            .orWhere('fullName', 'ilike', `%${value}%`)
+            .orWhere('email', 'ilike', `%${value}%`);
+        }
+      },
       orderLastFirstAscending(builder) {
         builder.orderByRaw('lower("lastName"), lower("firstName")');
       }
