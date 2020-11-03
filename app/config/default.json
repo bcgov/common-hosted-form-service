@@ -36,12 +36,12 @@
   "serviceClient": {
     "commonServices": {
       "ches": {
-        "endpoint": "https://ches-master-9f0fbe-dev.pathfinder.gov.bc.ca/api"
+        "endpoint": "https://ches-dev.pathfinder.gov.bc.ca/api"
       },
       "cdogs": {
-        "endpoint": "https://cdogs-master-idcqvl-dev.pathfinder.gov.bc.ca/api"
+        "endpoint": "https://cdogs-dev.pathfinder.gov.bc.ca/api"
       },
-      "tokenEndpoint": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token",
+      "tokenEndpoint": "https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token",
       "username": "CHEFS_SERVICE_CLIENT"
     }
   }
