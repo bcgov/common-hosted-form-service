@@ -116,11 +116,12 @@
 
       <v-combobox
         v-if="sendNotificationEmail"
+        v-model="notificationEmails"
+        :rules="notificationRules"
         dense
         flat
         solid
         outlined
-        v-model="notificationEmails"
         hide-selected
         clearable
         hint="Add one or more valid email addresses"
@@ -149,7 +150,7 @@
 <script>
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { IdentityMode, IdentityProviders } from '@/utils/constants';
+import { IdentityMode, IdentityProviders, Regex } from '@/utils/constants';
 
 export default {
   name: 'FormSettings',
@@ -176,6 +177,16 @@ export default {
       nameRules: [
         (v) => !!v || 'Name is required',
         (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
+      ],
+      notificationRules: [
+        (v) =>
+          !this.sendNotificationEmail ||
+          v.length > 0 ||
+          `Please enter at least ${v} email address`,
+        (v) =>
+          !this.sendNotificationEmail ||
+          v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
+          'Please enter all valid email addresses',
       ],
     };
   },
