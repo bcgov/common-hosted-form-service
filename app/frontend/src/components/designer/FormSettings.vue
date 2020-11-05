@@ -97,7 +97,7 @@
         </template>
       </v-checkbox>
 
-      <v-checkbox v-model="sendNotificationEmail">
+      <v-checkbox v-model="sendSubRecieviedEmail">
         <template #label>
           Send my team a notification email when a user submits our form
           <v-tooltip bottom>
@@ -115,7 +115,7 @@
       </v-checkbox>
 
       <v-combobox
-        v-if="sendNotificationEmail"
+        v-if="sendSubRecieviedEmail"
         v-model="submissionReceivedEmails"
         :rules="emailArrayRules"
         dense
@@ -159,7 +159,6 @@ export default {
   },
   data() {
     return {
-      sendNotificationEmail: false,
       loading: true,
       valid: false,
       // Validation
@@ -179,11 +178,11 @@ export default {
       ],
       emailArrayRules: [
         (v) =>
-          !this.sendNotificationEmail ||
+          !this.sendSubRecieviedEmail ||
           v.length > 0 ||
           `Please enter at least ${v} email address`,
         (v) =>
-          !this.sendNotificationEmail ||
+          !this.sendSubRecieviedEmail ||
           v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
           'Please enter all valid email addresses',
       ],
@@ -195,6 +194,7 @@ export default {
       'form.id',
       'form.idps',
       'form.name',
+      'form.sendSubRecieviedEmail',
       'form.showSubmissionConfirmation',
       'form.submissionReceivedEmails',
       'form.userType',
