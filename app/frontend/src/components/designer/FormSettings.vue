@@ -116,8 +116,8 @@
 
       <v-combobox
         v-if="sendNotificationEmail"
-        v-model="notificationEmails"
-        :rules="notificationRules"
+        v-model="submissionReceivedEmails"
+        :rules="emailArrayRules"
         dense
         flat
         solid
@@ -160,7 +160,6 @@ export default {
   data() {
     return {
       sendNotificationEmail: false,
-      notificationEmails: [],
       loading: true,
       valid: false,
       // Validation
@@ -178,7 +177,7 @@ export default {
         (v) => !!v || 'Name is required',
         (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
       ],
-      notificationRules: [
+      emailArrayRules: [
         (v) =>
           !this.sendNotificationEmail ||
           v.length > 0 ||
@@ -197,6 +196,7 @@ export default {
       'form.idps',
       'form.name',
       'form.showSubmissionConfirmation',
+      'form.submissionReceivedEmails',
       'form.userType',
     ]),
     ID_MODE() {

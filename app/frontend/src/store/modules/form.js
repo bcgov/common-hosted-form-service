@@ -11,7 +11,7 @@ const genInitialForm = () => ({
   isDirty: false,
   name: '',
   showSubmissionConfirmation: true,
-  submissionRecievedEmails: '',
+  submissionReceivedEmails: [],
   userType: 'team'
 });
 
