@@ -1,6 +1,7 @@
 import NProgress from 'nprogress';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import store from '@/store';
 
 Vue.use(VueRouter);
 
@@ -174,6 +175,24 @@ export default function getRouter(basePath = '/') {
 
   router.beforeEach((to, _from, next) => {
     NProgress.start();
+    if (isFirstTransition) {
+      // Always call rbac/current if authenticated and on first page load
+      if (router.app.$keycloak
+        && router.app.$keycloak.ready
+        && router.app.$keycloak.authenticated) {
+        store.dispatch('form/getFormsForCurrentUser');
+      }
+
+      // Handle proper redirections on first page load
+      if (to.query.r) {
+        router.replace({
+          path: to.query.r.replace(basePath, ''),
+          query: (({ r, ...q }) => q)(to.query) // eslint-disable-line no-unused-vars
+        });
+      }
+    }
+
+    // Force login redirect if not authenticated
     if (to.matched.some(route => route.meta.requiresAuth)
       && router.app.$keycloak
       && router.app.$keycloak.ready
@@ -184,16 +203,11 @@ export default function getRouter(basePath = '/') {
         redirectUri: redirect
       });
       window.location.replace(loginUrl);
-    } else {
-      document.title = to.meta.title ? to.meta.title : process.env.VUE_APP_TITLE;
-      if (to.query.r && isFirstTransition) {
-        router.replace({
-          path: to.query.r.replace(basePath, ''),
-          query: (({ r, ...q }) => q)(to.query) // eslint-disable-line no-unused-vars
-        });
-      }
-      next();
     }
+
+    // Update document title if applicable
+    document.title = to.meta.title ? to.meta.title : process.env.VUE_APP_TITLE;
+    next();
   });
 
   router.afterEach(() => {
