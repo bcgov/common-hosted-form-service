@@ -147,6 +147,7 @@ export default {
       'form.isDirty',
       'form.name',
       'form.showSubmissionConfirmation',
+      'form.sendSubRecieviedEmail',
       'form.submissionReceivedEmails',
       'form.snake',
       'form.userType',
@@ -342,6 +343,12 @@ export default {
       } else {
         // If creating a new form, add the form and then a version
         try {
+          const emailList =
+            this.sendSubRecieviedEmail &&
+            this.submissionReceivedEmails &&
+            Array.isArray(this.submissionReceivedEmails)
+              ? this.submissionReceivedEmails
+              : [];
           const response = await formService.createForm({
             name: this.name,
             description: this.description,
@@ -351,11 +358,7 @@ export default {
               userType: this.userType,
             }),
             showSubmissionConfirmation: this.showSubmissionConfirmation,
-            submissionReceivedEmails:
-              this.submissionReceivedEmails &&
-              Array.isArray(this.submissionReceivedEmails)
-                ? this.submissionReceivedEmails
-                : [],
+            submissionReceivedEmails: emailList,
           });
           // Add the schema to the newly created default version
           if (!response.data.versions || !response.data.versions[0]) {
