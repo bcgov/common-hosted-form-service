@@ -6,12 +6,15 @@
         hide-details
         outlined
         dense
-        :items="items"
+        clearable
         v-model="model"
-        :loading="isLoading"
+        :items="items"
         :search-input.sync="searchUsers"
+        :filter="filterObject"
         return-object
+        :loading="isLoading"
       >
+        <!-- selected user -->
         <template v-slot:selection="data">
           <span
             v-bind="data.attrs"
@@ -21,7 +24,7 @@
             @click:close="remove(data.item)"
           >{{ data.item.fullName }}</span>
         </template>
-
+        <!-- users found in dropdown -->
         <template v-slot:item="data">
           <template v-if="typeof data.item !== 'object'">
             <v-list-item-content v-text="data.item"></v-list-item-content>
@@ -35,8 +38,8 @@
           </template>
         </template>
       </v-autocomplete>
-
-      <v-btn color="primary" class="ml-2" :disabled="isLoading" :loading="isLoading" @click="save">
+      <!-- buttons -->
+      <v-btn color="primary" class="ml-2" :disabled="!model" :loading="isLoading" @click="save">
         <span>Add</span>
       </v-btn>
       <v-btn outlined class="ml-2" @click="addingUsers = false">
@@ -58,41 +61,54 @@ export default {
   data() {
     return {
       addingUsers: false,
-      items: [],
-      model: [],
       isLoading: false,
+      items: [],
+      model: null,
       searchUsers: null
     };
   },
   methods: {
+
+    // show users in dropdown that have a text match on multiple properties
+    filterObject(item, queryText) {
+      return (
+        item.email.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 ||
+        item.username.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 ||
+        item.fullName.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
+      );
+    },
+
     save(){
-      // emit saved new team members to the parent component
+      // emit user (object) to the parent component
       this.$emit('new-users', [this.model]);
+      // reset search field
+      this.model = null;
     }
   },
   watch: {
+
+    // Get a list of user objects from database
     async searchUsers(input) {
       if (!input) {
         return;
       }
-      this.loadingUsers = true;
+      this.isLoading = true;
       try {
         const response = await userService.getUsers({
           search: input
         });
         // remove system user accounts
+        // not sure if these need to be listed in a constant somewhere (?)
         this.items = response.data.filter(function(obj) {
           return obj.username !== 'service-account-chefs';
         });
-
-        this.loadingUsers = false;
-
+        this.isLoading = false;
       } catch (error) {
         console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
-        this.loadingUsers = false;
+        this.isLoading = false;
       }
     },
-  },
+  }
 };
 </script>
 
