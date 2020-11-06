@@ -33,7 +33,7 @@ const service = {
           title: `${form.name} Submission`,
           priority: 'normal',
           messageLinkText: 'Click to view your Submission',
-          messageLinkUrl: `${service._appUrl(referer)}/form/view?s=`
+          messageLinkUrl: `${service._appUrl(referer)}/success/view?s=`
         };
 
         const assetsPath = path.join(__dirname, 'assets');
@@ -87,6 +87,7 @@ const service = {
         const contexts = [
           {
             context: {
+              bottomText: `You are receiving this because this email address has been designated as a notification email address for successful submissions of the ${form.name} form`,
               confirmationNumber: submission.confirmationId,
               title: config.title,
               messageLinkText: config.messageLinkText,
