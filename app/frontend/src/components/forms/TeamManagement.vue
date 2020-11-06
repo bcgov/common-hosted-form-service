@@ -36,45 +36,36 @@
               <v-checkbox
                 v-if="typeof item[header.value] === 'boolean'"
                 v-model="item[header.value]"
-                @click="edited = true"
+                @click="onCheckboxToggle(item.userId)"
+                :disabled="updating"
               />
               <div v-else>{{ item[header.value] }}</div>
             </div>
           </td>
         </tr>
         <tr v-else>
-          <td v-for="header in headers" :key="header.value" :class="{'role-col': typeof item[header.value] === 'boolean'}">
+          <td
+            v-for="header in headers"
+            :key="header.value"
+            :class="{ 'role-col': typeof item[header.value] === 'boolean' }"
+          >
             <v-checkbox
               v-if="typeof item[header.value] === 'boolean'"
               v-model="item[header.value]"
-              @click="edited = true"
+              @click="onCheckboxToggle(item.userId)"
+              :disabled="updating"
             />
             <div v-else>{{ item[header.value] }}</div>
           </td>
         </tr>
       </template>
     </v-data-table>
-    <v-btn
-      color="primary"
-      class="my-2"
-      :disabled="!edited"
-      :loading="updating"
-      @click="setFormUsers"
-    >
-      <span>UPDATE</span>
-    </v-btn>
-    <v-btn
-      outlined
-      class="my-2 ml-2"
-      :disabled="!edited"
-      @click="createTableData"
-    >
-      <span>ROLLBACK</span>
-    </v-btn>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 import { rbacService, roleService } from '@/services';
 import { FormRoleCodes } from '@/utils/constants';
 
@@ -91,7 +82,7 @@ export default {
   },
   data() {
     return {
-      edited: false,
+      edited: false, // Does the table align with formUsers?
       headers: [],
       formUsers: [],
       loading: true,
@@ -102,6 +93,15 @@ export default {
     };
   },
   methods: {
+    ...mapActions('notifications', ['addNotification']),
+    addNewUsers(users) {
+      if (Array.isArray(users) && users.length) {
+        users.forEach((user) => {
+          // TODO: Create a new this.tableData object and add it in
+          console.log(user); // eslint-disable-line no-console
+        });
+      }
+    },
     createHeaders() {
       const headers = [
         { text: 'Full Name', value: 'fullName', className: '' },
@@ -136,28 +136,20 @@ export default {
       });
       this.edited = false;
     },
-    generateUserRoles() {
-      const body = [];
-      this.tableData.forEach((user) => {
-        Object.keys(user)
-          .filter((role) => this.roleOrder.includes(role))
-          .forEach((role) => {
-            if (user[role]) {
-              body.push({
-                formId: user.formId,
-                role: role,
-                userId: user.userId,
-              });
-            }
-          });
-      });
-      return body;
+    generateFormRoleUsers(user) {
+      return Object.keys(user)
+        .filter((role) => this.roleOrder.includes(role) && user[role])
+        .map((role) => ({
+          formId: user.formId,
+          role: role,
+          userId: user.userId,
+        }));
     },
     async getFormUsers() {
       try {
         const response = await rbacService.getFormUsers({
           formId: this.formId,
-          roles: '*'
+          roles: '*',
         });
         this.formUsers = response.data;
       } catch (error) {
@@ -172,18 +164,68 @@ export default {
         console.error(`Error getting list of roles: ${error}`); // eslint-disable-line no-console
       }
     },
+    onCheckboxToggle(userId) {
+      this.edited = true;
+      this.setUserForms(userId);
+    },
+    removeUser(userId) {
+      // TODO: Consider dialog box to confirm removal of user before executing?
+      this.edited = true;
+
+      // Set all of userId's roles to false
+      const index = this.tableData.findIndex(u => u.userId === userId);
+      this.roleList.forEach(role => this.tableData[index][role.code] = false);
+
+      this.setUserForms(userId);
+      this.tableData = this.tableData.filter(u => u.userId !== userId);
+    },
+    /**
+     * @function setFormUsers
+     * Sets all users' roles for the form at once
+     * @deprecated Use setUserForms instead
+     */
     async setFormUsers() {
       this.updating = true;
       try {
-        const userRoles = this.generateUserRoles();
-        const response = await rbacService.setFormUsers(userRoles, {
+        const userRoles = this.tableData.map((user) => this.generateFormRoleUsers(user)).flat();
+        await rbacService.setFormUsers(userRoles, {
           formId: this.formId,
         });
-        this.formUsers = response.data;
-        this.createTableData();
-        this.edited = false;
+        await this.getFormUsers();
+        this.createTableData(); // Force refresh table based on latest API response
       } catch (error) {
-        console.error(`Error setting form users: ${error}`); // eslint-disable-line no-console
+        this.addNotification({
+          message:
+            'An error occurred while attempting to update all user roles',
+          consoleError: `Error setting all user roles for form ${this.formId}: ${error}`,
+        });
+        this.createTableData(); // Force refresh table based on latest API response
+      }
+      this.updating = false;
+    },
+    /**
+     * @function setUserForms
+     * Sets `userId`'s roles for the form
+     * @param {String} userId The userId to be updated
+     */
+    async setUserForms(userId) {
+      this.updating = true;
+      try {
+        const user = this.tableData.filter(u => u.userId === userId)[0];
+        const userRoles = this.generateFormRoleUsers(user);
+        await rbacService.setUserForms(userRoles, {
+          formId: this.formId,
+          userId: userId,
+        });
+        await this.getFormUsers();
+        this.createTableData(); // Force refresh table based on latest API response
+      } catch (error) {
+        this.addNotification({
+          message:
+            'An error occurred while attempting to update roles for a user',
+          consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
+        });
+        this.createTableData(); // Force refresh table based on latest API response
       }
       this.updating = false;
     },
