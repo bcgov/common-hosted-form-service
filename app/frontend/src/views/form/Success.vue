@@ -7,16 +7,18 @@
             <v-icon large color="success">check_circle</v-icon>
             Your form has been submitted successfully
           </h1>
-          <h3 v-if="form.showSubmissionConfirmation">
-            If you wish to keep a record of this submission, you can keep the
-            following Confirmation ID:
-            <mark>{{ s.substring(0, 8).toUpperCase() }}</mark>
-          </h3>
-          <RequestReceipt
-            :email="email"
-            :formName="form.name"
-            :submissionId="s"
-          />
+          <div v-if="form.showSubmissionConfirmation">
+            <h3>
+              If you wish to keep a record of this submission, you can keep the
+              following Confirmation ID:
+              <mark>{{ s.substring(0, 8).toUpperCase() }}</mark>
+            </h3>
+            <RequestReceipt
+              :email="email"
+              :formName="form.name"
+              :submissionId="s"
+            />
+          </div>
           <hr />
         </div>
       </template>
@@ -39,6 +41,6 @@ export default {
     FormViewer,
     RequestReceipt,
   },
-  computed: mapGetters('auth', ['email'])
+  computed: mapGetters('auth', ['email']),
 };
 </script>

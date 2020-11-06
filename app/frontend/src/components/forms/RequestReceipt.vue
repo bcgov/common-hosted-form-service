@@ -62,18 +62,17 @@ export default {
     async requestReceipt() {
       if (this.valid) {
         try {
-          await formService.requestReceiptEmail(this.formName, {
-            submissionId: this.submissionId,
+          await formService.requestReceiptEmail(this.submissionId, {
             to: this.to,
           });
           this.addNotification({
             type: NotificationTypes.SUCCESS,
-            // message: `An email has been sent to ${this.to}.`,
+            message: `An email has been sent to ${this.to}.`,
           });
         } catch (error) {
           this.addNotification({
-            message: 'Not implemented yet...'
-            // message: 'An error occured while attempting to send your email.',
+            message: 'An error occured while attempting to send your email.',
+            consoleError: `Email confirmation to ${this.to} failed: ${error}`,
           });
         } finally {
           this.showDialog = false;
