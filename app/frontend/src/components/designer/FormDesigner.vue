@@ -182,6 +182,7 @@ export default {
                 simplecheckbox: true,
                 simplecheckboxes: true,
                 simpleradios: true,
+                simplefile: true
               },
             },
             layoutControls: {
@@ -209,17 +210,13 @@ export default {
               title: 'BC Gov.',
               weight: 50,
               components: {
-                orgbook: true,
+                orgbook: true
               },
             },
           },
         };
       } else {
-        return {
-          builder: {
-            premium: false,
-          },
-        };
+        return {};
       }
     },
   },

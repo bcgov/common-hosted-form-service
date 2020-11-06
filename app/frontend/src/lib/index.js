@@ -1,4 +1,7 @@
 import components from './components';
+// @ts-ignore
+import providers from './providers';
 export default {
-    components: components
+    components: components,
+    providers: providers
 };
