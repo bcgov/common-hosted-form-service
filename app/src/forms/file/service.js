@@ -1,6 +1,10 @@
+const config = require('config');
 const { FileStorage } = require('../common/models');
 const {transaction} = require('objection');
 const {v4: uuidv4} = require('uuid');
+
+const PERMANENT_STORAGE = config.get('files.permanent');
+const storageService = require('./storage/storageService');
 
 const service = {
 
@@ -18,7 +22,12 @@ const service = {
       obj.path = data.path;
       obj.createdBy = currentUser.username;
 
+      const uploadResult = await storageService.upload(obj);
+      obj.path = uploadResult.path;
+      obj.storage = uploadResult.storage;
+
       await FileStorage.query(trx).insert(obj);
+
       await trx.commit();
       const result = await service.read(obj.id);
       return result;
@@ -35,9 +44,54 @@ const service = {
   },
 
   delete: async (id) => {
-    return FileStorage.query()
-      .deleteById(id)
-      .throwIfNotFound();
+    let trx;
+    try {
+      trx = await transaction.start(FileStorage.knex());
+      const obj = await service.read(id);
+
+      await FileStorage.query(trx)
+        .deleteById(id)
+        .throwIfNotFound();
+
+      const result = await storageService.delete(obj);
+      if (!result) {
+        // error?
+      }
+      await trx.commit();
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  moveSubmissionFiles: async (submissionId, currentUser) => {
+    let trx;
+    try {
+      trx = await transaction.start(FileStorage.knex());
+
+      // fetch all the File Storage records for a submission id
+      // move them to permanent storage
+      // update their new paths.
+      const items = await FileStorage.query(trx).where('formSubmissionId', submissionId);
+
+      for (const item of items) {
+        // move the files under a sub directory for this submission
+        const newPath = await storageService.move(item, 'submissions', submissionId);
+        if (!newPath) {
+          throw new Error('Error moving files for submission');
+        }
+        await FileStorage.query(trx).patchAndFetchById(item.id, {
+          storage: PERMANENT_STORAGE,
+          path: newPath,
+          updatedBy: currentUser.username
+        });
+      }
+      await trx.commit();
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   }
 
 };
