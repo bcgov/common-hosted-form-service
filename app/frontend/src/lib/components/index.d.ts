@@ -11,6 +11,7 @@ import simpledatetime from './SimpleDateTime/Component';
 import simpleday from './SimpleDay/Component';
 import simpleemail from './SimpleEmail/Component';
 import simplefieldset from './SimpleFieldSet/Component';
+import simplefile from './SimpleFile/Component';
 import simpleheading from './SimpleHeading/Component';
 import simplenumber from './SimpleNumber/Component';
 import simplepanel from './SimplePanel/Component';
@@ -36,6 +37,7 @@ declare const _default: {
     simpleday: typeof simpleday;
     simpleemail: typeof simpleemail;
     simplefieldset: typeof simplefieldset;
+    simplefile: typeof simplefile;
     simpleheading: typeof simpleheading;
     simplenumber: typeof simplenumber;
     simplepanel: typeof simplepanel;

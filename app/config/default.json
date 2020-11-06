@@ -5,6 +5,26 @@
     "port": "5432",
     "username": "app"
   },
+  "files": {
+    "uploads": {
+      "enabled": "true",
+      "fileCount": "1",
+      "fileKey": "files",
+      "fileMaxSize": "25MB",
+      "fileMinSize": "0KB",
+      "path": "files"
+    },
+    "permanent": "localStorage",
+    "localStorage" : {
+      "path": "/tmp"
+    },
+    "objectStorage": {
+      "accessKeyId": "nr-iit-showcase",
+      "bucket": "egejyy",
+      "endpoint": "https://nrs.objectstore.gov.bc.ca",
+      "key": "chefs/dev/"
+    }
+  },
   "frontend": {
     "apiPath": "api/v1",
     "basePath" : "/app",
@@ -36,12 +56,12 @@
   "serviceClient": {
     "commonServices": {
       "ches": {
-        "endpoint": "https://ches-master-9f0fbe-dev.pathfinder.gov.bc.ca/api"
+        "endpoint": "https://ches-dev.pathfinder.gov.bc.ca/api"
       },
       "cdogs": {
-        "endpoint": "https://cdogs-master-idcqvl-dev.pathfinder.gov.bc.ca/api"
+        "endpoint": "https://cdogs-dev.pathfinder.gov.bc.ca/api"
       },
-      "tokenEndpoint": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token",
+      "tokenEndpoint": "https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token",
       "username": "CHEFS_SERVICE_CLIENT"
     }
   }
