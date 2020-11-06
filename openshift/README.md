@@ -53,6 +53,22 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_PORT=8080
 ```
 
+```sh
+oc create -n $NAMESPACE configmap $APP_NAME-files-config \
+  --from-literal=FILES_UPLOADS_DIR= \
+  --from-literal=FILES_UPLOADS_ENABLED=true \
+  --from-literal=FILES_UPLOADS_FILECOUNT=1 \
+  --from-literal=FILES_UPLOADS_FILEKEY=files \
+  --from-literal=FILES_UPLOADS_FILEMAXSIZE=25MB \
+  --from-literal=FILES_UPLOADS_FILEMINSIZE=0KB \
+  --from-literal=FILES_UPLOADS_PATH=files \
+  --from-literal=FILES_PERMANENT=objectStorage \
+  --from-literal=FILES_LOCALSTORAGE_PATH= \
+  --from-literal=FILES_OBJECTSTORAGE_BUCKET=egejyy \
+  --from-literal=FILES_OBJECTSTORAGE_ENDPOINT=https://nrs.objectstore.gov.bc.ca \
+  --from-literal=FILES_OBJECTSTORAGE_KEY=chefs/dev/ \
+```
+
 ### Secrets
 
 Replace anything in angle brackets with the appropriate value!
@@ -75,6 +91,16 @@ export username=<username>
 export password=<password>
 
 oc create -n $NAMESPACE secret generic $APP_NAME-sc-cs-secret \
+  --type=kubernetes.io/basic-auth \
+  --from-literal=username=$username \
+  --from-literal=password=$password
+```
+
+```sh
+export username=<username>
+export password=<password>
+
+oc create -n $NAMESPACE secret generic $APP_NAME-objectstorage-secret \
   --type=kubernetes.io/basic-auth \
   --from-literal=username=$username \
   --from-literal=password=$password

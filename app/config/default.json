@@ -16,7 +16,7 @@
     },
     "permanent": "objectStorage",
     "localStorage" : {
-      "path": "/tmp"
+      "path": ""
     },
     "objectStorage": {
       "accessKeyId": "nr-iit-showcase",
