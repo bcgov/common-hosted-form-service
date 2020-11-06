@@ -180,7 +180,7 @@ export default {
         (v) =>
           !this.sendSubRecieviedEmail ||
           v.length > 0 ||
-          `Please enter at least ${v} email address`,
+          'Please enter at least 1 email address',
         (v) =>
           !this.sendSubRecieviedEmail ||
           v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
