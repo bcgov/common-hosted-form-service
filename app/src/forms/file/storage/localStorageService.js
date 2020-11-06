@@ -1,10 +1,12 @@
 const config = require('config');
 const fs = require('fs-extra');
+const os = require('os');
 const path = require('path');
 
 const _remLastSep = (x) => x && x.endsWith(path.sep) ? x.slice(0, -1) : x;
 
-const BASE_PATH = _remLastSep(config.get('files.localStorage.path'));
+const _path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fs.realpathSync(os.tmpdir());
+const BASE_PATH = _remLastSep(_path);
 
 try {
   fs.ensureDirSync(BASE_PATH);
