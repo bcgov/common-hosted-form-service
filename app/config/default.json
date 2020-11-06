@@ -14,7 +14,7 @@
       "fileMinSize": "0KB",
       "path": "files"
     },
-    "permanent": "localStorage",
+    "permanent": "objectStorage",
     "localStorage" : {
       "path": "/tmp"
     },
