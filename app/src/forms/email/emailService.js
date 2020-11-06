@@ -33,7 +33,7 @@ const service = {
           title: `${form.name} Submission`,
           priority: 'normal',
           messageLinkText: 'Click to view your Submission',
-          messageLinkUrl: `${service._appUrl(referer)}/success/view?s=`
+          messageLinkUrl: `${service._appUrl(referer)}/form/success?s=`
         };
 
         const assetsPath = path.join(__dirname, 'assets');
