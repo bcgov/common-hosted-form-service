@@ -31,14 +31,14 @@ oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
   --from-literal=FRONTEND_BASEPATH=/app \
   --from-literal=FRONTEND_ENV=dev \
   --from-literal=FRONTEND_KC_REALM=cp1qly2d \
-  --from-literal=FRONTEND_KC_SERVERURL=https://sso-dev.pathfinder.gov.bc.ca/auth
+  --from-literal=FRONTEND_KC_SERVERURL=https://dev.oidc.gov.bc.ca/auth
 ```
 
 ```sh
 oc create -n $NAMESPACE configmap $APP_NAME-sc-config \
-  --from-literal=SC_CS_CHES_ENDPOINT=https://ches-master-9f0fbe-dev.pathfinder.gov.bc.ca/api \
-  --from-literal=SC_CS_CDOGS_ENDPOINT=https://cdogs-master-idcqvl-dev.pathfinder.gov.bc.ca/api \
-  --from-literal=SC_CS_TOKEN_ENDPOINT=https://sso-dev.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token
+  --from-literal=SC_CS_CHES_ENDPOINT=https://ches-dev.pathfinder.gov.bc.ca/api \
+  --from-literal=SC_CS_CDOGS_ENDPOINT=https://cdogs-dev.pathfinder.gov.bc.ca/api \
+  --from-literal=SC_CS_TOKEN_ENDPOINT=https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token
 ```
 
 ```sh
@@ -47,7 +47,7 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_BASEPATH=/app \
   --from-literal=SERVER_BODYLIMIT=30mb \
   --from-literal=SERVER_KC_REALM=cp1qly2d \
-  --from-literal=SERVER_KC_SERVERURL=https://sso-dev.pathfinder.gov.bc.ca/auth \
+  --from-literal=SERVER_KC_SERVERURL=https://dev.oidc.gov.bc.ca/auth \
   --from-literal=SERVER_LOGLEVEL=info \
   --from-literal=SERVER_MORGANFORMAT=combined \
   --from-literal=SERVER_PORT=8080
