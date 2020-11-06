@@ -58,7 +58,7 @@ objects:
               value: "${ROUTE_PATH}"
           from:
             kind: DockerImage
-            name: "mhart/alpine-node:12"
+            name: node:lts-alpine
         type: Docker
       successfulBuildsHistoryLimit: 3
 parameters:
