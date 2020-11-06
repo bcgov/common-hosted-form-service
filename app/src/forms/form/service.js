@@ -245,9 +245,10 @@ const service = {
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.
       // use the schema to determine if there are uploads, fetch the ids from the submission data...
-      const fileIds = formVersion.schema.components.filter(x => x.type === 'simplefile')
-        .map(x => data.submission.data[x.key])
-        .flatMap(x => x.flatMap(y => y.data.id));
+      const fileIds = formVersion.schema.components
+        .filter(x => x.type === 'simplefile')
+        .flatMap(x => data.submission.data[x.key])
+        .map(x => x.data.id);
 
       for (const fileId of fileIds) {
         await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: obj.id, updatedBy: currentUser.username });
