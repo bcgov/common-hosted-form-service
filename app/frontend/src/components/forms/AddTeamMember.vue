@@ -71,10 +71,12 @@ export default {
 
     // show users in dropdown that have a text match on multiple properties
     filterObject(item, queryText) {
+
+      // includes any of these
       return (
-        item.email.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 ||
-        item.username.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 ||
-        item.fullName.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
+        item.email.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) ||
+        item.username.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) ||
+        item.fullName.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
       );
     },
 
@@ -97,11 +99,9 @@ export default {
         const response = await userService.getUsers({
           search: input
         });
-        // remove system user accounts
-        // not sure if these need to be listed in a constant somewhere (?)
-        this.items = response.data.filter(function(obj) {
-          return obj.username !== 'service-account-chefs';
-        });
+
+        this.items = response.data;
+
         this.isLoading = false;
       } catch (error) {
         console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
