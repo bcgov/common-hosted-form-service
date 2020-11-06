@@ -26,5 +26,11 @@ module.exports = Object.freeze({
     CONFIRMATION_ID: '^[0-9A-Fa-f]{8}$',
     UUID: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$',
     EMAIL: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
+  },
+  StorageTypes: {
+    UPLOADS: 'uploads',
+    LOCAL_STORAGE: 'localStorage',
+    OBJECT_STORAGE: 'objectStorage',
+    LOCAL_STORES: ['uploads', 'localStorage']
   }
 });

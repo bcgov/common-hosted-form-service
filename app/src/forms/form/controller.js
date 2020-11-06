@@ -1,6 +1,7 @@
 const emailService = require('../email/emailService');
 const exportService = require('./exportService');
 const service = require('./service');
+const fileService = require('../file/service');
 
 module.exports = {
   export: async (req, res, next) => {
@@ -106,6 +107,8 @@ module.exports = {
     try {
       const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
       emailService.submissionReceived(req.params.formId, response.id, req.headers.referer).catch(() => {});
+      // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
+      fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => {});
       res.status(201).json(response);
     } catch (error) {
       next(error);

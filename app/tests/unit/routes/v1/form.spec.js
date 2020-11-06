@@ -34,6 +34,8 @@ const exportService = require('../../../../src/forms/form/exportService');
 
 const emailService = require('../../../../src/forms/email/emailService');
 
+const fileService = require('../../../../src/forms/file/service');
+
 
 //
 // mocks are in place, create the router
@@ -459,6 +461,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     // mock a success return value...
     service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
     emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
+    fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
@@ -470,6 +473,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     // mock an authentication/permission issue...
     service.createSubmission = jest.fn(() => { throw new Problem(401); });
     emailService.submissionReceived = jest.fn().mockReturnValue(true);
+    fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
@@ -481,6 +485,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     // mock an unexpected error...
     service.createSubmission = jest.fn(() => { throw new Error(); });
     emailService.submissionReceived = jest.fn().mockReturnValue(true);
+    fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
@@ -491,6 +496,18 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
   it('should handle error from email service gracefully', async () => {
     service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
     emailService.submissionReceived = jest.fn(() => Promise.reject({}));
+    fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
+
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle error from file service gracefully', async () => {
+    service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
+    emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
+    fileService.moveSubmissionFiles = jest.fn(() => Promise.reject({}));
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 

@@ -1,4 +1,5 @@
 const service = require('./service');
+const storageService = require('./storage/storageService');
 
 const _trim = (r) => {
   if (r) {
@@ -26,15 +27,27 @@ module.exports = {
   },
   read:  async (req, res, next) => {
     try {
-      const response = await service.read(req.params.id, req.currentUser);
-      res.status(200).json(_trim(response));
+      const fileStorage = await service.read(req.params.id, req.currentUser);
+      const stream = await storageService.read(fileStorage);
+
+      stream.on('error', function error(err) {
+        throw (err);
+      });
+
+      res.setHeader('Content-Disposition', `attachment; filename=${fileStorage.originalName}`);
+      res.set('Content-Type', fileStorage.mimeType);
+      res.set('Content-Length', fileStorage.size);
+      res.set('Last-Modified', fileStorage.updatedAt);
+
+      stream.pipe(res);
+
     } catch (error) {
       next(error);
     }
   },
   delete:  async (req, res, next) => {
     try {
-      await service.delete(req.params.id, req.currentUser);
+      await service.delete(req.params.id);
       res.sendStatus(202);
     } catch (error) {
       next(error);
