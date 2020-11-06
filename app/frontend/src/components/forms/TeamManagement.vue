@@ -104,8 +104,23 @@ export default {
     addNewUsers(users) {
       if (Array.isArray(users) && users.length) {
         users.forEach((user) => {
-          // TODO: Create a new this.tableData object and add it in
-          console.log(user); // eslint-disable-line no-console
+          // if user isnt already in the table
+          if(this.tableData.filter(function(obj) { return obj.userId === user.id; }).length < 1) {
+            // create new object for table row
+            var row = {
+              formId : this.formId,
+              userId : user.id,
+              form_submitter : false,
+              form_designer : false,
+              submission_reviewer : false,
+              team_manager : false,
+              owner : false,
+              fullName: user.fullName,
+              username: user.username
+            };
+            // add to beginning of table
+            this.tableData.unshift(row);
+          }
         });
       }
     },
