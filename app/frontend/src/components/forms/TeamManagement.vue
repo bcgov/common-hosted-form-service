@@ -105,9 +105,9 @@ export default {
       if (Array.isArray(users) && users.length) {
         users.forEach((user) => {
           // if user isnt already in the table
-          if(this.tableData.filter(function(obj) { return obj.userId === user.id; }).length < 1) {
+          if(!this.tableData.some((obj) => obj.userId === user.id)) {
             // create new object for table row
-            var row = {
+            const row = {
               formId : this.formId,
               userId : user.id,
               form_submitter : false,

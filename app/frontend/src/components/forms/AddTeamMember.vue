@@ -15,7 +15,7 @@
         :loading="isLoading"
       >
         <!-- selected user -->
-        <template v-slot:selection="data">
+        <template #selection="data">
           <span
             v-bind="data.attrs"
             :input-value="data.selected"
@@ -25,7 +25,7 @@
           >{{ data.item.fullName }}</span>
         </template>
         <!-- users found in dropdown -->
-        <template v-slot:item="data">
+        <template #item="data">
           <template v-if="typeof data.item !== 'object'">
             <v-list-item-content v-text="data.item"></v-list-item-content>
           </template>
@@ -48,7 +48,9 @@
     </div>
 
     <div v-else class="d-flex justify-md-end">
-      <v-btn @click="addingUsers = true" color="primary">Add a New Member</v-btn>
+      <v-btn @click="addingUsers = true" color="primary">
+        <span>Add a New Member</span>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -69,22 +71,27 @@ export default {
   },
   methods: {
 
+
     // show users in dropdown that have a text match on multiple properties
     filterObject(item, queryText) {
-
-      // includes any of these
-      return (
-        item.email.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) ||
-        item.username.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) ||
-        item.fullName.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
-      );
+      // eslint-disable-next-line
+      for (const [key, value] of Object.entries(item)) {
+        if(value !== null) {
+          if(value.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) ){
+            return true;
+          }
+        }
+      }
     },
+
+
 
     save(){
       // emit user (object) to the parent component
       this.$emit('new-users', [this.model]);
       // reset search field
       this.model = null;
+      this.addingUsers = false;
     }
   },
   watch: {
@@ -99,12 +106,10 @@ export default {
         const response = await userService.getUsers({
           search: input
         });
-
         this.items = response.data;
-
-        this.isLoading = false;
       } catch (error) {
         console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
+      } finally {
         this.isLoading = false;
       }
     },
