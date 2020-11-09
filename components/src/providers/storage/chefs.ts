@@ -123,8 +123,8 @@ const chefs = (formio) => {
     deleteFile(fileInfo, options) {
       return new NativePromise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        addHeaders(xhr, options);
         xhr.open('DELETE', fileInfo.url, true);
+        addHeaders(xhr, options);
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve('File deleted');

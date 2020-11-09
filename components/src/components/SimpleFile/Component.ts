@@ -55,7 +55,6 @@ export default class Component extends (ParentComponent as any) {
                 // componentOptions are passed in from the viewer, basically runtime configuration
                 const opts = this.options.componentOptions[ID];
                 this.component.options = {...this.component.options, ...opts};
-
                 // the config.uploads object will say what size our server can handle and what path to use.
                 if (opts.config && opts.config.uploads) {
                     const remSlash = (s) => s.replace(/^\s*\/*\s*|\s*\/*\s*$/gm, '');
@@ -75,9 +74,12 @@ export default class Component extends (ParentComponent as any) {
 
     deleteFile(fileInfo) {
         const { options = {} } = this.component;
-        const { fileService } = this;
-        if (fileInfo && fileService && typeof fileService.deleteFile === 'function') {
-            fileService.deleteFile(fileInfo, options);
+        const Provider = Formio.Providers.getProvider('storage', this.component.storage);
+        if (Provider) {
+            const provider = new Provider(this);
+            if (fileInfo && provider && typeof provider.deleteFile === 'function') {
+                provider.deleteFile(fileInfo, options)
+            }
         }
     }
 

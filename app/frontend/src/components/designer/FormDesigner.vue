@@ -216,7 +216,11 @@ export default {
           },
         };
       } else {
-        return {};
+        return {
+          builder: {
+            premium: false,
+          },
+        };
       }
     },
   },

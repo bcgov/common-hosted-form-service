@@ -1,6 +1,7 @@
 const { Form, FormVersion, FormSubmission, FormSubmissionUserPermissions, SubmissionMetadata, UserFormAccess } = require('../common/models');
 
 const Permissions = require('../common/constants').Permissions;
+const falsey = require('../common/utils').falsey;
 
 const Problem = require('api-problem');
 const {transaction} = require('objection');
@@ -62,7 +63,7 @@ const service = {
 
     // check against the public and user's identity provider permissions...
     if (!isDraft && !isDeleted) {
-      if (publicAllowed || idpAllowed) return result;
+      if (!falsey(publicAllowed) || !falsey(idpAllowed)) return result;
     }
 
     // check against the form level permissions assigned to the user...
