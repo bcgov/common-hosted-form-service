@@ -33,8 +33,14 @@
     >
       <template #item="{ item, isMobile, headers }">
         <tr v-if="isMobile" class="v-data-table__mobile-table-row">
-          <td v-for="header in headers" :key="header.value" class="v-data-table__mobile-row">
-            <div class="v-data-table__mobile-row__header">{{ header.text }}</div>
+          <td
+            v-for="header in headers"
+            :key="header.value"
+            class="v-data-table__mobile-row"
+          >
+            <div class="v-data-table__mobile-row__header">
+              {{ header.text }}
+            </div>
             <div class="v-data-table__mobile-row__cell">
               <v-checkbox
                 v-if="typeof item[header.value] === 'boolean'"
@@ -86,6 +92,8 @@ export default {
   },
   computed: {
     roleOrder: () => Object.values(FormRoleCodes),
+    validTableData: () =>
+      this.tableData.length && this.tableData.some((user) => user.owner),
   },
   data() {
     return {
@@ -105,18 +113,18 @@ export default {
       if (Array.isArray(users) && users.length) {
         users.forEach((user) => {
           // if user isnt already in the table
-          if(!this.tableData.some((obj) => obj.userId === user.id)) {
+          if (!this.tableData.some((obj) => obj.userId === user.id)) {
             // create new object for table row
             const row = {
-              formId : this.formId,
-              userId : user.id,
-              form_submitter : false,
-              form_designer : false,
-              submission_reviewer : false,
-              team_manager : false,
-              owner : false,
+              formId: this.formId,
+              userId: user.id,
+              form_submitter: false,
+              form_designer: false,
+              submission_reviewer: false,
+              team_manager: false,
+              owner: false,
               fullName: user.fullName,
-              username: user.username
+              username: user.username,
             };
             // add to beginning of table
             this.tableData.unshift(row);
@@ -191,15 +199,30 @@ export default {
       this.setUserForms(userId);
     },
     removeUser(userId) {
+      const index = this.tableData.findIndex((u) => u.userId === userId);
+
+      if (
+        this.tableData[index].owner &&
+        this.tableData.reduce((acc, user) => (user.owner ? acc + 1 : acc), 0) <
+          2
+      ) {
+        this.addNotification({
+          message: 'There must always be at least one form owner',
+          consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+        });
+        return;
+      }
+
       // TODO: Consider dialog box to confirm removal of user before executing?
       this.edited = true;
 
       // Set all of userId's roles to false
-      const index = this.tableData.findIndex(u => u.userId === userId);
-      this.roleList.forEach(role => this.tableData[index][role.code] = false);
+      this.roleList.forEach(
+        (role) => (this.tableData[index][role.code] = false)
+      );
 
       this.setUserForms(userId);
-      this.tableData = this.tableData.filter(u => u.userId !== userId);
+      this.tableData = this.tableData.filter((u) => u.userId !== userId);
     },
     /**
      * @function setFormUsers
@@ -209,7 +232,9 @@ export default {
     async setFormUsers() {
       this.updating = true;
       try {
-        const userRoles = this.tableData.map((user) => this.generateFormRoleUsers(user)).flat();
+        const userRoles = this.tableData
+          .map((user) => this.generateFormRoleUsers(user))
+          .flat();
         await rbacService.setFormUsers(userRoles, {
           formId: this.formId,
         });
@@ -233,7 +258,7 @@ export default {
     async setUserForms(userId) {
       this.updating = true;
       try {
-        const user = this.tableData.filter(u => u.userId === userId)[0];
+        const user = this.tableData.filter((u) => u.userId === userId)[0];
         const userRoles = this.generateFormRoleUsers(user);
         await rbacService.setUserForms(userRoles, {
           formId: this.formId,

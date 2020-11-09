@@ -1,6 +1,6 @@
 <template>
   <div class="new-member-div mb-5">
-    <div v-if="addingUsers" class="d-flex justify-end">
+    <div v-if="addingUsers" class="d-flex justify-end align-center">
       <v-autocomplete
         label="Type  a name, IDIR, or email to add member"
         hide-details
