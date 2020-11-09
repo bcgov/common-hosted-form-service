@@ -1,6 +1,5 @@
 <template>
   <BaseSecure>
-    <h1 class="my-6 text-center">Team Management</h1>
     <TeamManagement :formId="f" />
   </BaseSecure>
 </template>
