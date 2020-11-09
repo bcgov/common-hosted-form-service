@@ -18,6 +18,7 @@ export default {
     authenticated: () => Vue.prototype.$keycloak.authenticated,
     createLoginUrl: () => options => Vue.prototype.$keycloak.createLoginUrl(options),
     createLogoutUrl: () => options => Vue.prototype.$keycloak.createLogoutUrl(options),
+    email: () => Vue.prototype.$keycloak.tokenParsed.email,
     fullName: () => Vue.prototype.$keycloak.fullName,
     hasResourceRoles: (_state, getters) => (resource, roles) => {
       if (!getters.authenticated) return false;
