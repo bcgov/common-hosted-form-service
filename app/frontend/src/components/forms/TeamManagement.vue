@@ -1,16 +1,25 @@
 <template>
   <div>
-    <!-- search input -->
-    <div class="team-search mt-6 mt-sm-0">
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        class="pb-5"
-      />
-    </div>
+    <v-row class="mt-6">
+      <v-col cols="12" sm="8">
+        <h1 class="inline">Team Management</h1>
+      </v-col>
+      <v-col sm="4" class="pt-0">
+        <!-- search input -->
+        <div class>
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            hide-details
+            outlined
+            dense
+          />
+        </div>
+      </v-col>
+    </v-row>
+
+    <AddTeamMember @new-users="addNewUsers" />
 
     <!-- team table -->
     <v-data-table
@@ -24,14 +33,8 @@
     >
       <template #item="{ item, isMobile, headers }">
         <tr v-if="isMobile" class="v-data-table__mobile-table-row">
-          <td
-            v-for="header in headers"
-            :key="header.value"
-            class="v-data-table__mobile-row"
-          >
-            <div class="v-data-table__mobile-row__header">
-              {{ header.text }}
-            </div>
+          <td v-for="header in headers" :key="header.value" class="v-data-table__mobile-row">
+            <div class="v-data-table__mobile-row__header">{{ header.text }}</div>
             <div class="v-data-table__mobile-row__cell">
               <v-checkbox
                 v-if="typeof item[header.value] === 'boolean'"
@@ -68,9 +71,13 @@ import { mapActions } from 'vuex';
 
 import { rbacService, roleService } from '@/services';
 import { FormRoleCodes } from '@/utils/constants';
+import AddTeamMember from '@/components/forms/AddTeamMember.vue';
 
 export default {
   name: 'TeamManagement',
+  components: {
+    AddTeamMember,
+  },
   props: {
     formId: {
       type: String,
@@ -97,8 +104,23 @@ export default {
     addNewUsers(users) {
       if (Array.isArray(users) && users.length) {
         users.forEach((user) => {
-          // TODO: Create a new this.tableData object and add it in
-          console.log(user); // eslint-disable-line no-console
+          // if user isnt already in the table
+          if(!this.tableData.some((obj) => obj.userId === user.id)) {
+            // create new object for table row
+            const row = {
+              formId : this.formId,
+              userId : user.id,
+              form_submitter : false,
+              form_designer : false,
+              submission_reviewer : false,
+              team_manager : false,
+              owner : false,
+              fullName: user.fullName,
+              username: user.username
+            };
+            // add to beginning of table
+            this.tableData.unshift(row);
+          }
         });
       }
     },
@@ -240,27 +262,9 @@ export default {
 </script>
 
 <style scoped>
-.team-search {
-  width: 100%;
-}
-
 .role-col {
   width: 12%;
 }
-
-@media (min-width: 600px) {
-  .team-search {
-    max-width: 20em;
-    float: right;
-  }
-}
-@media (max-width: 599px) {
-  .team-search {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
 .team-table {
   clear: both;
 }
