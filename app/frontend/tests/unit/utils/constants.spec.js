@@ -5,7 +5,8 @@ describe('Constants', () => {
     expect(constants.ApiRoutes).toEqual({
       FORMS: '/forms',
       RBAC: '/rbac',
-      ROLES: '/roles'
+      ROLES: '/roles',
+      USERS: '/users'
     });
   });
 
