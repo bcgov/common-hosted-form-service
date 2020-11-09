@@ -2,8 +2,10 @@
   <div class="form-wrapper">
     <h1 class="my-6 text-center">{{ formName }}</h1>
     <slot name="alert" />
+
     <Form
       :form="formSchema"
+      :key="reRenderFormIo"
       :submission="submission"
       @submit="onSubmit"
       @submitDone="onSubmitDone"
@@ -39,6 +41,7 @@ export default {
         data: {},
       },
       currentForm: {},
+      reRenderFormIo: 0,
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
@@ -182,14 +185,16 @@ export default {
       });
     },
   },
-  created() {
+  async created() {
     if (this.submissionId) {
-      this.getFormData();
+      await this.getFormData();
     } else {
-      this.getFormSchema();
+      await this.getFormSchema();
       // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
       window.onbeforeunload = () => true;
     }
+    // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
+    this.reRenderFormIo += 1;
   },
 };
 </script>

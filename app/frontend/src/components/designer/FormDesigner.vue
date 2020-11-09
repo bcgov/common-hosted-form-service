@@ -133,7 +133,7 @@ export default {
       designerStep: 1,
       draftId: '',
       formSchema: {
-        display: 'form',
+        display: 'wizard',
         type: 'form',
         components: [],
       },
