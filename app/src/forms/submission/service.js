@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const { Form, FormVersion, FormSubmission, FormSubmissionUserPermissions, SubmissionMetadata, UserFormAccess } = require('../common/models');
 
 const Permissions = require('../common/constants').Permissions;
@@ -61,25 +60,16 @@ const service = {
     const publicAllowed = result.form.identityProviders.find(p => p.code === 'public') !== undefined;
     const idpAllowed = result.form.identityProviders.find(p => p.code === currentUser.idp) !== undefined;
 
-    console.log(`currentUser.idp = ${currentUser.idp}`);
-    console.log(`isDeleted = ${isDeleted}`);
-    console.log(`isDraft = ${isDraft}`);
-    console.log(`publicAllowed = ${publicAllowed}`);
-    console.log(`idpAllowed = ${idpAllowed}`);
-
     // check against the public and user's identity provider permissions...
-    console.log('check against the public and users identity provider permissions...');
     if (!isDraft && !isDeleted) {
       if (publicAllowed || idpAllowed) return result;
     }
 
     // check against the form level permissions assigned to the user...
-    console.log('check against the form level permissions assigned to the user');
     const formSubmissionsPermission = await checkFormSubmissionsPermission();
     if (!isDeleted && formSubmissionsPermission) return result;
 
     // check against the submission level permissions assigned to the user...
-    console.log('check against the submission level permissions assigned to the user...');
     const submissionPermission = await checkSubmissionPermission();
     if (submissionPermission) return result;
 

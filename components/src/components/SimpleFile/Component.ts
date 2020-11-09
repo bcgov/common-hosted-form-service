@@ -64,9 +64,15 @@ export default class Component extends (ParentComponent as any) {
 
                     this.component.fileMinSize = uploads.fileMinSize;
                     this.component.fileMaxSize = uploads.fileMaxSize;
-                    this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(cfg.apiPath)}/${remSlash(uploads.path)}`;
+                    const urls = {
+                        uploadUrl: `/${remSlash(cfg.basePath)}/${remSlash(cfg.apiPath)}/${remSlash(uploads.path)}`,
+                        downloadUrl:  `/${remSlash(cfg.basePath)}/${remSlash(uploads.path)}`
+                    }
+                    this.component.options = {...this.component.options,  ...urls}
                     // no idea what to do with this yet...
                     this._enabled = uploads.enabled;
+                    // set the default url to be for uploads.
+                    this.component.url = urls.uploadUrl;
                 }
             }
         } catch (e) {};

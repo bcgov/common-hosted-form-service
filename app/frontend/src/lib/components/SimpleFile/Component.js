@@ -57,9 +57,15 @@ var Component = /** @class */ (function (_super) {
                     var uploads = cfg.uploads;
                     _this.component.fileMinSize = uploads.fileMinSize;
                     _this.component.fileMaxSize = uploads.fileMaxSize;
-                    _this.component.url = "/" + remSlash(cfg.basePath) + "/" + remSlash(cfg.apiPath) + "/" + remSlash(uploads.path);
+                    var urls = {
+                        uploadUrl: "/" + remSlash(cfg.basePath) + "/" + remSlash(cfg.apiPath) + "/" + remSlash(uploads.path),
+                        downloadUrl: "/" + remSlash(cfg.basePath) + "/" + remSlash(uploads.path)
+                    };
+                    _this.component.options = __assign(__assign({}, _this.component.options), urls);
                     // no idea what to do with this yet...
                     _this._enabled = uploads.enabled;
+                    // set the default url to be for uploads.
+                    _this.component.url = urls.uploadUrl;
                 }
             }
         }

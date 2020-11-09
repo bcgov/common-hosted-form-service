@@ -86,15 +86,12 @@ var chefs = function (formio) {
                     _a.name = name,
                     _a.dir = dir,
                     _a), options, progressCallback).then(function (response) {
-                    // Store the project and form url along with the metadata.
                     response.data = response.data || {};
-                    //response.data.baseUrl = formio.projectUrl;
-                    //response.data.project = form ? form.project : '';
-                    //response.data.form = form ? form._id : '';
+                    var downloadUrl = options.downloadUrl ? options.downloadUrl : '/app/files';
                     return {
                         storage: 'chefs',
                         name: response.data.originalname,
-                        url: url + "/" + response.data.id,
+                        url: downloadUrl + "?f=" + response.data.id,
                         size: response.data.size,
                         type: response.data.mimetype,
                         data: { id: response.data.id }
