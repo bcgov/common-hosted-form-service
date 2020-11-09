@@ -35,11 +35,7 @@
         :mandatory="false"
         :rules="loginRequiredRules"
       >
-        <v-radio
-          disabled
-          label="Public (anonymous)"
-          :value="ID_MODE.PUBLIC"
-        />
+        <v-radio disabled label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
         <v-radio label="Log-in Required" value="login"></v-radio>
         <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6 mb-2">
           <v-checkbox
@@ -75,6 +71,78 @@
           You can specify users on the form's management screen once created.
         </v-row>
       </v-radio-group>
+
+      <v-checkbox v-model="showSubmissionConfirmation">
+        <template #label>
+          Show the submission confirmation details
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                help_outline
+              </v-icon>
+            </template>
+            <span>
+              Selecting this option controls what the submitting user of this
+              form will see on successful submission. <br />
+              If checked, it will display
+              <ul>
+                <li>the Confirmation ID</li>
+                <li>
+                  the option for the user to email themselves a submission
+                  confirmation
+                </li>
+              </ul>
+            </span>
+          </v-tooltip>
+        </template>
+      </v-checkbox>
+
+      <v-checkbox v-model="sendSubRecieviedEmail">
+        <template #label>
+          Send my team a notification email when a user submits our form
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                help_outline
+              </v-icon>
+            </template>
+            <span>
+              Send a notification to your specified email address when any user
+              submits this form
+            </span>
+          </v-tooltip>
+        </template>
+      </v-checkbox>
+
+      <v-combobox
+        v-if="sendSubRecieviedEmail"
+        v-model="submissionReceivedEmails"
+        :rules="emailArrayRules"
+        dense
+        flat
+        solid
+        outlined
+        hide-selected
+        clearable
+        hint="Add one or more valid email addresses"
+        label="Notification Email Addresses"
+        multiple
+        small-chips
+        deletable-chips
+        :delimiters="[' ', ',']"
+        append-icon=""
+      >
+        <template v-slot:no-data>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>
+                Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to
+                add multiple email addresses
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+      </v-combobox>
     </v-container>
   </v-skeleton-loader>
 </template>
@@ -82,7 +150,7 @@
 <script>
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { IdentityMode, IdentityProviders } from '@/utils/constants';
+import { IdentityMode, IdentityProviders, Regex } from '@/utils/constants';
 
 export default {
   name: 'FormSettings',
@@ -108,6 +176,16 @@ export default {
         (v) => !!v || 'Name is required',
         (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
       ],
+      emailArrayRules: [
+        (v) =>
+          !this.sendSubRecieviedEmail ||
+          v.length > 0 ||
+          'Please enter at least 1 email address',
+        (v) =>
+          !this.sendSubRecieviedEmail ||
+          v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
+          'Please enter all valid email addresses',
+      ],
     };
   },
   computed: {
@@ -116,6 +194,9 @@ export default {
       'form.id',
       'form.idps',
       'form.name',
+      'form.sendSubRecieviedEmail',
+      'form.showSubmissionConfirmation',
+      'form.submissionReceivedEmails',
       'form.userType',
     ]),
     ID_MODE() {
