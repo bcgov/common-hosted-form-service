@@ -166,4 +166,20 @@ export default {
   exportSubmissions(formId, minDate, maxDate) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export?format=csv&type=submissions${minDate ? `&minDate=${minDate}` : ''}${maxDate ? `&maxDate=${maxDate}` : ''}`, { responseType: 'blob', });
   },
+
+
+  //
+  // Email
+  //
+
+  /**
+  * @function requestReceiptEmail
+  * Send a receipt email
+  * @param {string} submissionId The submission uuid
+  * @param {Object} requestBody The body for the api call: { to }
+  * @returns {Promise} An axios response
+  */
+  requestReceiptEmail(submissionId, requestBody) {
+    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/email`, requestBody);
+  },
 };
