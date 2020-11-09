@@ -6,6 +6,7 @@ describe('Constants', () => {
       FORMS: '/forms',
       RBAC: '/rbac',
       ROLES: '/roles',
+      SUBMISSION: '/submissions',
       USERS: '/users'
     });
   });

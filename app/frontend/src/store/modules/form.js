@@ -10,6 +10,9 @@ const genInitialForm = () => ({
   idps: [],
   isDirty: false,
   name: '',
+  sendSubRecieviedEmail: false,
+  showSubmissionConfirmation: true,
+  submissionReceivedEmails: [],
   userType: 'team'
 });
 
@@ -144,6 +147,7 @@ export default {
         const identityProviders = parseIdps(data.identityProviders);
         data.idps = identityProviders.idps;
         data.userType = identityProviders.userType;
+        data.sendSubRecieviedEmail = data.submissionReceivedEmails && data.submissionReceivedEmails.length;
         commit('SET_FORM', data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -166,13 +170,21 @@ export default {
     },
     async updateForm({ state, dispatch }) {
       try {
+        const emailList =
+          state.form.sendSubRecieviedEmail &&
+            state.form.submissionReceivedEmails &&
+            Array.isArray(state.form.submissionReceivedEmails)
+            ? state.form.submissionReceivedEmails
+            : [];
         await formService.updateForm(state.form.id, {
           name: state.form.name,
           description: state.form.description,
           identityProviders: generateIdps({
             idps: state.form.idps,
             userType: state.form.userType,
-          })
+          }),
+          showSubmissionConfirmation: state.form.showSubmissionConfirmation,
+          submissionReceivedEmails: emailList
         });
       } catch (error) {
         dispatch('notifications/addNotification', {
