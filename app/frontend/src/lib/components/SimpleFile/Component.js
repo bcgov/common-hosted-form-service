@@ -108,9 +108,12 @@ var Component = /** @class */ (function (_super) {
     });
     Component.prototype.deleteFile = function (fileInfo) {
         var _a = this.component.options, options = _a === void 0 ? {} : _a;
-        var fileService = this.fileService;
-        if (fileInfo && fileService && typeof fileService.deleteFile === 'function') {
-            fileService.deleteFile(fileInfo, options);
+        var Provider = Formio.Providers.getProvider('storage', this.component.storage);
+        if (Provider) {
+            var provider = new Provider(this);
+            if (fileInfo && provider && typeof provider.deleteFile === 'function') {
+                provider.deleteFile(fileInfo, options);
+            }
         }
     };
     Component.prototype.upload = function (files) {
