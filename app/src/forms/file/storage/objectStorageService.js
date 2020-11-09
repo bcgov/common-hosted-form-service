@@ -70,12 +70,15 @@ class ObjectStorageService {
         Bucket: this._bucket,
         Key: key,
         Body: fileContent,
-        ContentType: mime.contentType(path.extname(fileStorage.originalName)),
         Metadata: {
           'name': fileStorage.originalName,
           'id': fileStorage.id
         }
       };
+
+      if (mime.contentType(path.extname(fileStorage.originalName))) {
+        params.ContentType = mime.contentType(path.extname(fileStorage.originalName));
+      }
 
       return new Promise((resolve, reject) => {
         // eslint-disable-next-line no-unused-vars
