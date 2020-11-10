@@ -53,7 +53,7 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
-            <span>Manage</span>
+            <span class="d-none d-sm-flex">Manage</span>
           </v-btn>
         </router-link>
         <router-link
@@ -62,7 +62,7 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">remove_red_eye</v-icon>
-            <span>View Submissions</span>
+            <span class="d-none d-sm-flex">View Submissions</span>
           </v-btn>
         </router-link>
         <router-link
@@ -75,7 +75,7 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">note_add</v-icon>
-            <span>Launch</span>
+            <span class="d-none d-sm-flex">Launch</span>
           </v-btn>
         </router-link>
       </template>
