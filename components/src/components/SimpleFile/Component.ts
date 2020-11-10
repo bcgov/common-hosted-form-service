@@ -64,15 +64,10 @@ export default class Component extends (ParentComponent as any) {
 
                     this.component.fileMinSize = uploads.fileMinSize;
                     this.component.fileMaxSize = uploads.fileMaxSize;
-                    const urls = {
-                        uploadUrl: `/${remSlash(cfg.basePath)}/${remSlash(cfg.apiPath)}/${remSlash(uploads.path)}`,
-                        downloadUrl:  `/${remSlash(cfg.basePath)}/${remSlash(uploads.path)}`
-                    }
-                    this.component.options = {...this.component.options,  ...urls}
+                    // set the default url to be for uploads.
+                    this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(cfg.apiPath)}/${remSlash(uploads.path)}`;
                     // no idea what to do with this yet...
                     this._enabled = uploads.enabled;
-                    // set the default url to be for uploads.
-                    this.component.url = urls.uploadUrl;
                 }
             }
         } catch (e) {};
@@ -207,24 +202,11 @@ export default class Component extends (ParentComponent as any) {
         if (!fileService) {
             return alert('File Service not provided');
         }
-        if (this.component.privateDownload) {
-            fileInfo.private = true;
-        }
-        fileService.downloadFile(fileInfo, options).then((file) => {
-            if (file) {
-                if (['base64', 'indexeddb'].includes(file.storage)) {
-                    // @ts-ignore
-                    download(file.url, file.originalName || file.name, file.type);
-                }
-                else {
-                    window.open(file.url, '_blank');
-                }
-            }
-        })
-            .catch((response) => {
-                // Is alert the best way to do this?
-                // User is expecting an immediate notification due to attempting to download a file.
-                alert(response);
-            });
+        fileService.downloadFile(fileInfo, options)
+        .catch((response) => {
+            // Is alert the best way to do this?
+            // User is expecting an immediate notification due to attempting to download a file.
+            alert(response);
+        });
     }
 }
