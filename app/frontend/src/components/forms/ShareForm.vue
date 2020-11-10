@@ -1,12 +1,22 @@
 <template>
   <span>
-    <v-dialog v-model="dialog" width="900">
+    <v-tooltip bottom>
       <template #activator="{ on, attrs }">
-        <v-btn color="primary" icon v-bind="attrs" v-on="on">
+        <v-btn
+          class="mx-1"
+          color="primary"
+          @click="dialog = true"
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
           <v-icon class="mr-1">share</v-icon>
         </v-btn>
       </template>
+      <span>Share Form</span>
+    </v-tooltip>
 
+    <v-dialog v-model="dialog" width="900">
       <v-card>
         <v-card-title class="headline pb-0">Share Link</v-card-title>
         <v-card-text>

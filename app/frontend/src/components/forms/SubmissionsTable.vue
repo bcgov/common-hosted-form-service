@@ -1,10 +1,18 @@
 <template>
   <div>
-    <v-row>
+    <v-row class="mt-6" no-gutters>
       <v-col cols="12" sm="6">
+        <h1>Submissions</h1>
+      </v-col>
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="6">
         <ExportSubmissions />
       </v-col>
-      <v-col cols="12" sm="6">
+    </v-row>
+
+    <v-row no-gutters>
+      <v-spacer />
+      <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
@@ -13,7 +21,7 @@
             label="Search"
             single-line
             hide-details
-            class="pb-5 pt-0 mt-0"
+            class="pb-5"
           />
         </div>
       </v-col>
