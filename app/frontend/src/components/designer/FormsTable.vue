@@ -1,16 +1,27 @@
 <template>
   <div>
-    <v-row>
+    <v-row class="mt-6" no-gutters>
       <v-col cols="12" sm="6">
-        <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">add_circle</v-icon>
-            <span>Create a New Form</span>
-          </v-btn>
-        </router-link>
+        <h1>My Forms</h1>
       </v-col>
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="6">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
+              <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+                <v-icon>add_circle</v-icon>
+              </v-btn>
+            </router-link>
+          </template>
+          <span>Create a New Form</span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
 
-      <v-col cols="12" sm="6">
+    <v-row no-gutters>
+      <v-spacer />
+      <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field

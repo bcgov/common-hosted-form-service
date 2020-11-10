@@ -1,25 +1,29 @@
 <template>
   <div>
     <v-row class="mt-6" no-gutters>
-      <v-col cols="12" sm="4">
-        <h1 class="inline">Team Management</h1>
+      <v-col cols="12" sm="6">
+        <h1>Team Management</h1>
       </v-col>
       <v-spacer />
-      <v-col sm="4" class="pt-0">
-        <!-- search input -->
-        <div class>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            hide-details
-            dense
-          />
-        </div>
+      <v-col class="text-sm-right" cols="12" sm="6">
+        <AddTeamMember @new-users="addNewUsers" />
       </v-col>
     </v-row>
 
-    <AddTeamMember @new-users="addNewUsers" />
+    <v-row no-gutters>
+      <v-spacer />
+      <v-col cols="12" sm="4">
+        <!-- search input -->
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+          class="pb-5"
+        />
+      </v-col>
+    </v-row>
 
     <!-- team table -->
     <v-data-table
@@ -96,6 +100,7 @@
       "
       @continue-dialog="removeUser"
     >
+      <template #title>Confirm Removal</template>
       <template #text>
         Are you sure you want to remove this team member?
       </template>

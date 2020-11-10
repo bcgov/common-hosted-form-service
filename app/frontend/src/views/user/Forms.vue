@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1 class="my-6 text-center">My Forms</h1>
     <FormsTable />
   </div>
 </template>

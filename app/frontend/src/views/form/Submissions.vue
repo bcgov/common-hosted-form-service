@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1 class="my-6 text-center">Submissions</h1>
     <SubmissionsTable :formId="f" />
   </div>
 </template>
