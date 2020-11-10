@@ -98,11 +98,10 @@ const chefs = (formio) => {
           dir
         }, options, progressCallback).then(response => {
           response.data = response.data || {};
-          const downloadUrl = options.downloadUrl ? options.downloadUrl : '/app/files';
           return {
             storage: 'chefs',
             name: response.data.originalname,
-            url: `${downloadUrl}?f=${response.data.id}`,
+            url: `${url}/${response.data.id}`,
             size: response.data.size,
             type: response.data.mimetype,
             data: {id: response.data.id}
@@ -134,16 +133,41 @@ const chefs = (formio) => {
       });
     },
     downloadFile(file, options) {
-      if (file.private) {
-        if (formio.submissionId && file.data) {
-          file.data.submission = formio.submissionId;
-        }
-        // @ts-ignore
-        return xhrRequest(file.url, file.name, {}, JSON.stringify(file), options).then(response => response.data);
-      }
+      return new NativePromise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', file.url, true);
+        addHeaders(xhr, options);
+        xhr.responseType = 'blob';
+        xhr.onload = function (event) {
+          const blob = xhr.response;
+          let fileName;
+          const contentType = xhr.getResponseHeader('content-type');
 
-      // Return the original as there is nothing to do.
-      return NativePromise.resolve(file);
+          // IE/EDGE doesn't send all response headers
+          if (xhr.getResponseHeader('content-disposition')) {
+            const contentDisposition = xhr.getResponseHeader('content-disposition');
+            fileName = contentDisposition.substring(contentDisposition.indexOf('=')+1);
+          } else {
+            fileName = 'unnamed.' + contentType.substring(contentType.indexOf('/')+1);
+          }
+
+          if (window.navigator.msSaveOrOpenBlob) {
+            // Internet Explorer
+            window.navigator.msSaveOrOpenBlob(new Blob([blob], {type: contentType}), fileName);
+          } else {
+            const url = window.URL.createObjectURL(blob);
+            let el = document.createElement('a');
+            // @ts-ignore
+            el.href = url;
+            // @ts-ignore
+            el.download = fileName;
+            el.click();
+            window.URL.revokeObjectURL(url);
+            el.remove();
+          }
+        };
+        xhr.send();
+      });
     }
   };
 };

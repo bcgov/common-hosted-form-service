@@ -57,15 +57,10 @@ var Component = /** @class */ (function (_super) {
                     var uploads = cfg.uploads;
                     _this.component.fileMinSize = uploads.fileMinSize;
                     _this.component.fileMaxSize = uploads.fileMaxSize;
-                    var urls = {
-                        uploadUrl: "/" + remSlash(cfg.basePath) + "/" + remSlash(cfg.apiPath) + "/" + remSlash(uploads.path),
-                        downloadUrl: "/" + remSlash(cfg.basePath) + "/" + remSlash(uploads.path)
-                    };
-                    _this.component.options = __assign(__assign({}, _this.component.options), urls);
+                    // set the default url to be for uploads.
+                    _this.component.url = "/" + remSlash(cfg.basePath) + "/" + remSlash(cfg.apiPath) + "/" + remSlash(uploads.path);
                     // no idea what to do with this yet...
                     _this._enabled = uploads.enabled;
-                    // set the default url to be for uploads.
-                    _this.component.url = urls.uploadUrl;
                 }
             }
         }
@@ -232,20 +227,7 @@ var Component = /** @class */ (function (_super) {
         if (!fileService) {
             return alert('File Service not provided');
         }
-        if (this.component.privateDownload) {
-            fileInfo.private = true;
-        }
-        fileService.downloadFile(fileInfo, options).then(function (file) {
-            if (file) {
-                if (['base64', 'indexeddb'].includes(file.storage)) {
-                    // @ts-ignore
-                    download(file.url, file.originalName || file.name, file.type);
-                }
-                else {
-                    window.open(file.url, '_blank');
-                }
-            }
-        })
+        fileService.downloadFile(fileInfo, options)
             .catch(function (response) {
             // Is alert the best way to do this?
             // User is expecting an immediate notification due to attempting to download a file.

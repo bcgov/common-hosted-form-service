@@ -87,11 +87,10 @@ var chefs = function (formio) {
                     _a.dir = dir,
                     _a), options, progressCallback).then(function (response) {
                     response.data = response.data || {};
-                    var downloadUrl = options.downloadUrl ? options.downloadUrl : '/app/files';
                     return {
                         storage: 'chefs',
                         name: response.data.originalname,
-                        url: downloadUrl + "?f=" + response.data.id,
+                        url: url + "/" + response.data.id,
                         size: response.data.size,
                         type: response.data.mimetype,
                         data: { id: response.data.id }
@@ -123,15 +122,41 @@ var chefs = function (formio) {
             });
         },
         downloadFile: function (file, options) {
-            if (file.private) {
-                if (formio.submissionId && file.data) {
-                    file.data.submission = formio.submissionId;
-                }
-                // @ts-ignore
-                return xhrRequest(file.url, file.name, {}, JSON.stringify(file), options).then(function (response) { return response.data; });
-            }
-            // Return the original as there is nothing to do.
-            return NativePromise.resolve(file);
+            return new NativePromise(function (resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', file.url, true);
+                addHeaders(xhr, options);
+                xhr.responseType = 'blob';
+                xhr.onload = function (event) {
+                    var blob = xhr.response;
+                    var fileName;
+                    var contentType = xhr.getResponseHeader('content-type');
+                    // IE/EDGE doesn't send all response headers
+                    if (xhr.getResponseHeader('content-disposition')) {
+                        var contentDisposition = xhr.getResponseHeader('content-disposition');
+                        fileName = contentDisposition.substring(contentDisposition.indexOf('=') + 1);
+                    }
+                    else {
+                        fileName = 'unnamed.' + contentType.substring(contentType.indexOf('/') + 1);
+                    }
+                    if (window.navigator.msSaveOrOpenBlob) {
+                        // Internet Explorer
+                        window.navigator.msSaveOrOpenBlob(new Blob([blob], { type: contentType }), fileName);
+                    }
+                    else {
+                        var url = window.URL.createObjectURL(blob);
+                        var el = document.createElement('a');
+                        // @ts-ignore
+                        el.href = url;
+                        // @ts-ignore
+                        el.download = fileName;
+                        el.click();
+                        window.URL.revokeObjectURL(url);
+                        el.remove();
+                    }
+                };
+                xhr.send();
+            });
         }
     };
 };
