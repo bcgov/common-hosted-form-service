@@ -1,9 +1,10 @@
 <template>
   <div>
     <v-row class="mt-6">
-      <v-col cols="12" sm="8">
+      <v-col cols="12" sm="4">
         <h1 class="inline">Team Management</h1>
       </v-col>
+      <v-spacer />
       <v-col sm="4" class="pt-0">
         <!-- search input -->
         <div class>
@@ -12,7 +13,6 @@
             append-icon="mdi-magnify"
             label="Search"
             hide-details
-            outlined
             dense
           />
         </div>
@@ -26,6 +26,7 @@
       class="team-table"
       :headers="headers"
       :items="tableData"
+      :key="updateTableKey"
       :loading="loading || updating"
       loading-text="Loading... Please wait"
       no-data-text="Failed to load team role data"
@@ -48,6 +49,14 @@
                 @click="onCheckboxToggle(item.userId)"
                 :disabled="updating"
               />
+              <v-btn
+                v-else-if="header.value === 'actions'"
+                @click="onRemoveClick(item.userId)"
+                color="red"
+                icon
+              >
+                <v-icon>remove_circle</v-icon>
+              </v-btn>
               <div v-else>{{ item[header.value] }}</div>
             </div>
           </td>
@@ -61,14 +70,39 @@
             <v-checkbox
               v-if="typeof item[header.value] === 'boolean'"
               v-model="item[header.value]"
-              @click="onCheckboxToggle(item.userId)"
+              @click="onCheckboxToggle(item.userId, header.value)"
               :disabled="updating"
             />
+            <v-btn
+              v-else-if="header.value === 'actions'"
+              @click="onRemoveClick(item.userId)"
+              color="red"
+              icon
+            >
+              <v-icon>remove_circle</v-icon>
+            </v-btn>
             <div v-else>{{ item[header.value] }}</div>
           </td>
         </tr>
       </template>
     </v-data-table>
+
+    <BaseDialog
+      v-model="showDeleteDialog"
+      type="CONTINUE"
+      @close-dialog="
+        showDeleteDialog = false;
+        userId = '';
+      "
+      @continue-dialog="removeUser"
+    >
+      <template #text>
+        Are you sure you want to remove this team member?
+      </template>
+      <template #button-text-continue>
+        <span>Remove</span>
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
@@ -92,8 +126,6 @@ export default {
   },
   computed: {
     roleOrder: () => Object.values(FormRoleCodes),
-    validTableData: () =>
-      this.tableData.length && this.tableData.some((user) => user.owner),
   },
   data() {
     return {
@@ -103,7 +135,10 @@ export default {
       loading: true,
       roleList: [],
       search: '',
+      showDeleteDialog: false,
       tableData: [],
+      userId: '',
+      updateTableKey: 0,
       updating: false,
     };
   },
@@ -115,7 +150,7 @@ export default {
           // if user isnt already in the table
           if (!this.tableData.some((obj) => obj.userId === user.id)) {
             // create new object for table row
-            const row = {
+            this.tableData.push({
               formId: this.formId,
               userId: user.id,
               form_submitter: false,
@@ -125,31 +160,44 @@ export default {
               owner: false,
               fullName: user.fullName,
               username: user.username,
-            };
-            // add to beginning of table
-            this.tableData.unshift(row);
+            });
           }
         });
       }
+    },
+    canRemoveOwner(userId) {
+      if (
+        this.tableData.reduce((acc, user) => (user.owner ? acc + 1 : acc), 0) <
+        2
+      ) {
+        this.addNotification({
+          message: 'There must always be at least one form owner',
+          consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+        });
+        return false;
+      }
+      return true;
     },
     createHeaders() {
       const headers = [
         { text: 'Full Name', value: 'fullName', className: '' },
         { text: 'Username', value: 'username', className: '' },
       ];
-      this.headers = headers.concat(
-        this.roleList
-          .map((role) => ({
-            filterable: false,
-            text: role.display,
-            value: role.code,
-          }))
-          .sort((a, b) =>
-            this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
-              ? 1
-              : -1
-          )
-      );
+      this.headers = headers
+        .concat(
+          this.roleList
+            .map((role) => ({
+              filterable: false,
+              text: role.display,
+              value: role.code,
+            }))
+            .sort((a, b) =>
+              this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
+                ? 1
+                : -1
+            )
+        )
+        .concat({ text: '', value: 'actions', className: '' });
     },
     createTableData() {
       this.tableData = this.formUsers.map((user) => {
@@ -194,35 +242,57 @@ export default {
         console.error(`Error getting list of roles: ${error}`); // eslint-disable-line no-console
       }
     },
-    onCheckboxToggle(userId) {
+    onCheckboxToggle(userId, header) {
+      const ownerCount = this.tableData.reduce(
+        (acc, user) => (user.owner ? acc + 1 : acc),
+        0
+      );
+      const index = this.tableData.findIndex((u) => u.userId === userId);
+      if (header === 'owner' && ownerCount === 0) {
+        // Rollback attempted last owner removal and exit
+        if (!this.tableData[index].owner) {
+          this.tableData[index].owner = true;
+          this.updateTableKey += 1;
+          this.ownerError(userId);
+          return;
+        }
+      }
       this.edited = true;
       this.setUserForms(userId);
     },
-    removeUser(userId) {
+    onRemoveClick(userId) {
+      const ownerCount = this.tableData.reduce(
+        (acc, user) => (user.owner ? acc + 1 : acc),
+        0
+      );
       const index = this.tableData.findIndex((u) => u.userId === userId);
 
-      if (
-        this.tableData[index].owner &&
-        this.tableData.reduce((acc, user) => (user.owner ? acc + 1 : acc), 0) <
-          2
-      ) {
-        this.addNotification({
-          message: 'There must always be at least one form owner',
-          consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
-        });
-        return;
+      if (this.tableData[index].owner && ownerCount === 1) {
+        this.ownerError(userId);
+      } else {
+        this.userId = userId;
+        this.showDeleteDialog = true;
       }
-
-      // TODO: Consider dialog box to confirm removal of user before executing?
+    },
+    ownerError(userId) {
+      this.addNotification({
+        message: 'There must always be at least one form owner',
+        consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+      });
+    },
+    removeUser() {
+      this.showDeleteDialog = false;
       this.edited = true;
 
       // Set all of userId's roles to false
+      const index = this.tableData.findIndex((u) => u.userId === this.userId);
       this.roleList.forEach(
         (role) => (this.tableData[index][role.code] = false)
       );
 
-      this.setUserForms(userId);
-      this.tableData = this.tableData.filter((u) => u.userId !== userId);
+      this.setUserForms(this.userId);
+      this.tableData = this.tableData.filter((u) => u.userId !== this.userId);
+      this.userId = '';
     },
     /**
      * @function setFormUsers
@@ -265,7 +335,7 @@ export default {
           userId: userId,
         });
         await this.getFormUsers();
-        this.createTableData(); // Force refresh table based on latest API response
+        // this.createTableData(); // Force refresh table based on latest API response
       } catch (error) {
         this.addNotification({
           message:
