@@ -1,15 +1,16 @@
 <template>
   <div>
-    <v-row no-gutters>
-      <v-col cols="12" sm="4">
+    <v-row class="mt-6" no-gutters>
+      <v-col cols="12" sm="6">
         <h1>Form Design</h1>
         <h3 v-if="name">{{ name }}</h3>
       </v-col>
       <v-spacer />
-      <v-col class="text-sm-right" cols="12" sm="4">
+      <v-col class="text-sm-right" cols="12" sm="6">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
+              class="mx-1"
               @click="submitFormSchema"
               color="primary"
               icon
@@ -24,6 +25,7 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
+              class="mx-1"
               @click="onExportClick"
               color="primary"
               icon
@@ -38,6 +40,7 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
+              class="mx-1"
               @click="$refs.uploader.click()"
               color="primary"
               icon
@@ -58,17 +61,18 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              :disabled="!formId"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+            <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+              <v-btn
+                class="mx-1"
+                color="primary"
+                :disabled="!formId"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
                 <v-icon>settings</v-icon>
-              </router-link>
-            </v-btn>
+              </v-btn>
+            </router-link>
           </template>
           <span>Form Settings</span>
         </v-tooltip>

@@ -33,19 +33,19 @@
         {{ item.date | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
-        <v-btn color="textLink" text small>
-          <router-link
-            :to="{
-              name: 'FormView',
-              query: {
-                s: item.submissionId,
-              },
-            }"
-          >
+        <router-link
+          :to="{
+            name: 'FormView',
+            query: {
+              s: item.submissionId,
+            },
+          }"
+        >
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>VIEW</span>
-          </router-link>
-        </v-btn>
+          </v-btn>
+        </router-link>
       </template>
     </v-data-table>
   </div>
@@ -70,10 +70,7 @@ export default {
     return {
       headers: [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
-        { text: 'Submission Date',
-          align: 'start',
-          value: 'date'
-        },
+        { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
         {
           text: 'Actions',

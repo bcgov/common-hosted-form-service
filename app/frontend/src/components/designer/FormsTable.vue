@@ -2,12 +2,12 @@
   <div>
     <v-row>
       <v-col cols="12" sm="6">
-        <v-btn color="primary" text small>
-          <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
+        <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">add_circle</v-icon>
             <span>Create a New Form</span>
-          </router-link>
-        </v-btn>
+          </v-btn>
+        </router-link>
       </v-col>
 
       <v-col cols="12" sm="6">
@@ -36,30 +36,37 @@
       loading-text="Loading... Please wait"
     >
       <template #[`item.actions`]="{ item }">
-        <v-btn v-if="checkFormManage(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormManage', query: { f: item.id } }">
+        <router-link
+          v-if="checkFormManage(item)"
+          :to="{ name: 'FormManage', query: { f: item.id } }"
+        >
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
             <span>Manage</span>
-          </router-link>
-        </v-btn>
-        <v-btn v-if="checkSubmissionView(item)" color="textLink" text small>
-          <router-link :to="{ name: 'FormSubmissions', query: { f: item.id } }">
+          </v-btn>
+        </router-link>
+        <router-link
+          v-if="checkSubmissionView(item)"
+          :to="{ name: 'FormSubmissions', query: { f: item.id } }"
+        >
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">remove_red_eye</v-icon>
             <span>View Submissions</span>
-          </router-link>
-        </v-btn>
-        <v-btn v-if="checkFormSubmit(item)" color="textLink" text small>
-          <router-link
-            :to="{
-              name: 'FormSubmit',
-              query: { f: item.id },
-            }"
-            target="_blank"
-          >
+          </v-btn>
+        </router-link>
+        <router-link
+          v-if="checkFormSubmit(item)"
+          :to="{
+            name: 'FormSubmit',
+            query: { f: item.id },
+          }"
+          target="_blank"
+        >
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">note_add</v-icon>
             <span>Launch</span>
-          </router-link>
-        </v-btn>
+          </v-btn>
+        </router-link>
       </template>
     </v-data-table>
   </div>
