@@ -1,15 +1,16 @@
 <template>
   <div>
-    <v-row no-gutters class="mb-5">
-      <v-col cols="12" sm="8">
+    <v-row no-gutters class="my-6">
+      <v-col cols="12" sm="6">
         <h1>Manage Form</h1>
       </v-col>
-      <v-col cols="12" sm="4" class="text-sm-right">
-        <span class="ml-5">
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="6">
+        <span class="mx-1">
           <ShareForm :formId="f" :versionId="currentVersion.id" />
         </span>
 
-        <span v-if="canManageTeam" class="ml-5">
+        <span v-if="canManageTeam" class="mx-1">
           <router-link :to="{ name: 'FormTeams', query: { f: f } }">
             <v-btn icon color="primary">
               <v-icon>group</v-icon>
@@ -17,7 +18,7 @@
           </router-link>
         </span>
 
-        <span v-if="canDeleteForm" class="ml-5">
+        <span v-if="canDeleteForm" class="mx-1">
           <v-btn icon color="red" @click="showDeleteDialog = true">
             <v-icon>delete</v-icon>
           </v-btn>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row class="mt-6">
+    <v-row class="mt-6" no-gutters>
       <v-col cols="12" sm="4">
         <h1 class="inline">Team Management</h1>
       </v-col>
@@ -180,8 +180,8 @@ export default {
     },
     createHeaders() {
       const headers = [
-        { text: 'Full Name', value: 'fullName', className: '' },
-        { text: 'Username', value: 'username', className: '' },
+        { text: 'Full Name', value: 'fullName' },
+        { text: 'Username', value: 'username' },
       ];
       this.headers = headers
         .concat(
@@ -197,7 +197,7 @@ export default {
                 : -1
             )
         )
-        .concat({ text: '', value: 'actions', className: '' });
+        .concat({ text: '', value: 'actions', width: '1rem' });
     },
     createTableData() {
       this.tableData = this.formUsers.map((user) => {
