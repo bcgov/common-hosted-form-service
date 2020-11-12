@@ -23,7 +23,7 @@
       <h1 data-test="btn-header-title" class="font-weight-bold title">
         {{ appTitle }}
       </h1>
-      <v-chip class="ma-2" color="green" text-color="white">
+      <v-chip v-if="!hideNavBar" class="ma-2" color="green" text-color="white">
         Beta
       </v-chip>
       <v-spacer />
