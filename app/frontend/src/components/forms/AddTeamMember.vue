@@ -1,6 +1,6 @@
 <template>
-  <div class="new-member-div mb-5">
-    <div v-if="addingUsers" class="d-flex justify-end">
+  <span>
+    <span v-if="addingUsers" class="d-flex justify-end">
       <v-autocomplete
         v-model="model"
         clearable
@@ -52,9 +52,8 @@
       <v-btn outlined class="ml-2" @click="addingUsers = false">
         <span>Cancel</span>
       </v-btn>
-    </div>
-
-    <div v-else>
+    </span>
+    <span v-else>
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
           <v-btn
@@ -70,8 +69,8 @@
         </template>
         <span>Add a New Member</span>
       </v-tooltip>
-    </div>
-  </div>
+    </span>
+  </span>
 </template>
 
 <script>

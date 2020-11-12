@@ -47,16 +47,24 @@
               {{ header.text }}
             </div>
             <div class="v-data-table__mobile-row__cell">
-              <v-checkbox
-                v-if="typeof item[header.value] === 'boolean'"
-                v-model="item[header.value]"
-                @click="onCheckboxToggle(item.userId)"
-                :disabled="updating"
-              />
+              <div v-if="typeof item[header.value] === 'boolean'">
+                <v-checkbox
+                  v-if="isSubmitterTeam(header.value, userType)"
+                  v-model="item[header.value]"
+                  disabled
+                />
+                <v-checkbox
+                  v-else
+                  v-model="item[header.value]"
+                  @click="onCheckboxToggle(item.userId, header.value)"
+                  :disabled="updating"
+                />
+              </div>
               <v-btn
                 v-else-if="header.value === 'actions'"
                 @click="onRemoveClick(item.userId)"
                 color="red"
+                :disabled="updating"
                 icon
               >
                 <v-icon>remove_circle</v-icon>
@@ -71,16 +79,24 @@
             :key="header.value"
             :class="{ 'role-col': typeof item[header.value] === 'boolean' }"
           >
-            <v-checkbox
-              v-if="typeof item[header.value] === 'boolean'"
-              v-model="item[header.value]"
-              @click="onCheckboxToggle(item.userId, header.value)"
-              :disabled="updating"
-            />
+            <div v-if="typeof item[header.value] === 'boolean'">
+              <v-checkbox
+                v-if="isSubmitterTeam(header.value, userType)"
+                v-model="item[header.value]"
+                disabled
+              />
+              <v-checkbox
+                v-else
+                v-model="item[header.value]"
+                @click="onCheckboxToggle(item.userId, header.value)"
+                :disabled="updating"
+              />
+            </div>
             <v-btn
               v-else-if="header.value === 'actions'"
               @click="onRemoveClick(item.userId)"
               color="red"
+              :disabled="updating"
               icon
             >
               <v-icon>remove_circle</v-icon>
@@ -113,9 +129,10 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { mapFields } from 'vuex-map-fields';
 
 import { rbacService, roleService } from '@/services';
-import { FormRoleCodes } from '@/utils/constants';
+import { FormRoleCodes, IdentityMode } from '@/utils/constants';
 import AddTeamMember from '@/components/forms/AddTeamMember.vue';
 
 export default {
@@ -130,6 +147,7 @@ export default {
     },
   },
   computed: {
+    ...mapFields('form', ['form.userType']),
     roleOrder: () => Object.values(FormRoleCodes),
   },
   data() {
@@ -247,6 +265,8 @@ export default {
         console.error(`Error getting list of roles: ${error}`); // eslint-disable-line no-console
       }
     },
+    isSubmitterTeam: (header, userType) =>
+      header === FormRoleCodes.FORM_SUBMITTER && userType === IdentityMode.TEAM,
     onCheckboxToggle(userId, header) {
       const ownerCount = this.tableData.reduce(
         (acc, user) => (user.owner ? acc + 1 : acc),
