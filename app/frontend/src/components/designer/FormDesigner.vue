@@ -74,7 +74,7 @@
               </v-btn>
             </router-link>
           </template>
-          <span>Form Settings</span>
+          <span>Manage Form</span>
         </v-tooltip>
       </v-col>
     </v-row>
