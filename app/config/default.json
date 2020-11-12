@@ -5,6 +5,26 @@
     "port": "5432",
     "username": "app"
   },
+  "files": {
+    "uploads": {
+      "enabled": "true",
+      "fileCount": "1",
+      "fileKey": "files",
+      "fileMaxSize": "25MB",
+      "fileMinSize": "0KB",
+      "path": "files"
+    },
+    "permanent": "objectStorage",
+    "localStorage" : {
+      "path": ""
+    },
+    "objectStorage": {
+      "accessKeyId": "nr-iit-showcase",
+      "bucket": "egejyy",
+      "endpoint": "https://nrs.objectstore.gov.bc.ca",
+      "key": "chefs/dev/"
+    }
+  },
   "frontend": {
     "apiPath": "api/v1",
     "basePath" : "/app",

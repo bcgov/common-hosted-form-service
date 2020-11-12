@@ -44,7 +44,10 @@ app.use(keycloak.middleware());
 apiRouter.use('/config', (_req, res, next) => {
   try {
     const frontend = config.get('frontend');
-    res.status(200).json(frontend);
+    // we will need to pass
+    const uploads = config.get('files.uploads');
+    const feConfig = {...frontend, uploads: uploads };
+    res.status(200).json(feConfig);
   } catch (err) {
     next(err);
   }

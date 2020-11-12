@@ -1,4 +1,4 @@
-const { Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 
 const Permissions = require('../common/constants').Permissions;
@@ -242,6 +242,18 @@ const service = {
         await FormSubmissionUser.query(trx).insert(items);
       }
 
+      // does this submission contain any file uploads?
+      // if so, we need to update the file storage records.
+      // use the schema to determine if there are uploads, fetch the ids from the submission data...
+      const fileIds = formVersion.schema.components
+        .filter(x => x.type === 'simplefile')
+        .flatMap(x => data.submission.data[x.key])
+        .map(x => x.data.id);
+
+      for (const fileId of fileIds) {
+        await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: obj.id, updatedBy: currentUser.username });
+      }
+
       await trx.commit();
       const result = await service.readSubmission(obj.id);
       return result;
@@ -259,6 +271,7 @@ const service = {
 
       // TODO: check if we can update this submission
       // TODO: we may have to update permissions for users (draft = false, then no delete?)
+      // TODO: deal with attachments?
 
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
       await trx.commit();

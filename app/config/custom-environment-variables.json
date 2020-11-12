@@ -6,6 +6,28 @@
     "port": "DB_PORT",
     "username": "DB_USERNAME"
   },
+  "files": {
+    "uploads": {
+      "dir": "FILES_UPLOADS_DIR",
+      "enabled": "FILES_UPLOADS_ENABLED",
+      "fileCount": "FILES_UPLOADS_FILECOUNT",
+      "fileKey": "FILES_UPLOADS_FILEKEY",
+      "fileMaxSize": "FILES_UPLOADS_FILEMAXSIZE",
+      "fileMinSize": "FILES_UPLOADS_FILEMINSIZE",
+      "path": "FILES_UPLOADS_PATH"
+    },
+    "permanent": "FILES_PERMANENT",
+    "localStorage" : {
+      "path": "FILES_LOCALSTORAGE_PATH"
+    },
+    "objectStorage": {
+      "accessKeyId": "FILES_OBJECTSTORAGE_ACCESSKEYID",
+      "bucket": "FILES_OBJECTSTORAGE_BUCKET",
+      "endpoint": "FILES_OBJECTSTORAGE_ENDPOINT",
+      "key": "FILES_OBJECTSTORAGE_KEY",
+      "secretAccessKey": "FILES_OBJECTSTORAGE_SECRETACCESSKEY"
+    }
+  },
   "frontend": {
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "FRONTEND_BASEPATH",

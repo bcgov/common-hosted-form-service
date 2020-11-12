@@ -57,8 +57,8 @@ const service = {
 
     const isDeleted = result.submission.deleted;
     const isDraft = result.submission.draft;
-    const publicAllowed = result.form.identityProviders.find(p => p.code === 'public');
-    const idpAllowed = result.form.identityProviders.find(p => p.code === currentUser.idp);
+    const publicAllowed = result.form.identityProviders.find(p => p.code === 'public') !== undefined;
+    const idpAllowed = result.form.identityProviders.find(p => p.code === currentUser.idp) !== undefined;
 
     // check against the public and user's identity provider permissions...
     if (!isDraft && !isDeleted) {

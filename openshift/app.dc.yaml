@@ -164,6 +164,16 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-sc-cs-secret"
+                - name: FILES_OBJECTSTORAGE_ACCESSKEYID
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: "${APP_NAME}-objectstorage-secret"
+                - name: FILES_OBJECTSTORAGE_SECRETACCESSKEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: "${APP_NAME}-objectstorage-secret"
               envFrom:
                 - configMapRef:
                     name: "${APP_NAME}-frontend-config"
@@ -171,6 +181,8 @@ objects:
                     name: "${APP_NAME}-sc-config"
                 - configMapRef:
                     name: "${APP_NAME}-server-config"
+                - configMapRef:
+                    name: "${APP_NAME}-files-config"
   #            volumeMounts:
   #              - mountPath: "${DATA_DIR}"
   #                name: app-data

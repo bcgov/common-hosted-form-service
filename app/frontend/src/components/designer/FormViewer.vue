@@ -15,7 +15,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import Vue from 'vue';
+import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
 import { formService } from '@/services';
@@ -45,12 +46,22 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('auth', ['token']),
     viewerOptions() {
       return {
         readOnly: this.readOnly || this.submissionId !== undefined,
         hooks: {
           beforeSubmit: this.onBeforeSubmit,
         },
+        // pass in options for custom components to use
+        componentOptions: {
+          simplefile: {
+            config: Vue.prototype.$config,
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          }
+        }
       };
     },
   },
