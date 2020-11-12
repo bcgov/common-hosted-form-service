@@ -1,26 +1,50 @@
 <template>
   <div>
-    <v-row no-gutters class="mb-5">
-      <v-col cols="12" sm="8">
+    <v-row class="my-6" no-gutters>
+      <v-col cols="12" sm="6">
         <h1>Manage Form</h1>
       </v-col>
-      <v-col cols="12" sm="4" class="text-sm-right">
-        <span class="ml-5">
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="6">
+        <span>
           <ShareForm :formId="f" :versionId="currentVersion.id" />
         </span>
 
-        <span v-if="canManageTeam" class="ml-5">
-          <router-link :to="{ name: 'FormTeams', query: { f: f } }">
-            <v-btn icon color="primary">
-              <v-icon>group</v-icon>
-            </v-btn>
-          </router-link>
+        <span v-if="canManageTeam">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link :to="{ name: 'FormTeams', query: { f: f } }">
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>group</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>Team Management</span>
+          </v-tooltip>
         </span>
 
-        <span v-if="canDeleteForm" class="ml-5">
-          <v-btn icon color="red" @click="showDeleteDialog = true">
-            <v-icon>delete</v-icon>
-          </v-btn>
+        <span v-if="canDeleteForm">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                class="mx-1"
+                color="red"
+                @click="showDeleteDialog = true"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </template>
+            <span>Delete Form</span>
+          </v-tooltip>
 
           <BaseDialog
             v-model="showDeleteDialog"
@@ -31,11 +55,11 @@
             <template #title>Confirm Deletion</template>
             <template #text>
               Are you sure you wish to delete
-              <strong>{{ form.name }}</strong>?
-              This form will no longer be accessible.
+              <strong>{{ form.name }}</strong
+              >? This form will no longer be accessible.
             </template>
             <template #button-text-continue>
-              <span>DELETE</span>
+              <span>Delete</span>
             </template>
           </BaseDialog>
         </span>
@@ -189,9 +213,7 @@ export default {
       return this.permissions.includes(FormPermissions.DESIGN_CREATE);
     },
     canDeleteForm() {
-      return (
-        this.permissions.includes(FormPermissions.FORM_DELETE)
-      );
+      return this.permissions.includes(FormPermissions.FORM_DELETE);
     },
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
