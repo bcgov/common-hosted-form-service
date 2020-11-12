@@ -23,7 +23,7 @@
       <h1 data-test="btn-header-title" class="font-weight-bold title">
         {{ appTitle }}
       </h1>
-      <v-chip class="ma-2" color="green" text-color="white">
+      <v-chip v-if="!hideBetaChip" class="ma-2" color="green" text-color="white">
         Beta
       </v-chip>
       <v-spacer />
@@ -41,6 +41,10 @@ export default {
         ? this.$route.meta.title
         : process.env.VUE_APP_TITLE;
     },
+    hideBetaChip() {
+      // Temp while we have this chip in, hide it for form submitter pages
+      return this.$route && this.$route.meta && this.$route.meta.hideNavBar;
+    }
   },
 };
 </script>

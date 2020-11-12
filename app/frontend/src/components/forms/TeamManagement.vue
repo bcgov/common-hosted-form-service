@@ -1,31 +1,57 @@
 <template>
   <div>
-    <v-row class="mt-6">
-      <v-col cols="12" sm="8">
-        <h1 class="inline">Team Management</h1>
+    <v-row class="mt-6" no-gutters>
+      <v-col cols="12" sm="6">
+        <h1>Team Management</h1>
       </v-col>
-      <v-col sm="4" class="pt-0">
-        <!-- search input -->
-        <div class>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            hide-details
-            outlined
-            dense
-          />
-        </div>
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="6">
+        <span>
+          <AddTeamMember @adding-users="addingUsers" @new-users="addNewUsers" />
+        </span>
+        <span v-if="!isAddingUsers">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  :disabled="!formId"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>settings</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>Manage Form</span>
+          </v-tooltip>
+        </span>
       </v-col>
     </v-row>
 
-    <AddTeamMember @new-users="addNewUsers" />
+    <v-row no-gutters>
+      <v-spacer />
+      <v-col cols="12" sm="4">
+        <!-- search input -->
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+          class="pb-5"
+        />
+      </v-col>
+    </v-row>
 
     <!-- team table -->
     <v-data-table
       class="team-table"
       :headers="headers"
       :items="tableData"
+      :key="updateTableKey"
       :loading="loading || updating"
       loading-text="Loading... Please wait"
       no-data-text="Failed to load team role data"
@@ -33,15 +59,37 @@
     >
       <template #item="{ item, isMobile, headers }">
         <tr v-if="isMobile" class="v-data-table__mobile-table-row">
-          <td v-for="header in headers" :key="header.value" class="v-data-table__mobile-row">
-            <div class="v-data-table__mobile-row__header">{{ header.text }}</div>
+          <td
+            v-for="header in headers"
+            :key="header.value"
+            class="v-data-table__mobile-row"
+          >
+            <div class="v-data-table__mobile-row__header">
+              {{ header.text }}
+            </div>
             <div class="v-data-table__mobile-row__cell">
-              <v-checkbox
-                v-if="typeof item[header.value] === 'boolean'"
-                v-model="item[header.value]"
-                @click="onCheckboxToggle(item.userId)"
+              <div v-if="typeof item[header.value] === 'boolean'">
+                <v-checkbox
+                  v-if="isSubmitterTeam(header.value, userType)"
+                  v-model="item[header.value]"
+                  disabled
+                />
+                <v-checkbox
+                  v-else
+                  v-model="item[header.value]"
+                  @click="onCheckboxToggle(item.userId, header.value)"
+                  :disabled="updating"
+                />
+              </div>
+              <v-btn
+                v-else-if="header.value === 'actions'"
+                @click="onRemoveClick(item.userId)"
+                color="red"
                 :disabled="updating"
-              />
+                icon
+              >
+                <v-icon>remove_circle</v-icon>
+              </v-btn>
               <div v-else>{{ item[header.value] }}</div>
             </div>
           </td>
@@ -52,25 +100,60 @@
             :key="header.value"
             :class="{ 'role-col': typeof item[header.value] === 'boolean' }"
           >
-            <v-checkbox
-              v-if="typeof item[header.value] === 'boolean'"
-              v-model="item[header.value]"
-              @click="onCheckboxToggle(item.userId)"
+            <div v-if="typeof item[header.value] === 'boolean'">
+              <v-checkbox
+                v-if="isSubmitterTeam(header.value, userType)"
+                v-model="item[header.value]"
+                disabled
+              />
+              <v-checkbox
+                v-else
+                v-model="item[header.value]"
+                @click="onCheckboxToggle(item.userId, header.value)"
+                :disabled="updating"
+              />
+            </div>
+            <v-btn
+              v-else-if="header.value === 'actions'"
+              @click="onRemoveClick(item.userId)"
+              color="red"
               :disabled="updating"
-            />
+              icon
+            >
+              <v-icon>remove_circle</v-icon>
+            </v-btn>
             <div v-else>{{ item[header.value] }}</div>
           </td>
         </tr>
       </template>
     </v-data-table>
+
+    <BaseDialog
+      v-model="showDeleteDialog"
+      type="CONTINUE"
+      @close-dialog="
+        showDeleteDialog = false;
+        userId = '';
+      "
+      @continue-dialog="removeUser"
+    >
+      <template #title>Confirm Removal</template>
+      <template #text>
+        Are you sure you want to remove this team member?
+      </template>
+      <template #button-text-continue>
+        <span>Remove</span>
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
+import { mapFields } from 'vuex-map-fields';
 
 import { rbacService, roleService } from '@/services';
-import { FormRoleCodes } from '@/utils/constants';
+import { FormRoleCodes, IdentityMode } from '@/utils/constants';
 import AddTeamMember from '@/components/forms/AddTeamMember.vue';
 
 export default {
@@ -85,6 +168,7 @@ export default {
     },
   },
   computed: {
+    ...mapFields('form', ['form.userType']),
     roleOrder: () => Object.values(FormRoleCodes),
   },
   data() {
@@ -92,56 +176,76 @@ export default {
       edited: false, // Does the table align with formUsers?
       headers: [],
       formUsers: [],
+      isAddingUsers: false,
       loading: true,
       roleList: [],
       search: '',
+      showDeleteDialog: false,
       tableData: [],
+      userId: '',
+      updateTableKey: 0,
       updating: false,
     };
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    addingUsers(adding) {
+      this.isAddingUsers = adding;
+    },
     addNewUsers(users) {
       if (Array.isArray(users) && users.length) {
         users.forEach((user) => {
           // if user isnt already in the table
-          if(!this.tableData.some((obj) => obj.userId === user.id)) {
+          if (!this.tableData.some((obj) => obj.userId === user.id)) {
             // create new object for table row
-            const row = {
-              formId : this.formId,
-              userId : user.id,
-              form_submitter : false,
-              form_designer : false,
-              submission_reviewer : false,
-              team_manager : false,
-              owner : false,
+            this.tableData.push({
+              formId: this.formId,
+              userId: user.id,
+              form_submitter: false,
+              form_designer: false,
+              submission_reviewer: false,
+              team_manager: false,
+              owner: false,
               fullName: user.fullName,
-              username: user.username
-            };
-            // add to beginning of table
-            this.tableData.unshift(row);
+              username: user.username,
+            });
           }
         });
       }
     },
+    canRemoveOwner(userId) {
+      if (
+        this.tableData.reduce((acc, user) => (user.owner ? acc + 1 : acc), 0) <
+        2
+      ) {
+        this.addNotification({
+          message: 'There must always be at least one form owner',
+          consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+        });
+        return false;
+      }
+      return true;
+    },
     createHeaders() {
       const headers = [
-        { text: 'Full Name', value: 'fullName', className: '' },
-        { text: 'Username', value: 'username', className: '' },
+        { text: 'Full Name', value: 'fullName' },
+        { text: 'Username', value: 'username' },
       ];
-      this.headers = headers.concat(
-        this.roleList
-          .map((role) => ({
-            filterable: false,
-            text: role.display,
-            value: role.code,
-          }))
-          .sort((a, b) =>
-            this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
-              ? 1
-              : -1
-          )
-      );
+      this.headers = headers
+        .concat(
+          this.roleList
+            .map((role) => ({
+              filterable: false,
+              text: role.display,
+              value: role.code,
+            }))
+            .sort((a, b) =>
+              this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
+                ? 1
+                : -1
+            )
+        )
+        .concat({ text: '', value: 'actions', width: '1rem' });
     },
     createTableData() {
       this.tableData = this.formUsers.map((user) => {
@@ -186,20 +290,59 @@ export default {
         console.error(`Error getting list of roles: ${error}`); // eslint-disable-line no-console
       }
     },
-    onCheckboxToggle(userId) {
+    isSubmitterTeam: (header, userType) =>
+      header === FormRoleCodes.FORM_SUBMITTER && userType === IdentityMode.TEAM,
+    onCheckboxToggle(userId, header) {
+      const ownerCount = this.tableData.reduce(
+        (acc, user) => (user.owner ? acc + 1 : acc),
+        0
+      );
+      const index = this.tableData.findIndex((u) => u.userId === userId);
+      if (header === 'owner' && ownerCount === 0) {
+        // Rollback attempted last owner removal and exit
+        if (!this.tableData[index].owner) {
+          this.tableData[index].owner = true;
+          this.updateTableKey += 1;
+          this.ownerError(userId);
+          return;
+        }
+      }
       this.edited = true;
       this.setUserForms(userId);
     },
-    removeUser(userId) {
-      // TODO: Consider dialog box to confirm removal of user before executing?
+    onRemoveClick(userId) {
+      const ownerCount = this.tableData.reduce(
+        (acc, user) => (user.owner ? acc + 1 : acc),
+        0
+      );
+      const index = this.tableData.findIndex((u) => u.userId === userId);
+
+      if (this.tableData[index].owner && ownerCount === 1) {
+        this.ownerError(userId);
+      } else {
+        this.userId = userId;
+        this.showDeleteDialog = true;
+      }
+    },
+    ownerError(userId) {
+      this.addNotification({
+        message: 'There must always be at least one form owner',
+        consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+      });
+    },
+    removeUser() {
+      this.showDeleteDialog = false;
       this.edited = true;
 
       // Set all of userId's roles to false
-      const index = this.tableData.findIndex(u => u.userId === userId);
-      this.roleList.forEach(role => this.tableData[index][role.code] = false);
+      const index = this.tableData.findIndex((u) => u.userId === this.userId);
+      this.roleList.forEach(
+        (role) => (this.tableData[index][role.code] = false)
+      );
 
-      this.setUserForms(userId);
-      this.tableData = this.tableData.filter(u => u.userId !== userId);
+      this.setUserForms(this.userId);
+      this.tableData = this.tableData.filter((u) => u.userId !== this.userId);
+      this.userId = '';
     },
     /**
      * @function setFormUsers
@@ -209,7 +352,9 @@ export default {
     async setFormUsers() {
       this.updating = true;
       try {
-        const userRoles = this.tableData.map((user) => this.generateFormRoleUsers(user)).flat();
+        const userRoles = this.tableData
+          .map((user) => this.generateFormRoleUsers(user))
+          .flat();
         await rbacService.setFormUsers(userRoles, {
           formId: this.formId,
         });
@@ -233,14 +378,14 @@ export default {
     async setUserForms(userId) {
       this.updating = true;
       try {
-        const user = this.tableData.filter(u => u.userId === userId)[0];
+        const user = this.tableData.filter((u) => u.userId === userId)[0];
         const userRoles = this.generateFormRoleUsers(user);
         await rbacService.setUserForms(userRoles, {
           formId: this.formId,
           userId: userId,
         });
         await this.getFormUsers();
-        this.createTableData(); // Force refresh table based on latest API response
+        // this.createTableData(); // Force refresh table based on latest API response
       } catch (error) {
         this.addNotification({
           message:

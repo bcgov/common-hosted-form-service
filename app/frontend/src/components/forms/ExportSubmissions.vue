@@ -1,13 +1,26 @@
 <template>
   <span>
-    <v-dialog v-model="dialog" width="900" content-class="export-submissions-dlg">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn color="primary" text small v-bind="attrs" v-on="on">
-          <v-icon class="mr-1">cloud_download</v-icon>
-          <span>Export CSV</span>
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          class="mx-1"
+          @click="dialog = true"
+          color="primary"
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>cloud_download</v-icon>
         </v-btn>
       </template>
+      <span>Export CSV</span>
+    </v-tooltip>
 
+    <v-dialog
+      v-model="dialog"
+      width="900"
+      content-class="export-submissions-dlg"
+    >
       <v-card>
         <v-card-title class="headline pb-0">Export CSV</v-card-title>
         <v-card-text>
@@ -120,7 +133,9 @@ export default {
       dateRange: false,
       dialog: false,
       endDate: '',
+      endDateMenu: false,
       startDate: '',
+      startDateMenu: false,
     };
   },
   computed: {
@@ -149,7 +164,9 @@ export default {
           to
         );
         if (response && response.data) {
-          const blob = new Blob([response.data], {type: response.headers['content-type']});
+          const blob = new Blob([response.data], {
+            type: response.headers['content-type'],
+          });
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;

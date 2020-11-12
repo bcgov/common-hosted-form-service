@@ -12,6 +12,6 @@ describe('Submissions.vue', () => {
       stubs: ['SubmissionsTable']
     });
 
-    expect(wrapper.html()).toMatch('Submissions');
+    expect(wrapper.html()).toMatch('submissionstable');
   });
 });

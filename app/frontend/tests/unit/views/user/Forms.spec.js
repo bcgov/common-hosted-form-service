@@ -10,6 +10,6 @@ describe('Forms.vue', () => {
       stubs: ['FormsTable']
     });
 
-    expect(wrapper.text()).toMatch('My Forms');
+    expect(wrapper.html()).toMatch('formstable');
   });
 });
