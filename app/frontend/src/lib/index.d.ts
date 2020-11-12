@@ -13,6 +13,7 @@ declare const _default: {
         simpleday: typeof import("./components/SimpleDay/Component").default;
         simpleemail: typeof import("./components/SimpleEmail/Component").default;
         simplefieldset: typeof import("./components/SimpleFieldSet/Component").default;
+        simplefile: typeof import("./components/SimpleFile/Component").default;
         simpleheading: typeof import("./components/SimpleHeading/Component").default;
         simplenumber: typeof import("./components/SimpleNumber/Component").default;
         simplepanel: typeof import("./components/SimplePanel/Component").default;
@@ -24,6 +25,20 @@ declare const _default: {
         simpletextarea: typeof import("./components/SimpleTextArea/Component").default;
         simpletextfield: typeof import("./components/SimpleTextField/Component").default;
         simpletime: typeof import("./components/SimpleTime/Component").default;
+    };
+    providers: {
+        storage: {
+            chefs: {
+                (formio: any): {
+                    title: string;
+                    name: string;
+                    uploadFile(file: any, name: any, dir: any, progressCallback: any, url: any, options: any, fileKey: any): any;
+                    deleteFile(fileInfo: any, options: any): any;
+                    downloadFile(file: any, options: any): any;
+                };
+                title: string;
+            };
+        };
     };
 };
 export default _default;

@@ -12,6 +12,7 @@ import simpledatetime from './SimpleDateTime/Component';
 import simpleday from './SimpleDay/Component';
 import simpleemail from './SimpleEmail/Component';
 import simplefieldset from './SimpleFieldSet/Component';
+import simplefile from './SimpleFile/Component';
 import simpleheading from './SimpleHeading/Component';
 import simplenumber from './SimpleNumber/Component';
 import simplepanel from './SimplePanel/Component';
@@ -38,6 +39,7 @@ export default {
   simpleday,
   simpleemail,
   simplefieldset,
+  simplefile,
   simpleheading,
   simplenumber,
   simplepanel,

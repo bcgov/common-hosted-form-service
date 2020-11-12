@@ -443,6 +443,24 @@ a,
     @extend :disabled;
     background-color: rgba(0, 0, 0, 0.12);
   }
+  // the drag/drop area needs to line up with vuetify v-application ul styles...
+  .formio-component-file .fileSelector {
+    margin-left: 24px;
+  }
+}
+
+.form-wrapper {
+   // the drag/drop area needs to line up with vuetify v-application ul styles...
+  .formio-component-file {
+    .fileSelector {
+      margin-left: 24px;
+    }
+    .file {
+      .row {
+        margin-left: 24px;
+      }
+    }
+  }
 }
 
 // formio component buttons
@@ -459,3 +477,5 @@ a,
   color: white;
   background: $bcgov-blue;
 }
+
+
