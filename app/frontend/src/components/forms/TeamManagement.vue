@@ -7,6 +7,23 @@
       <v-spacer />
       <v-col class="text-sm-right" cols="12" sm="6">
         <AddTeamMember @new-users="addNewUsers" />
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+              <v-btn
+                class="mx-1"
+                color="primary"
+                :disabled="!formId"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>settings</v-icon>
+              </v-btn>
+            </router-link>
+          </template>
+          <span>Manage Form</span>
+        </v-tooltip>
       </v-col>
     </v-row>
 

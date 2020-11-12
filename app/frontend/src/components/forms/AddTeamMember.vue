@@ -127,11 +127,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.new-member-div {
-  .v-autocomplete {
-    max-width: 450px;
-  }
-}
-</style>
