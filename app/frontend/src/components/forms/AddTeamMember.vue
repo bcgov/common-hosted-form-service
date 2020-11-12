@@ -64,7 +64,7 @@
             v-bind="attrs"
             v-on="on"
           >
-            <v-icon>add_circle</v-icon>
+            <v-icon>person_add</v-icon>
           </v-btn>
         </template>
         <span>Add a New Member</span>
@@ -109,11 +109,12 @@ export default {
     },
   },
   watch: {
+    addingUsers() {
+      this.$emit('adding-users', this.addingUsers);
+    },
     // Get a list of user objects from database
     async searchUsers(input) {
-      if (!input) {
-        return;
-      }
+      if (!input) return;
       this.isLoading = true;
       try {
         const response = await userService.getUsers({ search: input });
