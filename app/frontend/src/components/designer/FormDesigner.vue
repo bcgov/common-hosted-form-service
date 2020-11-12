@@ -184,8 +184,7 @@ export default {
                 simpletime: true,
                 simplecheckbox: true,
                 simplecheckboxes: true,
-                simpleradios: true,
-                simplefile: true
+                simpleradios: true
               },
             },
             layoutControls: {
