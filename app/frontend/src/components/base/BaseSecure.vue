@@ -41,7 +41,6 @@ export default {
     ...mapGetters('auth', [
       'authenticated',
       'createLoginUrl',
-      'isAdmin',
       'isUser',
       'keycloakReady',
     ]),
