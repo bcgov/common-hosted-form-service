@@ -29,12 +29,11 @@ describe('BaseSecure.vue', () => {
     window.location = location;
   });
 
-  it('renders nothing if authenticated, user, and admin', () => {
+  it('renders nothing if authenticated, user', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        isAdmin: () => true,
         isUser: () => true,
         keycloakReady: () => true
       }
@@ -45,32 +44,11 @@ describe('BaseSecure.vue', () => {
     expect(wrapper.text()).toMatch('');
   });
 
-  it('renders a message if authenticated, user and not admin', () => {
+  it('renders a message if authenticated, not user', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        isAdmin: () => false,
-        isUser: () => true,
-        keycloakReady: () => true
-      }
-    });
-
-    const wrapper = shallowMount(BaseSecure, {
-      localVue,
-      store,
-      stubs: ['router-link']
-    });
-
-    expect(wrapper.text()).toMatch('You are not authorized to use this feature.');
-  });
-
-  it('renders a message if authenticated, not user and not admin', () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => true,
-        isAdmin: () => false,
         isUser: () => false,
         keycloakReady: () => true
       }
