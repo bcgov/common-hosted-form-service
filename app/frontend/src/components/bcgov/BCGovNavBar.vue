@@ -8,7 +8,7 @@
         <li>
           <router-link :to="{ name: 'UserForms' }">My Forms</router-link>
         </li>
-        <li v-if="isAdmin">
+        <li>
           <router-link :to="{ name: 'FormCreate' }">Create a New Form</router-link>
         </li>
         <li v-if="isAdmin">
