@@ -1,4 +1,3 @@
-const config = require('config');
 const routes = require('express').Router();
 const currentUser = require('../auth/middleware/userAccess').currentUser;
 
