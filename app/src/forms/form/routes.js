@@ -1,4 +1,3 @@
-const config = require('config');
 const Problem = require('api-problem');
 const routes = require('express').Router();
 
@@ -7,13 +6,12 @@ const hasFormPermissions = require('../auth/middleware/userAccess').hasFormPermi
 const P = require('../common/constants').Permissions;
 
 const controller = require('./controller');
-const keycloak = require('../../components/keycloak');
 
 routes.get('/', currentUser, async (req, res, next) => {
   await controller.listForms(req, res, next);
 });
 
-routes.post('/', currentUser, keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
+routes.post('/', currentUser, async (req, res, next) => {
   await controller.createForm(req, res, next);
 });
 
