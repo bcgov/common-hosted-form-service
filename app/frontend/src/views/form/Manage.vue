@@ -205,10 +205,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAdmin']),
     ...mapGetters('form', ['form', 'permissions']),
 
-    // Permission checks, for right now some of these are restriced to app admins only until a later release
+    // Permission checks
     canCreateDesign() {
       return this.permissions.includes(FormPermissions.DESIGN_CREATE);
     },
@@ -219,9 +218,7 @@ export default {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
     canManageTeam() {
-      return (
-        this.isAdmin && this.permissions.includes(FormPermissions.TEAM_READ)
-      );
+      return this.permissions.includes(FormPermissions.TEAM_READ);
     },
 
     currentVersion() {
