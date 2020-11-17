@@ -92,7 +92,11 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "submit" */ '@/views/form/Submit.vue'),
             meta: {
               breadcrumbTitle: 'Submit Form',
-              hideNavBar: true
+              hideNavBar: true,
+              hideTitle: true,
+              hideVersionChip: true,
+              dontPrintHeader: true,
+              dontPrintFooter: true
             },
             props: createProps
           },
@@ -102,7 +106,11 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "submit" */ '@/views/form/Success.vue'),
             meta: {
               breadcrumbTitle: 'Submit Success',
-              hideNavBar: true
+              hideNavBar: true,
+              hideTitle: true,
+              hideVersionChip: true,
+              dontPrintHeader: true,
+              dontPrintFooter: true
             },
             props: createProps
           },

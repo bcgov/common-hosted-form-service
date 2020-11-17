@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="gov-footer">
+  <v-footer :class="{'gov-footer': true, 'no-print': dontPrintFooter}">
     <v-btn text id="footer-home" href="https://www.gov.bc.ca/">
       <span>Home</span>
     </v-btn>
@@ -26,7 +26,13 @@
 
 <script>
 export default {
-  name: 'BCGovFooter'
+  name: 'BCGovFooter',
+  computed: {
+    dontPrintFooter() {
+      // don't include footer when printing some pages
+      return this.$route && this.$route.meta && this.$route.meta.dontPrintFooter;
+    }
+  },
 };
 </script>
 
@@ -54,6 +60,13 @@ export default {
     font-weight: normal;
     text-decoration: none;
     text-transform: none;
+  }
+
+  @media print {
+    &.no-print,
+    &.no-print ::v-deep * {
+      display: none !important;
+    }
   }
 }
 </style>
