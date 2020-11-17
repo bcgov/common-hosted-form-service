@@ -40,7 +40,8 @@ const hasFormPermissions = (permissions) => {
       // cannot find the currentUser... guess we don't have access... FAIL!
       return next(new Problem(401, {detail: 'Current user not found on request.'}));
     }
-    const formId = req.params.formId;
+    // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
+    const formId = req.params.formId || req.query.formId;
     if (!formId) {
       // cannot find the currentUser... guess we don't have access... FAIL!
       return next(new Problem(401, {detail: 'Form Id not found on request.'}));
