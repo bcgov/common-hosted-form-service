@@ -61,30 +61,7 @@
     <v-sheet class="help-highlight pa-5">
       <v-row justify="center">
         <v-col lg="8">
-          <h2 class="mb-5">
-            Disclaimer and statement of responsibility for Form Designers:
-          </h2>
-          <ul>
-            <li>
-              It is your responsibility to comply with Privacy laws governing
-              the collection, use and disclosure of personally identifiable
-              information.
-            </li>
-            <li>
-              Access to this form designer tool does not inherently grant
-              permission to collect, use or disclose any personally identifiable
-              information.
-            </li>
-            <li>
-              It is your responsibility to obtain consent to collect information
-              as required by law.
-            </li>
-            <li>
-              Before publishing or distributing your form you are required to
-              discuss the intention of the form with your Ministry Privacy
-              Officer and to complete assessments as required.
-            </li>
-          </ul>
+          <BaseDisclaimer />
         </v-col>
       </v-row>
     </v-sheet>
@@ -93,9 +70,13 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import BaseDisclaimer from '@/components/base/BaseDisclaimer.vue';
 
 export default {
   name: 'About',
+  components: {
+    BaseDisclaimer
+  },
   computed: mapGetters('auth', ['createLoginUrl']),
 };
 </script>
