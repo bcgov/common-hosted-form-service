@@ -70,7 +70,7 @@
             <div class="v-data-table__mobile-row__cell">
               <div v-if="typeof item[header.value] === 'boolean'">
                 <v-checkbox
-                  v-if="isSubmitterTeam(header.value, userType)"
+                  v-if="disableSubmitter(header.value, userType)"
                   v-model="item[header.value]"
                   disabled
                 />
@@ -102,7 +102,7 @@
           >
             <div v-if="typeof item[header.value] === 'boolean'">
               <v-checkbox
-                v-if="isSubmitterTeam(header.value, userType)"
+                v-if="disableSubmitter(header.value, userType)"
                 v-model="item[header.value]"
                 disabled
               />
@@ -262,6 +262,9 @@ export default {
       });
       this.edited = false;
     },
+    // Is this the submitter column, and does this form have login type other than TEAM
+    disableSubmitter: (header, userType) =>
+      header === FormRoleCodes.FORM_SUBMITTER && userType !== IdentityMode.TEAM,
     generateFormRoleUsers(user) {
       return Object.keys(user)
         .filter((role) => this.roleOrder.includes(role) && user[role])
@@ -290,8 +293,6 @@ export default {
         console.error(`Error getting list of roles: ${error}`); // eslint-disable-line no-console
       }
     },
-    isSubmitterTeam: (header, userType) =>
-      header === FormRoleCodes.FORM_SUBMITTER && userType === IdentityMode.TEAM,
     onCheckboxToggle(userId, header) {
       const ownerCount = this.tableData.reduce(
         (acc, user) => (user.owner ? acc + 1 : acc),
