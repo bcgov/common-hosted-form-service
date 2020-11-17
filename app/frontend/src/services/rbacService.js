@@ -42,7 +42,7 @@ export default {
 
   /**
    * @function getUserForms
-   * Get the list of forms for associated user
+   * Get the list of forms for associated user (admin use only at this point if needed, use /current for an actual user)
    * @param {Object} [params={}] The query parameters
    * @returns {Promise} An axios response
    */

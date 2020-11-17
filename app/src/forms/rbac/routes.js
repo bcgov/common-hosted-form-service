@@ -1,8 +1,11 @@
+const config = require('config');
 const routes = require('express').Router();
-const currentUser = require('../auth/middleware/userAccess').currentUser;
 
+const currentUser = require('../auth/middleware/userAccess').currentUser;
 const controller = require('./controller');
+const hasFormPermissions = require('../auth/middleware/userAccess').hasFormPermissions;
 const keycloak = require('../../components/keycloak');
+const P = require('../common/constants').Permissions;
 
 routes.use(currentUser);
 
@@ -14,41 +17,20 @@ routes.get('/idps', async (req, res, next) => {
   await controller.getIdentityProviders(req, res, next);
 });
 
-routes.get('/forms', async (req, res, next) => {
+routes.get('/forms', hasFormPermissions(P.TEAM_READ), async (req, res, next) => {
   await controller.getFormUsers(req, res, next);
 });
 
-routes.put('/forms', async (req, res, next) => {
+routes.put('/forms', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) => {
   await controller.setFormUsers(req, res, next);
 });
 
-routes.get('/users', async (req, res, next) => {
+routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.getUserForms(req, res, next);
 });
 
-routes.put('/users', async (req, res, next) => {
+routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) => {
   await controller.setUserForms(req, res, next);
 });
-
-routes.get('/', async (req, res, next) => {
-  await controller.list(req, res, next);
-});
-
-routes.post('/', async (req, res, next) => {
-  await controller.create(req, res, next);
-});
-
-routes.get('/:id', async (req, res, next) => {
-  await controller.read(req, res, next);
-});
-
-routes.put('/:id', async (req, res, next) => {
-  await controller.update(req, res, next);
-});
-
-routes.delete('/:id', async (req, res, next) => {
-  await controller.delete(req, res, next);
-});
-
 
 module.exports = routes;
