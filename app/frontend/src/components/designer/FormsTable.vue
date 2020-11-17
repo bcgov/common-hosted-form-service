@@ -8,7 +8,7 @@
       <v-col class="text-sm-right" cols="12" sm="6">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <router-link :to="{ name: 'FormCreate' }" v-if="isAdmin">
+            <router-link :to="{ name: 'FormCreate' }">
               <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                 <v-icon>add_circle</v-icon>
               </v-btn>
@@ -111,7 +111,6 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['formList']),
-    ...mapGetters('auth', ['isAdmin']),
   },
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),

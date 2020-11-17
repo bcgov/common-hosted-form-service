@@ -1,18 +1,7 @@
 <template>
   <div v-if="authenticated">
     <div v-if="isUser">
-      <div v-if="isAdmin">
-        <slot />
-      </div>
-      <div v-else class="text-center">
-        <h1 class="my-8">You are not authorized to use this feature.</h1>
-        <router-link :to="{ name: 'About' }">
-          <v-btn color="primary" class="about-btn" large>
-            <v-icon left>home</v-icon>
-            <span>About</span>
-          </v-btn>
-        </router-link>
-      </div>
+      <slot />
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
@@ -52,7 +41,6 @@ export default {
     ...mapGetters('auth', [
       'authenticated',
       'createLoginUrl',
-      'isAdmin',
       'isUser',
       'keycloakReady',
     ]),

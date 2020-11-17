@@ -20,6 +20,11 @@ const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 userAccess.currentUser = jest.fn((req, res, next) => {
   next();
 });
+userAccess.hasFormPermissions = jest.fn(() => {
+  return jest.fn((req, res, next) => {
+    next();
+  });
+});
 
 //
 // we will mock the underlying data service calls...
@@ -102,176 +107,6 @@ describe(`GET ${basePath}/idps`, () => {
     service.getIdentityProviders = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).get(`${basePath}/idps`);
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toBeTruthy();
-  });
-
-});
-
-describe(`GET ${basePath}`, () => {
-
-  it('should return 200', async () => {
-    // mock a success return value...
-    service.list = jest.fn().mockReturnValue([]);
-
-    const response = await request(app).get(`${basePath}`);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 401', async () => {
-    // mock an authentication/permission issue...
-    service.list = jest.fn(() => { throw new Problem(401); });
-
-    const response = await request(app).get(`${basePath}`);
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 500', async () => {
-    // mock an unexpected error...
-    service.list = jest.fn(() => { throw new Error(); });
-
-    const response = await request(app).get(`${basePath}`);
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toBeTruthy();
-  });
-
-});
-
-describe(`POST ${basePath}`, () => {
-
-  it('should return 201', async () => {
-    // mock a success return value...
-    service.create = jest.fn().mockReturnValue({});
-
-    const response = await request(app).post(`${basePath}`);
-
-    expect(response.statusCode).toBe(201);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 401', async () => {
-    // mock an authentication/permission issue...
-    service.create = jest.fn(() => { throw new Problem(401); });
-
-    const response = await request(app).post(`${basePath}`);
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 500', async () => {
-    // mock an unexpected error...
-    service.create = jest.fn(() => { throw new Error(); });
-
-    const response = await request(app).post(`${basePath}`);
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toBeTruthy();
-  });
-
-});
-
-describe(`GET ${basePath}/FormRoleUser`, () => {
-
-  it('should return 200', async () => {
-    // mock a success return value...
-    service.read = jest.fn().mockReturnValue([]);
-
-    const response = await request(app).get(`${basePath}/FormRoleUser`);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 401', async () => {
-    // mock an authentication/permission issue...
-    service.read = jest.fn(() => { throw new Problem(401); });
-
-    const response = await request(app).get(`${basePath}/FormRoleUser`);
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 500', async () => {
-    // mock an unexpected error...
-    service.read = jest.fn(() => { throw new Error(); });
-
-    const response = await request(app).get(`${basePath}/FormRoleUser`);
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toBeTruthy();
-  });
-
-});
-
-describe(`PUT ${basePath}/FormRoleUser`, () => {
-
-  it('should return 200', async () => {
-    // mock a success return value...
-    service.update = jest.fn().mockReturnValue([]);
-
-    const response = await request(app).put(`${basePath}/FormRoleUser`);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 401', async () => {
-    // mock an authentication/permission issue...
-    service.update = jest.fn(() => { throw new Problem(401); });
-
-    const response = await request(app).put(`${basePath}/FormRoleUser`);
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 500', async () => {
-    // mock an unexpected error...
-    service.update = jest.fn(() => { throw new Error(); });
-
-    const response = await request(app).put(`${basePath}/FormRoleUser`);
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toBeTruthy();
-  });
-
-});
-
-describe(`DELETE ${basePath}/FormRoleUser`, () => {
-
-  it('should return 200', async () => {
-    // mock a success return value...
-    service.delete = jest.fn().mockReturnValue(true);
-
-    const response = await request(app).delete(`${basePath}/FormRoleUser`);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 401', async () => {
-    // mock an authentication/permission issue...
-    service.delete = jest.fn(() => { throw new Problem(401); });
-
-    const response = await request(app).delete(`${basePath}/FormRoleUser`);
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 500', async () => {
-    // mock an unexpected error...
-    service.delete = jest.fn(() => { throw new Error(); });
-
-    const response = await request(app).delete(`${basePath}/FormRoleUser`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
