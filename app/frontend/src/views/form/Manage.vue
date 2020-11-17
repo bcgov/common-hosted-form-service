@@ -216,7 +216,7 @@ export default {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
     canManageTeam() {
-      return this.permissions.includes(FormPermissions.TEAM_READ);
+      return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
 
     currentVersion() {
