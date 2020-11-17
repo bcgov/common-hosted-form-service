@@ -199,7 +199,7 @@ export default function getRouter(basePath = '/') {
       && !router.app.$keycloak.authenticated) {
       const redirect = location.origin + basePath + to.path + location.search;
       const loginUrl = router.app.$keycloak.createLoginUrl({
-        //idpHint: 'idir',
+        idpHint: 'idir',
         redirectUri: redirect
       });
       window.location.replace(loginUrl);
