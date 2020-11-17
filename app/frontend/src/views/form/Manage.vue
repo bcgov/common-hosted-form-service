@@ -143,9 +143,7 @@
               <small>
                 Last Updated:
                 {{ currentVersion.updatedAt | formatDateLong }}
-                <span v-if="currentVersion.updatedBy">
-                  ({{ currentVersion.updatedBy }})
-                </span>
+                ({{ currentVersion.createdBy }})
               </small>
             </span>
           </div>
