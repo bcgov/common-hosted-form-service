@@ -27,7 +27,8 @@ export default {
   computed: {
     ...mapGetters('auth', ['isAdmin']),
     hideNavBar() {
-      return this.$route && this.$route.meta && this.$route.meta.hideNavBar;
+      // hide nav bar if user is on form submitter page
+      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
     }
   }
 };
