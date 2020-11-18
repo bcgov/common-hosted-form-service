@@ -13,10 +13,10 @@
           <v-form ref="settingsForm" v-model="settingsFormValid">
             <h1>Form Settings</h1>
             <FormSettings />
-            <v-card v-if="!settingsFormValid" outlined class="pa-4">
+            <v-card outlined class="pa-4">
               <FormDisclaimer />
             </v-card>
-            <v-checkbox :rules="disclaimerRules" required label="I agree to the disclaimer and statement of responsibility for Form Designers"></v-checkbox>
+            <v-checkbox class="mb-6" :rules="disclaimerRules" required label="I agree to the disclaimer and statement of responsibility for Form Designers"></v-checkbox>
           </v-form>
           <v-btn
             class="py-4"
