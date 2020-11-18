@@ -1,5 +1,5 @@
 <template>
-  <header :class="{'gov-header': true, 'd-print-none': hidePrintHeader}">
+  <header :class="{'gov-header': true, 'd-print-none': formSubmitMode}">
     <v-toolbar color="#003366" flat>
       <!-- Navbar content -->
       <a href="https://www2.gov.bc.ca" data-test="btn-header-logo">
@@ -20,10 +20,10 @@
           width="10rem"
         />
       </a>
-      <h1 v-if="!hideTitle" data-test="btn-header-title" class="font-weight-bold title">
+      <h1 v-if="!formSubmitMode" data-test="btn-header-title" class="font-weight-bold title">
         {{ appTitle }}
       </h1>
-      <v-chip v-if="!hideVersionChip" class="ma-2" color="green" text-color="white">Beta</v-chip>
+      <v-chip v-if="!formSubmitMode" class="ma-2" color="green" text-color="white">Beta</v-chip>
       <v-spacer />
       <BaseAuthButton />
     </v-toolbar>
@@ -39,17 +39,9 @@ export default {
         ? this.$route.meta.title
         : process.env.VUE_APP_TITLE;
     },
-    hideVersionChip() {
-      // Temp while we have this chip in, hide it for form submitter pages
-      return this.$route && this.$route.meta && this.$route.meta.hideVersionChip;
-    },
-    hideTitle() {
-      // hide title in header for some pages
-      return this.$route && this.$route.meta && this.$route.meta.hideTitle;
-    },
-    hidePrintHeader() {
-      // don't include header when printing some pages
-      return this.$route && this.$route.meta && this.$route.meta.hidePrintHeader;
+    formSubmitMode() {
+      // hide header content on form submitter pages
+      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
     }
   },
 };
