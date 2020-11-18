@@ -1,4 +1,4 @@
-<template>
+<template functional>
   <div>
     <h3 class="mb-5">Disclaimer and statement of responsibility for Form Designers:</h3>
     <ul>
