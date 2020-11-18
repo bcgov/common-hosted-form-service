@@ -13,15 +13,15 @@
           <v-form ref="settingsForm" v-model="settingsFormValid">
             <h1>Form Settings</h1>
             <FormSettings />
-            <v-card v-if="!agreedToDisclaimer" outlined class="pa-4">
+            <v-card v-if="!settingsFormValid" outlined class="pa-4">
               <FormDisclaimer />
             </v-card>
-            <v-checkbox v-model="agreedToDisclaimer" label="I agree to the disclaimer and statement of responsibility for Form Designers"></v-checkbox>
+            <v-checkbox :rules="disclaimerRules" required label="I agree to the disclaimer and statement of responsibility for Form Designers"></v-checkbox>
           </v-form>
           <v-btn
             class="py-4"
             color="primary"
-            :disabled="!settingsFormValid && !agreedToDisclaimer"
+            :disabled="!settingsFormValid"
             @click="creatorStep = 2"
           >
             <span>Continue</span>
@@ -60,7 +60,9 @@ export default {
     return {
       creatorStep: 1,
       settingsFormValid: false,
-      agreedToDisclaimer: false
+      disclaimerRules: [
+        (v) => !!v || 'You must agree to the privacy disclaimer shown above.'
+      ]
     };
   },
   methods: mapActions('form', ['resetForm']),
