@@ -95,8 +95,8 @@ export default function getRouter(basePath = '/') {
               hideNavBar: true,
               hideTitle: true,
               hideVersionChip: true,
-              dontPrintHeader: true,
-              dontPrintFooter: true
+              hidePrintHeader: true,
+              hidePrintFooter: true
             },
             props: createProps
           },
@@ -109,8 +109,8 @@ export default function getRouter(basePath = '/') {
               hideNavBar: true,
               hideTitle: true,
               hideVersionChip: true,
-              dontPrintHeader: true,
-              dontPrintFooter: true
+              hidePrintHeader: true,
+              hidePrintFooter: true
             },
             props: createProps
           },

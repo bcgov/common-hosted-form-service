@@ -61,7 +61,7 @@
     <v-sheet class="help-highlight pa-5">
       <v-row justify="center">
         <v-col lg="8">
-          <BaseDisclaimer />
+          <FormDisclaimer />
         </v-col>
       </v-row>
     </v-sheet>
@@ -70,12 +70,12 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import BaseDisclaimer from '@/components/base/BaseDisclaimer.vue';
+import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
 
 export default {
   name: 'About',
   components: {
-    BaseDisclaimer
+    FormDisclaimer
   },
   computed: mapGetters('auth', ['createLoginUrl']),
 };
