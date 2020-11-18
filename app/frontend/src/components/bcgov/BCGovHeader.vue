@@ -1,5 +1,5 @@
 <template>
-  <header :class="{'gov-header': true, 'no-print': dontPrintHeader}">
+  <header :class="{'gov-header': true, 'd-print-none': hidePrintHeader}">
     <v-toolbar color="#003366" flat>
       <!-- Navbar content -->
       <a href="https://www2.gov.bc.ca" data-test="btn-header-logo">
@@ -47,9 +47,9 @@ export default {
       // hide title in header for some pages
       return this.$route && this.$route.meta && this.$route.meta.hideTitle;
     },
-    dontPrintHeader() {
+    hidePrintHeader() {
       // don't include header when printing some pages
-      return this.$route && this.$route.meta && this.$route.meta.dontPrintHeader;
+      return this.$route && this.$route.meta && this.$route.meta.hidePrintHeader;
     }
   },
 };
@@ -68,13 +68,6 @@ export default {
     margin-bottom: 0;
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
       font-size: 1rem !important;
-    }
-  }
-
-  @media print {
-    &.no-print,
-    &.no-print ::v-deep * {
-      display: none !important;
     }
   }
 }

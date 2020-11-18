@@ -13,15 +13,15 @@
           <v-form ref="settingsForm" v-model="settingsFormValid">
             <h1>Form Settings</h1>
             <FormSettings />
+            <v-card v-if="!agreedToDisclaimer" outlined class="pa-4">
+              <FormDisclaimer />
+            </v-card>
+            <v-checkbox v-model="agreedToDisclaimer" label="I agree to the disclaimer and statement of responsibility for Form Designers"></v-checkbox>
           </v-form>
-          <v-card v-if="!AgreedToDisclaimer" outlined class="pa-4">
-            <BaseDisclaimer />
-          </v-card>
-          <v-checkbox v-model="AgreedToDisclaimer" :label="`I agree to the disclaimer and statement of responsibility for Form Designers`"></v-checkbox>
           <v-btn
             class="py-4"
             color="primary"
-            :disabled="!settingsFormValid && !AgreedToDisclaimer"
+            :disabled="!settingsFormValid && !agreedToDisclaimer"
             @click="creatorStep = 2"
           >
             <span>Continue</span>
@@ -45,7 +45,7 @@ import { mapFields } from 'vuex-map-fields';
 
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
-import BaseDisclaimer from '@/components/base/BaseDisclaimer.vue';
+import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
 import { IdentityMode } from '@/utils/constants';
 
 export default {
@@ -53,14 +53,14 @@ export default {
   components: {
     FormDesigner,
     FormSettings,
-    BaseDisclaimer
+    FormDisclaimer
   },
   computed: mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
   data() {
     return {
       creatorStep: 1,
       settingsFormValid: false,
-      AgreedToDisclaimer: false
+      agreedToDisclaimer: false
     };
   },
   methods: mapActions('form', ['resetForm']),
