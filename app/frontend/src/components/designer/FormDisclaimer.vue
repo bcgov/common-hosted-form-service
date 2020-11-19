@@ -27,6 +27,6 @@
 
 <script>
 export default {
-  name: 'BaseDisclaimer'
+  name: 'FormDisclaimer'
 };
 </script>

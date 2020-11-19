@@ -16,7 +16,7 @@
             <v-card outlined class="pa-4">
               <FormDisclaimer />
             </v-card>
-            <v-checkbox class="mb-6" :rules="disclaimerRules" required label="I agree to the disclaimer and statement of responsibility for Form Designers"></v-checkbox>
+            <v-checkbox class="mb-6" :rules="disclaimerRules" required label="I agree to the disclaimer and statement of responsibility for Form Designers" />
           </v-form>
           <v-btn
             class="py-4"
