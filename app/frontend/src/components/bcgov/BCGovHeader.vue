@@ -1,5 +1,5 @@
 <template>
-  <header class="gov-header">
+  <header :class="{'gov-header': true, 'd-print-none': formSubmitMode}">
     <v-toolbar color="#003366" flat>
       <!-- Navbar content -->
       <a href="https://www2.gov.bc.ca" data-test="btn-header-logo">
@@ -20,12 +20,10 @@
           width="10rem"
         />
       </a>
-      <h1 data-test="btn-header-title" class="font-weight-bold title">
+      <h1 v-if="!formSubmitMode" data-test="btn-header-title" class="font-weight-bold title">
         {{ appTitle }}
       </h1>
-      <v-chip v-if="!hideBetaChip" class="ma-2" color="green" text-color="white">
-        Beta
-      </v-chip>
+      <v-chip v-if="!formSubmitMode" class="ma-2" color="secondary" text-color="white">Beta</v-chip>
       <v-spacer />
       <BaseAuthButton />
     </v-toolbar>
@@ -41,9 +39,9 @@ export default {
         ? this.$route.meta.title
         : process.env.VUE_APP_TITLE;
     },
-    hideBetaChip() {
-      // Temp while we have this chip in, hide it for form submitter pages
-      return this.$route && this.$route.meta && this.$route.meta.hideNavBar;
+    formSubmitMode() {
+      // hide header content on form submitter pages
+      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
     }
   },
 };

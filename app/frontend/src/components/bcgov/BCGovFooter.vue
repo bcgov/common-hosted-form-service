@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="gov-footer">
+  <v-footer :class="{'gov-footer': true, 'd-print-none': formSubmitMode}">
     <v-btn text id="footer-home" href="https://www.gov.bc.ca/">
       <span>Home</span>
     </v-btn>
@@ -26,7 +26,13 @@
 
 <script>
 export default {
-  name: 'BCGovFooter'
+  name: 'BCGovFooter',
+  computed: {
+    formSubmitMode() {
+      // don't include footer when printing form submitting pages
+      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
+    }
+  },
 };
 </script>
 

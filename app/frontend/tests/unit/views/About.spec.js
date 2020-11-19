@@ -29,7 +29,7 @@ describe('About.vue', () => {
     const wrapper = shallowMount(About, {
       localVue,
       store,
-      stubs: ['router-link', 'BaseImagePopout'],
+      stubs: ['router-link', 'BaseImagePopout', 'FormDisclaimer'],
       vuetify
     });
 
