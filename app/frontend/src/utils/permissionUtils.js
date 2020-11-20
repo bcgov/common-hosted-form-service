@@ -53,7 +53,7 @@ export function checkSubmissionView(userForm) {
  * When loading a form to fill out, determine if the user needs to log in to submit it
  * @param {Object} store The vuex store reference
  * @param {String} formId The form guid
- * @param {String} submissionId The submissionId guid
+ * @param {String} submissionId The submission guid
  * @param {Object} next The routing next object
  */
 export async function determineFormNeedsAuth(formId, submissionId, next) {
