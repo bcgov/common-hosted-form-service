@@ -21,7 +21,7 @@ describe('generateIdps', () => {
   });
 
   it('returns correct values when usertype is public', () => {
-    expect(transformUtils.generateIdps({ userType: IdentityMode.PUBLIC })).toEqual([IdentityMode.PUBLIC]);
+    expect(transformUtils.generateIdps({ userType: IdentityMode.PUBLIC })).toEqual([{ code: IdentityMode.PUBLIC }]);
   });
 });
 
@@ -41,7 +41,7 @@ describe('parseIdps', () => {
   });
 
   it('returns an empty array idps and usertype public when public', () => {
-    expect(transformUtils.parseIdps([IdentityMode.PUBLIC])).toEqual({
+    expect(transformUtils.parseIdps([{ code: IdentityMode.PUBLIC }])).toEqual({
       idps: [],
       userType: IdentityMode.PUBLIC,
     });

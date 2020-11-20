@@ -16,7 +16,7 @@ export function generateIdps({ idps, userType }) {
   if (userType === IdentityMode.LOGIN && idps && idps.length) {
     identityProviders = identityProviders.concat(idps.map((i) => ({ code: i })));
   } else if (userType === IdentityMode.PUBLIC) {
-    identityProviders.push(IdentityMode.PUBLIC);
+    identityProviders.push({ code: IdentityMode.PUBLIC });
   }
   return identityProviders;
 }
@@ -33,7 +33,7 @@ export function parseIdps(identityProviders) {
     userType: IdentityMode.TEAM,
   };
   if (identityProviders && identityProviders.length) {
-    if (identityProviders[0] === IdentityMode.PUBLIC) {
+    if (identityProviders[0].code === IdentityMode.PUBLIC) {
       result.userType = IdentityMode.PUBLIC;
     } else {
       result.userType = IdentityMode.LOGIN;
