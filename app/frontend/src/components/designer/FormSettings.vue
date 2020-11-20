@@ -35,7 +35,7 @@
         :mandatory="false"
         :rules="loginRequiredRules"
       >
-        <v-radio disabled label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
+        <v-radio label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
         <v-radio label="Log-in Required" value="login"></v-radio>
         <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6 mb-2">
           <v-checkbox
