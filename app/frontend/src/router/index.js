@@ -47,7 +47,9 @@ export default function getRouter(basePath = '/') {
             name: 'FormCreate',
             component: () => import(/* webpackChunkName: "create" */ '@/views/form/Create.vue'),
             meta: {
-              breadcrumbTitle: 'Form Designer'
+              breadcrumbTitle: 'Form Designer',
+              requiresAuth: true,
+              hasLogin: true
             },
           },
           {
@@ -55,7 +57,9 @@ export default function getRouter(basePath = '/') {
             name: 'FormDesigner',
             component: () => import(/* webpackChunkName: "designer" */ '@/views/form/Design.vue'),
             meta: {
-              breadcrumbTitle: 'Form Designer'
+              breadcrumbTitle: 'Form Designer',
+              requiresAuth: true,
+              hasLogin: true
             },
             props: createProps
           },
@@ -64,7 +68,9 @@ export default function getRouter(basePath = '/') {
             name: 'FormManage',
             component: () => import(/* webpackChunkName: "manage" */ '@/views/form/Manage.vue'),
             meta: {
-              breadcrumbTitle: 'Manage Form'
+              breadcrumbTitle: 'Manage Form',
+              requiresAuth: true,
+              hasLogin: true
             },
             props: createProps
           },
@@ -73,7 +79,9 @@ export default function getRouter(basePath = '/') {
             name: 'FormPreview',
             component: () => import(/* webpackChunkName: "viewsubmission" */ '@/views/form/Preview.vue'),
             meta: {
-              breadcrumbTitle: 'Preview Form'
+              breadcrumbTitle: 'Preview Form',
+              requiresAuth: true,
+              hasLogin: true
             },
             props: createProps
           },
@@ -82,7 +90,9 @@ export default function getRouter(basePath = '/') {
             name: 'FormSubmissions',
             component: () => import(/* webpackChunkName: "submissions" */ '@/views/form/Submissions.vue'),
             meta: {
-              breadcrumbTitle: 'Submissions'
+              breadcrumbTitle: 'Submissions',
+              requiresAuth: true,
+              hasLogin: true
             },
             props: createProps
           },
@@ -111,7 +121,9 @@ export default function getRouter(basePath = '/') {
             name: 'FormTeams',
             component: () => import(/* webpackChunkName: "teams" */ '@/views/form/Teams.vue'),
             meta: {
-              breadcrumbTitle: 'Team Management'
+              breadcrumbTitle: 'Team Management',
+              requiresAuth: true,
+              hasLogin: true
             },
             props: createProps
           },
@@ -120,15 +132,13 @@ export default function getRouter(basePath = '/') {
             name: 'FormView',
             component: () => import(/* webpackChunkName: "viewsubmission" */ '@/views/form/View.vue'),
             meta: {
-              breadcrumbTitle: 'View Submission'
+              breadcrumbTitle: 'View Submission',
+              requiresAuth: true,
+              hasLogin: true
             },
             props: createProps
           },
-        ],
-        meta: {
-          requiresAuth: true,
-          hasLogin: true
-        }
+        ]
       },
       {
         path: '/user',
@@ -193,6 +203,8 @@ export default function getRouter(basePath = '/') {
     }
 
     // Force login redirect if not authenticated
+    // Note some pages (Submit and Success) only require auth if the form being loaded is secured
+    // in those cases, see the navigation gaurds in their views for auth loop
     if (to.matched.some(route => route.meta.requiresAuth)
       && router.app.$keycloak
       && router.app.$keycloak.ready
