@@ -1,6 +1,6 @@
 <template>
   <nav v-if="!hideNavBar" class="navigation-main">
-    <div class="container py-0">
+    <v-container class="py-0">
       <div class="nav-holder">
         <ul>
           <li>
@@ -20,7 +20,7 @@
           </li>
         </ul>
       </div>
-    </div>
+    </v-container>
   </nav>
 </template>
 
