@@ -11,6 +11,9 @@
         <li>
           <router-link :to="{ name: 'FormCreate' }">Create a New Form</router-link>
         </li>
+        <li>
+          <a href="https://github.com/bcgov/common-hosted-form-service/wiki" target="_blank">Help</a>
+        </li>
         <li v-if="isAdmin">
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li>
