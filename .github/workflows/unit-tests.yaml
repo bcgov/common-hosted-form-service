@@ -1,0 +1,84 @@
+---
+name: Node.js CI
+on:
+  - push
+  - pull_request
+jobs:
+  test-app:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node-version:
+          - 10.x
+          - 12.x
+          - 14.x
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache node modules
+        uses: actions/cache@v2
+        id: cache-app
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: "**/app/node_modules"
+          key: ${{ runner.os }}-app-${{ env.cache-name }}-${{ hashFiles('**/app/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-app-${{ env.cache-name }}-
+            ${{ runner.os }}-app-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        if: steps.cache-app.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test
+        run: npm run test
+        env:
+          CI: true
+  test-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/frontend
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node-version:
+          - 10.x
+          - 12.x
+          - 14.x
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache node modules
+        uses: actions/cache@v2
+        id: cache-frontend
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: "**/frontend/node_modules"
+          key: ${{ runner.os }}-frontend-${{ env.cache-name }}-${{ hashFiles('**/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-${{ env.cache-name }}-
+            ${{ runner.os }}-frontend-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        if: steps.cache-frontend.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test
+        run: npm run test
+        env:
+          CI: true
