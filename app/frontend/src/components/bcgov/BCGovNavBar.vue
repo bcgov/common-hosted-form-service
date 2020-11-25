@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="!hideNavBar" class="navigation-main">
+  <nav v-if="!hideNavBar" class="navigation-main px-md-16 px-4">
     <div class="nav-holder">
       <ul>
         <li>
