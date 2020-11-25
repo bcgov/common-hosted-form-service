@@ -13,7 +13,7 @@ const genInitialForm = () => ({
   sendSubRecieviedEmail: false,
   showSubmissionConfirmation: true,
   submissionReceivedEmails: [],
-  userType: 'team'
+  userType: ''
 });
 
 /**
