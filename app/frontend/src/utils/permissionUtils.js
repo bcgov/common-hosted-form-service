@@ -29,7 +29,8 @@ export function checkFormManage(userForm) {
     FormPermissions.FORM_UPDATE,
     FormPermissions.FORM_DELETE,
     FormPermissions.DESIGN_UPDATE,
-    FormPermissions.DESIGN_DELETE
+    FormPermissions.DESIGN_DELETE,
+    FormPermissions.TEAM_UPDATE
   ];
   return userForm && userForm.permissions && userForm.permissions.some(p => perms.includes(p));
 }
