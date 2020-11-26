@@ -41,8 +41,8 @@ describe('form getters', () => {
     expect(store.getters.form).toEqual(sampleState.form);
   });
 
-  it('formlist should return the state formlist', () => {
-    expect(store.getters.formlist).toEqual(sampleState.formlist);
+  it('formList should return the state formList', () => {
+    expect(store.getters.formList).toEqual(sampleState.formList);
   });
 
   it('formSubmission should return the state formSubmission', () => {
