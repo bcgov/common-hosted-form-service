@@ -188,6 +188,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions('form', ['fetchForm']),
     ...mapActions('notifications', ['addNotification']),
     addingUsers(adding) {
       this.isAddingUsers = adding;
@@ -234,6 +235,7 @@ export default {
       this.headers = headers
         .concat(
           this.roleList
+            .filter((role) => this.userType === IdentityMode.TEAM || role.code !== FormRoleCodes.FORM_SUBMITTER)
             .map((role) => ({
               filterable: false,
               text: role.display,
@@ -399,7 +401,12 @@ export default {
     },
   },
   async mounted() {
-    await Promise.all([this.getFormUsers(), this.getRolesList()]);
+    // TODO: Make sure vuex fetchForm has been called at least once before this
+    await Promise.all([
+      this.fetchForm(this.formId),
+      this.getFormUsers(),
+      this.getRolesList()
+    ]);
     this.createHeaders();
     this.createTableData();
     this.loading = false;
