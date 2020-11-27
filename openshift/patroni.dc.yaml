@@ -10,44 +10,46 @@ metadata:
       This template deploys a patroni postgresql HA cluster
       with persistent storage.
     tags: postgresql
-  name: patroni-postgregsql-persistent
+  name: patroni-pgsql-persistent
 labels:
   app: "${NAME}-${INSTANCE}"
   app.kubernetes.io/instance: "${INSTANCE}"
   app.kubernetes.io/component: database
   app.kubernetes.io/name: patroni
   app.kubernetes.io/managed-by: template
-  app.kubernetes.io/version: "10"
+  app.kubernetes.io/part-of: "${NAME}-${INSTANCE}"
+  app.kubernetes.io/version: "12"
+  app.openshift.io/runtime: postgresql
   cluster-name: "${INSTANCE}"
 objects:
-  # - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+  # - apiVersion: security.devops.gov.bc.ca/v1alpha1
   #   kind: NetworkSecurityPolicy
   #   metadata:
-  #     name: "${NAME}-${INSTANCE}-sa-deployer-to-k8s-api-${NAMESPACE}"
+  #     name: "${NAME}-${INSTANCE}-sa-deployer-k8s-api-comms"
   #   spec:
   #     description: |
-  #       Allow pods to talk to the internal K8S api
+  #       Allow pods to talk to the internal k8s api
   #     source:
   #       - - "$namespace=${NAMESPACE}"
   #         - "@app:k8s:serviceaccountname=deployer"
   #     destination:
   #       - - int:network=internal-cluster-api-endpoint
-  # - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+  # - apiVersion: security.devops.gov.bc.ca/v1alpha1
   #   kind: NetworkSecurityPolicy
   #   metadata:
-  #     name: "${NAME}-${INSTANCE}-sa-${NAME}-${INSTANCE}-to-k8s-api-${NAMESPACE}"
+  #     name: "${NAME}-${INSTANCE}-sa-${NAME}-${INSTANCE}-k8s-api-comms"
   #   spec:
   #     description: |
-  #       Allow patroni cluster to talk to the internal K8S api
+  #       Allow patroni cluster to talk to the internal k8s api
   #     source:
   #       - - "$namespace=${NAMESPACE}"
   #         - "@app:k8s:serviceaccountname=${NAME}-${INSTANCE}"
   #     destination:
   #       - - int:network=internal-cluster-api-endpoint
   # - kind: NetworkSecurityPolicy
-  #   apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+  #   apiVersion: security.devops.gov.bc.ca/v1alpha1
   #   metadata:
-  #     name: "${NAME}-${INSTANCE}-pods-to-cluster-${NAMESPACE}"
+  #     name: "${NAME}-${INSTANCE}-cluster-comms"
   #   spec:
   #     description: |
   #       Allow patroni pods to open connections to other cluster pods
@@ -74,15 +76,28 @@ objects:
         app.kubernetes.io/name: patroni
       sessionAffinity: None
       type: ClusterIP
-    status:
-      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "${NAME}-${INSTANCE}-readonly"
+    spec:
+      ports:
+        - port: 5432
+          protocol: TCP
+          targetPort: 5432
+      selector:
+        cluster-name: "${INSTANCE}"
+        role: replica
+        app.kubernetes.io/name: patroni
+      sessionAffinity: None
+      type: ClusterIP
   - apiVersion: apps/v1
     kind: StatefulSet
     metadata:
       name: "${NAME}-${INSTANCE}"
     spec:
       podManagementPolicy: OrderedReady
-      replicas: 3
+      replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
         matchLabels:
@@ -91,8 +106,8 @@ objects:
       template:
         metadata:
           labels:
-            statefulset: "${NAME}-${INSTANCE}"
             cluster-name: "${INSTANCE}"
+            statefulset: "${NAME}-${INSTANCE}"
             app.kubernetes.io/name: patroni
         spec:
           affinity:
@@ -100,7 +115,7 @@ objects:
               requiredDuringSchedulingIgnoredDuringExecution:
                 - labelSelector:
                     matchExpressions:
-                      - key: app
+                      - key: statefulset
                         operator: In
                         values:
                           - ${NAME}-${INSTANCE}
@@ -315,11 +330,16 @@ parameters:
     description: Target namespace reference (i.e. 'k8vopl-dev')
     displayName: Target Namespace
     required: true
+  - name: REPLICAS
+    description: The number of StatefulSet replicas to use.
+    displayName: Replicas
+    required: true
+    value: "3"
   - name: IMAGE_REGISTRY
     description: The base OpenShift docker registry
     displayName: Docker Image Registry
     required: true
-    value: docker-registry.default.svc:5000
+    value: image-registry.openshift-image-registry.svc:5000
   - name: IMAGE_STREAM_NAMESPACE
     description:
       The OpenShift Namespace where the patroni and postgresql ImageStream
@@ -331,7 +351,7 @@ parameters:
     description: Patroni ImageTag
     displayName: ImageStream Tag
     required: true
-    value: patroni:v10-stable
+    value: patroni-postgres:12.4-latest
   - name: CPU_REQUEST
     description: Starting amount of CPU the container can use.
     displayName: CPU Request
