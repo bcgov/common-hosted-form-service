@@ -41,7 +41,7 @@
       class="submissions-table"
       :headers="headers"
       item-key="title"
-      :items="formList"
+      :items="filteredFormList"
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
@@ -111,6 +111,13 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['formList']),
+    filteredFormList() {
+      // At this point, we're only showing forms you can manage or view submissions of here
+      // This may get reconceptualized in the future to different pages or something
+      return this.formList.filter(
+        (f) => checkFormManage(f) || checkSubmissionView(f)
+      );
+    },
   },
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),
