@@ -37,6 +37,7 @@ describe('checkFormManage', () => {
     expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.FORM_DELETE] })).toBeTruthy();
     expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.DESIGN_UPDATE] })).toBeTruthy();
     expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.DESIGN_DELETE] })).toBeTruthy();
+    expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.TEAM_UPDATE] })).toBeTruthy();
   });
 });
 
