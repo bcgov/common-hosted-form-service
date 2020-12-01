@@ -121,7 +121,10 @@ objects:
                           - ${NAME}-${INSTANCE}
                   topologyKey: "kubernetes.io/hostname"
           containers:
-            - env:
+            - name: postgresql
+              image: "${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/${IMAGE_STREAM_TAG}"
+              imagePullPolicy: Always
+              env:
                 - name: APP_DATABASE
                   valueFrom:
                     secretKeyRef:
@@ -190,16 +193,25 @@ objects:
                   value: "500"
                 - name: POSTGRESQL_MAX_PREPARED_TRANSACTIONS
                   value: "500"
-              image: "${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/${IMAGE_STREAM_TAG}"
-              imagePullPolicy: Always
+              lifecycle:
+                preStop:
+                  exec:
+                    command:
+                      - /usr/bin/env
+                      - bash
+                      - -c
+                      - |
+                        # switch leader pod if the current pod is the leader
+                        if curl --fail http://localhost:8008/read-write; then
+                          patronictl switchover --force
+                        fi
               livenessProbe:
-                exec:
-                  command:
-                    - /usr/share/scripts/patroni/health_check.sh
-                initialDelaySeconds: 5
-                timeoutSeconds: 5
-                failureThreshold: 4
-              name: postgresql
+                httpGet:
+                  path: /health
+                  port: 8008
+                initialDelaySeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
               ports:
                 - containerPort: 8008
                   protocol: TCP
@@ -218,7 +230,7 @@ objects:
                 exec:
                   command:
                     - /usr/share/scripts/patroni/health_check.sh
-                initialDelaySeconds: 5
+                initialDelaySeconds: 20
                 timeoutSeconds: 5
                 failureThreshold: 4
               volumeMounts:
@@ -229,7 +241,6 @@ objects:
           schedulerName: default-scheduler
           securityContext: {}
           serviceAccountName: "${NAME}-${INSTANCE}"
-          terminationGracePeriodSeconds: 0
           volumes:
             - name: postgresql
               persistentVolumeClaim:
@@ -356,7 +367,7 @@ parameters:
     description: Starting amount of CPU the container can use.
     displayName: CPU Request
     required: true
-    value: "250m"
+    value: "100m"
   - name: CPU_LIMIT
     description: Maximum amount of CPU the container can use.
     displayName: CPU Limit
