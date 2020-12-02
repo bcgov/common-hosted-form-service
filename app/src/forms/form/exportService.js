@@ -44,7 +44,7 @@ const service = {
   _checkPermission: (currentUser, formId, permission, exportType) => {
     const form = currentUser.forms.find(x => x.formId === formId);
     if (!form || !form.permissions.includes(permission)) {
-      throw new Problem(401, {detail: `Current user does not have required permission(s) to export ${exportType} data for this form.`});
+      throw new Problem(401, { detail: `Current user does not have required permission(s) to export ${exportType} data for this form.` });
     }
   },
 
@@ -91,7 +91,7 @@ const service = {
         return await service._formatSubmissionsJson(form, data);
       }
     }
-    throw new Problem(422, {detail: 'Could not create an export for this form. Invalid options provided'});
+    throw new Problem(422, { detail: 'Could not create an export for this form. Invalid options provided' });
   },
 
   _getSubmissions: async (formId, params, currentUser) => {
@@ -109,7 +109,7 @@ const service = {
       data: data,
       headers: {
         'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.json)}"`,
-        'content-type':'text/json'
+        'content-type': 'text/json'
       }
     };
   },
@@ -117,19 +117,22 @@ const service = {
   _formatSubmissionsCsv: async (form, data) => {
     try {
       const options = {
+        fillGaps: true,
+        fillTopRow: true,
+        // Leaving this option here if we need it. This is the original csv setup where the submission just prints out in 1 column as JSON
         //definitions to type cast
-        typeHandlers: {
-          Object:function(value, name){
-            if (value instanceof Object) {
-              if (name === 'submission') {
-                // not really sure what the best representation for JSON is inside a csv...
-                // this will produce a "" string with all the fields and values like ""field"":""value""
-                return JSON.stringify(value);
-              }
-            }
-            return value;
-          }
-        }
+        // typeHandlers: {
+        //   Object: function (value, name) {
+        //     if (value instanceof Object) {
+        //       if (name === 'submission') {
+        //         // not really sure what the best representation for JSON is inside a csv...
+        //         // this will produce a "" string with all the fields and values like ""field"":""value""
+        //         return JSON.stringify(value);
+        //       }
+        //     }
+        //     return value;
+        //   }
+        // }
       };
 
       const csv = await jsonexport(data, options);
@@ -137,11 +140,11 @@ const service = {
         data: csv,
         headers: {
           'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-          'content-type':'text/csv'
+          'content-type': 'text/csv'
         }
       };
     } catch (e) {
-      throw new Problem(500, {detail: `Could not make a csv export of submissions for this form. ${e.message}`});
+      throw new Problem(500, { detail: `Could not make a csv export of submissions for this form. ${e.message}` });
     }
   },
 
