@@ -171,7 +171,8 @@ export default {
         const response = await formService.exportSubmissions(
           this.form.id,
           from,
-          to
+          to,
+          this.exportFormat
         );
         if (response && response.data) {
           const blob = new Blob([response.data], {
