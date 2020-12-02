@@ -165,7 +165,17 @@ export default {
    * @returns {Promise} An axios response
    */
   exportSubmissions(formId, minDate, maxDate, format) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export?format=${format}&type=submissions${minDate ? `&minDate=${minDate}` : ''}${maxDate ? `&maxDate=${maxDate}` : ''}`, { responseType: 'blob', });
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
+      {
+        params: {
+          format: format,
+          type: 'submissions',
+          minDate: minDate ? minDate : undefined,
+          maxDate: maxDate ? maxDate : undefined
+        },
+        responseType: 'blob'
+      }
+    );
   },
 
 
