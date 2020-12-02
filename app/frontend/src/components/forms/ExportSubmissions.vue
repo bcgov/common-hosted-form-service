@@ -99,7 +99,7 @@
           <p :class="!dateRange ? 'mt-8' : ''">Select your export options</p>
           <v-radio-group v-model="exportFormat" hide-details="auto">
             <v-radio label="CSV" value="csv"></v-radio>
-            <v-radio label="Raw JSON" value="json"></v-radio>
+            <v-radio label="JSON" value="json"></v-radio>
           </v-radio-group>
 
           <p class="mt-8">
@@ -149,7 +149,7 @@ export default {
   computed: {
     ...mapGetters('form', ['form']),
     fileName() {
-      return `${this.form.snake}_submissions.csv`;
+      return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
   },
   methods: {
