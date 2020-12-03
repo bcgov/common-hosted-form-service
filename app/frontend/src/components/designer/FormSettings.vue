@@ -211,6 +211,9 @@ export default {
     if (this.formId) {
       this.id = this.formId;
       await this.fetchForm(this.id);
+    } else {
+      // default to TEAM on the form Settings when starting new
+      this.userType = this.ID_MODE.TEAM;
     }
     this.loading = false;
   },
