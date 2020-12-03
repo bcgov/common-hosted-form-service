@@ -58,7 +58,7 @@ objects:
               value: "${ROUTE_PATH}"
           from:
             kind: DockerImage
-            name: node:lts-alpine
+            name: docker.io/node:lts-alpine
         type: Docker
       successfulBuildsHistoryLimit: 3
 parameters:
