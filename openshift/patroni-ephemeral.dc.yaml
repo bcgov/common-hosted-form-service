@@ -206,11 +206,15 @@ objects:
                           patronictl switchover --force
                         fi
               livenessProbe:
-                httpGet:
-                  path: /health
-                  port: 8008
+                exec:
+                  command:
+                    - /usr/bin/env
+                    - bash
+                    - -c
+                    - |
+                      set -Eeuo pipefail && curl -s localhost:8008/liveness | jq -e ". | select(.state == \"running\")"
                 initialDelaySeconds: 10
-                timeoutSeconds: 1
+                timeoutSeconds: 5
                 failureThreshold: 3
               ports:
                 - containerPort: 8008
@@ -223,9 +227,10 @@ objects:
                     - /usr/bin/env
                     - bash
                     - -c
-                    - pg_isready -q
-                initialDelaySeconds: 20
-                timeoutSeconds: 3
+                    - |
+                      set -Eeuo pipefail && df "${PATRONI_POSTGRESQL_DATA_DIR:-/home/postgres/pgdata}" --output=pcent | tail -n 1 | awk '{if ($1+0 > 90) exit 1; else exit 0;}' && pg_isready -q && curl -s localhost:8008/readiness | jq -e ". | select(.state == \"running\")"
+                initialDelaySeconds: 10
+                timeoutSeconds: 5
                 failureThreshold: 3
               resources:
                 requests:
