@@ -161,10 +161,21 @@ export default {
    * Get the export file for a range of form submittions
    * @param {string} minDate The form uuid
    * @param {string} maxDate The form uuid
+   * @param {string} format The file format csv or json
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, minDate, maxDate) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export?format=csv&type=submissions${minDate ? `&minDate=${minDate}` : ''}${maxDate ? `&maxDate=${maxDate}` : ''}`, { responseType: 'blob', });
+  exportSubmissions(formId, minDate, maxDate, format) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
+      {
+        params: {
+          format: format,
+          type: 'submissions',
+          minDate: minDate ? minDate : undefined,
+          maxDate: maxDate ? maxDate : undefined
+        },
+        responseType: 'blob'
+      }
+    );
   },
 
 
