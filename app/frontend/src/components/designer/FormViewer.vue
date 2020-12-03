@@ -1,13 +1,14 @@
 <template>
   <div class="form-wrapper">
     <h1 class="my-6 text-center">{{ form.name }}</h1>
-    <slot name="alert" v-bind:form="form"/>
+    <slot name="alert" v-bind:form="form" />
     <Form
       :form="formSchema"
       :submission="submission"
       @submit="onSubmit"
       @submitDone="onSubmitDone"
       @submitButton="onSubmitButton"
+      @customEvent="onCustomEvent"
       :options="viewerOptions"
     />
     <p v-if="version" class="text-right">Version: {{ version }}</p>
@@ -123,6 +124,10 @@ export default {
         });
       }
     },
+
+    // -----------------------------------------------------------------------------------------
+    // FormIO Events
+    // -----------------------------------------------------------------------------------------
     // event order is:
     // onSubmitButton
     // onBeforeSubmit
@@ -191,6 +196,12 @@ export default {
           s: this.submissionRecord.id,
         },
       });
+    },
+    // Custom Event triggered from buttons with Action type "Event"
+    onCustomEvent(event) {
+      alert(
+        `Custom button events not supported yet. Event Type: ${event.type}`
+      );
     },
   },
   created() {

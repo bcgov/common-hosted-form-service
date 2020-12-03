@@ -13,7 +13,7 @@
           <v-icon>cloud_download</v-icon>
         </v-btn>
       </template>
-      <span>Export CSV</span>
+      <span>Export Submissions to File</span>
     </v-tooltip>
 
     <v-dialog
@@ -22,7 +22,7 @@
       content-class="export-submissions-dlg"
     >
       <v-card>
-        <v-card-title class="headline pb-0">Export CSV</v-card-title>
+        <v-card-title class="headline pb-0">Export Submissions to File</v-card-title>
         <v-card-text>
           <hr />
           <p>Select the submission date</p>
@@ -95,7 +95,14 @@
               </v-col>
             </v-row>
           </div>
-          <p :class="!dateRange ? 'mt-5' : ''">
+
+          <p :class="!dateRange ? 'mt-8' : ''">Select your export options</p>
+          <v-radio-group v-model="exportFormat" hide-details="auto">
+            <v-radio label="CSV" value="csv"></v-radio>
+            <v-radio label="JSON" value="json"></v-radio>
+          </v-radio-group>
+
+          <p class="mt-8">
             File Name and Type: <strong>{{ fileName }}</strong>
           </p>
           <p>
@@ -134,6 +141,7 @@ export default {
       dialog: false,
       endDate: '',
       endDateMenu: false,
+      exportFormat: 'csv',
       startDate: '',
       startDateMenu: false,
     };
@@ -141,7 +149,7 @@ export default {
   computed: {
     ...mapGetters('form', ['form']),
     fileName() {
-      return `${this.form.snake}_submissions.csv`;
+      return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
   },
   methods: {
@@ -156,12 +164,15 @@ export default {
         // UTC end of selected end date...
         const to =
           this.dateRange && this.endDate
-            ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss').utc().format()
+            ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
+              .utc()
+              .format()
             : undefined;
         const response = await formService.exportSubmissions(
           this.form.id,
           from,
-          to
+          to,
+          this.exportFormat
         );
         if (response && response.data) {
           const blob = new Blob([response.data], {
