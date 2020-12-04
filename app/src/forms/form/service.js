@@ -167,7 +167,8 @@ const service = {
     return FormVersion.query()
       .where('formId', formId)
       .modify('filterPublished', params.published)
-      .modify('orderVersionDescending');
+      .modify('orderVersionDescending')
+      .modify('selectWithoutSchema');
   },
 
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
