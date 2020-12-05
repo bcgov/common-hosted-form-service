@@ -41,19 +41,10 @@
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
-            <v-btn
-              :disabled="formSettingsDisabled"
-              class="mr-5"
-              color="primary"
-              @click="updateSettings"
-            >
+            <v-btn class="mr-5" color="primary" @click="updateSettings">
               <span>Update</span>
             </v-btn>
-            <v-btn
-              :disabled="formSettingsDisabled"
-              outlined
-              @click="cancelSettingsEdit"
-            >
+            <v-btn outlined @click="cancelSettingsEdit">
               <span>Cancel</span>
             </v-btn>
           </div>
@@ -74,36 +65,13 @@
           <div class="header">
             <span>Form Design</span>
             <span>
-              <small>
-                Last Updated:
-                {{ currentVersion.updatedAt | formatDateLong }}
-                ({{ currentVersion.createdBy }})
-              </small>
+              <strong>Current Version:</strong>
+              {{ currentVersion.version }}
             </span>
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <p>
-            <strong>Current Version:</strong>
-            {{ currentVersion.version }}
-            <router-link
-              :to="{
-                name: 'FormDesigner',
-                query: { f: form.id, v: currentVersion.id },
-              }"
-            >
-              <v-btn v-if="canCreateDesign" color="primary" text small>
-                <v-icon class="mr-1">edit</v-icon>
-                <span>Edit Current Design</span>
-              </v-btn>
-            </router-link>
-          </p>
-
-          <BaseInfoCard>
-            Editing this form design and saving the changes will create and
-            publish a new version. Any submissions made to previous versions
-            will maintain the design of the form at the time of that submission.
-          </BaseInfoCard>
+          <ManageVersions />
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -115,10 +83,11 @@ import { mapGetters, mapActions } from 'vuex';
 
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
 import FormSettings from '@/components/designer/FormSettings.vue';
+import ManageVersions from '@/components/forms/manage/ManageVersions.vue';
 
 export default {
   name: 'ManageForm',
-  components: { FormSettings },
+  components: { FormSettings, ManageVersions },
   data() {
     return {
       formSettingsDisabled: true,
@@ -129,17 +98,11 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['form', 'permissions']),
-
-    // Permission checks
-    canCreateDesign() {
-      return this.permissions.includes(FormPermissions.DESIGN_CREATE);
-    },
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
-
     currentVersion() {
-      return this.form.versions ? this.form.versions[0] : {};
+      return this.form.versions ? this.form.versions[0] : { version: 'N/A' };
     },
   },
   methods: {

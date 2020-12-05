@@ -16,8 +16,8 @@
 <script>
 import { mapActions } from 'vuex';
 
-import ManageForm from '@/components/forms/ManageForm.vue';
-import ManageFormActions from '@/components/forms/ManageFormActions.vue';
+import ManageForm from '@/components/forms/manage/ManageForm.vue';
+import ManageFormActions from '@/components/forms/manage/ManageFormActions.vue';
 
 export default {
   name: 'FormManage',

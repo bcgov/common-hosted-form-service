@@ -58,7 +58,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 import { FormPermissions } from '@/utils/constants';
-import ShareForm from '@/components/forms/ShareForm.vue';
+import ShareForm from '@/components/forms/manage/ShareForm.vue';
 
 export default {
   name: 'ManageFormActions',
@@ -90,6 +90,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-</style>
