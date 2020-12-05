@@ -32,29 +32,37 @@
                 <v-icon>add_circle</v-icon>
               </v-btn>
             </template>
-            <span>Use version {{ item.version }} as the base</span>
+            <span>
+              Use version {{ item.version }} as the base for a new version
+            </span>
           </v-tooltip>
         </router-link>
       </template>
       <template #[`item.export`]="{ item }">
-        <router-link
-          :to="{
-            name: 'FormDesigner',
-            query: { f: item.formId, v: item.id },
-          }"
-        >
-          <v-btn color="primary" text small>
-            <v-icon>get_app</v-icon>
-          </v-btn>
-        </router-link>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              text
+              small
+              @click="exportSchema(item.id)"
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>get_app</v-icon>
+            </v-btn>
+          </template>
+          <span> Download version {{ item.version }} to a file </span>
+        </v-tooltip>
       </template>
     </v-data-table>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { FormPermissions } from '@/utils/constants';
+import formService from '@/services/formService.js';
 
 export default {
   name: 'ManageVersions',
@@ -87,6 +95,34 @@ export default {
     },
     versionList() {
       return this.form ? this.form.versions : [];
+    },
+  },
+  methods: {
+    ...mapActions('notifications', ['addNotification']),
+    async exportSchema(versionId) {
+      try {
+        const ver = await formService.readVersion(this.form.id, versionId);
+        if (ver && ver.data) {
+          const a = document.createElement('a');
+          a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
+            JSON.stringify(ver.data.schema)
+          )}`;
+          a.download = `${this.form.snake}_schema.json`;
+          a.style.display = 'none';
+          a.classList.add('hiddenDownloadTextElement');
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          throw new Error('No data in response from readVersion call');
+        }
+      } catch (error) {
+        this.addNotification({
+          message:
+            'An error occurred while attempting to export the design for this version.',
+          consoleError: `Error export schema for ${this.form.id} version ${versionId}: ${error}`,
+        });
+      }
     },
   },
 };
