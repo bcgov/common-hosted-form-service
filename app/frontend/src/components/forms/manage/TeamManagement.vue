@@ -154,7 +154,7 @@ import { mapFields } from 'vuex-map-fields';
 
 import { rbacService, roleService } from '@/services';
 import { FormRoleCodes, IdentityMode } from '@/utils/constants';
-import AddTeamMember from '@/components/forms/AddTeamMember.vue';
+import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
 
 export default {
   name: 'TeamManagement',
