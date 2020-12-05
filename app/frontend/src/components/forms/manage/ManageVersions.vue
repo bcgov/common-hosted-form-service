@@ -52,7 +52,7 @@
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
-          <span> Download version {{ item.version }} to a file </span>
+          <span>Download version {{ item.version }} to a file</span>
         </v-tooltip>
       </template>
     </v-data-table>
