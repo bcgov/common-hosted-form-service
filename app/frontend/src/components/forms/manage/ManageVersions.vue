@@ -21,10 +21,18 @@
       </template>
       <template #[`item.version`]="{ item }">
         <router-link
-          :to="{ name: 'FormPreview', query: { f: item.formId, v: item.id } }"
+          :to="{
+            name: 'FormPreview',
+            query: { f: item.formId, v: item.id },
+          }"
           class="mx-5"
         >
-          Version {{ item.version }}
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">Version {{ item.version }}</span>
+            </template>
+            <span> Click to preview </span>
+          </v-tooltip>
         </router-link>
       </template>
       <template #[`item.createdAt`]="{ item }">
