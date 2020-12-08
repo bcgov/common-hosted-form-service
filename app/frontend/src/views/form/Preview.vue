@@ -1,6 +1,6 @@
 <template>
   <BaseSecure>
-    <FormViewer :formId="f" readOnly :versionId="v" />
+    <FormViewer :draftId="d" :formId="f" preview :versionId="v" />
   </BaseSecure>
 </template>
 
@@ -10,6 +10,7 @@ import FormViewer from '@/components/designer/FormViewer.vue';
 export default {
   name: 'FormPreview',
   props: {
+    d: String,
     f: String,
     v: String,
   },

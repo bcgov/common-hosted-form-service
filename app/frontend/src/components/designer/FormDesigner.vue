@@ -84,7 +84,7 @@
     <v-alert v-if="saved" dense text type="success">
       Your form has been successfully saved
       <router-link
-        :to="{ name: 'FormPreview', query: { f: formId } }"
+        :to="{ name: 'FormPreview', query: { f: formId, d:draftId } }"
         class="mx-5"
       >
         Preview

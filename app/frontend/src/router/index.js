@@ -80,6 +80,7 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "viewsubmission" */ '@/views/form/Preview.vue'),
             meta: {
               breadcrumbTitle: 'Preview Form',
+              formSubmitMode: true,
               requiresAuth: true,
               hasLogin: true
             },
