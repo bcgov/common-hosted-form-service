@@ -1,13 +1,11 @@
 <template>
   <div>
-    <pre>{{ drafts }}</pre>
-
     <BaseInfoCard class="my-4">
       When you create a form, it becomes a Draft. Once you publish this form,
       you are no longer able to edit it, instead you can create a new version
       and edit from there. A new version of the form will carry the existing
       version that you created. If you unpublish the form, the submitter won't
-      be able to access to the form..
+      be able to access the form.
     </BaseInfoCard>
 
     <CurrentDraft v-if="hasDraft" class="my-8" />

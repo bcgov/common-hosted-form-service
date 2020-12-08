@@ -8,16 +8,31 @@
       <v-col cols="12" md="4">
         <v-switch
           class="my-0 mx-md-10 pa-0"
-          label="Unpublished"
+          v-model="publishing"
           color="success"
-          hide-details
-        ></v-switch>
+          @change="publishThisVersion"
+        >
+          <template v-slot:label>
+            {{ !publishing ? 'Unpublished' : 'Publishing' }}
+            <v-progress-circular
+              v-if="publishing"
+              :indeterminate="publishing"
+              :value="0"
+              size="24"
+              class="ml-2"
+            ></v-progress-circular>
+          </template>
+        </v-switch>
       </v-col>
+
       <v-spacer></v-spacer>
+
       <v-col cols="12" md="auto">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <router-link :to="{ name: 'FormDesigner', query: { d: draft.id, f: form.id } }">
+            <router-link
+              :to="{ name: 'FormDesigner', query: { d: draft.id, f: form.id } }"
+            >
               <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                 <v-icon>edit</v-icon>
               </v-btn>
@@ -48,9 +63,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
+  data() {
+    return {
+      publishing: false,
+    };
+  },
   computed: {
     ...mapGetters('form', ['drafts', 'form']),
     draft() {
@@ -58,6 +78,15 @@ export default {
     },
     hasVersions() {
       return !this.form || !this.form.versions || !this.form.versions.length;
+    },
+  },
+  methods: {
+    ...mapActions('form', ['fetchForm', 'fetchDrafts', 'publishDraft']),
+    async publishThisVersion() {
+      await this.publishDraft({ formId: this.form.id, draftId: this.draft.id });
+      // Refresh form version and drafts details
+      this.fetchForm(this.form.id);
+      this.fetchDrafts(this.form.id);
     },
   },
 };

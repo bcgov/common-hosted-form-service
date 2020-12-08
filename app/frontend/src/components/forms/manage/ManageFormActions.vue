@@ -1,7 +1,7 @@
 <template>
   <div>
     <span>
-      <ShareForm :formId="form.id" />
+      <ShareForm :formId="form.id" :warning="!hasVersions"/>
     </span>
 
     <span v-if="canManageTeam">
@@ -77,6 +77,9 @@ export default {
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
+    hasVersions() {
+      return this.form.versions && this.form.versions.length;
+    }
   },
   methods: {
     ...mapActions('form', ['deleteCurrentForm']),
