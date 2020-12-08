@@ -20,7 +20,12 @@
         No versions yet. Publish a draft to release a form version.
       </template>
       <template #[`item.version`]="{ item }">
-        Version {{ item.version }}
+        <router-link
+          :to="{ name: 'FormPreview', query: { f: item.formId, v: item.id } }"
+          class="mx-5"
+        >
+          Version {{ item.version }}
+        </router-link>
       </template>
       <template #[`item.createdAt`]="{ item }">
         {{ item.createdAt | formatDateLong }}

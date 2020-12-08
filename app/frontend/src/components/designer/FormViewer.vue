@@ -28,8 +28,10 @@ export default {
     Form,
   },
   props: {
+    draftId: String,
     formId: String,
     readOnly: Boolean,
+    preview: Boolean,
     submissionId: String,
     versionId: String,
   },
@@ -59,10 +61,10 @@ export default {
           simplefile: {
             config: Vue.prototype.$config,
             headers: {
-              'Authorization': `Bearer ${this.token}`
-            }
-          }
-        }
+              Authorization: `Bearer ${this.token}`,
+            },
+          },
+        },
       };
     },
   },
@@ -100,6 +102,14 @@ export default {
           }
           this.form = response.data;
           this.formSchema = response.data.schema;
+        } else if (this.draftId) {
+          // If getting for a specific draft version of the form for preview
+          response = await formService.readDraft(this.formId, this.draftId);
+          if (!response.data || !response.data.schema) {
+            throw new Error(`No schema in response. DraftId: ${this.draftId}`);
+          }
+          this.form = response.data;
+          this.formSchema = response.data.schema;
         } else {
           // If getting the HEAD form version (IE making a new submission)
           response = await formService.readPublished(this.formId);
@@ -134,6 +144,10 @@ export default {
     // if no errors: onSubmit -> onSubmitDone
     // else onSubmitError
     onSubmitButton(event) {
+      if (this.preview) {
+        alert('Submission disabled during form preview');
+        return;
+      }
       // this is our first event in the submission chain.
       // most important thing here is ensuring that the formio form does not have an action, or else it POSTs to that action.
       // console.info('onSubmitButton()') ; // eslint-disable-line no-console
@@ -141,6 +155,9 @@ export default {
       this.currentForm.form.action = undefined;
     },
     async onBeforeSubmit(submission, next) {
+      if (this.preview) {
+        return;
+      }
       // console.info(`onBeforeSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
       // since we are not using formio api
       // we should do the actual submit here, and return next or parse our errors and show with next(errors)
@@ -179,6 +196,10 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     async onSubmit(submission) {
+      if (this.preview) {
+        alert('Submission disabled during form preview');
+        return;
+      }
       // if we are here, the submission has been saved to our db
       // the passed in submission is the formio submission, not our db persisted submission record...
       // fire off the submitDone event.
@@ -210,7 +231,9 @@ export default {
     } else {
       this.getFormSchema();
       // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-      window.onbeforeunload = () => true;
+      if (!this.preview) {
+        window.onbeforeunload = () => true;
+      }
     }
   },
 };
