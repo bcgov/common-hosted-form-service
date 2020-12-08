@@ -51,7 +51,6 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
-
     <v-expansion-panels
       v-model="versionsPanel"
       flat
@@ -102,7 +101,9 @@ export default {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
     currentVersion() {
-      return this.form.versions ? this.form.versions[0] : { version: 'N/A' };
+      return this.form.versions && this.form.versions.length
+        ? this.form.versions[0]
+        : { version: 'N/A' };
     },
   },
   methods: {

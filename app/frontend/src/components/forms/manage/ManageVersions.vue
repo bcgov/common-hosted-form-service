@@ -1,10 +1,16 @@
 <template>
   <div>
+    <pre>{{ drafts }}</pre>
+
     <BaseInfoCard class="my-4">
-      Editing this form design and saving the changes will create and publish a
-      new version. Any submissions made to previous versions will maintain the
-      design of the form at the time of that submission.
+      When you create a form, it becomes a Draft. Once you publish this form,
+      you are no longer able to edit it, instead you can create a new version
+      and edit from there. A new version of the form will carry the existing
+      version that you created. If you unpublish the form, the submitter won't
+      be able to access to the form..
     </BaseInfoCard>
+
+    <CurrentDraft v-if="hasDraft" class="my-8" />
 
     <strong>History</strong>
     <v-data-table
@@ -12,6 +18,9 @@
       :headers="headers"
       :items="versionList"
     >
+      <template #no-data>
+        No versions yet. Publish a draft to release a form version.
+      </template>
       <template #[`item.version`]="{ item }">
         Version {{ item.version }}
       </template>
@@ -61,11 +70,14 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+
 import { FormPermissions } from '@/utils/constants';
+import CurrentDraft from '@/components/forms/manage/CurrentDraft.vue';
 import formService from '@/services/formService.js';
 
 export default {
   name: 'ManageVersions',
+  components: { CurrentDraft },
   data() {
     return {
       headers: [
@@ -89,9 +101,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
+    ...mapGetters('form', ['drafts', 'form', 'permissions']),
     canCreateDesign() {
       return this.permissions.includes(FormPermissions.DESIGN_CREATE);
+    },
+    hasDraft() {
+      return this.drafts && this.drafts.length;
     },
     versionList() {
       return this.form ? this.form.versions : [];

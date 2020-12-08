@@ -63,6 +63,16 @@ export default {
   },
 
   /**
+   * @function listDrafts
+   * Get any drafts for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  listDrafts(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/drafts`);
+  },
+
+  /**
    * @function publishDraft
    * Publishes a specific form draft
    * @param {string} formId The form uuid
@@ -71,6 +81,29 @@ export default {
    */
   publishDraft(formId, formVersionDraftId) {
     return appAxios().post(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}/publish`);
+  },
+
+  /**
+   * @function readDraft
+   * Get a specific draft for a form
+   * @param {string} formId The form uuid
+   * @param {string} formVersionDraftId The draft uuid
+   * @returns {Promise} An axios response
+   */
+  readDraft(formId, formVersionDraftId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`);
+  },
+
+  /**
+   * @function updateDraft
+   * Update a draft with a new schema
+   * @param {string} formId The form uuid
+   * @param {string} formVersionDraftId The draft uuid
+   * @param {Object} data The request body
+   * @returns {Promise} An axios response
+   */
+  updateDraft(formId, formVersionDraftId, data) {
+    return appAxios().put(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`, data);
   },
 
   //
