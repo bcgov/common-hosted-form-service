@@ -78,6 +78,19 @@
         </v-tooltip>
       </v-col>
     </v-row>
+
+    <p v-if="draftId" class="mb-3"><em >Draft</em></p>
+
+    <v-alert v-if="saved" dense text type="success">
+      Your form has been successfully saved
+      <router-link :to="{ name: 'FormPreview', query: { f: formId } }" class="mx-5">
+        Preview
+      </router-link>
+      <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+        Go to Manage Form to Publish
+      </router-link>
+    </v-alert>
+
     <BaseInfoCard class="my-6">
       <p class="my-0">
         Use the SAVE DESIGN (<v-icon small>save</v-icon>) button when you are
@@ -124,7 +137,12 @@ export default {
     FormBuilder,
   },
   props: {
+    draftId: String,
     formId: String,
+    saved: {
+      type: Boolean,
+      default: false,
+    },
     versionId: String,
   },
   data() {
@@ -135,7 +153,6 @@ export default {
         { text: 'Advanced Mode', value: true },
       ],
       designerStep: 1,
-      draftId: '',
       formSchema: {
         display: 'form',
         type: 'form',
@@ -188,7 +205,7 @@ export default {
                 simpletime: true,
                 simplecheckbox: true,
                 simplecheckboxes: true,
-                simpleradios: true
+                simpleradios: true,
               },
             },
             layoutControls: {
@@ -216,7 +233,7 @@ export default {
               title: 'BC Gov.',
               weight: 50,
               components: {
-                orgbook: true
+                orgbook: true,
               },
             },
           },
@@ -235,19 +252,21 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
-      if (this.versionId) {
-        try {
-          const response = await formService.readVersion(
-            this.formId,
-            this.versionId
-          );
-          this.formSchema = { ...this.formSchema, ...response.data.schema };
-        } catch (error) {
-          this.addNotification({
-            message: 'An error occurred while loading the form schema.',
-            consoleError: `Error loading form ${this.formId} schema version ${this.versionId}: ${error}`,
-          });
+      try {
+        let res;
+        if (this.versionId) {
+          // Making a new draft from a previous version
+          res = await formService.readVersion(this.formId, this.versionId);
+        } else if (this.draftId) {
+          // Editing an existing draft
+          res = await formService.readDraft(this.formId, this.draftId);
         }
+        this.formSchema = { ...this.formSchema, ...res.data.schema };
+      } catch (error) {
+        this.addNotification({
+          message: 'An error occurred while loading the form design.',
+          consoleError: `Error loading form ${this.formId} schema (version: ${this.versionId} draft: ${this.draftId}): ${error}`,
+        });
       }
     },
     async loadFile(event) {
@@ -307,36 +326,34 @@ export default {
     },
     async submitFormSchema() {
       if (this.formId) {
-        // If editing a form, add a new draft and then publish immediately
         try {
-          const { data } = await formService.createDraft(this.formId, {
-            schema: this.formSchema,
-          });
-          this.draftId = data.id;
-          this.formSchema = data.schema;
-
-          // TODO: Automatically publishing for now - remove this when draft/publish UI flow is implemented
-          this.publishFormSchema();
-
+          let draftId;
+          if (this.versionId) {
+            // If creating a new draft from an existing version, create the draft
+            const { data } = await formService.createDraft(this.formId, {
+              schema: this.formSchema,
+              formVersionId: this.versionId,
+            });
+            draftId = data.draftId;
+          } else if (this.draftId) {
+            // If editing a draft, save it
+            const { data } = await formService.updateDraft(this.formId, {
+              schema: this.formSchema,
+            });
+            draftId = data.draftId;
+          }
           // Once the form is done disable the native browser "leave site/page" message so they can quit without getting whined at
           await this.setDirtyFlag(false);
 
-          // Navigate back to navigation page on success
+          // Navigate back to this page with ID updated
           this.$router.push({
-            name: 'FormManage',
+            name: 'FormDesigner',
             query: {
               f: this.formId,
+              d: draftId,
+              sv: true,
             },
           });
-
-          // Draft version is now the latest - update route to reflect that
-          // this.$router.push({
-          //   name: 'FormDesigner',
-          //   query: {
-          //     f: this.formId,
-          //     v: this.draftId,
-          //   },
-          // });
         } catch (error) {
           this.addNotification({
             message:
@@ -364,21 +381,19 @@ export default {
             showSubmissionConfirmation: this.showSubmissionConfirmation,
             submissionReceivedEmails: emailList,
           });
-          // Add the schema to the newly created default version
-          if (!response.data.versions || !response.data.versions[0]) {
-            throw new Error(
-              `createForm response does not include a form version: ${response.data.versions}`
-            );
-          }
 
           // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
           await this.setDirtyFlag(false);
 
-          // Navigate back to navigation page on success
+          console.log(response);
+
+          // Navigate back to this page with ID updated
           this.$router.push({
-            name: 'FormManage',
+            name: 'FormDesigner',
             query: {
               f: response.data.id,
+              d: response.data.draft.id,
+              sv: true,
             },
           });
         } catch (error) {

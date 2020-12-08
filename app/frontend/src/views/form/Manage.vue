@@ -28,14 +28,18 @@ export default {
       required: true,
     },
   },
-  computed: {
-  },
+  computed: {},
   methods: {
-    ...mapActions('form', ['getFormPermissionsForUser', 'fetchForm']),
+    ...mapActions('form', [
+      'getFormPermissionsForUser',
+      'fetchDrafts',
+      'fetchForm',
+    ]),
   },
   mounted() {
     // Get the form for this management page
     this.fetchForm(this.f);
+    this.fetchDrafts(this.f);
     // Get the permissions for this form
     this.getFormPermissionsForUser(this.f);
   },

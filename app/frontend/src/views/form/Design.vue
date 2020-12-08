@@ -1,6 +1,12 @@
 <template>
   <BaseSecure>
-    <FormDesigner class="mt-6" :formId="f" :versionId="v" />
+    <FormDesigner
+      class="mt-6"
+      :draftId="d"
+      :formId="f"
+      :saved="sv"
+      :versionId="v"
+    />
   </BaseSecure>
 </template>
 
@@ -14,13 +20,19 @@ export default {
     FormDesigner,
   },
   props: {
+    d: String,
     f: String,
+    sv: Boolean,
     v: String,
   },
   computed: mapGetters('form', ['form']),
   beforeRouteLeave(to, from, next) {
     this.form.isDirty
-      ? next(window.confirm('Do you really want to leave this page? Changes you made will not be saved.'))
+      ? next(
+        window.confirm(
+          'Do you really want to leave this page? Changes you made will not be saved.'
+        )
+      )
       : next();
   },
 };
