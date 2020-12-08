@@ -79,11 +79,14 @@
       </v-col>
     </v-row>
 
-    <p v-if="draftId" class="mb-3"><em >Draft</em></p>
+    <p v-if="draftId" class="mb-3"><em>Draft</em></p>
 
     <v-alert v-if="saved" dense text type="success">
       Your form has been successfully saved
-      <router-link :to="{ name: 'FormPreview', query: { f: formId } }" class="mx-5">
+      <router-link
+        :to="{ name: 'FormPreview', query: { f: formId } }"
+        class="mx-5"
+      >
         Preview
       </router-link>
       <router-link :to="{ name: 'FormManage', query: { f: formId } }">
@@ -117,6 +120,7 @@
       :key="reRenderFormIo"
       :options="designerOptions"
       @change="onChangeMethod"
+      @initialized="init"
       class="form-designer"
     />
   </div>
@@ -290,6 +294,10 @@ export default {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
     },
+    init() {
+      // Since change is triggered during loading
+      this.setDirtyFlag(false);
+    },
     onExportClick() {
       let snek = this.snake;
       if (!this.snake) {
@@ -309,20 +317,6 @@ export default {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    },
-    async publishFormSchema() {
-      if (this.draftId) {
-        // If editing a form, add a new draft and then publish immediately
-        try {
-          await formService.publishDraft(this.formId, this.draftId);
-        } catch (error) {
-          this.addNotification({
-            message:
-              'An error occurred while attempting to publish this form. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
-            consoleError: `Error publishing form ${this.formId} schema version ${this.draftId}: ${error}`,
-          });
-        }
-      }
     },
     async submitFormSchema() {
       if (this.formId) {
@@ -384,8 +378,6 @@ export default {
 
           // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
           await this.setDirtyFlag(false);
-
-          console.log(response);
 
           // Navigate back to this page with ID updated
           this.$router.push({

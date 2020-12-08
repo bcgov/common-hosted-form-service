@@ -175,6 +175,17 @@ export default {
         }, { root: true });
       }
     },
+    async publishDraft({ dispatch }, { formId, draftId}) {
+      try {
+        await formService.publishDraft(formId, draftId);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while publishing.',
+          consoleError: `Error publishing ${draftId}: ${error}`,
+        }, { root: true });
+      }
+    },
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
     },
