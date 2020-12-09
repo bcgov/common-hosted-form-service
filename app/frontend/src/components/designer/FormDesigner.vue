@@ -85,6 +85,7 @@
       Your form has been successfully saved
       <router-link
         :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
+        target="_blank"
         class="mx-5"
       >
         Preview
@@ -382,13 +383,6 @@ export default {
         },
       });
     },
-    async schemaUpdateExistingDraft() {
-      await formService.updateDraft(this.formId, this.draftId, {
-        schema: this.formSchema,
-      });
-      // Navigate back to this page
-      this.$router.go();
-    },
     async schemaCreateDraftFromVersion() {
       const { data } = await formService.createDraft(this.formId, {
         schema: this.formSchema,
@@ -403,6 +397,13 @@ export default {
           sv: true,
         },
       });
+    },
+    async schemaUpdateExistingDraft() {
+      await formService.updateDraft(this.formId, this.draftId, {
+        schema: this.formSchema,
+      });
+      // Navigate back to this page
+      this.$router.go();
     },
     // ----------------------------------------------------------------------------------/ Saving Schema
   },
