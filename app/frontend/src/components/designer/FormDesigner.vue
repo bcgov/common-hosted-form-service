@@ -81,18 +81,24 @@
 
     <p v-if="draftId" class="mb-3"><em>Draft</em></p>
 
-    <v-alert v-if="saved" dense text type="success">
-      Your form has been successfully saved
-      <router-link
-        :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
-        target="_blank"
-        class="mx-5"
-      >
-        Preview
-      </router-link>
-      <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-        Go to Manage Form to Publish
-      </router-link>
+    <v-alert v-if="saved" dense text :type="saving ? 'info' : 'success'">
+      <div v-if="saving">
+        <v-progress-linear indeterminate />
+        Saving
+      </div>
+      <div v-else>
+        Your form has been successfully saved
+        <router-link
+          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
+          target="_blank"
+          class="mx-5"
+        >
+          Preview
+        </router-link>
+        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+          Go to Manage Form to Publish
+        </router-link>
+      </div>
     </v-alert>
 
     <BaseInfoCard class="my-6">
@@ -164,6 +170,7 @@ export default {
         components: [],
       },
       reRenderFormIo: 0,
+      saving: false,
     };
   },
   computed: {
@@ -330,6 +337,7 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
       try {
+        this.saving = true;
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
 
@@ -352,6 +360,8 @@ export default {
             'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
           consoleError: `Error updating or creating form (FormID: ${this.formId}, versionId: ${this.versionId}, draftId: ${this.draftId}) Error: ${error}`,
         });
+      } finally {
+        this.saving = false;
       }
     },
     async schemaCreateNew() {
@@ -402,8 +412,6 @@ export default {
       await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
       });
-      // Navigate back to this page
-      this.$router.go();
     },
     // ----------------------------------------------------------------------------------/ Saving Schema
   },
