@@ -22,6 +22,7 @@ const genInitialForm = () => ({
 export default {
   namespaced: true,
   state: {
+    drafts: [],
     form: genInitialForm(),
     formList: [],
     formSubmission: {
@@ -36,6 +37,7 @@ export default {
   },
   getters: {
     getField, // vuex-map-fields
+    drafts: state => state.drafts,
     form: state => state.form,
     formList: state => state.formList,
     formSubmission: state => state.formSubmission,
@@ -50,6 +52,9 @@ export default {
     },
     ADD_SUBMISSION_TO_LIST(state, submission) {
       state.submissions.push(submission);
+    },
+    SET_DRAFTS(state, drafts) {
+      state.drafts = drafts;
     },
     SET_FORM(state, form) {
       state.form = form;
@@ -140,6 +145,30 @@ export default {
         }, { root: true });
       }
     },
+    async deleteDraft({ dispatch }, { formId, draftId }) {
+      try {
+        await formService.deleteDraft(formId, draftId);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while deleting this draft.',
+          consoleError: `Error deleting ${draftId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async fetchDrafts({ commit, dispatch }, formId) {
+      try {
+        // Get any drafts for this form from the api
+        const { data } = await formService.listDrafts(formId);
+        commit('SET_DRAFTS', data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while scanning for drafts for this form.',
+          consoleError: `Error getting drafts for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
     async fetchForm({ commit, dispatch }, formId) {
       try {
         // Get the form definition from the api
@@ -154,6 +183,17 @@ export default {
           message:
             'An error occurred while fetching this form.',
           consoleError: `Error getting form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async publishDraft({ dispatch }, { formId, draftId }) {
+      try {
+        await formService.publishDraft(formId, draftId);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while publishing.',
+          consoleError: `Error publishing ${draftId}: ${error}`,
         }, { root: true });
       }
     },

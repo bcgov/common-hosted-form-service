@@ -78,6 +78,29 @@
         </v-tooltip>
       </v-col>
     </v-row>
+
+    <p v-if="draftId" class="mb-3"><em>Draft</em></p>
+
+    <v-alert v-if="saved" dense text :type="saving ? 'info' : 'success'">
+      <div v-if="saving">
+        <v-progress-linear indeterminate />
+        Saving
+      </div>
+      <div v-else>
+        Your form has been successfully saved
+        <router-link
+          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
+          target="_blank"
+          class="mx-5"
+        >
+          Preview
+        </router-link>
+        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+          Go to Manage Form to Publish
+        </router-link>
+      </div>
+    </v-alert>
+
     <BaseInfoCard class="my-6">
       <p class="my-0">
         Use the SAVE DESIGN (<v-icon small>save</v-icon>) button when you are
@@ -104,6 +127,7 @@
       :key="reRenderFormIo"
       :options="designerOptions"
       @change="onChangeMethod"
+      @initialized="init"
       class="form-designer"
     />
   </div>
@@ -124,7 +148,12 @@ export default {
     FormBuilder,
   },
   props: {
+    draftId: String,
     formId: String,
+    saved: {
+      type: Boolean,
+      default: false,
+    },
     versionId: String,
   },
   data() {
@@ -135,13 +164,13 @@ export default {
         { text: 'Advanced Mode', value: true },
       ],
       designerStep: 1,
-      draftId: '',
       formSchema: {
         display: 'form',
         type: 'form',
         components: [],
       },
       reRenderFormIo: 0,
+      saving: false,
     };
   },
   computed: {
@@ -188,7 +217,7 @@ export default {
                 simpletime: true,
                 simplecheckbox: true,
                 simplecheckboxes: true,
-                simpleradios: true
+                simpleradios: true,
               },
             },
             layoutControls: {
@@ -216,7 +245,7 @@ export default {
               title: 'BC Gov.',
               weight: 50,
               components: {
-                orgbook: true
+                orgbook: true,
               },
             },
           },
@@ -235,19 +264,21 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
-      if (this.versionId) {
-        try {
-          const response = await formService.readVersion(
-            this.formId,
-            this.versionId
-          );
-          this.formSchema = { ...this.formSchema, ...response.data.schema };
-        } catch (error) {
-          this.addNotification({
-            message: 'An error occurred while loading the form schema.',
-            consoleError: `Error loading form ${this.formId} schema version ${this.versionId}: ${error}`,
-          });
+      try {
+        let res;
+        if (this.versionId) {
+          // Making a new draft from a previous version
+          res = await formService.readVersion(this.formId, this.versionId);
+        } else if (this.draftId) {
+          // Editing an existing draft
+          res = await formService.readDraft(this.formId, this.draftId);
         }
+        this.formSchema = { ...this.formSchema, ...res.data.schema };
+      } catch (error) {
+        this.addNotification({
+          message: 'An error occurred while loading the form design.',
+          consoleError: `Error loading form ${this.formId} schema (version: ${this.versionId} draft: ${this.draftId}): ${error}`,
+        });
       }
     },
     async loadFile(event) {
@@ -266,10 +297,6 @@ export default {
           consoleError: `Error importing form schema : ${error}`,
         });
       }
-    },
-    onChangeMethod() {
-      // Don't call an unnecessary action if already dirty
-      if (!this.isDirty) this.setDirtyFlag(true);
     },
     onExportClick() {
       let snek = this.snake;
@@ -291,105 +318,102 @@ export default {
       a.click();
       document.body.removeChild(a);
     },
-    async publishFormSchema() {
-      if (this.draftId) {
-        // If editing a form, add a new draft and then publish immediately
-        try {
-          await formService.publishDraft(this.formId, this.draftId);
-        } catch (error) {
-          this.addNotification({
-            message:
-              'An error occurred while attempting to publish this form. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
-            consoleError: `Error publishing form ${this.formId} schema version ${this.draftId}: ${error}`,
-          });
-        }
-      }
+
+    // ---------------------------------------------------------------------------------------------------
+    // FormIO event handlers
+    // ---------------------------------------------------------------------------------------------------
+    onChangeMethod() {
+      // Don't call an unnecessary action if already dirty
+      if (!this.isDirty) this.setDirtyFlag(true);
     },
+    init() {
+      // Since change is triggered during loading
+      this.setDirtyFlag(false);
+    },
+    // ----------------------------------------------------------------------------------/ FormIO Handlers
+
+    // ---------------------------------------------------------------------------------------------------
+    // Saving the Schema
+    // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
-      if (this.formId) {
-        // If editing a form, add a new draft and then publish immediately
-        try {
-          const { data } = await formService.createDraft(this.formId, {
-            schema: this.formSchema,
-          });
-          this.draftId = data.id;
-          this.formSchema = data.schema;
+      try {
+        this.saving = true;
+        // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
+        await this.setDirtyFlag(false);
 
-          // TODO: Automatically publishing for now - remove this when draft/publish UI flow is implemented
-          this.publishFormSchema();
-
-          // Once the form is done disable the native browser "leave site/page" message so they can quit without getting whined at
-          await this.setDirtyFlag(false);
-
-          // Navigate back to navigation page on success
-          this.$router.push({
-            name: 'FormManage',
-            query: {
-              f: this.formId,
-            },
-          });
-
-          // Draft version is now the latest - update route to reflect that
-          // this.$router.push({
-          //   name: 'FormDesigner',
-          //   query: {
-          //     f: this.formId,
-          //     v: this.draftId,
-          //   },
-          // });
-        } catch (error) {
-          this.addNotification({
-            message:
-              'An error occurred while attempting to update this form. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
-            consoleError: `Error updating form ${this.formId} schema version ${this.versionId}: ${error}`,
-          });
-        }
-      } else {
-        // If creating a new form, add the form and then a version
-        try {
-          const emailList =
-            this.sendSubRecieviedEmail &&
-            this.submissionReceivedEmails &&
-            Array.isArray(this.submissionReceivedEmails)
-              ? this.submissionReceivedEmails
-              : [];
-          const response = await formService.createForm({
-            name: this.name,
-            description: this.description,
-            schema: this.formSchema,
-            identityProviders: generateIdps({
-              idps: this.idps,
-              userType: this.userType,
-            }),
-            showSubmissionConfirmation: this.showSubmissionConfirmation,
-            submissionReceivedEmails: emailList,
-          });
-          // Add the schema to the newly created default version
-          if (!response.data.versions || !response.data.versions[0]) {
-            throw new Error(
-              `createForm response does not include a form version: ${response.data.versions}`
-            );
+        if (this.formId) {
+          if (this.versionId) {
+            // If creating a new draft from an existing version
+            await this.schemaCreateDraftFromVersion();
+          } else if (this.draftId) {
+            // If updating an existing draft
+            await this.schemaUpdateExistingDraft();
           }
-
-          // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
-          await this.setDirtyFlag(false);
-
-          // Navigate back to navigation page on success
-          this.$router.push({
-            name: 'FormManage',
-            query: {
-              f: response.data.id,
-            },
-          });
-        } catch (error) {
-          this.addNotification({
-            message:
-              'An error occurred while attempting to create this form. If you need to refresh or leave to try again later you can Export the existing design on the page to save for later.',
-            consoleError: `Error creating new form : ${error}`,
-          });
+        } else {
+          // If creating a new form, add the form and a draft
+          this.schemaCreateNew();
         }
+      } catch (error) {
+        await this.setDirtyFlag(true);
+        this.addNotification({
+          message:
+            'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
+          consoleError: `Error updating or creating form (FormID: ${this.formId}, versionId: ${this.versionId}, draftId: ${this.draftId}) Error: ${error}`,
+        });
+      } finally {
+        this.saving = false;
       }
     },
+    async schemaCreateNew() {
+      const emailList =
+        this.sendSubRecieviedEmail &&
+        this.submissionReceivedEmails &&
+        Array.isArray(this.submissionReceivedEmails)
+          ? this.submissionReceivedEmails
+          : [];
+      const response = await formService.createForm({
+        name: this.name,
+        description: this.description,
+        schema: this.formSchema,
+        identityProviders: generateIdps({
+          idps: this.idps,
+          userType: this.userType,
+        }),
+        showSubmissionConfirmation: this.showSubmissionConfirmation,
+        submissionReceivedEmails: emailList,
+      });
+
+      // Navigate back to this page with ID updated
+      this.$router.push({
+        name: 'FormDesigner',
+        query: {
+          f: response.data.id,
+          d: response.data.draft.id,
+          sv: true,
+        },
+      });
+    },
+    async schemaCreateDraftFromVersion() {
+      const { data } = await formService.createDraft(this.formId, {
+        schema: this.formSchema,
+        formVersionId: this.versionId,
+      });
+      // Navigate back to this page with ID updated
+      this.$router.push({
+        name: 'FormDesigner',
+        query: {
+          f: this.formId,
+          d: data.id,
+          sv: true,
+        },
+      });
+    },
+    async schemaUpdateExistingDraft() {
+      await formService.updateDraft(this.formId, this.draftId, {
+        schema: this.formSchema,
+      });
+    },
+    // ----------------------------------------------------------------------------------/ Saving Schema
   },
   created() {
     if (this.formId) {
