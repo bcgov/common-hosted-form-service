@@ -31,9 +31,9 @@ export default {
   computed: {},
   methods: {
     ...mapActions('form', [
-      'getFormPermissionsForUser',
       'fetchDrafts',
       'fetchForm',
+      'getFormPermissionsForUser',
     ]),
   },
   mounted() {
