@@ -19,6 +19,8 @@
       <template #no-data>
         No versions yet. Publish a draft to release a form version.
       </template>
+
+      <!-- Version  -->
       <template #[`item.version`]="{ item }">
         <router-link
           :to="{
@@ -26,38 +28,45 @@
             query: { f: item.formId, v: item.id },
           }"
           class="mx-5"
+          target="_blank"
         >
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">Version {{ item.version }}</span>
             </template>
-            <span> Click to preview </span>
+            <span> Click to preview <v-icon>open_in_new</v-icon></span>
           </v-tooltip>
         </router-link>
       </template>
+
+      <!-- Published date  -->
       <template #[`item.createdAt`]="{ item }">
         {{ item.createdAt | formatDateLong }}
         - {{ item.createdBy }}
       </template>
+
+      <!-- Create new version  -->
       <template #[`item.create`]="{ item }">
-        <router-link
-          :to="{
-            name: 'FormDesigner',
-            query: { f: item.formId, v: item.id },
-          }"
-        >
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn color="primary" text small v-bind="attrs" v-on="on">
-                <v-icon>add_circle</v-icon>
-              </v-btn>
-            </template>
-            <span>
-              Use version {{ item.version }} as the base for a new version
-            </span>
-          </v-tooltip>
-        </router-link>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              text
+              small
+              @click="createVersion(item.formId, item.id)"
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>add_circle</v-icon>
+            </v-btn>
+          </template>
+          <span>
+            Use version {{ item.version }} as the base for a new version
+          </span>
+        </v-tooltip>
       </template>
+
+      <!-- Export Schema  -->
       <template #[`item.export`]="{ item }">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
@@ -76,6 +85,18 @@
         </v-tooltip>
       </template>
     </v-data-table>
+
+    <BaseDialog
+      v-model="showHasDraftsDialog"
+      type="OK"
+      @close-dialog="showHasDraftsDialog = false"
+    >
+      <template #title>Draft already exists</template>
+      <template #text>
+        A Draft already exists for this form. Please edit that draft or delete
+        it if you wish to start a new one.
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
@@ -109,6 +130,7 @@ export default {
           sortable: false,
         },
       ],
+      showHasDraftsDialog: false,
     };
   },
   computed: {
@@ -125,6 +147,16 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    createVersion(formId, versionId) {
+      if (this.hasDraft) {
+        this.showHasDraftsDialog = true;
+      } else {
+        this.$router.push({
+          name: 'FormDesigner',
+          query: { f: formId, v: versionId },
+        });
+      }
+    },
     async exportSchema(versionId) {
       try {
         const ver = await formService.readVersion(this.form.id, versionId);

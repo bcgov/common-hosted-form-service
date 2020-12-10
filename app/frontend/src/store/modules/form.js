@@ -145,6 +145,17 @@ export default {
         }, { root: true });
       }
     },
+    async deleteDraft({ dispatch }, { formId, draftId }) {
+      try {
+        await formService.deleteDraft(formId, draftId);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while deleting this draft.',
+          consoleError: `Error deleting ${draftId}: ${error}`,
+        }, { root: true });
+      }
+    },
     async fetchDrafts({ commit, dispatch }, formId) {
       try {
         // Get any drafts for this form from the api
@@ -175,7 +186,7 @@ export default {
         }, { root: true });
       }
     },
-    async publishDraft({ dispatch }, { formId, draftId}) {
+    async publishDraft({ dispatch }, { formId, draftId }) {
       try {
         await formService.publishDraft(formId, draftId);
       } catch (error) {

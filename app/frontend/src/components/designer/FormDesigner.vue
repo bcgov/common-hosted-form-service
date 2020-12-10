@@ -403,7 +403,7 @@ export default {
         name: 'FormDesigner',
         query: {
           f: this.formId,
-          d: data.draftId,
+          d: data.id,
           sv: true,
         },
       });
