@@ -31,7 +31,10 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <router-link
-              :to="{ name: 'FormDesigner', query: { d: draft.id, f: form.id } }"
+              :to="{
+                name: 'FormDesigner',
+                query: { d: draft.id, f: form.id, sv: true },
+              }"
             >
               <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                 <v-icon>edit</v-icon>
@@ -46,7 +49,7 @@
             <v-btn
               class="mx-1"
               color="red"
-              @click="showDeleteDialog = true"
+              @click="showDeleteDraftDialog = true"
               :disabled="hasVersions"
               icon
               v-bind="attrs"
@@ -59,6 +62,19 @@
         </v-tooltip>
       </v-col>
     </v-row>
+
+    <BaseDialog
+      v-model="showDeleteDraftDialog"
+      type="CONTINUE"
+      @close-dialog="showDeleteDraftDialog = false"
+      @continue-dialog="deleteCurrentDraft"
+    >
+      <template #title>Confirm Deletion</template>
+      <template #text> Are you sure you wish to delete this Draft? </template>
+      <template #button-text-continue>
+        <span>Delete</span>
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
@@ -69,6 +85,7 @@ export default {
   data() {
     return {
       publishing: false,
+      showDeleteDraftDialog: false,
     };
   },
   computed: {
@@ -81,7 +98,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'fetchDrafts', 'publishDraft']),
+    ...mapActions('form', ['deleteDraft', 'fetchForm', 'fetchDrafts', 'publishDraft']),
+    async deleteCurrentDraft() {
+      this.showDeleteDraftDialog = false;
+      await this.deleteDraft({ formId: this.form.id, draftId: this.draft.id });
+      this.fetchDrafts(this.form.id);
+    },
     async publishThisVersion() {
       await this.publishDraft({ formId: this.form.id, draftId: this.draft.id });
       // Refresh form version and drafts details

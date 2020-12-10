@@ -63,6 +63,17 @@ export default {
   },
 
   /**
+   * @function deleteDraft
+   * Delete a Form draft
+   * @param {string} formId The form uuid
+   * @param {string} formVersionDraftId The form version draft uuid
+   * @returns {Promise} An axios response
+   */
+  deleteDraft(formId, formVersionDraftId) {
+    return appAxios().delete(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`);
+  },
+
+  /**
    * @function listDrafts
    * Get any drafts for a form
    * @param {string} formId The form uuid
