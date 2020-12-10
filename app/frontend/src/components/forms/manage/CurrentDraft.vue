@@ -12,7 +12,7 @@
           color="success"
           @change="publishThisVersion"
         >
-          <template v-slot:label>
+          <template #label>
             {{ !publishing ? 'Unpublished' : 'Publishing' }}
             <v-progress-circular
               v-if="publishing"
@@ -20,12 +20,12 @@
               :value="0"
               size="24"
               class="ml-2"
-            ></v-progress-circular>
+            />
           </template>
         </v-switch>
       </v-col>
 
-      <v-spacer></v-spacer>
+      <v-spacer />
 
       <v-col cols="12" md="auto">
         <v-tooltip bottom>
@@ -82,6 +82,7 @@
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
+  name: 'CurrentDraft',
   data() {
     return {
       publishing: false,
@@ -94,11 +95,16 @@ export default {
       return this.drafts[0];
     },
     hasVersions() {
-      return !this.form || !this.form.versions || !this.form.versions.length;
+      return this.form && this.form.versions && this.form.versions.length;
     },
   },
   methods: {
-    ...mapActions('form', ['deleteDraft', 'fetchForm', 'fetchDrafts', 'publishDraft']),
+    ...mapActions('form', [
+      'deleteDraft',
+      'fetchForm',
+      'fetchDrafts',
+      'publishDraft',
+    ]),
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;
       await this.deleteDraft({ formId: this.form.id, draftId: this.draft.id });
