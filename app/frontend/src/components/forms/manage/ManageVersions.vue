@@ -93,8 +93,8 @@
     >
       <template #title>Draft already exists</template>
       <template #text>
-        A Draft already exists for this form. Please edit that draft or delete
-        it if you wish to start a new one.
+        Please edit, publish or delete the existing draft before starting a new
+        draft.
       </template>
     </BaseDialog>
   </div>
