@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import TeamManagement from '@/components/forms/TeamManagement.vue';
+import TeamManagement from '@/components/forms/manage/TeamManagement.vue';
 
 export default {
   name: 'FormTeams',

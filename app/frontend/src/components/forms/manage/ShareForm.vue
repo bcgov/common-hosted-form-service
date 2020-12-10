@@ -21,7 +21,12 @@
         <v-card-title class="headline pb-0">Share Link</v-card-title>
         <v-card-text>
           <hr />
-          <p class="pb-5">Copy the link below or download the QR code.</p>
+          <p class="mb-5">Copy the link below or download the QR code.</p>
+
+          <v-alert v-if="warning" dense border="left" type="warning">
+            There is no published version of the form at this time. The link
+            below will not be reachable until a version is published.
+          </v-alert>
 
           <v-row no-gutters class="mt-5">
             <v-col cols="11">
@@ -98,6 +103,10 @@ export default {
     formId: {
       type: String,
       required: true,
+    },
+    warning: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

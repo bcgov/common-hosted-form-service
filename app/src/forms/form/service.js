@@ -54,21 +54,18 @@ const service = {
       });
       await FormRoleUser.query(trx).insert(userRoles);
 
-      // create a default version 1
-      // for now, we will set this version to published.
-      // we will address this later.
-      const version = {
+      // create a unpublished draft
+      const draft = {
         id: uuidv4(),
         formId: obj.id,
-        version: 1,
         createdBy: currentUser.username,
-        schema: data.schema,
-        published: true
+        schema: data.schema
       };
-      await FormVersion.query(trx).insert(version);
+      await FormVersionDraft.query(trx).insert(draft);
 
       await trx.commit();
       const result = await service.readForm(obj.id);
+      result.draft = draft;
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -167,7 +164,8 @@ const service = {
     return FormVersion.query()
       .where('formId', formId)
       .modify('filterPublished', params.published)
-      .modify('orderVersionDescending');
+      .modify('orderVersionDescending')
+      .modify('selectWithoutSchema');
   },
 
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
