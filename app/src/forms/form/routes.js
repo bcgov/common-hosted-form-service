@@ -1,3 +1,4 @@
+const config = require('config');
 const Problem = require('api-problem');
 const routes = require('express').Router();
 
@@ -5,9 +6,10 @@ const currentUser = require('../auth/middleware/userAccess').currentUser;
 const hasFormPermissions = require('../auth/middleware/userAccess').hasFormPermissions;
 const P = require('../common/constants').Permissions;
 
+const keycloak = require('../../components/keycloak');
 const controller = require('./controller');
 
-routes.get('/', currentUser, async (req, res, next) => {
+routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), currentUser, async (req, res, next) => {
   await controller.listForms(req, res, next);
 });
 
@@ -44,7 +46,7 @@ routes.get('/:formId/versions', currentUser, hasFormPermissions([P.FORM_READ, P.
 });
 
 routes.post('/:formId/versions', currentUser, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
-  next(new Problem(410, {detail: 'This method is deprecated, use /forms/id/drafts to create form versions.'}));
+  next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to create form versions.' }));
 });
 
 routes.get('/:formId/versions/:formVersionId', currentUser, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
@@ -52,7 +54,7 @@ routes.get('/:formId/versions/:formVersionId', currentUser, hasFormPermissions([
 });
 
 routes.put('/:formId/versions/:formVersionId', currentUser, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
-  next(new Problem(410, {detail: 'This method is deprecated, use /forms/id/drafts to modify form versions.'}));
+  next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to modify form versions.' }));
 });
 
 routes.post('/:formId/versions/:formVersionId/publish', currentUser, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
@@ -68,11 +70,11 @@ routes.post('/:formId/versions/:formVersionId/submissions', currentUser, hasForm
 });
 
 routes.get('/:formId/versions/:formVersionId/submissions/:formSubmissionId', currentUser, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
-  next(new Problem(410, {detail: 'This method is deprecated, use /submissions to read a submission.'}));
+  next(new Problem(410, { detail: 'This method is deprecated, use /submissions to read a submission.' }));
 });
 
 routes.put('/:formId/versions/:formVersionId/submissions/:formSubmissionId', currentUser, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
-  next(new Problem(410, {detail: 'This method is deprecated, use /submissions to modify a submission.'}));
+  next(new Problem(410, { detail: 'This method is deprecated, use /submissions to modify a submission.' }));
 });
 
 routes.get('/:formId/drafts', currentUser, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
