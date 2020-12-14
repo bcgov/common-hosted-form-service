@@ -65,25 +65,6 @@
           </span>
         </v-tooltip>
       </template>
-
-      <!-- Export Schema  -->
-      <template #[`item.export`]="{ item }">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              text
-              small
-              @click="exportSchema(item.id)"
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>get_app</v-icon>
-            </v-btn>
-          </template>
-          <span>Download version {{ item.version }} to a file</span>
-        </v-tooltip>
-      </template>
     </v-data-table>
 
     <BaseDialog
@@ -105,7 +86,6 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { FormPermissions } from '@/utils/constants';
 import CurrentDraft from '@/components/forms/manage/CurrentDraft.vue';
-import formService from '@/services/formService.js';
 
 export default {
   name: 'ManageVersions',
@@ -119,13 +99,6 @@ export default {
           text: 'Create a New Version',
           align: 'center',
           value: 'create',
-          filterable: false,
-          sortable: false,
-        },
-        {
-          text: 'Export',
-          align: 'center',
-          value: 'export',
           filterable: false,
           sortable: false,
         },
@@ -154,31 +127,6 @@ export default {
         this.$router.push({
           name: 'FormDesigner',
           query: { f: formId, v: versionId },
-        });
-      }
-    },
-    async exportSchema(versionId) {
-      try {
-        const ver = await formService.readVersion(this.form.id, versionId);
-        if (ver && ver.data) {
-          const a = document.createElement('a');
-          a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-            JSON.stringify(ver.data.schema)
-          )}`;
-          a.download = `${this.form.snake}_schema.json`;
-          a.style.display = 'none';
-          a.classList.add('hiddenDownloadTextElement');
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        } else {
-          throw new Error('No data in response from readVersion call');
-        }
-      } catch (error) {
-        this.addNotification({
-          message:
-            'An error occurred while attempting to export the design for this version.',
-          consoleError: `Error export schema for ${this.form.id} version ${versionId}: ${error}`,
         });
       }
     },
