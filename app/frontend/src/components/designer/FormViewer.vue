@@ -49,7 +49,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['authenticated', 'token']),
+    ...mapGetters('auth', ['token']),
     viewerOptions() {
       return {
         readOnly: this.readOnly || this.submissionId !== undefined,
@@ -128,12 +128,10 @@ export default {
           this.formSchema = response.data.versions[0].schema;
         }
       } catch (error) {
-        if (this.authenticated) {
-          this.addNotification({
-            message: 'An error occurred fetching this form',
-            consoleError: `Error loading form schema ${this.versionId}: ${error}`,
-          });
-        }
+        this.addNotification({
+          message: 'An error occurred fetching this form',
+          consoleError: `Error loading form schema ${this.versionId}: ${error}`,
+        });
       }
     },
 
