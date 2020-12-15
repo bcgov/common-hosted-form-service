@@ -44,6 +44,7 @@
     "keycloak": {
       "clientId": "SERVER_KC_CLIENTID",
       "clientSecret": "SERVER_KC_CLIENTSECRET",
+      "publicKey": "SERVER_KC_PUBLICKEY",
       "realm": "SERVER_KC_REALM",
       "serverUrl": "SERVER_KC_SERVERURL"
     },

@@ -22,9 +22,12 @@ In order to prepare an environment, you will need to ensure that all of the foll
 
 *Note:* Replace anything in angle brackets with the appropriate value!
 
+*Note 2:* The Keycloak Public Key can be found in the Keycloak Admin Panel under Realm Settings > Keys. Look for the Public key button (normally under RS256 row), and click to see the key. The key should begin with a pattern of `MIIBIjANB...`.
+
 ```sh
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
+export PUBLIC_KEY=<yourkeycloakpublickey>
 
 oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
   --from-literal=FRONTEND_APIPATH=api/v1 \
@@ -46,6 +49,7 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_APIPATH=/api/v1 \
   --from-literal=SERVER_BASEPATH=/app \
   --from-literal=SERVER_BODYLIMIT=30mb \
+  --from-literal=SERVER_KC_PUBLICKEY=$PUBLIC_KEY \
   --from-literal=SERVER_KC_REALM=cp1qly2d \
   --from-literal=SERVER_KC_SERVERURL=https://dev.oidc.gov.bc.ca/auth \
   --from-literal=SERVER_LOGLEVEL=info \
