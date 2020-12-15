@@ -22,6 +22,10 @@ routes.get('/forms', async (req, res, next) => {
   await controller.listForms(req, res, next);
 });
 
+routes.get('/forms/:formId', async (req, res, next) => {
+  await controller.readForm(req, res, next);
+});
+
 
 //
 // Users

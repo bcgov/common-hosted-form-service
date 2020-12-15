@@ -19,6 +19,13 @@ const service = {
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .modify('orderNameAscending');
   },
+  readForm: async (formId, params = {}) => {
+    params = queryUtils.defaultActiveOnly(params);
+    return Form.query()
+      .findById(formId)
+      .modify('filterActive', params.active)
+      .throwIfNotFound();
+  },
 
   //
   // Users
