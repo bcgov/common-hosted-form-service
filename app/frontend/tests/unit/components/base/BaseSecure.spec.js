@@ -63,6 +63,52 @@ describe('BaseSecure.vue', () => {
     expect(wrapper.text()).toMatch('Unauthorized');
   });
 
+  it('renders a message if admin required, not admin', () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isAdmin: () => false,
+        isUser: () => true,
+        keycloakReady: () => true
+      }
+    });
+
+    const wrapper = shallowMount(BaseSecure, {
+      localVue,
+      store,
+      stubs: ['router-link'],
+      propsData: {
+        admin: true
+      }
+    });
+
+    expect(wrapper.text()).toMatch('You do not have permission');
+  });
+
+  it('renders nothing if admin required, user is admin', () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isAdmin: () => false,
+        isUser: () => true,
+        keycloakReady: () => true
+      }
+    });
+
+    const wrapper = shallowMount(BaseSecure, {
+      localVue,
+      store,
+      stubs: ['router-link'],
+      propsData: {
+        admin: true
+      }
+    });
+
+    expect(wrapper.text()).toMatch('');
+  });
+
   it('renders a message with login button if unauthenticated', () => {
     store.registerModule('auth', {
       namespaced: true,

@@ -1,7 +1,13 @@
 <template>
   <div v-if="authenticated">
     <div v-if="isUser">
-      <slot />
+      <div v-if="admin && !isAdmin" class="text-center">
+        <h1 class="my-8">401: Unauthorized. :(</h1>
+        <p>You do not have permission to access this page.<br /></p>
+      </div>
+      <div v-else>
+        <slot />
+      </div>
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
@@ -37,10 +43,17 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'BaseSecure',
+  props: {
+    admin: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {
     ...mapGetters('auth', [
       'authenticated',
       'createLoginUrl',
+      'isAdmin',
       'isUser',
       'keycloakReady',
     ]),
