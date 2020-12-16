@@ -1,27 +1,21 @@
 <template>
-  <div>
-    <v-tabs>
-      <v-tab>Forms</v-tab>
-      <v-tab>Users</v-tab>
-      <v-tab>Developer</v-tab>
+  <v-tabs>
+    <v-tab>Forms</v-tab>
+    <v-tab>Users</v-tab>
+    <v-tab>Developer</v-tab>
 
-      <v-tab-item> <AdminFormsTable /> </v-tab-item>
-      <v-tab-item> <AdminUsersTable /> </v-tab-item>
-      <v-tab-item> <Developer /> </v-tab-item>
-    </v-tabs>
-  </div>
+    <v-tab-item> <AdminFormsTable /> </v-tab-item>
+    <v-tab-item> <AdminUsersTable /> </v-tab-item>
+    <v-tab-item> <Developer /> </v-tab-item>
+  </v-tabs>
 </template>
 
 <script>
-import AdminFormsTable from '@/components/admin/AdminFormsTable.vue';
-import AdminUsersTable from '@/components/admin/AdminUsersTable.vue';
-import Developer from '@/components/admin/Developer.vue';
-
 export default {
   components: {
-    AdminFormsTable,
-    AdminUsersTable,
-    Developer,
+    AdminFormsTable: () => import('@/components/admin/AdminFormsTable.vue'),
+    AdminUsersTable: () => import('@/components/admin/AdminUsersTable.vue'),
+    Developer: () => import('@/components/admin/Developer.vue'),
   },
 };
 </script>

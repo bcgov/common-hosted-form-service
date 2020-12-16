@@ -76,8 +76,8 @@ export default {
       } catch (error) {
         dispatch('notifications/addNotification', {
           message:
-            'An error occurred while fetching forms.',
-          consoleError: `Error getting admin form data: ${error}`,
+            'An error occurred while fetching users.',
+          consoleError: `Error getting admin users data: ${error}`,
         }, { root: true });
       }
     },
