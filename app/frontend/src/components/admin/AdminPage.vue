@@ -18,6 +18,7 @@ import AdminUsersTable from '@/components/admin/AdminUsersTable.vue';
 import Developer from '@/components/admin/Developer.vue';
 
 export default {
+  name: 'AdminPage',
   components: {
     AdminFormsTable,
     AdminUsersTable,

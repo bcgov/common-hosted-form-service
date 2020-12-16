@@ -4,6 +4,7 @@ const routes = require('express').Router();
 const currentUser = require('../auth/middleware/userAccess').currentUser;
 
 const controller = require('./controller');
+const userController = require('../user/controller');
 const keycloak = require('../../components/keycloak');
 
 // Always have this applied to all routes here
@@ -26,14 +27,6 @@ routes.get('/forms/:formId', async (req, res, next) => {
   await controller.readForm(req, res, next);
 });
 
-
-//
-// Users
-//
-routes.get('/users', async (req, res, next) => {
-  await controller.getUsers(req, res, next);
-});
-
 routes.get('/formusers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
 });
@@ -41,5 +34,20 @@ routes.get('/formusers', async (req, res, next) => {
 routes.put('/formusers', async (req, res, next) => {
   await controller.setFormUserRoles(req, res, next);
 });
+
+
+//
+// Users
+//
+routes.get('/users', async (req, res, next) => {
+  await userController.list(req, res, next);
+});
+
+routes.get('/users/:userId', async (req, res, next) => {
+  await userController.read(req, res, next);
+});
+
+
+
 
 module.exports = routes;
