@@ -3,6 +3,7 @@ import * as constants from '@/utils/constants';
 describe('Constants', () => {
   it('ApiRoutes has the right values defined', () => {
     expect(constants.ApiRoutes).toEqual({
+      ADMIN: '/admin',
       FORMS: '/forms',
       RBAC: '/rbac',
       ROLES: '/roles',
