@@ -19,11 +19,9 @@ const service = {
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .modify('orderNameAscending');
   },
-  readForm: async (formId, params = {}) => {
-    params = queryUtils.defaultActiveOnly(params);
+  readForm: async (formId) => {
     return Form.query()
       .findById(formId)
-      .modify('filterActive', params.active)
       .throwIfNotFound();
   },
 
