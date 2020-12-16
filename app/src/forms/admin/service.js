@@ -10,7 +10,6 @@ const service = {
   // Forms
   //
   listForms: async (params) => {
-    console.log(params);
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .skipUndefined()
