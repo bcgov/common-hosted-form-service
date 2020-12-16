@@ -1,8 +1,9 @@
 <template>
   <BaseSecure :admin="true">
     <v-container>
-      <h1 class="mt-6">Admin</h1>
-      <AdminPage />
+      <transition name="component-fade" mode="out-in">
+        <router-view />
+      </transition>
     </v-container>
   </BaseSecure>
 </template>
@@ -11,13 +12,9 @@
 import { mapGetters } from 'vuex';
 
 import admin from '@/store/modules/admin.js';
-import AdminPage from '@/components/admin/AdminPage.vue';
 
 export default {
   name: 'Admin',
-  components: {
-    AdminPage,
-  },
   computed: {
     ...mapGetters('auth', ['isAdmin']),
   },
@@ -31,3 +28,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.component-fade-enter-active,
+.component-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.component-fade-enter,
+.component-fade-leave-to {
+  opacity: 0;
+}
+</style>

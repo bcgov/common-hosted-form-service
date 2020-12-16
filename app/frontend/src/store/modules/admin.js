@@ -17,7 +17,7 @@ export default {
     SET_FORMLIST(state, forms) {
       state.formList = forms;
     },
-    SET_USERIST(state, users) {
+    SET_USERLIST(state, users) {
       state.userList = users;
     }
   },
@@ -45,9 +45,10 @@ export default {
     //
     async getUsers({ commit, dispatch }) {
       try {
-        // Get all forms
-        const response = await adminService.listForms();
-        commit('SET_FORMLIST', response.data);
+        // Get all users
+        commit('SET_USERLIST', []);
+        const response = await adminService.getUsers();
+        commit('SET_USERLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
           message:

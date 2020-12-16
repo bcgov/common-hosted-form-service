@@ -1,14 +1,7 @@
 <template>
   <div>
     <v-row no-gutters>
-      <v-col cols="12" sm="8">
-        <v-checkbox
-          class="pl-3"
-          v-model="activeOnly"
-          label="Show deleted forms"
-          @click="refeshForms"
-        ></v-checkbox>
-      </v-col>
+      <v-spacer />
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
@@ -27,21 +20,18 @@
     <!-- table header -->
     <v-data-table
       class="submissions-table"
-      :headers="calcHeaders"
+      :headers="headers"
       item-key="title"
-      :items="formList"
+      :items="userList"
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
     >
       <template #[`item.created`]="{ item }">
-        {{ item.createdAt | formatDate }} - {{ item.createdBy }}
-      </template>
-      <template #[`item.deleted`]="{ item }">
-        {{ item.updatedAt | formatDate }} - {{ item.updatedBy }}
+        {{ item.createdAt | formatDate }}
       </template>
       <template #[`item.actions`]="{ item }">
-        <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
+        <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
           <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
             <span class="d-none d-sm-flex">Admin</span>
@@ -61,9 +51,9 @@ export default {
     return {
       activeOnly: false,
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name' },
+        { text: 'Full Name', align: 'start', value: 'fullName' },
+        { text: 'User ID', align: 'start', value: 'username' },
         { text: 'Created', align: 'start', value: 'created' },
-        { text: 'Deleted', align: 'start', value: 'deleted' },
         {
           text: 'Actions',
           align: 'end',
@@ -77,23 +67,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('admin', ['formList']),
-    calcHeaders() {
-      return this.headers.filter(
-        (x) => x.value !== 'deleted' || this.activeOnly
-      );
-    },
+    ...mapGetters('admin', ['userList']),
   },
   methods: {
-    ...mapActions('admin', ['getForms']),
-    async refeshForms() {
-      this.loading = true;
-      await this.getForms(!this.activeOnly);
-      this.loading = false;
-    },
+    ...mapActions('admin', ['getUsers']),
   },
   async mounted() {
-    await this.getForms();
+    await this.getUsers();
     this.loading = false;
   },
 };
