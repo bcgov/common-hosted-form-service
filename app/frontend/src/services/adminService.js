@@ -15,17 +15,36 @@ export default {
   listForms(active = true) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}`, { params: { active: active } });
   },
+  /**
+   * @function readForm
+   * Get a form
+   * @param {string} formId The GUID
+   * @returns {Promise} An axios response
+   */
+  readForm(formId) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}`);
+  },
 
   //
   // USer calls
   //
 
   /**
-   * @function getUsers
+   * @function listUsers
    * Read all the users in the DB
    * @returns {Promise} An axios response
    */
-  getUsers() {
+  listUsers() {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}`);
+  },
+
+  /**
+   * @function readUser
+   * Read a user in the DB
+   * @param {string} userId The GUID
+   * @returns {Promise} An axios response
+   */
+  readUser(userId) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`);
   },
 };
