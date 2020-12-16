@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :admin="true">
+  <BaseSecure admin>
     <v-container>
       <transition name="component-fade" mode="out-in">
         <router-view />

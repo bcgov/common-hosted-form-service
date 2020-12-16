@@ -7,7 +7,7 @@
           v-model="activeOnly"
           label="Show deleted forms"
           @click="refeshForms"
-        ></v-checkbox>
+        />
       </v-col>
       <v-col cols="12" sm="4">
         <!-- search input -->

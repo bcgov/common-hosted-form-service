@@ -3,7 +3,7 @@
     <div v-if="isUser">
       <div v-if="admin && !isAdmin" class="text-center">
         <h1 class="my-8">401: Unauthorized. :(</h1>
-        <p>You do not have permission to access this page.<br /></p>
+        <p>You do not have permission to access this page.</p>
       </div>
       <div v-else>
         <slot />

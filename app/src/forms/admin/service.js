@@ -51,7 +51,7 @@ const service = {
       // grab all users that have roles on this form...
       const users = [...new Set(accessItems.filter(x => x.formId === formId && x.roles.length))];
       const form = accessItems.find(x => x.formId === formId);
-      const userRoles = users.map(x => { return { userId: x.userId, username: x.username, roles: x.roles }; });
+      const userRoles = users.map(x => ({ userId: x.userId, username: x.username, roles: x.roles }));
       return {
         formId: formId,
         formName: form.formName,
