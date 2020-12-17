@@ -1,9 +1,33 @@
-const { FormRoleUser, User, UserFormAccess } = require('../common/models');
+const { Form, FormRoleUser, User, UserFormAccess } = require('../common/models');
+const { queryUtils } = require('../common/utils');
 
-const {transaction} = require('objection');
-const {v4: uuidv4} = require('uuid');
+const { transaction } = require('objection');
+const { v4: uuidv4 } = require('uuid');
 
 const service = {
+
+  //
+  // Forms
+  //
+  listForms: async (params) => {
+    params = queryUtils.defaultActiveOnly(params);
+    return Form.query()
+      .skipUndefined()
+      .modify('filterActive', params.active)
+      .allowGraph('[identityProviders,versions]')
+      .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
+      .modify('orderNameAscending');
+  },
+  readForm: async (formId) => {
+    return Form.query()
+      .findById(formId)
+      .throwIfNotFound();
+  },
+
+  //
+  // Users
+  //
 
   getUsers: async (params) => {
     return User.query()
@@ -27,7 +51,7 @@ const service = {
       // grab all users that have roles on this form...
       const users = [...new Set(accessItems.filter(x => x.formId === formId && x.roles.length))];
       const form = accessItems.find(x => x.formId === formId);
-      const userRoles = users.map(x => { return {userId: x.userId, username: x.username, roles: x.roles}; });
+      const userRoles = users.map(x => ({ userId: x.userId, username: x.username, roles: x.roles }));
       return {
         formId: formId,
         formName: form.formName,
@@ -59,7 +83,7 @@ const service = {
       data.forEach(f => {
         f.users.forEach(u => {
           u.roles.forEach(r => {
-            formUserRoles.push({id: uuidv4(), createdBy: currentUser.username, formId: f.formId, userId: u.userId, role: r});
+            formUserRoles.push({ id: uuidv4(), createdBy: currentUser.username, formId: f.formId, userId: u.userId, role: r });
           });
         });
       });

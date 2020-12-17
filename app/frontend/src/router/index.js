@@ -39,6 +39,33 @@ export default function getRouter(basePath = '/') {
         }
       },
       {
+        path: '/admin',
+        component: () => import(/* webpackChunkName: "admin" */ '@/views/Admin.vue'),
+        children: [
+          {
+            path: '',
+            name: 'Admin',
+            component: () => import(/* webpackChunkName: "adminroot" */ '@/views/admin/Root.vue')
+          },
+          {
+            path: 'form',
+            name: 'AdministerForm',
+            component: () => import(/* webpackChunkName: "administerform" */ '@/views/admin/Form.vue'),
+            props: createProps
+          },
+          {
+            path: 'user',
+            name: 'AdministerUser',
+            component: () => import(/* webpackChunkName: "administeruser" */ '@/views/admin/User.vue'),
+            props: createProps
+          },
+        ],
+        meta: {
+          requiresAuth: true,
+          hasLogin: true
+        }
+      },
+      {
         path: '/form',
         component: () => import(/* webpackChunkName: "form" */ '@/views/Form.vue'),
         children: [

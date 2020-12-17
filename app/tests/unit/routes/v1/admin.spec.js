@@ -25,6 +25,7 @@ userAccess.currentUser = jest.fn((req, res, next) => {
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/admin/service');
+const userService = require('../../../../src/forms/user/service');
 
 
 //
@@ -45,7 +46,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should return 200', async () => {
     // mock a success return value...
-    service.getUsers = jest.fn().mockReturnValue([]);
+    userService.list = jest.fn().mockReturnValue([]);
 
     const response = await request(app).get(`${basePath}/users`);
 
@@ -55,7 +56,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.getUsers = jest.fn(() => { throw new Problem(401); });
+    userService.list = jest.fn(() => { throw new Problem(401); });
 
     const response = await request(app).get(`${basePath}/users`);
 
@@ -65,7 +66,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.getUsers = jest.fn(() => { throw new Error(); });
+    userService.list = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).get(`${basePath}/users`);
 

@@ -66,6 +66,6 @@ describe('BCGovNavBar.vue', () => {
     expect(wrapper.text()).toContain('About');
     expect(wrapper.text()).toContain('My Forms');
     expect(wrapper.text()).toContain('Create a New Form');
-    expect(wrapper.text()).toContain('User');
+    expect(wrapper.text()).toContain('Admin');
   });
 });
