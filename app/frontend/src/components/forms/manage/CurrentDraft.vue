@@ -50,7 +50,7 @@
               class="mx-1"
               color="red"
               @click="showDeleteDraftDialog = true"
-              :disabled="hasVersions"
+              :disabled="!hasVersions"
               icon
               v-bind="attrs"
               v-on="on"
