@@ -24,6 +24,15 @@ export default {
   readForm(formId) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}`);
   },
+  /**
+   * @function restoreForm
+   * Restore a deleted form
+   * @param {string} formId The GUID
+   * @returns {Promise} An axios response
+   */
+  restoreForm(formId) {
+    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/restore`);
+  },
 
   //
   // USer calls

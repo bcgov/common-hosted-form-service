@@ -47,6 +47,19 @@
             <span class="d-none d-sm-flex">Admin</span>
           </v-btn>
         </router-link>
+
+        <router-link
+          :to="{
+            name: 'FormSubmit',
+            query: { f: item.id },
+          }"
+          target="_blank"
+        >
+          <v-btn color="primary" text small>
+            <v-icon class="mr-1">note_add</v-icon>
+            <span class="d-none d-sm-flex">Launch</span>
+          </v-btn>
+        </router-link>
       </template>
     </v-data-table>
   </div>
