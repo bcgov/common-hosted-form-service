@@ -81,7 +81,12 @@
 
     <p v-if="draftId" class="mb-3"><em>Draft</em></p>
 
-    <v-alert v-if="saved" dense text :type="saving ? 'info' : 'success'">
+    <v-alert
+      v-if="saved || saving"
+      dense
+      text
+      :type="saving ? 'info' : 'success'"
+    >
       <div v-if="saving">
         <v-progress-linear indeterminate />
         Saving
@@ -411,6 +416,11 @@ export default {
     async schemaUpdateExistingDraft() {
       await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
+      });
+      // Update this route with saved flag
+      this.$router.replace({
+        name: 'FormDesigner',
+        query: { ...this.$route.query, sv: true },
       });
     },
     // ----------------------------------------------------------------------------------/ Saving Schema
