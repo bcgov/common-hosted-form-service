@@ -117,7 +117,7 @@ export default {
       return this.permissions.includes(FormPermissions.DESIGN_CREATE);
     },
     hasDraft() {
-      return this.drafts && this.drafts.length;
+      return this.drafts && this.drafts.length > 0;
     },
     versionList() {
       return this.form ? this.form.versions : [];
