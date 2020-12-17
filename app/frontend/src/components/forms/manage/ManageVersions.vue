@@ -49,18 +49,23 @@
       <template #[`item.create`]="{ item }">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              text
-              small
-              @click="createVersion(item.formId, item.id)"
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>add_circle</v-icon>
-            </v-btn>
+            <div v-bind="attrs" v-on="on">
+              <v-btn
+                :disabled="hasDraft"
+                color="primary"
+                text
+                small
+                @click="createVersion(item.formId, item.id)"
+              >
+                <v-icon>add_circle</v-icon>
+              </v-btn>
+            </div>
           </template>
-          <span>
+          <span v-if="hasDraft">
+            Please edit, publish or delete the existing draft before starting a
+            new draft.
+          </span>
+          <span v-else>
             Use version {{ item.version }} as the base for a new version
           </span>
         </v-tooltip>
