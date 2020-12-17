@@ -46,7 +46,7 @@
             <router-link
               :to="{
                 name: 'FormDesigner',
-                query: { d: draft.id, f: form.id, sv: true },
+                query: { d: draft.id, f: form.id },
               }"
             >
               <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
