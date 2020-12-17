@@ -351,7 +351,7 @@ export default {
           }
         } else {
           // If creating a new form, add the form and a draft
-          this.schemaCreateNew();
+          await this.schemaCreateNew();
         }
       } catch (error) {
         await this.setDirtyFlag(true);
