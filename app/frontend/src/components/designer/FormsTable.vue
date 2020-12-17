@@ -52,7 +52,7 @@
           :to="{ name: 'FormManage', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">build_circle</v-icon>
+            <v-icon class="mr-1">settings</v-icon>
             <span class="d-none d-sm-flex">Manage</span>
           </v-btn>
         </router-link>

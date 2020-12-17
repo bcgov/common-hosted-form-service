@@ -63,6 +63,19 @@ export default {
         }, { root: true });
       }
     },
+    async restoreForm({ commit, dispatch }, formId) {
+      try {
+        // Get specific form
+        const response = await adminService.restoreForm(formId);
+        commit('SET_FORM', response.data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while restoring this form.',
+          consoleError: `Error restoring form ${formId} data: ${error}`,
+        }, { root: true });
+      }
+    },
 
     //
     // Users

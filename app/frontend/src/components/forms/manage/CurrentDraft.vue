@@ -2,7 +2,20 @@
   <div>
     <v-row no-gutters>
       <v-col cols="12" md="auto">
-        <strong>Current Draft: </strong>
+        <strong>
+          <router-link
+            :to="{ name: 'FormPreview', query: { f: form.id, d: draft.id } }"
+            target="_blank"
+          >
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <span v-bind="attrs" v-on="on">Current Draft</span>
+              </template>
+              <span> Click to preview draft <v-icon>open_in_new</v-icon></span>
+            </v-tooltip>
+          </router-link>
+          :
+        </strong>
         <small>Last Updated: {{ draft.updatedAt | formatDate }}</small>
       </v-col>
       <v-col cols="12" md="4">
@@ -33,7 +46,7 @@
             <router-link
               :to="{
                 name: 'FormDesigner',
-                query: { d: draft.id, f: form.id, sv: true },
+                query: { d: draft.id, f: form.id },
               }"
             >
               <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
@@ -50,7 +63,7 @@
               class="mx-1"
               color="red"
               @click="showDeleteDraftDialog = true"
-              :disabled="hasVersions"
+              :disabled="!hasVersions"
               icon
               v-bind="attrs"
               v-on="on"
