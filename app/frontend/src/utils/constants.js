@@ -4,6 +4,7 @@
 
 /** API Route paths */
 export const ApiRoutes = Object.freeze({
+  ADMIN: '/admin',
   FORMS: '/forms',
   RBAC: '/rbac',
   ROLES: '/roles',

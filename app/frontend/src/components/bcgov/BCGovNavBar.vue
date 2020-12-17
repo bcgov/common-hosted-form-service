@@ -14,8 +14,11 @@
         <li>
           <a href="https://github.com/bcgov/common-hosted-form-service/wiki" target="_blank">Help</a>
         </li>
-        <li v-if="isAdmin">
+        <!-- <li>
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
+        </li> -->
+        <li v-if="isAdmin">
+          <router-link :to="{ name: 'Admin' }">Admin</router-link>
         </li>
       </ul>
     </div>
