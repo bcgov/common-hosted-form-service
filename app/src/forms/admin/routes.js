@@ -27,6 +27,10 @@ routes.get('/forms/:formId', async (req, res, next) => {
   await controller.readForm(req, res, next);
 });
 
+routes.put('/forms/:formId/restore', async (req, res, next) => {
+  await controller.restoreForm(req, res, next);
+});
+
 routes.get('/formusers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
 });

@@ -42,6 +42,74 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+describe(`GET ${basePath}/forms`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.listForms = jest.fn().mockReturnValue([]);
+
+    const response = await request(app).get(`${basePath}/forms`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.listForms = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).get(`${basePath}/forms`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.listForms = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).get(`${basePath}/forms`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+});
+
+describe(`GET ${basePath}/forms/formId`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.readForm = jest.fn().mockReturnValue([]);
+
+    const response = await request(app).get(`${basePath}/forms/formId`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.readForm = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).get(`${basePath}/forms/formId`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.readForm = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).get(`${basePath}/forms/formId`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+});
+
 describe(`GET ${basePath}/users`, () => {
 
   it('should return 200', async () => {
