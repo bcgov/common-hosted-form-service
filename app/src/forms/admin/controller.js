@@ -20,6 +20,14 @@ module.exports = {
       next(error);
     }
   },
+  restoreForm:  async (req, res, next) => {
+    try {
+      const response = await service.restoreForm(req.params.formId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 
   //
   // Users

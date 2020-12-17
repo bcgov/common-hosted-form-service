@@ -24,6 +24,26 @@ const service = {
       .findById(formId)
       .throwIfNotFound();
   },
+  restoreForm: async (formId) => {
+    let trx;
+    try {
+      const obj = await service.readForm(formId);
+      trx = await transaction.start(Form.knex());
+      const upd = {
+        active: true,
+        updatedBy: 'ADMIN'
+      };
+
+      await Form.query(trx).patchAndFetchById(formId, upd);
+
+      await trx.commit();
+      const result = await service.readForm(obj.id);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
 
   //
   // Users
