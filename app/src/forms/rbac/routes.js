@@ -21,10 +21,12 @@ routes.get('/forms', hasFormPermissions(P.TEAM_READ), async (req, res, next) => 
   await controller.getFormUsers(req, res, next);
 });
 
+// deprecated
 routes.put('/forms', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) => {
   await controller.setFormUsers(req, res, next);
 });
 
+// deprecated (we're not using this but other FE's could)
 routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.getUserForms(req, res, next);
 });
