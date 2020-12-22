@@ -39,7 +39,7 @@ Create, edit and publish forms.
 * [Frontend Readme](app/frontend/README.md)
 * [Openshift Readme](openshift/README.md)
 * [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
-* [Product Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Product-Roadmap)
+* [Showcase Team Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Roadmap)
 
 ## Getting Help or Reporting an Issue
 

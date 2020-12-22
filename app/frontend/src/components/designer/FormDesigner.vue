@@ -174,6 +174,8 @@ export default {
         type: 'form',
         components: [],
       },
+      rerendered: false,
+      hasUploader: true,
       reRenderFormIo: 0,
       saving: false,
     };
@@ -211,6 +213,7 @@ export default {
               weight: 20,
               default: true,
               components: {
+                simplefile: this.hasUploader,
                 simpletextfield: true,
                 simpletextarea: true,
                 simpleselect: true,
@@ -429,6 +432,20 @@ export default {
     if (this.formId) {
       this.getFormSchema();
       this.fetchForm(this.formId);
+      // show/hide file upload component
+      this.hasUploader = ( this.userType !== this.ID_MODE.PUBLIC );
+    }
+  },
+  updated() {
+    // show/hide file upload component
+    if ((this.formSchema.components.filter(e => e.type === 'simplefile').length > 0 ) && !this.rerendered ) {
+      this.hasUploader = true;
+      // re-render form
+      this.reRenderFormIo += 1;
+      this.rerendered = true;
+    }
+    else{
+      this.hasUploader = false;
     }
   },
   watch: {
