@@ -174,8 +174,6 @@ export default {
         type: 'form',
         components: [],
       },
-      rerendered: false,
-      hasUploader: true,
       reRenderFormIo: 0,
       saving: false,
     };
@@ -199,6 +197,13 @@ export default {
       return IdentityProviders;
     },
     designerOptions() {
+
+      // hide simplefile component for new public forms
+      let showSimpleFile = true;
+      if ( this.userType === this.ID_MODE.PUBLIC && (this.formSchema.components.filter(e => e.type === 'simplefile').length === 0) ){
+        showSimpleFile = false;
+      }
+
       if (!this.advancedForm) {
         return {
           noDefaultSubmitButton: false,
@@ -213,7 +218,7 @@ export default {
               weight: 20,
               default: true,
               components: {
-                simplefile: this.hasUploader,
+                simplefile: showSimpleFile,
                 simpletextfield: true,
                 simpletextarea: true,
                 simpleselect: true,
@@ -432,21 +437,25 @@ export default {
     if (this.formId) {
       this.getFormSchema();
       this.fetchForm(this.formId);
+
       // show/hide file upload component
-      this.hasUploader = ( this.userType !== this.ID_MODE.PUBLIC );
+      // this.showSimpleFile = ( this.userType !== this.ID_MODE.PUBLIC );
     }
   },
   updated() {
     // show/hide file upload component
-    if ((this.formSchema.components.filter(e => e.type === 'simplefile').length > 0 ) && !this.rerendered ) {
-      this.hasUploader = true;
-      // re-render form
-      this.reRenderFormIo += 1;
-      this.rerendered = true;
-    }
-    else{
-      this.hasUploader = false;
-    }
+    // if (this.formId) {
+    //   if ( this.userType === this.ID_MODE.PUBLIC && (this.formSchema.components.filter(e => e.type === 'simplefile').length > 0 ) && this.reRenderFormIo === 0 ) {
+    //     console.log('updated, public and has uploader already');
+    //     // re-render formio component
+    //     this.showSimpleFile = true;
+    //     this.reRenderFormIo += 1;
+    //   }
+    //   else{
+    //     console.log('updated, dont show uploader');
+    //     this.showSimpleFile = false;
+    //   }
+    // }
   },
   watch: {
     advancedForm() {
