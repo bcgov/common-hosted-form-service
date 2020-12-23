@@ -8,7 +8,8 @@ This app will require some configuration. The API will be locked down and requir
 
 ## Super Quickstart
 
-Ensure that you have filled in all the appropriate configurations following [config/custom-environment-variables.json](config/custom-environment-variables.json) before proceeding.
+Ensure that you have filled in all the appropriate configurations shown in [config/custom-environment-variables.json](config/custom-environment-variables.json) before proceeding.
+You can configure your **database connection**, **front and back-end paths** and **authentication parameters** as well as **object storage** for file uploads with a local configuration file '/app/config/local.json' or [openshift config maps](../openshift/README.md).
 
 In general, most of these npm run scripts can be prepended with `all:` in order to run the same operation on both the application and the frontend sequentially.
 

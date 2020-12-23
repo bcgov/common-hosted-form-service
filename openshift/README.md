@@ -57,6 +57,8 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_PORT=8080
 ```
 
+*Note:* We use the NRS [Object Storage](https://github.com/bcgov/nr-get-token/wiki/Object-Storage) for CHEFS.
+
 ```sh
 oc create -n $NAMESPACE configmap $APP_NAME-files-config \
   --from-literal=FILES_UPLOADS_DIR= \
