@@ -21,31 +21,24 @@ servers:
   - url: /api/v1
     description: This Server
 security:
-  - OpenID:
-    - user
-    - admin
+  - OpenID: []
 tags:
   - name: Form
-  - name: Version
-  - name: Draft
   - name: Submission
   - name: User
   - name: Role
   - name: Permission
-  - name: Identity Provider
-  - name: Admin
+  - name: RBAC
 paths:
   /forms:
     get:
-      summary: 'List all forms in the system.'
+      summary: 'List all forms in the system'
       operationId: listForms
       tags:
-        - Admin
         - Form
       security:
         - OpenID:
-            - user
-              admin
+            - admin
       parameters:
         - in: query
           name: active
@@ -62,6 +55,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Form'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         default:
           description: Unexpected error
           content:
@@ -94,7 +89,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /forms/{formId}:
     get:
-      summary: Get details of a form (and metadata for all versions)
+      summary: Get details of a form (and metadata for versions)
       operationId: readForm
       tags:
         - Form
@@ -185,7 +180,7 @@ paths:
       summary: Export submissions for a form
       operationId: export
       tags:
-        - Submission
+        - Form
       parameters:
         - in: path
           name: formId
@@ -247,11 +242,10 @@ paths:
                 $ref: '#/components/schemas/Error'
   /forms/{formId}/versions:
     get:
-      summary: List versions for form
+      summary: List versions of a form
       operationId: listVersions
       tags:
         - Form
-        - Version
       parameters:
         - in: path
           name: formId
@@ -282,7 +276,6 @@ paths:
       operationId: readVersion
       tags:
         - Form
-        - Version
       parameters:
         - in: path
           name: formId
@@ -319,7 +312,6 @@ paths:
       operationId: readPublishedForm
       tags:
         - Form
-        - Version
       parameters:
         - in: path
           name: formId
@@ -348,7 +340,6 @@ paths:
       operationId: publishVersion
       tags:
         - Form
-        - Version
       parameters:
         - in: path
           name: formId
@@ -388,11 +379,10 @@ paths:
                 $ref: '#/components/schemas/Error'
   /forms/{formId}/drafts:
     get:
-      summary: List Drafts for form
+      summary: List drafts for a form
       operationId: listDrafts
       tags:
         - Form
-        - Draft
       parameters:
         - in: path
           name: formId
@@ -422,7 +412,6 @@ paths:
       operationId: createDraft
       tags:
         - Form
-        - Draft
       parameters:
         - in: path
           name: formId
@@ -442,7 +431,7 @@ paths:
                 formVersionId:
                   type: string
                   format: uuid
-                  description: ID of the Form Version used for this draft
+                  description: ID of the form version used for this draft
                   example: bea3b705-1de5-4f4e-a4e6-0716b7674132
                 schema:
                   type: object
@@ -466,7 +455,6 @@ paths:
       operationId: readDraft
       tags:
         - Form
-        - Draft
       parameters:
         - in: path
           name: formId
@@ -502,7 +490,6 @@ paths:
       operationId: updateDraft
       tags:
         - Form
-        - Draft
       parameters:
         - in: path
           name: formId
@@ -548,7 +535,6 @@ paths:
       operationId: deleteDraft
       tags:
         - Form
-        - Draft
       parameters:
         - in: path
           name: formId
@@ -581,7 +567,6 @@ paths:
       operationId: publishDraft
       tags:
         - Form
-        - Draft
       parameters:
         - in: path
           name: formId
@@ -617,7 +602,7 @@ paths:
       summary: List submissions for a form
       operationId: listFormSubmissions
       tags:
-        - Submission
+        - Form
       parameters:
         - in: path
           name: formId
@@ -647,7 +632,7 @@ paths:
       summary: Create a new form submission
       operationId: createSubmission
       tags:
-        - Submission
+        - Form
       parameters:
         - in: path
           name: formId
@@ -688,7 +673,7 @@ paths:
       summary: List submissions from a form version
       operationId: listSubmissions
       tags:
-        - Submission
+        - Form
       parameters:
         - in: path
           name: formId
@@ -782,7 +767,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /submissions/{formSubmissionId}/email:
     post:
       summary: Email a message with link to a Submission
@@ -836,11 +820,9 @@ paths:
       operationId: listPermissions
       tags:
         - Permission
-        - Admin
       security:
         - OpenID:
-            - user
-              admin
+            - admin
       responses:
         '200':
           description: 'OK'
@@ -850,6 +832,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Permission'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         default:
           description: Unexpected error
           content:
@@ -863,8 +847,7 @@ paths:
         - Permission
       security:
         - OpenID:
-            - user
-              admin
+            - admin
       requestBody:
         required: true
         content:
@@ -880,6 +863,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Permission'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         default:
           description: Unexpected error
           content:
@@ -894,8 +879,7 @@ paths:
         - Permission
       security:
         - OpenID:
-            - user
-              admin
+            - admin
       parameters:
         - in: path
           name: code
@@ -911,6 +895,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Permission'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         default:
           description: Unexpected error
           content:
@@ -922,11 +908,9 @@ paths:
       operationId: updatePermission
       tags:
         - Permission
-        - Admin
       security:
         - OpenID:
-            - user
-              admin
+            - admin
       parameters:
         - in: path
           name: code
@@ -948,6 +932,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Permission'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         default:
           description: Unexpected error
           content:
@@ -980,11 +966,9 @@ paths:
       operationId: createRole
       tags:
         - Role
-        - Admin
       security:
         - OpenID:
-            - user
-              admin
+            - admin
       requestBody:
         required: true
         content:
@@ -1000,6 +984,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         default:
           description: Unexpected error
           content:
@@ -1037,11 +1023,9 @@ paths:
       operationId: updateRole
       tags:
         - Role
-        - Admin
       security:
         - OpenID:
-            - user
-              admin
+            - admin
       parameters:
         - in: path
           name: code
@@ -1062,6 +1046,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         default:
           description: Unexpected error
           content:
@@ -1073,10 +1059,7 @@ paths:
       summary: Get forms/roles/permissions for the logged in user
       operationId: getCurrentUser
       tags:
-        - Form
-        - Role
-        - Permission
-        - User
+        - RBAC
       parameters:
         - in: query
           name: formId
@@ -1123,7 +1106,7 @@ paths:
       summary: Get the list of identity providers
       operationId: getIdentityProviders
       tags:
-        - Identity Provider
+        - RBAC
       parameters:
         - in: query
           name: active
@@ -1151,10 +1134,7 @@ paths:
       summary: Get users with roles for a form
       operationId: getFormUsers
       tags:
-        - Form
-        - User
-        - Role
-        - Permission
+        - RBAC
       parameters:
         - in: query
           name: formId
@@ -1245,15 +1225,10 @@ paths:
       summary: Get the list of users and associated forms
       operationId: getUserForms
       tags:
-        - Form
-        - User
-        - Role
-        - Permission
-        - Admin
+        - RBAC
       security:
         - OpenID:
-            - user
-              admin
+            - admin
       parameters:
         - in: query
           name: userId
@@ -1348,10 +1323,7 @@ paths:
       summary: Set relationships between users, forms, roles
       operationId: setUserForms
       tags:
-        - Form
-        - User
-        - Role
-        - Permission
+        - RBAC
       parameters:
         - in: query
           name: userId
@@ -1447,7 +1419,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /users/{userId}:
     get:
       summary: A User and their role
@@ -2045,6 +2016,10 @@ components:
             - submission_create
           items:
             type: string
+    Forbidden:
+      description: Lack required role to perform action
+    UnauthorizedError:
+      description: Access token is missing or invalid
     BadRequest:
       allOf:
         - $ref: '#/components/schemas/Problem'
