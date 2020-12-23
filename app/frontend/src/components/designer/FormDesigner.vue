@@ -223,6 +223,7 @@ export default {
                 simplecheckbox: true,
                 simplecheckboxes: true,
                 simpleradios: true,
+                simplefile: this.userType !== this.ID_MODE.PUBLIC,
               },
             },
             layoutControls: {
