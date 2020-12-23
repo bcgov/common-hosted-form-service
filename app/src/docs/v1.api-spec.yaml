@@ -24,12 +24,23 @@ security:
   - OpenID:
     - user
     - admin
+tags:
+  - name: Form
+  - name: Version
+  - name: Draft
+  - name: Submission
+  - name: User
+  - name: Role
+  - name: Permission
+  - name: Identity Provider
+  - name: Admin
 paths:
   /forms:
     get:
       summary: 'List all forms in the system.'
       operationId: listForms
       tags:
+        - Admin
         - Form
       security:
         - OpenID:
@@ -83,7 +94,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /forms/{formId}:
     get:
-      summary: Get a form
+      summary: Get details of a form (and metadata for all versions)
       operationId: readForm
       tags:
         - Form
@@ -93,6 +104,7 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form to fetch
       responses:
@@ -119,6 +131,7 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form to update
       requestBody:
@@ -151,8 +164,9 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form to delete
       responses:
         '204':
           description: 'OK'
@@ -178,8 +192,9 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form for the submissions
         - in: query
           name: format
           schema:
@@ -243,8 +258,9 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form for that versions belong to
       responses:
         '200':
           description: 'OK'
@@ -273,6 +289,7 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form that version belongs to
         - in: path
@@ -280,6 +297,7 @@ paths:
           schema:
             type: string
             format: uuid
+            example: dg7655376-382c-439d-a811-0381a0123fg4ge
           required: true
           description: ID of the form version to fetch
       responses:
@@ -308,6 +326,7 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form
       responses:
@@ -336,15 +355,17 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form to publish
         - in: path
           name: formVersionId
           schema:
             type: string
             format: uuid
+            example: k2355376-382c-439d-a811-0381a012d7d7
           required: true
-          description: ID of the form version to submit to
+          description: ID of the form version to publish
         - in: query
           name: unpublish
           schema:
@@ -378,8 +399,9 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form that has drafts
       responses:
         '200':
           description: 'OK'
@@ -407,8 +429,9 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form you are creating a draft of
       requestBody:
         required: true
         content:
@@ -418,6 +441,7 @@ paths:
               properties:
                 formVersionId:
                   type: string
+                  format: uuid
                   description: ID of the Form Version used for this draft
                   example: bea3b705-1de5-4f4e-a4e6-0716b7674132
                 schema:
@@ -449,15 +473,17 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form that has the draft
         - in: path
           name: formVersionDraftId
           schema:
             type: string
             format: uuid
+            example: k2355376-382c-439d-a811-0381a012dkj8
           required: true
-          description: ID of the form version
+          description: ID of the draft for the version of the form
       responses:
         '200':
           description: 'OK'
@@ -483,15 +509,17 @@ paths:
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form with draft
         - in: path
           name: formVersionDraftId
           schema:
             type: string
             format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form version
+          description: ID of the form version with draft
       requestBody:
         required: true
         content:
@@ -500,7 +528,7 @@ paths:
               type: object
               properties:
                 schema:
-                  type: object
+                  $ref: '#/components/schemas/FormSchema'
                   description: this is the json for the form design.
       responses:
         '200':
@@ -527,6 +555,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form
         - in: path
@@ -534,6 +563,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form version
       responses:
@@ -558,6 +588,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form
         - in: path
@@ -565,6 +596,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form version
       responses:
@@ -592,8 +624,9 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
-          description: ID of the form
+          description: ID of the form of the submissions
       responses:
         '200':
           description: 'OK'
@@ -621,6 +654,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form
         - in: path
@@ -628,6 +662,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form version to submit to
       requestBody:
@@ -660,6 +695,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form
         - in: path
@@ -667,6 +703,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the form version for submissions
       responses:
@@ -696,6 +733,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the Submission
       responses:
@@ -722,6 +760,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of a form submission
       requestBody:
@@ -756,6 +795,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: c6455376-382c-439d-a811-0381a012d696
           required: true
           description: ID of the Submission
         - in: header
@@ -763,6 +803,7 @@ paths:
           description: URL of webpage where email was requested
           schema:
             type: string
+          required: true
           example: 'https://survey.gov.bc.com/app/form/success?s=7d66664b-87c5-4df8-ba7c-a6fb7d62c379'
       requestBody:
         required: true
@@ -795,6 +836,7 @@ paths:
       operationId: listPermissions
       tags:
         - Permission
+        - Admin
       security:
         - OpenID:
             - user
@@ -880,6 +922,7 @@ paths:
       operationId: updatePermission
       tags:
         - Permission
+        - Admin
       security:
         - OpenID:
             - user
@@ -890,6 +933,7 @@ paths:
           schema:
             type: string
           required: true
+          example: submission_read
           description: code of the permission to update
       requestBody:
         required: true
@@ -936,6 +980,7 @@ paths:
       operationId: createRole
       tags:
         - Role
+        - Admin
       security:
         - OpenID:
             - user
@@ -992,6 +1037,7 @@ paths:
       operationId: updateRole
       tags:
         - Role
+        - Admin
       security:
         - OpenID:
             - user
@@ -1036,11 +1082,14 @@ paths:
           name: formId
           schema:
             type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           description: form ID
         - in: query
           name: active
           schema:
             type: boolean
+          example: true
           description: is the form active flag
         - in: query
           name: idps
@@ -1080,6 +1129,7 @@ paths:
           name: active
           schema:
             type: boolean
+          example: true
           description: is the identity provider active
       responses:
         '200':
@@ -1110,13 +1160,15 @@ paths:
           name: formId
           schema:
             type: string
-          description: form id
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
+          description: form ID
           required: true
         - in: query
           name: userId
           schema:
             type: string
-          description: user id
+          description: user ID
         - in: query
           name: keycloakId
           schema:
@@ -1156,6 +1208,7 @@ paths:
           name: active
           schema:
             type: boolean
+          example: true
           description: is the form active flag
         - in: query
           name: idps
@@ -1196,6 +1249,7 @@ paths:
         - User
         - Role
         - Permission
+        - Admin
       security:
         - OpenID:
             - user
@@ -1245,6 +1299,8 @@ paths:
           name: formId
           schema:
             type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           description: form id
           required: true
         - in: query
@@ -1256,6 +1312,7 @@ paths:
           name: active
           schema:
             type: boolean
+          example: true
           description: is the form active flag
         - in: query
           name: idps
@@ -1306,6 +1363,8 @@ paths:
           name: formId
           schema:
             type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
           description: form id
           required: true
       requestBody:
@@ -1375,7 +1434,7 @@ paths:
           description: string to match against  username, fullName and Email
       responses:
         '200':
-          description: Successful operation
+          description: 'OK'
           content:
             application/json:
               schema:
@@ -1405,7 +1464,7 @@ paths:
           required: true
       responses:
         '200':
-          description: Successful operation
+          description: 'OK'
           content:
             application/json:
               schema:
@@ -1499,6 +1558,7 @@ components:
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             active:
               type: boolean
+              example: true
             labels:
               type: array
               example:
@@ -1518,6 +1578,7 @@ components:
       properties:
         formId:
           type: string
+          format: uuid
           description: ID of form
           example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
         role:
@@ -1605,6 +1666,7 @@ components:
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             formId:
               type: string
+              format: uuid
               description: ID of the form this submission is for.
               example: bea3b705-1de5-4f4e-a4e6-0716b7674132
             formName:
@@ -1646,6 +1708,8 @@ components:
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             formId:
               type: string
+              format: uuid
+              description: ID of the form
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             version:
               type: integer
@@ -1657,11 +1721,7 @@ components:
     FormVersion:
       allOf:
         - $ref: '#/components/schemas/FormVersionBasic'
-        - type: object
-          properties:
-            schema:
-              type: object
-              description: this is the json for the form design.
+        - $ref: '#/components/schemas/FormSchema'
     FormDraft:
       allOf:
         - type: object
@@ -1671,15 +1731,43 @@ components:
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             formId:
               type: string
+              format: uuid
+              description: ID of the form
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             formVersionId:
               type: string
+              format: uuid
               description: ID of the FormVersion this submission is for.
               example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+        - $ref: '#/components/schemas/FormSchema'
+        - $ref: '#/components/schemas/TimeStampUserData'
+    FormSchema:
+      allOf:
+        - type: object
+          properties:
             schema:
               type: object
               description: this is the json for the form design.
-        - $ref: '#/components/schemas/TimeStampUserData'
+              example:
+                display: form
+                type: form
+                components:
+                  component1:
+                    type: textfield
+                    key: firstName
+                    label: First Name
+                    placeholder: Enter your first name.
+                    input: true
+                    tooltip: Enter your <strong>First Name</strong>
+                    description: Enter your <strong>First Name</strong>
+                  component2:
+                    type: textfield
+                    key: lastName
+                    label: Last Name
+                    placeholder: Enter your last name.
+                    input: true
+                    tooltip: Enter your <strong>Last Name</strong>
+                    description: Enter your <strong>Last Name</strong>
     IdentityProvider:
       allOf:
         - type: object
@@ -1813,6 +1901,7 @@ components:
           example: jsmith@gov.bc.ca
         formId:
           type: string
+          format: uuid
           description: ID of the form
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
         formName:
@@ -1909,6 +1998,7 @@ components:
       properties:
         formId:
           type: string
+          format: uuid
           description: ID of the form
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
         formName:
