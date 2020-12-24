@@ -10,13 +10,13 @@ info:
     submission review and export, as well as notifications, document generation and reporting.
   license:
     name: Apache 2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
   contact:
     name: NR Common Service Showcase
     email: NR.CommonServiceShowcase@gov.bc.ca
 externalDocs:
   description: Project Readmes
-  url: 'https://github.com/bcgov/common-hosted-form-service'
+  url: "https://github.com/bcgov/common-hosted-form-service"
 servers:
   - url: /api/v1
     description: This Server
@@ -57,22 +57,22 @@ paths:
           description: filter forms by active status
           example: true
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Form'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                  $ref: "#/components/schemas/Form"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     post:
       summary: Create a new form
       operationId: createForm
@@ -84,21 +84,21 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/FormBasic'
-                - $ref: '#/components/schemas/FormSchema'
+                - $ref: "#/components/schemas/FormBasic"
+                - $ref: "#/components/schemas/FormSchema"
       responses:
-        '201':
-          description: 'OK'
+        "201":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormBasic'
+                $ref: "#/components/schemas/FormBasic"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}:
     get:
       summary: Get details of a form (and metadata for versions)
@@ -106,66 +106,66 @@ paths:
       tags:
         - Form
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Form'
+                $ref: "#/components/schemas/Form"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     put:
       summary: Update a form
       operationId: updateForm
       tags:
         - Form
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FormBasic'
+              $ref: "#/components/schemas/FormBasic"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Form'
+                $ref: "#/components/schemas/Form"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     delete:
       summary: Delete (soft) a form
       operationId: deleteForm
       tags:
         - Form
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
       responses:
-        '204':
-          description: 'OK'
+        "204":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormBasic'
+                $ref: "#/components/schemas/FormBasic"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/export:
     get:
       summary: Export submissions for a form
@@ -173,7 +173,7 @@ paths:
       tags:
         - Submission
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
         - in: query
           name: format
           schema:
@@ -192,23 +192,23 @@ paths:
           name: minDate
           schema:
             type: string
-          example: '2020-12-17T08:00:00Z'
+          example: "2020-12-17T08:00:00Z"
           description: Start date of period included in the export
         - in: query
           name: maxDate
           schema:
             type: string
-          example: '2020-12-17T08:00:00Z'
+          example: "2020-12-17T08:00:00Z"
           description: End date of period included in the export
       responses:
-        '200':
-          description: 'Export file created for download'
+        "200":
+          description: "Export file created for download"
           headers:
-           content-type:
+            content-type:
               description: Response header
               schema:
                 type: object
-              example: 'text/json; charset=utf-8'
+              example: "text/json; charset=utf-8"
           content:
             text/csv:
               schema:
@@ -217,13 +217,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FormSubmissionExport'
+                  $ref: "#/components/schemas/FormSubmissionExport"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/versions:
     get:
       summary: List all versions of a form
@@ -231,22 +231,22 @@ paths:
       tags:
         - Version
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FormVersion'
+                  $ref: "#/components/schemas/FormVersion"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/versions/{formVersionId}:
     get:
       summary: Get a single form version
@@ -254,21 +254,21 @@ paths:
       tags:
         - Version
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
-        - $ref: '#/components/parameters/formVersionIdParam'
+        - $ref: "#/components/parameters/formIdParam"
+        - $ref: "#/components/parameters/formVersionIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormVersion'
+                $ref: "#/components/schemas/FormVersion"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/version:
     get:
       summary: Get published version of a form
@@ -276,20 +276,20 @@ paths:
       tags:
         - Version
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Form'
+                $ref: "#/components/schemas/Form"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/versions/{formVersionId}/publish:
     post:
       summary: Publish a version of a form
@@ -297,8 +297,8 @@ paths:
       tags:
         - Version
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
-        - $ref: '#/components/parameters/formVersionIdParam'
+        - $ref: "#/components/parameters/formIdParam"
+        - $ref: "#/components/parameters/formVersionIdParam"
         - in: query
           name: unpublish
           schema:
@@ -307,18 +307,18 @@ paths:
           required: false
           description: Should this version of the form be unpublished
       responses:
-        '201':
-          description: 'OK'
+        "201":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormVersionBasic'
+                $ref: "#/components/schemas/FormVersionBasic"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/drafts:
     get:
       summary: List drafts for a form
@@ -326,29 +326,29 @@ paths:
       tags:
         - Draft
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FormDraft'
+                  $ref: "#/components/schemas/FormDraft"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     post:
       summary: Create a draft from a form version
       operationId: createDraft
       tags:
         - Draft
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
       requestBody:
         required: true
         content:
@@ -362,20 +362,20 @@ paths:
                   description: ID of the form version used for this draft
                   example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
                 schema:
-                  $ref: '#/components/schemas/FormSchema'
+                  $ref: "#/components/schemas/FormSchema"
       responses:
-        '201':
-          description: 'OK'
+        "201":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormDraft'
+                $ref: "#/components/schemas/FormDraft"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/drafts/{formVersionDraftId}:
     get:
       summary: Get a form draft
@@ -383,29 +383,29 @@ paths:
       tags:
         - Draft
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
-        - $ref: '#/components/parameters/formVersionDraftIdParam'
+        - $ref: "#/components/parameters/formIdParam"
+        - $ref: "#/components/parameters/formVersionDraftIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormDraft'
+                $ref: "#/components/schemas/FormDraft"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     put:
       summary: Update a form draft
       operationId: updateDraft
       tags:
         - Draft
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
-        - $ref: '#/components/parameters/formVersionDraftIdParam'
+        - $ref: "#/components/parameters/formIdParam"
+        - $ref: "#/components/parameters/formVersionDraftIdParam"
       requestBody:
         required: true
         content:
@@ -414,38 +414,38 @@ paths:
               type: object
               properties:
                 schema:
-                  $ref: '#/components/schemas/FormSchema'
+                  $ref: "#/components/schemas/FormSchema"
                   description: this is the json for the form design.
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormDraft'
+                $ref: "#/components/schemas/FormDraft"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     delete:
       summary: Delete a form draft
       operationId: deleteDraft
       tags:
         - Draft
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
-        - $ref: '#/components/parameters/formVersionDraftIdParam'
+        - $ref: "#/components/parameters/formIdParam"
+        - $ref: "#/components/parameters/formVersionDraftIdParam"
       responses:
-        '204':
-          description: 'OK'
+        "204":
+          description: "OK"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/drafts/{formVersionDraftId}/publish:
     post:
       summary: Publish a form draft
@@ -453,21 +453,21 @@ paths:
       tags:
         - Draft
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
-        - $ref: '#/components/parameters/formVersionDraftIdParam'
+        - $ref: "#/components/parameters/formIdParam"
+        - $ref: "#/components/parameters/formVersionDraftIdParam"
       responses:
-        '201':
-          description: 'OK'
+        "201":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormVersionBasic'
+                $ref: "#/components/schemas/FormVersionBasic"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/submissions:
     get:
       summary: List submissions for a form
@@ -475,22 +475,22 @@ paths:
       tags:
         - Submission
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
+        - $ref: "#/components/parameters/formIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FormSubmissionSummary'
+                  $ref: "#/components/schemas/FormSubmissionSummary"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/versions/{formVersionId}/submissions:
     get:
       summary: List submissions from a form version
@@ -498,50 +498,50 @@ paths:
       tags:
         - Submission
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
-        - $ref: '#/components/parameters/formVersionIdParam'
+        - $ref: "#/components/parameters/formIdParam"
+        - $ref: "#/components/parameters/formVersionIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FormSubmission'
+                  $ref: "#/components/schemas/FormSubmission"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     post:
       summary: Create a new form submission
       operationId: createSubmission
       tags:
         - Submission
       parameters:
-        - $ref: '#/components/parameters/formIdParam'
-        - $ref: '#/components/parameters/formVersionIdParam'
+        - $ref: "#/components/parameters/formIdParam"
+        - $ref: "#/components/parameters/formVersionIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FormSubmissionBasic'
+              $ref: "#/components/schemas/FormSubmissionBasic"
       responses:
-        '201':
-          description: 'OK'
+        "201":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormSubmission'
+                $ref: "#/components/schemas/FormSubmission"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /submissions/{formSubmissionId}:
     get:
       summary: Get a form submission
@@ -549,46 +549,46 @@ paths:
       tags:
         - Submission
       parameters:
-        - $ref: '#/components/parameters/formSubmissionIdParam'
+        - $ref: "#/components/parameters/formSubmissionIdParam"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubmissionFormVersion'
+                $ref: "#/components/schemas/SubmissionFormVersion"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     put:
       summary: Update a form submission
       operationId: updateSubmission
       tags:
         - Submission
       parameters:
-        - $ref: '#/components/parameters/formSubmissionIdParam'
+        - $ref: "#/components/parameters/formSubmissionIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FormSubmissionBasic'
+              $ref: "#/components/schemas/FormSubmissionBasic"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormSubmission'
+                $ref: "#/components/schemas/FormSubmission"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /submissions/{formSubmissionId}/email:
     post:
       summary: Email a message with link to a submission
@@ -596,14 +596,14 @@ paths:
       tags:
         - Submission
       parameters:
-        - $ref: '#/components/parameters/formSubmissionIdParam'
+        - $ref: "#/components/parameters/formSubmissionIdParam"
         - in: header
           name: Referer
           description: URL of webpage where email was requested
           schema:
             type: string
           required: true
-          example: 'https://survey.gov.bc.com/app/form/success?s=7d66664b-87c5-4df8-ba7c-a6fb7d62c379'
+          example: "https://survey.gov.bc.com/app/form/success?s=7d66664b-87c5-4df8-ba7c-a6fb7d62c379"
       requestBody:
         required: true
         content:
@@ -613,22 +613,22 @@ paths:
               properties:
                 to:
                   type: string
-                  example: 'jsmith@email.ca'
+                  example: "jsmith@email.ca"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EmailMessage'
+                  $ref: "#/components/schemas/EmailMessage"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /permissions:
     get:
       summary: List all permissions
@@ -639,22 +639,22 @@ paths:
         - OpenID:
             - admin
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Permission'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                  $ref: "#/components/schemas/Permission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     post:
       summary: Create a new permission
       operationId: createPermission
@@ -670,22 +670,22 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Permission'
+                $ref: "#/components/schemas/Permission"
       responses:
-        '201':
-          description: 'OK'
+        "201":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Permission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /permissions/{code}:
     get:
       summary: Get a permission
@@ -704,20 +704,20 @@ paths:
           description: code of the permission to fetch
           example: submission_read
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Permission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     put:
       summary: Update a permission
       operationId: updatePermission
@@ -739,22 +739,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Permission'
+              $ref: "#/components/schemas/Permission"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Permission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /roles:
     get:
       summary: List all roles
@@ -762,20 +762,20 @@ paths:
       tags:
         - Role
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Role'
+                  $ref: "#/components/schemas/Role"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     post:
       summary: Create a new role
       operationId: createRole
@@ -791,22 +791,22 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Role'
+                $ref: "#/components/schemas/Role"
       responses:
-        '201':
-          description: 'OK'
+        "201":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Role'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Role"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /roles/{code}:
     get:
       summary: Get a role
@@ -821,18 +821,18 @@ paths:
           required: true
           description: code of the role to fetch
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Role'
+                $ref: "#/components/schemas/Role"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     put:
       summary: Update a role
       operationId: updateRole
@@ -853,22 +853,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Role'
+              $ref: "#/components/schemas/Role"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Role'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Role"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /rbac/current:
     get:
       summary: Get forms/roles/permissions for current user
@@ -900,22 +900,22 @@ paths:
           description: filter on the user access level for the form (public, idp, team)
         # and more...
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/CurrentUser'
+                  - $ref: "#/components/schemas/CurrentUser"
                   - type: array
                     items:
-                      $ref: '#/components/schemas/UserForm'
+                      $ref: "#/components/schemas/UserForm"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /rbac/idps:
     get:
       summary: Get a list of identity providers
@@ -930,20 +930,20 @@ paths:
           example: true
           description: is the identity provider active
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IdentityProvider'
+                  $ref: "#/components/schemas/IdentityProvider"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /rbac/forms:
     get:
       summary: Get a list of users and roles for a form
@@ -1021,23 +1021,60 @@ paths:
             type: string
           description: permissions (code field) user has on form
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserAccess'
+                  $ref: "#/components/schemas/UserAccess"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Set user roles for a form
+      operationId: setFormUsers
+      tags:
+        - RBAC
+      parameters:
+        - in: query
+          name: formId
+          schema:
+            type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
+          description: form id
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/FormRoleUser"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAccess"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /rbac/users:
     get:
-      summary: Get a list of users and associated forms
+      summary: Get a list of forms and roles for a user
       operationId: getUserForms
       tags:
         - RBAC
@@ -1120,22 +1157,22 @@ paths:
             type: string
           description: permissions (code field) user has on form
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserAccess'
+                  $ref: "#/components/schemas/UserAccess"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
     put:
-      summary: Set relationships between users, forms, roles
+      summary: Set form roles for a user
       operationId: setUserForms
       tags:
         - RBAC
@@ -1161,22 +1198,22 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/FormRoleUser'
+                $ref: "#/components/schemas/FormRoleUser"
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserAccess'
+                  $ref: "#/components/schemas/UserAccess"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /users:
     get:
       summary: Get a list of users and their roles
@@ -1220,20 +1257,20 @@ paths:
             type: string
           description: string to match against  username, fullName and Email
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /users/{userId}:
     get:
       summary: Get a user and their roles
@@ -1249,20 +1286,20 @@ paths:
           description: user ID
           required: true
       responses:
-        '200':
-          description: 'OK'
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     BearerAuth:
@@ -1271,48 +1308,48 @@ components:
       bearerFormat: JWT
     OpenID:
       type: openIdConnect
-      openIdConnectUrl: 'https://example.com/.well-known/openid-configuration'
+      openIdConnectUrl: "https://example.com/.well-known/openid-configuration"
   parameters:
-      formIdParam:
-        in: path
-        name: formId
-        schema:
-          type: string
-          format: uuid
-        description: ID of the form
-        required: true
-        example: c6455376-382c-439d-a811-0381a012d696
-      formVersionIdParam:
-        in: path
-        name: formVersionId
-        schema:
-          type: string
-          format: uuid
-        example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
-        required: true
-        description: ID of the form version
-      formVersionDraftIdParam:
-        in: path
-        name: formVersionDraftId
-        schema:
-          type: string
-          format: uuid
-          example: b2e11d09-30fe-4c4c-9375-5a9de0dc2e9e
-        required: true
-        description: ID of the draft for form version
-      formSubmissionIdParam:
-        in: path
-        name: formSubmissionId
-        schema:
-          type: string
-          format: uuid
-        example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
-        required: true
-        description: ID of the Submission
+    formIdParam:
+      in: path
+      name: formId
+      schema:
+        type: string
+        format: uuid
+      description: ID of the form
+      required: true
+      example: c6455376-382c-439d-a811-0381a012d696
+    formVersionIdParam:
+      in: path
+      name: formVersionId
+      schema:
+        type: string
+        format: uuid
+      example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
+      required: true
+      description: ID of the form version
+    formVersionDraftIdParam:
+      in: path
+      name: formVersionDraftId
+      schema:
+        type: string
+        format: uuid
+        example: b2e11d09-30fe-4c4c-9375-5a9de0dc2e9e
+      required: true
+      description: ID of the draft for form version
+    formSubmissionIdParam:
+      in: path
+      name: formSubmissionId
+      schema:
+        type: string
+        format: uuid
+      example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
+      required: true
+      description: ID of the Submission
   schemas:
     BadRequest:
       allOf:
-        - $ref: '#/components/schemas/Problem'
+        - $ref: "#/components/schemas/Problem"
         - type: object
           properties:
             status:
@@ -1320,10 +1357,10 @@ components:
             title:
               example: Bad Request
             type:
-              example: 'https://httpstatuses.com/400'
+              example: "https://httpstatuses.com/400"
     Conflict:
       allOf:
-        - $ref: '#/components/schemas/Problem'
+        - $ref: "#/components/schemas/Problem"
         - type: object
           properties:
             status:
@@ -1331,7 +1368,7 @@ components:
             title:
               example: Conflict
             type:
-              example: 'https://httpstatuses.com/409'
+              example: "https://httpstatuses.com/409"
     CurrentUser:
       type: object
       properties:
@@ -1375,7 +1412,7 @@ components:
               type: array
               items:
                 type: string
-                example: 'jsmith@email.com'
+                example: "jsmith@email.com"
               description: an array of the message recipients
             txId:
               type: string
@@ -1384,7 +1421,7 @@ components:
               example: 7d13b78b-21d2-4128-b4e8-02ad3da17d22
     Error:
       allOf:
-        - $ref: '#/components/schemas/Problem'
+        - $ref: "#/components/schemas/Problem"
         - type: object
           properties:
             status:
@@ -1392,12 +1429,12 @@ components:
             title:
               example: Internal Server Error
             type:
-              example: 'https://httpstatuses.com/500'
+              example: "https://httpstatuses.com/500"
     Forbidden:
       description: Lack required role to perform action
     Form:
       allOf:
-        - $ref: '#/components/schemas/FormBasic'
+        - $ref: "#/components/schemas/FormBasic"
         - type: object
           properties:
             id:
@@ -1415,11 +1452,11 @@ components:
             versions:
               type: array
               items:
-                $ref: '#/components/schemas/FormVersionBasic'
+                $ref: "#/components/schemas/FormVersionBasic"
             snake:
               type: string
               example: my-survey-form
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/TimeStampUserData"
     FormBasic:
       allOf:
         - type: object
@@ -1433,7 +1470,7 @@ components:
             identityProviders:
               type: array
               items:
-                $ref: '#/components/schemas/IdentityProvider'
+                $ref: "#/components/schemas/IdentityProvider"
             showSubmissionConfirmation:
               type: boolean
               example: true
@@ -1442,8 +1479,8 @@ components:
               items:
                 type: string
               example:
-                - 'me@email.com'
-                - 'manager@email.com'
+                - "me@email.com"
+                - "manager@email.com"
     FormDraft:
       allOf:
         - type: object
@@ -1461,8 +1498,8 @@ components:
               format: uuid
               description: ID of the FormVersion this submission is for.
               example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
-        - $ref: '#/components/schemas/FormSchema'
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/FormSchema"
+        - $ref: "#/components/schemas/TimeStampUserData"
     FormRoleUser:
       type: object
       properties:
@@ -1490,23 +1527,23 @@ components:
                 display: form
                 type: form
                 components:
-                - type: textfield
-                  key: firstName
-                  label: First Name
-                  placeholder: Enter your first name.
-                  input: true
-                  tooltip: Enter your <strong>First Name</strong>
-                  description: Enter your <strong>First Name</strong>
-                - type: textfield
-                  key: lastName
-                  label: Last Name
-                  placeholder: Enter your last name.
-                  input: true
-                  tooltip: Enter your <strong>Last Name</strong>
-                  description: Enter your <strong>Last Name</strong>
+                  - type: textfield
+                    key: firstName
+                    label: First Name
+                    placeholder: Enter your first name.
+                    input: true
+                    tooltip: Enter your <strong>First Name</strong>
+                    description: Enter your <strong>First Name</strong>
+                  - type: textfield
+                    key: lastName
+                    label: Last Name
+                    placeholder: Enter your last name.
+                    input: true
+                    tooltip: Enter your <strong>Last Name</strong>
+                    description: Enter your <strong>Last Name</strong>
     FormSubmission:
       allOf:
-        - $ref: '#/components/schemas/FormSubmissionBasic'
+        - $ref: "#/components/schemas/FormSubmissionBasic"
         - type: object
           properties:
             id:
@@ -1535,7 +1572,7 @@ components:
             submission:
               type: object
               description: this is the json for the form submission.
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/TimeStampUserData"
     FormSubmissionExport:
       allOf:
         - type: object
@@ -1604,11 +1641,11 @@ components:
               type: integer
               description: The version number of the form for a submission
               example: 1
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/TimeStampUserData"
     FormVersion:
       allOf:
-        - $ref: '#/components/schemas/FormVersionBasic'
-        - $ref: '#/components/schemas/FormSchema'
+        - $ref: "#/components/schemas/FormVersionBasic"
+        - $ref: "#/components/schemas/FormSchema"
     FormVersionBasic:
       allOf:
         - type: object
@@ -1627,7 +1664,7 @@ components:
             published:
               type: boolean
               example: true
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/TimeStampUserData"
     IdentityProvider:
       allOf:
         - type: object
@@ -1645,10 +1682,10 @@ components:
             active:
               type: boolean
               example: true
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/TimeStampUserData"
     NotFound:
       allOf:
-        - $ref: '#/components/schemas/Problem'
+        - $ref: "#/components/schemas/Problem"
         - type: object
           properties:
             status:
@@ -1656,7 +1693,7 @@ components:
             title:
               example: Not Found
             type:
-              example: 'https://httpstatuses.com/404'
+              example: "https://httpstatuses.com/404"
     PermissionBasic:
       allOf:
         - type: object
@@ -1667,7 +1704,7 @@ components:
             display:
               type: string
               description: The permission name
-              example: 'Design Update'
+              example: "Design Update"
             description:
               type: string
               example: >-
@@ -1675,16 +1712,16 @@ components:
             active:
               type: boolean
               example: true
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/TimeStampUserData"
     Permission:
       allOf:
-        - $ref: '#/components/schemas/PermissionBasic'
+        - $ref: "#/components/schemas/PermissionBasic"
         - type: object
           properties:
             roles:
               type: array
               items:
-                $ref: '#/components/schemas/RoleBasic'
+                $ref: "#/components/schemas/RoleBasic"
     Problem:
       required:
         - type
@@ -1694,10 +1731,10 @@ components:
       properties:
         type:
           type: string
-          description: 'What type of problem, link to explanation of problem'
+          description: "What type of problem, link to explanation of problem"
         title:
           type: string
-          description: 'Title of problem, generally the Http Status Code description'
+          description: "Title of problem, generally the Http Status Code description"
         status:
           type: string
           description: The Http Status code
@@ -1706,13 +1743,13 @@ components:
           description: short description of why this problem was raised.
     Role:
       allOf:
-        - $ref: '#/components/schemas/RoleBasic'
+        - $ref: "#/components/schemas/RoleBasic"
         - type: object
           properties:
             permissions:
               type: array
               items:
-                $ref: '#/components/schemas/PermissionBasic'
+                $ref: "#/components/schemas/PermissionBasic"
     RoleBasic:
       allOf:
         - type: object
@@ -1723,7 +1760,7 @@ components:
             display:
               type: string
               description: The role name
-              example: 'Form Designer'
+              example: "Form Designer"
             description:
               type: string
               example: >-
@@ -1731,12 +1768,12 @@ components:
             active:
               type: boolean
               example: true
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/TimeStampUserData"
     SubmissionFormVersion:
       allOf:
-        - $ref: '#/components/schemas/Form'
-        - $ref: '#/components/schemas/FormSubmission'
-        - $ref: '#/components/schemas/FormVersion'
+        - $ref: "#/components/schemas/Form"
+        - $ref: "#/components/schemas/FormSubmission"
+        - $ref: "#/components/schemas/FormVersion"
     TimeStampUserData:
       type: object
       properties:
@@ -1782,7 +1819,7 @@ components:
             email:
               type: string
               example: jsmith@gov.bc.ca
-        - $ref: '#/components/schemas/TimeStampUserData'
+        - $ref: "#/components/schemas/TimeStampUserData"
     UserAccess:
       type: object
       properties:
@@ -1928,7 +1965,7 @@ components:
             type: string
     ValidationError:
       allOf:
-        - $ref: '#/components/schemas/Problem'
+        - $ref: "#/components/schemas/Problem"
         - type: object
           required:
             - errors
@@ -1953,7 +1990,7 @@ components:
             title:
               example: Unprocessable Entity
             type:
-              example: 'https://httpstatuses.com/422'
+              example: "https://httpstatuses.com/422"
   responses:
     Accepted:
       description: Accepted
@@ -1962,19 +1999,19 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/BadRequest'
+            $ref: "#/components/schemas/BadRequest"
     Conflict:
       description: Request conflicts with server state
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Conflict'
+            $ref: "#/components/schemas/Conflict"
     Error:
       description: Unexpected error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     Forbidden:
       description: Lack required role to perform action
     NoContent:
@@ -1984,7 +2021,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/NotFound'
+            $ref: "#/components/schemas/NotFound"
     UnauthorizedError:
       description: Access token is missing or invalid
     UnprocessableEntity:
@@ -1994,4 +2031,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: "#/components/schemas/ValidationError"
