@@ -364,17 +364,17 @@ describe(`GET ${basePath}/formId/versions`, () => {
 
 });
 
-describe(`POST ${basePath}/formId/versions`, () => {
+// describe(`POST ${basePath}/formId/versions`, () => {
 
-  it('should return 410', async () => {
+//   it('should return 410', async () => {
 
-    const response = await request(app).post(`${basePath}/formId/versions`);
+//     const response = await request(app).post(`${basePath}/formId/versions`);
 
-    expect(response.statusCode).toBe(410);
-    expect(response.body).toBeTruthy();
-  });
+//     expect(response.statusCode).toBe(410);
+//     expect(response.body).toBeTruthy();
+//   });
 
-});
+// });
 
 describe(`GET ${basePath}/formId/versions/formVersionId`, () => {
 
@@ -410,16 +410,16 @@ describe(`GET ${basePath}/formId/versions/formVersionId`, () => {
 
 });
 
-describe(`PUT ${basePath}/formId/versions/formVersionId`, () => {
+// describe(`PUT ${basePath}/formId/versions/formVersionId`, () => {
 
-  it('should return 410', async () => {
-    const response = await request(app).put(`${basePath}/formId/versions/formVersionId`);
+//   it('should return 410', async () => {
+//     const response = await request(app).put(`${basePath}/formId/versions/formVersionId`);
 
-    expect(response.statusCode).toBe(410);
-    expect(response.body).toBeTruthy();
-  });
+//     expect(response.statusCode).toBe(410);
+//     expect(response.body).toBeTruthy();
+//   });
 
-});
+// });
 
 describe(`POST ${basePath}/formId/versions/formVersionId/publish`, () => {
 
@@ -552,27 +552,27 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
 
 });
 
-describe(`GET ${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`, () => {
+// describe(`GET ${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`, () => {
 
-  it('should return 410', async () => {
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`);
+//   it('should return 410', async () => {
+//     const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`);
 
-    expect(response.statusCode).toBe(410);
-    expect(response.body).toBeTruthy();
-  });
+//     expect(response.statusCode).toBe(410);
+//     expect(response.body).toBeTruthy();
+//   });
 
-});
+// });
 
-describe(`PUT ${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`, () => {
+// describe(`PUT ${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`, () => {
 
-  it('should return 410', async () => {
-    const response = await request(app).put(`${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`);
+//   it('should return 410', async () => {
+//     const response = await request(app).put(`${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`);
 
-    expect(response.statusCode).toBe(410);
-    expect(response.body).toBeTruthy();
-  });
+//     expect(response.statusCode).toBe(410);
+//     expect(response.body).toBeTruthy();
+//   });
 
-});
+// });
 
 describe(`GET ${basePath}/formId/drafts`, () => {
 
