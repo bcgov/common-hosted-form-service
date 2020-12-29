@@ -99,7 +99,7 @@ export default {
     return {
       headers: [
         { text: 'Version', align: 'start', value: 'version' },
-        { text: 'Date Published', align: 'start', value: 'createdAt' },
+        { text: 'Last Update', align: 'start', value: 'createdAt' },
         {
           text: 'Create a New Version',
           align: 'center',
