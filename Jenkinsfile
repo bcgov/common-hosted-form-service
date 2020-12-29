@@ -5,8 +5,8 @@
 // ------------------
 
 // Global Variable Stash Names
-APP_COV_STASH = 'app-coverage'
-FE_COV_STASH = 'frontend-coverage'
+// APP_COV_STASH = 'app-coverage'
+// FE_COV_STASH = 'frontend-coverage'
 
 // --------------------
 // Declarative Pipeline
@@ -46,8 +46,8 @@ pipeline {
     PATH_ROOT = "/${JOB_NAME.equalsIgnoreCase('master') ? 'app' : JOB_NAME}"
 
     // SonarQube Endpoint URL
-    SONARQUBE_URL_INT = 'http://sonarqube:9000'
-    SONARQUBE_URL_EXT = "https://sonarqube-${TOOLS_PROJECT}.${APP_DOMAIN}"
+    // SONARQUBE_URL_INT = 'http://sonarqube:9000'
+    // SONARQUBE_URL_EXT = "https://sonarqube-${TOOLS_PROJECT}.${APP_DOMAIN}"
   }
 
   options {
@@ -80,32 +80,32 @@ pipeline {
       }
     }
 
-    stage('Tests') {
-      agent any
-      steps {
-        script {
-          commonPipeline.notifyStageStatus('Tests', 'PENDING')
-          commonPipeline.runStageTests()
-        }
-      }
-      post {
-        success {
-          script {
-            stash name: APP_COV_STASH, includes: 'app/coverage/**'
-            stash name: FE_COV_STASH, includes: 'app/frontend/coverage/**'
+    // stage('Tests') {
+    //   agent any
+    //   steps {
+    //     script {
+    //       commonPipeline.notifyStageStatus('Tests', 'PENDING')
+    //       commonPipeline.runStageTests()
+    //     }
+    //   }
+    //   post {
+    //     success {
+    //       script {
+    //         stash name: APP_COV_STASH, includes: 'app/coverage/**'
+    //         stash name: FE_COV_STASH, includes: 'app/frontend/coverage/**'
 
-            echo 'All Lint Checks and Tests passed'
-            commonPipeline.notifyStageStatus('Tests', 'SUCCESS')
-          }
-        }
-        failure {
-          script {
-            echo 'Some Lint Checks and Tests failed'
-            commonPipeline.notifyStageStatus('Tests', 'FAILURE')
-          }
-        }
-      }
-    }
+    //         echo 'All Lint Checks and Tests passed'
+    //         commonPipeline.notifyStageStatus('Tests', 'SUCCESS')
+    //       }
+    //     }
+    //     failure {
+    //       script {
+    //         echo 'Some Lint Checks and Tests failed'
+    //         commonPipeline.notifyStageStatus('Tests', 'FAILURE')
+    //       }
+    //     }
+    //   }
+    // }
 
     stage('Build') {
       agent any

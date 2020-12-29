@@ -1,12 +1,5 @@
 
-# Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Quality Gate](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/gate?key=common-hosted-form-service-master)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
-
-[![Bugs](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=bugs)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
-[![Vulnerabilities](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=vulnerabilities)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
-[![Code Smells](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=code_smells)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
-[![Coverage](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=coverage)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
-[![Lines](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=lines)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
-[![Duplication](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-hosted-form-service-master&metric=duplicated_lines_density)](https://sonarqube-wxpbtr-tools.pathfinder.gov.bc.ca/dashboard?id=common-hosted-form-service-master)
+# Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 Create, edit and publish forms.
 
@@ -32,6 +25,7 @@ Create, edit and publish forms.
     Jenkinsfile.cicd           - Pull-Request Pipeline
     LICENSE                    - License
     sonar-project.properties   - SonarQube configuration
+    vetur.config.js            - Vetur configuration
 
 ## Documentation
 
