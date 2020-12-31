@@ -124,6 +124,18 @@ describe('Form Service', () => {
     });
   });
 
+  describe('Forms/{formId}/versions/{versioId}/publish', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/versions/${oneUuid}/publish`;
+
+    it('calls publish endpoint', async () => {
+      mockAxios.onPost(endpoint).reply(200);
+
+      const result = await formService.publishVersion(zeroUuid, oneUuid, true);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
   describe('Forms/{formId}/drafts/publish', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/drafts/${oneUuid}/publish`;
 
