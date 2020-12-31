@@ -171,7 +171,6 @@ const service = {
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
     let trx;
     try {
-      console.log(params);
       // allow an unpublish if they pass in unpublish parameter with an affirmative
       const publish = params.unpublish ? falsey(params.unpublish) : true;
       const form = await service.readForm(formId);
