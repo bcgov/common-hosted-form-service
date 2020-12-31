@@ -63,10 +63,16 @@
           </template>
           <div class="header">
             <span>Form Design</span>
-            <span>
-              <strong>Current Version:</strong>
-              {{ currentVersion.version }}
-            </span>
+            <div>
+              <span>
+                <strong>Current Version:</strong>
+                {{ currentVersion.version }}
+              </span>
+              <span class="ml-12">
+                <strong>State:</strong>
+                {{ versionState }}
+              </span>
+            </div>
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
@@ -96,7 +102,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
+    ...mapGetters('form', ['drafts', 'form', 'permissions']),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
@@ -104,6 +110,15 @@ export default {
       return this.form.versions && this.form.versions.length
         ? this.form.versions[0]
         : { version: 'N/A' };
+    },
+    versionState() {
+      if (this.form.versions && this.form.versions.length) {
+        return 'Published';
+      } else if (this.drafts && this.drafts.length > 0) {
+        return 'Draft';
+      } else {
+        return 'Not Published';
+      }
     },
   },
   methods: {
