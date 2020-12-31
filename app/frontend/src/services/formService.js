@@ -153,6 +153,22 @@ export default {
   },
 
   /**
+   * @function publishVersion
+   * Publish or unpublish a specific form version. Publishing a verison will unpublish all others.
+   * @param {string} formId The form uuid
+   * @param {string} formVersionId The form version uuid
+   * @param {Boolean} publish True to publish, false to unpublish
+   * @returns {Promise} An axios response
+   */
+  publishVersion(formId, formVersionId, publish) {
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/publish`, null, {
+      params: {
+        unpublish: !publish,
+      }
+    });
+  },
+
+  /**
    * @function updateVersion
    * Updates a specific form version schema
    * @param {string} formId The form uuid

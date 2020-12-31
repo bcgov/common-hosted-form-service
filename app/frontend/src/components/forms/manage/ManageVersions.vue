@@ -12,6 +12,7 @@
 
     <strong>History</strong>
     <v-data-table
+      :key="rerenderTable"
       class="submissions-table"
       :headers="headers"
       :items="versionList"
@@ -39,10 +40,21 @@
         </router-link>
       </template>
 
-      <!-- Published date  -->
-      <template #[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
-        - {{ item.createdBy }}
+      <!-- Status  -->
+      <template #[`item.status`]="{ item }">
+        <v-switch
+          color="success"
+          value
+          :input-value="item.published"
+          :label="item.published ? 'Published' : 'Unpublished'"
+          @change="togglePublish($event, item.id, item.version)"
+        />
+      </template>
+
+      <!-- Update date  -->
+      <template #[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | formatDateLong }}
+        - {{ item.updatedBy }}
       </template>
 
       <!-- Create new version  -->
@@ -83,6 +95,29 @@
         draft.
       </template>
     </BaseDialog>
+
+    <BaseDialog
+      v-model="showPublishDialog"
+      type="CONTINUE"
+      @continue-dialog="updatePublish"
+      @close-dialog="cancelPublish"
+    >
+      <template #title>
+        <span v-if="publishOpts.publishing">
+          Publish Version {{ publishOpts.version }}
+        </span>
+        <span v-else>Unpublish Version {{ publishOpts.version }}</span>
+      </template>
+      <template #text>
+        <span v-if="publishOpts.publishing">
+          This will set Version {{ publishOpts.version }} to the live form.
+        </span>
+        <span v-else>
+          Unpublishing this form will take the form out of circulation until a
+          version is published again.
+        </span>
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
@@ -99,7 +134,8 @@ export default {
     return {
       headers: [
         { text: 'Version', align: 'start', value: 'version' },
-        { text: 'Date Published', align: 'start', value: 'createdAt' },
+        { text: 'Status', align: 'start', value: 'status' },
+        { text: 'Last Update', align: 'start', value: 'updatedAt' },
         {
           text: 'Create a New Version',
           align: 'center',
@@ -108,7 +144,14 @@ export default {
           sortable: false,
         },
       ],
+      publishOpts: {
+        publishing: true,
+        version: '',
+        versionId: '',
+      },
       showHasDraftsDialog: false,
+      showPublishDialog: false,
+      rerenderTable: 0,
     };
   },
   computed: {
@@ -125,6 +168,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('form', ['fetchForm', 'toggleVersionPublish']),
     createVersion(formId, versionId) {
       if (this.hasDraft) {
         this.showHasDraftsDialog = true;
@@ -135,6 +179,34 @@ export default {
         });
       }
     },
+
+    // -----------------------------------------------------------------------------------------------------
+    // Publish/unpublish actions
+    // -----------------------------------------------------------------------------------------------------
+    cancelPublish() {
+      this.showPublishDialog = false;
+      // To get the toggle back to original state
+      this.rerenderTable += 1;
+    },
+    togglePublish(value, versionId, version) {
+      this.publishOpts = {
+        publishing: value,
+        version: version,
+        versionId: versionId,
+      };
+      this.showPublishDialog = true;
+    },
+    async updatePublish() {
+      this.showPublishDialog = false;
+      await this.toggleVersionPublish({
+        formId: this.form.id,
+        versionId: this.publishOpts.versionId,
+        publish: this.publishOpts.publishing,
+      });
+      // Refresh form version list
+      this.fetchForm(this.form.id);
+    },
+    // ----------------------------------------------------------------------/ Publish/unpublish actions
   },
 };
 </script>
