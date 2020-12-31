@@ -103,12 +103,19 @@
       @close-dialog="cancelPublish"
     >
       <template #title>
-        <span v-if="publishOpts.publishing">Publish Version {{ publishOpts.version }}</span>
+        <span v-if="publishOpts.publishing">
+          Publish Version {{ publishOpts.version }}
+        </span>
         <span v-else>Unpublish Version {{ publishOpts.version }}</span>
       </template>
       <template #text>
-        <span v-if="publishOpts.publishing">This will set Version {{ publishOpts.version }} to the live form.</span>
-        <span v-else>Unpublishing this form will take the form out of circulation until a version is published again.</span>
+        <span v-if="publishOpts.publishing">
+          This will set Version {{ publishOpts.version }} to the live form.
+        </span>
+        <span v-else>
+          Unpublishing this form will take the form out of circulation until a
+          version is published again.
+        </span>
       </template>
     </BaseDialog>
   </div>
@@ -144,7 +151,7 @@ export default {
       },
       showHasDraftsDialog: false,
       showPublishDialog: false,
-      rerenderTable: 0
+      rerenderTable: 0,
     };
   },
   computed: {
