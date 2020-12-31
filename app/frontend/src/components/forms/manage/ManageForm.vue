@@ -69,7 +69,7 @@
                 {{ currentVersion.version }}
               </span>
               <span class="ml-12">
-                <strong>State:</strong>
+                <strong>Status:</strong>
                 {{ versionState }}
               </span>
             </div>
@@ -107,12 +107,14 @@ export default {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
     currentVersion() {
-      return this.form.versions && this.form.versions.length
-        ? this.form.versions[0]
-        : { version: 'N/A' };
+      if (this.form.versions && this.form.versions.length) {
+        return this.form.versions.find((v) => v.published);
+      } else {
+        return { version: 'N/A' };
+      }
     },
     versionState() {
-      if (this.form.versions && this.form.versions.length) {
+      if (this.form.versions && this.form.versions.some((v) => v.published)) {
         return 'Published';
       } else if (this.drafts && this.drafts.length > 0) {
         return 'Draft';
