@@ -39,10 +39,21 @@
         </router-link>
       </template>
 
-      <!-- Published date  -->
-      <template #[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
-        - {{ item.createdBy }}
+      <!-- Status  -->
+      <template #[`item.status`]="{ item }">
+        <v-switch
+          color="success"
+          value
+          :input-value="item.published"
+          :label="item.published ? 'Published' : 'Unpublished'"
+          @change="togglePublish($event, item.id)"
+        />
+      </template>
+
+      <!-- Update date  -->
+      <template #[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | formatDateLong }}
+        - {{ item.updatedBy }}
       </template>
 
       <!-- Create new version  -->
@@ -83,6 +94,18 @@
         draft.
       </template>
     </BaseDialog>
+
+    <BaseDialog
+      v-model="showPublishDialog"
+      type="OK"
+      @close-dialog="showPublishDialog = false"
+    >
+      <template #title>Draft already exists</template>
+      <template #text>
+        Please edit, publish or delete the existing draft before starting a new
+        draft.
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
@@ -99,7 +122,8 @@ export default {
     return {
       headers: [
         { text: 'Version', align: 'start', value: 'version' },
-        { text: 'Last Update', align: 'start', value: 'createdAt' },
+        { text: 'Status', align: 'start', value: 'status' },
+        { text: 'Last Update', align: 'start', value: 'updatedAt' },
         {
           text: 'Create a New Version',
           align: 'center',
@@ -109,6 +133,7 @@ export default {
         },
       ],
       showHasDraftsDialog: false,
+      showPublishDialog: false,
     };
   },
   computed: {
@@ -125,6 +150,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('form', ['fetchForm', 'toggleVersionPublish']),
     createVersion(formId, versionId) {
       if (this.hasDraft) {
         this.showHasDraftsDialog = true;
@@ -134,6 +160,15 @@ export default {
           query: { f: formId, v: versionId },
         });
       }
+    },
+    async togglePublish(value, versionId) {
+      await this.toggleVersionPublish({
+        formId: this.form.id,
+        versionId: versionId,
+        publish: value,
+      });
+      // Refresh form version list
+      this.fetchForm(this.form.id);
     },
   },
 };

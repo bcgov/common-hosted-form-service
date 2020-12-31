@@ -197,6 +197,17 @@ export default {
         }, { root: true });
       }
     },
+    async toggleVersionPublish({ dispatch }, { formId, versionId, publish }) {
+      try {
+        await formService.publishVersion(formId, versionId, publish);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            `An error occurred while ${publish ? 'publishing' : 'unpublishing'}.`,
+          consoleError: `Error in toggleVersionPublish ${versionId} ${publish}: ${error}`,
+        }, { root: true });
+      }
+    },
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
     },
