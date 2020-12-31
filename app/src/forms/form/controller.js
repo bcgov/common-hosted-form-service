@@ -89,6 +89,7 @@ module.exports = {
   },
   publishVersion:  async (req, res, next) => {
     try {
+      console.log(req.query);
       const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.query, req.currentUser);
       res.status(200).json(response);
     } catch (error) {

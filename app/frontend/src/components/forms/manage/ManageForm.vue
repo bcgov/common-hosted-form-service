@@ -108,10 +108,12 @@ export default {
     },
     currentVersion() {
       if (this.form.versions && this.form.versions.length) {
-        return this.form.versions.find((v) => v.published);
-      } else {
-        return { version: 'N/A' };
+        const cv = this.form.versions.find((v) => v.published);
+        if(cv) {
+          return cv;
+        }
       }
+      return { version: 'N/A' };
     },
     versionState() {
       if (this.form.versions && this.form.versions.some((v) => v.published)) {
