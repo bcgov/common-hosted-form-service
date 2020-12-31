@@ -12,6 +12,7 @@
 
     <strong>History</strong>
     <v-data-table
+      :key="rerenderTable"
       class="submissions-table"
       :headers="headers"
       :items="versionList"
@@ -46,7 +47,7 @@
           value
           :input-value="item.published"
           :label="item.published ? 'Published' : 'Unpublished'"
-          @change="togglePublish($event, item.id)"
+          @change="togglePublish($event, item.id, item.version)"
         />
       </template>
 
@@ -97,13 +98,17 @@
 
     <BaseDialog
       v-model="showPublishDialog"
-      type="OK"
-      @close-dialog="showPublishDialog = false"
+      type="CONTINUE"
+      @continue-dialog="updatePublish"
+      @close-dialog="cancelPublish"
     >
-      <template #title>Draft already exists</template>
+      <template #title>
+        <span v-if="publishOpts.publishing">Publish Version {{ publishOpts.version }}</span>
+        <span v-else>Unpublish Version {{ publishOpts.version }}</span>
+      </template>
       <template #text>
-        Please edit, publish or delete the existing draft before starting a new
-        draft.
+        <span v-if="publishOpts.publishing">This will set Version {{ publishOpts.version }} to the live form.</span>
+        <span v-else>Unpublishing this form will take the form out of circulation until a version is published again.</span>
       </template>
     </BaseDialog>
   </div>
@@ -132,8 +137,14 @@ export default {
           sortable: false,
         },
       ],
+      publishOpts: {
+        publishing: true,
+        version: '',
+        versionId: '',
+      },
       showHasDraftsDialog: false,
       showPublishDialog: false,
+      rerenderTable: 0
     };
   },
   computed: {
@@ -161,15 +172,34 @@ export default {
         });
       }
     },
-    async togglePublish(value, versionId) {
+
+    // -----------------------------------------------------------------------------------------------------
+    // Publish/unpublish actions
+    // -----------------------------------------------------------------------------------------------------
+    cancelPublish() {
+      this.showPublishDialog = false;
+      // To get the toggle back to original state
+      this.rerenderTable += 1;
+    },
+    togglePublish(value, versionId, version) {
+      this.publishOpts = {
+        publishing: value,
+        version: version,
+        versionId: versionId,
+      };
+      this.showPublishDialog = true;
+    },
+    async updatePublish() {
+      this.showPublishDialog = false;
       await this.toggleVersionPublish({
         formId: this.form.id,
-        versionId: versionId,
-        publish: value,
+        versionId: this.publishOpts.versionId,
+        publish: this.publishOpts.publishing,
       });
       // Refresh form version list
       this.fetchForm(this.form.id);
     },
+    // ----------------------------------------------------------------------/ Publish/unpublish actions
   },
 };
 </script>
