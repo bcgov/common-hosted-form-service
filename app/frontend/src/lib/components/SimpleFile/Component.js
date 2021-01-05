@@ -36,7 +36,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 var uniqueName = Utils.uniqueName;
 var ID = 'simplefile';
-var DISPLAY = 'Upload';
+var DISPLAY = 'File Upload';
 var Component = /** @class */ (function (_super) {
     __extends(Component, _super);
     function Component() {
