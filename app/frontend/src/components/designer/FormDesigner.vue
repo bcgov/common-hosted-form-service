@@ -439,11 +439,11 @@ export default {
     }
   },
   watch: {
-    // if form userType (public, idir, team, etc) changes, re-render the form builder
-    userType() {
+    advancedForm() {
       this.reRenderFormIo += 1;
     },
-    advancedForm() {
+    // if form userType (public, idir, team, etc) changes, re-render the form builder
+    userType() {
       this.reRenderFormIo += 1;
     },
   },
