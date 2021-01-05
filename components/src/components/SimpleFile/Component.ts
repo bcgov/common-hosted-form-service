@@ -7,7 +7,7 @@ import { Constants } from '../Common/Constants';
 import uniqueName = Utils.uniqueName;
 
 const ID = 'simplefile';
-const DISPLAY = 'Upload';
+const DISPLAY = 'File Upload';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {
