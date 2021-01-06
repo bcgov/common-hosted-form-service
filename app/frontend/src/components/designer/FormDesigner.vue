@@ -260,6 +260,12 @@ export default {
         return {
           builder: {
             premium: false,
+            basic: {
+              components: {
+                // add 'simplefile' file upload component to formBuilder in advanced mode
+                simplefile: this.userType !== this.ID_MODE.PUBLIC
+              }
+            }
           },
         };
       }
@@ -434,6 +440,10 @@ export default {
   },
   watch: {
     advancedForm() {
+      this.reRenderFormIo += 1;
+    },
+    // if form userType (public, idir, team, etc) changes, re-render the form builder
+    userType() {
       this.reRenderFormIo += 1;
     },
   },
