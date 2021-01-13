@@ -8,6 +8,10 @@
   >
     <v-card>
       <div class="dialog-body">
+        <div v-if="type === 'X'">
+          <v-spacer></v-spacer>
+          <v-icon color="primary" class="float-right m-2" @click="closeDialog">close</v-icon>
+        </div>
         <v-card-title class primary-title>
           <slot name="title"></slot>
         </v-card-title>

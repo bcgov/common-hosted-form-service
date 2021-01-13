@@ -8,7 +8,7 @@
             flat
             solid
             outlined
-            label="Name"
+            label="Form Title"
             data-test="text-name"
             v-model="name"
             :rules="nameRules"
@@ -20,7 +20,7 @@
             flat
             solid
             outlined
-            label="Description"
+            label="Form Description"
             data-test="text-description"
             v-model="description"
             :rules="descriptionRules"
@@ -170,11 +170,11 @@ export default {
       ],
       descriptionRules: [
         (v) =>
-          !v || v.length <= 255 || 'Description must be 255 characters or less',
+          !v || v.length <= 255 || 'Form Description must be 255 characters or less',
       ],
       nameRules: [
-        (v) => !!v || 'Name is required',
-        (v) => (v && v.length <= 255) || 'Name must be 255 characters or less',
+        (v) => !!v || 'Form Title is required',
+        (v) => (v && v.length <= 255) || 'Form Title must be 255 characters or less',
       ],
       emailArrayRules: [
         (v) =>

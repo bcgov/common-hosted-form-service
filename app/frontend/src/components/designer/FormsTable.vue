@@ -46,6 +46,37 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
+      <template #[`item.name`]="{ item }">
+        <router-link
+          :to="{
+            name: 'FormSubmit',
+            query: { f: item.id },
+          }"
+          target="_blank"
+        >
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">{{ item.name }}</span>
+            </template>
+            <span>
+              View form
+              <v-icon>open_in_new</v-icon>
+            </span>
+          </v-tooltip>
+        </router-link>
+
+        <v-btn
+          v-if="item.description"
+          @click="onDescriptionClick(item.id, item.description)"
+          color="primary"
+          :disabled="descriptionDialogOpen"
+          icon
+        >
+          <v-icon>chat</v-icon>
+        </v-btn>
+      </template>
+
+
       <template #[`item.actions`]="{ item }">
         <router-link
           v-if="checkFormManage(item)"
@@ -65,21 +96,18 @@
             <span class="d-none d-sm-flex">View Submissions</span>
           </v-btn>
         </router-link>
-        <router-link
-          v-if="checkFormSubmit(item)"
-          :to="{
-            name: 'FormSubmit',
-            query: { f: item.id },
-          }"
-          target="_blank"
-        >
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">note_add</v-icon>
-            <span class="d-none d-sm-flex">Launch</span>
-          </v-btn>
-        </router-link>
       </template>
     </v-data-table>
+
+    <BaseDialog
+      v-model="showDescriptionDialog"
+      type='X'
+      @close-dialog="showDescriptionDialog = false;"
+    >
+      <template #text>
+        <slot name="formDescription">{{ formDescription }}</slot>
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
@@ -106,6 +134,9 @@ export default {
         },
       ],
       loading: true,
+      showDescriptionDialog: false,
+      formId: null,
+      formDescription: null,
       search: '',
     };
   },
@@ -124,6 +155,13 @@ export default {
     checkFormManage: checkFormManage,
     checkFormSubmit: checkFormSubmit,
     checkSubmissionView: checkSubmissionView,
+
+    onDescriptionClick(formId, formDescription) {
+      this.formId = formId;
+      this.formDescription = formDescription;
+      this.showDescriptionDialog = true;
+    }
+
   },
   async mounted() {
     await this.getFormsForCurrentUser();

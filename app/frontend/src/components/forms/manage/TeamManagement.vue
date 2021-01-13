@@ -57,15 +57,13 @@
       no-data-text="Failed to load team role data"
       :search="search"
     >
-      <!-- custom header markup - add tooltip to roles -->
+      <!-- custom header markup - add tooltip to heading that are roles -->
       <template v-for="h in headers.slice(2)" v-slot:[`header.${h.value}`]="{ headers }">
-        <v-tooltip
-          :key="h.value"
-          bottom>
+        <v-tooltip :key="h.value" bottom>
           <template v-slot:activator="{ on }">
-            <span v-on="on">{{h.text}}</span>
+            <span v-on="on">{{ h.text }}</span>
           </template>
-          <span>{{h.description}}</span>
+          <span>{{ h.description }}</span>
         </v-tooltip>
       </template>
       <template #item="{ item, isMobile, headers }">
@@ -464,6 +462,6 @@ export default {
 /* remove extra padding on data-table rows for mobile view */
 .team-table >>> thead.v-data-table-header-mobile th,
 .team-table tr.v-data-table__mobile-table-row td {
-  padding: 0 !important;
+  padding: 0;
 }
 </style>
