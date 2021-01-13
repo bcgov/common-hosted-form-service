@@ -57,7 +57,19 @@
       no-data-text="Failed to load team role data"
       :search="search"
     >
+      <!-- custom header markup - add tooltip to roles -->
+      <template v-for="h in headers.slice(2)" v-slot:[`header.${h.value}`]="{ headers }">
+        <v-tooltip
+          :key="h.value"
+          bottom>
+          <template v-slot:activator="{ on }">
+            <span v-on="on">{{h.text}}</span>
+          </template>
+          <span>{{h.description}}</span>
+        </v-tooltip>
+      </template>
       <template #item="{ item, isMobile, headers }">
+        <!-- if showing in mobile view -->
         <tr v-if="isMobile" class="v-data-table__mobile-table-row">
           <td
             v-for="header in headers"
@@ -65,7 +77,19 @@
             class="v-data-table__mobile-row"
           >
             <div class="v-data-table__mobile-row__header">
-              {{ header.text }}
+              <!-- if header is a role with description, add tooltip -->
+              <v-tooltip v-if="header.description" bottom>
+                <template v-slot:activator="{ on }">
+                  <span
+                    v-on="on"
+                  >{{ header.text }}</span>
+                </template>
+                <span>{{ header.description }}</span>
+              </v-tooltip>
+              <!-- else just show text -->
+              <span v-else>
+                {{ header.text }}
+              </span>
             </div>
             <div class="v-data-table__mobile-row__cell">
               <div v-if="typeof item[header.value] === 'boolean'">
@@ -94,6 +118,7 @@
             </div>
           </td>
         </tr>
+        <!-- else display data-table in desktop view -->
         <tr v-else>
           <td
             v-for="header in headers"
@@ -240,6 +265,7 @@ export default {
               filterable: false,
               text: role.display,
               value: role.code,
+              description: role.description
             }))
             .sort((a, b) =>
               this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
@@ -434,5 +460,10 @@ export default {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;
+}
+/* remove extra padding on data-table rows for mobile view */
+.team-table >>> thead.v-data-table-header-mobile th,
+.team-table tr.v-data-table__mobile-table-row td {
+  padding: 0 !important;
 }
 </style>
