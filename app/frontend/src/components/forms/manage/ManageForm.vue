@@ -97,7 +97,7 @@ export default {
     return {
       formSettingsDisabled: true,
       settingsFormValid: false,
-      settingsPanel: 0,
+      settingsPanel: 1,
       versionsPanel: 0,
     };
   },
