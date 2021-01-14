@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="forms-table">
     <v-row class="mt-6" no-gutters>
       <v-col cols="12" sm="6">
         <h1>My Forms</h1>
@@ -66,10 +66,10 @@
         </router-link>
         <!-- link to description in dialog -->
         <v-icon
-          v-if="item.description"
-          @click="onDescriptionClick(item.id, item.description)"
+          v-if="item.description.trim()"
+          @click="onDescriptionClick(item.id, item.name, item.description)"
           small
-          class="ml-2 mr-4"
+          class="description-icon ml-2 mr-4"
           color="primary"
         >
           chat
@@ -102,10 +102,14 @@
       type='X'
       @close-dialog="showDescriptionDialog = false;"
     >
+      <template #title>
+        <span class="pl-5">Description:</span>
+      </template>
       <template #text>
         <slot name="formDescription">{{ formDescription }}</slot>
       </template>
     </BaseDialog>
+
   </div>
 </template>
 
@@ -135,6 +139,7 @@ export default {
       showDescriptionDialog: false,
       formId: null,
       formDescription: null,
+      formName: null,
       search: '',
     };
   },
@@ -153,7 +158,7 @@ export default {
     checkFormManage: checkFormManage,
     checkFormSubmit: checkFormSubmit,
     checkSubmissionView: checkSubmissionView,
-
+    // show a description if is set in db
     onDescriptionClick(formId, formDescription) {
       this.formId = formId;
       this.formDescription = formDescription;
@@ -201,5 +206,11 @@ export default {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;
+}
+.description-icon:focus::after {
+  opacity: 0;
+}
+.description-icon:hover {
+  color: #3b99fc !important;
 }
 </style>
