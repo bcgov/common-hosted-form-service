@@ -64,19 +64,17 @@
             </span>
           </v-tooltip>
         </router-link>
-
-        <v-btn
+        <!-- link to description in dialog -->
+        <v-icon
           v-if="item.description"
           @click="onDescriptionClick(item.id, item.description)"
+          small
+          class="ml-2 mr-4"
           color="primary"
-          :disabled="descriptionDialogOpen"
-          icon
         >
-          <v-icon>chat</v-icon>
-        </v-btn>
+          chat
+        </v-icon>
       </template>
-
-
       <template #[`item.actions`]="{ item }">
         <router-link
           v-if="checkFormManage(item)"

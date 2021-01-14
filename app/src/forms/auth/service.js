@@ -190,9 +190,6 @@ const service = {
   },
 
   formAccessToForm: (item) => {
-
-    console.log(item.formDescription);
-
     return {
       formId: item.formId,
       formName: item.formName,
