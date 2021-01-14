@@ -134,7 +134,9 @@ export default {
       this.fetchForm(this.form.id);
     },
     enableSettingsEdit() {
-      if (this.settingsPanel === undefined) this.settingsPanel = 0;
+      // open 'Form Settings' accordion
+      this.settingsPanel = 0;
+      // enable 'Form Setings' form
       this.formSettingsDisabled = false;
     },
     async updateSettings() {
