@@ -59,7 +59,7 @@
               <span v-bind="attrs" v-on="on">{{ item.name }}</span>
             </template>
             <span>
-              View form
+              View Form
               <v-icon>open_in_new</v-icon>
             </span>
           </v-tooltip>
@@ -67,7 +67,7 @@
         <!-- link to description in dialog -->
         <v-icon
           v-if="item.description.trim()"
-          @click="onDescriptionClick(item.id, item.name, item.description)"
+          @click="onDescriptionClick(item.id, item.description)"
           small
           class="description-icon ml-2 mr-4"
           color="primary"
@@ -139,7 +139,6 @@ export default {
       showDescriptionDialog: false,
       formId: null,
       formDescription: null,
-      formName: null,
       search: '',
     };
   },
@@ -207,10 +206,10 @@ export default {
   color: #003366 !important;
   font-size: 1.1em;
 }
+.submissions-table a{
+  color: #003366;
+}
 .description-icon:focus::after {
   opacity: 0;
-}
-.description-icon:hover {
-  color: #3b99fc !important;
 }
 </style>
