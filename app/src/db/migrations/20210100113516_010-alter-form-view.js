@@ -40,8 +40,10 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-  // Restore original definition of this view from 001-views
+  // drop view 'user_form_access_vw' and everything that depends on it
+  // then re-create it using DDL for the view from before this migration (from file .006-version-drafts.js) and its dependencies (currenly no dependencies)
   return Promise.resolve()
+    .then(() => knex.schema.raw('drop view user_form_access_vw cascade'))
     .then(() => knex.schema.raw(`create or replace
     view user_form_access_vw as
     select
