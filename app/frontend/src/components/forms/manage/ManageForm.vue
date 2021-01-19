@@ -68,7 +68,7 @@
                 <strong>Current Version:</strong>
                 {{ currentVersion }}
               </span>
-              <span class="ml-12">
+              <span class="ml-12 mr-2">
                 <strong>Status:</strong>
                 {{ versionState }}
               </span>
@@ -161,3 +161,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.v-expansion-panel:not(.v-expansion-panel--active){
+  margin-bottom: 30px;
+}
+</style>
