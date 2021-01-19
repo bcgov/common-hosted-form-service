@@ -99,7 +99,7 @@
 
     <BaseDialog
       v-model="showDescriptionDialog"
-      type='X'
+      showCloseButton
       @close-dialog="showDescriptionDialog = false;"
     >
       <template #title>
@@ -206,7 +206,7 @@ export default {
   color: #003366 !important;
   font-size: 1.1em;
 }
-.submissions-table a{
+.submissions-table a {
   color: #003366;
 }
 .description-icon:focus::after {

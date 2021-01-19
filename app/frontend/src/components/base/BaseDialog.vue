@@ -8,8 +8,8 @@
   >
     <v-card>
       <div class="dialog-body">
-        <div v-if="type === 'X'">
-          <v-spacer></v-spacer>
+        <div v-if="showCloseButton">
+          <v-spacer />
           <v-icon color="primary" class="float-right m-3" @click="closeDialog">close</v-icon>
         </div>
         <v-card-title class primary-title>
@@ -73,8 +73,12 @@ export default {
       type: Boolean,
     },
     type: {
-      default: 'OK',
+      default: null,
       type: String,
+    },
+    showCloseButton: {
+      default: false,
+      type: Boolean,
     },
     width: {
       default: '500',
