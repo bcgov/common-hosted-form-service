@@ -40,4 +40,15 @@ describe('BaseDialog.vue', () => {
     expect(wrapper.text()).toMatch('close');
   });
 
+  it('renders without the close button', async () => {
+    const wrapper = shallowMount(BaseDialog, {
+      localVue,
+      propsData: { show: true }
+    });
+    await wrapper.vm.closeDialog();
+    await localVue.nextTick();
+
+    expect(wrapper.text()).not.toMatch('close');
+  });
+
 });
