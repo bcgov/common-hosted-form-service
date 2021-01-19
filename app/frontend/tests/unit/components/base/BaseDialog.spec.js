@@ -29,7 +29,7 @@ describe('BaseDialog.vue', () => {
     expect(wrapper.text()).toMatch('Continue');
   });
 
-  it('renders with no action buttons and the close X', async () => {
+  it('renders with the close button', async () => {
     const wrapper = shallowMount(BaseDialog, {
       localVue,
       propsData: { show: true, showCloseButton: true }
