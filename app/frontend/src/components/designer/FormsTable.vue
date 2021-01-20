@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="forms-table">
     <v-row class="mt-6" no-gutters>
       <v-col cols="12" sm="6">
         <h1>My Forms</h1>
@@ -46,6 +46,35 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
+      <template #[`item.name`]="{ item }">
+        <router-link
+          :to="{
+            name: 'FormSubmit',
+            query: { f: item.id },
+          }"
+          target="_blank"
+        >
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">{{ item.name }}</span>
+            </template>
+            <span>
+              View Form
+              <v-icon>open_in_new</v-icon>
+            </span>
+          </v-tooltip>
+        </router-link>
+        <!-- link to description in dialog -->
+        <v-icon
+          v-if="item.description.trim()"
+          @click="onDescriptionClick(item.id, item.description)"
+          small
+          class="description-icon ml-2 mr-4"
+          color="primary"
+        >
+          chat
+        </v-icon>
+      </template>
       <template #[`item.actions`]="{ item }">
         <router-link
           v-if="checkFormManage(item)"
@@ -65,21 +94,22 @@
             <span class="d-none d-sm-flex">View Submissions</span>
           </v-btn>
         </router-link>
-        <router-link
-          v-if="checkFormSubmit(item)"
-          :to="{
-            name: 'FormSubmit',
-            query: { f: item.id },
-          }"
-          target="_blank"
-        >
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">note_add</v-icon>
-            <span class="d-none d-sm-flex">Launch</span>
-          </v-btn>
-        </router-link>
       </template>
     </v-data-table>
+
+    <BaseDialog
+      v-model="showDescriptionDialog"
+      showCloseButton
+      @close-dialog="showDescriptionDialog = false;"
+    >
+      <template #title>
+        <span class="pl-5">Description:</span>
+      </template>
+      <template #text>
+        <slot name="formDescription">{{ formDescription }}</slot>
+      </template>
+    </BaseDialog>
+
   </div>
 </template>
 
@@ -106,6 +136,9 @@ export default {
         },
       ],
       loading: true,
+      showDescriptionDialog: false,
+      formId: null,
+      formDescription: null,
       search: '',
     };
   },
@@ -124,6 +157,13 @@ export default {
     checkFormManage: checkFormManage,
     checkFormSubmit: checkFormSubmit,
     checkSubmissionView: checkSubmissionView,
+    // show a description if is set in db
+    onDescriptionClick(formId, formDescription) {
+      this.formId = formId;
+      this.formDescription = formDescription;
+      this.showDescriptionDialog = true;
+    }
+
   },
   async mounted() {
     await this.getFormsForCurrentUser();
@@ -165,5 +205,11 @@ export default {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;
+}
+.submissions-table a {
+  color: #003366;
+}
+.description-icon:focus::after {
+  opacity: 0;
 }
 </style>

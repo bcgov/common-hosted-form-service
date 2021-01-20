@@ -10,7 +10,7 @@ describe('BaseDialog.vue', () => {
   it('renders with ok button', async () => {
     const wrapper = shallowMount(BaseDialog, {
       localVue,
-      propsData: { show: true }
+      propsData: { show: true, type: 'OK' }
     });
     await wrapper.vm.closeDialog();
     await localVue.nextTick();
@@ -28,4 +28,27 @@ describe('BaseDialog.vue', () => {
 
     expect(wrapper.text()).toMatch('Continue');
   });
+
+  it('renders with the close button', async () => {
+    const wrapper = shallowMount(BaseDialog, {
+      localVue,
+      propsData: { show: true, showCloseButton: true }
+    });
+    await wrapper.vm.closeDialog();
+    await localVue.nextTick();
+
+    expect(wrapper.text()).toMatch('close');
+  });
+
+  it('renders without the close button', async () => {
+    const wrapper = shallowMount(BaseDialog, {
+      localVue,
+      propsData: { show: true }
+    });
+    await wrapper.vm.closeDialog();
+    await localVue.nextTick();
+
+    expect(wrapper.text()).not.toMatch('close');
+  });
+
 });
