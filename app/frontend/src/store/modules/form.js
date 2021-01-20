@@ -94,6 +94,7 @@ export default {
             id: f.formId,
             idps: f.idps,
             name: f.formName,
+            description: f.formDescription,
             permissions: f.permissions
           };
         });

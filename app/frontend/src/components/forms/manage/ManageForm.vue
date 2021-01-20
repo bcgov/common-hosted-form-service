@@ -68,7 +68,7 @@
                 <strong>Current Version:</strong>
                 {{ currentVersion }}
               </span>
-              <span class="ml-12">
+              <span class="ml-12 mr-2">
                 <strong>Status:</strong>
                 {{ versionState }}
               </span>
@@ -97,7 +97,7 @@ export default {
     return {
       formSettingsDisabled: true,
       settingsFormValid: false,
-      settingsPanel: 0,
+      settingsPanel: 1,
       versionsPanel: 0,
     };
   },
@@ -134,7 +134,9 @@ export default {
       this.fetchForm(this.form.id);
     },
     enableSettingsEdit() {
-      if (this.settingsPanel === undefined) this.settingsPanel = 0;
+      // open 'Form Settings' accordion
+      this.settingsPanel = 0;
+      // enable 'Form Setings' form
       this.formSettingsDisabled = false;
     },
     async updateSettings() {
@@ -159,3 +161,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.v-expansion-panel:not(.v-expansion-panel--active){
+  margin-bottom: 30px;
+}
+</style>

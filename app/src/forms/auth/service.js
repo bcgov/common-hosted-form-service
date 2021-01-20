@@ -193,6 +193,7 @@ const service = {
     return {
       formId: item.formId,
       formName: item.formName,
+      formDescription: item.formDescription,
       labels: item.labels,
       idps: item.idps,
       active: item.active,
