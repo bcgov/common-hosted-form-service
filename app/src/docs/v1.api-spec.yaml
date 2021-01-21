@@ -1404,6 +1404,58 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /admin/users:
+    get:
+      summary: Get the list of users
+      operationId: adminReadUsers
+      tags:
+        - Admin
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /admin/users/{userId}:
+    get:
+      summary: Get a user
+      operationId: adminReadUser
+      tags:
+        - Admin
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: user ID
+          required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     BearerAuth:
