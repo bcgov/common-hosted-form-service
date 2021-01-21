@@ -1302,6 +1302,108 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /admin/forms:
+    get:
+      summary: List all forms in the system
+      operationId: adminListForms
+      tags:
+        - Admin
+      security:
+        - OpenID:
+            - admin
+      parameters:
+        - in: query
+          name: active
+          schema:
+            type: boolean
+          description: filter forms by active status
+          example: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Form"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /admin/forms/{formId}:
+    get:
+      summary: Get top level details of a form
+      operationId: adminReadForm
+      tags:
+        - Admin
+      parameters:
+        - $ref: "#/components/parameters/formIdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormBasic"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /admin/forms/{formId}/restore:
+    put:
+      summary: Un-delete a soft deleted form
+      operationId: adminRestoreForm
+      tags:
+        - Admin
+      parameters:
+        - $ref: "#/components/parameters/formIdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserForm"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /admin/formusers:
+    get:
+      summary: Get the list of users for the active forms in the system
+      operationId: adminReadFormUsers
+      tags:
+        - Admin
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FormUserList"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     BearerAuth:
@@ -1644,6 +1746,20 @@ components:
               description: The version number of the form for a submission
               example: 1
         - $ref: "#/components/schemas/TimeStampUserData"
+    FormUserList:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            name:
+              type: string
+              example: My First Form.
+            users:
+              type: array
+              items:
+                $ref: "#/components/schemas/UserFormBasic"
     FormVersion:
       allOf:
         - $ref: "#/components/schemas/FormVersionBasic"
@@ -1963,6 +2079,25 @@ components:
           example:
             - design_update
             - submission_create
+          items:
+            type: string
+    UserFormBasic:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user
+          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+        username:
+          type: string
+          example: jsmith
+        roles:
+          type: array
+          description: the role codes this user has on this form
+          example:
+            - owner
+            - team_manager
           items:
             type: string
     ValidationError:
