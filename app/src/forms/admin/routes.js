@@ -35,10 +35,6 @@ routes.get('/formusers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
 });
 
-routes.put('/formusers', async (req, res, next) => {
-  await controller.setFormUserRoles(req, res, next);
-});
-
 
 //
 // Users
