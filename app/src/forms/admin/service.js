@@ -80,43 +80,7 @@ const service = {
     });
 
     return results;
-  },
-
-  setFormUserRoles: async (params, data, currentUser) => {
-    let trx;
-    try {
-      trx = await transaction.start(FormRoleUser.knex());
-      if (!Array.isArray(data)) {
-        data = [data];
-      }
-
-      // clear out all user/roles for the specified forms...
-      for (const f of data) {
-        await FormRoleUser.query()
-          .skipUndefined()
-          .delete()
-          .where('formId', f.formId);
-      }
-
-      // build the form/ user/ roles...
-      const formUserRoles = [];
-      data.forEach(f => {
-        f.users.forEach(u => {
-          u.roles.forEach(r => {
-            formUserRoles.push({ id: uuidv4(), createdBy: currentUser.username, formId: f.formId, userId: u.userId, role: r });
-          });
-        });
-      });
-      // now add in the specified user/roles...
-      await FormRoleUser.query().insert(formUserRoles);
-      await trx.commit();
-      return service.getFormUserRoles(params);
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
-  },
-
+  }
 };
 
 module.exports = service;

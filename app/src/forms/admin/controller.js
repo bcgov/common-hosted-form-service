@@ -47,14 +47,6 @@ module.exports = {
     } catch (error) {
       next(error);
     }
-  },
-  setFormUserRoles: async (req, res, next) => {
-    try {
-      const response = await service.setFormUserRoles(req.query, req.body, req.currentUser);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
   }
 
 };
