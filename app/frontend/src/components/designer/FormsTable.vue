@@ -72,7 +72,7 @@
           class="description-icon ml-2 mr-4"
           color="primary"
         >
-          chat
+          description
         </v-icon>
       </template>
       <template #[`item.actions`]="{ item }">
