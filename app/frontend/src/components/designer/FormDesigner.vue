@@ -206,6 +206,20 @@ export default {
             data: false,
             layout: false,
             premium: false,
+
+            layoutControls: {
+              title: 'Layout',
+              weight: 10,
+              components: {
+                simplecols2: true,
+                simplecols3: true,
+                simplecols4: true,
+                simplefieldset: true,
+                simplepanel: true,
+                simpletabs: true,
+              },
+            },
+
             entryControls: {
               title: 'Form fields',
               weight: 20,
@@ -226,21 +240,9 @@ export default {
                 simplefile: this.userType !== this.ID_MODE.PUBLIC,
               },
             },
-            layoutControls: {
-              title: 'Layout',
-              weight: 30,
-              components: {
-                simplecols2: true,
-                simplecols3: true,
-                simplecols4: true,
-                simplefieldset: true,
-                simplepanel: true,
-                simpletabs: true,
-              },
-            },
             staticControls: {
               title: 'Static Content',
-              weight: 40,
+              weight: 30,
               components: {
                 simpleheading: true,
                 simpleparagraph: true,
@@ -249,7 +251,7 @@ export default {
             },
             customControls: {
               title: 'BC Gov.',
-              weight: 50,
+              weight: 40,
               components: {
                 orgbook: true,
               },
@@ -260,12 +262,32 @@ export default {
         return {
           builder: {
             premium: false,
+            layout: {
+              weight: 10,
+            },
             basic: {
+              title: 'Form Fields',
+              weight: 20,
               components: {
                 // add 'simplefile' file upload component to formBuilder in advanced mode
                 simplefile: this.userType !== this.ID_MODE.PUBLIC
               }
-            }
+            },
+            advanced: {
+              weight: 30,
+              components: {
+                orgbook: false,
+              },
+            },
+            customControls: {
+              title: 'BC Gov.',
+              weight: 50,
+              components: {
+                orgbook: true,
+              },
+            },
+
+
           },
         };
       }
