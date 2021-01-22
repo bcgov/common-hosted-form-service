@@ -31,6 +31,8 @@ tags:
     description: This section of the API includes endpoints used to perform various operations related to form drafts, for example create or publish a draft from a specific version of a form.
   - name: Submission
     description: These API endpoints handle the input data provided by a user that completes the form, for example, writing the form data to the database, or exporting form submissions created during a defined time period.
+  - name: Files
+    description: API endpoints to upload and retrieve files stored in CHEFS.
   - name: User
     description: The section includes API endpoints for carrying out operations with data related to users of the application.
   - name: Role
@@ -625,6 +627,80 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /files:
+    post:
+      summary: Upload a file
+      operationId: fileUpload
+      tags:
+        - Files
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "file_name-5b26db5a-8388-4c01-b728-d0d098f815ba.pdf"
+                  description: The desired file name
+                files:
+                  type: string
+                  format: binary
+                  description: The actual files to upload
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileUpload"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /files/{fileId}:
+    get:
+      summary: Get a file
+      operationId: fileGet
+      tags:
+        - Files
+      parameters:
+        - $ref: "#/components/parameters/fileIdParam"
+      responses:
+        '200':
+          description: The returned binary file
+          content:
+            application/<type>:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete a file
+      operationId: fileDelete
+      tags:
+        - Files
+      parameters:
+        - $ref: "#/components/parameters/fileIdParam"
+      responses:
+        "202":
+          description: "Accepted"
         default:
           description: Unexpected error
           content:
@@ -1466,6 +1542,15 @@ components:
       type: openIdConnect
       openIdConnectUrl: "https://example.com/.well-known/openid-configuration"
   parameters:
+    fileIdParam:
+      in: path
+      name: fileId
+      schema:
+        type: string
+        format: uuid
+      example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
+      required: true
+      description: ID of the File
     formIdParam:
       in: path
       name: formId
@@ -1586,8 +1671,25 @@ components:
               example: Internal Server Error
             type:
               example: "https://httpstatuses.com/500"
-    Forbidden:
-      description: Lack required role to perform action
+    FileUpload:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          example: 2020-06-04T18:49:20.672Z
+        createdBy:
+          type: string
+          example: jsmith
+        id:
+          type: string
+          format: uuid
+          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+        originalName:
+          type: string
+          example: hiring_approval_request_form_schema.json
+        size:
+          type: integer
+          example: 27462
     Form:
       allOf:
         - $ref: "#/components/schemas/FormBasic"
