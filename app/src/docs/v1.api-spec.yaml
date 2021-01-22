@@ -1417,6 +1417,9 @@ paths:
       operationId: adminReadForm
       tags:
         - Admin
+      security:
+        - OpenID:
+            - admin
       parameters:
         - $ref: "#/components/parameters/formIdParam"
       responses:
@@ -1440,6 +1443,9 @@ paths:
       operationId: adminRestoreForm
       tags:
         - Admin
+      security:
+        - OpenID:
+            - admin
       parameters:
         - $ref: "#/components/parameters/formIdParam"
       responses:
@@ -1463,6 +1469,9 @@ paths:
       operationId: adminReadFormUsers
       tags:
         - Admin
+      security:
+        - OpenID:
+            - admin
       responses:
         "200":
           description: "OK"
@@ -1486,6 +1495,9 @@ paths:
       operationId: adminReadUsers
       tags:
         - Admin
+      security:
+        - OpenID:
+            - admin
       responses:
         "200":
           description: "OK"
@@ -1509,6 +1521,9 @@ paths:
       operationId: adminReadUser
       tags:
         - Admin
+      security:
+        - OpenID:
+            - admin
       parameters:
         - in: path
           name: userId
