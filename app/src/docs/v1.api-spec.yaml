@@ -1662,7 +1662,7 @@ components:
             msgid:
               type: string
               format: uuid
-              description: ID of message .
+              description: ID of message.
               example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
             to:
               type: array
@@ -1704,6 +1704,7 @@ components:
           example: hiring_approval_request_form_schema.json
         size:
           type: integer
+          description: Size in bytes of the file.
           example: 27462
     Form:
       allOf:
