@@ -191,6 +191,7 @@ export default {
   computed: {
     ...mapFields('form', [
       'form.description',
+      'form.enableStatusUpdates',
       'form.id',
       'form.idps',
       'form.name',
