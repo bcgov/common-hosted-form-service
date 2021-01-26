@@ -232,7 +232,7 @@ export default {
         await formService.updateForm(state.form.id, {
           name: state.form.name,
           description: state.form.description,
-          enableStatusUpdates: state.form.state.form,
+          enableStatusUpdates: state.form.enableStatusUpdates,
           identityProviders: generateIdps({
             idps: state.form.idps,
             userType: state.form.userType,

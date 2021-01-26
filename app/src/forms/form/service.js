@@ -34,6 +34,7 @@ const service = {
       obj.labels = data.labels;
       obj.showSubmissionConfirmation = data.showSubmissionConfirmation;
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
+      obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.createdBy = currentUser.username;
 
       await Form.query(trx).insert(obj);
@@ -85,6 +86,7 @@ const service = {
         labels: data.labels ? data.labels : [],
         showSubmissionConfirmation: data.showSubmissionConfirmation,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
+        enableStatusUpdates: data.enableStatusUpdates,
         updatedBy: currentUser.username
       };
 
