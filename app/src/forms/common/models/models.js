@@ -95,7 +95,7 @@ class Form extends Timestamps(Model) {
   // exclude labels and submissionReceivedEmails arrays from explicit JSON conversion
   // encounter malformed array literal
   static get jsonAttributes() {
-    return ['id', 'name', 'description', 'active', 'showSubmissionConfirmation', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
+    return ['id', 'name', 'description', 'active', 'showSubmissionConfirmation', 'enableStatusUpdates', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
   }
 
   static get jsonSchema() {
@@ -110,6 +110,7 @@ class Form extends Timestamps(Model) {
         labels: { type: ['array', 'null'], items: { type: 'string' } },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
+        enableStatusUpdates: { type: 'boolean' },
         ...stamps
       },
       additionalProperties: false

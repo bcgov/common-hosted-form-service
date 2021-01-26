@@ -1755,6 +1755,9 @@ components:
               example:
                 - "me@email.com"
                 - "manager@email.com"
+            enableStatusUpdates:
+              type: boolean
+              example: true
     FormDraft:
       allOf:
         - type: object
