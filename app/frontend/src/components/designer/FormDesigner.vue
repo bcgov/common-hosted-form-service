@@ -210,6 +210,7 @@ export default {
             layoutControls: {
               title: 'Layout',
               weight: 10,
+              default: true,
               components: {
                 simplecols2: true,
                 simplecols3: true,
@@ -217,13 +218,15 @@ export default {
                 simplefieldset: true,
                 simplepanel: true,
                 simpletabs: true,
+                simpleheading: true,
+                simpleparagraph: true,
+                simplecontent: true,
               },
             },
 
             entryControls: {
               title: 'Form fields',
               weight: 20,
-              default: true,
               components: {
                 simpletextfield: true,
                 simpletextarea: true,
@@ -240,18 +243,9 @@ export default {
                 simplefile: this.userType !== this.ID_MODE.PUBLIC,
               },
             },
-            staticControls: {
-              title: 'Static Content',
-              weight: 30,
-              components: {
-                simpleheading: true,
-                simpleparagraph: true,
-                simplecontent: true,
-              },
-            },
             customControls: {
               title: 'BC Gov.',
-              weight: 40,
+              weight: 30,
               components: {
                 orgbook: true,
               },
@@ -263,11 +257,13 @@ export default {
           builder: {
             premium: false,
             layout: {
+              default: true,
               weight: 10,
             },
             basic: {
               title: 'Form Fields',
               weight: 20,
+              default: false,
               components: {
                 // add 'simplefile' file upload component to formBuilder in advanced mode
                 simplefile: this.userType !== this.ID_MODE.PUBLIC
