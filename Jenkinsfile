@@ -74,8 +74,7 @@ pipeline {
             echo sh(returnStdout: true, script: 'env')
           }
 
-          // Load Common Code as Global Variable
-          commonPipeline = load "${WORKSPACE}/openshift/commonPipeline.groovy"
+          loadCommonPipeline()
         }
       }
     }
@@ -84,6 +83,7 @@ pipeline {
     //   agent any
     //   steps {
     //     script {
+    //       loadCommonPipeline()
     //       commonPipeline.notifyStageStatus('Tests', 'PENDING')
     //       commonPipeline.runStageTests()
     //     }
@@ -111,6 +111,7 @@ pipeline {
       agent any
       steps {
         script {
+          loadCommonPipeline()
           commonPipeline.runStageBuild()
         }
       }
@@ -141,6 +142,7 @@ pipeline {
       agent any
       steps {
         script {
+          loadCommonPipeline()
           commonPipeline.runStageDeploy('Dev', DEV_PROJECT, DEV_HOST, PATH_ROOT)
         }
       }
@@ -164,6 +166,7 @@ pipeline {
       agent any
       steps {
         script {
+          loadCommonPipeline()
           commonPipeline.runStageDeploy('Test', TEST_PROJECT, TEST_HOST, PATH_ROOT)
         }
       }
@@ -187,6 +190,7 @@ pipeline {
       agent any
       steps {
         script {
+          loadCommonPipeline()
           commonPipeline.runStageDeploy('Prod', PROD_PROJECT, PROD_HOST, PATH_ROOT)
         }
       }
@@ -205,5 +209,16 @@ pipeline {
         }
       }
     }
+  }
+}
+
+// --------------------
+// Supporting Functions
+// --------------------
+
+// Load Common Code as Global Variable
+def loadCommonPipeline() {
+  if (!binding.hasVariable('commonPipeline')) {
+    commonPipeline = load "${WORKSPACE}/openshift/commonPipeline.groovy"
   }
 }
