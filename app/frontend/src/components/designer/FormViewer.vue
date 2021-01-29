@@ -1,6 +1,6 @@
 <template>
   <div class="form-wrapper">
-    <h1 class="my-6 text-center">{{ form.name }}</h1>
+    <h1 v-if="displayTitle" class="my-6 text-center">{{ form.name }}</h1>
     <slot name="alert" v-bind:form="form" />
     <Form
       :form="formSchema"
@@ -28,6 +28,10 @@ export default {
     Form,
   },
   props: {
+    displayTitle: {
+      type: Boolean,
+      default: false,
+    },
     draftId: String,
     formId: String,
     readOnly: Boolean,
