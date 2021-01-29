@@ -40,6 +40,9 @@
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
+      <template #[`item.status`]="{ item }">
+        Submitted <span class="d-none">{{ item }}</span>
+      </template>
       <template #[`item.actions`]="{ item }">
         <router-link
           :to="{
@@ -80,6 +83,7 @@ export default {
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
+        { text: 'Status', align: 'start', value: 'status' },
         {
           text: 'Actions',
           align: 'end',
