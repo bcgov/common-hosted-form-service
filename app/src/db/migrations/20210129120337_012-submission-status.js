@@ -88,15 +88,65 @@ exports.up = function (knex) {
       table.uuid('submissionStatusId').references('id').inTable('form_submission_status').index();
       table.string('note', 4000).nullable();
       stamps(knex, table);
-    }));
+    }))
+
+    // modify the submission view to return status information
+    .then(() => knex.schema.raw(`create or replace
+    view submissions_vw as
+      SELECT s.id AS "submissionId",
+      s."confirmationId",
+      s.draft,
+      s.deleted,
+      s."createdBy",
+      s."createdAt",
+      f.id AS "formId",
+      f.name AS "formName",
+      fv.id AS "formVersionId",
+      fv."version",
+      st.id AS "formSubmissionStatusId",
+      st.code AS "formSubmissionStatusCode"
+    FROM form_submission s
+      JOIN form_version fv ON s."formVersionId" = fv.id
+      JOIN form f ON fv."formId" = f.id
+      LEFT OUTER JOIN LATERAL (
+        SELECT id, code, "createdBy", "createdAt"
+        FROM form_submission_status
+        WHERE "submissionId" = s.id
+        ORDER BY "createdAt" DESC
+        FETCH FIRST 1 ROW ONLY
+      ) st ON true
+    ORDER BY s."createdAt" DESC`));
+
 };
 
 exports.down = function (knex) {
   return Promise.resolve()
+    // reset the submission view to return status information
+    .then(() => knex.schema.raw('drop view submissions_vw'))
+    .then(() => knex.schema.raw(`create or replace
+      view submissions_vw as
+      SELECT s.id AS "submissionId",
+        s."confirmationId",
+        s.draft,
+        s.deleted,
+        s."createdBy",
+        s."createdAt",
+        f.id AS "formId",
+        f.name AS "formName",
+        fv.id AS "formVersionId",
+        fv.version
+      FROM form_submission s
+      JOIN form_version fv ON s."formVersionId" = fv.id
+      JOIN form f ON fv."formId" = f.id
+      ORDER BY s."createdAt" DESC;`))
+
+    // undo the new tables
     .then(() => knex.schema.dropTableIfExists('note'))
     .then(() => knex.schema.dropTableIfExists('form_submission_status'))
     .then(() => knex.schema.dropTableIfExists('form_status_code'))
     .then(() => knex.schema.dropTableIfExists('status_code'))
+
+    // undo the new field add
     .then(() => knex.schema.alterTable('form', table => {
       table.dropColumn('enableStatusUpdates');
     }));
