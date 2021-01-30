@@ -11,6 +11,11 @@ const statusCodes = [
 
 exports.up = function (knex) {
   return Promise.resolve()
+    // Add a status update flag
+    .then(() => knex.schema.alterTable('form', table => {
+      table.boolean('enableStatusUpdates').notNullable().defaultTo(false).comment('When true, submissions of this form will have status updates available');
+    }))
+
     // add a status_code table
     .then(() => knex.schema.createTable('status_code', table => {
       table.string('code').primary();
@@ -91,5 +96,8 @@ exports.down = function (knex) {
     .then(() => knex.schema.dropTableIfExists('note'))
     .then(() => knex.schema.dropTableIfExists('form_submission_status'))
     .then(() => knex.schema.dropTableIfExists('form_status_code'))
-    .then(() => knex.schema.dropTableIfExists('status_code'));
+    .then(() => knex.schema.dropTableIfExists('status_code'))
+    .then(() => knex.schema.alterTable('form', table => {
+      table.dropColumn('enableStatusUpdates');
+    }));
 };
