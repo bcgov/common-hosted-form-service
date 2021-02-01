@@ -206,10 +206,27 @@ export default {
             data: false,
             layout: false,
             premium: false,
+
+            layoutControls: {
+              title: 'Layout',
+              weight: 10,
+              default: true,
+              components: {
+                simplecols2: true,
+                simplecols3: true,
+                simplecols4: true,
+                simplefieldset: true,
+                simplepanel: true,
+                simpletabs: true,
+                simpleheading: true,
+                simpleparagraph: true,
+                simplecontent: true,
+              },
+            },
+
             entryControls: {
               title: 'Form fields',
               weight: 20,
-              default: true,
               components: {
                 simpletextfield: true,
                 simpletextarea: true,
@@ -226,30 +243,9 @@ export default {
                 simplefile: this.userType !== this.ID_MODE.PUBLIC,
               },
             },
-            layoutControls: {
-              title: 'Layout',
-              weight: 30,
-              components: {
-                simplecols2: true,
-                simplecols3: true,
-                simplecols4: true,
-                simplefieldset: true,
-                simplepanel: true,
-                simpletabs: true,
-              },
-            },
-            staticControls: {
-              title: 'Static Content',
-              weight: 40,
-              components: {
-                simpleheading: true,
-                simpleparagraph: true,
-                simplecontent: true,
-              },
-            },
             customControls: {
               title: 'BC Gov.',
-              weight: 50,
+              weight: 30,
               components: {
                 orgbook: true,
               },
@@ -260,12 +256,34 @@ export default {
         return {
           builder: {
             premium: false,
+            layout: {
+              default: true,
+              weight: 10,
+            },
             basic: {
+              title: 'Form Fields',
+              weight: 20,
+              default: false,
               components: {
                 // add 'simplefile' file upload component to formBuilder in advanced mode
                 simplefile: this.userType !== this.ID_MODE.PUBLIC
               }
-            }
+            },
+            advanced: {
+              weight: 30,
+              components: {
+                orgbook: false,
+              },
+            },
+            customControls: {
+              title: 'BC Gov.',
+              weight: 50,
+              components: {
+                orgbook: true,
+              },
+            },
+
+
           },
         };
       }

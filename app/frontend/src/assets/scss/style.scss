@@ -351,6 +351,13 @@ a,
     }
   }
 
+  // Data Grid
+  .formio-component-datagrid {
+    thead th.field-required:after {
+      content: "";
+    }
+  }
+
   // tooltips
   .tooltip-inner {
     background-color: #606060;
