@@ -17,7 +17,7 @@ import store from '@/store';
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
 import { Formio } from 'vue-formio';
-import BcGovFormioComponents from '@/lib';
+import BcGovFormioComponents from '@/formio';
 Formio.use(BcGovFormioComponents);
 
 import VueKeycloakJs from '@/plugins/keycloak';
