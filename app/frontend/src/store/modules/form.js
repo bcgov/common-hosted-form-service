@@ -257,6 +257,7 @@ export default {
           submissionId
         );
         commit('SET_FORMSUBMISSION', response.data.submission);
+        commit('SET_FORM', response.data.form);
       } catch (error) {
         dispatch('notifications/addNotification', {
           message:

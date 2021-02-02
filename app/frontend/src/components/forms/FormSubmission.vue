@@ -1,18 +1,26 @@
 <template>
   <div>
-    <div v-if="loading">Test {{ formId }}</div>
+    <div v-if="loading">
+      <v-skeleton-loader type="article" />
+    </div>
     <div v-else>
-      <h1>Magic Intake Form</h1>
+      <h1>{{ form.name }}</h1>
       <p>
-        <strong>Submitted: </strong> January 21, 2020, 4:55 pm <br />
-        <strong>Confirmation ID: </strong> ABC1234 <br />
-        <strong>Submitted By: </strong> loneil <br />
+        <strong>Submitted: </strong>
+        {{ formSubmission.createdAt | formatDateLong }} <br />
+        <strong>Confirmation ID: </strong> {{ formSubmission.confirmationId }}
+        <br />
+        <strong>Submitted By: </strong> {{ formSubmission.createdBy }} <br />
       </p>
     </div>
 
     <v-row>
       <!-- The form submission -->
-      <v-col cols="12" md="8" class="pl-0 pt-0">
+      <v-col
+        cols="12"
+        :md="form.enableStatusUpdates ? 8 : 12"
+        class="pl-0 pt-0"
+      >
         <v-card outlined class="review-form">
           <h2 class="review-heading">Submission</h2>
           <FormViewer
@@ -23,9 +31,10 @@
           />
         </v-card>
       </v-col>
-      
+
       <!-- Status updates and notes -->
       <v-col
+        v-if="form.enableStatusUpdates"
         cols="12"
         md="4"
         class="pl-0 pt-0 d-print-none"
@@ -69,10 +78,10 @@ export default {
       loading: true,
     };
   },
-  computed: mapGetters('form', ['form']),
-  methods: mapActions('form', ['fetchForm']),
+  computed: mapGetters('form', ['form', 'formSubmission']),
+  methods: mapActions('form', ['fetchSubmission']),
   async mounted() {
-    await this.fetchForm(this.formId);
+    await this.fetchSubmission({ submissionId: this.submissionId });
     this.loading = false;
   },
 };
