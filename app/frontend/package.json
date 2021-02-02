@@ -5,7 +5,10 @@
   "license": "Apache-2.0",
   "scripts": {
     "serve": "vue-cli-service serve",
+    "preserve": "sh ./formio.sh",
     "build": "vue-cli-service build",
+    "prebuild": "sh ./formio.sh",
+    "build:formio": "cd ../../components && npm run build",
     "test": "npm run test:unit",
     "test:unit": "vue-cli-service test:unit --verbose --verbose --forceExit --detectOpenHandles --maxWorkers=10",
     "lint": "vue-cli-service lint",
@@ -13,7 +16,8 @@
     "pretest": "npm run lint",
     "posttest": "node ./lcov-fix.js",
     "clean": "rm -rf coverage dist **/e2e/videos",
-    "purge": "rm -rf node_modules",
+    "purge": "rm -rf src/formio node_modules",
+    "purge:formio": "rm -rf src/formio",
     "rebuild": "npm run clean && npm run build",
     "reinstall": "npm run purge && npm install"
   },

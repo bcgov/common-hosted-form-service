@@ -30,8 +30,9 @@
     "webpack:use": "webpack --config webpack.use.js",
     "webpack": "npm run webpack:dev && npm run webpack:prod && npm run webpack:use",
     "build": "tsc && gulp templates && npm run webpack && node-sass ./src/sass/contrib.scss ./dist/bcgov-formio-components.css",
-    "lint": "tslint -p .",
-    "prepublish": "npm run build"
+    "clean": "rm -rf coverage dist lib",
+    "purge": "rm -rf node_modules",
+    "lint": "tslint -p ."
   },
   "pre-commit": [
     "lint",
