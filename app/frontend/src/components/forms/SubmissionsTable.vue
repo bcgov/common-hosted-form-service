@@ -79,11 +79,18 @@ export default {
   },
   data() {
     return {
-      headers: [
+      submissionTable: [],
+      loading: true,
+      search: '',
+    };
+  },
+  computed: {
+    ...mapGetters('form', ['form', 'submissionList']),
+    headers() {
+      let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
-        { text: 'Status', align: 'start', value: 'status' },
         {
           text: 'Actions',
           align: 'end',
@@ -91,14 +98,19 @@ export default {
           filterable: false,
           sortable: false,
         },
-      ],
-      submissionTable: [],
-      loading: true,
-      search: '',
-    };
-  },
-  computed: {
-    ...mapGetters('form', ['submissionList']),
+      ];
+      if (this.showStatus) {
+        headers.splice(3, 0, {
+          text: 'Status',
+          align: 'start',
+          value: 'status',
+        });
+      }
+      return headers;
+    },
+    showStatus() {
+      return this.form && this.form.enableStatusUpdates;
+    },
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
