@@ -16,6 +16,7 @@
     "pretest": "npm run lint",
     "posttest": "node ./lcov-fix.js",
     "clean": "rm -rf coverage dist **/e2e/videos",
+    "clean:formio": "cd ../../components && npm run clean",
     "purge": "rm -rf src/formio node_modules",
     "purge:formio": "rm -rf src/formio",
     "rebuild": "npm run clean && npm run build",
