@@ -89,7 +89,6 @@ export default {
 
 <style lang="scss" scoped>
 .review-form {
-  font-size: smaller;
   margin-bottom: 2em;
   padding: 1em;
   background-color: #fafafa;
