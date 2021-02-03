@@ -1,13 +1,13 @@
 /* tslint:disable */
 import { Components } from 'formiojs';
 const SelectComponent = (Components as any).components.select;
-import editForm from './OrgBook.form';
+import editForm from './Component.form';
 
 import { Constants } from '../Common/Constants';
 
 const ID = 'orgbook';
 
-export default class OrgBook extends (SelectComponent as any) {
+export default class Component extends (SelectComponent as any) {
     static schema(...extend) {
         return SelectComponent.schema({
             type: ID,
@@ -125,7 +125,7 @@ export default class OrgBook extends (SelectComponent as any) {
             icon: 'database',
             weight: 70,
             documentation: Constants.DEFAULT_HELP_LINK,
-            schema: OrgBook.schema()
+            schema: Component.schema()
         };
     }
 }

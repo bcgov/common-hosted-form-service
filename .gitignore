@@ -6,6 +6,7 @@
 build
 coverage
 dist
+**/src/formio
 **/e2e/videos
 node_modules
 # Ignore only top-level package-lock.json
