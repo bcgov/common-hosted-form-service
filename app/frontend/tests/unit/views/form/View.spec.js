@@ -11,6 +11,6 @@ describe('View.vue', () => {
       stubs: ['FormViewer']
     });
 
-    expect(wrapper.html()).toMatch('formviewer');
+    expect(wrapper.html()).toMatch('formsubmission-stub');
   });
 });
