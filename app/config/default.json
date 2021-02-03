@@ -59,7 +59,7 @@
         "endpoint": "https://ches-dev.pathfinder.gov.bc.ca/api"
       },
       "cdogs": {
-        "endpoint": "https://cdogs-dev.pathfinder.gov.bc.ca/api"
+        "endpoint": "https://cdogs-dev.apps.silver.devops.gov.bc.ca/api"
       },
       "tokenEndpoint": "https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token",
       "username": "CHEFS_SERVICE_CLIENT"

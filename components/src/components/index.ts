@@ -1,4 +1,4 @@
-import orgbook from './OrgBook/Orgbook';
+import orgbook from './OrgBook/Component';
 
 import simplebtnreset from './SimpleButtonReset/Component';
 import simplebtnsubmit from './SimpleButtonSubmit/Component';
