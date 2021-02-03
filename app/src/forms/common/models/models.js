@@ -902,6 +902,50 @@ class FileStorage extends Model {
   }
 }
 
+class Note extends Timestamps(Model) {
+  static get tableName() {
+    return 'note';
+  }
+
+  static get modifiers() {
+    return {
+      filterSubmissionId(query, value) {
+        if (value) {
+          query.where('submissionId', value);
+        }
+      },
+      filterSubmissionStatusId(query, value) {
+        if (value) {
+          query.where('submissionId', value);
+        }
+      },
+      orderDefault(builder) {
+        builder.orderBy('createdAt', 'DESC');
+      }
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['submissionId'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        submissionId: { type: 'string', pattern: Regex.UUID },
+        submissionStatusId: { type: 'string', pattern: Regex.UUID },
+        username: { type: ['string', 'null'], maxLength: 255 },
+        firstName: { type: ['string', 'null'], maxLength: 255 },
+        lastName: { type: ['string', 'null'], maxLength: 255 },
+        fullName: { type: ['string', 'null'], maxLength: 255 },
+        email: { type: ['string', 'null'], maxLength: 255 },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
+}
+
 
 module.exports = {
   FileStorage: FileStorage,
@@ -914,6 +958,7 @@ module.exports = {
   FormVersion: FormVersion,
   FormVersionDraft: FormVersionDraft,
   IdentityProvider: IdentityProvider,
+  Note: Note,
   Permission: Permission,
   PublicFormAccess: PublicFormAccess,
   Role: Role,
