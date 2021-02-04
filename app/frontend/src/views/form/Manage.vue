@@ -6,10 +6,14 @@
       </v-col>
       <v-spacer />
       <v-col class="text-sm-right" cols="12" sm="6">
-        <ManageFormActions />
+        <v-skeleton-loader :loading="loading" type="actions">
+          <ManageFormActions />
+        </v-skeleton-loader>
       </v-col>
     </v-row>
-    <ManageForm />
+    <v-skeleton-loader :loading="loading" type="list-item-two-line">
+      <ManageForm />
+    </v-skeleton-loader>
   </BaseSecure>
 </template>
 
@@ -28,7 +32,11 @@ export default {
       required: true,
     },
   },
-  computed: {},
+  data() {
+    return {
+      loading: true,
+    };
+  },
   methods: {
     ...mapActions('form', [
       'fetchDrafts',
@@ -36,12 +44,16 @@ export default {
       'getFormPermissionsForUser',
     ]),
   },
-  mounted() {
-    // Get the form for this management page
-    this.fetchForm(this.f);
-    this.fetchDrafts(this.f);
-    // Get the permissions for this form
-    this.getFormPermissionsForUser(this.f);
+  async mounted() {
+    this.loading = true;
+    await Promise.all([
+      // Get the form for this management page
+      this.fetchForm(this.f),
+      this.fetchDrafts(this.f),
+      // Get the permissions for this form
+      this.getFormPermissionsForUser(this.f),
+    ]);
+    this.loading = false;
   },
 };
 </script>
