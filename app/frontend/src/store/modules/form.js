@@ -1,6 +1,6 @@
 import { getField, updateField } from 'vuex-map-fields';
 
-import { NotificationTypes } from '@/utils/constants';
+import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { formService, rbacService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
@@ -13,7 +13,7 @@ const genInitialForm = () => ({
   sendSubRecieviedEmail: false,
   showSubmissionConfirmation: true,
   submissionReceivedEmails: [],
-  userType: ''
+  userType: IdentityMode.TEAM
 });
 
 /**
