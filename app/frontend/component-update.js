@@ -1,5 +1,4 @@
 // This script attempts to gracefully rebuild and update @bcgov/formio if necessary
-const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,16 +7,33 @@ const FORMIO_DIR = 'src/formio';
 const TITLE = '@bcgov/formio';
 
 try {
-  if (!fs.existsSync(FORMIO_DIR) || !fs.readdirSync(FORMIO_DIR).length) {
-    console.log(`${TITLE} not found under "${FORMIO_DIR}"`); // eslint-disable-line no-console
-    buildComponents();
-    deployComponents();
-  } else if (fs.statSync(FORMIO_DIR).mtime < fs.statSync(COMPONENTS_DIR).mtime) {
-    console.log(`${TITLE} "${COMPONENTS_DIR}" directory has been modified`); // eslint-disable-line no-console
-    buildComponents();
-    deployComponents();
-  } else {
-    console.log(`${TITLE} is present and up to date`); // eslint-disable-line no-console
+  const args = process.argv.slice(2);
+  switch (args[0]) {
+    case 'build':
+      buildComponents();
+      break;
+    case 'clean':
+      cleanComponents();
+      break;
+    case 'deploy':
+      deployComponents();
+      break;
+    case 'purge':
+      console.log(`Purging "${FORMIO_DIR}"...`); // eslint-disable-line no-console
+      fs.rmdirSync(FORMIO_DIR, { recursive: true });
+      break;
+    default:
+      if (!fs.existsSync(FORMIO_DIR) || !fs.readdirSync(FORMIO_DIR).length) {
+        console.log(`${TITLE} not found under "${FORMIO_DIR}"`); // eslint-disable-line no-console
+        buildComponents();
+        deployComponents();
+      } else if (fs.statSync(FORMIO_DIR).mtime < fs.statSync(COMPONENTS_DIR).mtime) {
+        console.log(`${TITLE} "${COMPONENTS_DIR}" directory has been modified`); // eslint-disable-line no-console
+        buildComponents();
+        deployComponents();
+      } else {
+        console.log(`${TITLE} is present and up to date`); // eslint-disable-line no-console
+      }
   }
 } catch (err) {
   console.error(err.message); // eslint-disable-line no-console
@@ -34,16 +50,25 @@ try {
  * @description Rebuild `@bcgov/formio` library
  */
 function buildComponents() {
-  console.log(`Rebuilding ${TITLE}...`); // eslint-disable-line no-console
   if (!fs.existsSync(`${COMPONENTS_DIR}/node_modules`)) {
     console.warn(`${TITLE} missing dependencies. Reinstalling...`); // eslint-disable-line no-console
     runSync('npm ci', COMPONENTS_DIR);
   }
+  console.log(`Rebuilding ${TITLE}...`); // eslint-disable-line no-console
+  runSync('npm run build', COMPONENTS_DIR);
+  console.log(`${TITLE} has been rebuilt`); // eslint-disable-line no-console
+}
+
+/**
+ * @function cleanComponents
+ * @description Clean `@bcgov/formio` library directory
+ */
+function cleanComponents() {
+  console.log(`Cleaning ${TITLE}...`); // eslint-disable-line no-console
   fs.rmdirSync(`${COMPONENTS_DIR}/coverage`, { recursive: true });
   fs.rmdirSync(`${COMPONENTS_DIR}/dist`, { recursive: true });
   fs.rmdirSync(`${COMPONENTS_DIR}/lib`, { recursive: true });
-  runSync('npm run build', COMPONENTS_DIR);
-  console.log(`${TITLE} has been rebuilt`); // eslint-disable-line no-console
+  console.log(`${TITLE} has been cleaned`); // eslint-disable-line no-console
 }
 
 /**
@@ -68,6 +93,7 @@ function deployComponents() {
  * @param {string} [cwd] Working directory of the command to run
  */
 function runSync(cmd, cwd = undefined) {
+  const { spawnSync } = require('child_process');
   const parts = cmd.split(/\s+/g);
   const opts = { stdio: 'inherit', shell: true };
   if (cwd) opts.cwd = cwd;
