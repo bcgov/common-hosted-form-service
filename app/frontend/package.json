@@ -5,9 +5,9 @@
   "license": "Apache-2.0",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "preserve": "sh ./formio.sh",
+    "preserve": "node ./component-update.js",
     "build": "vue-cli-service build",
-    "prebuild": "sh ./formio.sh",
+    "prebuild": "node ./component-update.js",
     "build:formio": "cd ../../components && npm run build",
     "test": "npm run test:unit",
     "test:unit": "vue-cli-service test:unit --verbose --verbose --forceExit --detectOpenHandles --maxWorkers=10",
