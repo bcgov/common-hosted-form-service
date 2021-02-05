@@ -1,13 +1,13 @@
-const { Form, FormVersion, FormSubmission, FormSubmissionUserPermissions, SubmissionMetadata, UserFormAccess } = require('../common/models');
+const { Form, FormVersion, FormSubmission, FormSubmissionUserPermissions, Note, SubmissionMetadata, UserFormAccess } = require('../common/models');
 
 const Permissions = require('../common/constants').Permissions;
 
 const Problem = require('api-problem');
-const {transaction} = require('objection');
+const { transaction } = require('objection');
 
 const service = {
 
-  _fetchSubmissionData: async(formSubmissionId) => {
+  _fetchSubmissionData: async (formSubmissionId) => {
     const meta = await SubmissionMetadata.query()
       .where('submissionId', formSubmissionId)
       .first()
@@ -34,31 +34,16 @@ const service = {
     });
   },
 
-  _fetchSubmissionNotesData: async(formSubmissionId) => {
-    const meta = await SubmissionMetadata.query()
-      .where('submissionId', formSubmissionId)
-      .first()
-      .throwIfNotFound();
+  _fetchSubmissionNotesData: async (formSubmissionId) => {
+    // return await Promise.all([
+    //   Note.query()
+    //   .where('submissionId', formSubmissionId)
+    // ]);
 
     return await Promise.all([
-      FormSubmission.query()
-        .findById(meta.submissionId)
-        .throwIfNotFound(),
-      FormVersion.query()
-        .findById(meta.formVersionId)
-        .throwIfNotFound(),
-      Form.query()
-        .findById(meta.formId)
-        .allowGraph('identityProviders')
-        .withGraphFetched('identityProviders(orderDefault)')
-        .throwIfNotFound()
-    ]).then(data => {
-      return {
-        submission: data[0],
-        version: data[1],
-        form: data[2]
-      };
-    });
+      Note.query()
+        .modify('filterSubmissionId', formSubmissionId)
+    ]);
   },
 
   read: async (formSubmissionId, currentUser, permissions = [Permissions.SUBMISSION_READ]) => {
@@ -115,7 +100,7 @@ const service = {
       // TODO: check if we can update this submission
       // TODO: we may have to update permissions for users (draft = false, then no delete?)
 
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {draft: data.draft, submission: data.submission, updatedBy: currentUser.username});
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
       await trx.commit();
       const result = await service.read(formSubmissionId);
       return result;
@@ -126,30 +111,10 @@ const service = {
 
   },
 
+  // Get notes for a specific submission
   getNotes: async (formSubmissionId) => {
-    const result = await service._fetchSubmissionData(formSubmissionId);
-
-    const isDeleted = result.submission.deleted;
-    const isDraft = result.submission.draft;
-    const publicAllowed = result.form.identityProviders.find(p => p.code === 'public') !== undefined;
-    const idpAllowed = result.form.identityProviders.find(p => p.code === currentUser.idp) !== undefined;
-
-    // check against the public and user's identity provider permissions...
-    if (!isDraft && !isDeleted) {
-      if (publicAllowed || idpAllowed) return result;
-    }
-
-    // check against the form level permissions assigned to the user...
-    const formSubmissionsPermission = await checkFormSubmissionsPermission();
-    if (!isDeleted && formSubmissionsPermission) return result;
-
-    // check against the submission level permissions assigned to the user...
-    const submissionPermission = await checkSubmissionPermission();
-    if (submissionPermission) return result;
-
-    // no access to this submission...
-
-    throw new Problem(401, 'You do not have access to this submission.');
+    const result = await service._fetchSubmissionNotesData(formSubmissionId);
+    return result;
   },
 
 };
