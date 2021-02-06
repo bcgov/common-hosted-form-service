@@ -122,7 +122,7 @@ exports.up = function (knex) {
 exports.down = function (knex) {
   return Promise.resolve()
     // reset the submission view to return status information
-    .then(() => knex.schema.raw('drop view submissions_vw'))
+    .then(() => knex.schema.raw('drop view submissions_vw cascade'))
     .then(() => knex.schema.raw(`create or replace
       view submissions_vw as
       SELECT s.id AS "submissionId",

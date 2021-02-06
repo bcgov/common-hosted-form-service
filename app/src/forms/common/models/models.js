@@ -909,6 +909,11 @@ class Note extends Timestamps(Model) {
 
   static get modifiers() {
     return {
+      filterId(query, value) {
+        if (value) {
+          query.where('id', value);
+        }
+      },
       filterSubmissionId(query, value) {
         if (value) {
           query.where('submissionId', value);
@@ -933,11 +938,7 @@ class Note extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         submissionId: { type: 'string', pattern: Regex.UUID },
         submissionStatusId: { type: 'string', pattern: Regex.UUID },
-        username: { type: ['string', 'null'], maxLength: 255 },
-        firstName: { type: ['string', 'null'], maxLength: 255 },
-        lastName: { type: ['string', 'null'], maxLength: 255 },
-        fullName: { type: ['string', 'null'], maxLength: 255 },
-        email: { type: ['string', 'null'], maxLength: 255 },
+        note: { type: ['string', 'null'], maxLength: 4000 },
         ...stamps
       },
       additionalProperties: false

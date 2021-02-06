@@ -238,6 +238,27 @@ export default {
     );
   },
 
+  /**
+  * @function getSubmissionNotes
+  * Get the notes associated with the submission
+  * @param {string} submissionId The form submission identifier
+  * @returns {Promise} An axios response
+  */
+  getSubmissionNotes(submissionId) {
+    return appAxios().get(`/submissions/${submissionId}/notes`);
+  },
+
+  /**
+  * @function addNote
+  * Add a new notes to the submission
+  * @param {string} submissionId The form submission identifier
+   * @param {Object} data The request body
+  * @returns {Promise} An axios response
+  */
+  addNote(submissionId, data) {
+    return appAxios().post(`/submissions/${submissionId}/notes`, data);
+  },
+
 
   //
   // Email
