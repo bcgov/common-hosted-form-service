@@ -71,6 +71,15 @@
       </v-row>
     </v-radio-group>
 
+    <v-checkbox v-model="enableStatusUpdates">
+      <template #label>
+        <span>
+          Enable submission <strong>Status Updates</strong> for this form (i.e.
+          Submitted, In-Progress, Completed)
+        </span>
+      </template>
+    </v-checkbox>
+
     <v-checkbox v-model="showSubmissionConfirmation">
       <template #label>
         Show the submission confirmation details

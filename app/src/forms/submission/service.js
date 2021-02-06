@@ -4,9 +4,13 @@ const Permissions = require('../common/constants').Permissions;
 
 const Problem = require('api-problem');
 const { transaction } = require('objection');
+const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
+  // -------------------------------------------------------------------------------------------------------
+  // Submissions
+  // -------------------------------------------------------------------------------------------------------
   _fetchSubmissionData: async (formSubmissionId) => {
     const meta = await SubmissionMetadata.query()
       .where('submissionId', formSubmissionId)
@@ -32,18 +36,6 @@ const service = {
         form: data[2]
       };
     });
-  },
-
-  _fetchSubmissionNotesData: async (formSubmissionId) => {
-    // return await Promise.all([
-    //   Note.query()
-    //   .where('submissionId', formSubmissionId)
-    // ]);
-
-    return await Promise.all([
-      Note.query()
-        .modify('filterSubmissionId', formSubmissionId)
-    ]);
   },
 
   read: async (formSubmissionId, currentUser, permissions = [Permissions.SUBMISSION_READ]) => {
@@ -110,13 +102,51 @@ const service = {
     }
 
   },
+  // --------------------------------------------------------------------------------------------/Submissions
+
+  // -------------------------------------------------------------------------------------------------------
+  // Notes
+  // -------------------------------------------------------------------------------------------------------
+  _createNote: async (submissionId, data, currentUser) => {
+    let trx;
+    try {
+      trx = await transaction.start(Note.knex());
+      const obj = {};
+      obj.id = uuidv4();
+      obj.submissionId = submissionId;
+      obj.submissionStatusId = data.submissionStatusId;
+      obj.note = data.note;
+      obj.createdBy = currentUser.username;
+
+      await Note.query(trx).insert(obj);
+
+      await trx.commit();
+      const result = await service.getNote(obj.id);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  // Add a note for a specific submission
+  addNote: async (formSubmissionId, data, currentUser) => {
+    return await service._createNote(formSubmissionId, data, currentUser);
+  },
 
   // Get notes for a specific submission
   getNotes: async (formSubmissionId) => {
-    const result = await service._fetchSubmissionNotesData(formSubmissionId);
-    return result;
+    return await Note.query()
+      .modify('filterSubmissionId', formSubmissionId)
+      .modify('orderDefault');
   },
 
+  // Get a specific note
+  getNote: async (noteId) => {
+    return await Note.query()
+      .modify('filterId', noteId);
+  },
+  // -------------------------------------------------------------------------------------------------/Notes
 };
 
 module.exports = service;

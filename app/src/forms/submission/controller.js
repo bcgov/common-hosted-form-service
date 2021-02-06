@@ -35,5 +35,13 @@ module.exports = {
       next(error);
     }
   },
+  addNote:  async (req, res, next) => {
+    try {
+      const response = await service.addNote(req.params.formSubmissionId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 
 };
