@@ -1,15 +1,7 @@
 <template>
   <div>
-    <v-progress-linear
-      v-if="loading"
-      indeterminate
-      color="primary"
-      class="mb-2"
-    />
-    <div v-else>
-      <p>
-        <strong>Current Status:</strong> Submitted
-      </p>
+    <v-skeleton-loader :loading="loading" type="list-item-two-line">
+      <p><strong>Current Status:</strong> Submitted</p>
 
       <v-form v-if="!error" ref="form" v-model="valid" lazy-validation>
         <v-row>
@@ -171,11 +163,15 @@
           </v-col>
         </v-row>
       </v-form>
-    </div>
+    </v-skeleton-loader>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
+import formService from '@/services/formService';
+
 export default {
   name: 'StatusPanel',
   props: {
@@ -190,7 +186,7 @@ export default {
       currentStatus: {},
       error: '',
       historyDialog: false,
-      loading: false,
+      loading: true,
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
@@ -208,7 +204,44 @@ export default {
   computed: {
     items() {
       return ['ASSIGNED'];
-    }
+    },
+  },
+  methods: {
+    ...mapActions('notifications', ['addNotification']),
+    async getStatus() {
+      this.loading = true;
+      try {
+        const statuses = await formService.getSubmissionStatuses(
+          this.submissionId
+        );
+        this.statusHistory = statuses.data;
+        if (!this.statusHistory.length || !this.statusHistory[0]) {
+          throw new Error('No statuses found');
+        } else {
+          // Statuses are returned in date precedence, the 0th item in the array is the current status
+          this.currentStatus = this.statusHistory[0];
+          const formId = this.currentStatus.formId;
+          const scRes = await formService.getStatusCodes(formId);
+          const statusCodes = scRes.data;
+          if (!statusCodes.length) {
+            throw new Error('error finding status codes');
+          }
+          this.currentStatus.statusCodeDetail = statusCodes.find(
+            (sc) => sc.code === this.currentStatus.code
+          );
+        }
+      } catch (error) {
+        this.addNotification({
+          message: 'Error occured fetching status for this submission.',
+          consoleError: `Error getting statuses: ${error.message}`,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+  created() {
+    this.getStatus();
   },
 };
 </script>

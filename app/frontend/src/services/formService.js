@@ -259,6 +259,16 @@ export default {
     return appAxios().post(`/submissions/${submissionId}/notes`, data);
   },
 
+  /**
+  * @function getSubmissionStatus
+  * Get the current status history associated with the submission
+  * @param {string} submissionId The form submission identifier
+  * @returns {Promise} An axios response
+  */
+  getSubmissionStatus(submissionId) {
+    return appAxios().get(`/submissions/${submissionId}/status`);
+  },
+
 
   //
   // Email

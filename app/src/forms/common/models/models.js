@@ -269,6 +269,43 @@ class FormSubmission extends Timestamps(Model) {
 
 }
 
+class FormSubmissionStatus extends Timestamps(Model) {
+  static get tableName() {
+    return 'form_submission_status';
+  }
+
+  static get modifiers() {
+    return {
+      filterSubmissionId(query, value) {
+        if (value !== undefined) {
+          query.where('submissionId', value);
+        }
+      },
+      orderDescending(builder) {
+        builder.orderBy('createdAt', 'desc');
+      }
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['submissionId', 'code'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        submissionId: { type: 'string', pattern: Regex.UUID },
+        code: { type: 'string'},
+        assignedTo: { type: 'string' },
+        assignedToEmail: { type: 'string' },
+        actionDate: { type: 'string' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
+}
+
 class Permission extends Timestamps(Model) {
   static get tableName() {
     return 'permission';
@@ -953,6 +990,7 @@ module.exports = {
   Form: Form,
   FormIdentityProvider: FormIdentityProvider,
   FormSubmission: FormSubmission,
+  FormSubmissionStatus: FormSubmissionStatus,
   FormSubmissionUser: FormSubmissionUser,
   FormSubmissionUserPermissions: FormSubmissionUserPermissions,
   FormRoleUser: FormRoleUser,

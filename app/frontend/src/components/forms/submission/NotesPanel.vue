@@ -18,23 +18,19 @@
       </div>
 
       <v-form v-if="showNoteField">
+        <label>Note</label>
+        <v-textarea
+          v-model="newNote"
+          :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+          counter
+          auto-grow
+          dense
+          flat
+          outlined
+          solo
+        />
         <v-row>
-          <v-col cols="12" xl="8" offset-xl="2">
-            <label>Note</label>
-            <v-textarea
-              v-model="newNote"
-              :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
-              counter
-              auto-grow
-              dense
-              flat
-              outlined
-              solo
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" sm="6" xl="4" offset-xl="2">
+          <v-col cols="12" sm="6" xl="4">
             <v-btn
               block
               color="primary"
@@ -61,7 +57,7 @@
       <ul class="mt-5">
         <li class="mb-2" v-for="note in notes" v-bind:key="note.noteId">
           <strong>
-            {{ note.createdAt | formatDateLong}} -
+            {{ note.createdAt | formatDateLong }} -
             {{ note.createdBy }}
           </strong>
           <br />

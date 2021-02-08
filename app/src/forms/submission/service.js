@@ -147,6 +147,19 @@ const service = {
       .modify('filterId', noteId);
   },
   // -------------------------------------------------------------------------------------------------/Notes
+
+
+  // -------------------------------------------------------------------------------------------------------
+  // Status
+  // -------------------------------------------------------------------------------------------------------
+
+  // Get status history for a specific submission
+  getStatus: async (formSubmissionId) => {
+    return await Note.query()
+      .modify('filterSubmissionId', formSubmissionId)
+      .modify('orderDefault');
+  },
+  // -------------------------------------------------------------------------------------------------/Notes
 };
 
 module.exports = service;
