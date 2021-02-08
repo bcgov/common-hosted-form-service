@@ -5,48 +5,7 @@ import bcgov.GitHubHelper
 // Pipeline Stages
 // ---------------
 
-// Run Tests
-// def runStageTests() {
-//   timeout(time: 10, unit: 'MINUTES') {
-//     parallel(
-//       App: {
-//         dir('app') {
-//           try {
-//             echo 'Installing NPM Dependencies...'
-//             sh 'npm ci'
-
-//             echo 'Linting and Testing App...'
-//             sh 'npm run test'
-
-//             echo 'App Lint Checks and Tests passed'
-//           } catch (e) {
-//             echo 'App Lint Checks and Tests failed'
-//             throw e
-//           }
-//         }
-//       },
-
-//       Frontend: {
-//         dir('app/frontend') {
-//           try {
-//             echo 'Installing NPM Dependencies...'
-//             sh 'npm ci'
-
-//             echo 'Linting and Testing Frontend...'
-//             sh 'npm run test'
-
-//             echo 'Frontend Lint Checks and Tests passed'
-//           } catch (e) {
-//             echo 'Frontend Lint Checks and Tests failed'
-//             throw e
-//           }
-//         }
-//       }
-//     )
-//   }
-// }
-
-// Build Images & SonarQube Report
+// Build Images
 def runStageBuild() {
   openshift.withCluster() {
     openshift.withProject(TOOLS_PROJECT) {
@@ -54,8 +13,6 @@ def runStageBuild() {
         echo "DEBUG - Using project: ${openshift.project()}"
       }
 
-      // parallel(
-      //   App: {
       try {
         notifyStageStatus('Build App', 'PENDING')
 
@@ -84,21 +41,6 @@ def runStageBuild() {
         notifyStageStatus('Build App', 'FAILURE')
         throw e
       }
-    // },
-
-    //   SonarQube: {
-    //     unstash APP_COV_STASH
-    //     unstash FE_COV_STASH
-
-    //     echo 'Performing SonarQube static code analysis...'
-    //     sh """
-    //     sonar-scanner \
-    //       -Dsonar.host.url='${SONARQUBE_URL_INT}' \
-    //       -Dsonar.projectKey='${REPO_NAME}-${JOB_NAME}' \
-    //       -Dsonar.projectName='${APP_NAME} (${JOB_NAME.toUpperCase()})'
-    //     """
-    //   }
-    // )
     }
   }
 }
