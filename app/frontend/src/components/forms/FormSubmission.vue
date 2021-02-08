@@ -43,7 +43,7 @@
       >
         <v-card outlined class="review-form">
           <h2 class="review-heading">Status</h2>
-          <!-- <StatusPanel :submissionId="submissionId" /> -->
+          <StatusPanel :submissionId="submissionId" />
         </v-card>
         <v-card outlined class="review-form">
           <h2 class="review-heading">Notes</h2>
@@ -58,7 +58,7 @@
 import { mapActions, mapGetters } from 'vuex';
 
 import FormViewer from '@/components/designer/FormViewer.vue';
-// import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
+import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
 import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
 
 export default {
@@ -66,7 +66,7 @@ export default {
   components: {
     FormViewer,
     NotesPanel,
-    // StatusPanel,
+    StatusPanel,
   },
   props: {
     formId: String,

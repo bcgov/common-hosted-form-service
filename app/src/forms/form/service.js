@@ -1,4 +1,4 @@
-const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 
 const Permissions = require('../common/constants').Permissions;
@@ -121,7 +121,7 @@ const service = {
     }
   },
 
-  readForm: async (formId, params ={}) => {
+  readForm: async (formId, params = {}) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .findById(formId)
@@ -132,7 +132,7 @@ const service = {
       .throwIfNotFound();
   },
 
-  readPublishedForm: async (formId, params ={}) => {
+  readPublishedForm: async (formId, params = {}) => {
     params = queryUtils.defaultActiveOnly(params);
     const form = await Form.query()
       .findById(formId)
@@ -241,6 +241,15 @@ const service = {
         ];
         await FormSubmissionUser.query(trx).insert(items);
       }
+
+      // Add a submitted status
+      const stObj = {};
+      stObj.id = uuidv4();
+      stObj.submissionId = obj.id;
+      stObj.code = 'SUBMITTED';
+      stObj.createdBy = currentUser.username;
+
+      await FormSubmissionStatus.query(trx).insert(stObj);
 
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.
