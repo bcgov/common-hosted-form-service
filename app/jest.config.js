@@ -10,7 +10,5 @@ module.exports = {
     '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'
   ],
   testPathIgnorePatterns: ['frontend'],
-  testResultsProcessor: 'jest-sonar-reporter',
   testURL: 'http://localhost/',
-
 };

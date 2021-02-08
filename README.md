@@ -1,6 +1,10 @@
 
 # Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
+![Tests](https://github.com/bcgov/common-hosted-form-service/workflows/Tests/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/maintainability)](https://codeclimate.com/github/bcgov/common-hosted-form-service/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/test_coverage)](https://codeclimate.com/github/bcgov/common-hosted-form-service/test_coverage)
+
 Create, edit and publish forms.
 
 ## Directory Structure
@@ -24,7 +28,6 @@ Create, edit and publish forms.
     Jenkinsfile                - Top-level Pipeline
     Jenkinsfile.cicd           - Pull-Request Pipeline
     LICENSE                    - License
-    sonar-project.properties   - SonarQube configuration
     vetur.config.js            - Vetur configuration
 
 ## Documentation
