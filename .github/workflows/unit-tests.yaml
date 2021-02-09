@@ -44,8 +44,10 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: github.ref == 'refs/heads/master' && matrix.node-version == '14.x'
+        if: env.CC_TEST_REPORTER_ID == 'true' && matrix.node-version == '14.x'
         uses: actions/upload-artifact@v2
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
@@ -90,14 +92,15 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: github.ref == 'refs/heads/master' && matrix.node-version == '14.x'
+        if: env.CC_TEST_REPORTER_ID == 'true' && matrix.node-version == '14.x'
         uses: actions/upload-artifact@v2
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
           retention-days: 1
   test-coverage:
-    if: github.ref == 'refs/heads/master'
     needs:
       - test-app
       - test-frontend
@@ -110,6 +113,7 @@ jobs:
       - name: Restore Coverage Results
         uses: actions/download-artifact@v2
       - name: Publish code coverage
+        if: env.CC_TEST_REPORTER_ID == 'true'
         uses: paambaati/codeclimate-action@v2.7.5
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
