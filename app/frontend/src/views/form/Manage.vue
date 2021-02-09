@@ -3,6 +3,7 @@
     <v-row class="my-6" no-gutters>
       <v-col cols="12" sm="6">
         <h1>Manage Form</h1>
+        <h3>{{ this.form.name }}</h3>
       </v-col>
       <v-spacer />
       <v-col class="text-sm-right" cols="12" sm="6">
@@ -18,7 +19,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import ManageForm from '@/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '@/components/forms/manage/ManageFormActions.vue';
@@ -36,6 +37,9 @@ export default {
     return {
       loading: true,
     };
+  },
+  computed: {
+    ...mapGetters('form', ['form'])
   },
   methods: {
     ...mapActions('form', [
