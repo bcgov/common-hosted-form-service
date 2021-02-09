@@ -232,6 +232,37 @@ class FormVersionDraft extends Timestamps(Model) {
 
 }
 
+class FormStatusCode extends Timestamps(Model) {
+  static get tableName() {
+    return 'form_status_code';
+  }
+
+  static get modifiers() {
+    return {
+      filterFormId(query, value) {
+        if (value !== undefined) {
+          query.where('formId', value);
+        }
+      }
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['formId', 'code'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        formId: { type: 'string', pattern: Regex.UUID },
+        code: { type: 'string'},
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
+}
+
 class FormSubmission extends Timestamps(Model) {
   static get tableName() {
     return 'form_submission';
@@ -990,6 +1021,7 @@ module.exports = {
   Form: Form,
   FormIdentityProvider: FormIdentityProvider,
   FormSubmission: FormSubmission,
+  FormStatusCode: FormStatusCode,
   FormSubmissionStatus: FormSubmissionStatus,
   FormSubmissionUser: FormSubmissionUser,
   FormSubmissionUserPermissions: FormSubmissionUserPermissions,

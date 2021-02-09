@@ -1,4 +1,4 @@
-const { Form, FormVersion, FormSubmission, FormSubmissionUserPermissions, Note, SubmissionMetadata, UserFormAccess } = require('../common/models');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUserPermissions, Note, SubmissionMetadata, UserFormAccess } = require('../common/models');
 
 const Permissions = require('../common/constants').Permissions;
 
@@ -155,9 +155,9 @@ const service = {
 
   // Get status history for a specific submission
   getStatus: async (formSubmissionId) => {
-    return await Note.query()
+    return await FormSubmissionStatus.query()
       .modify('filterSubmissionId', formSubmissionId)
-      .modify('orderDefault');
+      .modify('orderDescending');
   },
   // -------------------------------------------------------------------------------------------------/Notes
 };

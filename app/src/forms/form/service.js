@@ -1,9 +1,10 @@
-const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 
 const Permissions = require('../common/constants').Permissions;
 const Roles = require('../common/constants').Roles;
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
+const Statuses = require('../common/constants').Statuses;
 
 const Problem = require('api-problem');
 const { transaction } = require('objection');
@@ -242,11 +243,11 @@ const service = {
         await FormSubmissionUser.query(trx).insert(items);
       }
 
-      // Add a submitted status
+      // Add a SUBMITTED status
       const stObj = {};
       stObj.id = uuidv4();
       stObj.submissionId = obj.id;
-      stObj.code = 'SUBMITTED';
+      stObj.code = Statuses.SUBMITTED;
       stObj.createdBy = currentUser.username;
 
       await FormSubmissionStatus.query(trx).insert(stObj);
@@ -393,6 +394,11 @@ const service = {
       if (trx) await trx.rollback();
       throw err;
     }
+  },
+
+  getStatusCodes: async (formId) => {
+    return FormStatusCode.query()
+      .findById(formId);
   },
 
 };
