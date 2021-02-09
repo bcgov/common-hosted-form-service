@@ -2,6 +2,7 @@
   <div>
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
       <p><strong>Current Status:</strong> Submitted</p>
+      ss {{ statusHistory }}
 
       <v-form v-if="!error" ref="form" v-model="valid" lazy-validation>
         <v-row>
@@ -117,13 +118,7 @@
           <v-col cols="12" sm="6" xl="4">
             <v-dialog v-model="historyDialog" width="1200">
               <template v-slot:activator="{ on }">
-                <v-btn
-                  block
-                  outlined
-                  color="textLink"
-                  data-test="btn-inspection-view-history"
-                  v-on="on"
-                >
+                <v-btn block outlined color="textLink" v-on="on">
                   <span>VIEW HISTORY</span>
                 </v-btn>
               </template>
@@ -133,15 +128,12 @@
                   Status History
                 </v-card-title>
 
+                <StatusTable :submissionId="submissionId"/>
+
                 <v-divider />
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn
-                    @click="historyDialog = false"
-                    color="primary"
-                    data-test="btn-inspection-close-status-table"
-                    text
-                  >
+                  <v-btn @click="historyDialog = false" color="primary" text>
                     <span>CLOSE</span>
                   </v-btn>
                 </v-card-actions>
@@ -153,7 +145,6 @@
             <v-btn
               block
               color="primary"
-              data-test="btn-inspection-update-status"
               :disabled="!hasReviewer"
               v-on="on"
               @click="updateStatus"
@@ -171,6 +162,7 @@
 import { mapActions } from 'vuex';
 
 import formService from '@/services/formService';
+import StatusTable from '@/components/forms/submission/StatusTable';
 
 export default {
   name: 'StatusPanel',
@@ -179,6 +171,9 @@ export default {
       type: String,
       required: true,
     },
+  },
+  components: {
+    StatusTable,
   },
   data() {
     return {

@@ -177,6 +177,14 @@ module.exports = {
     } catch (error) {
       next(error);
     }
+  },
+  getStatusCodes:  async (req, res, next) => {
+    try {
+      const response = await service.getStatusCodes(req.params.formId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
   }
 
 };

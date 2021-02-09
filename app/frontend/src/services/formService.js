@@ -260,13 +260,23 @@ export default {
   },
 
   /**
-  * @function getSubmissionStatus
+  * @function getSubmissionStatuses
   * Get the current status history associated with the submission
   * @param {string} submissionId The form submission identifier
   * @returns {Promise} An axios response
   */
-  getSubmissionStatus(submissionId) {
+  getSubmissionStatuses(submissionId) {
     return appAxios().get(`/submissions/${submissionId}/status`);
+  },
+
+  /**
+  * @function getStatusCodes
+  * Get the statuses that are available to a form
+  * @param {string} formId The form identifier
+  * @returns {Promise} An axios response
+  */
+  getStatusCodes(formId) {
+    return appAxios().get(`/submissions/${formId}/statusCodes`);
   },
 
 
