@@ -1,5 +1,5 @@
 ---
-name: Node.js CI
+name: Tests
 on:
   - push
   - pull_request
@@ -30,7 +30,7 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: "**/app/node_modules"
+          path: ${{ github.workspace }}/app/node_modules
           key: ${{ runner.os }}-app-${{ env.cache-name }}-${{ hashFiles('**/app/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-app-${{ env.cache-name }}-
@@ -43,6 +43,13 @@ jobs:
         run: npm run test
         env:
           CI: true
+      - name: Save Coverage Results
+        if: github.ref == 'refs/heads/master' && matrix.node-version == '14.x'
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-app
+          path: ${{ github.workspace }}/app/coverage
+          retention-days: 1
   test-frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -69,7 +76,7 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: "**/frontend/node_modules"
+          path: ${{ github.workspace }}/app/frontend/node_modules
           key: ${{ runner.os }}-frontend-${{ env.cache-name }}-${{ hashFiles('**/frontend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-frontend-${{ env.cache-name }}-
@@ -82,3 +89,31 @@ jobs:
         run: npm run test
         env:
           CI: true
+      - name: Save Coverage Results
+        if: github.ref == 'refs/heads/master' && matrix.node-version == '14.x'
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-frontend
+          path: ${{ github.workspace }}/app/frontend/coverage
+          retention-days: 1
+  test-coverage:
+    if: github.ref == 'refs/heads/master'
+    needs:
+      - test-app
+      - test-frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Restore Coverage Results
+        uses: actions/download-artifact@v2
+      - name: Publish code coverage
+        uses: paambaati/codeclimate-action@v2.7.5
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageLocations: |
+            ${{ github.workspace }}/**/lcov.info:lcov
+          prefix: ${{ github.workplace }}
