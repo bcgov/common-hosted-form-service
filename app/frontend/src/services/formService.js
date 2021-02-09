@@ -47,6 +47,16 @@ export default {
     return appAxios().delete(`${ApiRoutes.FORMS}/${formId}`);
   },
 
+  /**
+  * @function getStatusCodes
+  * Get the statuses that are available to a form
+  * @param {string} formId The form identifier
+  * @returns {Promise} An axios response
+  */
+  getStatusCodes(formId) {
+    return appAxios().get(`/forms/${formId}/statusCodes`);
+  },
+
   //
   // Form draft calls
   //
@@ -268,17 +278,6 @@ export default {
   getSubmissionStatuses(submissionId) {
     return appAxios().get(`/submissions/${submissionId}/status`);
   },
-
-  /**
-  * @function getStatusCodes
-  * Get the statuses that are available to a form
-  * @param {string} formId The form identifier
-  * @returns {Promise} An axios response
-  */
-  getStatusCodes(formId) {
-    return appAxios().get(`/submissions/${formId}/statusCodes`);
-  },
-
 
   //
   // Email

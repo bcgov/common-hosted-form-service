@@ -1,10 +1,19 @@
 <template>
   <div>
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
-      <p><strong>Current Status:</strong> Submitted</p>
-      ss {{ statusHistory }}
+      <p>
+        <strong>Current Status:</strong> {{ currentStatus.code }}
+        <br />
+        <strong>Assigned To:</strong>
+        {{ currentStatus.assignedTo ? currentStatus.assignedTo : 'N/A' }}
+        <span
+          v-if="currentStatus.assignedToEmail"
+        >({{ currentStatus.assignedToEmail }})</span>
+        <br />
+        <strong>Effective Date:</strong>
+      </p>
 
-      <v-form v-if="!error" ref="form" v-model="valid" lazy-validation>
+      <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="12">
             <label>Update Status</label>
@@ -20,7 +29,6 @@
               item-text="display"
               item-value="code"
               v-model="statusToSet"
-              data-test="select-inspection-statusToSet"
               :rules="[(v) => !!v || 'Status is required']"
               @change="statusFields = true"
             />
@@ -30,7 +38,6 @@
                 <label>Effective Date (Optional)</label>
                 <v-menu
                   v-model="actionDateMenu"
-                  data-test="menu-inspection-actionDateMenu"
                   :close-on-content-click="true"
                   :nudge-right="40"
                   transition="scale-transition"
@@ -40,7 +47,6 @@
                   <template v-slot:activator="{ on }">
                     <v-text-field
                       v-model="actionDate"
-                      data-test="text-inspection-actionDate"
                       placeholder="yyyy-mm-dd"
                       append-icon="event"
                       v-on:click:append="actionDateMenu = true"
@@ -54,7 +60,6 @@
                   </template>
                   <v-date-picker
                     v-model="actionDate"
-                    data-test="picker-inspection-actionDate"
                     @input="actionDateMenu = false"
                   />
                 </v-menu>
@@ -64,7 +69,6 @@
                 <label>Assignee Name</label>
                 <v-text-field
                   v-model="assignedTo"
-                  data-test="text-inspection-assignedTo"
                   :rules="[(v) => !!v || 'Name is required']"
                   dense
                   flat
@@ -75,7 +79,6 @@
                 <label>Assignee Email (Optional)</label>
                 <v-text-field
                   v-model="assignedToEmail"
-                  data-test="text-inspection-assignedToEmail"
                   dense
                   flat
                   outlined
@@ -89,7 +92,6 @@
                     color="primary"
                     class="pl-0 my-0 text-end"
                     @click="assignToCurrentUser"
-                    data-test="btn-inspection-assign-self"
                   >
                     <v-icon class="mr-1">person</v-icon>
                     <span>ASSIGN TO ME</span>
@@ -100,7 +102,6 @@
               <label>Note (Optional)</label>
               <v-textarea
                 v-model="note"
-                data-test="text-inspection-note"
                 :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
                 rows="1"
                 counter
@@ -128,7 +129,7 @@
                   Status History
                 </v-card-title>
 
-                <StatusTable :submissionId="submissionId"/>
+                <StatusTable :submissionId="submissionId" />
 
                 <v-divider />
                 <v-card-actions>
@@ -145,7 +146,6 @@
             <v-btn
               block
               color="primary"
-              :disabled="!hasReviewer"
               v-on="on"
               @click="updateStatus"
             >
@@ -167,6 +167,10 @@ import StatusTable from '@/components/forms/submission/StatusTable';
 export default {
   name: 'StatusPanel',
   props: {
+    formId: {
+      type: String,
+      required: true,
+    },
     submissionId: {
       type: String,
       required: true,
@@ -177,11 +181,13 @@ export default {
   },
   data() {
     return {
+      on: false,
       actionDateMenu: false,
       currentStatus: {},
-      error: '',
       historyDialog: false,
       loading: true,
+      showActionDate: false,
+      showInspector: false,
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
@@ -203,6 +209,12 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    assignToCurrentUser() {
+      alert('tbd');
+    },
+    updateStatus() {
+      alert('tbd');
+    },
     async getStatus() {
       this.loading = true;
       try {
@@ -215,8 +227,7 @@ export default {
         } else {
           // Statuses are returned in date precedence, the 0th item in the array is the current status
           this.currentStatus = this.statusHistory[0];
-          const formId = this.currentStatus.formId;
-          const scRes = await formService.getStatusCodes(formId);
+          const scRes = await formService.getStatusCodes(this.formId);
           const statusCodes = scRes.data;
           if (!statusCodes.length) {
             throw new Error('error finding status codes');

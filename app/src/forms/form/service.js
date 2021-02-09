@@ -398,7 +398,7 @@ const service = {
 
   getStatusCodes: async (formId) => {
     return FormStatusCode.query()
-      .findById(formId);
+      .where('formId', formId);
   },
 
 };
