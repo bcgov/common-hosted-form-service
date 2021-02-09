@@ -25,8 +25,6 @@
           <h2 class="review-heading">Submission</h2>
           <FormViewer
             :displayTitle="false"
-            :formId="formId"
-            :versionId="versionId"
             :submissionId="submissionId"
           />
         </v-card>
@@ -43,7 +41,7 @@
       >
         <v-card outlined class="review-form">
           <h2 class="review-heading">Status</h2>
-          <StatusPanel :submissionId="submissionId" />
+          <StatusPanel :submissionId="submissionId" :formId="form.id"/>
         </v-card>
         <v-card outlined class="review-form">
           <h2 class="review-heading">Notes</h2>
@@ -69,9 +67,7 @@ export default {
     StatusPanel,
   },
   props: {
-    formId: String,
     submissionId: String,
-    versionId: String,
   },
   data() {
     return {
