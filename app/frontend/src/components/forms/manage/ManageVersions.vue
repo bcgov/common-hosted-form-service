@@ -4,12 +4,17 @@
       <h4 class="primary--text">
         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
       </h4>
-      <p>If there are no published versions, users are unable to access this form until there
-        is a published version assigned. Once a version is published, that version is no longer editable. You must create a new version based on one of the previous form versions to continue editing.</p>
+      <p>
+        If there are no published versions, users are unable to access this form
+        until there is a published version assigned. Once a version is
+        published, that version is no longer editable. You must create a new
+        version based on one of the previous form versions to continue editing.
+      </p>
     </BaseInfoCard>
 
     <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary">info</v-icon>Note: Only one version can be published.
+      <v-icon class="mr-1" color="primary">info</v-icon>Note: Only one version
+      can be published.
     </div>
     <v-data-table
       :key="rerenderTable"
@@ -20,7 +25,11 @@
       <!-- Version  -->
       <template #[`item.version`]="{ item }">
         <router-link
-          :to=" item.isDraft ? { name: 'FormPreview', query: { f: item.formId, d: item.id } } : { name: 'FormPreview', query: { f: item.formId, v: item.id } }"
+          :to="
+            item.isDraft
+              ? { name: 'FormPreview', query: { f: item.formId, d: item.id } }
+              : { name: 'FormPreview', query: { f: item.formId, v: item.id } }
+          "
           class="mx-5"
           target="_blank"
         >
@@ -90,7 +99,12 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <div v-bind="attrs" v-on="on">
-              <v-btn color="primary" text small @click="onExportClick(item.id, item.isDraft)">
+              <v-btn
+                color="primary"
+                text
+                small
+                @click="onExportClick(item.id, item.isDraft)"
+              >
                 <v-icon>get_app</v-icon>
               </v-btn>
             </div>
@@ -117,15 +131,17 @@
               </div>
             </template>
             <span v-if="hasDraft">
-              Please publish or delete your latest draft version before starting a
-              new version.
+              Please publish or delete your latest draft version before starting
+              a new version.
             </span>
-            <span v-else>Use version {{ item.version }} as the base for a new version</span>
+            <span v-else>Use version {{ item.version }} as the base for a new
+              version
+            </span>
           </v-tooltip>
         </div>
 
         <!-- delete draft version -->
-        <div v-if="item.isDraft">
+        <div v-else>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -145,7 +161,11 @@
       </template>
     </v-data-table>
 
-    <BaseDialog v-model="showHasDraftsDialog" type="OK" @close-dialog="showHasDraftsDialog = false">
+    <BaseDialog
+      v-model="showHasDraftsDialog"
+      type="OK"
+      @close-dialog="showHasDraftsDialog = false"
+    >
       <template #title>Draft already exists</template>
       <template #text>
         Please edit, publish or delete the existing draft before starting a new
@@ -160,13 +180,15 @@
       @close-dialog="cancelPublish"
     >
       <template #title>
-        <span v-if="publishOpts.publishing">Publish Version {{ publishOpts.version }}</span>
+        <span v-if="publishOpts.publishing">
+          Publish Version {{ publishOpts.version }}
+        </span>
         <span v-else>Unpublish Version {{ publishOpts.version }}</span>
       </template>
       <template #text>
-        <span
-          v-if="publishOpts.publishing"
-        >This will set Version {{ publishOpts.version }} to the live form.</span>
+        <span v-if="publishOpts.publishing">
+          This will set Version {{ publishOpts.version }} to the live form.
+        </span>
         <span v-else>
           Unpublishing this form will take the form out of circulation until a
           version is published again.
@@ -248,9 +270,9 @@ export default {
       return this.drafts && this.drafts.length > 0;
     },
     versionList() {
-      if(this.hasDraft) {
+      if (this.hasDraft) {
         // reformat draft object and then join with versions array
-        const reDraft = this.drafts.map(obj => {
+        const reDraft = this.drafts.map((obj) => {
           obj.published = false;
           obj.version = this.form.versions.length + 1;
           obj.isDraft = true;
@@ -261,15 +283,20 @@ export default {
         });
         const merged = reDraft.concat(this.form.versions);
         return this.form ? merged : [];
-      }
-      else {
+      } else {
         return this.form ? this.form.versions : [];
       }
     },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['fetchForm', 'fetchDrafts', 'publishDraft', 'deleteDraft', 'toggleVersionPublish']),
+    ...mapActions('form', [
+      'fetchForm',
+      'fetchDrafts',
+      'publishDraft',
+      'deleteDraft',
+      'toggleVersionPublish',
+    ]),
     createVersion(formId, versionId) {
       if (this.hasDraft) {
         this.showHasDraftsDialog = true;
@@ -294,17 +321,17 @@ export default {
         publishing: value,
         version: version,
         id: id,
-        isDraft: isDraft
+        isDraft: isDraft,
       };
       this.showPublishDialog = true;
     },
     async updatePublish() {
       this.showPublishDialog = false;
       // if publishing a draft version
-      if(this.publishOpts.isDraft){
+      if (this.publishOpts.isDraft) {
         await this.publishDraft({
           formId: this.form.id,
-          draftId: this.publishOpts.id
+          draftId: this.publishOpts.id,
         });
         // Refresh draft in form version list
         this.fetchDrafts(this.form.id);
@@ -324,7 +351,10 @@ export default {
 
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;
-      await this.deleteDraft({ formId: this.form.id, draftId: this.drafts[0].id });
+      await this.deleteDraft({
+        formId: this.form.id,
+        draftId: this.drafts[0].id,
+      });
       this.fetchDrafts(this.form.id);
     },
 
@@ -353,7 +383,9 @@ export default {
 
     async getFormSchema(id, isDraft = false) {
       try {
-        let res = (!isDraft ) ? await formService.readVersion(this.form.id, id) : await formService.readDraft(this.form.id, id);
+        let res = !isDraft
+          ? await formService.readVersion(this.form.id, id)
+          : await formService.readDraft(this.form.id, id);
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
@@ -362,7 +394,6 @@ export default {
         });
       }
     },
-
   },
 };
 </script>
