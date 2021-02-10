@@ -2,15 +2,20 @@
   <div>
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
       <p>
-        <strong>Current Status:</strong> {{ currentStatus.code }}
+        <strong>Current Status:</strong>
+        {{ currentStatus.code }}
         <br />
         <strong>Assigned To:</strong>
         {{ currentStatus.assignedTo ? currentStatus.assignedTo : 'N/A' }}
-        <span
-          v-if="currentStatus.assignedToEmail"
-        >({{ currentStatus.assignedToEmail }})</span>
+        <span v-if="currentStatus.assignedToEmail">
+          ({{ currentStatus.assignedToEmail }})
+        </span>
         <br />
         <strong>Effective Date:</strong>
+        <span v-if="currentStatus.actionDate">
+          {{ currentStatus.actionDate | formatDate }}
+        </span>
+        <span v-else> N/A </span>
       </p>
 
       <v-form ref="form" v-model="valid" lazy-validation>
@@ -18,12 +23,8 @@
           <v-col cols="12">
             <label>Update Status</label>
             <v-select
-              block
               dense
-              flat
               outlined
-              solo
-              single-line
               label="Select status to set"
               :items="items"
               item-text="display"
@@ -53,9 +54,7 @@
                       readonly
                       v-on="on"
                       dense
-                      flat
                       outlined
-                      solo
                     />
                   </template>
                   <v-date-picker
@@ -72,8 +71,8 @@
                   :rules="[(v) => !!v || 'Name is required']"
                   dense
                   flat
+                  solid
                   outlined
-                  solo
                 />
 
                 <label>Assignee Email (Optional)</label>
@@ -82,7 +81,7 @@
                   dense
                   flat
                   outlined
-                  solo
+                  solid
                 />
 
                 <div class="text-right">
@@ -109,7 +108,7 @@
                 dense
                 flat
                 outlined
-                solo
+                solid
               />
             </div>
           </v-col>
@@ -143,12 +142,7 @@
           </v-col>
 
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-            <v-btn
-              block
-              color="primary"
-              v-on="on"
-              @click="updateStatus"
-            >
+            <v-btn block color="primary" v-on="on" @click="updateStatus">
               <span>UPDATE</span>
             </v-btn>
           </v-col>
@@ -159,7 +153,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import formService from '@/services/formService';
 import StatusTable from '@/components/forms/submission/StatusTable';
@@ -185,9 +179,8 @@ export default {
       actionDateMenu: false,
       currentStatus: {},
       historyDialog: false,
+      items: [],
       loading: true,
-      showActionDate: false,
-      showInspector: false,
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
@@ -203,17 +196,21 @@ export default {
     };
   },
   computed: {
-    items() {
-      return ['ASSIGNED'];
+    ...mapGetters('auth', ['hasResourceRoles', 'email', 'token', 'fullName']),
+
+    // State Machine
+    showInspector() {
+      return ['ASSIGNED'].includes(this.statusToSet);
+    },
+    showActionDate() {
+      return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
     },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     assignToCurrentUser() {
-      alert('tbd');
-    },
-    updateStatus() {
-      alert('tbd');
+      this.assignedTo = this.fullName;
+      this.assignedToEmail = this.email;
     },
     async getStatus() {
       this.loading = true;
@@ -227,14 +224,18 @@ export default {
         } else {
           // Statuses are returned in date precedence, the 0th item in the array is the current status
           this.currentStatus = this.statusHistory[0];
+
+          // Get the codes that this form is associated with
           const scRes = await formService.getStatusCodes(this.formId);
           const statusCodes = scRes.data;
           if (!statusCodes.length) {
             throw new Error('error finding status codes');
           }
+          // For the CURRENT status, add the code details (display name, next codes etc)
           this.currentStatus.statusCodeDetail = statusCodes.find(
             (sc) => sc.code === this.currentStatus.code
-          );
+          ).statusCode;
+          this.items = this.currentStatus.statusCodeDetail.nextCodes;
         }
       } catch (error) {
         this.addNotification({
@@ -243,6 +244,72 @@ export default {
         });
       } finally {
         this.loading = false;
+      }
+    },
+    resetForm() {
+      this.statusFields = false;
+      this.$refs.form.resetValidation();
+      this.statusToSet = null;
+      this.statusFields = false;
+      this.note = '';
+    },
+    async updateStatus() {
+      try {
+        if (this.$refs.form.validate()) {
+          if (!this.statusToSet) {
+            throw new Error('No Status');
+          }
+
+          const statusBody = {
+            code: this.statusToSet,
+          };
+          if (this.showInspector) {
+            if (this.assignedTo) {
+              statusBody.assignedTo = this.assignedTo;
+            }
+            if (this.assignedToEmail) {
+              statusBody.assignedToEmail = this.assignedToEmail;
+            }
+          }
+          if (this.actionDate && this.showActionDate) {
+            statusBody.actionDate = this.actionDate;
+          }
+          const statusResponse = await formService.updateSubmissionStatus(
+            this.submissionId,
+            statusBody
+          );
+          if (!statusResponse.data) {
+            throw new Error(
+              'No response data from API while submitting status update form'
+            );
+          }
+          // if (this.note) {
+          //   const submissionStatusId = statusResponse.data.submissionStatusId;
+          //   const noteBody = {
+          //     submissionId: this.submissionId,
+          //     submissionStatusId: submissionStatusId,
+          //     note: this.note,
+          //   };
+          //   const response = await formService.addNoteToStatus(
+          //     this.formName,
+          //     this.submissionId,
+          //     submissionStatusId,
+          //     noteBody
+          //   );
+          //   if (!response.data) {
+          //     throw new Error(
+          //       'No response data from API while submitting note for status update'
+          //     );
+          //   }
+          //   // Update the parent if the note was updated
+          //   this.$emit('note-updated');
+          // }
+          this.resetForm();
+          this.getStatus();
+        }
+      } catch (error) {
+        console.error(`Error updating status: ${error}`); // eslint-disable-line no-console
+        this.error = 'An error occured while trying to update the status';
       }
     },
   },

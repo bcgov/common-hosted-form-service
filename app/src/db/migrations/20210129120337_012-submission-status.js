@@ -20,7 +20,6 @@ exports.up = function (knex) {
     .then(() => knex.schema.createTable('status_code', table => {
       table.string('code').primary();
       table.string('display').notNullable();
-      table.boolean('enabled').notNullable().defaultTo(true);
       table.specificType('nextCodes', 'text ARRAY').comment('This is an array of codes that this status could transition to next');
       stamps(knex, table);
     }))
