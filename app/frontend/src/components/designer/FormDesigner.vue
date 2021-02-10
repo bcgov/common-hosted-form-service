@@ -61,7 +61,10 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <router-link :to="{ name: 'FormManage', query: { f: formId } }" :class="{ disabled_router: !formId }">
+            <router-link
+              :to="{ name: 'FormManage', query: { f: formId } }"
+              :class="{ disabled_router: !formId }"
+            >
               <v-btn
                 class="mx-1"
                 color="primary"
@@ -79,7 +82,9 @@
       </v-col>
     </v-row>
 
-    <p class="mb-3"><em>Version: {{ this.displayVersion }}</em></p>
+    <p class="mb-3">
+      <em>Version: {{ this.displayVersion }}</em>
+    </p>
 
     <v-alert
       v-if="saved || saving"
@@ -107,14 +112,16 @@
     </v-alert>
 
     <BaseInfoCard class="my-6">
-      <h4 class="primary--text"><v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!</h4>
+      <h4 class="primary--text">
+        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+      </h4>
       <p class="my-0">
-        Use the <strong>SAVE DESIGN</strong> button when you are
-        done building this form.
+        Use the <strong>SAVE DESIGN</strong> button when you are done building
+        this form.
       </p>
       <p class="my-0">
-        The <strong>SUBMIT</strong> button is provided for your user to submit this form and will
-        be activated after it is saved.
+        The <strong>SUBMIT</strong> button is provided for your user to submit
+        this form and will be activated after it is saved.
       </p>
     </BaseInfoCard>
     <v-row class="mt-4" no-gutters>
@@ -269,8 +276,8 @@ export default {
               default: false,
               components: {
                 // add 'simplefile' file upload component to formBuilder in advanced mode
-                simplefile: this.userType !== this.ID_MODE.PUBLIC
-              }
+                simplefile: this.userType !== this.ID_MODE.PUBLIC,
+              },
             },
             advanced: {
               weight: 30,
@@ -285,8 +292,6 @@ export default {
                 orgbook: true,
               },
             },
-
-
           },
         };
       }

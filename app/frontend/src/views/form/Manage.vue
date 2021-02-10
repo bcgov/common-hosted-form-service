@@ -39,7 +39,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form'])
+    ...mapGetters('form', ['form']),
   },
   methods: {
     ...mapActions('form', [
