@@ -71,9 +71,11 @@
         - {{ item.updatedBy ? item.updatedBy : item.createdBy }}
       </template>
 
-      <!-- Edit draft version -->
-      <template #[`item.edit`]="{ item }">
-        <div v-if="item.isDraft" class="a1">
+      <!-- Actions -->
+      <template #[`item.action`]="{ item }">
+
+        <!-- Edit draft version -->
+        <div v-if="item.isDraft" class="action">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <div v-bind="attrs" v-on="on">
@@ -92,30 +94,28 @@
             <span>Edit Version</span>
           </v-tooltip>
         </div>
-      </template>
 
-      <!-- export -->
-      <template #[`item.export`]="{ item }">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <div v-bind="attrs" v-on="on">
-              <v-btn
-                color="primary"
-                text
-                small
-                @click="onExportClick(item.id, item.isDraft)"
-              >
-                <v-icon>get_app</v-icon>
-              </v-btn>
-            </div>
-          </template>
-          <span>Export Design</span>
-        </v-tooltip>
-      </template>
+        <!-- export -->
+        <div class="action">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <div v-bind="attrs" v-on="on">
+                <v-btn
+                  color="primary"
+                  text
+                  small
+                  @click="onExportClick(item.id, item.isDraft)"
+                >
+                  <v-icon>get_app</v-icon>
+                </v-btn>
+              </div>
+            </template>
+            <span>Export Design</span>
+          </v-tooltip>
+        </div>
 
-      <template #[`item.action`]="{ item }">
         <!-- create new version -->
-        <div v-if="!item.isDraft">
+        <div v-if="!item.isDraft" class="action">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <div v-bind="attrs" v-on="on">
@@ -141,7 +141,7 @@
         </div>
 
         <!-- delete draft version -->
-        <div v-else>
+        <div v-else class="action">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -187,7 +187,7 @@
       </template>
       <template #text>
         <span v-if="publishOpts.publishing">
-          This will set Version {{ publishOpts.version }} to the live form.
+          This will make Version {{ publishOpts.version }} of your form live.
         </span>
         <span v-else>
           Unpublishing this form will take the form out of circulation until a
@@ -227,22 +227,11 @@ export default {
         { text: 'Last Update', align: 'start', value: 'updatedAt' },
         {
           text: 'Actions',
-          align: 'center',
-          value: 'edit',
-          filterable: false,
-          sortable: false,
-        },
-        {
-          text: '',
-          value: 'export',
-          filterable: false,
-          sortable: false,
-        },
-        {
-          text: '',
           value: 'action',
+          align: 'end',
           filterable: false,
           sortable: false,
+          width: 200,
         },
       ],
       formSchema: {
@@ -417,8 +406,8 @@ export default {
   color: #003366 !important;
   font-size: 1.1em;
 }
-.submissions-table
-  >>> td:not(.v-data-table__mobile-row):nth-last-child(-n + 3) {
-  padding: 0;
+.submissions-table >>> .action {
+  display: inline-block;
+  width: 50px;
 }
 </style>
