@@ -4,9 +4,9 @@ const { v4: uuidv4 } = require('uuid');
 const CREATED_BY = 'migration-012';
 
 const statusCodes = [
-  { code: 'SUBMITTED', display: 'Submitted', enabled: true, nextCodes: ['ASSIGNED', 'COMPLETED'], createdBy: CREATED_BY },
-  { code: 'ASSIGNED', display: 'Assigned', enabled: true, nextCodes: ['ASSIGNED', 'COMPLETED'], createdBy: CREATED_BY },
-  { code: 'COMPLETED', display: 'Completed', enabled: true, nextCodes: ['ASSIGNED'], createdBy: CREATED_BY }
+  { code: 'SUBMITTED', display: 'Submitted', nextCodes: ['ASSIGNED', 'COMPLETED'], createdBy: CREATED_BY },
+  { code: 'ASSIGNED', display: 'Assigned', nextCodes: ['ASSIGNED', 'COMPLETED'], createdBy: CREATED_BY },
+  { code: 'COMPLETED', display: 'Completed', nextCodes: ['ASSIGNED'], createdBy: CREATED_BY }
 ];
 
 exports.up = function (knex) {
