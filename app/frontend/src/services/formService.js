@@ -279,6 +279,17 @@ export default {
     return appAxios().get(`/submissions/${submissionId}/status`);
   },
 
+  /**
+  * @function updateSubmissionStatus
+  * Add a new status entry to the submission
+  * @param {string} submissionId The form submission identifier
+   * @param {Object} data The request body
+  * @returns {Promise} An axios response
+  */
+  updateSubmissionStatus(submissionId, data) {
+    return appAxios().post(`/submissions/${submissionId}/status`, data);
+  },
+
   //
   // Email
   //

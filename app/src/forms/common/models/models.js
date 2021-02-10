@@ -237,6 +237,19 @@ class FormStatusCode extends Timestamps(Model) {
     return 'form_status_code';
   }
 
+  static get relationMappings() {
+    return {
+      statusCode: {
+        relation: Model.HasOneRelation,
+        modelClass: StatusCode,
+        join: {
+          from: 'form_status_code.code',
+          to: 'status_code.code'
+        }
+      }
+    };
+  }
+
   static get modifiers() {
     return {
       filterFormId(query, value) {
@@ -255,6 +268,27 @@ class FormStatusCode extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         code: { type: 'string'},
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
+}
+
+class StatusCode extends Timestamps(Model) {
+  static get tableName() {
+    return 'status_code';
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['code'],
+      properties: {
+        code: { type: 'string' },
+        display: { type: 'string' },
+        nextCodes: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         ...stamps
       },
       additionalProperties: false
@@ -1033,6 +1067,7 @@ module.exports = {
   Permission: Permission,
   PublicFormAccess: PublicFormAccess,
   Role: Role,
+  StatusCode: StatusCode,
   SubmissionMetadata: SubmissionMetadata,
   User: User,
   UserFormAccess: UserFormAccess

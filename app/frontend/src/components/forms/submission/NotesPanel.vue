@@ -27,7 +27,7 @@
           dense
           flat
           outlined
-          solo
+          solid
         />
         <v-row>
           <v-col cols="12" sm="6" xl="4">

@@ -398,6 +398,7 @@ const service = {
 
   getStatusCodes: async (formId) => {
     return FormStatusCode.query()
+      .withGraphFetched('statusCode')
       .where('formId', formId);
   },
 

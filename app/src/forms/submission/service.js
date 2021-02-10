@@ -152,12 +152,40 @@ const service = {
   // -------------------------------------------------------------------------------------------------------
   // Status
   // -------------------------------------------------------------------------------------------------------
+  _createSubmissionStatus: async (submissionId, data, currentUser) => {
+    let trx;
+    try {
+      trx = await transaction.start(FormSubmissionStatus.knex());
+      const obj = {};
+      obj.id = uuidv4();
+      obj.submissionId = submissionId;
+      obj.code = data.code;
+      obj.assignedTo = data.assignedTo;
+      obj.assignedToEmail = data.assignedToEmail;
+      obj.actionDate = data.actionDate;
+      obj.createdBy = currentUser.username;
+
+      await FormSubmissionStatus.query(trx).insert(obj);
+
+      await trx.commit();
+      const result = await service.getStatus(submissionId);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
 
   // Get status history for a specific submission
   getStatus: async (formSubmissionId) => {
     return await FormSubmissionStatus.query()
       .modify('filterSubmissionId', formSubmissionId)
       .modify('orderDescending');
+  },
+
+  // Add a status history for a specific submission
+  createStatus: async (formSubmissionId, data, currentUser) => {
+    return await service._createSubmissionStatus(formSubmissionId, data, currentUser);
   },
   // -------------------------------------------------------------------------------------------------/Notes
 };

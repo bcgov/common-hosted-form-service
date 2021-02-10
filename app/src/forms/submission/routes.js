@@ -25,6 +25,10 @@ routes.get('/:formSubmissionId/status', async (req, res, next) => {
   await controller.getStatus(req, res, next);
 });
 
+routes.post('/:formSubmissionId/status', async (req, res, next) => {
+  await controller.addStatus(req, res, next);
+});
+
 
 routes.post('/:formSubmissionId/email', async (req, res, next) => {
   await controller.email(req, res, next);
