@@ -11,13 +11,15 @@ jobs:
         working-directory: app
     timeout-minutes: 10
     strategy:
+      fail-fast: true
       matrix:
         node-version:
           - 10.x
           - 12.x
           - 14.x
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Use Node.js ${{ matrix.node-version }}
@@ -44,10 +46,8 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: env.CC_TEST_REPORTER_ID == 'true' && matrix.node-version == '14.x'
+        if: matrix.node-version == '14.x'
         uses: actions/upload-artifact@v2
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
@@ -59,13 +59,15 @@ jobs:
         working-directory: app/frontend
     timeout-minutes: 10
     strategy:
+      fail-fast: true
       matrix:
         node-version:
           - 10.x
           - 12.x
           - 14.x
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Use Node.js ${{ matrix.node-version }}
@@ -92,10 +94,8 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: env.CC_TEST_REPORTER_ID == 'true' && matrix.node-version == '14.x'
+        if: matrix.node-version == '14.x'
         uses: actions/upload-artifact@v2
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
@@ -107,13 +107,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      - name: Check Workflow Secrets
+        id: check-secrets
+        run: |
+          unset HAS_SECRETS
+          if [ -n "$CC_TEST_REPORTER_ID" ]; then HAS_SECRETS='true'; fi
+          echo ::set-output name=HAS_SECRETS::${HAS_SECRETS}
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      - name: Checkout Repository
+        if: steps.check-secrets.outputs.HAS_SECRETS
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Restore Coverage Results
+        if: steps.check-secrets.outputs.HAS_SECRETS
         uses: actions/download-artifact@v2
       - name: Publish code coverage
-        if: env.CC_TEST_REPORTER_ID == 'true'
+        if: steps.check-secrets.outputs.HAS_SECRETS
         uses: paambaati/codeclimate-action@v2.7.5
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
