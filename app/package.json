@@ -5,6 +5,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "serve": "nodemon ./bin/www",
+    "debug": "nodemon --inspect ./bin/www",
     "build": "cd frontend && npm run build",
     "start": "node ./bin/www",
     "test": "jest --verbose --forceExit --detectOpenHandles",
