@@ -41,7 +41,7 @@
         {{ item.date | formatDateLong }}
       </template>
       <template #[`item.status`]="{ item }">
-        Submitted <span class="d-none">{{ item }}</span>
+        {{ item.status }}
       </template>
       <template #[`item.actions`]="{ item }">
         <router-link
@@ -125,6 +125,7 @@ export default {
               confirmationId: s.confirmationId,
               date: s.createdAt,
               formId: s.formId,
+              status: s.formSubmissionStatusCode,
               submissionId: s.submissionId,
               submitter: s.createdBy,
               versionId: s.formVersionId,
