@@ -75,7 +75,7 @@
       <template #label>
         <span>
           Enable submission <strong>Status Updates</strong> for this form (i.e.
-          Submitted, In-Progress, Completed)
+          Submitted, Assigned, Completed)
         </span>
       </template>
     </v-checkbox>
