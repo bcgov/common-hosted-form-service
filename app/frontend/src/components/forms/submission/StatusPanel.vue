@@ -283,27 +283,26 @@ export default {
               'No response data from API while submitting status update form'
             );
           }
-          // if (this.note) {
-          //   const submissionStatusId = statusResponse.data.submissionStatusId;
-          //   const noteBody = {
-          //     submissionId: this.submissionId,
-          //     submissionStatusId: submissionStatusId,
-          //     note: this.note,
-          //   };
-          //   const response = await formService.addNoteToStatus(
-          //     this.formName,
-          //     this.submissionId,
-          //     submissionStatusId,
-          //     noteBody
-          //   );
-          //   if (!response.data) {
-          //     throw new Error(
-          //       'No response data from API while submitting note for status update'
-          //     );
-          //   }
-          //   // Update the parent if the note was updated
-          //   this.$emit('note-updated');
-          // }
+          if (this.note) {
+            const submissionStatusId =
+              statusResponse.data[0].submissionStatusId;
+            const noteBody = {
+              submissionId: this.submissionId,
+              submissionStatusId: submissionStatusId,
+              note: this.note,
+            };
+            const response = await formService.addNote(
+              this.submissionId,
+              noteBody
+            );
+            if (!response.data) {
+              throw new Error(
+                'No response data from API while submitting note for status update'
+              );
+            }
+            // Update the parent if the note was updated
+            this.$emit('note-updated');
+          }
           this.resetForm();
           this.getStatus();
         }

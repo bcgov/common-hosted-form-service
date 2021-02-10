@@ -23,10 +23,7 @@
       >
         <v-card outlined class="review-form">
           <h2 class="review-heading">Submission</h2>
-          <FormViewer
-            :displayTitle="false"
-            :submissionId="submissionId"
-          />
+          <FormViewer :displayTitle="false" :submissionId="submissionId" />
         </v-card>
       </v-col>
 
@@ -41,11 +38,15 @@
       >
         <v-card outlined class="review-form">
           <h2 class="review-heading">Status</h2>
-          <StatusPanel :submissionId="submissionId" :formId="form.id"/>
+          <StatusPanel
+            :submissionId="submissionId"
+            :formId="form.id"
+            v-on:note-updated="refreshNotes"
+          />
         </v-card>
         <v-card outlined class="review-form">
           <h2 class="review-heading">Notes</h2>
-          <NotesPanel :submissionId="submissionId" />
+          <NotesPanel :submissionId="submissionId" ref="notesPanel" />
         </v-card>
       </v-col>
     </v-row>
@@ -75,7 +76,12 @@ export default {
     };
   },
   computed: mapGetters('form', ['form', 'formSubmission']),
-  methods: mapActions('form', ['fetchSubmission']),
+  methods: {
+    ...mapActions('form', ['fetchSubmission']),
+    refreshNotes() {
+      this.$refs.notesPanel.getNotes();
+    },
+  },
   async mounted() {
     await this.fetchSubmission({ submissionId: this.submissionId });
     this.loading = false;
