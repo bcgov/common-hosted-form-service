@@ -233,8 +233,8 @@ export default {
         { text: 'Last Update', align: 'start', value: 'updatedAt' },
         {
           text: 'Actions',
-          value: 'action',
           align: 'end',
+          value: 'action',
           filterable: false,
           sortable: false,
           width: 200,
@@ -356,7 +356,8 @@ export default {
       this.fetchDrafts(this.form.id);
     },
 
-    onExportClick(id, isDraft) {
+    async onExportClick(id, isDraft) {
+      await this.getFormSchema(id, isDraft);
       let snek = this.form.snake;
       if (!this.form.snake) {
         snek = this.form.name
@@ -364,8 +365,6 @@ export default {
           .replace(/[^-_0-9a-z]/gi, '')
           .toLowerCase();
       }
-
-      this.getFormSchema(id, isDraft);
 
       const a = document.createElement('a');
       a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
