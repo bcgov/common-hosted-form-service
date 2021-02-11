@@ -1,6 +1,6 @@
 {
   "name": "common-hosted-form-service-frontend",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
@@ -59,7 +59,7 @@
     "node-sass": "^5.0.0",
     "prettier": "^2.2.1",
     "sass": "^1.30.0",
-    "sass-loader": "^10.1.0",
+    "sass-loader": "^10.1.1",
     "vue-cli-plugin-vuetify": "^2.0.8",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0"
