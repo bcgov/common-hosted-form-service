@@ -148,6 +148,7 @@
                 class="mx-1"
                 color="red"
                 @click="showDeleteDraftDialog = true"
+                :disabled="!hasVersions"
                 icon
                 v-bind="attrs"
                 v-on="on"
@@ -257,6 +258,9 @@ export default {
     },
     hasDraft() {
       return this.drafts && this.drafts.length > 0;
+    },
+    hasVersions() {
+      return this.form && this.form.versions && this.form.versions.length;
     },
     versionList() {
       if (this.hasDraft) {
