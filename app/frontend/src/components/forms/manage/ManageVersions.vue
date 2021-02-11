@@ -39,11 +39,13 @@
                 Version {{ item.version }}
                 <v-chip
                   v-if="item.isDraft"
+                  color="secondary"
                   class="mb-5 px-1"
                   x-small
-                  color="secondary"
                   text-color="black"
-                >Draft</v-chip>
+                >
+                  Draft
+                </v-chip>
               </span>
             </template>
             <span>
@@ -73,92 +75,95 @@
 
       <!-- Actions -->
       <template #[`item.action`]="{ item }">
-
         <!-- Edit draft version -->
-        <div v-if="item.isDraft" class="action">
+        <span v-if="item.isDraft">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <div v-bind="attrs" v-on="on">
-                <router-link
-                  :to="{
-                    name: 'FormDesigner',
-                    query: { d: item.id, f: item.formId },
-                  }"
+              <router-link
+                :to="{
+                  name: 'FormDesigner',
+                  query: { d: item.id, f: item.formId },
+                }"
+              >
+                <v-btn
+                  color="primary"
+                  class="mx-1"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
                 >
-                  <v-btn color="primary" text small>
-                    <v-icon>edit</v-icon>
-                  </v-btn>
-                </router-link>
-              </div>
+                  <v-icon>edit</v-icon>
+                </v-btn>
+              </router-link>
             </template>
             <span>Edit Version</span>
           </v-tooltip>
-        </div>
+        </span>
 
         <!-- export -->
-        <div class="action">
+        <span>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <div v-bind="attrs" v-on="on">
-                <v-btn
-                  color="primary"
-                  text
-                  small
-                  @click="onExportClick(item.id, item.isDraft)"
-                >
-                  <v-icon>get_app</v-icon>
-                </v-btn>
-              </div>
+              <v-btn
+                color="primary"
+                class="mx-1"
+                icon
+                @click="onExportClick(item.id, item.isDraft)"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>get_app</v-icon>
+              </v-btn>
             </template>
             <span>Export Design</span>
           </v-tooltip>
-        </div>
+        </span>
 
         <!-- create new version -->
-        <div v-if="!item.isDraft" class="action">
+        <span v-if="!item.isDraft">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <div v-bind="attrs" v-on="on">
+              <span v-bind="attrs" v-on="on">
                 <v-btn
-                  :disabled="hasDraft"
                   color="primary"
-                  text
-                  small
+                  class="mx-1"
+                  :disabled="hasDraft"
+                  icon
                   @click="createVersion(item.formId, item.id)"
                 >
                   <v-icon>add</v-icon>
                 </v-btn>
-              </div>
+              </span>
             </template>
             <span v-if="hasDraft">
               Please publish or delete your latest draft version before starting
               a new version.
             </span>
-            <span v-else>Use version {{ item.version }} as the base for a new
-              version
+            <span v-else>
+              Use version {{ item.version }} as the base for a new version
             </span>
           </v-tooltip>
-        </div>
+        </span>
 
         <!-- delete draft version -->
-        <div v-else class="action">
+        <span v-else>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <v-btn
-                class="mx-1"
-                color="red"
-                @click="showDeleteDraftDialog = true"
-                :disabled="!hasVersions"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>delete</v-icon>
-              </v-btn>
+              <span v-bind="attrs" v-on="on">
+                <v-btn
+                  color="red"
+                  class="mx-1"
+                  :disabled="!hasVersions"
+                  icon
+                  @click="showDeleteDraftDialog = true"
+                >
+                  <v-icon>delete</v-icon>
+                </v-btn>
+              </span>
             </template>
             <span>Delete Version</span>
           </v-tooltip>
-        </div>
+        </span>
       </template>
     </v-data-table>
 
@@ -409,9 +414,5 @@ export default {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;
-}
-.submissions-table >>> .action {
-  display: inline-block;
-  width: 50px;
 }
 </style>
