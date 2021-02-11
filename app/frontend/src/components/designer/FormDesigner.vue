@@ -63,7 +63,7 @@
           <template #activator="{ on, attrs }">
             <router-link
               :to="{ name: 'FormManage', query: { f: formId } }"
-              :class="{ disabled_router: !formId }"
+              :class="{ 'disabled-router': !formId }"
             >
               <v-btn
                 class="mx-1"
@@ -483,7 +483,7 @@ export default {
 @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
 
 /* disable router-link */
-.disabled_router {
+.disabled-router {
   pointer-events: none;
 }
 </style>
