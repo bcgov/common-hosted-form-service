@@ -61,7 +61,10 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+            <router-link
+              :to="{ name: 'FormManage', query: { f: formId } }"
+              :class="{ 'disabled-router': !formId }"
+            >
               <v-btn
                 class="mx-1"
                 color="primary"
@@ -79,7 +82,9 @@
       </v-col>
     </v-row>
 
-    <p v-if="draftId" class="mb-3"><em>Draft</em></p>
+    <p class="mb-3">
+      <em>Version: {{ this.displayVersion }}</em>
+    </p>
 
     <v-alert
       v-if="saved || saving"
@@ -107,13 +112,16 @@
     </v-alert>
 
     <BaseInfoCard class="my-6">
+      <h4 class="primary--text">
+        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+      </h4>
       <p class="my-0">
-        Use the SAVE DESIGN (<v-icon small>save</v-icon>) button when you are
-        done building this form.
+        Use the <strong>SAVE DESIGN</strong> button when you are done building
+        this form.
       </p>
       <p class="my-0">
-        The SUBMIT button is provided for your user to submit this form and will
-        be activated after it is saved.
+        The <strong>SUBMIT</strong> button is provided for your user to submit
+        this form and will be activated after it is saved.
       </p>
     </BaseInfoCard>
     <v-row class="mt-4" no-gutters>
@@ -174,6 +182,7 @@ export default {
         type: 'form',
         components: [],
       },
+      displayVersion: 1,
       reRenderFormIo: 0,
       saving: false,
     };
@@ -189,6 +198,7 @@ export default {
       'form.submissionReceivedEmails',
       'form.snake',
       'form.userType',
+      'form.versions',
     ]),
     ID_MODE() {
       return IdentityMode;
@@ -266,8 +276,8 @@ export default {
               default: false,
               components: {
                 // add 'simplefile' file upload component to formBuilder in advanced mode
-                simplefile: this.userType !== this.ID_MODE.PUBLIC
-              }
+                simplefile: this.userType !== this.ID_MODE.PUBLIC,
+              },
             },
             advanced: {
               weight: 30,
@@ -282,8 +292,6 @@ export default {
                 orgbook: true,
               },
             },
-
-
           },
         };
       }
@@ -310,6 +318,8 @@ export default {
           consoleError: `Error loading form ${this.formId} schema (version: ${this.versionId} draft: ${this.draftId}): ${error}`,
         });
       }
+      // get a version number to show in header
+      this.displayVersion = this.versions.length + 1;
     },
     async loadFile(event) {
       try {
@@ -471,4 +481,9 @@ export default {
 <style lang="scss" scoped>
 @import '~font-awesome/css/font-awesome.min.css';
 @import 'https://unpkg.com/formiojs@4.11.2/dist/formio.builder.min.css';
+
+/* disable router-link */
+.disabled-router {
+  pointer-events: none;
+}
 </style>

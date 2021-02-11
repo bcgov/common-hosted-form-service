@@ -11,7 +11,7 @@
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <span>Form Settings</span>
+            <strong>Form Settings</strong>
             <span>
               <small>
                 Created: {{ form.createdAt | formatDate }} ({{
@@ -40,11 +40,21 @@
             <FormSettings :disabled="formSettingsDisabled" />
           </v-form>
 
-          <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
-            <v-btn class="mr-5" color="primary" @click="updateSettings">
+          <div
+            v-if="canEditForm && !formSettingsDisabled"
+            class="mb-5"
+          >
+            <v-btn
+              class="mr-5"
+              color="primary"
+              @click="updateSettings"
+            >
               <span>Update</span>
             </v-btn>
-            <v-btn outlined @click="cancelSettingsEdit">
+            <v-btn
+              outlined
+              @click="cancelSettingsEdit"
+            >
               <span>Cancel</span>
             </v-btn>
           </div>
@@ -62,11 +72,11 @@
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <span>Form Design</span>
+            <strong>Form Design History</strong>
             <div>
               <span>
-                <strong>Current Version:</strong>
-                {{ currentVersion }}
+                <strong>Total Versions:</strong>
+                {{ combinedVersionAndDraftCount }}
               </span>
               <span class="ml-12 mr-2">
                 <strong>Status:</strong>
@@ -106,11 +116,17 @@ export default {
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
+    combinedVersionAndDraftCount() {
+      return (
+        (this.form.versions ? this.form.versions.length : 0) +
+        (this.drafts ? this.drafts.length : 0)
+      );
+    },
     currentVersion() {
       let cv = 'N/A';
       if (this.form.versions && this.form.versions.length) {
         const vers = this.form.versions.find((v) => v.published);
-        if(vers) {
+        if (vers) {
           cv = vers.version;
         }
       }
@@ -118,11 +134,9 @@ export default {
     },
     versionState() {
       if (this.form.versions && this.form.versions.some((v) => v.published)) {
-        return 'Published';
-      } else if (this.drafts && this.drafts.length) {
-        return 'Draft';
+        return `Published (ver ${this.currentVersion})`;
       } else {
-        return 'Not Published';
+        return 'Unpublished';
       }
     },
   },
@@ -163,7 +177,7 @@ export default {
 </script>
 
 <style>
-.v-expansion-panel:not(.v-expansion-panel--active){
-  margin-bottom: 30px;
+.v-expansion-panel:not(.v-expansion-panel--active) {
+  margin-bottom: 20px;
 }
 </style>
