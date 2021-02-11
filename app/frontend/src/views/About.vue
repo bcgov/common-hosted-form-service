@@ -13,7 +13,7 @@
           </p>
           <video class="main-video" width="100%" controls>
             <source
-              src="https://github.com/bcgov/common-hosted-form-service/wiki/videos/drag_drop.mp4"
+              src="https://github.com/bcgov/common-hosted-form-service/wiki/videos/intro_720.mp4"
               type="video/mp4"
             />
             Your browser does not support the video tag.
