@@ -1,6 +1,6 @@
 {
   "name": "common-hosted-form-service-frontend",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
@@ -29,6 +29,7 @@
     "bootstrap-scss": "^4.5.3",
     "core-js": "^3.8.1",
     "font-awesome": "^4.7.0",
+    "formiojs": "4.11.3",
     "keycloak-js": "^10.0.2",
     "material-design-icons-iconfont": "^6.1.0",
     "nprogress": "^0.2.0",
@@ -58,7 +59,7 @@
     "node-sass": "^5.0.0",
     "prettier": "^2.2.1",
     "sass": "^1.30.0",
-    "sass-loader": "^10.1.0",
+    "sass-loader": "^10.1.1",
     "vue-cli-plugin-vuetify": "^2.0.8",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0"
