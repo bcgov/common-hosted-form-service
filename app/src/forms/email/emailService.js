@@ -28,7 +28,7 @@ const service = {
         // along with a template path, mess
         const config = {
           template: 'confirmation-number-email.html',
-          from: 'donotreply@gov.bc.ca',
+          from: 'donotreplyCHEFS@gov.bc.ca',
           subject: `${form.name} Submission`,
           title: `${form.name} Submission`,
           priority: 'normal',
@@ -73,7 +73,7 @@ const service = {
         // along with a template path, mess
         const config = {
           template: 'confirmation-number-email.html',
-          from: 'donotreply@gov.bc.ca',
+          from: 'donotreplyCHEFS@gov.bc.ca',
           subject: `${form.name} Accepted`,
           title: `${form.name} Accepted`,
           priority: 'normal',
