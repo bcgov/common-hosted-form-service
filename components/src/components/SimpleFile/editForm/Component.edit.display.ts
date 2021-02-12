@@ -23,7 +23,7 @@ export default [
         key: 'className',
         ignore: true,
     },
-     {
+    {
         key: 'prefix',
         ignore: true
     },

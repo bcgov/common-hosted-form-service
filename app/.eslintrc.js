@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   env: {
+    browser: true,
     commonjs: true,
     es6: true,
     jest: true,
@@ -13,7 +14,8 @@ module.exports = {
     _: false
   },
   parserOptions: {
-    ecmaVersion: 9
+    ecmaVersion: 9,
+    sourceType: 'module'
   },
   rules: {
     'eol-last': ['error', 'always'],
