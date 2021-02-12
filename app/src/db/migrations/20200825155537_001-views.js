@@ -22,7 +22,7 @@ FROM form f
 GROUP BY f.id, f.name, f.active, f.description, f.labels, f."createdAt", f."createdBy", f."updatedAt",
          f."updatedBy", fv.id, fv.version
 ORDER BY (lower(f.name::text)), fv.version DESC`))
-    .then(() => knex.schema.raw(`create view user_form_permissions_vw as 
+    .then(() => knex.schema.raw(`create view user_form_permissions_vw as
 select fru."userId", fru."formId", array_agg(distinct(p.code)) as permissions
 from form_role_user fru
 inner join role r on fru.role = r.code
@@ -33,7 +33,7 @@ union
 select u2.id as "userId", f2.id as "formId", '{submission_create,form_read}'::varchar[] as permissions
 from form_vw f2, "user" u2
 where not exists (select * from form_role_user fru2 where fru2."formId"= f2.id and fru2."userId" = u2.id)`))
-    .then(() => knex.schema.raw(`create view user_form_roles_vw as 
+    .then(() => knex.schema.raw(`create view user_form_roles_vw as
 select fru."userId", fru."formId", array_agg(distinct(r.code)) as roles
 from form_role_user fru
 inner join role r on fru.role = r.code
@@ -42,16 +42,16 @@ union
 select u2.id as "userId", f2.id as "formId", '{}'::varchar[] as roles
 from form_vw f2, "user" u2
 where not exists (select * from form_role_user fru2 where fru2."formId"= f2.id and fru2."userId" = u2.id)`))
-    .then(() => knex.schema.raw(`create view user_form_access_vw as 
+    .then(() => knex.schema.raw(`create view user_form_access_vw as
 select r."userId", u."keycloakId", u.username, u."fullName", u."firstName", u."lastName", u.email, r."formId", f.name as "formName", f.labels, f."identityProviders", f.idps, f.active, f."formVersionId", f.version, r.roles, p.permissions
 from "user" u join user_form_roles_vw r on u.id = r."userId" join user_form_permissions_vw p on r."userId" = p."userId" and r."formId" = p."formId" join form_vw f on f.id = p."formId"
 order by lower(u."lastName"::text), lower(u."firstName"::text), lower(f.name::text)`))
-    .then(() => knex.schema.raw(`create view public_form_access_vw as 
+    .then(() => knex.schema.raw(`create view public_form_access_vw as
 select null as "userId", null as "keycloakId", 'public' as username, 'public' as "fullName", null as "firstName", null as "lastName", null as email, f.id as "formId", f.name as "formName", f.labels, f."identityProviders", f.idps, f.active, f."formVersionId", f.version, '{}'::varchar[] as roles, '{submission_create,form_read}'::varchar[] as permissions
 from form_vw f
 where 'public' = ANY(f."idps")
 order by lower(f.name::text)`))
-    .then(() => knex.schema.raw(`create view submissions_vw as 
+    .then(() => knex.schema.raw(`create view submissions_vw as
 select s.id as "submissionId", s."confirmationId", s.draft, s.deleted, s."createdBy", s."createdAt", f.id as "formId", f.name as "formName", fv.id as"formVersionId", fv.version
 from form_submission as s
     inner join form_version fv on s."formVersionId" = fv.id

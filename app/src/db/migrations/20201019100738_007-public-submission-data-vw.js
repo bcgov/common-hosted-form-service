@@ -1,7 +1,7 @@
 
 exports.up = function (knex) {
   return Promise.resolve()
-    .then(() => knex.schema.raw(`create or replace view submissions_data_vw as  
+    .then(() => knex.schema.raw(`create or replace view submissions_data_vw as
 select s."confirmationId", s."formName", s.version, s."createdAt",
        case when u.id is null then 'public'::varchar(255) else u."fullName" end as "fullName", case when u.id is null then 'public'::varchar(255) else u.username end as "username", u.email,
        fs.submission -> 'data' AS "submission", s.deleted, s.draft,
@@ -16,7 +16,7 @@ order by s."createdAt", s."formName", s.version`));
 exports.down = function (knex) {
   // Restore original definition of this view from 005
   return Promise.resolve()
-    .then(() => knex.schema.raw(`create or replace view submissions_data_vw as  
+    .then(() => knex.schema.raw(`create or replace view submissions_data_vw as
 select s."confirmationId", s."formName", s.version, s."createdAt",
        u."fullName", u.username, u.email,
        fs.submission -> 'data' AS "submission", s.deleted, s.draft,
