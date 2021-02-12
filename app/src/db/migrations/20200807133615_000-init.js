@@ -92,4 +92,3 @@ exports.down = function(knex) {
     .then(() => knex.schema.dropTableIfExists('role'))
     .then(() => knex.schema.dropTableIfExists('user'));
 };
-

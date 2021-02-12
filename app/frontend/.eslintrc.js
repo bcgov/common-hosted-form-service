@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   env: {
+    browser: true,
     es6: true,
     jest: true,
     node: true
@@ -13,8 +14,8 @@ module.exports = {
     _: false
   },
   parserOptions: {
-    parser: 'babel-eslint',
-    ecmaVersion: 8
+    ecmaVersion: 9,
+    parser: 'babel-eslint'
   },
   rules: {
     'eol-last': ['error', 'always'],
