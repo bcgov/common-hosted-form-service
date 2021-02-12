@@ -27,4 +27,3 @@ from submissions_vw s
     inner join "user" u on fsu."userId" = u.id
 order by s."createdAt", s."formName", s.version`));
 };
-
