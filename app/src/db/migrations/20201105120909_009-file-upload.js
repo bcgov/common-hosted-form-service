@@ -18,5 +18,3 @@ exports.down = function(knex) {
   return Promise.resolve()
     .then(() => knex.schema.dropTableIfExists('file_storage'));
 };
-
-

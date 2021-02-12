@@ -9,7 +9,7 @@ exports.up = function(knex) {
       table.string('permission').references('code').inTable('permission').notNullable();
       stamps(knex, table);
     }))
-    .then(() => knex.schema.raw(`create view form_submission_users_vw as 
+    .then(() => knex.schema.raw(`create view form_submission_users_vw as
 select fsu."formSubmissionId", fsu."userId", array_agg(distinct(fsu.permission)) as permissions
 from form_submission_user fsu
 group by fsu."formSubmissionId", fsu."userId"`));

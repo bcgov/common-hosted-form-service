@@ -210,4 +210,3 @@ const secretAccessKey = config.get('files.objectStorage.secretAccessKey');
 
 let objectStorageService = new ObjectStorageService({accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, endpoint: endpoint, bucket: bucket, key: key});
 module.exports = objectStorageService;
-

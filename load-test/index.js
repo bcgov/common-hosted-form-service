@@ -11,22 +11,22 @@ log.addLevel('debug', 1500, { fg: 'cyan' });
 
 const printObj = (o) => {
   if (log.levels[log.level] < log.levels['info']) {
-    console.log(o);
+    console.log(o); // eslint-disable-line no-console
   }
-}
+};
 
 const formName = () => {
   const name = config.get('submissions.name');
   return `${name} - ${new Date().toISOString()} - (${config.get('submissions.count')})`;
-}
+};
 
 const schemaTemplate = () => {
   return require(`./schemas/${config.get('submissions.schema')}_schema.json`);
-}
+};
 
 const submissionTemplate = () => {
   return require(`./submissions/${config.get('submissions.schema')}_submission.json`);
-}
+};
 
 const tokenExpired = (token) => {
   let expired = true;
@@ -42,7 +42,7 @@ const tokenExpired = (token) => {
     }
   }
   return expired;
-}
+};
 
 const parseOk = (start, res) => {
   const finish = performance.now();
@@ -65,8 +65,8 @@ const parseOk = (start, res) => {
       size: size
     },
     json: res.body
-  }
-}
+  };
+};
 
 const getToken = async () => {
   const auth = config.get('auth');
@@ -100,11 +100,11 @@ const apiPath = () => {
   const t = s => s.replace(/^\s*\/*\s*|\s*\/*\s*$/gm, '');
   const api = config.get('api');
   return `${t(api.host)}/${t(api.basePath)}/${t(api.apiPath)}`;
-}
+};
 
-const createForm = async (token, schema, ) => {
+const createForm = async (token, schema,) => {
   return new Promise((resolve, reject) => {
-    log.info(`creating form ${formName()}`)
+    log.info(`creating form ${formName()}`);
     const form = {
       name: formName(),
       description: 'Load testing',
@@ -154,7 +154,7 @@ const createSubmission = async (token, formId, formVersionId, submission) => {
         }
       });
   });
-}
+};
 
 const getSubmissions = async (token, formId) => {
   return new Promise((resolve, reject) => {
@@ -195,55 +195,55 @@ const exportSubmissions = async (token, formId) => {
 };
 
 const loadSubmissions = async (token, formId, formVersionId, submission, count = 1) => {
-  const pad = (n) => (n).toString().padStart((count).toString().length,' ');
+  const pad = (n) => (n).toString().padStart((count).toString().length, ' ');
 
-    try {
-      let accessToken = token;
-      const results = [];
-      for(let i = 0; i < count; i++) {
-        log.verbose(`${pad(i+1)}/${count}`);
-        try {
-          if (tokenExpired(accessToken)) {
-            log.debug('token expired, get new token.');
-            const tokenResult = await getToken();
-            accessToken = tokenResult.accessToken;
-          }
-          const result = await createSubmission(accessToken, formId, formVersionId, submission);
-          log.verbose(`${pad('')} ${result.elapsedMs} ms`);
-          results.push(result);
-        } catch (e) {
-          log.error(e.message);
+  try {
+    let accessToken = token;
+    const results = [];
+    for (let i = 0; i < count; i++) {
+      log.verbose(`${pad(i + 1)}/${count}`);
+      try {
+        if (tokenExpired(accessToken)) {
+          log.debug('token expired, get new token.');
+          const tokenResult = await getToken();
+          accessToken = tokenResult.accessToken;
         }
+        const result = await createSubmission(accessToken, formId, formVersionId, submission);
+        log.verbose(`${pad('')} ${result.elapsedMs} ms`);
+        results.push(result);
+      } catch (e) {
+        log.error(e.message);
       }
-      return results;
-    } catch (e) {
-      log.error(e);
     }
+    return results;
+  } catch (e) {
+    log.error(e);
+  }
 };
 
 const fetchSubmissions = async (token, formId) => {
-    try {
-      let accessToken = token;
-      if (tokenExpired(accessToken)) {
-        console.log('token expired, get new token.');
-        const tokenResult = await getToken();
-        accessToken = tokenResult.accessToken;
-      }
-      const getResult = await getSubmissions(accessToken, formId);
-      const exportResult = await exportSubmissions(accessToken, formId);
-      return {
-        getResults: getResult,
-        exportResults: exportResult
-      }
-    } catch (e) {
-      log.error(e.message);
+  try {
+    let accessToken = token;
+    if (tokenExpired(accessToken)) {
+      console.log('token expired, get new token.'); // eslint-disable-line no-console
+      const tokenResult = await getToken();
+      accessToken = tokenResult.accessToken;
     }
+    const getResult = await getSubmissions(accessToken, formId);
+    const exportResult = await exportSubmissions(accessToken, formId);
+    return {
+      getResults: getResult,
+      exportResults: exportResult
+    };
+  } catch (e) {
+    log.error(e.message);
+  }
 };
 
 const printStats = (createFormResult, createSubmissionResult, fetchSubmissionResult) => {
   const padLabel = (s) => s.padEnd(34, ' ');
-  const padMs = (n) => Math.ceil(n).toString().padStart(10,' ');
-  const padBytes = (n) => bytes(n, {unit: 'kb'}).padStart(12,' ');
+  const padMs = (n) => Math.ceil(n).toString().padStart(10, ' ');
+  const padBytes = (n) => bytes(n, { unit: 'kb' }).padStart(12, ' ');
 
   log.info('');
   log.info('==============================================================================');
@@ -283,7 +283,7 @@ const printStats = (createFormResult, createSubmissionResult, fetchSubmissionRes
   log.info('');
   log.info('==============================================================================');
   log.info('');
-}
+};
 
 const main = () => {
   (async () => {
@@ -296,7 +296,7 @@ const main = () => {
       printObj(tokenResult);
       const formResult = await createForm(tokenResult.accessToken, formSchema);
       printObj(formResult);
-      const submissionResults = await loadSubmissions(tokenResult.accessToken, formResult.formId, formResult.formVersionId, formSubmission, config.get('submissions.count') );
+      const submissionResults = await loadSubmissions(tokenResult.accessToken, formResult.formId, formResult.formVersionId, formSubmission, config.get('submissions.count'));
       printObj(submissionResults);
       const fetchResults = await fetchSubmissions(tokenResult.accessToken, formResult.formId);
       printStats(formResult, submissionResults, fetchResults);
