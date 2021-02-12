@@ -1,7 +1,7 @@
 
 exports.up = function(knex) {
   return Promise.resolve()
-    .then(() => knex.schema.raw(`create or replace view submissions_data_vw as  
+    .then(() => knex.schema.raw(`create or replace view submissions_data_vw as
 select s."confirmationId", s."formName", s.version, s."createdAt",
        u."fullName", u.username, u.email,
        fs.submission -> 'data' AS "submission", s.deleted, s.draft,
