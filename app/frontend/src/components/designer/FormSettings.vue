@@ -66,7 +66,7 @@
         />
       </v-row>
       <v-radio label="Specific Team Members" value="team" />
-      <v-row v-if="userType === ID_MODE.TEAM" class="pl-6 mb-2">
+      <v-row v-if="userType === ID_MODE.TEAM" class="pl-10 my-1">
         You can specify users on the form's management screen once created.
       </v-row>
     </v-radio-group>
