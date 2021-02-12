@@ -1,7 +1,7 @@
 module.exports = {
   clearMocks: true,
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.{js,vue}', '!src/main.js', '!src/lib/**/*.*', '!src/plugins/*.*'],
+  collectCoverageFrom: ['src/**/*.{js,vue}', '!src/main.js', '!src/formio/**/*.*', '!src/plugins/*.*'],
   moduleFileExtensions: ['js', 'json', 'vue', 'jsx'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
