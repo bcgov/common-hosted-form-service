@@ -1,4 +1,5 @@
 import { formService } from '@/services';
+import store from '@/store';
 import { FormPermissions, IdentityProviders } from '@/utils/constants';
 import * as permissionUtils from '@/utils/permissionUtils';
 
@@ -58,34 +59,65 @@ describe('checkSubmissionView', () => {
 });
 
 describe('determineFormNeedsAuth', () => {
+  const oldWindowLocation = window.location;
+
   const mockNext = jest.fn();
+  const dispatchSpy = jest.spyOn(store, 'dispatch');
   const getSubmissionSpy = jest.spyOn(formService, 'getSubmission');
   const readFormSpy = jest.spyOn(formService, 'readForm');
 
+  beforeAll(() => {
+    delete window.location;
+    window.location = Object.defineProperties(
+      {},
+      {
+        ...Object.getOwnPropertyDescriptors(oldWindowLocation),
+        replace: {
+          configurable: true,
+          value: jest.fn(),
+        },
+      },
+    );
+
+    if (store.hasModule('auth')) store.unregisterModule('auth');
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => false,
+        createLoginUrl: () => () => { }
+      }
+    });
+  });
+
   beforeEach(() => {
     mockNext.mockReset();
+    dispatchSpy.mockReset();
     getSubmissionSpy.mockReset();
     readFormSpy.mockReset();
   });
 
-  afterEach(() => {
+  afterAll(() => {
+    window.location = oldWindowLocation;
+    store.unregisterModule('auth');
     mockNext.mockRestore();
+    dispatchSpy.mockRestore();
     getSubmissionSpy.mockReset();
     readFormSpy.mockRestore();
   });
 
   it('should call readForm service', async () => {
-    readFormSpy.mockImplementation(() => {});
+    readFormSpy.mockImplementation(() => { });
     await permissionUtils.determineFormNeedsAuth('f', undefined, mockNext);
     expect(readFormSpy).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 
   it('should call getSubmission service', async () => {
-    getSubmissionSpy.mockImplementation(() => {});
+    getSubmissionSpy.mockImplementation(() => { });
     await permissionUtils.determineFormNeedsAuth(undefined, 's', mockNext);
     expect(getSubmissionSpy).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledTimes(1);
+
   });
 
   it('should passthrough when nothing specified', async () => {
@@ -93,9 +125,7 @@ describe('determineFormNeedsAuth', () => {
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 
-  it.skip('should force a user login', async () => {
-    // delete window.location;
-    // window.location = { replace: jest.fn() };
+  it('should force a user login', async () => {
     readFormSpy.mockImplementation(() => {
       const error = new Error();
       error.response = { status: 401 };
@@ -104,6 +134,17 @@ describe('determineFormNeedsAuth', () => {
 
     await permissionUtils.determineFormNeedsAuth('f', undefined, mockNext);
     expect(window.location.replace).toHaveBeenCalledTimes(1);
+    expect(mockNext).toHaveBeenCalledTimes(1);
+  });
+
+  it('should raise an issue notification', async () => {
+    dispatchSpy.mockImplementation(() => {});
+    readFormSpy.mockImplementation(() => {
+      throw new Error();
+    });
+
+    await permissionUtils.determineFormNeedsAuth('f', undefined, mockNext);
+    expect(dispatchSpy).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 });
