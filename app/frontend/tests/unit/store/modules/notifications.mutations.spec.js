@@ -9,7 +9,7 @@ describe('notifications mutations', () => {
     state = cloneDeep(store.state);
   });
 
-  it('PUSH should add notification object', () => {
+  it('PUSH should add notification to notifications state', () => {
     const obj = { foo: 'bar' };
     store.mutations.PUSH(state, obj);
 
