@@ -51,7 +51,7 @@ export default {
       state.formList.push(form);
     },
     ADD_SUBMISSION_TO_LIST(state, submission) {
-      state.submissions.push(submission);
+      state.submissionList.push(submission);
     },
     SET_DRAFTS(state, drafts) {
       state.drafts = drafts;

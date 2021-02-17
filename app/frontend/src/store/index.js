@@ -7,7 +7,7 @@ import notifications from '@/store/modules/notifications.js';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  // auth module is dynamically loaded when invoking secured pages
+  // Modules not specified below are expected to dynamically register when needed
   modules: { form, notifications },
   state: {},
   mutations: {},

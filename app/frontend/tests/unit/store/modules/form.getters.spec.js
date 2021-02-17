@@ -11,6 +11,7 @@ describe('form getters', () => {
   let store;
 
   const sampleState = {
+    drafts: [],
     form: {
       name: 'ABC'
     },
@@ -35,6 +36,10 @@ describe('form getters', () => {
   beforeEach(() => {
     store = new Vuex.Store(cloneDeep(formStore));
     store.replaceState(cloneDeep(sampleState));
+  });
+
+  it('drafts should return the state drafts', () => {
+    expect(store.getters.drafts).toEqual(sampleState.drafts);
   });
 
   it('form should return the state form', () => {
