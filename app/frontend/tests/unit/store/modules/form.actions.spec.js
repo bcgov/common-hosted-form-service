@@ -82,9 +82,7 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
-  });
 
-  describe('draft', () => {
     it('fetchDrafts should commit to SET_DRAFTS', async () => {
       formService.listDrafts.mockResolvedValue({ data: [] });
       await store.actions.fetchDrafts(mockStore, 'dId' );
