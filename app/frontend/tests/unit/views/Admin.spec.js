@@ -11,6 +11,12 @@ describe('Admin.vue', () => {
 
   beforeEach(() => {
     store = new Vuex.Store();
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        isAdmin: () => false
+      }
+    });
   });
 
   it('renders without error', async () => {

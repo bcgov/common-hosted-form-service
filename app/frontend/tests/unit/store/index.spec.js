@@ -1,8 +1,15 @@
-import index from '@/store/index';
+import store from '@/store/index';
 
-describe('index.js', () => {
-
+describe('vuex store', () => {
   it('exists', () => {
-    expect(index.getters).toBeTruthy();
+    expect(store.getters).toBeTruthy();
+  });
+
+  it('loads form module immediately', () => {
+    expect(store.hasModule('form')).toBeTruthy();
+  });
+
+  it('loads notifications module immediately', () => {
+    expect(store.hasModule('notifications')).toBeTruthy();
   });
 });
