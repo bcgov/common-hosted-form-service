@@ -67,10 +67,14 @@
         />
       </template>
 
-      <!-- Update date  -->
-      <template #[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }}
-        - {{ item.updatedBy ? item.updatedBy : item.createdBy }}
+      <!-- Created date  -->
+      <template #[`item.createdAt`]="{ item }">
+        {{ item.createdAt | formatDateLong }}
+      </template>
+
+      <!-- Created by  -->
+      <template #[`item.createdBy`]="{ item }">
+        {{ item.createdBy }}
       </template>
 
       <!-- Actions -->
@@ -230,7 +234,8 @@ export default {
       headers: [
         { text: 'Version', align: 'start', value: 'version' },
         { text: 'Status', align: 'start', value: 'status' },
-        { text: 'Last Update', align: 'start', value: 'updatedAt' },
+        { text: 'Date Created', align: 'start', value: 'createdAt' },
+        { text: 'Created By', align: 'start', value: 'createdBy' },
         {
           text: 'Actions',
           align: 'end',
