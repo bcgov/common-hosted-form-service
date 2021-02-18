@@ -80,7 +80,7 @@ export default {
   },
   actions: {
     //
-    // User-specific form stuff
+    // Current User
     //
     async getFormsForCurrentUser({ commit, dispatch }) {
       try {
@@ -88,16 +88,14 @@ export default {
         const response = await rbacService.getCurrentUser();
         const data = response.data;
         // Build up the list of forms for the table
-        const forms = data.forms.map((f) => {
-          return {
-            currentVersionId: f.formVersionId,
-            id: f.formId,
-            idps: f.idps,
-            name: f.formName,
-            description: f.formDescription,
-            permissions: f.permissions
-          };
-        });
+        const forms = data.forms.map((f) => ({
+          currentVersionId: f.formVersionId,
+          id: f.formId,
+          idps: f.idps,
+          name: f.formName,
+          description: f.formDescription,
+          permissions: f.permissions
+        }));
         commit('SET_FORMLIST', forms);
       } catch (error) {
         dispatch('notifications/addNotification', {
