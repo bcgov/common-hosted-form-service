@@ -98,6 +98,73 @@ describe(`PUT ${basePath}/ID`, () => {
   });
 });
 
+describe(`GET ${basePath}/ID/notes`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.getNotes = jest.fn().mockReturnValue({});
+
+    const response = await request(app).get(`${basePath}/ID/notes`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.getNotes = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).get(`${basePath}/ID/notes`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.getNotes = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).get(`${basePath}/ID/notes`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
+describe(`POST ${basePath}/ID/notes`, () => {
+
+  const noteRes = { note: 'responseNote' };
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.addNote = jest.fn().mockReturnValue(noteRes);
+
+    const response = await request(app).post(`${basePath}/ID/notes`, {note:'requestNote'});
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.addNote = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).post(`${basePath}/ID/notes`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error.
+    service.addNote = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).post(`${basePath}/ID/notes`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
 
 describe(`POST ${basePath}/ID/email`, () => {
 
@@ -146,4 +213,37 @@ describe(`POST ${basePath}/ID/email`, () => {
     expect(response.body).toBeTruthy();
   });
 
+});
+
+describe(`GET ${basePath}/ID/status`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.getStatus = jest.fn().mockReturnValue({});
+
+    const response = await request(app).get(`${basePath}/ID/status`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.getStatus = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).get(`${basePath}/ID/status`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.getStatus = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).get(`${basePath}/ID/status`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
 });

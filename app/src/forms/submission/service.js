@@ -160,8 +160,7 @@ const service = {
       obj.id = uuidv4();
       obj.submissionId = submissionId;
       obj.code = data.code;
-      obj.assignedTo = data.assignedTo;
-      obj.assignedToEmail = data.assignedToEmail;
+      obj.assignedToUserId = data.assignedToUserId;
       obj.actionDate = data.actionDate;
       obj.createdBy = currentUser.username;
 

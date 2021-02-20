@@ -46,8 +46,8 @@ module.exports = {
     try {
       const response = await service.createStatus(req.params.formSubmissionId, req.body, req.currentUser);
       // send an email (async in the background)
-      if (req.body.assignedToEmail) {
-        emailService.statusAssigned(response[0], req.headers.referer).catch(() => { });
+      if (req.body.assignmentNotificationEmail) {
+        emailService.statusAssigned(response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
       }
       res.status(200).json(response);
     } catch (error) {

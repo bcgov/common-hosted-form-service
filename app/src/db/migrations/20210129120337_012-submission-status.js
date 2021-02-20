@@ -57,8 +57,7 @@ exports.up = function (knex) {
       table.uuid('id').primary();
       table.uuid('submissionId').references('id').inTable('form_submission').notNullable().index();
       table.string('code').references('code').inTable('status_code').notNullable().index();
-      table.string('assignedTo');
-      table.string('assignedToEmail');
+      table.uuid('assignedToUserId').references('id').inTable('user').index();
       table.date('actionDate').nullable();
       stamps(knex, table);
     }))

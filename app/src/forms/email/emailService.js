@@ -20,48 +20,46 @@ const service = {
     }
   },
 
-  _sendStatusAssigned: async (currentStatus, submission, referer) => {
-    if (currentStatus.assignedToEmail) {
-      try {
-        // these may get persisted at some point...
-        // along with a template path, mess
-        const config = {
-          template: 'status-assignment-email.html',
-          from: 'donotreply@gov.bc.ca',
-          subject: 'Form Submission Assignment',
-          title: 'Form Submission Assignment',
-          priority: 'normal',
-          messageLinkText: 'The status of the above form submission has changed. You have been assigned to review this submission.',
-          messageLinkUrl: `${service._appUrl(referer)}/form/view?s=`
-        };
+  _sendStatusAssigned: async (assignmentNotificationEmail, submission, referer) => {
+    try {
+      // these may get persisted at some point...
+      // along with a template path, mess
+      const config = {
+        template: 'status-assignment-email.html',
+        from: 'donotreply@gov.bc.ca',
+        subject: 'Form Submission Assignment',
+        title: 'Form Submission Assignment',
+        priority: 'normal',
+        messageLinkText: 'The status of the above form submission has changed. You have been assigned to review this submission.',
+        messageLinkUrl: `${service._appUrl(referer)}/form/view?s=`
+      };
 
-        const assetsPath = path.join(__dirname, 'assets');
-        const emailBody = fs.readFileSync(`${assetsPath}/${config.template}`, 'utf8');
+      const assetsPath = path.join(__dirname, 'assets');
+      const emailBody = fs.readFileSync(`${assetsPath}/${config.template}`, 'utf8');
 
-        const contexts = [
-          {
-            context: {
-              confirmationNumber: submission.confirmationId,
-              title: config.title,
-              messageLinkText: config.messageLinkText,
-              messageLinkUrl: `${config.messageLinkUrl}${submission.id}`
-            },
-            to: [currentStatus.assignedToEmail]
-          }
-        ];
+      const contexts = [
+        {
+          context: {
+            confirmationNumber: submission.confirmationId,
+            title: config.title,
+            messageLinkText: config.messageLinkText,
+            messageLinkUrl: `${config.messageLinkUrl}${submission.id}`
+          },
+          to: [assignmentNotificationEmail]
+        }
+      ];
 
-        const data = {
-          body: emailBody,
-          bodyType: 'html',
-          contexts: contexts,
-          ...config
-        };
-        return await chesService.merge(data);
-      } catch (err) {
-        log.error('_sendStatusAssigned', `Error: ${err.message}.`);
-        log.error(err);
-        throw err;
-      }
+      const data = {
+        body: emailBody,
+        bodyType: 'html',
+        contexts: contexts,
+        ...config
+      };
+      return await chesService.merge(data);
+    } catch (err) {
+      log.error('_sendStatusAssigned', `Error: ${err.message}.`);
+      log.error(err);
+      throw err;
     }
   },
 
@@ -157,10 +155,10 @@ const service = {
     }
   },
 
-  statusAssigned: async (currentStatus, referer) => {
+  statusAssigned: async (currentStatus, assignmentNotificationEmail, referer) => {
     try {
       const submission = await formService.readSubmission(currentStatus.submissionId);
-      return service._sendStatusAssigned(currentStatus, submission, referer);
+      return service._sendStatusAssigned(assignmentNotificationEmail, submission, referer);
     } catch (e) {
       log.error('statusAssigned', `status: ${currentStatus}, referer: ${referer}`);
       log.error('statusAssigned', e.message);
