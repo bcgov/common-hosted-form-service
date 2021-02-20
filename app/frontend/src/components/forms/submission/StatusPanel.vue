@@ -25,7 +25,6 @@
             <v-select
               dense
               outlined
-              label="Select status to set"
               :items="items"
               item-text="display"
               item-value="code"
@@ -64,25 +63,47 @@
                 </v-menu>
               </div>
 
-              <div v-if="showInspector">
-                <label>Assignee Name</label>
-                <v-text-field
-                  v-model="assignedTo"
-                  :rules="[(v) => !!v || 'Name is required']"
+              <div v-if="showAsignee">
+                <!-- {{ formReviewers }} -->
+                <label>Assign To</label>
+                <v-autocomplete
+                  v-model="assignee"
+                  clearable
                   dense
-                  flat
-                  solid
+                  :filter="autoCompleteFilter"
+                  :items="formReviewers"
+                  :loading="loading"
                   outlined
-                />
-
-                <label>Assignee Email (Optional)</label>
-                <v-text-field
-                  v-model="assignedToEmail"
-                  dense
-                  flat
-                  outlined
-                  solid
-                />
+                  return-object
+                  :rules="[(v) => !!v || 'Assignee is required']"
+                >
+                  <!-- selected user -->
+                  <template #selection="data">
+                    <span
+                      v-bind="data.attrs"
+                      :input-value="data.selected"
+                      close
+                      @click="data.select"
+                      @click:close="remove(data.item)"
+                    >
+                      {{ data.item.fullName }}
+                    </span>
+                  </template>
+                  <!-- users found in dropdown -->
+                  <template #item="data">
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-item-content v-text="data.item" />
+                    </template>
+                    <template v-else>
+                      <v-list-item-content>
+                        <v-list-item-title v-html="data.item.fullName" />
+                        <v-list-item-subtitle v-html="data.item.username" />
+                        <v-list-item-subtitle v-html="data.item.email" />
+                      </v-list-item-content>
+                    </template>
+                  </template>
+                </v-autocomplete>
+                <span v-if="assignee">Email: {{ assignee.email }}</span>
 
                 <div class="text-right">
                   <v-btn
@@ -155,7 +176,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
+import { FormPermissions } from '@/utils/constants';
 import formService from '@/services/formService';
+import rbacService from '@/services/rbacService';
 import StatusTable from '@/components/forms/submission/StatusTable';
 
 export default {
@@ -177,10 +200,12 @@ export default {
     return {
       on: false,
       actionDateMenu: false,
+      assignee: null,
       currentStatus: {},
       historyDialog: false,
       items: [],
       loading: true,
+      formReviewers: [],
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
@@ -196,10 +221,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['hasResourceRoles', 'email', 'token', 'fullName']),
+    ...mapGetters('auth', ['hasResourceRoles','token', 'keycloakSubject']),
 
     // State Machine
-    showInspector() {
+    showAsignee() {
       return ['ASSIGNED'].includes(this.statusToSet);
     },
     showActionDate() {
@@ -209,12 +234,31 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     assignToCurrentUser() {
-      this.assignedTo = this.fullName;
-      this.assignedToEmail = this.email;
+      this.assignee = this.formReviewers.find(f => f.keycloakId === this.keycloakSubject);
+    },
+    autoCompleteFilter(item, queryText) {
+      return (
+        item.fullName
+          .toLocaleLowerCase()
+          .includes(queryText.toLocaleLowerCase()) ||
+        item.username
+          .toLocaleLowerCase()
+          .includes(queryText.toLocaleLowerCase())
+      );
     },
     async getStatus() {
       this.loading = true;
       try {
+        // Prepopulate the form reviewers (people with submission read on this form)
+        const rbacUsrs = await rbacService.getFormUsers({
+          formId: this.formId,
+          permissions: FormPermissions.SUBMISSION_READ,
+        });
+        this.formReviewers = rbacUsrs.data.sort((a, b) =>
+          a.fullName.localeCompare(b.fullName)
+        );
+
+        // Get submission status
         const statuses = await formService.getSubmissionStatuses(
           this.submissionId
         );
@@ -263,12 +307,12 @@ export default {
           const statusBody = {
             code: this.statusToSet,
           };
-          if (this.showInspector) {
-            if (this.assignedTo) {
-              statusBody.assignedTo = this.assignedTo;
+          if (this.showAsignee) {
+            if (this.assignedToUserId) {
+              statusBody.assignedToUserId = this.assignedTo;
             }
-            if (this.assignedToEmail) {
-              statusBody.assignedToEmail = this.assignedToEmail;
+            if (this.assignmentNotificationEmail) {
+              statusBody.assignmentNotificationEmail = this.assignmentNotificationEmail;
             }
           }
           if (this.actionDate && this.showActionDate) {

@@ -360,8 +360,7 @@ class FormSubmissionStatus extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         submissionId: { type: 'string', pattern: Regex.UUID },
         code: { type: 'string'},
-        assignedTo: { type: 'string' },
-        assignedToEmail: { type: 'string' },
+        assignedToUserId: { type: 'string', pattern: Regex.UUID },
         actionDate: { type: 'string' },
         ...stamps
       },
