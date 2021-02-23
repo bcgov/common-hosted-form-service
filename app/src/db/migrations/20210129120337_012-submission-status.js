@@ -113,12 +113,31 @@ exports.up = function (knex) {
         ORDER BY "createdAt" DESC
         FETCH FIRST 1 ROW ONLY
       ) st ON true
-    ORDER BY s."createdAt" DESC`));
+    ORDER BY s."createdAt" DESC`))
+
+    // Allow form reviewers to see team members for a form
+    .then(() => {
+      const rolePermssion = {
+        id: uuidv4(),
+        createdBy: CREATED_BY,
+        role: 'submission_reviewer',
+        permission: 'team_read'
+      };
+      return knex('role_permission').insert(rolePermssion);
+    });
 
 };
 
 exports.down = function (knex) {
   return Promise.resolve()
+    // undo new form role permission
+    .then(() => knex('role_permission')
+      .where({
+        role: 'submission_reviewer',
+        permission: 'team_read'
+      })
+      .del())
+
     // reset the submission view to return status information
     .then(() => knex.schema.raw('drop view submissions_vw cascade'))
     .then(() => knex.schema.raw(`create or replace
