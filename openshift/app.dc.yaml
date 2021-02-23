@@ -12,39 +12,46 @@ labels:
 metadata:
   name: "${REPO_NAME}-app-dc"
 objects:
-  - kind: NetworkSecurityPolicy
-    apiVersion: security.devops.gov.bc.ca/v1alpha1
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
     metadata:
-      name: "${APP_NAME}-app-${JOB_NAME}-egress-internet"
+      name: "allow-${APP_NAME}-app-${JOB_NAME}-to-patroni-${JOB_NAME}-cluster"
     spec:
-      description: |
-        Allow pods to open connections to the internet
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "app=${APP_NAME}-${JOB_NAME}"
-          - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
-          - role=app
-      destination:
-        - - ext:network=any
-  - apiVersion: security.devops.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
+      # Allow app to talk to Patroni cluster
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: "${APP_NAME}-${JOB_NAME}"
+                  deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+                  role: app
+          ports:
+            - port: 5432
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          cluster-name: "${JOB_NAME}"
+          statefulset: "patroni-${JOB_NAME}"
+          role: master
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
     metadata:
-      name: "${APP_NAME}-app-${JOB_NAME}-patroni-${JOB_NAME}-master-comms"
+      name: "allow-pre-hook-to-patroni-${JOB_NAME}-cluster"
     spec:
-      description: |
-        Allow pods to open connections to patroni cluster
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "app=${APP_NAME}-${JOB_NAME}"
-          - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
-          - role=app
-        - - "$namespace=${NAMESPACE}"
-          - "openshift.io/deployer-pod.type=hook-pre"
-      destination:
-        - - "$namespace=${NAMESPACE}"
-          - "cluster-name=${JOB_NAME}"
-          - "statefulset=patroni-${JOB_NAME}"
-          - role=master
+      # Allow app pre-hook pods to talk to Patroni cluster
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  openshift.io/deployer-pod.type: hook-pre
+          ports:
+            - port: 5432
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          cluster-name: "${JOB_NAME}"
+          statefulset: "patroni-${JOB_NAME}"
+          role: master
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
