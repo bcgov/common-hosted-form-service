@@ -114,22 +114,6 @@ module.exports = {
       next(error);
     }
   },
-  readSubmission:  async (req, res, next) => {
-    try {
-      const response = await service.readSubmission(req.params.formSubmissionId);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
-  updateSubmission:  async (req, res, next) => {
-    try {
-      const response = await service.updateSubmission(req.params.formSubmissionId, req.body, req.currentUser);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
   listDrafts: async (req, res, next) => {
     try {
       const response = await service.listDrafts(req.params.formId, req.query);

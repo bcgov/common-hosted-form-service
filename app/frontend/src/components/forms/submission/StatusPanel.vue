@@ -6,9 +6,9 @@
         {{ currentStatus.code }}
         <br />
         <strong>Assigned To:</strong>
-        {{ currentStatus.assignedTo ? currentStatus.assignedTo : 'N/A' }}
-        <span v-if="currentStatus.assignedToEmail">
-          ({{ currentStatus.assignedToEmail }})
+        {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
+        <span v-if="currentStatus.user">
+          ({{ currentStatus.user.email }})
         </span>
         <br />
         <strong>Effective Date:</strong>
@@ -199,25 +199,19 @@ export default {
   data() {
     return {
       on: false,
+      actionDate: '',
       actionDateMenu: false,
       assignee: null,
       currentStatus: {},
+      formReviewers: [],
       historyDialog: false,
       items: [],
       loading: true,
-      formReviewers: [],
+      note: '',
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
       valid: false,
-
-      // Fields
-      assignedTo: this.currentStatus ? this.currentStatus.assignedTo : '',
-      assignedToEmail: this.currentStatus
-        ? this.currentStatus.assignedToEmail
-        : '',
-      actionDate: '',
-      note: '',
     };
   },
   computed: {
@@ -308,11 +302,9 @@ export default {
             code: this.statusToSet,
           };
           if (this.showAsignee) {
-            if (this.assignedToUserId) {
-              statusBody.assignedToUserId = this.assignedTo;
-            }
-            if (this.assignmentNotificationEmail) {
-              statusBody.assignmentNotificationEmail = this.assignmentNotificationEmail;
+            if (this.assignee) {
+              statusBody.assignedToUserId = this.assignee.userId;
+              statusBody.assignmentNotificationEmail = this.assignee.email;
             }
           }
           if (this.actionDate && this.showActionDate) {

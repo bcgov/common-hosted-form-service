@@ -179,6 +179,7 @@ const service = {
   getStatus: async (formSubmissionId) => {
     return await FormSubmissionStatus.query()
       .modify('filterSubmissionId', formSubmissionId)
+      .withGraphFetched('user')
       .modify('orderDescending');
   },
 

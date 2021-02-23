@@ -247,3 +247,41 @@ describe(`GET ${basePath}/ID/status`, () => {
     expect(response.body).toBeTruthy();
   });
 });
+
+describe(`POST ${basePath}/ID/status`, () => {
+
+  const statRes = { code: 'SUBMITTED', user: {} };
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.createStatus = jest.fn().mockReturnValue(statRes);
+    emailService.statusAssigned = jest.fn().mockReturnValue(true);
+
+    const response = await request(app).post(`${basePath}/ID/status`, { code: 'SUBMITTED', user: {} });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+    expect(emailService.statusAssigned).toHaveBeenCalledTimes(0);
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.createStatus = jest.fn(() => { throw new Problem(401); });
+    emailService.statusAssigned = jest.fn().mockReturnValue(true);
+
+    const response = await request(app).post(`${basePath}/ID/status`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error.
+    service.createStatus = jest.fn(() => { throw new Error(); });
+    emailService.statusAssigned = jest.fn().mockReturnValue(true);
+
+    const response = await request(app).post(`${basePath}/ID/status`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});

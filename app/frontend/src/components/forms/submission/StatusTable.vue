@@ -19,6 +19,10 @@
         </v-tooltip>
       </template>
 
+      <template #[`item.user`]="{ item }">{{
+        item.user ? item.user.fullName : ''
+      }}</template>
+
       <template #[`item.actionDate`]="{ item }">{{
         item.actionDate | formatDate
       }}</template>
@@ -42,7 +46,7 @@ export default {
     headers: [
       { text: 'Status', value: 'code' },
       { text: 'Date Status Changed', align: 'start', value: 'createdAt' },
-      { text: 'Assignee', value: 'assignedTo' },
+      { text: 'Assignee', value: 'user' },
       { text: 'Effective Date', value: 'actionDate' },
     ],
     statuses: [],
