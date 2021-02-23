@@ -22,45 +22,27 @@ labels:
   app.openshift.io/runtime: postgresql
   cluster-name: "${INSTANCE}"
 objects:
-  - apiVersion: security.devops.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
     metadata:
-      name: "${NAME}-${INSTANCE}-sa-deployer-k8s-api-comms"
+      name: "allow-patroni-${INSTANCE}-to-patroni-${INSTANCE}-cluster"
     spec:
-      description: |
-        Allow pods to talk to the internal k8s api
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "@app:k8s:serviceaccountname=deployer"
-      destination:
-        - - int:network=internal-cluster-api-endpoint
-  - apiVersion: security.devops.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
-    metadata:
-      name: "${NAME}-${INSTANCE}-sa-${NAME}-${INSTANCE}-k8s-api-comms"
-    spec:
-      description: |
-        Allow patroni cluster to talk to the internal k8s api
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "@app:k8s:serviceaccountname=${NAME}-${INSTANCE}"
-      destination:
-        - - int:network=internal-cluster-api-endpoint
-  - kind: NetworkSecurityPolicy
-    apiVersion: security.devops.gov.bc.ca/v1alpha1
-    metadata:
-      name: "${NAME}-${INSTANCE}-cluster-comms"
-    spec:
-      description: |
-        Allow patroni pods to open connections to other cluster pods
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "cluster-name=${INSTANCE}"
-          - "statefulset=${NAME}-${INSTANCE}"
-      destination:
-        - - "$namespace=${NAMESPACE}"
-          - "cluster-name=${INSTANCE}"
-          - "statefulset=${NAME}-${INSTANCE}"
+      # Allow Patroni pods to talk to its cluster
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  cluster-name: "${INSTANCE}"
+                  statefulset: "patroni-${INSTANCE}"
+          ports:
+            - port: 5432
+              protocol: TCP
+            - port: 8008
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          cluster-name: "${INSTANCE}"
+          statefulset: "patroni-${INSTANCE}"
   - apiVersion: v1
     kind: Service
     metadata:
