@@ -110,6 +110,40 @@ describe(`GET ${basePath}/forms/formId`, () => {
 
 });
 
+describe(`PUT ${basePath}/forms/formId/restore`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.restoreForm = jest.fn().mockReturnValue([]);
+
+    const response = await request(app).put(`${basePath}/forms/formId/restore`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.restoreForm = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).put(`${basePath}/forms/formId/restore`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.restoreForm = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).put(`${basePath}/forms/formId/restore`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+});
+
 describe(`GET ${basePath}/users`, () => {
 
   it('should return 200', async () => {
@@ -143,6 +177,41 @@ describe(`GET ${basePath}/users`, () => {
   });
 
 });
+
+describe(`GET ${basePath}/users/userId`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    userService.read = jest.fn().mockReturnValue([]);
+
+    const response = await request(app).get(`${basePath}/users/userId`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    userService.read = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).get(`${basePath}/users/userId`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    userService.read = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).get(`${basePath}/users/userId`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+});
+
 
 describe(`GET ${basePath}/formusers`, () => {
 

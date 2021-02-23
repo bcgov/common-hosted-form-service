@@ -339,6 +339,19 @@ class FormSubmissionStatus extends Timestamps(Model) {
     return 'form_submission_status';
   }
 
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.HasOneRelation,
+        modelClass: User,
+        join: {
+          from: 'form_submission_status.assignedToUserId',
+          to: 'user.id'
+        }
+      }
+    };
+  }
+
   static get modifiers() {
     return {
       filterSubmissionId(query, value) {
