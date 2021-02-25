@@ -9,7 +9,7 @@ localVue.use(Vuex);
 describe('Manage.vue', () => {
   const mockFormGetter = jest.fn();
   let store;
-  let formActions = {
+  const formActions = {
     fetchDrafts: jest.fn(),
     fetchForm: jest.fn(),
     getFormPermissionsForUser: jest.fn()

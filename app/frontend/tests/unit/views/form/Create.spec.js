@@ -15,7 +15,7 @@ localVue.use(Vuex);
 describe('Create.vue', () => {
   const mockWindowConfirm = jest.spyOn(window, 'confirm');
   let store;
-  let formActions = {
+  const formActions = {
     resetForm: jest.fn()
   };
 
