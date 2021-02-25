@@ -13,16 +13,12 @@
 </template>
 
 <script>
-import AdminFormsTable from '@/components/admin/AdminFormsTable.vue';
-import AdminUsersTable from '@/components/admin/AdminUsersTable.vue';
-import Developer from '@/components/admin/Developer.vue';
-
 export default {
   name: 'AdminPage',
   components: {
-    AdminFormsTable,
-    AdminUsersTable,
-    Developer,
+    AdminFormsTable: () => import('@/components/admin/AdminFormsTable.vue'),
+    AdminUsersTable: () => import('@/components/admin/AdminUsersTable.vue'),
+    Developer: () => import('@/components/admin/Developer.vue'),
   },
 };
 </script>
