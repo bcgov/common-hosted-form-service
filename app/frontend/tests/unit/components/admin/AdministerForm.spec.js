@@ -8,7 +8,7 @@ localVue.use(Vuex);
 describe('AdministerForm.vue', () => {
   const mockAdminGetter = jest.fn();
   let store;
-  let actions = {
+  const actions = {
     readForm: jest.fn(),
     restoreForm: jest.fn()
   };

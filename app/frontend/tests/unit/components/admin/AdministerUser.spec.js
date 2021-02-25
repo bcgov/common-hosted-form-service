@@ -8,7 +8,7 @@ localVue.use(Vuex);
 describe('AdministerUser.vue', () => {
   const mockAdminGetter = jest.fn();
   let store;
-  let actions = {
+  const actions = {
     readUser: jest.fn()
   };
 
