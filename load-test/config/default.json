@@ -9,7 +9,7 @@
   "api": {
     "apiPath": "api/v1",
     "basePath" : "/app",
-    "host": "https://chefs-dev.pathfinder.gov.bc.ca"
+    "host": "https://chefs-dev.apps.silver.devops.gov.bc.ca"
   },
   "submissions": {
     "count": 1000,
