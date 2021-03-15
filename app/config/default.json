@@ -56,7 +56,7 @@
   "serviceClient": {
     "commonServices": {
       "ches": {
-        "endpoint": "https://ches-dev.pathfinder.gov.bc.ca/api"
+        "endpoint": "https://ches-dev.apps.silver.devops.gov.bc.ca/api"
       },
       "cdogs": {
         "endpoint": "https://cdogs-dev.apps.silver.devops.gov.bc.ca/api"
