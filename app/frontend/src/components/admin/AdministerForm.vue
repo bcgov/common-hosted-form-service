@@ -4,7 +4,7 @@
     <p>{{ form.description }}</p>
 
     <div v-if="form.active === false" class="red--text mb-6">
-      (DELETED)
+      (DELETED 1234)
       <v-btn
         color="primary"
         class="mt-0"
