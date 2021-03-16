@@ -25,7 +25,7 @@ Expect the following layout for results:
 ```sh
 info
 info ==============================================================================
-info              API: https://chefs-dev.pathfinder.gov.bc.ca/app/api/v1
+info              API: https://chefs-dev.apps.silver.devops.gov.bc.ca/app/api/v1
 info             User: chefs-load-test
 info             Form: CHEFS Load Test - 2020-10-23T21:20:09.043Z - (5)
 info Submission Count: 5
