@@ -30,7 +30,7 @@ pipeline {
     SOURCE_REPO_REF = "${JOB_NAME}"
     SOURCE_REPO_URL = "https://github.com/${REPO_OWNER}/${REPO_NAME}.git"
 
-    // ENV_HOST is the full domain without the path (ie. 'appname-dev.pathfinder.gov.bc.ca')
+    // ENV_HOST is the full domain without the path (ie. 'appname-dev.apps.silver.devops.gov.bc.ca')
     DEV_HOST = "${APP_NAME}-dev.${APP_DOMAIN}"
     TEST_HOST = "${APP_NAME}-test.${APP_DOMAIN}"
     PROD_HOST = "${APP_NAME}.${APP_DOMAIN}"
