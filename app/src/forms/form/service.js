@@ -1,10 +1,8 @@
 const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 
-const Permissions = require('../common/constants').Permissions;
-const Roles = require('../common/constants').Roles;
+const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
-const Statuses = require('../common/constants').Statuses;
 
 const Problem = require('api-problem');
 const { transaction } = require('objection');
