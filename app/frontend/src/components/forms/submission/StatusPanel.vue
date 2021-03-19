@@ -44,12 +44,12 @@
                   offset-y
                   min-width="290px"
                 >
-                  <template v-slot:activator="{ on }">
+                  <template #activator="{ on }">
                     <v-text-field
                       v-model="actionDate"
                       placeholder="yyyy-mm-dd"
                       append-icon="event"
-                      v-on:click:append="actionDateMenu = true"
+                      @click:append="actionDateMenu = true"
                       readonly
                       v-on="on"
                       dense
@@ -138,7 +138,7 @@
         <v-row>
           <v-col cols="12" sm="6" xl="4">
             <v-dialog v-model="historyDialog" width="1200">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-btn block outlined color="textLink" v-on="on">
                   <span>VIEW HISTORY</span>
                 </v-btn>
@@ -198,6 +198,7 @@ export default {
   },
   data() {
     return {
+      // TODO: use a better name than "on" if possible, check multiple usage in template though...
       on: false,
       actionDate: '',
       actionDateMenu: false,
@@ -215,7 +216,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['hasResourceRoles','token', 'keycloakSubject']),
+    ...mapGetters('auth', ['hasResourceRoles', 'token', 'keycloakSubject']),
 
     // State Machine
     showAsignee() {
@@ -228,7 +229,9 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     assignToCurrentUser() {
-      this.assignee = this.formReviewers.find(f => f.keycloakId === this.keycloakSubject);
+      this.assignee = this.formReviewers.find(
+        (f) => f.keycloakId === this.keycloakSubject
+      );
     },
     autoCompleteFilter(item, queryText) {
       return (

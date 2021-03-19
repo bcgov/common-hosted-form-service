@@ -2200,34 +2200,34 @@ components:
         - $ref: "#/components/schemas/TimeStampUserData"
     StatusCodes:
       allOf:
-          - type: object
-            properties:
-              id:
-                type: string
-                example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
-              formId:
-                type: string
-                example: ccb5b715-1de5-4f4e-a4e6-0716b7671034
-              code:
-                type: string
-                example: 'COMPLETED'
-              statusCode:
-                type: object
-                properties:
-                  code:
+        - type: object
+          properties:
+            id:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            formId:
+              type: string
+              example: ccb5b715-1de5-4f4e-a4e6-0716b7671034
+            code:
+              type: string
+              example: 'COMPLETED'
+            statusCode:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: 'COMPLETED'
+                display:
+                  type: string
+                  example: 'Completed'
+                nextCodes:
+                  type: array
+                  example:
+                    - ASSIGNED
+                    - COMPLETED
+                  items:
                     type: string
-                    example: 'COMPLETED'
-                  display:
-                    type: string
-                    example: 'Completed'
-                  nextCodes:
-                    type: array
-                    example:
-                      - ASSIGNED
-                      - COMPLETED
-                    items:
-                      type: string
-          - $ref: "#/components/schemas/TimeStampUserData"
+        - $ref: "#/components/schemas/TimeStampUserData"
     SubmissionFormVersion:
       allOf:
         - $ref: "#/components/schemas/Form"
@@ -2250,26 +2250,26 @@ components:
           example: '2020-06-04T18:49:20.672Z'
     SubmissionStatusHistory:
       allOf:
-          - type: object
-            properties:
-              id:
-                type: string
-                example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
-              submissionId:
-                type: string
-                example: ccb5b715-1de5-4f4e-a4e6-0716b7671034
-              code:
-                type: string
-                example: 'COMPLETED'
-              assignedToUserId:
-                type: string
-                example: dda7a123-1de5-4f4e-a4e6-0716b7671034
-              actionDate:
-                type: string
-                example: 2020-06-04T18:49:20.672Z
-              user:
-                $ref: "#/components/schemas/User"
-          - $ref: "#/components/schemas/TimeStampUserData"
+        - type: object
+          properties:
+            id:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            submissionId:
+              type: string
+              example: ccb5b715-1de5-4f4e-a4e6-0716b7671034
+            code:
+              type: string
+              example: 'COMPLETED'
+            assignedToUserId:
+              type: string
+              example: dda7a123-1de5-4f4e-a4e6-0716b7671034
+            actionDate:
+              type: string
+              example: 2020-06-04T18:49:20.672Z
+            user:
+              $ref: "#/components/schemas/User"
+        - $ref: "#/components/schemas/TimeStampUserData"
     TimeStampUserData:
       type: object
       properties:
