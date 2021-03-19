@@ -267,7 +267,7 @@ class FormStatusCode extends Timestamps(Model) {
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
-        code: { type: 'string'},
+        code: { type: 'string' },
         ...stamps
       },
       additionalProperties: false
@@ -294,7 +294,6 @@ class StatusCode extends Timestamps(Model) {
       additionalProperties: false
     };
   }
-
 }
 
 class FormSubmission extends Timestamps(Model) {
@@ -372,7 +371,7 @@ class FormSubmissionStatus extends Timestamps(Model) {
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         submissionId: { type: 'string', pattern: Regex.UUID },
-        code: { type: 'string'},
+        code: { type: 'string' },
         assignedToUserId: { type: 'string', pattern: Regex.UUID },
         actionDate: { type: 'string' },
         ...stamps
@@ -1058,7 +1057,6 @@ class Note extends Timestamps(Model) {
       additionalProperties: false
     };
   }
-
 }
 
 

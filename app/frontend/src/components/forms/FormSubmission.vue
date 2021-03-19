@@ -57,8 +57,8 @@
 import { mapActions, mapGetters } from 'vuex';
 
 import FormViewer from '@/components/designer/FormViewer.vue';
-import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
 import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
+import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
 
 export default {
   name: 'FormSubmission',

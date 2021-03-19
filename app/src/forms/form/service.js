@@ -411,7 +411,6 @@ const service = {
       .withGraphFetched('statusCode')
       .where('formId', formId);
   },
-
 };
 
 module.exports = service;

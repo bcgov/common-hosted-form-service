@@ -13,7 +13,7 @@
         <span>NEW NOTE</span>
       </v-btn>
 
-      <div v-if="notes.length == 0" class="my-5">
+      <div v-if="!notes.length" class="my-5">
         There are no notes on this submission yet.
       </div>
 
@@ -55,7 +55,7 @@
       </v-form>
 
       <ul class="mt-5">
-        <li class="mb-2" v-for="note in notes" v-bind:key="note.noteId">
+        <li class="mb-2" v-for="note in notes" :key="note.noteId">
           <strong>
             {{ note.createdAt | formatDateLong }} -
             {{ note.createdBy }}
