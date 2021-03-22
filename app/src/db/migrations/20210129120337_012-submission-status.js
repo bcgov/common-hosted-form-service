@@ -85,6 +85,7 @@ exports.up = function (knex) {
       table.uuid('submissionId').references('id').inTable('form_submission').index();
       table.uuid('submissionStatusId').references('id').inTable('form_submission_status').index();
       table.string('note', 4000).nullable();
+      table.uuid('userId').references('id').inTable('user').index();
       stamps(knex, table);
     }))
 

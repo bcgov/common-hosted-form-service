@@ -10,11 +10,6 @@
         <span v-if="currentStatus.user">
           ({{ currentStatus.user.email }})
         </span>
-        <br />
-        <strong>Effective Date:</strong>
-        <span v-if="currentStatus.actionDate">
-          {{ currentStatus.actionDate | formatDate }}
-        </span>
         <span v-else> N/A </span>
       </p>
 
@@ -34,35 +29,6 @@
             />
 
             <div v-show="statusFields">
-              <div v-if="showActionDate">
-                <label>Effective Date (Optional)</label>
-                <v-menu
-                  v-model="actionDateMenu"
-                  :close-on-content-click="true"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="290px"
-                >
-                  <template #activator="{ on }">
-                    <v-text-field
-                      v-model="actionDate"
-                      placeholder="yyyy-mm-dd"
-                      append-icon="event"
-                      @click:append="actionDateMenu = true"
-                      readonly
-                      v-on="on"
-                      dense
-                      outlined
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="actionDate"
-                    @input="actionDateMenu = false"
-                  />
-                </v-menu>
-              </div>
-
               <div v-if="showAsignee">
                 <!-- {{ formReviewers }} -->
                 <label>Assign To</label>
@@ -200,8 +166,6 @@ export default {
     return {
       // TODO: use a better name than "on" if possible, check multiple usage in template though...
       on: false,
-      actionDate: '',
-      actionDateMenu: false,
       assignee: null,
       currentStatus: {},
       formReviewers: [],
@@ -216,7 +180,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['hasResourceRoles', 'token', 'keycloakSubject']),
+    ...mapGetters('auth', ['keycloakSubject']),
 
     // State Machine
     showAsignee() {
@@ -310,9 +274,6 @@ export default {
               statusBody.assignmentNotificationEmail = this.assignee.email;
             }
           }
-          if (this.actionDate && this.showActionDate) {
-            statusBody.actionDate = this.actionDate;
-          }
           const statusResponse = await formService.updateSubmissionStatus(
             this.submissionId,
             statusBody
@@ -325,10 +286,12 @@ export default {
           if (this.note) {
             const submissionStatusId =
               statusResponse.data[0].submissionStatusId;
+            const user = await rbacService.getCurrentUser();
             const noteBody = {
               submissionId: this.submissionId,
               submissionStatusId: submissionStatusId,
               note: this.note,
+              userId: user.data.id
             };
             const response = await formService.addNote(
               this.submissionId,

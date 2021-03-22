@@ -1020,6 +1020,20 @@ class Note extends Timestamps(Model) {
     return 'note';
   }
 
+
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.HasOneRelation,
+        modelClass: User,
+        join: {
+          from: 'note.userId',
+          to: 'user.id'
+        }
+      }
+    };
+  }
+
   static get modifiers() {
     return {
       filterId(query, value) {
@@ -1052,6 +1066,7 @@ class Note extends Timestamps(Model) {
         submissionId: { type: 'string', pattern: Regex.UUID },
         submissionStatusId: { type: 'string', pattern: Regex.UUID },
         note: { type: ['string', 'null'], maxLength: 4000 },
+        userId: { type: 'string', pattern: Regex.UUID },
         ...stamps
       },
       additionalProperties: false

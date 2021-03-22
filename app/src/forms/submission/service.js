@@ -116,6 +116,7 @@ const service = {
       obj.submissionId = submissionId;
       obj.submissionStatusId = data.submissionStatusId;
       obj.note = data.note;
+      obj.userId = data.userId;
       obj.createdBy = currentUser.username;
 
       await Note.query(trx).insert(obj);
