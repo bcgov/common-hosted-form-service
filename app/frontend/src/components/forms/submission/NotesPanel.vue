@@ -69,9 +69,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import formService from '@/services/formService';
+import { rbacService } from '@/services';
 
 export default {
   name: 'NotesPanel',
@@ -90,12 +91,17 @@ export default {
       showNoteField: false,
     };
   },
+  computed: {
+    ...mapGetters('auth', ['keycloakSubject']),
+  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     async addNote() {
       try {
+        const user = await rbacService.getCurrentUser();
         const body = {
           note: this.newNote,
+          userId: user.data.id
         };
         const response = await formService.addNote(this.submissionId, body);
         if (!response.data) {

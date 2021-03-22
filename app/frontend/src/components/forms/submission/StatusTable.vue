@@ -22,10 +22,6 @@
       <template #[`item.user`]="{ item }">{{
         item.user ? item.user.fullName : ''
       }}</template>
-
-      <template #[`item.actionDate`]="{ item }">{{
-        item.actionDate | formatDate
-      }}</template>
     </v-data-table>
   </v-container>
 </template>
@@ -46,8 +42,7 @@ export default {
     headers: [
       { text: 'Status', value: 'code' },
       { text: 'Date Status Changed', align: 'start', value: 'createdAt' },
-      { text: 'Assignee', value: 'user' },
-      { text: 'Effective Date', value: 'actionDate' },
+      { text: 'Assignee', value: 'user' }
     ],
     statuses: [],
     loading: true,
