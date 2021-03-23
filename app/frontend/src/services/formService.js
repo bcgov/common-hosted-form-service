@@ -47,6 +47,16 @@ export default {
     return appAxios().delete(`${ApiRoutes.FORMS}/${formId}`);
   },
 
+  /**
+  * @function getStatusCodes
+  * Get the statuses that are available to a form
+  * @param {string} formId The form identifier
+  * @returns {Promise} An axios response
+  */
+  getStatusCodes(formId) {
+    return appAxios().get(`/forms/${formId}/statusCodes`);
+  },
+
   //
   // Form draft calls
   //
@@ -238,6 +248,47 @@ export default {
     );
   },
 
+  /**
+  * @function getSubmissionNotes
+  * Get the notes associated with the submission
+  * @param {string} submissionId The form submission identifier
+  * @returns {Promise} An axios response
+  */
+  getSubmissionNotes(submissionId) {
+    return appAxios().get(`/submissions/${submissionId}/notes`);
+  },
+
+  /**
+  * @function addNote
+  * Add a new notes to the submission
+  * @param {string} submissionId The form submission identifier
+   * @param {Object} data The request body
+  * @returns {Promise} An axios response
+  */
+  addNote(submissionId, data) {
+    return appAxios().post(`/submissions/${submissionId}/notes`, data);
+  },
+
+  /**
+  * @function getSubmissionStatuses
+  * Get the current status history associated with the submission
+  * @param {string} submissionId The form submission identifier
+  * @returns {Promise} An axios response
+  */
+  getSubmissionStatuses(submissionId) {
+    return appAxios().get(`/submissions/${submissionId}/status`);
+  },
+
+  /**
+  * @function updateSubmissionStatus
+  * Add a new status entry to the submission
+  * @param {string} submissionId The form submission identifier
+   * @param {Object} data The request body
+  * @returns {Promise} An axios response
+  */
+  updateSubmissionStatus(submissionId, data) {
+    return appAxios().post(`/submissions/${submissionId}/status`, data);
+  },
 
   //
   // Email

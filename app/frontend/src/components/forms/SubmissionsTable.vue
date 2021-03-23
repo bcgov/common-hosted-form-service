@@ -40,6 +40,9 @@
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
+      <template #[`item.status`]="{ item }">
+        {{ item.status }}
+      </template>
       <template #[`item.actions`]="{ item }">
         <router-link
           :to="{
@@ -76,7 +79,15 @@ export default {
   },
   data() {
     return {
-      headers: [
+      submissionTable: [],
+      loading: true,
+      search: '',
+    };
+  },
+  computed: {
+    ...mapGetters('form', ['form', 'submissionList']),
+    headers() {
+      let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
@@ -87,14 +98,19 @@ export default {
           filterable: false,
           sortable: false,
         },
-      ],
-      submissionTable: [],
-      loading: true,
-      search: '',
-    };
-  },
-  computed: {
-    ...mapGetters('form', ['submissionList']),
+      ];
+      if (this.showStatus) {
+        headers.splice(3, 0, {
+          text: 'Status',
+          align: 'start',
+          value: 'status',
+        });
+      }
+      return headers;
+    },
+    showStatus() {
+      return this.form && this.form.enableStatusUpdates;
+    },
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
@@ -109,6 +125,7 @@ export default {
               confirmationId: s.confirmationId,
               date: s.createdAt,
               formId: s.formId,
+              status: s.formSubmissionStatusCode,
               submissionId: s.submissionId,
               submitter: s.createdBy,
               versionId: s.formVersionId,

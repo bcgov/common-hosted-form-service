@@ -6,6 +6,7 @@ import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 const genInitialForm = () => ({
   description: '',
+  enableStatusUpdates: false,
   id: '',
   idps: [],
   isDirty: false,
@@ -229,6 +230,7 @@ export default {
         await formService.updateForm(state.form.id, {
           name: state.form.name,
           description: state.form.description,
+          enableStatusUpdates: state.form.enableStatusUpdates,
           identityProviders: generateIdps({
             idps: state.form.idps,
             userType: state.form.userType,
@@ -255,6 +257,7 @@ export default {
           submissionId
         );
         commit('SET_FORMSUBMISSION', response.data.submission);
+        commit('SET_FORM', response.data.form);
       } catch (error) {
         dispatch('notifications/addNotification', {
           message:
