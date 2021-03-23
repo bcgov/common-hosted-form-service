@@ -61,23 +61,12 @@ exports.up = function (knex) {
       table.date('actionDate').nullable();
       stamps(knex, table);
     }))
-    // Get all submission ids
-    .then(() => {
-      return knex('form_submission').select('id', 'createdBy', 'createdAt');
-    })
     // Backfill submission statuses to "SUBMITTED for each exsiting submission"
     // Use the original submitter and time as the creator (store "migrate" in updatedBy for tracking)
-    .then(submissions => {
-      const subStatuses = submissions.map(s => ({
-        id: uuidv4(),
-        submissionId: s.id,
-        code: 'SUBMITTED',
-        createdBy: s.createdBy,
-        createdAt: s.createdAt,
-        updatedBy: CREATED_BY
-      }));
-      return knex('form_submission_status').insert(subStatuses);
-    })
+    .then(() => knex.schema.raw(`INSERT INTO public.form_submission_status
+      ("id", "submissionId", code, "assignedToUserId", "actionDate", "createdBy", "createdAt", "updatedBy", "updatedAt")
+      SELECT md5(random()::text || clock_timestamp()::text)::uuid, id, 'SUBMITTED', NULL, NULL, "createdBy", "createdAt", '${CREATED_BY}', now()
+      FROM public.form_submission`))
 
     // add a note table
     .then(() => knex.schema.createTable('note', table => {
