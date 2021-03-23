@@ -102,11 +102,12 @@ describe('form actions', () => {
 
   describe('submission', () => {
     it('fetchSubmission should commit to SET_FORMSUBMISSION', async () => {
-      formService.getSubmission.mockResolvedValue({ data: { submission: {} } });
+      formService.getSubmission.mockResolvedValue({ data: { submission: {}, form: {} } });
       await store.actions.fetchSubmission(mockStore, { submissionId: 'sId' });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_FORMSUBMISSION', expect.any(Object));
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FORM', expect.any(Object));
     });
 
     it('fetchSubmission should dispatch to notifications/addNotification', async () => {

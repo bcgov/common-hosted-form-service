@@ -1,8 +1,7 @@
-const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormSubmission, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 
-const Permissions = require('../common/constants').Permissions;
-const Roles = require('../common/constants').Roles;
+const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const Problem = require('api-problem');
@@ -34,6 +33,7 @@ const service = {
       obj.labels = data.labels;
       obj.showSubmissionConfirmation = data.showSubmissionConfirmation;
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
+      obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.createdBy = currentUser.username;
 
       await Form.query(trx).insert(obj);
@@ -63,6 +63,16 @@ const service = {
       };
       await FormVersionDraft.query(trx).insert(draft);
 
+      // Map the status codes to the form
+      // TODO: this is hardcoded to the default submitted->assigned->complete for now
+      // We could make this more dynamic and settable by the user if that feature is required
+      const defaultStatuses = [
+        { id: uuidv4(), formId: obj.id, code: Statuses.SUBMITTED, createdBy: currentUser.username },
+        { id: uuidv4(), formId: obj.id, code: Statuses.ASSIGNED, createdBy: currentUser.username },
+        { id: uuidv4(), formId: obj.id, code: Statuses.COMPLETED, createdBy: currentUser.username }
+      ];
+      await FormStatusCode.query(trx).insert(defaultStatuses);
+
       await trx.commit();
       const result = await service.readForm(obj.id);
       result.draft = draft;
@@ -85,6 +95,7 @@ const service = {
         labels: data.labels ? data.labels : [],
         showSubmissionConfirmation: data.showSubmissionConfirmation,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
+        enableStatusUpdates: data.enableStatusUpdates,
         updatedBy: currentUser.username
       };
 
@@ -119,7 +130,7 @@ const service = {
     }
   },
 
-  readForm: async (formId, params ={}) => {
+  readForm: async (formId, params = {}) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .findById(formId)
@@ -130,7 +141,7 @@ const service = {
       .throwIfNotFound();
   },
 
-  readPublishedForm: async (formId, params ={}) => {
+  readPublishedForm: async (formId, params = {}) => {
     params = queryUtils.defaultActiveOnly(params);
     const form = await Form.query()
       .findById(formId)
@@ -239,6 +250,15 @@ const service = {
         ];
         await FormSubmissionUser.query(trx).insert(items);
       }
+
+      // Add a SUBMITTED status
+      const stObj = {};
+      stObj.id = uuidv4();
+      stObj.submissionId = obj.id;
+      stObj.code = Statuses.SUBMITTED;
+      stObj.createdBy = currentUser.username;
+
+      await FormSubmissionStatus.query(trx).insert(stObj);
 
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.
@@ -384,6 +404,11 @@ const service = {
     }
   },
 
+  getStatusCodes: async (formId) => {
+    return FormStatusCode.query()
+      .withGraphFetched('statusCode')
+      .where('formId', formId);
+  },
 };
 
 module.exports = service;

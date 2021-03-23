@@ -100,4 +100,8 @@ routes.post('/:formId/drafts/:formVersionDraftId/publish', currentUser, hasFormP
   await controller.publishDraft(req, res, next);
 });
 
+routes.get('/:formId/statusCodes', currentUser, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.getStatusCodes(req, res, next);
+});
+
 module.exports = routes;

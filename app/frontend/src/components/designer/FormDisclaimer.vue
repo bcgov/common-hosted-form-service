@@ -1,4 +1,4 @@
-<template functional>
+<template>
   <div>
     <h3 class="mb-5">Disclaimer and statement of responsibility for Form Designers:</h3>
     <ul>
@@ -18,8 +18,11 @@
       </li>
       <li>
         Before publishing or distributing your form you are required to
-        discuss the intention of the form with your Ministry Privacy
-        Officer and to complete assessments as required.
+        discuss the intention of the form with your
+        <a href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/resources/privacy-officers" target="_blank">
+          Ministry Privacy Officer <v-icon small color="primary">open_in_new</v-icon>
+        </a>
+        and to complete assessments as required.
       </li>
     </ul>
   </div>

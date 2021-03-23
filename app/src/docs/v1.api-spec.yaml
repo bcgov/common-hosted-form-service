@@ -31,6 +31,8 @@ tags:
     description: This section of the API includes endpoints used to perform various operations related to form drafts, for example create or publish a draft from a specific version of a form.
   - name: Submission
     description: These API endpoints handle the input data provided by a user that completes the form, for example, writing the form data to the database, or exporting form submissions created during a defined time period.
+  - name: Status
+    description: These API endpoints handle operations to update and retrieve statuses and notes on a submission, and status code management for a Form.
   - name: Files
     description: API endpoints to upload and retrieve files stored in CHEFS.
   - name: User
@@ -627,6 +629,129 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /forms/{formId}/statusCodes:
+    get:
+      summary: List status codes for a form
+      operationId: getStatusCodes
+      tags:
+        - Status
+      parameters:
+        - $ref: "#/components/parameters/formIdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StatusCodes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /submissions/{formSubmissionId}/status:
+    get:
+      summary: Get the list of status history for a submission
+      operationId: readSubmissionStatus
+      tags:
+        - Status
+      parameters:
+        - $ref: "#/components/parameters/formSubmissionIdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubmissionStatusHistory"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Add a new status to a form, send an email to the assignee if an email address is specified
+      operationId: addSubmissionStatus
+      tags:
+        - Status
+      parameters:
+        - $ref: "#/components/parameters/formSubmissionIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmissionStatus"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmissionStatusHistory"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /submissions/{formSubmissionId}/notes:
+    get:
+      summary: Get the list of notes for a submission
+      operationId: readSubmissioNotes
+      tags:
+        - Status
+      parameters:
+        - $ref: "#/components/parameters/formSubmissionIdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Note"
+                    - $ref: "#/components/schemas/TimeStampUserData"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Add a note to a submission
+      operationId: addSubmissionNote
+      tags:
+        - Status
+      parameters:
+        - $ref: "#/components/parameters/formSubmissionIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Note"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
         default:
           description: Unexpected error
           content:
@@ -1755,6 +1880,9 @@ components:
               example:
                 - "me@email.com"
                 - "manager@email.com"
+            enableStatusUpdates:
+              type: boolean
+              example: true
     FormDraft:
       allOf:
         - type: object
@@ -1971,6 +2099,19 @@ components:
               type: boolean
               example: true
         - $ref: "#/components/schemas/TimeStampUserData"
+    Note:
+      type: object
+      properties:
+        submissionId:
+          type: string
+          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+        submissionStatusId:
+          type: string
+          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+        note:
+          type: string
+          example: >-
+            'This is a note that can be up to 4000 characters I add to the submission and can link to an individual status id'
     NotFound:
       allOf:
         - $ref: "#/components/schemas/Problem"
@@ -2057,11 +2198,78 @@ components:
               type: boolean
               example: true
         - $ref: "#/components/schemas/TimeStampUserData"
+    StatusCodes:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            formId:
+              type: string
+              example: ccb5b715-1de5-4f4e-a4e6-0716b7671034
+            code:
+              type: string
+              example: 'COMPLETED'
+            statusCode:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: 'COMPLETED'
+                display:
+                  type: string
+                  example: 'Completed'
+                nextCodes:
+                  type: array
+                  example:
+                    - ASSIGNED
+                    - COMPLETED
+                  items:
+                    type: string
+        - $ref: "#/components/schemas/TimeStampUserData"
     SubmissionFormVersion:
       allOf:
         - $ref: "#/components/schemas/Form"
         - $ref: "#/components/schemas/FormSubmission"
         - $ref: "#/components/schemas/FormVersion"
+    SubmissionStatus:
+      type: object
+      properties:
+        code:
+          type: string
+          example: ASSIGNED
+        assignedToUserId:
+          type: string
+          example: ccb5b715-1de5-4f4e-a4e6-0716b7671034
+        assignmentNotificationEmail:
+          type: string
+          example: jsmith@gov.bc.ca
+        actionDate:
+          type: string
+          example: '2020-06-04T18:49:20.672Z'
+    SubmissionStatusHistory:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            submissionId:
+              type: string
+              example: ccb5b715-1de5-4f4e-a4e6-0716b7671034
+            code:
+              type: string
+              example: 'COMPLETED'
+            assignedToUserId:
+              type: string
+              example: dda7a123-1de5-4f4e-a4e6-0716b7671034
+            actionDate:
+              type: string
+              example: 2020-06-04T18:49:20.672Z
+            user:
+              $ref: "#/components/schemas/User"
+        - $ref: "#/components/schemas/TimeStampUserData"
     TimeStampUserData:
       type: object
       properties:

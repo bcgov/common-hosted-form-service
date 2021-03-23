@@ -95,7 +95,7 @@ class Form extends Timestamps(Model) {
   // exclude labels and submissionReceivedEmails arrays from explicit JSON conversion
   // encounter malformed array literal
   static get jsonAttributes() {
-    return ['id', 'name', 'description', 'active', 'showSubmissionConfirmation', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
+    return ['id', 'name', 'description', 'active', 'showSubmissionConfirmation', 'enableStatusUpdates', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
   }
 
   static get jsonSchema() {
@@ -110,6 +110,7 @@ class Form extends Timestamps(Model) {
         labels: { type: ['array', 'null'], items: { type: 'string' } },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
+        enableStatusUpdates: { type: 'boolean' },
         ...stamps
       },
       additionalProperties: false
@@ -231,6 +232,70 @@ class FormVersionDraft extends Timestamps(Model) {
 
 }
 
+class FormStatusCode extends Timestamps(Model) {
+  static get tableName() {
+    return 'form_status_code';
+  }
+
+  static get relationMappings() {
+    return {
+      statusCode: {
+        relation: Model.HasOneRelation,
+        modelClass: StatusCode,
+        join: {
+          from: 'form_status_code.code',
+          to: 'status_code.code'
+        }
+      }
+    };
+  }
+
+  static get modifiers() {
+    return {
+      filterFormId(query, value) {
+        if (value !== undefined) {
+          query.where('formId', value);
+        }
+      }
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['formId', 'code'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        formId: { type: 'string', pattern: Regex.UUID },
+        code: { type: 'string' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
+}
+
+class StatusCode extends Timestamps(Model) {
+  static get tableName() {
+    return 'status_code';
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['code'],
+      properties: {
+        code: { type: 'string' },
+        display: { type: 'string' },
+        nextCodes: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+}
+
 class FormSubmission extends Timestamps(Model) {
   static get tableName() {
     return 'form_submission';
@@ -260,6 +325,55 @@ class FormSubmission extends Timestamps(Model) {
         draft: { type: 'boolean' },
         deleted: { type: 'boolean' },
         submission: { type: 'jsonb' },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+
+}
+
+class FormSubmissionStatus extends Timestamps(Model) {
+  static get tableName() {
+    return 'form_submission_status';
+  }
+
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.HasOneRelation,
+        modelClass: User,
+        join: {
+          from: 'form_submission_status.assignedToUserId',
+          to: 'user.id'
+        }
+      }
+    };
+  }
+
+  static get modifiers() {
+    return {
+      filterSubmissionId(query, value) {
+        if (value !== undefined) {
+          query.where('submissionId', value);
+        }
+      },
+      orderDescending(builder) {
+        builder.orderBy('createdAt', 'desc');
+      }
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['submissionId', 'code'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        submissionId: { type: 'string', pattern: Regex.UUID },
+        code: { type: 'string' },
+        assignedToUserId: { type: 'string', pattern: Regex.UUID },
+        actionDate: { type: 'string' },
         ...stamps
       },
       additionalProperties: false
@@ -901,21 +1015,84 @@ class FileStorage extends Model {
   }
 }
 
+class Note extends Timestamps(Model) {
+  static get tableName() {
+    return 'note';
+  }
+
+
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.HasOneRelation,
+        modelClass: User,
+        join: {
+          from: 'note.userId',
+          to: 'user.id'
+        }
+      }
+    };
+  }
+
+  static get modifiers() {
+    return {
+      filterId(query, value) {
+        if (value) {
+          query.where('id', value);
+        }
+      },
+      filterSubmissionId(query, value) {
+        if (value) {
+          query.where('submissionId', value);
+        }
+      },
+      filterSubmissionStatusId(query, value) {
+        if (value) {
+          query.where('submissionId', value);
+        }
+      },
+      orderDefault(builder) {
+        builder.orderBy('createdAt', 'DESC');
+      }
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['submissionId'],
+      properties: {
+        id: { type: 'string', pattern: Regex.UUID },
+        submissionId: { type: 'string', pattern: Regex.UUID },
+        submissionStatusId: { type: 'string', pattern: Regex.UUID },
+        note: { type: ['string', 'null'], maxLength: 4000 },
+        userId: { type: 'string', pattern: Regex.UUID },
+        ...stamps
+      },
+      additionalProperties: false
+    };
+  }
+}
+
 
 module.exports = {
   FileStorage: FileStorage,
   Form: Form,
   FormIdentityProvider: FormIdentityProvider,
   FormSubmission: FormSubmission,
+  FormStatusCode: FormStatusCode,
+  FormSubmissionStatus: FormSubmissionStatus,
   FormSubmissionUser: FormSubmissionUser,
   FormSubmissionUserPermissions: FormSubmissionUserPermissions,
   FormRoleUser: FormRoleUser,
   FormVersion: FormVersion,
   FormVersionDraft: FormVersionDraft,
   IdentityProvider: IdentityProvider,
+  Note: Note,
   Permission: Permission,
   PublicFormAccess: PublicFormAccess,
   Role: Role,
+  StatusCode: StatusCode,
   SubmissionMetadata: SubmissionMetadata,
   User: User,
   UserFormAccess: UserFormAccess
