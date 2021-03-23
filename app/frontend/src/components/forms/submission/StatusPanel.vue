@@ -10,7 +10,6 @@
         <span v-if="currentStatus.user">
           ({{ currentStatus.user.email }})
         </span>
-        <span v-else> N/A </span>
       </p>
 
       <v-form ref="form" v-model="valid" lazy-validation>
