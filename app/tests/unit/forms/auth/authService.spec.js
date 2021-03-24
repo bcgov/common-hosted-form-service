@@ -23,7 +23,7 @@ describe('parseToken', () => {
 
 describe('formAccessToForm', () => {
   it('transforms the object', () => {
-    const result = service.formAccessToForm({
+    const form = {
       formId: 1,
       formName: 2,
       formDescription: 3,
@@ -36,25 +36,18 @@ describe('formAccessToForm', () => {
       versionUpdatedAt: 10,
       roles: 11,
       permissions: 12
-    });
-    expect(result).toEqual({
-      formId: 1,
-      formName: 2,
-      formDescription: 3,
-      labels: 4,
-      idps: 5,
-      active: 6,
-      formVersionId: 7,
-      version: 8,
-      published: 9,
-      versionUpdatedAt: 10,
-      roles: 11,
-      permissions: 12
-    });
+    };
+    const result = service.formAccessToForm(form);
+    expect(result).toEqual(form);
   });
 });
 
 describe('login', () => {
+  const resultSample = {
+    user: 'me',
+    forms: [{ formID: 1 }, { formId: 2 }],
+    deletedForms: [{ formID: 1 }, { formId: 2 }]
+  };
 
   it('returns a currentUser object', async () => {
     service.parseToken = jest.fn().mockReturnValue('userInf');
@@ -70,12 +63,12 @@ describe('login', () => {
     expect(service.getUserForms).toHaveBeenCalledTimes(2);
     expect(service.getUserForms).toHaveBeenCalledWith({ user: 'me' }, { p: 1, active: false });
     expect(result).toBeTruthy();
-    expect(result).toEqual({ user: 'me', forms: [{ formID: 1 }, { formId: 2 }], deletedForms: [{ formID: 1 }, { formId: 2 }] });
+    expect(result).toEqual(resultSample);
   });
 
   it('works with no params supplied', async () => {
     const token = 'token';
     const result = await service.login(token);
-    expect(result).toEqual({ user: 'me', forms: [{ formID: 1 }, { formId: 2 }], deletedForms: [{ formID: 1 }, { formId: 2 }] });
+    expect(result).toEqual(resultSample);
   });
 });
