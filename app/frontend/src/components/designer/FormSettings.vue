@@ -80,7 +80,6 @@
       </template>
     </v-checkbox>
 
-    {{ description }}
     <v-checkbox v-model="showSubmissionConfirmation">
       <template #label>
         Show the submission confirmation details
