@@ -27,7 +27,7 @@ const currentUser = async (request, response, next) => {
     const token = request.headers.authorization.substring(7);
     const ok = await keycloak.grantManager.validateAccessToken(token);
     if (!ok) {
-      return next(new Problem(403, {detail: 'Authorization token is invalid.'}));
+      return next(new Problem(403, { detail: 'Authorization token is invalid.' }));
     }
   }
   return setUser(request, response, next);
@@ -38,21 +38,23 @@ const hasFormPermissions = (permissions) => {
 
     if (!req.currentUser) {
       // cannot find the currentUser... guess we don't have access... FAIL!
-      return next(new Problem(401, {detail: 'Current user not found on request.'}));
+      return next(new Problem(401, { detail: 'Current user not found on request.' }));
     }
     // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
     const formId = req.params.formId || req.query.formId;
     if (!formId) {
       // No form provided to this route that secures based on form... that's a problem!
-      return next(new Problem(401, {detail: 'Form Id not found on request.'}));
+      return next(new Problem(401, { detail: 'Form Id not found on request.' }));
     }
     let form = req.currentUser.forms.find(f => f.formId === formId);
     if (!form) {
       // check deleted... (this allows 404 on other queries later)
-      form = req.currentUser.deletedForms.find(f => f.formId === formId);
+      if (req.currentUser.deletedForms) {
+        form = req.currentUser.deletedForms.find(f => f.formId === formId);
+      }
       if (!form) {
         // cannot find the form... guess we don't have access... FAIL!
-        return next(new Problem(401, {detail: 'Current user has no access to form.'}));
+        return next(new Problem(401, { detail: 'Current user has no access to form.' }));
       }
     }
 
@@ -65,7 +67,7 @@ const hasFormPermissions = (permissions) => {
     });
 
     if (intersection.length !== permissions.length) {
-      return next(new Problem(401, {detail: 'Current user does not have required permission(s) on form'}));
+      return next(new Problem(401, { detail: 'Current user does not have required permission(s) on form' }));
     } else {
       return next();
     }
