@@ -65,7 +65,7 @@ exports.up = function (knex) {
     // Use the original submitter and time as the creator (store "migrate" in updatedBy for tracking)
     .then(() => knex.schema.raw(`INSERT INTO public.form_submission_status
       ("id", "submissionId", code, "assignedToUserId", "actionDate", "createdBy", "createdAt", "updatedBy", "updatedAt")
-      SELECT md5(random()::text || clock_timestamp()::text)::uuid, id, 'SUBMITTED', NULL, NULL, "createdBy", "createdAt", '${CREATED_BY}', now()
+      SELECT uuid_in(overlay(overlay(md5(random()::text || ':' || clock_timestamp()::text) placing '4' from 13) placing to_hex(floor(random()*(11-8+1) + 8)::int)::text from 17)::cstring), id, 'SUBMITTED', NULL, NULL, "createdBy", "createdAt", '${CREATED_BY}', now()
       FROM public.form_submission`))
 
     // add a note table
