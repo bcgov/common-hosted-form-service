@@ -30,7 +30,21 @@
             <div v-show="statusFields">
               <div v-if="showAsignee">
                 <!-- {{ formReviewers }} -->
-                <label>Assign To</label>
+                <label>
+                  Assign To
+                  <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                      <v-icon color="primary" v-bind="attrs" v-on="on">
+                        help_outline
+                      </v-icon>
+                    </template>
+                    <span>
+                      Submissions can be assigned to Form Reviewers. <br />
+                      To add more team members as Form Reviewers, go to the
+                      Manage page for this form.
+                    </span>
+                  </v-tooltip>
+                </label>
                 <v-autocomplete
                   v-model="assignee"
                   clearable
@@ -38,6 +52,7 @@
                   :filter="autoCompleteFilter"
                   :items="formReviewers"
                   :loading="loading"
+                  no-data-text="No Form Reviewers found with search. Add Form Reviewers on the Manage page."
                   outlined
                   return-object
                   :rules="[(v) => !!v || 'Assignee is required']"
@@ -290,7 +305,7 @@ export default {
               submissionId: this.submissionId,
               submissionStatusId: submissionStatusId,
               note: this.note,
-              userId: user.data.id
+              userId: user.data.id,
             };
             const response = await formService.addNote(
               this.submissionId,
