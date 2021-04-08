@@ -100,16 +100,6 @@ exports.up = function (knex) {
         id: uuidv4(),
         createdBy: CREATED_BY,
         role: 'owner',
-        permission: 'team_read'
-      };
-      return knex('role_permission').insert(rolePermssion);
-    })
-
-    .then(() => {
-      const rolePermssion = {
-        id: uuidv4(),
-        createdBy: CREATED_BY,
-        role: 'owner',
         permission: 'team_update'
       };
       return knex('role_permission').insert(rolePermssion);
