@@ -32,8 +32,12 @@ log.addLevel('debug', 1500, { fg: 'cyan' });
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
+  const morganOpts = {
+    // Skip logging kube-probe requests
+    skip: (req) => req.headers['user-agent'] && req.headers['user-agent'].includes('kube-probe')
+  };
   // Add Morgan endpoint logging
-  app.use(morgan(config.get('server.morganFormat')));
+  app.use(morgan(config.get('server.morganFormat'), morganOpts));
   initializeConnections();
 }
 
