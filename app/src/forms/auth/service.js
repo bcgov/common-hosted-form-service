@@ -1,10 +1,10 @@
-const { PublicFormAccess, User, UserFormAccess } = require('../common/models');
+const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
 
-const {transaction} = require('objection');
-const {v4: uuidv4} = require('uuid');
+const { transaction } = require('objection');
+const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
@@ -13,14 +13,15 @@ const service = {
     try {
       trx = await transaction.start(User.knex());
 
-      const obj = Object.assign({},{
+      const obj = Object.assign({}, {
         id: uuidv4(),
         keycloakId: data.keycloakId,
         username: data.username,
         fullName: data.fullName,
         email: data.email,
         firstName: data.firstName,
-        lastName: data.lastName});
+        lastName: data.lastName
+      });
 
       await User.query(trx).insert(obj);
       await trx.commit();
@@ -50,7 +51,8 @@ const service = {
         fullName: data.fullName,
         email: data.email,
         firstName: data.firstName,
-        lastName: data.lastName};
+        lastName: data.lastName
+      };
 
       await User.query(trx).patchAndFetchById(obj.id, update);
       await trx.commit();
@@ -102,7 +104,7 @@ const service = {
 
   getUserId: async (userInfo) => {
     if (userInfo.public) {
-      return Object.assign({}, {...userInfo, id: 'public' });
+      return Object.assign({}, { ...userInfo, id: 'public' });
     }
 
     const obj = Object.assign({}, userInfo);
@@ -120,7 +122,7 @@ const service = {
       user = await service.updateUser(user.id, obj);
     }
     // return with the db id...
-    return Object.assign({}, {...userInfo, id: user.id });
+    return Object.assign({}, { ...userInfo, id: user.id });
   },
 
   getUserForms: async (userInfo, params = {}) => {
@@ -212,8 +214,41 @@ const service = {
     const forms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
     params.active = false;
     const deletedForms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
-    return Object.assign({}, {...user, forms: forms, deletedForms: deletedForms});
+    return Object.assign({}, { ...user, forms: forms, deletedForms: deletedForms });
+  },
+
+  // -------------------------------------------------------------------------------------------------------------
+  // Submission Data
+  // -------------------------------------------------------------------------------------------------------------
+  checkSubmissionPermission: async (currentUser, submissionId, permissions) => {
+    if (currentUser.public) return false;
+    return FormSubmissionUserPermissions.query()
+      .modify('filterSubmissionId', submissionId)
+      .modify('filterUserId', currentUser.id)
+      .modify('filterByPermissions', permissions)
+      .first();
+  },
+
+  getSubmissionForm: async (submissionId) => {
+    // Get this submission data for the form Id
+    const meta = await SubmissionMetadata.query()
+      .where('submissionId', submissionId)
+      .first()
+      .throwIfNotFound();
+
+    // Get the form with IDP info
+    const form = await Form.query()
+      .findById(meta.formId)
+      .allowGraph('identityProviders')
+      .withGraphFetched('identityProviders(orderDefault)')
+      .throwIfNotFound();
+
+    return {
+      submission: meta,
+      form: form
+    };
   }
+  // ---------------------------------------------------------------------------------------------/Submission Data
 
 };
 
