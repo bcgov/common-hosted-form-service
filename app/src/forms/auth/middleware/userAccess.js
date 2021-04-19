@@ -74,6 +74,59 @@ const hasFormPermissions = (permissions) => {
   };
 };
 
+const hasSubmissionPermissions = async (permissions) => {
+  return async (req, res, next) => {
+
+    if (!req.currentUser) {
+      // cannot find the currentUser... guess we don't have access... FAIL!
+      return next(new Problem(401, { detail: 'Current user not found on request.' }));
+    }
+    // Get the provided submission ID whether in a param or query (precedence to param)
+    const submissionId = req.params.submissionId || req.query.submissionId;
+    if (!submissionId) {
+      // No submission provided to this route that secures based on form... that's a problem!
+      return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
+    }
+
+    // Get the submission results so we know what form this submission is for
+    const submissionForm = await service.getSubmissionForm(submissionId);
+
+    // Does the user have permissions for this submission due to their FORM permissions
+    let formFromCurrentUser = req.currentUser.forms.find(f => f.formId === submissionForm.form.id);
+    if (formFromCurrentUser) {
+      if (!Array.isArray(permissions)) {
+        permissions = [permissions];
+      }
+      // Do they have the submission permissions being requested on this FORM
+      const intersection = permissions.filter(p => {
+        return formFromCurrentUser.permissions.includes(p);
+      });
+      if (intersection.length == permissions.length) {
+        return next();
+      }
+    }
+
+    const isDeleted = submissionForm.submission.deleted;
+    const isDraft = submissionForm.submission.draft;
+    const publicAllowed = submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
+    const idpAllowed = submissionForm.form.identityProviders.find(p => p.code === currentUser.idp) !== undefined;
+
+    // check against the public and user's identity provider permissions...
+    if (!isDraft && !isDeleted) {
+      if (publicAllowed || idpAllowed) return next();
+    }
+
+    // check against the submission level permissions assigned to the user...
+    const submissionPermission = service.checkSubmissionPermission();
+    if (submissionPermission) return next();
+
+    // no access to this submission...
+    return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  };
+};
+
+
 
 module.exports.currentUser = currentUser;
 module.exports.hasFormPermissions = hasFormPermissions;
+module.exports.hasSubmissionPermissions = hasSubmissionPermissions;
