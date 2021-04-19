@@ -1,8 +1,5 @@
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUserPermissions, Note, SubmissionMetadata, UserFormAccess } = require('../common/models');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionMetadata } = require('../common/models');
 
-const Permissions = require('../common/constants').Permissions;
-
-const Problem = require('api-problem');
 const { transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 

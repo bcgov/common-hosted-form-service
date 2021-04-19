@@ -1,6 +1,8 @@
 const Problem = require('api-problem');
-const service = require('../service');
+
 const keycloak = require('../../../components/keycloak');
+const Permissions = require('../../common/constants').Permissions;
+const service = require('../service');
 
 const getToken = req => {
   try {
@@ -76,11 +78,10 @@ const hasFormPermissions = (permissions) => {
 
 const hasSubmissionPermissions = async (permissions) => {
   return async (req, res, next) => {
-
-    if (!req.currentUser) {
-      // cannot find the currentUser... guess we don't have access... FAIL!
-      return next(new Problem(401, { detail: 'Current user not found on request.' }));
+    if (!Array.isArray(permissions)) {
+      permissions = [permissions];
     }
+
     // Get the provided submission ID whether in a param or query (precedence to param)
     const submissionId = req.params.submissionId || req.query.submissionId;
     if (!submissionId) {
@@ -90,30 +91,32 @@ const hasSubmissionPermissions = async (permissions) => {
 
     // Get the submission results so we know what form this submission is for
     const submissionForm = await service.getSubmissionForm(submissionId);
+    const isDeleted = submissionForm.submission.deleted;
 
-    // Does the user have permissions for this submission due to their FORM permissions
-    let formFromCurrentUser = req.currentUser.forms.find(f => f.formId === submissionForm.form.id);
-    if (formFromCurrentUser) {
-      if (!Array.isArray(permissions)) {
-        permissions = [permissions];
-      }
-      // Do they have the submission permissions being requested on this FORM
-      const intersection = permissions.filter(p => {
-        return formFromCurrentUser.permissions.includes(p);
-      });
-      if (intersection.length == permissions.length) {
-        return next();
-      }
+    // Deleted submissions are inaccessible
+    if (isDeleted) {
+      return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
     }
 
-    const isDeleted = submissionForm.submission.deleted;
-    const isDraft = submissionForm.submission.draft;
+    // Public (annonymous) forms are publicly viewable
     const publicAllowed = submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
-    const idpAllowed = submissionForm.form.identityProviders.find(p => p.code === currentUser.idp) !== undefined;
+    if (permissions === [Permissions.SUBMISSION_READ] && publicAllowed) {
+      return next();
+    }
 
-    // check against the public and user's identity provider permissions...
-    if (!isDraft && !isDeleted) {
-      if (publicAllowed || idpAllowed) return next();
+    // Does the user have permissions for this submission due to their FORM permissions
+    if (req.currentUser) {
+      let formFromCurrentUser = req.currentUser.forms.find(f => f.formId === submissionForm.form.id);
+      if (formFromCurrentUser) {
+
+        // Do they have the submission permissions being requested on this FORM
+        const intersection = permissions.filter(p => {
+          return formFromCurrentUser.permissions.includes(p);
+        });
+        if (intersection.length == permissions.length) {
+          return next();
+        }
+      }
     }
 
     // check against the submission level permissions assigned to the user...
