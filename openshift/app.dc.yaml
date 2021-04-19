@@ -129,7 +129,7 @@ objects:
                   scheme: HTTP
                 initialDelaySeconds: 10
                 timeoutSeconds: 1
-                failureThreshold: 3
+                failureThreshold: 1
               resources:
                 requests:
                   cpu: "${CPU_REQUEST}"
