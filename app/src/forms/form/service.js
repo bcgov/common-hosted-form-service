@@ -281,26 +281,6 @@ const service = {
     }
   },
 
-  updateSubmission: async (formSubmissionId, data, currentUser) => {
-    let trx;
-    try {
-      const obj = await service.readSubmission(formSubmissionId);
-      trx = await transaction.start(FormSubmission.knex());
-
-      // TODO: check if we can update this submission
-      // TODO: we may have to update permissions for users (draft = false, then no delete?)
-      // TODO: deal with attachments?
-
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
-      await trx.commit();
-      const result = await service.readSubmission(obj.id);
-      return result;
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
-  },
-
   readSubmission: async (id) => {
     return FormSubmission.query()
       .findById(id)
