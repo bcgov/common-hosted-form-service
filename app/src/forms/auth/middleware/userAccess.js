@@ -76,14 +76,14 @@ const hasFormPermissions = (permissions) => {
   };
 };
 
-const hasSubmissionPermissions = async (permissions) => {
+const hasSubmissionPermissions = (permissions) => {
   return async (req, res, next) => {
     if (!Array.isArray(permissions)) {
       permissions = [permissions];
     }
 
     // Get the provided submission ID whether in a param or query (precedence to param)
-    const submissionId = req.params.submissionId || req.query.submissionId;
+    const submissionId = req.params.formSubmissionId || req.query.formSubmissionId;
     if (!submissionId) {
       // No submission provided to this route that secures based on form... that's a problem!
       return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
@@ -100,7 +100,7 @@ const hasSubmissionPermissions = async (permissions) => {
 
     // Public (annonymous) forms are publicly viewable
     const publicAllowed = submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
-    if (permissions === [Permissions.SUBMISSION_READ] && publicAllowed) {
+    if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
       return next();
     }
 
@@ -120,7 +120,7 @@ const hasSubmissionPermissions = async (permissions) => {
     }
 
     // check against the submission level permissions assigned to the user...
-    const submissionPermission = service.checkSubmissionPermission();
+    const submissionPermission = await service.checkSubmissionPermission(req.currentUser, submissionId, permissions);
     if (submissionPermission) return next();
 
     // no access to this submission...
