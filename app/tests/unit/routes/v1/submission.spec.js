@@ -10,6 +10,11 @@ const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 userAccess.currentUser = jest.fn((req, res, next) => {
   next();
 });
+userAccess.hasSubmissionPermissions = jest.fn(() => {
+  return jest.fn((req, res, next) => {
+    next();
+  });
+});
 
 //
 // we will mock the underlying data service calls...
@@ -138,7 +143,7 @@ describe(`POST ${basePath}/ID/notes`, () => {
     // mock a success return value...
     service.addNote = jest.fn().mockReturnValue(noteRes);
 
-    const response = await request(app).post(`${basePath}/ID/notes`, {note:'requestNote'});
+    const response = await request(app).post(`${basePath}/ID/notes`, { note: 'requestNote' });
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -168,13 +173,13 @@ describe(`POST ${basePath}/ID/notes`, () => {
 
 describe(`POST ${basePath}/ID/email`, () => {
 
-  const submissionResult = { form: { id: '' }, submission: { id: ''}, version: { id: '' } };
+  const submissionResult = { form: { id: '' }, submission: { id: '' }, version: { id: '' } };
   it('should return 200', async () => {
     // mock a success return value...
     service.read = jest.fn().mockReturnValue(submissionResult);
     emailService.submissionConfirmation = jest.fn().mockReturnValue(true);
 
-    const response = await request(app).post(`${basePath}/ID/email`, {to:'account@fake.com'});
+    const response = await request(app).post(`${basePath}/ID/email`, { to: 'account@fake.com' });
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
