@@ -1,6 +1,8 @@
 const Problem = require('api-problem');
-const service = require('../service');
+
 const keycloak = require('../../../components/keycloak');
+const Permissions = require('../../common/constants').Permissions;
+const service = require('../service');
 
 const getToken = req => {
   try {
@@ -74,6 +76,59 @@ const hasFormPermissions = (permissions) => {
   };
 };
 
+const hasSubmissionPermissions = (permissions) => {
+  return async (req, res, next) => {
+    if (!Array.isArray(permissions)) {
+      permissions = [permissions];
+    }
+
+    // Get the provided submission ID whether in a param or query (precedence to param)
+    const submissionId = req.params.formSubmissionId || req.query.formSubmissionId;
+    if (!submissionId) {
+      // No submission provided to this route that secures based on form... that's a problem!
+      return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
+    }
+
+    // Get the submission results so we know what form this submission is for
+    const submissionForm = await service.getSubmissionForm(submissionId);
+
+    // Deleted submissions are inaccessible
+    if (submissionForm.submission.deleted) {
+      return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+    }
+
+    // Public (annonymous) forms are publicly viewable
+    const publicAllowed = submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
+    if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
+      return next();
+    }
+
+    // Does the user have permissions for this submission due to their FORM permissions
+    if (req.currentUser) {
+      let formFromCurrentUser = req.currentUser.forms.find(f => f.formId === submissionForm.form.id);
+      if (formFromCurrentUser) {
+
+        // Do they have the submission permissions being requested on this FORM
+        const intersection = permissions.filter(p => {
+          return formFromCurrentUser.permissions.includes(p);
+        });
+        if (intersection.length === permissions.length) {
+          return next();
+        }
+      }
+    }
+
+    // check against the submission level permissions assigned to the user...
+    const submissionPermission = await service.checkSubmissionPermission(req.currentUser, submissionId, permissions);
+    if (submissionPermission) return next();
+
+    // no access to this submission...
+    return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  };
+};
+
+
 
 module.exports.currentUser = currentUser;
 module.exports.hasFormPermissions = hasFormPermissions;
+module.exports.hasSubmissionPermissions = hasSubmissionPermissions;
