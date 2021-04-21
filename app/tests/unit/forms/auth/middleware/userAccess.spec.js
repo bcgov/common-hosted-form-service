@@ -23,7 +23,7 @@ afterEach(() => {
 });
 
 
-describe.skip('currentUser', () => {
+describe('currentUser', () => {
   it('gets the current user with valid request', async () => {
     const testReq = {
       params: {
@@ -103,7 +103,7 @@ describe.skip('currentUser', () => {
   });
 });
 
-describe.skip('getToken', () => {
+describe('getToken', () => {
   it('returns a null token if no kauth in the request', async () => {
     const testReq = {
       params: {
@@ -119,7 +119,7 @@ describe.skip('getToken', () => {
 });
 
 
-describe.skip('hasFormPermissions', () => {
+describe('hasFormPermissions', () => {
   it('returns a middleware function', async () => {
     const mw = hasFormPermissions(['abc']);
     expect(mw).toBeInstanceOf(Function);
