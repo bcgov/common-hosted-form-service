@@ -48,6 +48,7 @@
       "realm": "SERVER_KC_REALM",
       "serverUrl": "SERVER_KC_SERVERURL"
     },
+    "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",
     "morganFormat": "SERVER_MORGANFORMAT",
     "port": "SERVER_PORT"
