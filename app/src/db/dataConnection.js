@@ -125,6 +125,37 @@ class DataConnection {
       return false;
     }
   }
+
+
+  /**
+   * @function close
+   * Will close the DataConnection
+   * @param {function} [cb] Optional callback
+   */
+  close(cb = undefined) {
+    if (this.knex) {
+      try {
+        this.knex.destroy(() => {
+          this._connected = false;
+          log.info('DataConnection.close', 'Disconnected');
+          if (cb) cb();
+        });
+      } catch (e) {
+        log.error(e);
+      }
+    }
+  }
+
+  /**
+   * @function resetConnection
+   * Invalidates and reconnects existing knex connection
+   */
+  resetConnection() {
+    log.warn('DataConnection.resetConnection', 'Attempting to reset database connection pool...');
+    this.knex.destroy(() => {
+      this.knex.initialize();
+    });
+  }
 }
 
 module.exports = DataConnection;

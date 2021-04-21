@@ -21,7 +21,8 @@ servers:
   - url: /api/v1
     description: This Server
 security:
-  - OpenID: []
+  - BearerAuth: []
+    OpenID: []
 tags:
   - name: Form
     description: The API paths in this section are used to read and write data that make up a web form, for example, the form schema object, metadata, and related settings
