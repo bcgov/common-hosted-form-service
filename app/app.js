@@ -1,11 +1,13 @@
 const compression = require('compression');
 const config = require('config');
 const express = require('express');
+const fs = require('fs');
 const log = require('npmlog');
 const morgan = require('morgan');
 const path = require('path');
 const Problem = require('api-problem');
 const querystring = require('querystring');
+const Writable = require('stream').Writable;
 
 const keycloak = require('./src/components/keycloak');
 const v1Router = require('./src/routes/v1');
@@ -30,14 +32,35 @@ app.use(express.urlencoded({ extended: true }));
 log.level = config.get('server.logLevel');
 log.addLevel('debug', 1500, { fg: 'cyan' });
 
+let logFileStream;
+let teeStream;
+if (config.has('server.logFile')) {
+  // Write to logFile in append mode
+  logFileStream = fs.createWriteStream(config.get('server.logFile'), { flags: 'a' });
+  teeStream = new Writable({
+    objectMode: true,
+    write: (data, _, done) => {
+      process.stdout.write(data);
+      logFileStream.write(data);
+      done();
+    }
+  });
+  log.disableColor();
+  log.stream = teeStream;
+}
+
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
   const morganOpts = {
     // Skip logging kube-probe requests
     skip: (req) => req.headers['user-agent'] && req.headers['user-agent'].includes('kube-probe')
   };
+  if (config.has('server.logFile')) {
+    morganOpts.stream = teeStream;
+  }
   // Add Morgan endpoint logging
   app.use(morgan(config.get('server.morganFormat'), morganOpts));
+  // Initialize connections and exit if unsuccessful
   initializeConnections();
 }
 
