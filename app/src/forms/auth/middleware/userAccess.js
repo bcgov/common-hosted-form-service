@@ -91,10 +91,9 @@ const hasSubmissionPermissions = (permissions) => {
 
     // Get the submission results so we know what form this submission is for
     const submissionForm = await service.getSubmissionForm(submissionId);
-    const isDeleted = submissionForm.submission.deleted;
 
     // Deleted submissions are inaccessible
-    if (isDeleted) {
+    if (submissionForm.submission.deleted) {
       return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
     }
 
@@ -113,7 +112,7 @@ const hasSubmissionPermissions = (permissions) => {
         const intersection = permissions.filter(p => {
           return formFromCurrentUser.permissions.includes(p);
         });
-        if (intersection.length == permissions.length) {
+        if (intersection.length === permissions.length) {
           return next();
         }
       }
