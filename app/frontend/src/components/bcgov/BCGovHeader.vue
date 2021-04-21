@@ -15,7 +15,6 @@
       <h1 v-if="!formSubmitMode" data-test="btn-header-title" class="font-weight-bold title d-none d-md-flex pl-4">
         {{ appTitle }}
       </h1>
-      <v-chip v-if="!formSubmitMode" class="d-none d-md-flex ma-2" color="secondary" text-color="white">Beta</v-chip>
       <v-spacer />
       <BaseAuthButton />
     </v-toolbar>

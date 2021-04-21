@@ -1,5 +1,6 @@
 const currentUser = require('../../../../../src/forms/auth/middleware/userAccess').currentUser;
 const hasFormPermissions = require('../../../../../src/forms/auth/middleware/userAccess').hasFormPermissions;
+const hasSubmissionPermissions = require('../../../../../src/forms/auth/middleware/userAccess').hasSubmissionPermissions;
 const keycloak = require('../../../../../src/components/keycloak');
 const Problem = require('api-problem');
 const service = require('../../../../../src/forms/auth/service');
@@ -295,5 +296,350 @@ describe('hasFormPermissions', () => {
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith();
   });
+
+});
+
+describe('hasSubmissionPermissions', () => {
+  it('returns a middleware function', () => {
+    const mw = hasSubmissionPermissions(['abc']);
+    expect(mw).toBeInstanceOf(Function);
+  });
+
+  it('401s if the request has no formId', async () => {
+    const mw = hasSubmissionPermissions(['abc']);
+    const nxt = jest.fn();
+    const req = {
+      params: {
+        formId: 123
+      },
+      query: {
+        otherQueryThing: 'abc'
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Submission Id not found on request.' }));
+  });
+
+  it('401s if the submission was deleted', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({ submission: { deleted: true } });
+
+    const mw = hasSubmissionPermissions(['abc']);
+    const nxt = jest.fn();
+    const req = {
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
+    expect(service.getSubmissionForm).toHaveBeenCalledWith(123);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  });
+
+  it('moves on if the form is public and you are only requesting read permission', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: { identityProviders: [{ code: 'random' }, { code: 'public' }] }
+    });
+
+    const mw = hasSubmissionPermissions('submission_read');
+    const nxt = jest.fn();
+    const req = {
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
+
+  it('moves on if the form is public and you are only requesting read permission (only 1 idp)', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: { identityProviders: [{ code: 'public' }] }
+    });
+
+    const mw = hasSubmissionPermissions(['submission_read']);
+    const nxt = jest.fn();
+    const req = {
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
+
+  it('does not allow public access if more than read permission is needed', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: { identityProviders: [{ code: 'public' }] }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+
+    const mw = hasSubmissionPermissions(['submission_read', 'submission_delete']);
+    const nxt = jest.fn();
+    const req = {
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
+    expect(service.checkSubmissionPermission).toHaveBeenCalledWith(undefined, 123, ['submission_read', 'submission_delete']);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  });
+
+  it('does not allow public access if the form does not have the public idp', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: { identityProviders: [{ code: 'idir' }, { code: 'bceid' }] }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+
+    const mw = hasSubmissionPermissions('submission_read');
+    const nxt = jest.fn();
+    const req = {
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
+    expect(service.checkSubmissionPermission).toHaveBeenCalledWith(undefined, 123, ['submission_read']);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  });
+
+  it('moves on if the permission check query succeeds', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: { identityProviders: [{ code: 'idir' }, { code: 'bceid' }] }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(true);
+
+    const mw = hasSubmissionPermissions('submission_read');
+    const nxt = jest.fn();
+    const req = {
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
+
+
+  it('falls through to the query if the current user has no forms', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: { identityProviders: [{ code: 'idir' }, { code: 'bceid' }] }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+
+    const mw = hasSubmissionPermissions('submission_read');
+    const nxt = jest.fn();
+    const cu = {
+      forms: []
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
+    expect(service.checkSubmissionPermission).toHaveBeenCalledWith(cu, 123, ['submission_read']);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  });
+
+  it('falls through to the query if the current user does not have any FORM access on the current form', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: { id: '999', identityProviders: [{ code: 'idir' }, { code: 'bceid' }] }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+
+    const mw = hasSubmissionPermissions('submission_read');
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        formId: '456'
+      }, {
+        formId: '789'
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
+    expect(service.checkSubmissionPermission).toHaveBeenCalledWith(cu, 123, ['submission_read']);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  });
+
+  it('falls through to the query if the current user does not have the expected permission for FORM access on the current form', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: {
+        id: '999',
+        identityProviders: [{ code: 'idir' }, { code: 'bceid' }]
+      }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+
+    const mw = hasSubmissionPermissions(['submission_delete', 'submission_create']);
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        formId: '456'
+      }, {
+        formId: '999',
+        permissions: ['submission_read', 'submission_update'],
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
+    expect(service.checkSubmissionPermission).toHaveBeenCalledWith(cu, 123, ['submission_delete', 'submission_create']);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  });
+
+  it('falls through to the query if the current user does not have the expected permission for FORM access on the current form (single check)', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: {
+        id: '999',
+        identityProviders: [{ code: 'idir' }, { code: 'bceid' }]
+      }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+
+    const mw = hasSubmissionPermissions('submission_delete');
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        formId: '456'
+      }, {
+        formId: '999',
+        permissions: ['submission_read'],
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
+    expect(service.checkSubmissionPermission).toHaveBeenCalledWith(cu, 123, ['submission_delete']);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  });
+
+  it('moves on if the user has the appropriate requested permissions', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: {
+        id: '999',
+        identityProviders: [{ code: 'idir' }, { code: 'bceid' }]
+      }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+
+    const mw = hasSubmissionPermissions(['submission_read', 'submission_update']);
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        formId: '456'
+      }, {
+        formId: '999',
+        permissions: ['submission_read', 'submission_update'],
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
+
+  it('moves on if the user has the appropriate requested permissions (single included in array)', async () => {
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { deleted: false },
+      form: {
+        id: '999',
+        identityProviders: [{ code: 'idir' }, { code: 'bceid' }]
+      }
+    });
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+
+    const mw = hasSubmissionPermissions('submission_read');
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        formId: '456'
+      }, {
+        formId: '999',
+        permissions: ['submission_read', 'submission_update', 'submission_delete'],
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+        formSubmissionId: 123
+      }
+    };
+
+    await mw(req, undefined, nxt);
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
+
 
 });
