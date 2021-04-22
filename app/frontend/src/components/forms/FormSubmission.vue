@@ -1,18 +1,28 @@
 <template>
   <div>
-    <div v-if="loading">
-      <v-skeleton-loader type="article" />
-    </div>
-    <div v-else>
-      <h1>{{ form.name }}</h1>
-      <p>
-        <strong>Submitted: </strong>
-        {{ formSubmission.createdAt | formatDateLong }} <br />
-        <strong>Confirmation ID: </strong> {{ formSubmission.confirmationId }}
-        <br />
-        <strong>Submitted By: </strong> {{ formSubmission.createdBy }} <br />
-      </p>
-    </div>
+    <v-row no-gutters>
+      <v-col cols="12" sm="6">
+        <div v-if="loading">
+          <v-skeleton-loader type="article" />
+        </div>
+        <div v-else>
+          <h1>{{ form.name }}</h1>
+          <p>
+            <strong>Submitted: </strong>
+            {{ formSubmission.createdAt | formatDateLong }} <br />
+            <strong>Confirmation ID: </strong>
+            {{ formSubmission.confirmationId }}
+            <br />
+            <strong>Submitted By: </strong> {{ formSubmission.createdBy }}
+            <br />
+          </p>
+        </div>
+      </v-col>
+      <v-spacer />
+      <v-col class="text-sm-right" cols="12" sm="6">
+        <DeleteSubmission />
+      </v-col>
+    </v-row>
 
     <v-row>
       <!-- The form submission -->
@@ -56,6 +66,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
+import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
 import FormViewer from '@/components/designer/FormViewer.vue';
 import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
 import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
@@ -63,6 +74,7 @@ import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
 export default {
   name: 'FormSubmission',
   components: {
+    DeleteSubmission,
     FormViewer,
     NotesPanel,
     StatusPanel,
