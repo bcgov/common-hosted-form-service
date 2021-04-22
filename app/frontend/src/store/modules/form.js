@@ -270,7 +270,7 @@ export default {
       try {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of submissions for this form
-        const response = await formService.listSubmissions(formId);
+        const response = await formService.listSubmissions(formId, false);
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
