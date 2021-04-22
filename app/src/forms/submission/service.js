@@ -35,9 +35,7 @@ const service = {
     });
   },
 
-  read: async (formSubmissionId) => {
-    return await service._fetchSubmissionData(formSubmissionId);
-  },
+  read: (formSubmissionId) => service._fetchSubmissionData(formSubmissionId),
 
   update: async (formSubmissionId, data, currentUser) => {
     let trx;
