@@ -20,7 +20,7 @@
       v-model="showDeleteDialog"
       type="CONTINUE"
       @close-dialog="showDeleteDialog = false"
-      @continue-dialog="deleteSubmission"
+      @continue-dialog="delSub"
     >
       <template #title>Confirm Deletion</template>
       <template #text>
@@ -34,18 +34,33 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
+  props: {
+    submissionId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
-      showDeleteDialog: false
+      showDeleteDialog: false,
     };
   },
+  computed: mapGetters('form', ['form']),
   methods: {
+    ...mapActions('form', ['deleteSubmission']),
     ...mapActions('notifications', ['addNotification']),
-    deleteSubmission() {
-      alert('coming soon');
+    async delSub() {
+      await this.deleteSubmission(this.submissionId);
+      this.showDeleteDialog = false;
+      this.$router.push({
+        name: 'FormSubmissions',
+        query: {
+          f: this.form.id,
+        },
+      });
     },
   },
 };

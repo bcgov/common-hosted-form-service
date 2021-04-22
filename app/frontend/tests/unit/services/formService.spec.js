@@ -226,6 +226,18 @@ describe('Form Service', () => {
     });
   });
 
+  describe('delete submissions/{submissionId}', () => {
+    const endpoint = `submissions/${zeroUuid}`;
+
+    it('calls get on endpoint', async () => {
+      mockAxios.onDelete(endpoint).reply(200);
+
+      const result = await formService.deleteSubmission(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.delete).toHaveLength(1);
+    });
+  });
+
   describe('forms/{formId}/submissions', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/submissions`;
 

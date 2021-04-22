@@ -207,6 +207,16 @@ export default {
   },
 
   /**
+  * @function deleteSubmission
+  * Soft delete a specific submission
+  * @param {string} submission The form submission identifier
+  * @returns {Promise} An axios response
+  */
+  deleteSubmission(submissionId) {
+    return appAxios().delete(`/submissions/${submissionId}`);
+  },
+
+  /**
   * @function getSubmission
   * Get the form data + version + submission data
   * @param {string} submission The form submission identifier

@@ -250,6 +250,18 @@ export default {
     //
     // Submission
     //
+    async deleteSubmission({ dispatch }, { submissionId }) {
+      try {
+        // Get this submission
+        await formService.deleteSubmission(submissionId);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while deleting this submission.',
+          consoleError: `Error deleting submission ${submissionId}: ${error}`,
+        }, { root: true });
+      }
+    },
     async fetchSubmission({ commit, dispatch }, { submissionId }) {
       try {
         // Get this submission

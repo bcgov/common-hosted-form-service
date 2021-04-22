@@ -20,7 +20,7 @@
       </v-col>
       <v-spacer />
       <v-col class="text-sm-right" cols="12" sm="6">
-        <DeleteSubmission />
+        <DeleteSubmission :submissionId="submissionId" />
       </v-col>
     </v-row>
 

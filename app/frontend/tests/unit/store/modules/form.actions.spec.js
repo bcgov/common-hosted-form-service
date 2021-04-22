@@ -101,6 +101,22 @@ describe('form actions', () => {
   });
 
   describe('submission', () => {
+    it('deleteSubmission should commit to SET_FORMSUBMISSION', async () => {
+      formService.deleteSubmission.mockResolvedValue({ data: { submission: {}, form: {} } });
+      await store.actions.deleteSubmission(mockStore, { submissionId: 'sId' });
+
+      expect(formService.deleteSubmission).toHaveBeenCalledTimes(1);
+      expect(formService.deleteSubmission).toHaveBeenCalledWith('sId');
+    });
+
+    it('fetchSubmission should dispatch to notifications/addNotification', async () => {
+      formService.deleteSubmission.mockRejectedValue('');
+      await store.actions.deleteSubmission(mockStore, { submissionId: 'sId' });
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
     it('fetchSubmission should commit to SET_FORMSUBMISSION', async () => {
       formService.getSubmission.mockResolvedValue({ data: { submission: {}, form: {} } });
       await store.actions.fetchSubmission(mockStore, { submissionId: 'sId' });
