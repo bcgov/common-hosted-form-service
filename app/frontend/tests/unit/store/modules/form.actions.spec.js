@@ -124,6 +124,8 @@ describe('form actions', () => {
 
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
+      expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', false);
     });
 
     it('fetchSubmissions should dispatch to notifications/addNotification', async () => {
@@ -134,6 +136,8 @@ describe('form actions', () => {
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', false);
     });
 
     it('fetchVersion should commit to SET_FORMSUBMISSION and SET_VERSION', async () => {
