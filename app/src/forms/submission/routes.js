@@ -15,6 +15,10 @@ routes.put('/:formSubmissionId', currentUser, hasSubmissionPermissions(P.SUBMISS
   await controller.update(req, res, next);
 });
 
+routes.delete('/:formSubmissionId', currentUser, hasSubmissionPermissions(P.SUBMISSION_DELETE), async (req, res, next) => {
+  await controller.delete(req, res, next);
+});
+
 routes.get('/:formSubmissionId/notes', currentUser, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.getNotes(req, res, next);
 });

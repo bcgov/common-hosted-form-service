@@ -35,9 +35,7 @@ const service = {
     });
   },
 
-  read: async (formSubmissionId) => {
-    return await service._fetchSubmissionData(formSubmissionId);
-  },
+  read: (formSubmissionId) => service._fetchSubmissionData(formSubmissionId),
 
   update: async (formSubmissionId, data, currentUser) => {
     let trx;
@@ -45,6 +43,22 @@ const service = {
       trx = await transaction.start(FormSubmission.knex());
 
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
+      await trx.commit();
+      const result = await service.read(formSubmissionId);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+
+  },
+
+  delete: async (formSubmissionId, currentUser) => {
+    let trx;
+    try {
+      trx = await transaction.start(FormSubmission.knex());
+
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: true, updatedBy: currentUser.username });
       await trx.commit();
       const result = await service.read(formSubmissionId);
       return result;
