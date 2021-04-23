@@ -596,6 +596,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    delete:
+      summary: (Soft) delete a form submission
+      operationId: deleteSubmission
+      tags:
+        - Submission
+      parameters:
+        - $ref: "#/components/parameters/formSubmissionIdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormSubmission"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /submissions/{formSubmissionId}/email:
     post:
       summary: Email a message with link to a submission
