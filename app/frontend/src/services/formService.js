@@ -209,7 +209,7 @@ export default {
   /**
   * @function deleteSubmission
   * Soft delete a specific submission
-  * @param {string} submission The form submission identifier
+  * @param {string} submissionId The form submission identifier
   * @returns {Promise} An axios response
   */
   deleteSubmission(submissionId) {
@@ -219,7 +219,7 @@ export default {
   /**
   * @function getSubmission
   * Get the form data + version + submission data
-  * @param {string} submission The form submission identifier
+  * @param {string} submissionId The form submission identifier
   * @returns {Promise} An axios response
   */
   getSubmission(submissionId) {
