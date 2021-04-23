@@ -250,6 +250,23 @@ export default {
     //
     // Submission
     //
+    async deleteSubmission({ dispatch }, submissionId) {
+      try {
+        // Get this submission
+        await formService.deleteSubmission(submissionId);
+        dispatch('notifications/addNotification', {
+          message:
+            'Submission deleted successfully.',
+          type: NotificationTypes.SUCCESS
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while deleting this submission.',
+          consoleError: `Error deleting submission ${submissionId}: ${error}`,
+        }, { root: true });
+      }
+    },
     async fetchSubmission({ commit, dispatch }, { submissionId }) {
       try {
         // Get this submission
@@ -269,7 +286,7 @@ export default {
     async fetchSubmissions({ commit, dispatch }, formId) {
       try {
         commit('SET_SUBMISSIONLIST', []);
-        // Get list of submissions for this form
+        // Get list of active submissions for this form
         const response = await formService.listSubmissions(formId);
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
