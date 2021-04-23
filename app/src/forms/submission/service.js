@@ -52,6 +52,22 @@ const service = {
     }
 
   },
+
+  delete: async (formSubmissionId, currentUser) => {
+    let trx;
+    try {
+      trx = await transaction.start(FormSubmission.knex());
+
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: true, updatedBy: currentUser.username });
+      await trx.commit();
+      const result = await service.read(formSubmissionId);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+
+  },
   // --------------------------------------------------------------------------------------------/Submissions
 
   // -------------------------------------------------------------------------------------------------------

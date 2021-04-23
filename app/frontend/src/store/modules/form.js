@@ -250,10 +250,15 @@ export default {
     //
     // Submission
     //
-    async deleteSubmission({ dispatch }, { submissionId }) {
+    async deleteSubmission({ dispatch }, submissionId) {
       try {
         // Get this submission
         await formService.deleteSubmission(submissionId);
+        dispatch('notifications/addNotification', {
+          message:
+            'Submission deleted successfully.',
+          type: NotificationTypes.SUCCESS
+        }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
           message:
