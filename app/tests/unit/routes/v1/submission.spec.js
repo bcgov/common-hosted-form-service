@@ -103,6 +103,39 @@ describe(`PUT ${basePath}/ID`, () => {
   });
 });
 
+describe(`DELETE ${basePath}/ID`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.delete = jest.fn().mockReturnValue({});
+
+    const response = await request(app).delete(`${basePath}/ID`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.delete = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).delete(`${basePath}/ID`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.delete = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).delete(`${basePath}/ID`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
 describe(`GET ${basePath}/ID/notes`, () => {
 
   it('should return 200', async () => {
