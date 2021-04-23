@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-row no-gutters>
-      <v-col cols="12" sm="6">
-        <div v-if="loading">
-          <v-skeleton-loader type="article" />
-        </div>
-        <div v-else>
+    <div v-if="loading">
+      <v-skeleton-loader type="article" />
+    </div>
+    <div v-else>
+      <v-row no-gutters>
+        <v-col cols="12" sm="6">
           <h1>{{ form.name }}</h1>
           <p>
             <strong>Submitted: </strong>
@@ -16,13 +16,13 @@
             <strong>Submitted By: </strong> {{ formSubmission.createdBy }}
             <br />
           </p>
-        </div>
-      </v-col>
-      <v-spacer />
-      <v-col class="text-sm-right" cols="12" sm="6">
-        <DeleteSubmission :submissionId="submissionId" />
-      </v-col>
-    </v-row>
+        </v-col>
+        <v-spacer />
+        <v-col class="text-sm-right" cols="12" sm="6">
+          <DeleteSubmission :submissionId="submissionId" />
+        </v-col>
+      </v-row>
+    </div>
 
     <v-row>
       <!-- The form submission -->
