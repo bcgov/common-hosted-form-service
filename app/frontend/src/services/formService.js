@@ -233,7 +233,7 @@ export default {
    * @param {Boolean} deleted TRUE to show deleted submissions, FALSE to show only active ones
    * @returns {Promise} An axios response
    */
-  listSubmissions(formId, deleted) {
+  listSubmissions(formId, deleted = false) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/submissions`, {
       params: {
         deleted: deleted,

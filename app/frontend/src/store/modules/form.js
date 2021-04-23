@@ -286,8 +286,8 @@ export default {
     async fetchSubmissions({ commit, dispatch }, formId) {
       try {
         commit('SET_SUBMISSIONLIST', []);
-        // Get list of submissions for this form
-        const response = await formService.listSubmissions(formId, false);
+        // Get list of active submissions for this form
+        const response = await formService.listSubmissions(formId);
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
