@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormViewer :submissionId="s">
+    <FormViewer :submissionId="s" :readOnly="true">
       <template #alert="{ form }">
         <div class="mb-5">
           <h1 class="mb-5">
