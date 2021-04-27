@@ -32,8 +32,52 @@
         class="pl-0 pt-0"
       >
         <v-card outlined class="review-form">
-          <h2 class="review-heading">Submission</h2>
-          <FormViewer :displayTitle="false" :submissionId="submissionId" />
+          <v-row no-gutters>
+            <v-col cols="12" sm="6">
+              <h2 class="review-heading">Submission</h2>
+            </v-col>
+            <v-spacer />
+            <v-col class="text-sm-right" cols="12" sm="6">
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    class="mx-1"
+                    @click="showEditHistory"
+                    color="primary"
+                    :disabled="!submissionReadOnly"
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon>history</v-icon>
+                  </v-btn>
+                </template>
+                <span>View History of Edits</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    class="mx-1"
+                    @click="editSubmission"
+                    color="primary"
+                    :disabled="!submissionReadOnly"
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon>mode_edit</v-icon>
+                  </v-btn>
+                </template>
+                <span>Edit This Submission</span>
+              </v-tooltip>
+            </v-col>
+          </v-row>
+          <FormViewer
+            :displayTitle="false"
+            :submissionId="submissionId"
+            :readOnly="submissionReadOnly"
+            :key="reRenderSubmission"
+          />
         </v-card>
       </v-col>
 
@@ -85,11 +129,17 @@ export default {
   data() {
     return {
       loading: true,
+      reRenderSubmission: 0,
+      submissionReadOnly: true
     };
   },
   computed: mapGetters('form', ['form', 'formSubmission']),
   methods: {
     ...mapActions('form', ['fetchSubmission']),
+    editSubmission() {
+      this.submissionReadOnly = false;
+      this.reRenderSubmission += 1;
+    },
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
     },

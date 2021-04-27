@@ -34,7 +34,10 @@ export default {
     },
     draftId: String,
     formId: String,
-    readOnly: Boolean,
+    readOnly: {
+      type: Boolean,
+      default: false,
+    },
     preview: Boolean,
     submissionId: String,
     versionId: String,
@@ -56,7 +59,7 @@ export default {
     ...mapGetters('auth', ['authenticated', 'token']),
     viewerOptions() {
       return {
-        readOnly: this.readOnly || this.submissionId !== undefined,
+        readOnly: this.readOnly,
         hooks: {
           beforeSubmit: this.onBeforeSubmit,
         },
