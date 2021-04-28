@@ -229,34 +229,50 @@ const service = {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
+      const { identityProviders } = await service.readForm(formVersion.formId);
+
       trx = await transaction.start(FormSubmission.knex());
 
-      const obj = Object.assign({}, data);
-      obj.id = uuidv4();
-      obj.formVersionId = formVersion.id;
-      obj.confirmationId = obj.id.substring(0, 8).toUpperCase();
-      obj.createdBy = currentUser.username;
+      // Ensure we only record the user if the form is not public facing
+      const isPublicForm = identityProviders.some(idp => idp.code === 'public');
+      const createdBy = isPublicForm ? 'public' : currentUser.username;
+
+      const submissionId = uuidv4();
+      const obj = Object.assign({
+        id: submissionId,
+        formVersionId: formVersion.id,
+        confirmationId: submissionId.substring(0, 8).toUpperCase(),
+        createdBy: createdBy
+      }, data);
 
       await FormSubmission.query(trx).insert(obj);
 
-      if (!currentUser.public) {
-        // add specific permissions to this submission...
-        // this is the submission creator, we will know by having the submission_create permission...
+      if (!isPublicForm && !currentUser.public) {
+        // Provide the submission creator full CRUD permissions if this is a non-public form
+        // We know this is the submission creator when we seet the SUBMISSION_CREATE permission
         const items = [
-          { id: uuidv4(), userId: currentUser.id, formSubmissionId: obj.id, permission: Permissions.SUBMISSION_CREATE, createdBy: currentUser.username },
-          { id: uuidv4(), userId: currentUser.id, formSubmissionId: obj.id, permission: Permissions.SUBMISSION_DELETE, createdBy: currentUser.username },
-          { id: uuidv4(), userId: currentUser.id, formSubmissionId: obj.id, permission: Permissions.SUBMISSION_READ, createdBy: currentUser.username },
-          { id: uuidv4(), userId: currentUser.id, formSubmissionId: obj.id, permission: Permissions.SUBMISSION_UPDATE, createdBy: currentUser.username },
-        ];
+          Permissions.SUBMISSION_CREATE,
+          Permissions.SUBMISSION_READ,
+          Permissions.SUBMISSION_UPDATE,
+          Permissions.SUBMISSION_DELETE
+        ].map(perm => ({
+          id: uuidv4(),
+          userId: currentUser.id,
+          formSubmissionId: submissionId,
+          permission: perm,
+          createdBy: createdBy
+        }));
+
         await FormSubmissionUser.query(trx).insert(items);
       }
 
       // Add a SUBMITTED status
-      const stObj = {};
-      stObj.id = uuidv4();
-      stObj.submissionId = obj.id;
-      stObj.code = Statuses.SUBMITTED;
-      stObj.createdBy = currentUser.username;
+      const stObj = {
+        id: uuidv4(),
+        submissionId: submissionId,
+        code: Statuses.SUBMITTED,
+        createdBy: createdBy
+      };
 
       await FormSubmissionStatus.query(trx).insert(stObj);
 
