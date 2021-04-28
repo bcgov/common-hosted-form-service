@@ -482,7 +482,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~font-awesome/css/font-awesome.min.css';
-@import 'https://unpkg.com/formiojs@4.11.3/dist/formio.builder.min.css';
+@import 'https://unpkg.com/formiojs@4.13.0/dist/formio.builder.min.css';
 
 /* disable router-link */
 .disabled-router {
