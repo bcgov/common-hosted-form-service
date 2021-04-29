@@ -217,6 +217,17 @@ export default {
   },
 
   /**
+   * @function updateSubmission
+   * Update an existing submission
+   * @param {string} submissionId The form uuid
+   * @param {Object} requestBody The form data for the submission
+   * @returns {Promise} An axios response
+   */
+  updateSubmission(submissionId, requestBody) {
+    return appAxios().put(`/submissions/${submissionId}`, requestBody);
+  },
+
+  /**
   * @function getSubmission
   * Get the form data + version + submission data
   * @param {string} submissionId The form submission identifier
@@ -262,6 +273,11 @@ export default {
       }
     );
   },
+
+
+  //
+  // Notes and Status
+  //
 
   /**
   * @function getSubmissionNotes

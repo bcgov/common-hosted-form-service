@@ -2,15 +2,18 @@
   <div class="form-wrapper">
     <h1 v-if="displayTitle" class="my-6 text-center">{{ form.name }}</h1>
     <slot name="alert" v-bind:form="form" />
-    <Form
-      :form="formSchema"
-      :submission="submission"
-      @submit="onSubmit"
-      @submitDone="onSubmitDone"
-      @submitButton="onSubmitButton"
-      @customEvent="onCustomEvent"
-      :options="viewerOptions"
-    />
+
+    <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+      <Form
+        :form="formSchema"
+        :submission="submission"
+        @submit="onSubmit"
+        @submitDone="onSubmitDone"
+        @submitButton="onSubmitButton"
+        @customEvent="onCustomEvent"
+        :options="viewerOptions"
+      />
+    </v-skeleton-loader>
     <p v-if="version" class="text-right">Version: {{ version }}</p>
   </div>
 </template>
@@ -50,6 +53,7 @@ export default {
         data: {},
       },
       currentForm: {},
+      loadingSubmission: false,
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
@@ -81,6 +85,7 @@ export default {
     // Get the data for a form submission
     async getFormData() {
       try {
+        this.loadingSubmission = true;
         const response = await formService.getSubmission(this.submissionId);
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
@@ -92,6 +97,8 @@ export default {
           message: 'An error occurred fetching the submission for this form',
           consoleError: `Error loading form submission data ${this.submissionId}: ${error}`,
         });
+      } finally {
+        this.loadingSubmission = false;
       }
     },
     // Get the form definition/schema
@@ -178,13 +185,23 @@ export default {
           submission: submission,
         };
 
-        const response = await formService.createSubmission(
-          this.formId,
-          this.versionIdToSubmitTo,
-          body
-        );
+        let response;
+        if (this.submissionId) {
+          // Updating an existing submission
+          response = await formService.updateSubmission(
+            this.submissionId,
+            body
+          );
+        } else {
+          // Adding a new submission
+          response = await formService.createSubmission(
+            this.formId,
+            this.versionIdToSubmitTo,
+            body
+          );
+        }
 
-        if (response.status === 201) {
+        if ([200, 201].includes(response.status)) {
           // all is good, let's just call next() and carry on...
           // store our submission result...
           this.submissionRecord = Object.assign({}, response.data);
@@ -220,12 +237,18 @@ export default {
       // really nothing to do, the formio button has consumed the event and updated its display
       // is there anything here for us to do?
       // console.info('onSubmitDone()') ; // eslint-disable-line no-console
-      this.$router.push({
-        name: 'FormSuccess',
-        query: {
-          s: this.submissionRecord.id,
-        },
-      });
+      if (this.submissionId) {
+        // updating an existing submission
+        this.$emit('submission-updated');
+      } else {
+        // User created new submission
+        this.$router.push({
+          name: 'FormSuccess',
+          query: {
+            s: this.submissionRecord.id,
+          },
+        });
+      }
     },
     // Custom Event triggered from buttons with Action type "Event"
     onCustomEvent(event) {
