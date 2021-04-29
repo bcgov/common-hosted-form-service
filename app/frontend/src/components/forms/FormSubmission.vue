@@ -38,6 +38,9 @@
             </v-col>
             <v-spacer />
             <v-col class="text-sm-right" cols="12" sm="6">
+              <v-btn outlined color="textLink" v-if="!submissionReadOnly" @click="toggleSubmissionEdit(false)">
+                <span>CANCEL</span>
+              </v-btn>
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
                   <v-btn
@@ -58,7 +61,7 @@
                 <template #activator="{ on, attrs }">
                   <v-btn
                     class="mx-1"
-                    @click="editSubmission"
+                    @click="toggleSubmissionEdit(true)"
                     color="primary"
                     :disabled="!submissionReadOnly"
                     icon
@@ -77,6 +80,7 @@
             :submissionId="submissionId"
             :readOnly="submissionReadOnly"
             :key="reRenderSubmission"
+            v-on:submission-updated="toggleSubmissionEdit(false)"
           />
         </v-card>
       </v-col>
@@ -130,18 +134,18 @@ export default {
     return {
       loading: true,
       reRenderSubmission: 0,
-      submissionReadOnly: true
+      submissionReadOnly: true,
     };
   },
   computed: mapGetters('form', ['form', 'formSubmission']),
   methods: {
     ...mapActions('form', ['fetchSubmission']),
-    editSubmission() {
-      this.submissionReadOnly = false;
-      this.reRenderSubmission += 1;
-    },
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
+    },
+    toggleSubmissionEdit(editing) {
+      this.submissionReadOnly = !editing;
+      this.reRenderSubmission += 1;
     },
   },
   async mounted() {
