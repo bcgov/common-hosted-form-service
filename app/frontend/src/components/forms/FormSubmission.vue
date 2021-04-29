@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-5">
     <div v-if="loading">
       <v-skeleton-loader type="article" />
     </div>
@@ -19,6 +19,28 @@
         </v-col>
         <v-spacer />
         <v-col class="text-sm-right" cols="12" sm="6">
+          <span v-if="canViewAllSubmissions()">
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <router-link
+                  :to="{ name: 'FormSubmissions', query: { f: form.id } }"
+                >
+                  <v-btn
+                    class="mx-1"
+                    color="primary"
+                    text
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon class="mr-1">content_copy</v-icon>
+                    <span>Submissions</span>
+                  </v-btn>
+                </router-link>
+              </template>
+              <span>View All Submissions</span>
+            </v-tooltip>
+          </span>
+
           <DeleteSubmission :submissionId="submissionId" />
         </v-col>
       </v-row>
@@ -110,6 +132,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { FormPermissions } from '@/utils/constants';
 
 import AuditHistory from '@/components/forms/submission/AuditHistory.vue';
 import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
@@ -136,9 +159,9 @@ export default {
       submissionReadOnly: true,
     };
   },
-  computed: mapGetters('form', ['form', 'formSubmission']),
+  computed: mapGetters('form', ['form', 'formSubmission', 'permissions']),
   methods: {
-    ...mapActions('form', ['fetchSubmission']),
+    ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
     },
@@ -146,10 +169,20 @@ export default {
       this.submissionReadOnly = !editing;
       this.reRenderSubmission += 1;
     },
+    canViewAllSubmissions() {
+      const perms = [
+        FormPermissions.SUBMISSION_READ,
+        FormPermissions.SUBMISSION_UPDATE,
+      ];
+      return this.permissions.some((p) => perms.includes(p));
+    },
   },
   async mounted() {
     await this.fetchSubmission({ submissionId: this.submissionId });
     this.loading = false;
+
+    // get current user's permissions on associated form
+    await this.getFormPermissionsForUser(this.form.id);
   },
 };
 </script>
