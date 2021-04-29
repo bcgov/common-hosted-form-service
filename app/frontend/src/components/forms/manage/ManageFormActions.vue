@@ -4,6 +4,19 @@
       <ShareForm :formId="form.id" :warning="!hasVersions"/>
     </span>
 
+    <span v-if="canViewSubmissions">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
+          <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
+            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+              <v-icon class="mr-1">content_copy</v-icon>
+            </v-btn>
+          </router-link>
+        </template>
+        <span>View Submissions</span>
+      </v-tooltip>
+    </span>
+
     <span v-if="canManageTeam">
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
@@ -76,6 +89,13 @@ export default {
     },
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
+    },
+    canViewSubmissions() {
+      const perms = [
+        FormPermissions.SUBMISSION_READ,
+        FormPermissions.SUBMISSION_UPDATE
+      ];
+      return this.permissions.some(p => perms.includes(p));
     },
     hasVersions() {
       return this.form.versions && this.form.versions.length;
