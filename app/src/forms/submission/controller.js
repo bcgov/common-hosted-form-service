@@ -4,7 +4,7 @@ const service = require('./service');
 module.exports = {
   read: async (req, res, next) => {
     try {
-      const response = await service.read(req.params.formSubmissionId, req.currentUser);
+      const response = await service.read(req.params.formSubmissionId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -66,6 +66,14 @@ module.exports = {
     try {
       const submission = await service.read(req.params.formSubmissionId, req.currentUser);
       const response = await emailService.submissionConfirmation(submission.form.id, req.params.formSubmissionId, req.body, req.headers.referer);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  listEdits: async (req, res, next) => {
+    try {
+      const response = await service.listEdits(req.params.formSubmissionId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
