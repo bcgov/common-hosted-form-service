@@ -140,6 +140,7 @@
       :key="reRenderFormIo"
       :options="designerOptions"
       @change="onChangeMethod"
+      @render="onRenderMethod"
       @initialized="init"
       class="form-designer"
     />
@@ -196,8 +197,8 @@ export default {
       'form.name',
       'form.sendSubRecieviedEmail',
       'form.showSubmissionConfirmation',
-      'form.submissionReceivedEmails',
       'form.snake',
+      'form.submissionReceivedEmails',
       'form.userType',
       'form.versions',
     ]),
@@ -363,13 +364,17 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     // FormIO event handlers
     // ---------------------------------------------------------------------------------------------------
+    init() {
+      // Since change is triggered during loading
+      this.setDirtyFlag(false);
+    },
     onChangeMethod() {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
     },
-    init() {
-      // Since change is triggered during loading
-      this.setDirtyFlag(false);
+    onRenderMethod() {
+      const el = document.querySelector('input.builder-sidebar_search:focus');
+      if (el && el.value === '') this.reRenderFormIo += 1;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -480,9 +485,10 @@ export default {
 };
 </script>
 
+
 <style lang="scss" scoped>
 @import '~font-awesome/css/font-awesome.min.css';
-@import 'https://unpkg.com/formiojs@4.11.3/dist/formio.builder.min.css';
+@import '~formiojs/dist/formio.builder.min.css';
 
 /* disable router-link */
 .disabled-router {
