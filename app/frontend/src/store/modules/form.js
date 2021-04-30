@@ -13,8 +13,10 @@ const genInitialForm = () => ({
   name: '',
   sendSubRecieviedEmail: false,
   showSubmissionConfirmation: true,
+  snake: '',
   submissionReceivedEmails: [],
-  userType: IdentityMode.TEAM
+  userType: IdentityMode.TEAM,
+  versions: []
 });
 
 /**

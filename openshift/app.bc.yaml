@@ -45,6 +45,12 @@ objects:
           FROM BuildConfig
           ENV NO_UPDATE_NOTIFIER=true
           WORKDIR /opt/app-root/src/app
+
+          # Install Git (Needed for dependencies)
+          RUN apk add --no-cache git \
+           && rm -rf /var/cache/apk/*
+
+          # Install application
           COPY . /opt/app-root/src
           RUN npm run all:ci \
            && npm run all:build \
