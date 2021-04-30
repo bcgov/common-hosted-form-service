@@ -247,7 +247,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~font-awesome/css/font-awesome.min.css';
-@import 'https://unpkg.com/formiojs@4.13.0/dist/formio.builder.min.css';
+@import '~formiojs/dist/formio.form.min.css';
 
 .form-wrapper ::v-deep .formio-form {
   &.formio-read-only {
