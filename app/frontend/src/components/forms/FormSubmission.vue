@@ -38,25 +38,15 @@
             </v-col>
             <v-spacer />
             <v-col class="text-sm-right" cols="12" sm="6">
-              <v-btn outlined color="textLink" v-if="!submissionReadOnly" @click="toggleSubmissionEdit(false)">
+              <v-btn
+                outlined
+                color="textLink"
+                v-if="!submissionReadOnly"
+                @click="toggleSubmissionEdit(false)"
+              >
                 <span>CANCEL</span>
               </v-btn>
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    class="mx-1"
-                    @click="showEditHistory"
-                    color="primary"
-                    :disabled="!submissionReadOnly"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <v-icon>history</v-icon>
-                  </v-btn>
-                </template>
-                <span>View History of Edits</span>
-              </v-tooltip>
+              <AuditHistory :submissionId="submissionId"/>
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
                   <v-btn
@@ -114,6 +104,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
+import AuditHistory from '@/components/forms/submission/AuditHistory.vue';
 import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
 import FormViewer from '@/components/designer/FormViewer.vue';
 import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
@@ -122,6 +113,7 @@ import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
 export default {
   name: 'FormSubmission',
   components: {
+    AuditHistory,
     DeleteSubmission,
     FormViewer,
     NotesPanel,
