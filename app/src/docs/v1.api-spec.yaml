@@ -473,14 +473,14 @@ paths:
       responses:
         "204":
           description: "OK"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "403":
-          $ref: "#/components/responses/Forbidden"
   /forms/{formId}/drafts/{formVersionDraftId}/publish:
     post:
       summary: Publish a form draft

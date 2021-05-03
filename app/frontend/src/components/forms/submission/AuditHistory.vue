@@ -18,7 +18,7 @@
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="headline pb-0"> Edit History </v-card-title>
+        <v-card-title class="headline pb-0">Edit History</v-card-title>
         <v-card-text>
           <hr />
           <p>
