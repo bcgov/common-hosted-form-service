@@ -73,7 +73,8 @@ const service = {
   listEdits: async (submissionId) => {
     return SubmissionAudit.query()
       .select('id', 'updatedByUsername', 'actionTimestamp', 'action')
-      .where('submissionId', submissionId);
+      .where('submissionId', submissionId)
+      .modify('orderDefault');
   },
   // --------------------------------------------------------------------------------------------/Submissions
 
