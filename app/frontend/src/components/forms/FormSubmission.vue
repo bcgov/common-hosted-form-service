@@ -37,7 +37,12 @@
               <h2 class="review-heading">Submission</h2>
             </v-col>
             <v-spacer />
-            <v-col class="text-sm-right" cols="12" sm="6">
+            <v-col
+              v-if="form.enableStatusUpdates"
+              class="text-sm-right"
+              cols="12"
+              sm="6"
+            >
               <span v-if="submissionReadOnly">
                 <AuditHistory :submissionId="submissionId" />
                 <v-tooltip bottom>
