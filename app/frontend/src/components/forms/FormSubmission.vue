@@ -77,7 +77,7 @@
             :submissionId="submissionId"
             :readOnly="submissionReadOnly"
             :key="reRenderSubmission"
-            v-on:submission-updated="toggleSubmissionEdit(false)"
+            @submission-updated="toggleSubmissionEdit(false)"
           />
         </v-card>
       </v-col>
@@ -96,7 +96,7 @@
           <StatusPanel
             :submissionId="submissionId"
             :formId="form.id"
-            v-on:note-updated="refreshNotes"
+            @note-updated="refreshNotes"
           />
         </v-card>
         <v-card outlined class="review-form">
