@@ -656,6 +656,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /submissions/{formSubmissionId}/edits:
+    get:
+      summary: Get an audit list of edits to a submission
+      operationId: readSubmissionEdits
+      tags:
+        - Submission
+      parameters:
+        - $ref: "#/components/parameters/formSubmissionIdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubmissionEditMetadata"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /forms/{formId}/statusCodes:
     get:
       summary: List status codes for a form
@@ -2249,6 +2274,21 @@ components:
                   items:
                     type: string
         - $ref: "#/components/schemas/TimeStampUserData"
+    SubmissionEditMetadata:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        updatedByUsername:
+          type: string
+          example: jsmith
+        actionTimestamp:
+          type: string
+          example: '2020-06-04T18:49:20.672Z'
+        action:
+          type: string
+          example: U
     SubmissionFormVersion:
       allOf:
         - $ref: "#/components/schemas/Form"
