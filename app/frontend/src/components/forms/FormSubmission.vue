@@ -38,31 +38,33 @@
             </v-col>
             <v-spacer />
             <v-col class="text-sm-right" cols="12" sm="6">
+              <span v-if="submissionReadOnly">
+                <AuditHistory :submissionId="submissionId" />
+                <v-tooltip bottom>
+                  <template #activator="{ on, attrs }">
+                    <v-btn
+                      class="mx-1"
+                      @click="toggleSubmissionEdit(true)"
+                      color="primary"
+                      :disabled="!submissionReadOnly"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon>mode_edit</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Edit This Submission</span>
+                </v-tooltip>
+              </span>
               <v-btn
+                v-else
                 outlined
                 color="textLink"
-                v-if="!submissionReadOnly"
                 @click="toggleSubmissionEdit(false)"
               >
                 <span>CANCEL</span>
               </v-btn>
-              <AuditHistory :submissionId="submissionId"/>
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    class="mx-1"
-                    @click="toggleSubmissionEdit(true)"
-                    color="primary"
-                    :disabled="!submissionReadOnly"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <v-icon>mode_edit</v-icon>
-                  </v-btn>
-                </template>
-                <span>Edit This Submission</span>
-              </v-tooltip>
             </v-col>
           </v-row>
           <FormViewer
