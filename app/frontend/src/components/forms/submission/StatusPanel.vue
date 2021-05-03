@@ -125,16 +125,17 @@
               </template>
 
               <v-card v-if="historyDialog">
-                <v-card-title class="headline grey lighten-3" primary-title>
+                <v-card-title class="headline pb-0">
                   Status History
                 </v-card-title>
 
-                <StatusTable :submissionId="submissionId" />
+                <v-card-text>
+                  <hr />
+                  <StatusTable :submissionId="submissionId" />
+                </v-card-text>
 
-                <v-divider />
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn @click="historyDialog = false" color="primary" text>
+                <v-card-actions class="justify-center">
+                  <v-btn @click="historyDialog = false" class="mb-5" outlined>
                     <span>CLOSE</span>
                   </v-btn>
                 </v-card-actions>
