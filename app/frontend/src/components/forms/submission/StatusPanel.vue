@@ -135,7 +135,7 @@
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn @click="historyDialog = false" class="mb-5" outlined>
+                  <v-btn @click="historyDialog = false" class="mb-5 close-dlg" color="primary">
                     <span>CLOSE</span>
                   </v-btn>
                 </v-card-actions>
