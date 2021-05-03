@@ -31,7 +31,7 @@
             :items="history"
             :loading="loading"
             loading-text="Loading... Please wait"
-            item-key="statusId"
+            item-key="id"
             class="status-table"
           >
             <template #[`item.actionTimestamp`]="{ item }">
