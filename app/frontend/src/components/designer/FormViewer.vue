@@ -1,6 +1,5 @@
 <template>
   <div class="form-wrapper">
-    <h1 v-if="displayTitle" class="my-6 text-center">{{ form.name }}</h1>
     <slot name="alert" v-bind:form="form" />
 
     <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
@@ -13,8 +12,8 @@
         @customEvent="onCustomEvent"
         :options="viewerOptions"
       />
+      <p v-if="version" class="text-right">Version: {{ version }}</p>
     </v-skeleton-loader>
-    <p v-if="version" class="text-right">Version: {{ version }}</p>
   </div>
 </template>
 
