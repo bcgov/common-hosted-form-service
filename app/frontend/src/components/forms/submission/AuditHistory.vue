@@ -18,9 +18,7 @@
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="headline pb-0">
-          Log of Changes to this Submission
-        </v-card-title>
+        <v-card-title class="headline pb-0"> Edit History </v-card-title>
         <v-card-text>
           <hr />
           <p>
@@ -43,7 +41,7 @@
         </v-card-text>
 
         <v-card-actions class="justify-center">
-          <v-btn class="mb-5" outlined @click="dialog = false">
+          <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
             <span>Close</span>
           </v-btn>
         </v-card-actions>
