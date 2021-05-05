@@ -19,7 +19,7 @@
         </v-col>
         <v-spacer />
         <v-col class="text-sm-right" cols="12" sm="6">
-          <span v-if="canViewAllSubmissions()">
+          <span>
             <v-tooltip bottom>
               <template #activator="{ on, attrs }">
                 <router-link
@@ -33,7 +33,6 @@
                     v-on="on"
                   >
                     <v-icon class="mr-1">content_copy</v-icon>
-                    <span>Submissions</span>
                   </v-btn>
                 </router-link>
               </template>
@@ -132,7 +131,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { FormPermissions } from '@/utils/constants';
 
 import AuditHistory from '@/components/forms/submission/AuditHistory.vue';
 import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
@@ -169,20 +167,12 @@ export default {
       this.submissionReadOnly = !editing;
       this.reRenderSubmission += 1;
     },
-    canViewAllSubmissions() {
-      const perms = [
-        FormPermissions.SUBMISSION_READ,
-        FormPermissions.SUBMISSION_UPDATE,
-      ];
-      return this.permissions.some((p) => perms.includes(p));
-    },
   },
   async mounted() {
     await this.fetchSubmission({ submissionId: this.submissionId });
-    this.loading = false;
-
     // get current user's permissions on associated form
     await this.getFormPermissionsForUser(this.form.id);
+    this.loading = false;
   },
 };
 </script>
