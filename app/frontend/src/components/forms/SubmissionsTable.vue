@@ -86,7 +86,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FormPermissions } from '@/utils/constants';
+import { FormManagePermissions } from '@/utils/constants';
 
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
@@ -140,14 +140,7 @@ export default {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions', 'getFormPermissionsForUser']),
 
     checkFormManage() {
-      const perms = [
-        FormPermissions.FORM_UPDATE,
-        FormPermissions.FORM_DELETE,
-        FormPermissions.DESIGN_UPDATE,
-        FormPermissions.DESIGN_DELETE,
-        FormPermissions.TEAM_UPDATE
-      ];
-      return this.permissions.some(p => perms.includes(p));
+      return this.permissions.some(p => FormManagePermissions.includes(p));
     },
 
     async populateSubmissionsTable() {
@@ -177,13 +170,10 @@ export default {
     },
   },
 
-  created(){
-    // Get the permissions for this form
-    this.getFormPermissionsForUser(this.formId);
-  },
-
   mounted() {
     this.fetchForm(this.formId);
+    // Get the permissions for this form
+    this.getFormPermissionsForUser(this.formId);
     this.populateSubmissionsTable();
   },
 };
