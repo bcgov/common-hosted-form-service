@@ -9,7 +9,7 @@
         <template #activator="{ on, attrs }">
           <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
             <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
-              <v-icon class="mr-1">content_copy</v-icon>
+              <v-icon class="mr-1">view_list</v-icon>
             </v-btn>
           </router-link>
         </template>

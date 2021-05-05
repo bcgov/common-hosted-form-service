@@ -74,9 +74,8 @@
             },
           }"
         >
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">remove_red_eye</v-icon>
-            <span>VIEW</span>
+          <v-btn color="primary" icon>
+            <v-icon>remove_red_eye</v-icon>
           </v-btn>
         </router-link>
       </template>

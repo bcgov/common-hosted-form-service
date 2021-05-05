@@ -28,11 +28,11 @@
                   <v-btn
                     class="mx-1"
                     color="primary"
-                    text
+                    icon
                     v-bind="attrs"
                     v-on="on"
                   >
-                    <v-icon class="mr-1">content_copy</v-icon>
+                    <v-icon class="mr-1">view_list</v-icon>
                   </v-btn>
                 </router-link>
               </template>

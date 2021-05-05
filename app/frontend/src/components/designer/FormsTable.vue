@@ -90,7 +90,7 @@
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">content_copy</v-icon>
+            <v-icon class="mr-1">view_list</v-icon>
             <span class="d-none d-sm-flex">Submissions</span>
           </v-btn>
         </router-link>
