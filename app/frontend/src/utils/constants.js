@@ -42,6 +42,15 @@ export const FormPermissions = Object.freeze({
   TEAM_UPDATE: 'team_update'
 });
 
+/** Permissions a user needs to Manage a Form */
+export const FormManagePermissions = [
+  FormPermissions.FORM_UPDATE,
+  FormPermissions.FORM_DELETE,
+  FormPermissions.DESIGN_UPDATE,
+  FormPermissions.DESIGN_DELETE,
+  FormPermissions.TEAM_UPDATE
+];
+
 /** Identity modes that a form can operate in regards to user identification */
 export const IdentityMode = Object.freeze({
   LOGIN: 'login', // Requires Login
