@@ -821,6 +821,30 @@ class FormIdentityProvider extends Timestamps(Model) {
   }
 }
 
+class SubmissionAudit extends Model {
+  static get tableName() {
+    return 'form_submission_audit';
+  }
+
+  static get modifiers() {
+    return {
+      filterId(query, value) {
+        if (value) {
+          query.where('id', value);
+        }
+      },
+      filterSubmissionId(query, value) {
+        if (value) {
+          query.where('submissionId', value);
+        }
+      },
+      orderDefault(builder) {
+        builder.orderBy('actionTimestamp', 'DESC');
+      }
+    };
+  }
+}
+
 class SubmissionMetadata extends Model {
   static get tableName() {
     return 'submissions_vw';
@@ -1093,6 +1117,7 @@ module.exports = {
   PublicFormAccess: PublicFormAccess,
   Role: Role,
   StatusCode: StatusCode,
+  SubmissionAudit: SubmissionAudit,
   SubmissionMetadata: SubmissionMetadata,
   User: User,
   UserFormAccess: UserFormAccess

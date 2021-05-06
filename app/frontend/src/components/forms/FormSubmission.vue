@@ -32,8 +32,53 @@
         class="pl-0 pt-0"
       >
         <v-card outlined class="review-form">
-          <h2 class="review-heading">Submission</h2>
-          <FormViewer :displayTitle="false" :submissionId="submissionId" />
+          <v-row no-gutters>
+            <v-col cols="12" sm="6">
+              <h2 class="review-heading">Submission</h2>
+            </v-col>
+            <v-spacer />
+            <v-col
+              v-if="form.enableStatusUpdates"
+              class="text-sm-right"
+              cols="12"
+              sm="6"
+            >
+              <span v-if="submissionReadOnly">
+                <AuditHistory :submissionId="submissionId" />
+                <v-tooltip bottom>
+                  <template #activator="{ on, attrs }">
+                    <v-btn
+                      class="mx-1"
+                      @click="toggleSubmissionEdit(true)"
+                      color="primary"
+                      :disabled="!submissionReadOnly"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon>mode_edit</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Edit This Submission</span>
+                </v-tooltip>
+              </span>
+              <v-btn
+                v-else
+                outlined
+                color="textLink"
+                @click="toggleSubmissionEdit(false)"
+              >
+                <span>CANCEL</span>
+              </v-btn>
+            </v-col>
+          </v-row>
+          <FormViewer
+            :displayTitle="false"
+            :submissionId="submissionId"
+            :readOnly="submissionReadOnly"
+            :key="reRenderSubmission"
+            @submission-updated="toggleSubmissionEdit(false)"
+          />
         </v-card>
       </v-col>
 
@@ -51,7 +96,7 @@
           <StatusPanel
             :submissionId="submissionId"
             :formId="form.id"
-            v-on:note-updated="refreshNotes"
+            @note-updated="refreshNotes"
           />
         </v-card>
         <v-card outlined class="review-form">
@@ -66,6 +111,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
+import AuditHistory from '@/components/forms/submission/AuditHistory.vue';
 import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
 import FormViewer from '@/components/designer/FormViewer.vue';
 import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
@@ -74,6 +120,7 @@ import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
 export default {
   name: 'FormSubmission',
   components: {
+    AuditHistory,
     DeleteSubmission,
     FormViewer,
     NotesPanel,
@@ -85,6 +132,8 @@ export default {
   data() {
     return {
       loading: true,
+      reRenderSubmission: 0,
+      submissionReadOnly: true,
     };
   },
   computed: mapGetters('form', ['form', 'formSubmission']),
@@ -92,6 +141,10 @@ export default {
     ...mapActions('form', ['fetchSubmission']),
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
+    },
+    toggleSubmissionEdit(editing) {
+      this.submissionReadOnly = !editing;
+      this.reRenderSubmission += 1;
     },
   },
   async mounted() {

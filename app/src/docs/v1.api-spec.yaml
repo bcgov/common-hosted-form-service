@@ -100,6 +100,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormBasic"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -121,6 +123,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Form"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -147,6 +151,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Form"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -167,6 +173,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormBasic"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -225,6 +233,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/FormSubmissionExport"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -248,6 +258,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/FormVersion"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -270,6 +282,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormVersion"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -291,6 +305,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Form"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -320,6 +336,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormVersionBasic"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -343,6 +361,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/FormDraft"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -377,6 +397,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormDraft"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -399,6 +421,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormDraft"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -430,6 +454,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormDraft"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -447,6 +473,8 @@ paths:
       responses:
         "204":
           description: "OK"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -469,6 +497,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormVersionBasic"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -492,6 +522,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/FormSubmissionSummary"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -516,6 +548,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/FormSubmission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -543,6 +577,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormSubmission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -564,6 +600,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SubmissionFormVersion"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -590,6 +628,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormSubmission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -610,6 +650,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FormSubmission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -650,6 +692,33 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/EmailMessage"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /submissions/{formSubmissionId}/edits:
+    get:
+      summary: Get an audit list of edits to a submission
+      operationId: readSubmissionEdits
+      tags:
+        - Submission
+      parameters:
+        - $ref: "#/components/parameters/formSubmissionIdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubmissionEditMetadata"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -673,6 +742,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/StatusCodes"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -696,6 +767,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/SubmissionStatusHistory"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -722,6 +795,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SubmissionStatusHistory"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -747,6 +822,8 @@ paths:
                   allOf:
                     - $ref: "#/components/schemas/Note"
                     - $ref: "#/components/schemas/TimeStampUserData"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -773,6 +850,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Note"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -809,6 +888,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/FileUpload"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -831,6 +912,8 @@ paths:
               schema:
                 type: string
                 format: binary
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -847,6 +930,8 @@ paths:
       responses:
         "202":
           description: "Accepted"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -994,6 +1079,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Role"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -1051,6 +1138,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Role"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -1134,6 +1223,8 @@ paths:
                   - type: array
                     items:
                       $ref: "#/components/schemas/UserForm"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -1253,6 +1344,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserAccess"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -1290,6 +1383,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserAccess"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -1389,6 +1484,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserAccess"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -1432,6 +1529,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserAccess"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -1489,6 +1588,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -1518,6 +1619,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         default:
           description: Unexpected error
           content:
@@ -2249,6 +2352,21 @@ components:
                   items:
                     type: string
         - $ref: "#/components/schemas/TimeStampUserData"
+    SubmissionEditMetadata:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        updatedByUsername:
+          type: string
+          example: jsmith
+        actionTimestamp:
+          type: string
+          example: '2020-06-04T18:49:20.672Z'
+        action:
+          type: string
+          example: U
     SubmissionFormVersion:
       allOf:
         - $ref: "#/components/schemas/Form"

@@ -1,4 +1,4 @@
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionMetadata } = require('../common/models');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 
 const { transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
@@ -67,6 +67,14 @@ const service = {
       throw err;
     }
 
+  },
+
+  // get the audit history metadata
+  listEdits: async (submissionId) => {
+    return SubmissionAudit.query()
+      .select('id', 'updatedByUsername', 'actionTimestamp', 'action')
+      .where('submissionId', submissionId)
+      .modify('orderDefault');
   },
   // --------------------------------------------------------------------------------------------/Submissions
 
