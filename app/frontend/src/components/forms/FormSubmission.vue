@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-5">
     <div v-if="loading">
       <v-skeleton-loader type="article" />
     </div>
@@ -19,6 +19,27 @@
         </v-col>
         <v-spacer />
         <v-col class="text-sm-right" cols="12" sm="6">
+          <span>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <router-link
+                  :to="{ name: 'FormSubmissions', query: { f: form.id } }"
+                >
+                  <v-btn
+                    class="mx-1"
+                    color="primary"
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon class="mr-1">view_list</v-icon>
+                  </v-btn>
+                </router-link>
+              </template>
+              <span>View All Submissions</span>
+            </v-tooltip>
+          </span>
+
           <DeleteSubmission :submissionId="submissionId" />
         </v-col>
       </v-row>
@@ -136,9 +157,9 @@ export default {
       submissionReadOnly: true,
     };
   },
-  computed: mapGetters('form', ['form', 'formSubmission']),
+  computed: mapGetters('form', ['form', 'formSubmission', 'permissions']),
   methods: {
-    ...mapActions('form', ['fetchSubmission']),
+    ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
     },
@@ -149,6 +170,8 @@ export default {
   },
   async mounted() {
     await this.fetchSubmission({ submissionId: this.submissionId });
+    // get current user's permissions on associated form
+    await this.getFormPermissionsForUser(this.form.id);
     this.loading = false;
   },
 };

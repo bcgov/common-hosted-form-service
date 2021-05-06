@@ -6,6 +6,28 @@
       </v-col>
       <v-spacer />
       <v-col class="text-sm-right" cols="12" sm="6">
+
+        <span v-if="checkFormManage">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  :disabled="!formId"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>settings</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>Manage Form</span>
+          </v-tooltip>
+        </span>
+
+
         <ExportSubmissions />
       </v-col>
     </v-row>
@@ -52,9 +74,8 @@
             },
           }"
         >
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">remove_red_eye</v-icon>
-            <span>VIEW</span>
+          <v-btn color="primary" icon>
+            <v-icon>remove_red_eye</v-icon>
           </v-btn>
         </router-link>
       </template>
@@ -64,6 +85,8 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { FormManagePermissions } from '@/utils/constants';
+
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
 export default {
@@ -85,7 +108,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'submissionList']),
+    ...mapGetters('form', ['form', 'submissionList', 'permissions']),
     headers() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
@@ -113,7 +136,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
+    ...mapActions('form', ['fetchForm', 'fetchSubmissions', 'getFormPermissionsForUser']),
+
+    checkFormManage() {
+      return this.permissions.some(p => FormManagePermissions.includes(p));
+    },
+
     async populateSubmissionsTable() {
       try {
         // Get the submissions for this form
@@ -140,8 +168,11 @@ export default {
       }
     },
   },
+
   mounted() {
     this.fetchForm(this.formId);
+    // Get the permissions for this form
+    this.getFormPermissionsForUser(this.formId);
     this.populateSubmissionsTable();
   },
 };

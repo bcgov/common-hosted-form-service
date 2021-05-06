@@ -248,13 +248,13 @@ const service = {
       await FormSubmission.query(trx).insert(obj);
 
       if (!isPublicForm && !currentUser.public) {
-        // Provide the submission creator full CRUD permissions if this is a non-public form
-        // We know this is the submission creator when we seet the SUBMISSION_CREATE permission
+        // Provide the submission creator appropriate CRUD permissions if this is a non-public form
+        // we decided that subitter cannot delete their own submission
+        // We know this is the submission creator when we see the SUBMISSION_CREATE permission
         const items = [
           Permissions.SUBMISSION_CREATE,
           Permissions.SUBMISSION_READ,
           Permissions.SUBMISSION_UPDATE,
-          Permissions.SUBMISSION_DELETE
         ].map(perm => ({
           id: uuidv4(),
           userId: currentUser.id,

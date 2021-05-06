@@ -90,8 +90,8 @@
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">remove_red_eye</v-icon>
-            <span class="d-none d-sm-flex">View Submissions</span>
+            <v-icon class="mr-1">view_list</v-icon>
+            <span class="d-none d-sm-flex">Submissions</span>
           </v-btn>
         </router-link>
       </template>

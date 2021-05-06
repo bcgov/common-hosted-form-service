@@ -1,4 +1,4 @@
-import { FormPermissions, IdentityProviders } from '@/utils/constants';
+import { FormPermissions, FormManagePermissions, IdentityProviders } from '@/utils/constants';
 import { formService } from '@/services';
 import store from '@/store';
 
@@ -25,14 +25,7 @@ export function checkFormSubmit(userForm) {
  * @returns {boolean} TRUE if they can
  */
 export function checkFormManage(userForm) {
-  const perms = [
-    FormPermissions.FORM_UPDATE,
-    FormPermissions.FORM_DELETE,
-    FormPermissions.DESIGN_UPDATE,
-    FormPermissions.DESIGN_DELETE,
-    FormPermissions.TEAM_UPDATE
-  ];
-  return userForm && userForm.permissions && userForm.permissions.some(p => perms.includes(p));
+  return userForm && userForm.permissions && userForm.permissions.some(p => FormManagePermissions.includes(p));
 }
 
 /**
