@@ -217,6 +217,17 @@ export default {
   },
 
   /**
+   * @function updateSubmission
+   * Update an existing submission
+   * @param {string} submissionId The form uuid
+   * @param {Object} requestBody The form data for the submission
+   * @returns {Promise} An axios response
+   */
+  updateSubmission(submissionId, requestBody) {
+    return appAxios().put(`/submissions/${submissionId}`, requestBody);
+  },
+
+  /**
   * @function getSubmission
   * Get the form data + version + submission data
   * @param {string} submissionId The form submission identifier
@@ -242,6 +253,16 @@ export default {
   },
 
   /**
+   * @function listSubmissionEdits
+   * Get the audit history for edits of a submission
+   * @param {string} submissionId The submission uuid
+   * @returns {Promise} An axios response
+   */
+  listSubmissionEdits(submissionId) {
+    return appAxios().get(`/submissions/${submissionId}/edits`);
+  },
+
+  /**
    * @function exportSubmissions
    * Get the export file for a range of form submittions
    * @param {string} minDate The form uuid
@@ -262,6 +283,11 @@ export default {
       }
     );
   },
+
+
+  //
+  // Notes and Status
+  //
 
   /**
   * @function getSubmissionNotes

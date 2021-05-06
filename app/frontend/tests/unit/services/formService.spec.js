@@ -238,6 +238,20 @@ describe('Form Service', () => {
     });
   });
 
+  describe('put submissions/{submissionId}', () => {
+    const endpoint = `submissions/${zeroUuid}`;
+
+    it('calls update on endpoint', async () => {
+      const data = { test: 'testdata' };
+      mockAxios.onPut(endpoint).reply(200, data);
+
+      const result = await formService.updateSubmission(zeroUuid, data);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(data);
+      expect(mockAxios.history.put).toHaveLength(1);
+    });
+  });
+
   describe('forms/{formId}/submissions', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/submissions`;
 
@@ -245,6 +259,18 @@ describe('Form Service', () => {
       mockAxios.onGet(endpoint).reply(200);
 
       const result = await formService.listSubmissions(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+  describe('submissions/{submissionId}/edits', () => {
+    const endpoint = `submissions/${zeroUuid}/edits`;
+
+    it('calls get on endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.listSubmissionEdits(zeroUuid);
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });

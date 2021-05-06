@@ -39,4 +39,14 @@ routes.post('/:formSubmissionId/email', currentUser, hasSubmissionPermissions(P.
   await controller.email(req, res, next);
 });
 
+routes.get('/:formSubmissionId/edits', currentUser, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+  await controller.listEdits(req, res, next);
+});
+
+// Implement this when we want to fetch a specific audit row including the whole old submission record
+// routes.get('/:formSubmissionId/edits/:auditId', currentUser, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+//   await controller.listEdits(req, res, next);
+// });
+
+
 module.exports = routes;
