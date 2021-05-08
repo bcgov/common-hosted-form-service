@@ -1,5 +1,6 @@
 <template>
   <div class="form-wrapper">
+    <h1 v-if="displayTitle" class="my-6 text-center">{{ form.name }}</h1>
     <slot name="alert" v-bind:form="form" />
 
     <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
