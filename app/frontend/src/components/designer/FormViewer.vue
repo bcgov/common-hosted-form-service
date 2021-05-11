@@ -1,9 +1,33 @@
 <template>
   <div class="form-wrapper">
-    <h1 v-if="displayTitle" class="my-6 text-center">{{ form.name }}</h1>
-    <slot name="alert" v-bind:form="form" />
-
     <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+      <div v-if="displayTitle">
+        <div v-if="!isFormPublic(form)" class="text-right" cols="12" sm="6">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link
+                :to="{ name: 'UserSubmissions', query: { f: formId } }"
+              >
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>view_list</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>View your Previous Submissions</span>
+          </v-tooltip>
+        </div>
+
+        <h1 class="mb-6 text-center">{{ form.name }}</h1>
+      </div>
+
+      <slot name="alert" v-bind:form="form" />
+
       <Form
         :form="formSchema"
         :submission="submission"
@@ -23,6 +47,7 @@ import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
+import { isFormPublic } from '@/utils/permissionUtils';
 import { formService } from '@/services';
 
 export default {
@@ -82,6 +107,7 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('form', ['setDirtyFlag']),
+    isFormPublic: isFormPublic,
     // Get the data for a form submission
     async getFormData() {
       try {
