@@ -7,7 +7,11 @@
       <v-spacer />
       <v-col class="text-sm-right" cols="12" sm="6">
         <span>
-          <AddTeamMember @adding-users="addingUsers" @new-users="addNewUsers" />
+          <AddTeamMember
+            :disabled="!canManageTeam"
+            @adding-users="addingUsers"
+            @new-users="addNewUsers"
+          />
         </span>
         <span v-if="!isAddingUsers">
           <v-tooltip bottom>
@@ -38,10 +42,11 @@
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
+          class="pb-5"
+          :disabled="!canManageTeam"
+          hide-details
           label="Search"
           single-line
-          hide-details
-          class="pb-5"
         />
       </v-col>
     </v-row>
@@ -172,11 +177,11 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 
 import { rbacService, roleService } from '@/services';
-import { FormRoleCodes, IdentityMode } from '@/utils/constants';
+import { IdentityMode, FormPermissions, FormRoleCodes } from '@/utils/constants';
 import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
 
 export default {
@@ -192,6 +197,10 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.userType']),
+    ...mapGetters('form', ['permissions']),
+    canManageTeam() {
+      return this.permissions.includes(FormPermissions.TEAM_UPDATE);
+    },
     roleOrder: () => Object.values(FormRoleCodes),
   },
   data() {
@@ -211,7 +220,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('form', ['fetchForm']),
+    ...mapActions('form', ['fetchForm', 'getFormPermissionsForUser']),
     ...mapActions('notifications', ['addNotification']),
     addingUsers(adding) {
       this.isAddingUsers = adding;
@@ -302,13 +311,22 @@ export default {
     },
     async getFormUsers() {
       try {
+        if (!this.canManageTeam) {
+          throw new Error('Insufficient permissions to manage team');
+        }
         const response = await rbacService.getFormUsers({
           formId: this.formId,
           roles: '*',
         });
         this.formUsers = response.data;
       } catch (error) {
-        console.error(`Error getting form users: ${error}`); // eslint-disable-line no-console
+        this.addNotification({
+          message: error.message,
+          consoleError: `Error getting form users: ${error}`,
+        });
+        this.formUsers = [];
+      } finally {
+        this.createTableData(); // Force refresh table based on latest API response
       }
     },
     async getRolesList() {
@@ -316,7 +334,13 @@ export default {
         const response = await roleService.list();
         this.roleList = response.data;
       } catch (error) {
-        console.error(`Error getting list of roles: ${error}`); // eslint-disable-line no-console
+        this.addNotification({
+          message: error.message,
+          consoleError: `Error getting list of roles: ${error}`,
+        });
+        this.roleList = [];
+      } finally {
+        this.createHeaders();
       }
     },
     onCheckboxToggle(userId, header) {
@@ -385,15 +409,14 @@ export default {
         await rbacService.setFormUsers(userRoles, {
           formId: this.formId,
         });
+        await this.getFormPermissionsForUser(this.formId);
         await this.getFormUsers();
-        this.createTableData(); // Force refresh table based on latest API response
       } catch (error) {
         this.addNotification({
           message:
             'An error occurred while attempting to update all user roles',
           consoleError: `Error setting all user roles for form ${this.formId}: ${error}`,
         });
-        this.createTableData(); // Force refresh table based on latest API response
       }
       this.updating = false;
     },
@@ -411,15 +434,14 @@ export default {
           formId: this.formId,
           userId: userId,
         });
+        await this.getFormPermissionsForUser(this.formId);
         await this.getFormUsers();
-        // this.createTableData(); // Force refresh table based on latest API response
       } catch (error) {
         this.addNotification({
           message:
             'An error occurred while attempting to update roles for a user',
           consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
         });
-        this.createTableData(); // Force refresh table based on latest API response
       }
       this.updating = false;
     },
@@ -428,11 +450,10 @@ export default {
     // TODO: Make sure vuex fetchForm has been called at least once before this
     await Promise.all([
       this.fetchForm(this.formId),
-      this.getFormUsers(),
+      this.getFormPermissionsForUser(this.formId),
       this.getRolesList()
     ]);
-    this.createHeaders();
-    this.createTableData();
+    await this.getFormUsers(),
     this.loading = false;
   },
 };
