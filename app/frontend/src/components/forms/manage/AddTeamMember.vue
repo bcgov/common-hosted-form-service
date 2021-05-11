@@ -60,6 +60,7 @@
             class="mx-1"
             @click="addingUsers = true"
             color="primary"
+            :disabled="disabled"
             icon
             v-bind="attrs"
             v-on="on"
@@ -77,6 +78,12 @@
 import { userService } from '@/services';
 
 export default {
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       addingUsers: false,
