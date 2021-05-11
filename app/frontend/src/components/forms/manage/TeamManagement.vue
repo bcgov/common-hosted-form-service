@@ -220,7 +220,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('form', ['fetchForm']),
+    ...mapActions('form', ['fetchForm', 'getFormPermissionsForUser']),
     ...mapActions('notifications', ['addNotification']),
     addingUsers(adding) {
       this.isAddingUsers = adding;
@@ -325,6 +325,8 @@ export default {
           consoleError: `Error getting form users: ${error}`,
         });
         this.formUsers = [];
+      } finally {
+        this.createTableData(); // Force refresh table based on latest API response
       }
     },
     async getRolesList() {
@@ -337,6 +339,8 @@ export default {
           consoleError: `Error getting list of roles: ${error}`,
         });
         this.roleList = [];
+      } finally {
+        this.createHeaders();
       }
     },
     onCheckboxToggle(userId, header) {
@@ -405,15 +409,14 @@ export default {
         await rbacService.setFormUsers(userRoles, {
           formId: this.formId,
         });
+        await this.getFormPermissionsForUser(this.formId);
         await this.getFormUsers();
-        this.createTableData(); // Force refresh table based on latest API response
       } catch (error) {
         this.addNotification({
           message:
             'An error occurred while attempting to update all user roles',
           consoleError: `Error setting all user roles for form ${this.formId}: ${error}`,
         });
-        this.createTableData(); // Force refresh table based on latest API response
       }
       this.updating = false;
     },
@@ -431,15 +434,14 @@ export default {
           formId: this.formId,
           userId: userId,
         });
+        await this.getFormPermissionsForUser(this.formId);
         await this.getFormUsers();
-        this.createTableData(); // Force refresh table based on latest API response
       } catch (error) {
         this.addNotification({
           message:
             'An error occurred while attempting to update roles for a user',
           consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
         });
-        this.createTableData(); // Force refresh table based on latest API response
       }
       this.updating = false;
     },
@@ -448,11 +450,10 @@ export default {
     // TODO: Make sure vuex fetchForm has been called at least once before this
     await Promise.all([
       this.fetchForm(this.formId),
-      this.getFormUsers(),
+      this.getFormPermissionsForUser(this.formId),
       this.getRolesList()
     ]);
-    this.createHeaders();
-    this.createTableData();
+    await this.getFormUsers(),
     this.loading = false;
   },
 };
