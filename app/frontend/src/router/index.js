@@ -193,6 +193,26 @@ export default function getRouter(basePath = '/') {
               breadcrumbTitle: 'History'
             }
           },
+          {
+            path: 'submissions',
+            name: 'UserSubmissions',
+            component: () => import(/* webpackChunkName: "usersubmissions" */ '@/views/user/Submissions.vue'),
+            meta: {
+              breadcrumbTitle: 'Previous Submissions',
+              formSubmitMode: true,
+            },
+            props: createProps
+          },
+          {
+            path: 'view',
+            name: 'UserFormView',
+            component: () => import(/* webpackChunkName: "userformview" */ '@/views/user/SubmissionView.vue'),
+            meta: {
+              breadcrumbTitle: 'Submission',
+              formSubmitMode: true,
+            },
+            props: createProps
+          },
         ],
         meta: {
           requiresAuth: true,
