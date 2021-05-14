@@ -75,6 +75,10 @@ routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPe
   await controller.createSubmission(req, res, next);
 });
 
+routes.get('/:formId/versions/:formVersionId/submissions/discover', (req, res, next) => {
+  controller.listSubmissionFields(req, res, next);
+});
+
 // routes.get('/:formId/versions/:formVersionId/submissions/:formSubmissionId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
 //   next(new Problem(410, { detail: 'This method is deprecated, use /submissions to read a submission.' }));
 // });

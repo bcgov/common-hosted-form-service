@@ -122,6 +122,23 @@ module.exports = {
       next(error);
     }
   },
+  listSubmissionFields: async (req, res, next) => {
+    try {
+      const fields = [];
+      if (req.query.fields) {
+        if (Array.isArray(req.query.fields)) {
+          fields.push(req.query.fields.flatMap(f => f.split(',').map(s => s.trim())));
+        } else {
+          fields.push(req.query.fields.split(',').map(s => s.trim()));
+        }
+      }
+
+      const response = await service.listSubmissionFields(req.params.formVersionId, fields.flat());
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   listDrafts: async (req, res, next) => {
     try {
       const response = await service.listDrafts(req.params.formId, req.query);
