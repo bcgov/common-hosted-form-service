@@ -87,6 +87,14 @@ module.exports = {
       next(error);
     }
   },
+  readVersionFields: async (req, res, next) => {
+    try {
+      const response = await service.readVersionFields(req.params.formVersionId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   publishVersion: async (req, res, next) => {
     try {
       const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.query, req.currentUser);

@@ -221,6 +221,26 @@ const service = {
       .throwIfNotFound();
   },
 
+  readVersionFields: async (formVersionId) => {
+    const fields = [];
+
+    // Recursively find field key names
+    const findFields = (obj) => {
+      if (obj.components && obj.components.length) {
+        obj.components.forEach(o => findFields(o));
+      }
+      // Only add to list if it is an input field
+      if (obj.input) fields.push(obj.key);
+    };
+
+    const { schema } = await FormVersion.query()
+      .findById(formVersionId)
+      .throwIfNotFound();
+
+    schema.components.forEach(c => findFields(c));
+    return fields;
+  },
+
   listSubmissions: async (formVersionId) => {
     return FormSubmission.query()
       .where('formVersionId', formVersionId)
