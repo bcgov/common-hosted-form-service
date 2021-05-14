@@ -228,8 +228,8 @@ const service = {
       const fields = [];
       // Only add key if it is an input and visible
       if (obj.input && !obj.hidden) fields.push(obj.key);
-      // Check children components
-      if (obj.components && obj.components.length) {
+      // Check children components that aren't inputs
+      else if (!obj.hidden && obj.components && obj.components.length) {
         fields.push(obj.components.flatMap(o => findFields(o)));
       }
       return fields.flat();
