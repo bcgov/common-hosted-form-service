@@ -222,23 +222,24 @@ const service = {
   },
 
   readVersionFields: async (formVersionId) => {
-    const fields = [];
-
-    // Recursively find field key names
+    // Recursively find all field key names
+    // TODO: Consider if this should be a form utils function instead?
     const findFields = (obj) => {
+      const fields = [];
+      // Only add key if it is an input and visible
+      if (obj.input && !obj.hidden) fields.push(obj.key);
+      // Check children components
       if (obj.components && obj.components.length) {
-        obj.components.forEach(o => findFields(o));
+        fields.push(obj.components.flatMap(o => findFields(o)));
       }
-      // Only add to list if it is an input field
-      if (obj.input) fields.push(obj.key);
+      return fields.flat();
     };
 
     const { schema } = await FormVersion.query()
       .findById(formVersionId)
       .throwIfNotFound();
 
-    schema.components.forEach(c => findFields(c));
-    return fields;
+    return schema.components.flatMap(c => findFields(c));
   },
 
   listSubmissions: async (formVersionId) => {
