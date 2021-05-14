@@ -5,7 +5,7 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const Problem = require('api-problem');
-const { transaction } = require('objection');
+const { ref, transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 
 const service = {
@@ -326,6 +326,13 @@ const service = {
       if (trx) await trx.rollback();
       throw err;
     }
+  },
+
+  listSubmissionFields: (formVersionId, fields) => {
+    return FormSubmission.query()
+      .select(fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))))
+      .where('formVersionId', formVersionId)
+      .modify('orderDescending');
   },
 
   readSubmission: async (id) => {
