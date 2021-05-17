@@ -1,10 +1,35 @@
 <template>
   <div>
     <v-skeleton-loader :loading="loading" type="heading">
-      <div class="text-center mt-6">
-        <h1>Previous Submissions</h1>
-        <h2>{{ form.name }}</h2>
-      </div>
+      <v-row class="mt-6" no-gutters>
+        <v-col class="text-center" cols="12" sm="10" offset-sm="1">
+          <h1>Previous Submissions</h1>
+          <h2>{{ form.name }}</h2>
+        </v-col>
+        <v-col class="text-right" cols="12" sm="1">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link
+                :to="{
+                  name: 'FormSubmit',
+                  query: { f: form.id },
+                }"
+              >
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>add_circle</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>Create a New Submission</span>
+          </v-tooltip>
+        </v-col>
+      </v-row>
     </v-skeleton-loader>
 
     <v-row no-gutters>
@@ -33,7 +58,7 @@
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
-      no-data-text="You have made any submissions of this form yet"
+      no-data-text="You have no submissions"
     >
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
