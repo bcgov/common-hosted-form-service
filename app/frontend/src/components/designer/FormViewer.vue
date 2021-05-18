@@ -6,7 +6,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <router-link
-                :to="{ name: 'UserSubmissions', query: { f: formId } }"
+                :to="{ name: 'UserSubmissions', query: { f: form.id } }"
               >
                 <v-btn
                   class="mx-1"
