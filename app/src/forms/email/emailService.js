@@ -70,14 +70,23 @@ const service = {
       try {
         // these may get persisted at some point...
         // along with a template path, mess
+        const messageLinks = [
+          {
+            text: 'View this submission',
+            url: `${service._appUrl(referer)}/form/success?s=${submission.id}`
+          },
+          {
+            text: 'List all your previous submissions to this form',
+            url: `${service._appUrl(referer)}/user/submissions?f=${form.id}`
+          }
+        ];
         const config = {
           template: 'triggered-notification-email-template.html',
           from: constants.EmailProperties.FROM_EMAIL,
           subject: `${form.name} Submission`,
           title: `${form.name} Submission`,
           priority: 'normal',
-          messageLinkText: '',
-          messageLinkUrl: `${service._appUrl(referer)}/form/success?s=`
+          messageLinks: messageLinks
         };
 
         const assetsPath = path.join(__dirname, 'assets');
@@ -88,8 +97,7 @@ const service = {
             context: {
               confirmationNumber: submission.confirmationId,
               title: config.title,
-              messageLinkText: config.messageLinkText,
-              messageLinkUrl: `${config.messageLinkUrl}${submission.id}`
+              messageLinks: config.messageLinks
             },
             to: [body.to]
           }
