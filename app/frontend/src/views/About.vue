@@ -4,7 +4,7 @@
       <v-row justify="center">
         <v-col lg="8">
           <h1 class="my-5">
-            Create and publish forms, and receive submissions from your users TEST123
+            Create and publish forms, and receive submissions from your users
           </h1>
           <p>
             The Common Hosted Form Service is available to BC Government
