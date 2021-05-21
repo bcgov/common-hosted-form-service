@@ -1,7 +1,7 @@
+const previousMigration  = require('./20201019100738_007-public-submission-data-vw').up;
 
 exports.up = function (knex) {
   return Promise.resolve()
-
     // JOIN user table to submissions_vw on form_submission_status.assignedToUserId to get 'assigned to' user
     .then(() => knex.schema.raw(`create or replace
     view submissions_vw as
@@ -47,18 +47,14 @@ exports.up = function (knex) {
         st."assignedToUserId" = u."id"
       ORDER BY
         s."createdAt" DESC`));
-
 };
 
 exports.down = function (knex) {
-
   // to revert this migration and (remove the new columns)
   // we need to  drop..cascade the modified view
   // AND recreate any dependent views
   // currently the only dependent view: 'submissions_data_vw'
-
   return Promise.resolve()
-
     // drop the modified 'submissions_vw' view and all dependent views
     .then(() => knex.schema.raw('drop view submissions_vw cascade'))
 
@@ -90,15 +86,5 @@ exports.down = function (knex) {
     ORDER BY s."createdAt" DESC`))
 
     // recreate dependent view 'submissions_data_vw' from migration 007
-    .then(() => knex.schema.raw(`create or replace view submissions_data_vw as
-    select s."confirmationId", s."formName", s.version, s."createdAt",
-           case when u.id is null then 'public'::varchar(255) else u."fullName" end as "fullName", case when u.id is null then 'public'::varchar(255) else u.username end as "username", u.email,
-           fs.submission -> 'data' AS "submission", s.deleted, s.draft,
-           s."submissionId", s."formId", s."formVersionId", u.id as "userId", u."keycloakId", u."firstName", u."lastName"
-    from submissions_vw s
-        inner join form_submission fs on s."submissionId" = fs.id
-        left outer join form_submission_user fsu on s."submissionId" = fsu."formSubmissionId" and fsu.permission = 'submission_create'
-        left outer join "user" u on fsu."userId" = u.id
-    order by s."createdAt", s."formName", s.version`));
-
+    .then(() => previousMigration(knex));
 };
