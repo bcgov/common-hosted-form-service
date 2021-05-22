@@ -124,17 +124,6 @@
         this form and will be activated after it is saved.
       </p>
     </BaseInfoCard>
-    <v-row class="mt-4" no-gutters>
-      <v-spacer />
-      <v-col class="text-sm-right" cols="12" sm="3">
-        <v-select
-          dense
-          :items="advancedItems"
-          outlined
-          v-model="advancedForm"
-        />
-      </v-col>
-    </v-row>
     <FormBuilder
       :form="formSchema"
       :key="reRenderFormIo"
@@ -172,7 +161,6 @@ export default {
   },
   data() {
     return {
-      advancedForm: false,
       advancedItems: [
         { text: 'Simple Mode', value: false },
         { text: 'Advanced Mode', value: true },
@@ -209,94 +197,71 @@ export default {
       return IdentityProviders;
     },
     designerOptions() {
-      if (!this.advancedForm) {
-        return {
-          noDefaultSubmitButton: false,
-          builder: {
-            basic: false,
-            advanced: false,
-            data: false,
-            layout: false,
-            premium: false,
-
-            layoutControls: {
-              title: 'Layout',
-              weight: 10,
-              default: true,
-              components: {
-                simplecols2: true,
-                simplecols3: true,
-                simplecols4: true,
-                simplefieldset: true,
-                simplepanel: true,
-                simpletabs: true,
-                simpleheading: true,
-                simpleparagraph: true,
-                simplecontent: true,
-              },
-            },
-
-            entryControls: {
-              title: 'Form fields',
-              weight: 20,
-              components: {
-                simpletextfield: true,
-                simpletextarea: true,
-                simpleselect: true,
-                simplenumber: true,
-                simplephonenumber: true,
-                simpleemail: true,
-                simpledatetime: true,
-                simpleday: true,
-                simpletime: true,
-                simplecheckbox: true,
-                simplecheckboxes: true,
-                simpleradios: true,
-                simplefile: this.userType !== this.ID_MODE.PUBLIC,
-              },
-            },
-            customControls: {
-              title: 'BC Gov.',
-              weight: 30,
-              components: {
-                orgbook: true,
-              },
+      return {
+        noDefaultSubmitButton: false,
+        builder: {
+          premium: false,
+          layoutControls: {
+            title: 'Layout (Basic)',
+            default: true,
+            weight: 10,
+            components: {
+              simplecols2: true,
+              simplecols3: true,
+              simplecols4: true,
+              simplefieldset: true,
+              simplepanel: true,
+              simpletabs: true,
+              simpleheading: true,
+              simpleparagraph: true,
+              simplecontent: true,
             },
           },
-        };
-      } else {
-        return {
-          builder: {
-            premium: false,
-            layout: {
-              default: true,
-              weight: 10,
-            },
-            basic: {
-              title: 'Form Fields',
-              weight: 20,
-              default: false,
-              components: {
-                // add 'simplefile' file upload component to formBuilder in advanced mode
-                simplefile: this.userType !== this.ID_MODE.PUBLIC,
-              },
-            },
-            advanced: {
-              weight: 30,
-              components: {
-                orgbook: false,
-              },
-            },
-            customControls: {
-              title: 'BC Gov.',
-              weight: 50,
-              components: {
-                orgbook: true,
-              },
+          layout: {
+            title: 'Layout (Expert)',
+            weight: 20,
+          },
+          entryControls: {
+            title: 'Fields (Basic)',
+            weight: 30,
+            components: {
+              simpletextfield: true,
+              simpletextarea: true,
+              simpleselect: true,
+              simplenumber: true,
+              simplephonenumber: true,
+              simpleemail: true,
+              simpledatetime: true,
+              simpleday: true,
+              simpletime: true,
+              simplecheckbox: true,
+              simplecheckboxes: true,
+              simpleradios: true,
             },
           },
-        };
-      }
+          basic: {
+            title: 'Fields (Advanced)',
+            default: false,
+            weight: 40,
+          },
+          advanced: {
+            title: 'Fields (Expert)',
+            weight: 50,
+          },
+          data: {
+            title: 'Data (Expert)',
+            weight: 60,
+          },
+          customControls: {
+            title: 'BC Government',
+            weight: 70,
+            components: {
+              orgbook: true,
+              simplefile: this.userType !== this.ID_MODE.PUBLIC
+            },
+          },
+        },
+      };
     },
   },
   methods: {
@@ -474,9 +439,6 @@ export default {
     }
   },
   watch: {
-    advancedForm() {
-      this.reRenderFormIo += 1;
-    },
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
