@@ -2,6 +2,7 @@ const previousMigration  = require('./20201019100738_007-public-submission-data-
 
 exports.up = function (knex) {
   return Promise.resolve()
+
     // JOIN user table to submissions_vw on form_submission_status.assignedToUserId to get 'assigned to' user
     .then(() => knex.schema.raw(`create or replace
     view submissions_vw as
@@ -46,7 +47,50 @@ exports.up = function (knex) {
       LEFT JOIN "user" u ON
         st."assignedToUserId" = u."id"
       ORDER BY
-        s."createdAt" DESC`));
+        s."createdAt" DESC`))
+
+    // add extra columns to submissions_data_vw
+    .then(() => knex.schema.raw(`create or replace view submissions_data_vw as
+      select
+        s."confirmationId",
+        s."formName",
+        s.version,
+        s."createdAt",
+        case
+          when u.id is null then 'public'::varchar(255)
+          else u."fullName"
+        end as "fullName",
+        case
+          when u.id is null then 'public'::varchar(255)
+          else u.username
+        end as "username",
+        u.email,
+        fs.submission -> 'data' as "submission",
+        s.deleted,
+        s.draft,
+        s."submissionId",
+        s."formId",
+        s."formVersionId",
+        u.id as "userId",
+        u."keycloakId",
+        u."firstName",
+        u."lastName",
+        s."formSubmissionStatusCode" as "status",
+        s."formSubmissionAssignedToFullName" as "assignee",
+        s."formSubmissionAssignedToEmail" as "assigneeEmail"
+      from
+        submissions_vw s
+      inner join form_submission fs on
+        s."submissionId" = fs.id
+      left outer join form_submission_user fsu on
+        s."submissionId" = fsu."formSubmissionId"
+        and fsu.permission = 'submission_create'
+      left outer join "user" u on
+        fsu."userId" = u.id
+      order by
+        s."createdAt",
+        s."formName",
+        s.version`));
 };
 
 exports.down = function (knex) {

@@ -66,7 +66,7 @@ const service = {
     if (params.columns) {
       return params.columns;
     }
-    return ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'submission'];
+    return ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'status', 'assignee', 'assigneeEmail', 'submission'];
   },
 
   _getForm: async (formId) => {
@@ -81,6 +81,17 @@ const service = {
   },
 
   _formatData: async (exportFormat, exportType, form, data = {}) => {
+
+    // if form doesnt have status updates enabled in the form settings
+    if(!form.enableStatusUpdates) {
+      // remove status related attributes from data set
+      data.forEach(function(obj){
+        delete obj.status;
+        delete  obj.assignee;
+        delete  obj.assigneeEmail;
+      });
+    }
+
     if (EXPORT_FORMATS.csv === exportFormat) {
       if (EXPORT_TYPES.submissions === exportType) {
         return await service._formatSubmissionsCsv(form, data);
