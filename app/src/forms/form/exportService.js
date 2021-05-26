@@ -88,16 +88,15 @@ const service = {
     return Form.query().findById(formId).throwIfNotFound();
   },
 
-  _getData: async (exportType, form, params = {}, currentUser) => {
+  _getData: (exportType, form, params = {}, currentUser) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return await service._getSubmissions(form, params, currentUser);
+      return service._getSubmissions(form, params, currentUser);
     }
     return {};
   },
 
   _formatData: async (exportFormat, exportType, form, data = {}) => {
-
-    // make headers/data fields more human readable
+    // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map(obj => {
       const { submission, ...form } = obj;
       return Object.assign({ form: form }, submission);
@@ -114,7 +113,7 @@ const service = {
     throw new Problem(422, { detail: 'Could not create an export for this form. Invalid options provided' });
   },
 
-  _getSubmissions: async (form, params, currentUser) => {
+  _getSubmissions: (form, params, currentUser) => {
     service._checkPermission(currentUser, form.id, Permissions.SUBMISSION_READ, EXPORT_TYPES.submissions);
     // possible params for this export include minDate and maxDate (full timestamp dates).
     return SubmissionData.query()
