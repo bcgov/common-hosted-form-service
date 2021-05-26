@@ -76,7 +76,6 @@ const service = {
       'username',
       'email'
     ];
-
     // if form has 'status updates' enabled in the form settings include these in export
     if (form.enableStatusUpdates) {
       columns = columns.concat(['status', 'assignee', 'assigneeEmail']);
@@ -98,12 +97,18 @@ const service = {
 
   _formatData: async (exportFormat, exportType, form, data = {}) => {
 
+    // make headers/data fields more human readable
+    const formatted = data.map(obj => {
+      const { submission, ...form } = obj;
+      return Object.assign({ form: form }, submission);
+    });
+
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
-        return await service._formatSubmissionsCsv(form, data);
+        return await service._formatSubmissionsCsv(form, formatted);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
-        return await service._formatSubmissionsJson(form, data);
+        return await service._formatSubmissionsJson(form, formatted);
       }
     }
     throw new Problem(422, { detail: 'Could not create an export for this form. Invalid options provided' });
