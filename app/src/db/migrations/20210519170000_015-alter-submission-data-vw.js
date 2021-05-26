@@ -29,25 +29,25 @@ exports.up = function (knex) {
       s."formVersionId" = fv.id
     JOIN form f ON
       fv."formId" = f.id
-      LEFT OUTER JOIN LATERAL (
-        SELECT
-          id,
-          code,
-          "createdBy",
-          "createdAt",
-          "assignedToUserId"
-        FROM
-          form_submission_status
-        WHERE
-          "submissionId" = s.id
-        ORDER BY
-          "createdAt" DESC
-        FETCH FIRST 1 ROW ONLY
-      ) st ON true
-      LEFT JOIN "user" u ON
-        st."assignedToUserId" = u."id"
+    LEFT OUTER JOIN LATERAL (
+      SELECT
+        id,
+        code,
+        "createdBy",
+        "createdAt",
+        "assignedToUserId"
+      FROM
+        form_submission_status
+      WHERE
+        "submissionId" = s.id
       ORDER BY
-        s."createdAt" DESC`))
+        "createdAt" DESC
+      FETCH FIRST 1 ROW ONLY
+    ) st ON true
+    LEFT JOIN "user" u ON
+      st."assignedToUserId" = u."id"
+    ORDER BY
+      s."createdAt" DESC`))
 
     // add extra columns to submissions_data_vw
     .then(() => knex.schema.raw(`create or replace view submissions_data_vw as
