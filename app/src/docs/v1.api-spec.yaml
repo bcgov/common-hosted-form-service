@@ -2103,34 +2103,41 @@ components:
       allOf:
         - type: object
           properties:
-            confirmationId:
-              type: string
-              description: shortend version of the id, useful for visual representation
-              example: AEB3B705
-            formName:
-              type: string
-              description: The title of the form
-              example: My Survey Form
-            username:
-              type: string
-              description: Username of this user
-              example: jsmith
-            fullName:
-              type: string
-              example: Jane Smith
-            email:
-              type: string
-              example: jsmith@gov.bc.ca
-            version:
-              type: integer
-              description: The version number of the form for a submission
-              example: 1
-            submission:
+            form:
               type: object
-              description: this is the json for the form submission.
-            createdAt:
+              properties:
+                confirmationId:
+                  type: string
+                  description: shortend version of the id, useful for visual representation
+                  example: AEB3B705
+                formName:
+                  type: string
+                  description: The title of the form
+                  example: My Survey Form
+                username:
+                  type: string
+                  description: Username of this user
+                  example: jsmith
+                fullName:
+                  type: string
+                  example: Jane Smith
+                email:
+                  type: string
+                  example: jsmith@gov.bc.ca
+                version:
+                  type: integer
+                  description: The version number of the form for a submission
+                  example: 1
+                createdAt:
+                  type: string
+                  example: 2020-06-04T18:49:20.672Z
+            formFieldA:
               type: string
-              example: 2020-06-04T18:49:20.672Z
+              description: A field in the submission object
+            formFieldB:
+              type: string
+              description: A field in the submission object
+
     FormSubmissionSummary:
       allOf:
         - type: object
