@@ -62,44 +62,63 @@ const service = {
     return `${form.snake()}_${type}.${format}`.toLowerCase();
   },
 
-  _submissionsColumns: (params = {}) => {
+  _submissionsColumns: (form, params = {}) => {
     if (params.columns) {
       return params.columns;
     }
-    return ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'submission'];
+    // Custom columns not defined - return default column selection behavior
+    let columns = [
+      'confirmationId',
+      'formName',
+      'version',
+      'createdAt',
+      'fullName',
+      'username',
+      'email'
+    ];
+    // if form has 'status updates' enabled in the form settings include these in export
+    if (form.enableStatusUpdates) {
+      columns = columns.concat(['status', 'assignee', 'assigneeEmail']);
+    }
+    // and join the submission data
+    return columns.concat(['submission']);
   },
 
-  _getForm: async (formId) => {
+  _getForm: (formId) => {
     return Form.query().findById(formId).throwIfNotFound();
   },
 
-  _getData: async (exportType, formId, params = {}, currentUser) => {
+  _getData: (exportType, form, params = {}, currentUser) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return await service._getSubmissions(formId, params, currentUser);
+      return service._getSubmissions(form, params, currentUser);
     }
     return {};
   },
 
   _formatData: async (exportFormat, exportType, form, data = {}) => {
-    if (EXPORT_FORMATS.csv === exportFormat) {
-      if (EXPORT_TYPES.submissions === exportType) {
-        return await service._formatSubmissionsCsv(form, data);
+    // inverting content structure nesting to prioritize submission content clarity
+    const formatted = data.map(obj => {
+      const { submission, ...form } = obj;
+      return Object.assign({ form: form }, submission);
+    });
+
+    if (EXPORT_TYPES.submissions === exportType) {
+      if (EXPORT_FORMATS.csv === exportFormat) {
+        return await service._formatSubmissionsCsv(form, formatted);
       }
-    }
-    if (EXPORT_FORMATS.json === exportFormat) {
-      if (EXPORT_TYPES.submissions === exportType) {
-        return await service._formatSubmissionsJson(form, data);
+      if (EXPORT_FORMATS.json === exportFormat) {
+        return await service._formatSubmissionsJson(form, formatted);
       }
     }
     throw new Problem(422, { detail: 'Could not create an export for this form. Invalid options provided' });
   },
 
-  _getSubmissions: async (formId, params, currentUser) => {
-    service._checkPermission(currentUser, formId, Permissions.SUBMISSION_READ, EXPORT_TYPES.submissions);
+  _getSubmissions: (form, params, currentUser) => {
+    service._checkPermission(currentUser, form.id, Permissions.SUBMISSION_READ, EXPORT_TYPES.submissions);
     // possible params for this export include minDate and maxDate (full timestamp dates).
     return SubmissionData.query()
-      .column(service._submissionsColumns(params))
-      .where('formId', formId)
+      .column(service._submissionsColumns(form, params))
+      .where('formId', form.id)
       .modify('filterCreatedAt', params.minDate, params.maxDate)
       .modify('orderDefault');
   },
@@ -157,7 +176,7 @@ const service = {
     const exportFormat = service._exportFormat(params);
 
     const form = await service._getForm(formId);
-    const data = await service._getData(exportType, formId, params, currentUser);
+    const data = await service._getData(exportType, form, params, currentUser);
     const result = await service._formatData(exportFormat, exportType, form, data);
 
     return { data: result.data, headers: result.headers };
