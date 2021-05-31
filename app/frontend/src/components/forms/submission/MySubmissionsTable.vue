@@ -64,7 +64,13 @@
         {{ item.date | formatDateLong }}
       </template>
       <template #[`item.status`]="{ item }">
-        {{ item.status }}
+        {{ getCurrentStatus(item.statusList) }}
+      </template>
+      <template #[`item.submittedDate`]="{ item }">
+        {{ getStatusDate(item.statusList, 'SUBMITTED') | formatDateLong }}
+      </template>
+      <template #[`item.completedDate`]="{ item }">
+        {{ getStatusDate(item.statusList, 'COMPLETED') | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
         <router-link
@@ -107,7 +113,7 @@ export default {
     headers() {
       let headers = [
         { text: 'ConfirmationId', align: 'start', value: 'confirmationId' },
-        { text: 'Submission Date', align: 'start', value: 'date' },
+        { text: 'Submission Date', align: 'start', value: 'submittedDate' },
         {
           text: 'Actions',
           align: 'end',
@@ -137,18 +143,30 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
 
+    // Status columns in the table
+    getCurrentStatus(history) {
+      // Current status is most recent status (top in array, query returns in status created desc)
+      return history && history[0] ? history[0].code : 'N/A';
+    },
+    getStatusDate(history, statusCode) {
+      // Get the created date of the most recent occurence of a specified status
+      if (history) {
+        const submittedStatus = history.find(stat => (stat.code == statusCode));
+        if (submittedStatus) return submittedStatus.createdAt;
+      }
+      return '';
+    },
+
     async populateSubmissionsTable() {
       try {
         // Get the submissions for this form
-        await this.fetchSubmissions(this.formId);
+        await this.fetchSubmissions({ formId: this.formId, userView: true });
         // Build up the list of forms for the table
         if (this.submissionList) {
           const tableRows = this.submissionList.map((s) => {
             return {
               confirmationId: s.confirmationId,
-              date: s.createdAt,
-              formId: s.formId,
-              status: s.formSubmissionStatusCode,
+              statusList: s.submissionStatus,
               submissionId: s.submissionId,
             };
           });

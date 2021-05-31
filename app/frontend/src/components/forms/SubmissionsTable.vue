@@ -6,7 +6,6 @@
       </v-col>
       <v-spacer />
       <v-col class="text-sm-right" cols="12" sm="6">
-
         <span v-if="checkFormManage">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -26,7 +25,6 @@
             <span>Manage Form</span>
           </v-tooltip>
         </span>
-
 
         <ExportSubmissions />
       </v-col>
@@ -136,16 +134,20 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'fetchSubmissions', 'getFormPermissionsForUser']),
+    ...mapActions('form', [
+      'fetchForm',
+      'fetchSubmissions',
+      'getFormPermissionsForUser',
+    ]),
 
     checkFormManage() {
-      return this.permissions.some(p => FormManagePermissions.includes(p));
+      return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
 
     async populateSubmissionsTable() {
       try {
         // Get the submissions for this form
-        await this.fetchSubmissions(this.formId);
+        await this.fetchSubmissions({ formId: this.formId });
         // Build up the list of forms for the table
         if (this.submissionList) {
           const tableRows = this.submissionList.map((s) => {
