@@ -51,6 +51,14 @@ module.exports = {
       next(error);
     }
   },
+  getCurrentUserSubmissions:  async (req, res, next) => {
+    try {
+      const response = await service.getCurrentUserSubmissions(req.currentUser, req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   getFormUsers:  async (req, res, next) => {
     try {
       const response = await service.getFormUsers(req.query);

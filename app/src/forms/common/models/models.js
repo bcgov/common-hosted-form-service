@@ -752,6 +752,48 @@ class UserFormAccess extends Model {
   }
 }
 
+class UserSubmissions extends Model {
+  static get tableName() {
+    return 'submissions_submitters_vw';
+  }
+
+  static get relationMappings() {
+    return {
+      submissionStatus: {
+        relation: Model.HasManyRelation,
+        modelClass: FormSubmissionStatus,
+        join: {
+          from: 'submissions_submitters_vw.formSubmissionId',
+          to: 'form_submission_status.submissionId'
+        }
+      }
+    };
+  }
+
+  static get modifiers() {
+    return {
+      filterFormId(query, value) {
+        if (value) {
+          query.where('formId', value);
+        }
+      },
+      filterUserId(query, value) {
+        if (value) {
+          query.where('userId', value);
+        }
+      },
+      filterActive(query, value) {
+        if (value !== undefined) {
+          query.where('deleted', !value);
+        }
+      },
+      orderDefault(builder) {
+        builder.orderBy('createdAt', 'DESC');
+      }
+    };
+  }
+}
+
 class PublicFormAccess extends Model {
   static get tableName() {
     return 'public_form_access_vw';
@@ -1120,5 +1162,6 @@ module.exports = {
   SubmissionAudit: SubmissionAudit,
   SubmissionMetadata: SubmissionMetadata,
   User: User,
-  UserFormAccess: UserFormAccess
+  UserFormAccess: UserFormAccess,
+  UserSubmissions: UserSubmissions
 };

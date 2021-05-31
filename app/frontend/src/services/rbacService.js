@@ -11,6 +11,16 @@ export default {
     return appAxios().get(`${ApiRoutes.RBAC}/current`, { params });
   },
 
+  /**
+  * @function getUserSubmissions
+  * Get the submissions for a form that the current user has permissions on
+  * @param {Object} [params={}] The query parameters
+  * @returns {Promise} An axios response
+  */
+  getUserSubmissions(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/current/submissions`, { params });
+  },
+
   //
   // Form Management calls
   //

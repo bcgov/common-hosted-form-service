@@ -13,6 +13,10 @@ routes.get('/current', keycloak.protect(), async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);
 });
 
+routes.get('/current/submissions', keycloak.protect(), async (req, res, next) => {
+  await controller.getCurrentUserSubmissions(req, res, next);
+});
+
 routes.get('/idps', async (req, res, next) => {
   await controller.getIdentityProviders(req, res, next);
 });
