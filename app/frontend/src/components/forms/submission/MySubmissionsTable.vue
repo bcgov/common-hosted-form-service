@@ -167,7 +167,7 @@ export default {
             return {
               confirmationId: s.confirmationId,
               statusList: s.submissionStatus,
-              submissionId: s.submissionId,
+              submissionId: s.formSubmissionId,
             };
           });
           this.submissionTable = tableRows;
