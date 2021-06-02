@@ -26,11 +26,11 @@ const service = {
       // along with a template path, mess
       const config = {
         template: 'status-assignment-email.html',
-        from: 'donotreply@gov.bc.ca',
+        from: 'DoNotReplyCommonServices@gov.bc.ca',
         subject: 'Form Submission Assignment',
         title: 'Form Submission Assignment',
         priority: 'normal',
-        messageLinkText: 'The status of the above form submission has changed. You have been assigned to review this submission.',
+        messageLinkText: 'You have been assigned to review this submission.',
         messageLinkUrl: `${service._appUrl(referer)}/form/view?s=`
       };
 
@@ -71,7 +71,7 @@ const service = {
         // along with a template path, mess
         const config = {
           template: 'confirmation-number-email.html',
-          from: 'donotreplyCHEFS@gov.bc.ca',
+          from: 'DoNotReplyCommonServices@gov.bc.ca',
           subject: `${form.name} Submission`,
           title: `${form.name} Submission`,
           priority: 'normal',
@@ -116,7 +116,7 @@ const service = {
         // along with a template path, mess
         const config = {
           template: 'confirmation-number-email.html',
-          from: 'donotreplyCHEFS@gov.bc.ca',
+          from: 'DoNotReplyCommonServices@gov.bc.ca',
           subject: `${form.name} Accepted`,
           title: `${form.name} Accepted`,
           priority: 'normal',
