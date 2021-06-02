@@ -37,5 +37,8 @@ module.exports = Object.freeze({
     LOCAL_STORAGE: 'localStorage',
     OBJECT_STORAGE: 'objectStorage',
     LOCAL_STORES: ['uploads', 'localStorage']
+  },
+  EmailProperties: {
+    FROM_EMAIL: 'DoNotReplyCommonServices@gov.bc.ca'
   }
 });
