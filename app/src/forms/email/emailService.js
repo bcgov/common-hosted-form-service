@@ -2,6 +2,7 @@ const chesService = require('../../components/chesService');
 const fs = require('fs');
 const log = require('npmlog');
 const path = require('path');
+const constants = require('../common/constants');
 
 const formService = require('../form/service');
 
@@ -26,7 +27,7 @@ const service = {
       // along with a template path, mess
       const config = {
         template: 'status-assignment-email.html',
-        from: 'DoNotReplyCommonServices@gov.bc.ca',
+        from: constants.EmailProperties.FROM_EMAIL,
         subject: 'Form Submission Assignment',
         title: 'Form Submission Assignment',
         priority: 'normal',
@@ -71,7 +72,7 @@ const service = {
         // along with a template path, mess
         const config = {
           template: 'confirmation-number-email.html',
-          from: 'DoNotReplyCommonServices@gov.bc.ca',
+          from: constants.EmailProperties.FROM_EMAIL,
           subject: `${form.name} Submission`,
           title: `${form.name} Submission`,
           priority: 'normal',
@@ -116,7 +117,7 @@ const service = {
         // along with a template path, mess
         const config = {
           template: 'confirmation-number-email.html',
-          from: 'DoNotReplyCommonServices@gov.bc.ca',
+          from: constants.EmailProperties.FROM_EMAIL,
           subject: `${form.name} Accepted`,
           title: `${form.name} Accepted`,
           priority: 'normal',
