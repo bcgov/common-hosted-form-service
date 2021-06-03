@@ -47,8 +47,8 @@ import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
-import { isFormPublic } from '@/utils/permissionUtils';
 import { formService } from '@/services';
+import { isFormPublic } from '@/utils/permissionUtils';
 
 export default {
   name: 'FormViewer',

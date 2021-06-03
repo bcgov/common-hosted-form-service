@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <FormSubmission :submissionId="s" />
-  </div>
+  <FormSubmission :submissionId="s" />
 </template>
 
 <script>

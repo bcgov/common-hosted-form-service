@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <SubmissionsTable :formId="f" />
-  </div>
+  <SubmissionsTable :formId="f" />
 </template>
 
 <script>

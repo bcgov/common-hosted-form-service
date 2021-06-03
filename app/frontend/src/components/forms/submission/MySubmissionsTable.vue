@@ -151,32 +151,27 @@ export default {
     getStatusDate(history, statusCode) {
       // Get the created date of the most recent occurence of a specified status
       if (history) {
-        const submittedStatus = history.find(stat => (stat.code == statusCode));
+        const submittedStatus = history.find((stat) => stat.code == statusCode);
         if (submittedStatus) return submittedStatus.createdAt;
       }
       return '';
     },
 
     async populateSubmissionsTable() {
-      try {
-        // Get the submissions for this form
-        await this.fetchSubmissions({ formId: this.formId, userView: true });
-        // Build up the list of forms for the table
-        if (this.submissionList) {
-          const tableRows = this.submissionList.map((s) => {
-            return {
-              confirmationId: s.confirmationId,
-              statusList: s.submissionStatus,
-              submissionId: s.formSubmissionId,
-            };
-          });
-          this.submissionTable = tableRows;
-        }
-      } catch (error) {
-        // Handled in state fetchSubmissions
-      } finally {
-        this.loading = false;
+      // Get the submissions for this form
+      await this.fetchSubmissions({ formId: this.formId, userView: true });
+      // Build up the list of forms for the table
+      if (this.submissionList) {
+        const tableRows = this.submissionList.map((s) => {
+          return {
+            confirmationId: s.confirmationId,
+            statusList: s.submissionStatus,
+            submissionId: s.formSubmissionId,
+          };
+        });
+        this.submissionTable = tableRows;
       }
+      this.loading = false;
     },
   },
 
