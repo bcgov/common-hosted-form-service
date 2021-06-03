@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormViewer :formId="f" :displayTitle="true"/>
+    <FormViewer :formId="f" displayTitle/>
   </div>
 </template>
 

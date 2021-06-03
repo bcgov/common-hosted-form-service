@@ -23,9 +23,7 @@ export default {
     };
   },
   computed: mapGetters('form', ['formSubmission']),
-  methods: {
-    ...mapActions('form', ['fetchSubmission']),
-  },
+  methods: mapActions('form', ['fetchSubmission']),
   async mounted() {
     await this.fetchSubmission({ submissionId: this.submissionId });
     this.loading = false;
