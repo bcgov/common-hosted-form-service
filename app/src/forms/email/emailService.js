@@ -2,6 +2,7 @@ const chesService = require('../../components/chesService');
 const fs = require('fs');
 const log = require('npmlog');
 const path = require('path');
+const constants = require('../common/constants');
 
 const formService = require('../form/service');
 
@@ -25,12 +26,12 @@ const service = {
       // these may get persisted at some point...
       // along with a template path, mess
       const config = {
-        template: 'status-assignment-email.html',
-        from: 'donotreply@gov.bc.ca',
+        template: 'triggered-notification-email-template.html',
+        from: constants.EmailProperties.FROM_EMAIL,
         subject: 'Form Submission Assignment',
         title: 'Form Submission Assignment',
         priority: 'normal',
-        messageLinkText: 'The status of the above form submission has changed. You have been assigned to review this submission.',
+        messageLinkText: 'You have been assigned to review this submission.',
         messageLinkUrl: `${service._appUrl(referer)}/form/view?s=`
       };
 
@@ -70,12 +71,12 @@ const service = {
         // these may get persisted at some point...
         // along with a template path, mess
         const config = {
-          template: 'confirmation-number-email.html',
-          from: 'donotreplyCHEFS@gov.bc.ca',
+          template: 'triggered-notification-email-template.html',
+          from: constants.EmailProperties.FROM_EMAIL,
           subject: `${form.name} Submission`,
           title: `${form.name} Submission`,
           priority: 'normal',
-          messageLinkText: 'Click to view your Submission',
+          messageLinkText: '',
           messageLinkUrl: `${service._appUrl(referer)}/form/success?s=`
         };
 
@@ -115,8 +116,8 @@ const service = {
         // these may get persisted at some point...
         // along with a template path, mess
         const config = {
-          template: 'confirmation-number-email.html',
-          from: 'donotreplyCHEFS@gov.bc.ca',
+          template: 'triggered-notification-email-template.html',
+          from: constants.EmailProperties.FROM_EMAIL,
           subject: `${form.name} Accepted`,
           title: `${form.name} Accepted`,
           priority: 'normal',
