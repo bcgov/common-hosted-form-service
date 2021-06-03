@@ -26,7 +26,7 @@ const service = {
       // these may get persisted at some point...
       // along with a template path, mess
       const config = {
-        template: 'status-assignment-email.html',
+        template: 'triggered-notification-email-template.html',
         from: constants.EmailProperties.FROM_EMAIL,
         subject: 'Form Submission Assignment',
         title: 'Form Submission Assignment',
@@ -71,12 +71,12 @@ const service = {
         // these may get persisted at some point...
         // along with a template path, mess
         const config = {
-          template: 'confirmation-number-email.html',
+          template: 'triggered-notification-email-template.html',
           from: constants.EmailProperties.FROM_EMAIL,
           subject: `${form.name} Submission`,
           title: `${form.name} Submission`,
           priority: 'normal',
-          messageLinkText: 'Click to view your Submission',
+          messageLinkText: '',
           messageLinkUrl: `${service._appUrl(referer)}/form/success?s=`
         };
 
@@ -116,7 +116,7 @@ const service = {
         // these may get persisted at some point...
         // along with a template path, mess
         const config = {
-          template: 'confirmation-number-email.html',
+          template: 'triggered-notification-email-template.html',
           from: constants.EmailProperties.FROM_EMAIL,
           subject: `${form.name} Accepted`,
           title: `${form.name} Accepted`,
