@@ -72,7 +72,7 @@ const service = {
         // along with a template path, mess
         const messageLinks = [
           {
-            text: 'View this submission',
+            text: 'Your Submission has been recieved',
             url: `${service._appUrl(referer)}/form/success?s=${submission.id}`
           },
           {
@@ -86,7 +86,9 @@ const service = {
           subject: `${form.name} Submission`,
           title: `${form.name} Submission`,
           priority: 'normal',
-          messageLinks: messageLinks
+          // TODO: after email body refactoring both links will be inserted into email
+          messageLinkText: messageLinks[0].text,
+          messageLinkUrl: messageLinks[0].url
         };
 
         const assetsPath = path.join(__dirname, 'assets');
@@ -97,7 +99,8 @@ const service = {
             context: {
               confirmationNumber: submission.confirmationId,
               title: config.title,
-              messageLinks: config.messageLinks
+              messageLinkText: config.messageLinkText,
+              messageLinkUrl: config.messageLinkUrl
             },
             to: [body.to]
           }
