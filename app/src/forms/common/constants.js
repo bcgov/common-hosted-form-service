@@ -1,4 +1,7 @@
 module.exports = Object.freeze({
+  EmailProperties: {
+    FROM_EMAIL: 'donotreplyCHEFS@gov.bc.ca'
+  },
   Permissions: {
     FORM_READ: 'form_read',
     FORM_UPDATE: 'form_update',
@@ -37,5 +40,5 @@ module.exports = Object.freeze({
     LOCAL_STORAGE: 'localStorage',
     OBJECT_STORAGE: 'objectStorage',
     LOCAL_STORES: ['uploads', 'localStorage']
-  }
+  },
 });
