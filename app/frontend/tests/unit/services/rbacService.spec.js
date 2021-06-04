@@ -31,6 +31,19 @@ describe('RBAC Service', () => {
     });
   });
 
+  describe('rbac/current/submissions', () => {
+    const endpoint = `${ApiRoutes.RBAC}/current/submissions`;
+
+    it('calls rbac/current endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await rbacService.getUserSubmissions({ formId: '123' });
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+      expect(Object.keys(mockAxios.history.get[0].params)).toEqual(['formId']);
+    });
+  });
+
   describe('rbac/forms', () => {
     const endpoint = `${ApiRoutes.RBAC}/forms`;
 

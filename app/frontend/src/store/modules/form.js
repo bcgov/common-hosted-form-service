@@ -285,11 +285,13 @@ export default {
         }, { root: true });
       }
     },
-    async fetchSubmissions({ commit, dispatch }, formId) {
+    async fetchSubmissions({ commit, dispatch }, { formId, userView }) {
       try {
         commit('SET_SUBMISSIONLIST', []);
-        // Get list of active submissions for this form
-        const response = await formService.listSubmissions(formId);
+        // Get list of active submissions for this form (for either all submissions, or just single user)
+        const response = userView
+          ? await rbacService.getUserSubmissions({ formId: formId })
+          : await formService.listSubmissions(formId);
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {

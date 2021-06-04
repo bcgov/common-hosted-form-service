@@ -1,34 +1,36 @@
 <template>
   <div>
-    <v-row class="mt-6" no-gutters>
-      <v-col cols="12" sm="6">
-        <h1>Submissions</h1>
-      </v-col>
-      <v-spacer />
-      <v-col class="text-sm-right" cols="12" sm="6">
-        <span v-if="checkFormManage">
+    <v-skeleton-loader :loading="loading" type="heading">
+      <v-row class="mt-6" no-gutters>
+        <v-col class="text-center" cols="12" sm="10" offset-sm="1">
+          <h1>Previous Submissions</h1>
+          <h2>{{ form.name }}</h2>
+        </v-col>
+        <v-col class="text-right" cols="12" sm="1">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+              <router-link
+                :to="{
+                  name: 'FormSubmit',
+                  query: { f: form.id },
+                }"
+              >
                 <v-btn
                   class="mx-1"
                   color="primary"
-                  :disabled="!formId"
                   icon
                   v-bind="attrs"
                   v-on="on"
                 >
-                  <v-icon>settings</v-icon>
+                  <v-icon>add_circle</v-icon>
                 </v-btn>
               </router-link>
             </template>
-            <span>Manage Form</span>
+            <span>Create a New Submission</span>
           </v-tooltip>
-        </span>
-
-        <ExportSubmissions />
-      </v-col>
-    </v-row>
+        </v-col>
+      </v-row>
+    </v-skeleton-loader>
 
     <v-row no-gutters>
       <v-spacer />
@@ -56,17 +58,18 @@
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
+      no-data-text="You have no submissions"
     >
-      <template #[`item.date`]="{ item }">
-        {{ item.date | formatDateLong }}
+      <template #[`item.submittedDate`]="{ item }">
+        {{ item.submittedDate | formatDateLong }}
       </template>
-      <template #[`item.status`]="{ item }">
-        {{ item.status }}
+      <template #[`item.completedDate`]="{ item }">
+        {{ item.completedDate | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
         <router-link
           :to="{
-            name: 'FormView',
+            name: 'UserFormView',
             query: {
               s: item.submissionId,
             },
@@ -83,15 +86,9 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FormManagePermissions } from '@/utils/constants';
-
-import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
 export default {
-  name: 'SubmissionsTable',
-  components: {
-    ExportSubmissions,
-  },
+  name: 'MySubmissionsTable',
   props: {
     formId: {
       type: String,
@@ -109,9 +106,13 @@ export default {
     ...mapGetters('form', ['form', 'submissionList', 'permissions']),
     headers() {
       let headers = [
-        { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
-        { text: 'Submission Date', align: 'start', value: 'date' },
-        { text: 'Submitter', align: 'start', value: 'submitter' },
+        { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
+        {
+          text: 'Submission Date',
+          align: 'start',
+          value: 'submittedDate',
+          sortable: true,
+        },
         {
           text: 'Actions',
           align: 'end',
@@ -121,10 +122,15 @@ export default {
         },
       ];
       if (this.showStatus) {
-        headers.splice(3, 0, {
+        headers.splice(0, 0, {
           text: 'Status',
           align: 'start',
           value: 'status',
+        });
+        headers.splice(3, 0, {
+          text: 'Completed Date',
+          align: 'start',
+          value: 'completedDate',
         });
       }
       return headers;
@@ -134,47 +140,44 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', [
-      'fetchForm',
-      'fetchSubmissions',
-      'getFormPermissionsForUser',
-    ]),
+    ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
 
-    checkFormManage() {
-      return this.permissions.some((p) => FormManagePermissions.includes(p));
+    // Status columns in the table
+    getCurrentStatus(history) {
+      // Current status is most recent status (top in array, query returns in status created desc)
+      return history && history[0] ? history[0].code : 'N/A';
+    },
+    getStatusDate(history, statusCode) {
+      // Get the created date of the most recent occurence of a specified status
+      if (history) {
+        const submittedStatus = history.find((stat) => stat.code == statusCode);
+        if (submittedStatus) return submittedStatus.createdAt;
+      }
+      return '';
     },
 
     async populateSubmissionsTable() {
-      try {
-        // Get the submissions for this form
-        await this.fetchSubmissions({ formId: this.formId });
-        // Build up the list of forms for the table
-        if (this.submissionList) {
-          const tableRows = this.submissionList.map((s) => {
-            return {
-              confirmationId: s.confirmationId,
-              date: s.createdAt,
-              formId: s.formId,
-              status: s.formSubmissionStatusCode,
-              submissionId: s.submissionId,
-              submitter: s.createdBy,
-              versionId: s.formVersionId,
-            };
-          });
-          this.submissionTable = tableRows;
-        }
-      } catch (error) {
-        // Handled in state fetchSubmissions
-      } finally {
-        this.loading = false;
+      // Get the submissions for this form
+      await this.fetchSubmissions({ formId: this.formId, userView: true });
+      // Build up the list of forms for the table
+      if (this.submissionList) {
+        const tableRows = this.submissionList.map((s) => {
+          return {
+            completedDate: this.getStatusDate(s.submissionStatus, 'COMPLETED'),
+            confirmationId: s.confirmationId,
+            status: this.getCurrentStatus(s.submissionStatus),
+            submissionId: s.formSubmissionId,
+            submittedDate: this.getStatusDate(s.submissionStatus, 'SUBMITTED'),
+          };
+        });
+        this.submissionTable = tableRows;
       }
+      this.loading = false;
     },
   },
 
   mounted() {
     this.fetchForm(this.formId);
-    // Get the permissions for this form
-    this.getFormPermissionsForUser(this.formId);
     this.populateSubmissionsTable();
   },
 };

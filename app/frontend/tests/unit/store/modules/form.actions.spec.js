@@ -136,17 +136,40 @@ describe('form actions', () => {
 
     it('fetchSubmissions should commit to SET_SUBMISSIONLIST', async () => {
       formService.listSubmissions.mockResolvedValue({ data: [] });
-      await store.actions.fetchSubmissions(mockStore, 'fId');
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId' });
 
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
       expect(formService.listSubmissions).toHaveBeenCalledWith('fId');
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
+    });
+
+    it('fetchSubmissions should call the formService if not for userView', async () => {
+      formService.listSubmissions.mockResolvedValue({ data: [] });
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: false });
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
+      expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId');
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
+    });
+
+    it('fetchSubmissions should call the rbacService if for userView', async () => {
+      rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true });
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
+      expect(formService.listSubmissions).toHaveBeenCalledTimes(0);
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(1);
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId' });
     });
 
     it('fetchSubmissions should dispatch to notifications/addNotification', async () => {
       formService.listSubmissions.mockRejectedValue('');
-      await store.actions.fetchSubmissions(mockStore, 'fId');
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId' });
 
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
@@ -154,6 +177,7 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
       expect(formService.listSubmissions).toHaveBeenCalledWith('fId');
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
     it('fetchVersion should commit to SET_FORMSUBMISSION and SET_VERSION', async () => {

@@ -1,4 +1,4 @@
-import { FormPermissions, FormManagePermissions, IdentityProviders } from '@/utils/constants';
+import { FormPermissions, FormManagePermissions, IdentityMode, IdentityProviders } from '@/utils/constants';
 import { formService } from '@/services';
 import store from '@/store';
 
@@ -78,4 +78,15 @@ export async function determineFormNeedsAuth(formId, submissionId, next) {
     }
   }
   next();
+}
+
+/**
+ * @function isFormPublic
+ * Returns true for a form object if this form can be viewed by public users
+ * @param {Object} form The form object fr
+ * @returns {boolean} TRUE if public
+ */
+export function isFormPublic(form) {
+  return form &&
+    (form.identityProviders && form.identityProviders.some(i => i.code === IdentityMode.PUBLIC));
 }

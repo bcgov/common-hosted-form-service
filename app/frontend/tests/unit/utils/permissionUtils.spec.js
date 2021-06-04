@@ -1,6 +1,6 @@
 import { formService } from '@/services';
 import store from '@/store';
-import { FormPermissions, IdentityProviders } from '@/utils/constants';
+import { FormPermissions, IdentityProviders, IdentityMode } from '@/utils/constants';
 import * as permissionUtils from '@/utils/permissionUtils';
 
 describe('checkFormSubmit', () => {
@@ -138,7 +138,7 @@ describe('determineFormNeedsAuth', () => {
   });
 
   it('should raise an issue notification', async () => {
-    dispatchSpy.mockImplementation(() => {});
+    dispatchSpy.mockImplementation(() => { });
     readFormSpy.mockImplementation(() => {
       throw new Error();
     });
@@ -146,5 +146,27 @@ describe('determineFormNeedsAuth', () => {
     await permissionUtils.determineFormNeedsAuth('f', undefined, mockNext);
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('isFormPublic', () => {
+  it('should be false when form is undefined', () => {
+    expect(permissionUtils.isFormPublic(undefined)).toBeFalsy();
+  });
+
+  it('should be false when idps is undefined', () => {
+    expect(permissionUtils.isFormPublic({ blah: [] })).toBeFalsy();
+  });
+
+  it('should be true when idps is public', () => {
+    expect(permissionUtils.isFormPublic({ identityProviders: [{ code: IdentityMode.PUBLIC }] })).toBeTruthy();
+  });
+
+  it('should be true when idps includes public', () => {
+    expect(permissionUtils.isFormPublic({ identityProviders: [{ code: IdentityMode.LOGIN }, { code: IdentityMode.PUBLIC }] })).toBeTruthy();
+  });
+
+  it('should be false when idps has something else', () => {
+    expect(permissionUtils.isFormPublic({ identityProviders: [{ code: IdentityMode.TEAM }, { code: IdentityMode.LOGIN }] })).toBeFalsy();
   });
 });

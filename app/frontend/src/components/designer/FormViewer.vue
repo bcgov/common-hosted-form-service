@@ -1,8 +1,33 @@
 <template>
   <div class="form-wrapper">
-    <slot name="alert" v-bind:form="form" />
-
     <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+      <div v-if="displayTitle">
+        <div v-if="!isFormPublic(form)" class="text-right" cols="12" sm="6">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link
+                :to="{ name: 'UserSubmissions', query: { f: form.id } }"
+              >
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>view_list</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>View your Previous Submissions</span>
+          </v-tooltip>
+        </div>
+
+        <h1 class="mb-6 text-center">{{ form.name }}</h1>
+      </div>
+
+      <slot name="alert" v-bind:form="form" />
+
       <Form
         :form="formSchema"
         :submission="submission"
@@ -23,6 +48,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
 import { formService } from '@/services';
+import { isFormPublic } from '@/utils/permissionUtils';
 
 export default {
   name: 'FormViewer',
@@ -81,6 +107,7 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('form', ['setDirtyFlag']),
+    isFormPublic: isFormPublic,
     // Get the data for a form submission
     async getFormData() {
       try {

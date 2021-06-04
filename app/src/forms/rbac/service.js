@@ -1,8 +1,8 @@
-const { FormRoleUser, IdentityProvider, User, UserFormAccess } = require('../common/models');
+const { FormRoleUser, IdentityProvider, User, UserFormAccess, UserSubmissions } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
-const {transaction} = require('objection');
-const {v4: uuidv4} = require('uuid');
+const { transaction } = require('objection');
+const { v4: uuidv4 } = require('uuid');
 
 const authService = require('../auth/service');
 
@@ -42,7 +42,8 @@ const service = {
       const update = {
         formId: data.formId,
         role: data.role,
-        userId: data.userId};
+        userId: data.userId
+      };
 
       await FormRoleUser.query(trx).patchAndFetchById(obj.id, update);
       await trx.commit();
@@ -104,7 +105,8 @@ const service = {
         fullName: data.fullName,
         email: data.email,
         firstName: data.firstName,
-        lastName: data.lastName};
+        lastName: data.lastName
+      };
 
       await User.query(trx).patchAndFetchById(obj.id, update);
       await trx.commit();
@@ -129,6 +131,18 @@ const service = {
     const filteredForms = authService.filterForms(user, user.forms, accessLevels);
     user.forms = filteredForms;
     return user;
+  },
+
+  getCurrentUserSubmissions: async (currentUser, params) => {
+    params = queryUtils.defaultActiveOnly(params);
+    const items = await UserSubmissions.query()
+      .skipUndefined()
+      .withGraphFetched('submissionStatus(orderDescending)')
+      .modify('filterFormId', params.formId)
+      .modify('filterUserId', currentUser.id)
+      .modify('filterActive', params.active)
+      .modify('orderDefault');
+    return items;
   },
 
   getFormUsers: async (params) => {
@@ -196,10 +210,10 @@ const service = {
         data = data.filter(d => d.userId === userId);
       }
       // add an id and save them
-      const items = data.map(d => { return {id: uuidv4(), createdBy: currentUser.username, ...d}; });
+      const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.username, ...d }; });
       await FormRoleUser.query(trx).insert(items);
       await trx.commit();
-      return service.getFormUsers({userId: userId, formId: formId});
+      return service.getFormUsers({ userId: userId, formId: formId });
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
@@ -232,11 +246,11 @@ const service = {
         data = data.filter(d => d.formId === formId);
       }
       // add an id and save them
-      const items = data.map(d => { return {id: uuidv4(), createdBy: currentUser.username, ...d}; });
+      const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.username, ...d }; });
       await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       // return the new mappings
-      const result = await service.getUserForms({userId: userId, formId: formId});
+      const result = await service.getUserForms({ userId: userId, formId: formId });
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
