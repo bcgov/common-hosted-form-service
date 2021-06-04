@@ -60,17 +60,11 @@
       loading-text="Loading... Please wait"
       no-data-text="You have no submissions"
     >
-      <template #[`item.date`]="{ item }">
-        {{ item.date | formatDateLong }}
-      </template>
-      <template #[`item.status`]="{ item }">
-        {{ getCurrentStatus(item.statusList) }}
-      </template>
       <template #[`item.submittedDate`]="{ item }">
-        {{ getStatusDate(item.statusList, 'SUBMITTED') | formatDateLong }}
+        {{ item.submittedDate | formatDateLong }}
       </template>
       <template #[`item.completedDate`]="{ item }">
-        {{ getStatusDate(item.statusList, 'COMPLETED') | formatDateLong }}
+        {{ item.completedDate | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
         <router-link
@@ -112,8 +106,13 @@ export default {
     ...mapGetters('form', ['form', 'submissionList', 'permissions']),
     headers() {
       let headers = [
-        { text: 'ConfirmationId', align: 'start', value: 'confirmationId' },
-        { text: 'Submission Date', align: 'start', value: 'submittedDate' },
+        { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
+        {
+          text: 'Submission Date',
+          align: 'start',
+          value: 'submittedDate',
+          sortable: true,
+        },
         {
           text: 'Actions',
           align: 'end',
@@ -164,9 +163,11 @@ export default {
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
           return {
+            completedDate: this.getStatusDate(s.submissionStatus, 'COMPLETED'),
             confirmationId: s.confirmationId,
-            statusList: s.submissionStatus,
+            status: this.getCurrentStatus(s.submissionStatus),
             submissionId: s.formSubmissionId,
+            submittedDate: this.getStatusDate(s.submissionStatus, 'SUBMITTED'),
           };
         });
         this.submissionTable = tableRows;
