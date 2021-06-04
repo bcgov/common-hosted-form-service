@@ -1,9 +1,11 @@
 <template>
-  <SubmissionsTable :formId="f" />
+  <div>
+    <MySubmissionsTable :formId="f" />
+  </div>
 </template>
 
 <script>
-import SubmissionsTable from '@/components/forms/SubmissionsTable.vue';
+import MySubmissionsTable from '@/components/forms/submission/MySubmissionsTable.vue';
 
 export default {
   name: 'Submissions',
@@ -14,7 +16,7 @@ export default {
     },
   },
   components: {
-    SubmissionsTable,
+    MySubmissionsTable,
   },
 };
 </script>
