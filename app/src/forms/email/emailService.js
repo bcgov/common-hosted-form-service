@@ -3,11 +3,38 @@ const fs = require('fs');
 const log = require('npmlog');
 const path = require('path');
 const constants = require('../common/constants');
-
 const formService = require('../form/service');
 
-const service = {
+// Function that merges the template and body HTML files to allow dynamic content in the emails.
+const mergeEmailTemplate = (bodyFileName, returnTemplateCb) => {
+  fs.readFile(
+    `${path.join(
+      __dirname,
+      'assets'
+    )}/triggered-notification-email-template.html`,
+    'utf8',
+    (err, template) => {
+      if (err) {
+        log.error('Error getting email template file: ' + err);
+        throw err;
+      }
+      let body = fs.readFileSync(
+        `${path.join(__dirname, 'assets', 'bodies')}/${bodyFileName}`,
+        'utf8'
+      );
+      const bodyInsertIndex = template.search('<!-- BODY END -->');
+      template = [
+        template.substring(0, bodyInsertIndex),
+        body,
+        template.substring(bodyInsertIndex, template.length),
+      ].join('');
 
+      returnTemplateCb(template);
+    }
+  );
+};
+
+const service = {
   _appUrl: (referer) => {
     try {
       const url = new URL(referer);
@@ -15,50 +42,62 @@ const service = {
       const u = url.href.substring(0, url.href.indexOf(`/${p}`));
       return `${u}/${p}`;
     } catch (err) {
-      log.error('_appUrl', `URL = ${JSON.stringify(referer)}. Error: ${err.message}.`);
+      log.error(
+        '_appUrl',
+        `URL = ${JSON.stringify(referer)}. Error: ${err.message}.`
+      );
       log.error(err);
       throw err;
     }
   },
 
-  _sendStatusAssigned: async (assignmentNotificationEmail, submission, referer) => {
+  _sendEmailTemplate: (type, configData, submission, referer) => {
     try {
-      // these may get persisted at some point...
-      // along with a template path, mess
-      const config = {
-        template: 'triggered-notification-email-template.html',
-        from: constants.EmailProperties.FROM_EMAIL,
-        subject: 'Form Submission Assignment',
-        title: 'Form Submission Assignment',
-        priority: 'normal',
-        messageLinkText: 'You have been assigned to review this submission.',
-        messageLinkUrl: `${service._appUrl(referer)}/form/view?s=`
-      };
+      mergeEmailTemplate(
+        configData.template,
+        (mergedHtml) => {
+          const messageLinkUrl = `${service._appUrl(referer)}/form/view?s=`;
+          let contextToVal = [];
 
-      const assetsPath = path.join(__dirname, 'assets');
-      const emailBody = fs.readFileSync(`${assetsPath}/${config.template}`, 'utf8');
+          if (type === 'sendStatusAssigned') {
+            contextToVal = [configData.assignmentNotificationEmail];
+          } else if (type === 'sendSubmissionConfirmation' && configData.form.showSubmissionConfirmation) {
+            contextToVal = [configData.body.to];
+          } else if (type === 'sendSubmissionReceived' && configData.form.submissionReceivedEmails && configData.form.submissionReceivedEmails.length) {
+            const emailsObj = configData.form.submissionReceivedEmails;
+            for(let index in emailsObj) {
+              contextToVal.push(emailsObj[index]);
+            }
+          }
 
-      const contexts = [
-        {
-          context: {
-            confirmationNumber: submission.confirmationId,
-            title: config.title,
-            messageLinkText: config.messageLinkText,
-            messageLinkUrl: `${config.messageLinkUrl}${submission.id}`
-          },
-          to: [assignmentNotificationEmail]
+          let contexts = [
+            {
+              context: {
+                confirmationNumber: submission.confirmationId,
+                title: configData.title,
+                messageLinkText: configData.messageLinkText,
+                messageLinkUrl: `${messageLinkUrl}${submission.id}`,
+              },
+              to: contextToVal,
+            },
+          ];
+
+          let data = {
+            body: mergedHtml,
+            bodyType: 'html',
+            contexts: contexts,
+            from: constants.EmailProperties.FROM_EMAIL,
+            subject: configData.subject,
+            title: configData.title,
+            priority: configData.priority,
+            messageLinkText: configData.messageLinkText,
+          };
+
+          return chesService.merge(data);
         }
-      ];
-
-      const data = {
-        body: emailBody,
-        bodyType: 'html',
-        contexts: contexts,
-        ...config
-      };
-      return await chesService.merge(data);
+      );
     } catch (err) {
-      log.error('_sendStatusAssigned', `Error: ${err.message}.`);
+      log.error('_sendEmailTemplate', `Error: ${err.message}.`);
       log.error(err);
       throw err;
     }
@@ -169,10 +208,29 @@ const service = {
 
   statusAssigned: async (currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const submission = await formService.readSubmission(currentStatus.submissionId);
-      return service._sendStatusAssigned(assignmentNotificationEmail, submission, referer);
+      const submission = await formService.readSubmission(
+        currentStatus.submissionId
+      );
+      const configData = {
+        template: 'send-status-assigned-email-body.html',
+        title: 'Form Submission Assignment',
+        subject: 'Form Submission Assignment',
+        messageLinkText: 'You have been assigned to review this submission.',
+        priority: 'normal',
+        assignmentNotificationEmail,
+      };
+
+      return service._sendEmailTemplate(
+        'sendStatusAssigned',
+        configData,
+        submission,
+        referer
+      );
     } catch (e) {
-      log.error('statusAssigned', `status: ${currentStatus}, referer: ${referer}`);
+      log.error(
+        'statusAssigned',
+        `status: ${currentStatus}, referer: ${referer}`
+      );
       log.error('statusAssigned', e.message);
       log.error(e);
       throw e;
@@ -183,9 +241,29 @@ const service = {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(submissionId);
-      return service._sendSubmissionConfirmation(form, submission, body, referer);
+
+      const configData = {
+        template: 'submission-confirmation.html',
+        title: `${form.name} Submission`,
+        subject: `${form.name} Submission`,
+        priority: 'normal',
+        body,
+        form
+      };
+
+      return service._sendEmailTemplate(
+        'sendSubmissionConfirmation',
+        configData,
+        submission,
+        referer
+      );
     } catch (e) {
-      log.error('submissionConfirmation', `formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(body)}, referer: ${referer}`);
+      log.error(
+        'submissionConfirmation',
+        `formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(
+          body
+        )}, referer: ${referer}`
+      );
       log.error('submissionConfirmation', e.message);
       log.error(e);
       throw e;
@@ -196,15 +274,32 @@ const service = {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(submissionId);
-      return service._sendSubmissionReceived(form, submission, referer);
+
+      const configData = {
+        template: 'submission-received-confirmation.html',
+        title: `${form.name} Accepted`,
+        subject: `${form.name} Accepted`,
+        priority: 'normal',
+        messageLinkText: `Please login to view the details of this ${form.name} submission`,
+        form
+      };
+
+      return service._sendEmailTemplate(
+        'sendSubmissionReceived',
+        configData,
+        submission,
+        referer
+      );
     } catch (e) {
-      log.error('submissionReceived', `formId: ${formId}, submissionId: ${submissionId}, referer: ${referer}`);
+      log.error(
+        'submissionReceived',
+        `formId: ${formId}, submissionId: ${submissionId}, referer: ${referer}`
+      );
       log.error('submissionReceived', e.message);
       log.error(e);
       throw e;
     }
-  }
-
+  },
 };
 
 module.exports = service;
