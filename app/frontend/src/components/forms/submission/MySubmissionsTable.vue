@@ -143,9 +143,15 @@ export default {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
 
     // Status columns in the table
-    getCurrentStatus(history) {
-      // Current status is most recent status (top in array, query returns in status created desc)
-      return history && history[0] ? history[0].code : 'N/A';
+    getCurrentStatus(record) {
+      if (record.draft) {
+        return 'DRAFT';
+      } else {
+        // Current status is most recent status (top in array, query returns in status created desc)
+        return record.submissionStatus && record.submissionStatus[0]
+          ? record.submissionStatus[0].code
+          : 'N/A';
+      }
     },
     getStatusDate(history, statusCode) {
       // Get the created date of the most recent occurence of a specified status
@@ -165,7 +171,7 @@ export default {
           return {
             completedDate: this.getStatusDate(s.submissionStatus, 'COMPLETED'),
             confirmationId: s.confirmationId,
-            status: this.getCurrentStatus(s.submissionStatus),
+            status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
             submittedDate: this.getStatusDate(s.submissionStatus, 'SUBMITTED'),
           };
