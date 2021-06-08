@@ -52,10 +52,11 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
+      const submission = await service.read(req.params.formSubmissionId, req.currentUser);
       const response = await service.createStatus(req.params.formSubmissionId, req.body, req.currentUser);
       // send an email (async in the background)
       if (req.body.assignmentNotificationEmail) {
-        emailService.statusAssigned(response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
+        emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
       }
       res.status(200).json(response);
     } catch (error) {
