@@ -6,20 +6,27 @@ const constants = require('../common/constants');
 const formService = require('../form/service');
 
 // Helper function used to assign the "to" email value(s) for the email's context
-const getContextToVal = (type, configData) => {
+const generateContexts = (type, configData, submission, referer) => {
+  let contextToVal = [];
   if (type === 'sendStatusAssigned') {
-    return [configData.assignmentNotificationEmail];
-  } else if (
-    type === 'sendSubmissionConfirmation' &&
-    configData.form.showSubmissionConfirmation
-  ) {
-    return [configData.body.to];
-  } else if (
-    type === 'sendSubmissionReceived' &&
-    configData.form.submissionReceivedEmails
-  ) {
-    return configData.form.submissionReceivedEmails;
+    contextToVal = [configData.assignmentNotificationEmail];
+  } else if (type === 'sendSubmissionConfirmation' && configData.form.showSubmissionConfirmation) {
+    contextToVal = [configData.body.to];
+  } else if (type === 'sendSubmissionReceived' && configData.form.submissionReceivedEmails) {
+    contextToVal = configData.form.submissionReceivedEmails;
   }
+  const contexts = [
+    {
+      context: {
+        confirmationNumber: submission.confirmationId,
+        title: configData.title,
+        messageLinkText: configData.messageLinkText,
+        messageLinkUrl: `${service._appUrl(referer)}/form/view?s=${submission.id}`,
+      },
+      to: contextToVal
+    }
+  ];
+  return contexts;
 };
 
 const service = {
@@ -65,32 +72,19 @@ const service = {
   _sendEmailTemplate: (type, configData, submission, referer) => {
     try {
       const mergedHtml = service._mergeEmailTemplate(configData.bodyTemplate);
-      const contexts = [
-        {
-          context: {
-            confirmationNumber: submission.confirmationId,
-            title: configData.title,
-            messageLinkText: configData.messageLinkText,
-            messageLinkUrl: `${service._appUrl(referer)}/form/view?s=${submission.id}`,
-          },
-          to: getContextToVal(type, configData),
-        },
-      ];
       const data = {
         body: mergedHtml,
         bodyType: 'html',
-        contexts,
+        contexts: generateContexts(type, configData, submission, referer),
         from: constants.EmailProperties.FROM_EMAIL,
         subject: configData.subject,
         title: configData.title,
         priority: configData.priority,
         messageLinkText: configData.messageLinkText,
       };
-
       return chesService.merge(data);
     } catch (err) {
       log.error('_sendEmailTemplate', `Error: ${err.message}.`);
-      log.error(err);
       throw err;
     }
   },
@@ -131,7 +125,7 @@ const service = {
         body,
         form,
       };
-      return service._sendEmailTemplate( 'sendSubmissionConfirmation', configData, submission, referer);
+      return service._sendEmailTemplate('sendSubmissionConfirmation', configData, submission, referer);
     } catch (e) {
       log.error('submissionConfirmation', `formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(body)}, referer: ${referer}`);
       log.error('submissionConfirmation', e.message);
