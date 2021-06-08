@@ -48,6 +48,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
 import { formService } from '@/services';
+import { NotificationTypes } from '@/utils/constants';
 import { isFormPublic } from '@/utils/permissionUtils';
 import formioUtils from 'formiojs/utils';
 
@@ -68,18 +69,23 @@ export default {
       default: false,
     },
     preview: Boolean,
+    staffEditMode: {
+      type: Boolean,
+      default: false,
+    },
     submissionId: String,
     versionId: String,
   },
   data() {
     return {
+      currentForm: {},
       form: {},
       formSchema: {},
+      savingDraft: false,
+      loadingSubmission: false,
       submission: {
         data: {},
       },
-      currentForm: {},
-      loadingSubmission: false,
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
@@ -222,6 +228,7 @@ export default {
       this.currentForm.form.action = undefined;
     },
     async onBeforeSubmit(submission, next) {
+      this.savingDraft = submission.state && submission.state === 'draft';
       if (this.preview) {
         return;
       }
@@ -232,7 +239,7 @@ export default {
       const errors = [];
       try {
         const body = {
-          draft: false,
+          draft: this.savingDraft,
           submission: submission,
         };
 
@@ -255,7 +262,7 @@ export default {
         if ([200, 201].includes(response.status)) {
           // all is good, let's just call next() and carry on...
           // store our submission result...
-          this.submissionRecord = Object.assign({}, response.data);
+          this.submissionRecord = Object.assign({}, this.submissionId ? response.data.submission : response.data);
           // console.info(`onBeforeSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
           next();
         } else {
@@ -288,17 +295,31 @@ export default {
       // really nothing to do, the formio button has consumed the event and updated its display
       // is there anything here for us to do?
       // console.info('onSubmitDone()') ; // eslint-disable-line no-console
-      if (this.submissionId) {
-        // updating an existing submission
-        this.$emit('submission-updated');
-      } else {
-        // User created new submission
+      if (this.savingDraft) {
+        this.addNotification({
+          type: NotificationTypes.SUCCESS,
+          message: `A draft for your submission ${this.submissionRecord.confirmationId} has been saved.`,
+        });
+        // Go to the user submissions list
         this.$router.push({
-          name: 'FormSuccess',
+          name: 'UserSubmissions',
           query: {
-            s: this.submissionRecord.id,
+            f: this.formId,
           },
         });
+      } else {
+        if (this.staffEditMode) {
+          // updating an existing submission on the staff side
+          this.$emit('submission-updated');
+        } else {
+          // User created new submission
+          this.$router.push({
+            name: 'FormSuccess',
+            query: {
+              s: this.submissionRecord.id,
+            },
+          });
+        }
       }
     },
     // Custom Event triggered from buttons with Action type "Event"

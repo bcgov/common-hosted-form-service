@@ -1,6 +1,6 @@
 <template>
   <v-skeleton-loader :loading="loading" type="article">
-    <FormViewer displayTitle readOnly :submissionId="submissionId" />
+    <FormViewer displayTitle :readOnly="readOnly" :submissionId="submissionId" />
   </v-skeleton-loader>
 </template>
 
@@ -16,6 +16,7 @@ export default {
   },
   props: {
     submissionId: String,
+    readOnly: { type: Boolean, default: true },
   },
   data() {
     return {
