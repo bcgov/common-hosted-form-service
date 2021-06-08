@@ -52,10 +52,7 @@ describe('_sendEmailTemplate', () => {
     },
     form: {
       showSubmissionConfirmation: 'confirmation',
-      submissionReceivedEmails: {
-        1: 'x@y.com',
-        2: 'a@b.com',
-      },
+      submissionReceivedEmails: ['x@y.com', 'a@b.com'],
     },
   };
 
