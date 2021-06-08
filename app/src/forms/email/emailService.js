@@ -5,7 +5,7 @@ const path = require('path');
 const constants = require('../common/constants');
 const formService = require('../form/service');
 
-// Helper function used to assign the "to" email value(s) for the email's context
+// Helper function used to generate contexts for the ches.merge data argument
 const generateContexts = (type, configData, submission, referer) => {
   let contextToVal = [];
   if (type === 'sendStatusAssigned') {
