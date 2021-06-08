@@ -67,24 +67,44 @@
         {{ item.completedDate | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
-        <span>
+        <router-link
+          :to="{
+            name: 'UserFormView',
+            query: {
+              s: item.submissionId,
+            },
+          }"
+        >
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <router-link
-                :to="{
-                  name: 'UserFormView',
-                  query: {
-                    s: item.submissionId,
-                  },
-                }"
-              >
-                <v-btn color="primary" icon v-bind="attrs" v-on="on">
-                  <v-icon>remove_red_eye</v-icon>
-                </v-btn>
-              </router-link>
+              <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                <v-icon>remove_red_eye</v-icon>
+              </v-btn>
             </template>
-            <span>View Submission</span>
+            <span>View This Submission</span>
           </v-tooltip>
+        </router-link>
+
+        <span v-if="item.status === 'DRAFT'">
+          <router-link
+            v-if="item.status === 'DRAFT'"
+            :to="{
+              name: 'UserFormDraftEdit',
+              query: {
+                s: item.submissionId,
+              },
+            }"
+          >
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                  <v-icon>mode_edit</v-icon>
+                </v-btn>
+              </template>
+              <span>Edit This Draft</span>
+            </v-tooltip>
+          </router-link>
+          <DeleteSubmission :submissionId="item.submissionId" />
         </span>
       </template>
     </v-data-table>
@@ -94,8 +114,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
+import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
+
 export default {
   name: 'MySubmissionsTable',
+  components: {
+    DeleteSubmission,
+  },
   props: {
     formId: {
       type: String,
@@ -114,6 +139,7 @@ export default {
     headers() {
       let headers = [
         { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
+        { text: 'Status', align: 'start', value: 'status' },
         {
           text: 'Submission Date',
           align: 'start',
@@ -129,11 +155,6 @@ export default {
         },
       ];
       if (this.showStatus) {
-        headers.splice(0, 0, {
-          text: 'Status',
-          align: 'start',
-          value: 'status',
-        });
         headers.splice(3, 0, {
           text: 'Completed Date',
           align: 'start',
@@ -160,10 +181,10 @@ export default {
           : 'N/A';
       }
     },
-    getStatusDate(history, statusCode) {
+    getStatusDate(record, statusCode) {
       // Get the created date of the most recent occurence of a specified status
-      if (history) {
-        const submittedStatus = history.find((stat) => stat.code == statusCode);
+      if (record.submissionStatus && !record.draft) {
+        const submittedStatus = record.submissionStatus.find((stat) => stat.code == statusCode);
         if (submittedStatus) return submittedStatus.createdAt;
       }
       return '';
@@ -176,11 +197,11 @@ export default {
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
           return {
-            completedDate: this.getStatusDate(s.submissionStatus, 'COMPLETED'),
+            completedDate: this.getStatusDate(s, 'COMPLETED'),
             confirmationId: s.confirmationId,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
-            submittedDate: this.getStatusDate(s.submissionStatus, 'SUBMITTED'),
+            submittedDate: this.getStatusDate(s, 'SUBMITTED'),
           };
         });
         this.submissionTable = tableRows;
