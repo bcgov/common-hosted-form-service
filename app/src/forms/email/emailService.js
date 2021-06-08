@@ -5,6 +5,23 @@ const path = require('path');
 const constants = require('../common/constants');
 const formService = require('../form/service');
 
+// Helper function used to assign the "to" email value(s) for the email's context
+const getContextToVal = (type, configData) => {
+  if (type === 'sendStatusAssigned') {
+    return [configData.assignmentNotificationEmail];
+  } else if (
+    type === 'sendSubmissionConfirmation' &&
+    configData.form.showSubmissionConfirmation
+  ) {
+    return [configData.body.to];
+  } else if (
+    type === 'sendSubmissionReceived' &&
+    configData.form.submissionReceivedEmails
+  ) {
+    return configData.form.submissionReceivedEmails;
+  }
+};
+
 const service = {
   _appUrl: (referer) => {
     try {
@@ -35,7 +52,6 @@ const service = {
       `${path.join(__dirname, 'assets', 'bodies')}/${bodyTemplate}`,
       'utf8'
     );
-
     const bodyInsertIndex = template.search('<!-- BODY END -->');
     const result = [
       template.substring(0, bodyInsertIndex),
@@ -47,42 +63,23 @@ const service = {
   },
 
   _sendEmailTemplate: (type, configData, submission, referer) => {
-    const bodyTemplate = configData.bodyTemplate;
-    const mergedHtml = service._mergeEmailTemplate(bodyTemplate);
     try {
-      const messageLinkUrl = `${service._appUrl(referer)}/form/view?s=`;
-      let contextToVal = [];
-
-      if (type === 'sendStatusAssigned') {
-        contextToVal = [configData.assignmentNotificationEmail];
-      } else if (
-        type === 'sendSubmissionConfirmation' &&
-        configData.form.showSubmissionConfirmation
-      ) {
-        contextToVal = [configData.body.to];
-      } else if (
-        type === 'sendSubmissionReceived' &&
-        configData.form.submissionReceivedEmails
-      ) {
-        contextToVal = configData.form.submissionReceivedEmails;
-      }
-
-      let contexts = [
+      const mergedHtml = service._mergeEmailTemplate(configData.bodyTemplate);
+      const contexts = [
         {
           context: {
             confirmationNumber: submission.confirmationId,
             title: configData.title,
             messageLinkText: configData.messageLinkText,
-            messageLinkUrl: `${messageLinkUrl}${submission.id}`,
+            messageLinkUrl: `${service._appUrl(referer)}/form/view?s=${submission.id}`,
           },
-          to: contextToVal,
+          to: getContextToVal(type, configData),
         },
       ];
-
-      let data = {
+      const data = {
         body: mergedHtml,
         bodyType: 'html',
-        contexts: contexts,
+        contexts,
         from: constants.EmailProperties.FROM_EMAIL,
         subject: configData.subject,
         title: configData.title,
@@ -98,17 +95,10 @@ const service = {
     }
   },
 
-  statusAssigned: async (
-    formId,
-    currentStatus,
-    assignmentNotificationEmail,
-    referer
-  ) => {
+  statusAssigned: async (formId, currentStatus,assignmentNotificationEmail, referer) => {
     try {
       const form = await formService.readForm(formId);
-      const submission = await formService.readSubmission(
-        currentStatus.submissionId
-      );
+      const submission = await formService.readSubmission(currentStatus.submissionId);
       const configData = {
         bodyTemplate: 'send-status-assigned-email-body.html',
         title: `${form.name} Submission Assignment`,
@@ -117,13 +107,7 @@ const service = {
         priority: 'normal',
         assignmentNotificationEmail,
       };
-
-      return service._sendEmailTemplate(
-        'sendStatusAssigned',
-        configData,
-        submission,
-        referer
-      );
+      return service._sendEmailTemplate('sendStatusAssigned', configData, submission, referer);
     } catch (e) {
       log.error(
         'statusAssigned',
@@ -139,7 +123,6 @@ const service = {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(submissionId);
-
       const configData = {
         bodyTemplate: 'submission-confirmation.html',
         title: `${form.name} Submission`,
@@ -148,20 +131,9 @@ const service = {
         body,
         form,
       };
-
-      return service._sendEmailTemplate(
-        'sendSubmissionConfirmation',
-        configData,
-        submission,
-        referer
-      );
+      return service._sendEmailTemplate( 'sendSubmissionConfirmation', configData, submission, referer);
     } catch (e) {
-      log.error(
-        'submissionConfirmation',
-        `formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(
-          body
-        )}, referer: ${referer}`
-      );
+      log.error('submissionConfirmation', `formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(body)}, referer: ${referer}`);
       log.error('submissionConfirmation', e.message);
       log.error(e);
       throw e;
@@ -172,7 +144,6 @@ const service = {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(submissionId);
-
       const configData = {
         bodyTemplate: 'submission-received-confirmation.html',
         title: `${form.name} Accepted`,
@@ -181,18 +152,9 @@ const service = {
         messageLinkText: `Please login to view the details of this ${form.name} submission`,
         form,
       };
-
-      return service._sendEmailTemplate(
-        'sendSubmissionReceived',
-        configData,
-        submission,
-        referer
-      );
+      return service._sendEmailTemplate('sendSubmissionReceived', configData, submission, referer);
     } catch (e) {
-      log.error(
-        'submissionReceived',
-        `formId: ${formId}, submissionId: ${submissionId}, referer: ${referer}`
-      );
+      log.error('submissionReceived', `formId: ${formId}, submissionId: ${submissionId}, referer: ${referer}`);
       log.error('submissionReceived', e.message);
       log.error(e);
       throw e;
