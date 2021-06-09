@@ -2,31 +2,32 @@ const chesService = require('../../components/chesService');
 const fs = require('fs');
 const log = require('npmlog');
 const path = require('path');
-const constants = require('../common/constants');
+const { EmailProperties } = require('../common/constants');
 const formService = require('../form/service');
 
 // Helper function used to generate contexts for the ches.merge data argument
 const generateContexts = (type, configData, submission, referer) => {
   let contextToVal = [];
+  let userTypePath = '';
   if (type === 'sendStatusAssigned') {
     contextToVal = [configData.assignmentNotificationEmail];
   } else if (type === 'sendSubmissionConfirmation' && configData.form.showSubmissionConfirmation) {
     contextToVal = [configData.body.to];
+    userTypePath = '/view?s=';
   } else if (type === 'sendSubmissionReceived' && configData.form.submissionReceivedEmails) {
     contextToVal = configData.form.submissionReceivedEmails;
+    userTypePath = '/success?s=';
   }
-  const contexts = [
-    {
-      context: {
-        confirmationNumber: submission.confirmationId,
-        title: configData.title,
-        messageLinkText: configData.messageLinkText,
-        messageLinkUrl: `${service._appUrl(referer)}/form/view?s=${submission.id}`,
-      },
-      to: contextToVal
-    }
-  ];
-  return contexts;
+  return [{
+    context: {
+      confirmationNumber: submission.confirmationId,
+      title: configData.title,
+      messageLinkText: configData.messageLinkText,
+      // messageLinkUrl: `${service._appUrl(referer)}/form/view?s=${submission.id}`,
+      messageLinkUrl: `${service._appUrl(referer)}/form${userTypePath}${submission.id}`,
+    },
+    to: contextToVal
+  }];
 };
 
 const service = {
@@ -76,7 +77,7 @@ const service = {
         body: mergedHtml,
         bodyType: 'html',
         contexts: generateContexts(type, configData, submission, referer),
-        from: constants.EmailProperties.FROM_EMAIL,
+        from: EmailProperties.FROM_EMAIL,
         subject: configData.subject,
         title: configData.title,
         priority: configData.priority,
@@ -89,7 +90,7 @@ const service = {
     }
   },
 
-  statusAssigned: async (formId, currentStatus,assignmentNotificationEmail, referer) => {
+  statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(currentStatus.submissionId);
