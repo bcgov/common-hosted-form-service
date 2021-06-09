@@ -3,7 +3,7 @@ export default [
         type: 'checkbox',
         input: true,
         key: 'enableTime',
-        label: 'Enable Time Input TEST 1',
+        label: 'Enable Time Input',
         tooltip: 'Enables time input for this field.',
         weight: 30
     },
