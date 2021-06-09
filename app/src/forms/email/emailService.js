@@ -13,10 +13,10 @@ const generateContexts = (type, configData, submission, referer) => {
     contextToVal = [configData.assignmentNotificationEmail];
   } else if (type === 'sendSubmissionConfirmation' && configData.form.showSubmissionConfirmation) {
     contextToVal = [configData.body.to];
-    userTypePath = '/view?s=';
+    userTypePath = '/success?s=';
   } else if (type === 'sendSubmissionReceived' && configData.form.submissionReceivedEmails) {
     contextToVal = configData.form.submissionReceivedEmails;
-    userTypePath = '/success?s=';
+    userTypePath = '/view?s=';
   }
   return [{
     context: {
