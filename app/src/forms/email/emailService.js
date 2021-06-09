@@ -23,7 +23,6 @@ const generateContexts = (type, configData, submission, referer) => {
       confirmationNumber: submission.confirmationId,
       title: configData.title,
       messageLinkText: configData.messageLinkText,
-      // messageLinkUrl: `${service._appUrl(referer)}/form/view?s=${submission.id}`,
       messageLinkUrl: `${service._appUrl(referer)}/form${userTypePath}${submission.id}`,
     },
     to: contextToVal
