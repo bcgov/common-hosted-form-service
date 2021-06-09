@@ -11,6 +11,7 @@ const generateContexts = (type, configData, submission, referer) => {
   let userTypePath = '';
   if (type === 'sendStatusAssigned') {
     contextToVal = [configData.assignmentNotificationEmail];
+    userTypePath = '/view?s=';
   } else if (type === 'sendSubmissionConfirmation' && configData.form.showSubmissionConfirmation) {
     contextToVal = [configData.body.to];
     userTypePath = '/success?s=';
