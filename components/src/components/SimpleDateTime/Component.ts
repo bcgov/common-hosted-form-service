@@ -38,7 +38,6 @@ export default class Component extends (ParentComponent as any) {
             timePicker: {
                 hourStep: 1,
                 minuteStep: 1,
-                enableTime: false,
                 showMeridian: true,
                 readonlyInput: false,
                 mousewheel: true,
