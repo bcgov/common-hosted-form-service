@@ -62,6 +62,10 @@ describe('_sendEmailTemplate', () => {
       .mockReturnValueOnce('<h1>New Body</h1>');
   });
 
+  afterEach(() => {
+    mockedReadFileSync.mockRestore();
+  });
+
   it('should call chesService to send an email with type sendStatusAssigned', () => {
     chesService.merge = jest.fn().mockReturnValue('sent');
     emailService._mergeEmailTemplate = jest.fn().mockReturnValue('merged');
@@ -75,7 +79,6 @@ describe('_sendEmailTemplate', () => {
 
     expect(result).toBeTruthy();
     expect(chesService.merge).toHaveBeenCalledTimes(1);
-    mockedReadFileSync.mockRestore();
   });
 
   it('should call chesService to send an email with type sendSubmissionConfirmation', () => {
@@ -91,7 +94,6 @@ describe('_sendEmailTemplate', () => {
 
     expect(result).toBeTruthy();
     expect(chesService.merge).toHaveBeenCalledTimes(1);
-    mockedReadFileSync.mockRestore();
   });
 
   it('should call chesService to send an email with type sendSubmissionReceived', () => {
@@ -107,7 +109,6 @@ describe('_sendEmailTemplate', () => {
 
     expect(result).toBeTruthy();
     expect(chesService.merge).toHaveBeenCalledTimes(1);
-    mockedReadFileSync.mockRestore();
   });
 });
 
