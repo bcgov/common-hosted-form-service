@@ -42,7 +42,7 @@
             </v-tooltip>
           </span>
 
-          <DeleteSubmission :submissionId="submissionId" />
+          <DeleteSubmission @deleted="deleted" :submissionId="submissionId" />
         </v-col>
       </v-row>
     </div>
@@ -175,6 +175,14 @@ export default {
   computed: mapGetters('form', ['form', 'formSubmission', 'permissions']),
   methods: {
     ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
+    deleted() {
+      this.$router.push({
+        name: 'FormSubmissions',
+        query: {
+          f: this.form.id,
+        },
+      });
+    },
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
     },
