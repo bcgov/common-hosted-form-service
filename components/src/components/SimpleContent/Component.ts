@@ -31,4 +31,17 @@ export default class Component extends (ParentComponent as any) {
             schema: Component.schema()
         };
     }
+
+    addTargetBlankToLinks = (html) => {
+      let result = '';
+      if(html.includes('<a href=')) {
+        result = html.replace(/<a href=/g, '<a target="_blank" href=');
+      }
+      return result;
+    };
+
+    constructor(component, options, data) {
+      super(component, options, data);
+      component.html = this.addTargetBlankToLinks(component.html);
+    }
 }
