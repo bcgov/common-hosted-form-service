@@ -72,6 +72,11 @@ export const NotificationTypes = Object.freeze({
   SUCCESS: 'success'
 });
 
+/** For now just draft (submitted has no state) */
+export const SubmissionStates = Object.freeze({
+  DRAFT: 'DRAFT'
+});
+
 export const Regex = Object.freeze({
   EMAIL: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
 });

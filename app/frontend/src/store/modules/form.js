@@ -291,7 +291,7 @@ export default {
         // Get list of active submissions for this form (for either all submissions, or just single user)
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
-          : await formService.listSubmissions(formId);
+          : await formService.listSubmissions(formId, { deleted: false, draft: false });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {

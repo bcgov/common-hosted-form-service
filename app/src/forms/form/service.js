@@ -1,7 +1,7 @@
 const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 
-const { Permissions, Roles, Statuses } = require('../common/constants');
+const { Permissions, Roles, Statuses, SubmissionStates } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const Problem = require('api-problem');
@@ -249,13 +249,19 @@ const service = {
 
       if (!isPublicForm && !currentUser.public) {
         // Provide the submission creator appropriate CRUD permissions if this is a non-public form
-        // we decided that subitter cannot delete their own submission
+        // we decided that subitter cannot delete or update their own submission unless it's a draft
         // We know this is the submission creator when we see the SUBMISSION_CREATE permission
-        const items = [
+        // These are adjusted at the update point if going from draft to submitted, or when adding
+        // team submitters to a draft
+        const perms = [
           Permissions.SUBMISSION_CREATE,
-          Permissions.SUBMISSION_READ,
-          Permissions.SUBMISSION_UPDATE,
-        ].map(perm => ({
+          Permissions.SUBMISSION_READ
+        ];
+        if (data.submission.state === SubmissionStates.DRAFT) {
+          perms.push(Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE);
+        }
+
+        const itemsToInsert = perms.map(perm => ({
           id: uuidv4(),
           userId: currentUser.id,
           formSubmissionId: submissionId,
@@ -263,18 +269,20 @@ const service = {
           createdBy: createdBy
         }));
 
-        await FormSubmissionUser.query(trx).insert(items);
+        await FormSubmissionUser.query(trx).insert(itemsToInsert);
       }
 
-      // Add a SUBMITTED status
-      const stObj = {
-        id: uuidv4(),
-        submissionId: submissionId,
-        code: Statuses.SUBMITTED,
-        createdBy: createdBy
-      };
+      if (data.submission.state !== SubmissionStates.DRAFT) {
+        // Add a SUBMITTED status if it's not a draft
+        const stObj = {
+          id: uuidv4(),
+          submissionId: submissionId,
+          code: Statuses.SUBMITTED,
+          createdBy: createdBy
+        };
 
-      await FormSubmissionStatus.query(trx).insert(stObj);
+        await FormSubmissionStatus.query(trx).insert(stObj);
+      }
 
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.

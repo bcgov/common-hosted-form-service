@@ -48,7 +48,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
 import { formService } from '@/services';
-import { NotificationTypes } from '@/utils/constants';
+import { NotificationTypes, SubmissionStates } from '@/utils/constants';
 import { isFormPublic } from '@/utils/permissionUtils';
 import formioUtils from 'formiojs/utils';
 
@@ -228,7 +228,9 @@ export default {
       this.currentForm.form.action = undefined;
     },
     async onBeforeSubmit(submission, next) {
-      this.savingDraft = submission.state && submission.state === 'draft';
+      // Normalize the submission state in case a form is somehow designed where the state is lowercased
+      if(submission.state) submission.state = submission.state.toUpperCase();
+      this.savingDraft = submission.state && submission.state === SubmissionStates.DRAFT;
       if (this.preview) {
         return;
       }
