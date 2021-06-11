@@ -1,4 +1,5 @@
 /* tslint:disable */
+import _ from 'lodash';
 import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.datetime;
 import editForm from './Component.form';
@@ -58,5 +59,13 @@ export default class Component extends (ParentComponent as any) {
             documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
+    }
+
+    constructor(component) {
+      super(component);
+      // if enableTime is set to false, manually add time fields since it get removed later on through Form IO
+      if (!this.component.enableTime) {
+        this.component.format = this.component.format.concat(' hh:mm a');
+      }
     }
 }
