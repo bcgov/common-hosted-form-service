@@ -1,8 +1,8 @@
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
 
 import EditDisplay from './editForm/Component.edit.display';
-import SimpleApi from "../Common/Simple.edit.api";
-import SimpleConditional from "../Common/Simple.edit.conditional";
+import SimpleApi from '../Common/Simple.edit.api';
+import SimpleConditional from '../Common/Simple.edit.conditional';
 
 export default function(...extend) {
     const editForm = baseEditForm([
