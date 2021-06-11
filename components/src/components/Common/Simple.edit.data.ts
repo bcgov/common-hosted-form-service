@@ -28,9 +28,9 @@ export default [
         valueProperty: 'value',
         data: {
             custom(context) {
-                var values = [];
+                const values = [];
                 values.push({ label: 'Any Change', value: 'data' });
-                context.utils.eachComponent(context.instance.options.editForm.components, function(component, path) {
+                context.utils.eachComponent(context.instance.options.editForm.components, (component, path) => {
                     if (component.key !== context.data.key) {
                         values.push({
                             label: component.label || component.key,

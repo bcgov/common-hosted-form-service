@@ -1,5 +1,13 @@
 export default [
     {
+        type: 'checkbox',
+        input: true,
+        key: 'enableTime',
+        label: 'Enable Time Input',
+        tooltip: 'Enables time input for this field.',
+        weight: 30
+    },
+    {
         type: 'number',
         input: true,
         key: 'timePicker.hourStep',
