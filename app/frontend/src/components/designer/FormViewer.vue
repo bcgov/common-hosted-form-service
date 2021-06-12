@@ -306,7 +306,7 @@ export default {
         this.$router.push({
           name: 'UserSubmissions',
           query: {
-            f: this.formId,
+            f: this.form.id,
           },
         });
       } else {
