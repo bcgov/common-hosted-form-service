@@ -141,7 +141,7 @@ describe('form actions', () => {
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId');
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'draft': false });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -152,7 +152,7 @@ describe('form actions', () => {
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId');
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'draft': false });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -176,7 +176,7 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId');
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'draft': false });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
