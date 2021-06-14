@@ -136,6 +136,7 @@ const service = {
   _readLatestFormSchema: async (formId) => {
     return FormVersion.query()
       .select('schema')
+      .withGraphFetched('submissions')
       .where('formId', formId)
       .modify('orderVersionDescending')
       .first().then((row) => row.schema);
