@@ -4,7 +4,8 @@
       <v-row class="mt-6" no-gutters>
         <v-col class="text-center" cols="12" sm="10" offset-sm="1">
           <h1>Previous Submissions</h1>
-          <h2>{{ form.name }}</h2>
+          <h2 v-if="formId">{{ form.name }}</h2>
+          <h2 v-else>All Forms</h2>
         </v-col>
         <v-col class="text-right" cols="12" sm="1">
           <v-tooltip bottom>
@@ -119,11 +120,18 @@ export default {
           sortable: false,
         },
       ];
-      if (this.showStatus) {
+      if (this.showStatus || !this.formId) {
         headers.splice(3, 0, {
           text: 'Completed Date',
           align: 'start',
           value: 'completedDate',
+        });
+      }
+      if (!this.formId) {
+        headers.splice(0, 0, {
+          text: 'Form Title',
+          align: 'start',
+          value: 'name',
         });
       }
       return headers;
@@ -167,6 +175,7 @@ export default {
           return {
             completedDate: this.getStatusDate(s, 'COMPLETED'),
             confirmationId: s.confirmationId,
+            name: s.name,
             permissions: s.permissions,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
