@@ -1,6 +1,5 @@
 const config = require('config');
 const fs = require('fs-extra');
-const log = require('npmlog');
 const mime = require('mime-types');
 const path = require('path');
 const Problem = require('api-problem');
@@ -8,6 +7,7 @@ const S3 = require('aws-sdk/clients/s3');
 
 const StorageTypes = require('../../common/constants').StorageTypes;
 const errorToProblem = require('../../../components/errorToProblem');
+const log = require('../../../components/log')(module.filename);
 
 const SERVICE = 'ObjectStorage';
 const TEMP_DIR = 'uploads';
@@ -15,9 +15,9 @@ const Delimiter = '/';
 
 class ObjectStorageService {
   constructor({endpoint, bucket, key, accessKeyId, secretAccessKey}) {
-    log.verbose('ObjectStorageService', `Constructed with ${endpoint}, ${bucket}, ${key}, ${accessKeyId}, secretAccessKey`);
+    log.debug(`Constructed with ${endpoint}, ${bucket}, ${key}, ${accessKeyId}, secretAccessKey`, { function: 'constructor' });
     if (!endpoint || !bucket || !key || !accessKeyId || !secretAccessKey) {
-      log.error('ObjectStorageService', 'Invalid configuration.');
+      log.error('Invalid configuration.', { function: 'constructor' });
       throw new Error('ObjectStorageService is not configured. Check configuration.');
     }
     this._endpoint = endpoint;

@@ -1,13 +1,14 @@
 const axios = require('axios');
-const log = require('npmlog');
 const oauth = require('axios-oauth-client');
 const tokenProvider = require('axios-token-interceptor');
 
+const log = require('./log')(module.filename);
+
 class ClientConnection {
   constructor({ tokenUrl, clientId, clientSecret }) {
-    log.verbose('ClientConnection', `Constructed with ${tokenUrl}, ${clientId}, clientSecret`);
+    log.verbose(`Constructed with ${tokenUrl}, ${clientId}, clientSecret`, { function: 'constructor' });
     if (!tokenUrl || !clientId || !clientSecret) {
-      log.error('ClientConnection', 'Invalid configuration.');
+      log.error('Invalid configuration.', { function: 'constructor' });
       throw new Error('ClientConnection is not configured. Check configuration.');
     }
 
