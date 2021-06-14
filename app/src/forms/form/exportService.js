@@ -2,7 +2,7 @@ const jsonexport = require('jsonexport');
 const { Model } = require('objection');
 const Problem = require('api-problem');
 
-const { Form } = require('../common/models');
+const { Form, FormVersion } = require('../common/models');
 const Permissions = require('../common/constants').Permissions;
 
 
@@ -133,7 +133,28 @@ const service = {
     };
   },
 
+  _readLatestFormSchema: async (formId) => {
+    return FormVersion.query()
+      .select('schema')
+      .where('formId', formId)
+      .modify('orderVersionDescending')
+      .first().then((row) => row.schema);
+  },
+
   _formatSubmissionsCsv: async (form, data) => {
+
+    // -- get column order to match field order in form design
+    // object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
+    // get correctly ordered field names (keys) from latest form version
+    let latestFormDesign = await service._readLatestFormSchema(form.id);
+    let fieldNames = latestFormDesign.components
+      .filter(x => x.input === true)
+      .map(({key}) => key);
+
+    // get meta properties in 'form.<child.key>' string format
+    let metaKeys = Object.keys(data[0].form);
+    let metaHeaders = metaKeys.map(x => 'form.' + x);
+
     try {
       const options = {
         fillGaps: true,
@@ -152,6 +173,9 @@ const service = {
         //     return value;
         //   }
         // }
+
+        // show meta headers first, then field names from form schema, remaining fields in data have columns automatically appended
+        headers: metaHeaders.concat(fieldNames)
       };
 
       const csv = await jsonexport(data, options);
