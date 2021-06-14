@@ -1,5 +1,6 @@
-const log = require('npmlog');
 const Problem = require('api-problem');
+
+const log = require('./log')(module.filename);
 
 module.exports = function(service, e) {
   if (e.response) {

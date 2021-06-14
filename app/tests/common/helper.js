@@ -1,5 +1,4 @@
 const express = require('express');
-const log = require('npmlog');
 const Problem = require('api-problem');
 
 /**
@@ -41,17 +40,6 @@ const helper = {
     });
 
     return app;
-  },
-
-  /**
-   * @function logHelper
-   * Configures an npmlog instance to have debug level logging and the right log level
-   */
-  logHelper: () => {
-    log.level = 'silent';
-    log.addLevel('debug', 1500, {
-      fg: 'cyan'
-    });
   }
 };
 
