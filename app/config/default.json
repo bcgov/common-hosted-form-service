@@ -43,8 +43,7 @@
       "realm": "cp1qly2d",
       "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
     },
-    "logLevel": "debug",
-    "morganFormat": "combined",
+    "logLevel": "http",
     "port": "8080",
     "rateLimit" : {
       "public": {

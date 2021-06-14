@@ -1,7 +1,8 @@
-const chesService = require('../../components/chesService');
 const fs = require('fs');
-const log = require('npmlog');
 const path = require('path');
+
+const chesService = require('../../components/chesService');
+const log = require('../../components/log')(module.filename);
 const { EmailProperties } = require('../common/constants');
 const formService = require('../form/service');
 
@@ -38,10 +39,7 @@ const service = {
       const u = url.href.substring(0, url.href.indexOf(`/${p}`));
       return `${u}/${p}`;
     } catch (err) {
-      log.error(
-        '_appUrl',
-        `URL = ${JSON.stringify(referer)}. Error: ${err.message}.`
-      );
+      log.error(`URL = ${JSON.stringify(referer)}. Error: ${err.message}.`, { function: '_appUrl' });
       log.error(err);
       throw err;
     }
@@ -85,7 +83,7 @@ const service = {
       };
       return chesService.merge(data);
     } catch (err) {
-      log.error('_sendEmailTemplate', `Error: ${err.message}.`);
+      log.error(`Error: ${err.message}.`, { function: '_sendEmailTemplate' });
       throw err;
     }
   },
@@ -104,11 +102,8 @@ const service = {
       };
       return service._sendEmailTemplate('sendStatusAssigned', configData, submission, referer);
     } catch (e) {
-      log.error(
-        'statusAssigned',
-        `status: ${currentStatus}, referer: ${referer}`
-      );
-      log.error('statusAssigned', e.message);
+      log.error(`status: ${currentStatus}, referer: ${referer}`, { function: 'statusAssigned' });
+      log.error(e.message, { function: 'statusAssigned' });
       log.error(e);
       throw e;
     }
@@ -128,8 +123,8 @@ const service = {
       };
       return service._sendEmailTemplate('sendSubmissionConfirmation', configData, submission, referer);
     } catch (e) {
-      log.error('submissionConfirmation', `formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(body)}, referer: ${referer}`);
-      log.error('submissionConfirmation', e.message);
+      log.error(`formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(body)}, referer: ${referer}`, { function: 'submissionConfirmation' });
+      log.error(e.message, { function: 'submissionConfirmation' });
       log.error(e);
       throw e;
     }
@@ -149,8 +144,8 @@ const service = {
       };
       return service._sendEmailTemplate('sendSubmissionReceived', configData, submission, referer);
     } catch (e) {
-      log.error('submissionReceived', `formId: ${formId}, submissionId: ${submissionId}, referer: ${referer}`);
-      log.error('submissionReceived', e.message);
+      log.error(`formId: ${formId}, submissionId: ${submissionId}, referer: ${referer}`, { function: 'submissionReceived' });
+      log.error(e.message, { function: 'submissionReceived' });
       log.error(e);
       throw e;
     }

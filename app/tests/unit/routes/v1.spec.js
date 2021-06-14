@@ -1,12 +1,11 @@
 const request = require('supertest');
 
-const helper = require('../../common/helper');
+const { expressHelper } = require('../../common/helper');
 const router = require('../../../src/routes/v1');
 
 // Simple Express Server
 const basePath = '/api/v1';
-const app = helper.expressHelper(basePath, router);
-helper.logHelper();
+const app = expressHelper(basePath, router);
 
 describe(`GET ${basePath}`, () => {
   it('should return all available endpoints', async () => {
