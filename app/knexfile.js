@@ -1,4 +1,5 @@
 const config = require('config');
+const log = require('./src/components/log')(module.filename);
 const moment = require('moment');
 
 /** Knex configuration
@@ -29,6 +30,8 @@ types.setTypeParser(1184, (value) => {
   return moment(value).toISOString();
 });
 
+const logWrapper = (level, msg) => log.log(level, msg);
+
 module.exports = {
   client: 'pg',
   connection: {
@@ -38,7 +41,16 @@ module.exports = {
     database: config.get('db.database'),
     port: config.get('db.port')
   },
-  debug: ['silly', 'verbose'].includes(config.get('server.logLevel')),
+  debug: ['silly', 'debug'].includes(config.get('server.logLevel')),
+  log: {
+    debug: (msg) => logWrapper('debug', msg),
+    deprecate: (msg) => logWrapper('warn', msg),
+    error: (msg) => logWrapper('error', msg),
+    info: (msg) => logWrapper('info', msg),
+    silly: (msg) => logWrapper('silly', msg),
+    verbose: (msg) => logWrapper('verbose', msg),
+    warn: (msg) => logWrapper('warn', msg),
+  },
   migrations: {
     directory: __dirname + '/src/db/migrations'
   },
