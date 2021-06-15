@@ -41,6 +41,28 @@ const EXPORT_FORMATS = Object.freeze({
 });
 
 const service = {
+
+  _buildCsvHeaders: async (form, data) => {
+    // -- get column order to match field order in form design
+    // object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
+    // get correctly ordered field names (keys) from latest form version
+    const latestFormDesign = await service._readLatestFormSchema(form.id);
+
+    const fieldNames = latestFormDesign.components
+      .filter(x => x.input === true)
+      .map(({key}) => key);
+
+    // get meta properties in 'form.<child.key>' string format
+    const metaKeys = Object.keys(data[0].form);
+    const metaHeaders = metaKeys.map(x => 'form.' + x);
+
+    // -- make other changes to headers here if required
+    // eg: use field labels as headers
+    // see: https://github.com/kaue/jsonexport
+
+    return metaHeaders.concat(fieldNames);
+  },
+
   _checkPermission: (currentUser, formId, permission, exportType) => {
     const form = currentUser.forms.find(x => x.formId === formId);
     if (!form || !form.permissions.includes(permission)) {
@@ -133,29 +155,7 @@ const service = {
     };
   },
 
-  _readLatestFormSchema: async (formId) => {
-    return FormVersion.query()
-      .select('schema')
-      .withGraphFetched('submissions')
-      .where('formId', formId)
-      .modify('orderVersionDescending')
-      .first().then((row) => row.schema);
-  },
-
   _formatSubmissionsCsv: async (form, data) => {
-
-    // -- get column order to match field order in form design
-    // object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
-    // get correctly ordered field names (keys) from latest form version
-    let latestFormDesign = await service._readLatestFormSchema(form.id);
-    let fieldNames = latestFormDesign.components
-      .filter(x => x.input === true)
-      .map(({key}) => key);
-
-    // get meta properties in 'form.<child.key>' string format
-    let metaKeys = Object.keys(data[0].form);
-    let metaHeaders = metaKeys.map(x => 'form.' + x);
-
     try {
       const options = {
         fillGaps: true,
@@ -176,7 +176,7 @@ const service = {
         // }
 
         // show meta headers first, then field names from form schema, remaining fields in data have columns automatically appended
-        headers: metaHeaders.concat(fieldNames)
+        headers: await service._buildCsvHeaders(form, data)
       };
 
       const csv = await jsonexport(data, options);
@@ -190,6 +190,15 @@ const service = {
     } catch (e) {
       throw new Problem(500, { detail: `Could not make a csv export of submissions for this form. ${e.message}` });
     }
+  },
+
+  _readLatestFormSchema: (formId) => {
+    return FormVersion.query()
+      .select('schema')
+      .where('formId', formId)
+      .modify('orderVersionDescending')
+      .first()
+      .then((row) => row.schema);
   },
 
   export: async (formId, params = {}, currentUser) => {
