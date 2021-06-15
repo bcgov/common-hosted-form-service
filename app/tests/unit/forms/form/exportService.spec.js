@@ -2,10 +2,10 @@ const exportService = require('../../../../src/forms/form/exportService');
 
 describe('_buildCsvHeaders', () => {
 
-  it.only('should build correct csv headers', async () => {
+  it('should build correct csv headers', async () => {
 
     // form object from db
-    const form = { id: 1 };
+    const form = { id: 123 };
 
     // latest form version's schema
     const formSchema = {
@@ -50,8 +50,13 @@ describe('_buildCsvHeaders', () => {
     // build csv headers
     const result = await exportService._buildCsvHeaders(form, submissionsData);
 
-    // expect headers array to have 3 element - [ 'form.confirmationId', 'firstName', 'lastName' ]
-    expect(result.length === 3).toBeTruthy();
+    expect(result).toHaveLength(3);
+    expect(result).toEqual(expect.arrayContaining([ 'form.confirmationId', 'firstName', 'lastName' ]));
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123);
+
+    // restore mocked function to it's original implementation
+    exportService._readLatestFormSchema.mockRestore();
   });
 
 });

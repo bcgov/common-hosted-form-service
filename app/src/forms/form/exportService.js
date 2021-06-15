@@ -145,7 +145,7 @@ const service = {
       .modify('orderDefault');
   },
 
-  _formatSubmissionsJson: async (form, data) => {
+  _formatSubmissionsJson: (form, data) => {
     return {
       data: data,
       headers: {
@@ -175,7 +175,7 @@ const service = {
         //   }
         // }
 
-        // show meta headers first, then field names from form schema, remaining fields in data have columns automatically appended
+        // re-organize our headers to change column ordering or header labels, etc
         headers: await service._buildCsvHeaders(form, data)
       };
 
