@@ -112,7 +112,7 @@
         order="first"
         order-md="last"
       >
-        <v-card outlined class="review-form">
+        <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Status</h2>
           <StatusPanel
             :submissionId="submissionId"
@@ -120,7 +120,7 @@
             @note-updated="refreshNotes"
           />
         </v-card>
-        <v-card outlined class="review-form">
+        <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Notes</h2>
           <NotesPanel :submissionId="submissionId" ref="notesPanel" />
         </v-card>
