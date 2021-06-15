@@ -1,5 +1,4 @@
 /* tslint:disable */
-import _ from 'lodash';
 import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.content;
 import editForm from './Component.form';
