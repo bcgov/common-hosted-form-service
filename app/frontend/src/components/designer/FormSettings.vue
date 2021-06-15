@@ -71,6 +71,15 @@
       </v-row>
     </v-radio-group>
 
+    <v-checkbox v-model="enableSubmitterDraft">
+      <template #label>
+        <span>
+          Enable submitters of this form to
+          <strong>Save and Edit Draft</strong> submissions
+        </span>
+      </template>
+    </v-checkbox>
+
     <v-checkbox v-model="enableStatusUpdates">
       <template #label>
         <span>
@@ -200,6 +209,7 @@ export default {
   computed: {
     ...mapFields('form', [
       'form.description',
+      'form.enableSubmitterDraft',
       'form.enableStatusUpdates',
       'form.id',
       'form.idps',

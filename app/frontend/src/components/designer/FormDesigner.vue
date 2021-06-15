@@ -181,6 +181,7 @@ export default {
   computed: {
     ...mapFields('form', [
       'form.description',
+      'form.enableSubmitterDraft',
       'form.enableStatusUpdates',
       'form.idps',
       'form.isDirty',
@@ -406,6 +407,7 @@ export default {
           idps: this.idps,
           userType: this.userType,
         }),
+        enableSubmitterDraft: this.enableSubmitterDraft,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
