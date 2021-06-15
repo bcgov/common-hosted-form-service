@@ -33,6 +33,7 @@
       v-model="userType"
       :mandatory="false"
       :rules="loginRequiredRules"
+      @change="userTypeChanged"
     >
       <v-radio label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
       <v-radio label="Log-in Required" value="login"></v-radio>
@@ -71,7 +72,10 @@
       </v-row>
     </v-radio-group>
 
-    <v-checkbox v-model="enableSubmitterDraft">
+    <v-checkbox
+      v-model="enableSubmitterDraft"
+      :disabled="userType === ID_MODE.PUBLIC"
+    >
       <template #label>
         <span>
           Enable submitters of this form to
@@ -226,6 +230,14 @@ export default {
       return IdentityProviders;
     },
   },
-  methods: mapActions('form', ['fetchForm']),
+  methods: {
+    ...mapActions('form', ['fetchForm']),
+    userTypeChanged() {
+      // if they checked enable drafts then went back to public, uncheck it
+      if (this.userType === this.ID_MODE.PUBLIC) {
+        this.enableSubmitterDraft = false;
+      }
+    },
+  },
 };
 </script>
