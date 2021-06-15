@@ -1,4 +1,5 @@
 /* tslint:disable */
+import _ from 'lodash';
 import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.content;
 import editForm from './Component.form';
@@ -9,39 +10,43 @@ const ID = 'simplecontent';
 const DISPLAY = 'Static Text';
 
 export default class Component extends (ParentComponent as any) {
-    static schema(...extend) {
-        return ParentComponent.schema({
-            type: ID,
-            label: DISPLAY,
-            key: ID,
-            input: false,
-            html: ''
-        }, ...extend);
-    }
+  static schema(...extend) {
+    return ParentComponent.schema({
+      type: ID,
+      label: DISPLAY,
+      key: ID,
+      input: false,
+      html: ''
+    }, ...extend);
+  }
 
-    public static editForm = editForm;
+  public static editForm = editForm;
 
-    static get builderInfo() {
-        return {
-            title: DISPLAY,
-            group: 'simple',
-            icon: 'pencil-square-o',
-            weight: 40,
-            documentation: Constants.DEFAULT_HELP_LINK,
-            schema: Component.schema()
-        };
-    }
-
-    addTargetBlankToLinks = (html) => {
-      let result = '';
-      if(html.includes('<a href=')) {
-        result = html.replace(/<a href=/g, '<a target="_blank" href=');
-      }
-      return result;
+  static get builderInfo() {
+    return {
+      title: DISPLAY,
+      group: 'simple',
+      icon: 'pencil-square-o',
+      weight: 40,
+      documentation: Constants.DEFAULT_HELP_LINK,
+      schema: Component.schema()
     };
+  }
 
-    constructor(component, options, data) {
-      super(component, options, data);
-      component.html = this.addTargetBlankToLinks(component.html);
+  get defaultSchema() {
+    return Component.schema();
+  }
+
+  addTargetBlankToLinks = (html) => {
+    let result = '';
+    if (html.includes('<a href=')) {
+      result = html.replace(/<a href=/g, '<a target="_blank" href=');
     }
+    return result;
+  }
+
+  attach(element) {
+    this.loadRefs(element, { html: 'single' });
+    this.refs.html.innerHTML = this.addTargetBlankToLinks(this.refs.html.innerHTML);
+  }
 }
