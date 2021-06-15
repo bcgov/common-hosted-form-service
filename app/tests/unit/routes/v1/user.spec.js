@@ -1,7 +1,7 @@
 const request = require('supertest');
 const Problem = require('api-problem');
 
-const helper = require('../../../common/helper');
+const { expressHelper } = require('../../../common/helper');
 
 //
 // mock middleware
@@ -34,8 +34,7 @@ const router = require('../../../../src/forms/user/routes');
 
 // Simple Express Server
 const basePath = '/users';
-const app = helper.expressHelper(basePath, router);
-helper.logHelper();
+const app = expressHelper(basePath, router);
 
 afterEach(() => {
   jest.clearAllMocks();

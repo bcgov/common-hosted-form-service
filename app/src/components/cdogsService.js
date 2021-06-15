@@ -2,18 +2,18 @@ const config = require('config');
 const crypto = require('crypto');
 const FormData = require('form-data');
 const fs = require('fs-extra');
-const log = require('npmlog');
 
 const ClientConnection = require('./clientConnection');
 const errorToProblem = require('./errorToProblem');
+const log = require('./log')(module.filename);
 
 const SERVICE = 'CDOGS';
 
 class CdogsService {
   constructor({ tokenUrl, clientId, clientSecret, apiUrl }) {
-    log.verbose('CdogsService', `Constructed with ${tokenUrl}, ${clientId}, clientSecret, ${apiUrl}`);
+    log.debug(`Constructed with ${tokenUrl}, ${clientId}, clientSecret, ${apiUrl}`, { function: 'constructor' });
     if (!tokenUrl || !clientId || !clientSecret || !apiUrl) {
-      log.error('CdogsService', 'Invalid configuration.');
+      log.error('Invalid configuration.', { function: 'constructor' });
       throw new Error('CdogsService is not configured. Check configuration.');
     }
     this.connection = new ClientConnection({ tokenUrl, clientId, clientSecret });
@@ -25,7 +25,7 @@ class CdogsService {
   async health() {
     try {
       const url = `${this.apiV2}/health`;
-      log.debug('health', `GET to ${url}`);
+      log.debug(`GET to ${url}`, { function: 'health' });
 
       const { data, status } = await this.axios.get(url, {
         headers: {
@@ -42,7 +42,7 @@ class CdogsService {
   async templateUploadAndRender(body) {
     try {
       const url = `${this.apiV2}/template/render`;
-      log.debug('templateUploadAndRender', `POST to ${url}`);
+      log.debug(`POST to ${url}`, { function: 'templateUploadAndRender' });
 
       const { data, headers, status } = await this.axios.post(url, body, {
         responseType: 'arraybuffer' // Needed for binaries unless you want pain
@@ -57,7 +57,7 @@ class CdogsService {
   async templateRender(templateId, body) {
     try {
       const url = `${this.apiV2}/template/${templateId}/render`;
-      log.debug('templateUploadAndRender', `POST to ${url}`);
+      log.debug(`POST to ${url}`, { function: 'templateRender' });
 
       const { data, headers, status } = await this.axios.post(url, body, {
         headers: {
@@ -75,7 +75,7 @@ class CdogsService {
   async getTemplate(templateId) {
     try {
       const url = `${this.apiV2}/template/${templateId}`;
-      log.debug('getTemplate', `GET to ${url}`);
+      log.debug(`GET to ${url}`, { function: 'getTemplate' });
 
       const { data, status } = await this.axios.get(url, {
         headers: {
@@ -98,7 +98,7 @@ class CdogsService {
       form.append('template', fs.createReadStream(path));
 
       const url = `${this.apiV2}/template`;
-      log.debug('uploadTemplate', `POST to ${url}`);
+      log.debug(`POST to ${url}`, { function: 'uploadTemplate' });
 
       const { data, headers, status } = await this.axios(
         {
