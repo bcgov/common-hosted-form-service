@@ -34,7 +34,7 @@ export default class Component extends (ParentComponent as any) {
 
   addTargetBlankToLinks = (html) => {
     if (html.includes('<a')) {
-      html = html.replace(/<a(?![^>]+target)/g, '<a target="_blank"');
+      html = html.replace(/<a(?![^>]+target=)/g, '<a target="_blank"');
     }
     return html;
   }
@@ -51,5 +51,4 @@ export default class Component extends (ParentComponent as any) {
     }
     return super.attach(element);
   }
-
 }
