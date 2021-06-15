@@ -2,6 +2,13 @@ const previousMigration = require('./20210528134214_016-submission-submitters-vw
 
 exports.up = function (knex) {
   return Promise.resolve()
+
+    // Add a status update flag
+    .then(() => knex.schema.alterTable('form', table => {
+      table.boolean('enableSubmitterDraft').notNullable().defaultTo(false).comment('When true, submitters can save drafts');
+    }))
+
+    // Update view. Add form join and some fields from form
     .then(() => knex.schema.raw(`create or replace view submissions_submitters_vw as
     SELECT
     fsu.*,
@@ -15,7 +22,8 @@ exports.up = function (knex) {
     f.name,
     f.description,
     f.active,
-    f."enableStatusUpdates"
+    f."enableStatusUpdates",
+    f."enableSubmitterDraft"
   FROM
     form_submission_users_vw fsu
   INNER JOIN form_submission sub ON
@@ -28,6 +36,11 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return Promise.resolve()
+    // undo the new field add
+    .then(() => knex.schema.alterTable('form', table => {
+      table.dropColumn('enableSubmitterDraft');
+    }))
+
     // drop the modified 'submissions_vw' view
     .then(() => knex.schema.raw('drop view submissions_submitters_vw'))
     // recreate dependent view 'submissions_data_vw' from migration 16
