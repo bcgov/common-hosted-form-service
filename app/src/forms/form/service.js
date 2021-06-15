@@ -34,6 +34,7 @@ const service = {
       obj.showSubmissionConfirmation = data.showSubmissionConfirmation;
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.enableStatusUpdates = data.enableStatusUpdates;
+      obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser.username;
 
       await Form.query(trx).insert(obj);
@@ -96,6 +97,7 @@ const service = {
         showSubmissionConfirmation: data.showSubmissionConfirmation,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
+        enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.username
       };
 

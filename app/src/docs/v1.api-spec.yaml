@@ -2007,6 +2007,9 @@ components:
             enableStatusUpdates:
               type: boolean
               example: true
+            enableSubmitterDraft:
+              type: boolean
+              example: true
     FormDraft:
       allOf:
         - type: object
