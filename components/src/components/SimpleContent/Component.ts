@@ -32,20 +32,24 @@ export default class Component extends (ParentComponent as any) {
     };
   }
 
-  get defaultSchema() {
-    return Component.schema();
-  }
-
   addTargetBlankToLinks = (html) => {
-    let result = '';
-    if (html.includes('<a href=')) {
-      result = html.replace(/<a href=/g, '<a target="_blank" href=');
+    if (html.includes('<a')) {
+      html = html.replace(/<a(?![^>]+target)/g, '<a target="_blank"');
     }
-    return result;
+    return html;
   }
 
   attach(element) {
     this.loadRefs(element, { html: 'single' });
     this.refs.html.innerHTML = this.addTargetBlankToLinks(this.refs.html.innerHTML);
+    if (this.component.refreshOnChange) {
+      this.on('change', () => {
+        if (this.refs.html) {
+          this.setContent(this.refs.html, this.content);
+        }
+      }, true);
+    }
+    return super.attach(element);
   }
+
 }
