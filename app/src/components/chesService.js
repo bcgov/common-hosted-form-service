@@ -1,16 +1,16 @@
 const config = require('config');
-const log = require('npmlog');
 
 const ClientConnection = require('./clientConnection');
 const errorToProblem = require('./errorToProblem');
+const log = require('./log')(module.filename);
 
 const SERVICE = 'CHES';
 
 class ChesService {
   constructor({tokenUrl, clientId, clientSecret, apiUrl}) {
-    log.verbose('ChesService', `Constructed with ${tokenUrl}, ${clientId}, clientSecret, ${apiUrl}`);
+    log.debug(`Constructed with ${tokenUrl}, ${clientId}, clientSecret, ${apiUrl}`, { function: 'constructor' });
     if (!tokenUrl || !clientId || !clientSecret || !apiUrl) {
-      log.error('ChesService', 'Invalid configuration.');
+      log.error('Invalid configuration.', { function: 'constructor' });
       throw new Error('ChesService is not configured. Check configuration.');
     }
     this.connection = new ClientConnection({ tokenUrl, clientId, clientSecret });

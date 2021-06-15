@@ -1,9 +1,6 @@
 const errorToProblem = require('../../../src/components/errorToProblem');
-const helper = require('../../common/helper');
 
 const SERVICE = 'TESTSERVICE';
-
-helper.logHelper();
 
 describe('errorToProblem', () => {
   it('should throw a 422', () => {

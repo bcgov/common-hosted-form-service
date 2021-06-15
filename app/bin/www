@@ -3,7 +3,7 @@
 /** Module dependencies */
 const config = require('config');
 const http = require('http');
-const log = require('npmlog');
+const log = require('../src/components/log')(module.filename);
 
 const app = require('../app');
 

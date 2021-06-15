@@ -1,7 +1,7 @@
 const request = require('supertest');
 const Problem = require('api-problem');
 
-const helper = require('../../../common/helper');
+const { expressHelper } = require('../../../common/helper');
 
 //
 // mock middleware
@@ -29,11 +29,8 @@ userAccess.hasFormPermissions = jest.fn(() => {
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/form/service');
-
 const exportService = require('../../../../src/forms/form/exportService');
-
 const emailService = require('../../../../src/forms/email/emailService');
-
 const fileService = require('../../../../src/forms/file/service');
 
 
@@ -44,8 +41,7 @@ const router = require('../../../../src/forms/form/routes');
 
 // Simple Express Server
 const basePath = '/form';
-const app = helper.expressHelper(basePath, router);
-helper.logHelper();
+const app = expressHelper(basePath, router);
 
 afterEach(() => {
   jest.clearAllMocks();
