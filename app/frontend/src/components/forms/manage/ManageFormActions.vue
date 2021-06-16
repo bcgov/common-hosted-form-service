@@ -1,7 +1,7 @@
 <template>
   <div>
     <span>
-      <ShareForm :formId="form.id" :warning="!hasVersions"/>
+      <ShareForm :formId="form.id" :warning="!isPublished" />
     </span>
 
     <span v-if="canViewSubmissions">
@@ -93,13 +93,17 @@ export default {
     canViewSubmissions() {
       const perms = [
         FormPermissions.SUBMISSION_READ,
-        FormPermissions.SUBMISSION_UPDATE
+        FormPermissions.SUBMISSION_UPDATE,
       ];
-      return this.permissions.some(p => perms.includes(p));
+      return this.permissions.some((p) => perms.includes(p));
     },
-    hasVersions() {
-      return this.form.versions && this.form.versions.length;
-    }
+    isPublished() {
+      return (
+        this.form.versions &&
+        this.form.versions.length &&
+        this.form.versions.some((v) => v.published)
+      );
+    },
   },
   methods: {
     ...mapActions('form', ['deleteCurrentForm']),
