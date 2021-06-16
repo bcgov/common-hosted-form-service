@@ -23,7 +23,12 @@
           <hr />
           <p class="mb-5">Copy the link below or download the QR code.</p>
 
-          <v-alert v-if="warning" dense border="left" type="warning">
+          <v-alert
+            dense
+            type="warning"
+            transition="scale-transition"
+            :value="warning"
+          >
             There is no published version of the form at this time. The link
             below will not be reachable until a version is published.
           </v-alert>
