@@ -1,8 +1,6 @@
 <template>
   <div class="mt-5">
-    <div v-if="loading">
-      <v-skeleton-loader type="article" />
-    </div>
+    <v-skeleton-loader v-if="loading" type="article" />
     <div v-else>
       <v-row no-gutters>
         <v-col cols="12" sm="6">
@@ -52,6 +50,16 @@
         :md="form.enableStatusUpdates ? 8 : 12"
         class="pl-0 pt-0"
       >
+        <v-alert
+          color="primary"
+          dense
+          text
+          transition="scale-transition"
+          type="info"
+          :value="!submissionReadOnly"
+        >
+          <strong>After editing, re-submit the form to save your changes.</strong>
+        </v-alert>
         <v-card outlined class="review-form">
           <v-row no-gutters>
             <v-col cols="12" sm="6">
