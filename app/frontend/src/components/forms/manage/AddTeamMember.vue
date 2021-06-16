@@ -13,6 +13,11 @@
         return-object
         :search-input.sync="searchUsers"
       >
+        <!-- no data -->
+        <template #no-data>
+          <span>Can't find someone? They may not have joined the site.<br/>
+            Kindly send them a link to the site and ask them to log in.</span>
+        </template>
         <!-- selected user -->
         <template #selection="data">
           <span
