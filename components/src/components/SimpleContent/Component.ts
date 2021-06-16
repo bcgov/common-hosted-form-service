@@ -19,16 +19,10 @@ export default class Component extends (ParentComponent as any) {
         }, ...extend);
     }
 
-    public static editForm = editForm;
-
-    static get builderInfo() {
-        return {
-            title: DISPLAY,
-            group: 'simple',
-            icon: 'pencil-square-o',
-            weight: 40,
-            documentation: Constants.DEFAULT_HELP_LINK,
-            schema: Component.schema()
-        };
+  constructor(component, options, data) {
+    super(component, options, data);
+    if(component.html) {
+      component.html = this.addTargetBlankToLinks(component.html);
     }
+  }
 }
