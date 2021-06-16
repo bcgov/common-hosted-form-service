@@ -2,7 +2,7 @@ const jsonexport = require('jsonexport');
 const { Model } = require('objection');
 const Problem = require('api-problem');
 
-const { Form } = require('../common/models');
+const { Form, FormVersion } = require('../common/models');
 const Permissions = require('../common/constants').Permissions;
 
 
@@ -41,6 +41,28 @@ const EXPORT_FORMATS = Object.freeze({
 });
 
 const service = {
+
+  _buildCsvHeaders: async (form, data) => {
+    // -- get column order to match field order in form design
+    // object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
+    // get correctly ordered field names (keys) from latest form version
+    const latestFormDesign = await service._readLatestFormSchema(form.id);
+
+    const fieldNames = latestFormDesign.components
+      .filter(x => x.input === true)
+      .map(({key}) => key);
+
+    // get meta properties in 'form.<child.key>' string format
+    const metaKeys = Object.keys(data[0].form);
+    const metaHeaders = metaKeys.map(x => 'form.' + x);
+
+    // -- make other changes to headers here if required
+    // eg: use field labels as headers
+    // see: https://github.com/kaue/jsonexport
+
+    return metaHeaders.concat(fieldNames);
+  },
+
   _checkPermission: (currentUser, formId, permission, exportType) => {
     const form = currentUser.forms.find(x => x.formId === formId);
     if (!form || !form.permissions.includes(permission)) {
@@ -123,7 +145,7 @@ const service = {
       .modify('orderDefault');
   },
 
-  _formatSubmissionsJson: async (form, data) => {
+  _formatSubmissionsJson: (form, data) => {
     return {
       data: data,
       headers: {
@@ -152,6 +174,9 @@ const service = {
         //     return value;
         //   }
         // }
+
+        // re-organize our headers to change column ordering or header labels, etc
+        headers: await service._buildCsvHeaders(form, data)
       };
 
       const csv = await jsonexport(data, options);
@@ -165,6 +190,15 @@ const service = {
     } catch (e) {
       throw new Problem(500, { detail: `Could not make a csv export of submissions for this form. ${e.message}` });
     }
+  },
+
+  _readLatestFormSchema: (formId) => {
+    return FormVersion.query()
+      .select('schema')
+      .where('formId', formId)
+      .modify('orderVersionDescending')
+      .first()
+      .then((row) => row.schema);
   },
 
   export: async (formId, params = {}, currentUser) => {
