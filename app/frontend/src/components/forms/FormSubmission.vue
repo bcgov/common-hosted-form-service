@@ -32,7 +32,7 @@
                     v-bind="attrs"
                     v-on="on"
                   >
-                    <v-icon class="mr-1">view_list</v-icon>
+                    <v-icon class="mr-1">list_alt</v-icon>
                   </v-btn>
                 </router-link>
               </template>
