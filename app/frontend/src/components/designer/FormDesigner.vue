@@ -87,10 +87,12 @@
     </p>
 
     <v-alert
-      v-if="saved || saving"
+      :color="saving ? 'primary' : undefined"
       dense
       text
+      transition="scale-transition"
       :type="saving ? 'info' : 'success'"
+      :value="saved || saving"
     >
       <div v-if="saving">
         <v-progress-linear indeterminate />
