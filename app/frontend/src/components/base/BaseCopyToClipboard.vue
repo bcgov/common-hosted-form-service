@@ -4,8 +4,7 @@
       <template #activator="{ on, attrs }">
         <v-btn
           color="primary"
-          text
-          small
+          icon
           v-clipboard:copy="copyText"
           v-clipboard:success="clipboardSuccessHandler"
           v-clipboard:error="clipboardErrorHandler"
@@ -25,8 +24,14 @@
       :timeout="6000"
       :color="clipSnackbar.color"
     >
-      {{ clipSnackbar.text }}
-      <v-btn color="white" text @click="clipSnackbar.on = false">
+      <span>{{ clipSnackbar.text }}</span>
+      <v-btn
+        color="white"
+        class="float-right"
+        @click="clipSnackbar.on = false"
+        icon
+        small
+      >
         <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>
