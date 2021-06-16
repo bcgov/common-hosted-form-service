@@ -44,7 +44,7 @@
                 </template>
               </v-text-field></v-col
             >
-            <v-col cols="1" class="pt-1">
+            <v-col cols="1" class="pt-1 pl-1">
               <BaseCopyToClipboard
                 :copyText="formLink"
                 tooltipText="Copy URL to clipboard"
