@@ -23,17 +23,19 @@ try {
       fs.rmdirSync(FORMIO_DIR, { recursive: true });
       break;
     default:
-      if (!fs.existsSync(FORMIO_DIR) || !fs.readdirSync(FORMIO_DIR).length) {
-        console.log(`${TITLE} not found under "${FORMIO_DIR}"`); // eslint-disable-line no-console
-        buildComponents();
-        deployComponents();
-      } else if (fs.statSync(FORMIO_DIR).mtime < fs.statSync(COMPONENTS_DIR).mtime) {
-        console.log(`${TITLE} "${COMPONENTS_DIR}" directory has been modified`); // eslint-disable-line no-console
-        buildComponents();
-        deployComponents();
-      } else {
-        console.log(`${TITLE} is present and up to date`); // eslint-disable-line no-console
-      }
+      buildComponents();
+      deployComponents();
+      // if (!fs.existsSync(FORMIO_DIR) || !fs.readdirSync(FORMIO_DIR).length) {
+      //   console.log(`${TITLE} not found under "${FORMIO_DIR}"`); // eslint-disable-line no-console
+      //   buildComponents();
+      //   deployComponents();
+      // } else if (fs.statSync(FORMIO_DIR).mtime < fs.statSync(COMPONENTS_DIR).mtime) {
+      //   console.log(`${TITLE} "${COMPONENTS_DIR}" directory has been modified`); // eslint-disable-line no-console
+      //   buildComponents();
+      //   deployComponents();
+      // } else {
+      //   console.log(`${TITLE} is present and up to date`); // eslint-disable-line no-console
+      // }
   }
 } catch (err) {
   console.error(err.message); // eslint-disable-line no-console
