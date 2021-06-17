@@ -42,15 +42,50 @@ const EXPORT_FORMATS = Object.freeze({
 
 const service = {
 
+  _readSchemaFields: (schema) => {
+
+    const fields = [];
+
+    // function to recursively find all input field names
+    const findFields = function (obj) {
+      // if component is an input field showing in the form,
+      if (obj.input && !obj.hidden) {
+        fields.push(obj.key);
+
+        // if object is a checkbox group
+        if (obj.values && obj.type && obj.type.includes('checkbox')) {
+          // add checkbox fields now
+          obj.values.forEach(element => fields.push(obj.key + '.' + element.value));
+        }
+      }
+
+      // else not an input (eg: panel, column, etc)
+      else {
+        // for each property of the component
+        Object.keys(obj).forEach(function (prop) {
+          // if an array (that might contain other components)
+          if (Array.isArray(obj[prop]) && obj[prop].length) {
+            // repeat this function recursively
+            obj[prop].map(e => findFields(e));
+          }
+        });
+      }
+    };
+
+    schema.components.forEach(function (item) {
+      findFields(item);
+    });
+
+    return fields;
+  },
+
   _buildCsvHeaders: async (form, data) => {
     // -- get column order to match field order in form design
     // object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
+
     // get correctly ordered field names (keys) from latest form version
     const latestFormDesign = await service._readLatestFormSchema(form.id);
-
-    const fieldNames = latestFormDesign.components
-      .filter(x => x.input === true)
-      .map(({key}) => key);
+    const fieldNames = await service._readSchemaFields(latestFormDesign);
 
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data[0].form);
