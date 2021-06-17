@@ -2,7 +2,9 @@
   <v-row>
     <v-col>
       <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
-        <v-btn color="primary" outlined> View All Submissions </v-btn>
+        <v-btn color="primary" outlined>
+          <span>View All Submissions</span>
+        </v-btn>
       </router-link>
     </v-col>
     <v-col class="text-right">
@@ -76,7 +78,7 @@
             <p class="mt-5">
               <strong>Team members for this submission:</strong>
             </p>
-            <v-simple-table>
+            <v-simple-table dense>
               <template v-slot:default>
                 <thead>
                   <tr>
@@ -90,11 +92,7 @@
                     <td>Lucas</td>
                     <td>a@a.com</td>
                     <td>
-                      <v-btn
-                        color="red"
-                        :disabled="updating"
-                        icon
-                      >
+                      <v-btn color="red" :disabled="updating" icon>
                         <v-icon>remove_circle</v-icon>
                       </v-btn>
                     </td>
@@ -103,11 +101,7 @@
                     <td>Mina</td>
                     <td>a@a.com</td>
                     <td>
-                      <v-btn
-                        color="red"
-                        :disabled="updating"
-                        icon
-                      >
+                      <v-btn color="red" :disabled="updating" icon>
                         <v-icon>remove_circle</v-icon>
                       </v-btn>
                     </td>
@@ -116,11 +110,7 @@
                     <td>Chris</td>
                     <td>a@a.com</td>
                     <td>
-                      <v-btn
-                        color="red"
-                        :disabled="updating"
-                        icon
-                      >
+                      <v-btn color="red" :disabled="updating" icon>
                         <v-icon>remove_circle</v-icon>
                       </v-btn>
                     </td>
@@ -129,11 +119,7 @@
                     <td>etc</td>
                     <td>a@a.com</td>
                     <td>
-                      <v-btn
-                        color="red"
-                        :disabled="updating"
-                        icon
-                      >
+                      <v-btn color="red" :disabled="updating" icon>
                         <v-icon>remove_circle</v-icon>
                       </v-btn>
                     </td>
