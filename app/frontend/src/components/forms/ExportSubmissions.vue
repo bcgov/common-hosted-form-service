@@ -10,7 +10,7 @@
           v-bind="attrs"
           v-on="on"
         >
-          <v-icon>cloud_download</v-icon>
+          <v-icon>get_app</v-icon>
         </v-btn>
       </template>
       <span>Export Submissions to File</span>

@@ -67,18 +67,25 @@
         {{ item.completedDate | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
-        <router-link
-          :to="{
-            name: 'UserFormView',
-            query: {
-              s: item.submissionId,
-            },
-          }"
-        >
-          <v-btn color="primary" icon>
-            <v-icon>remove_red_eye</v-icon>
-          </v-btn>
-        </router-link>
+        <span>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link
+                :to="{
+                  name: 'UserFormView',
+                  query: {
+                    s: item.submissionId,
+                  },
+                }"
+              >
+                <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                  <v-icon>remove_red_eye</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>View Submission</span>
+          </v-tooltip>
+        </span>
       </template>
     </v-data-table>
   </div>

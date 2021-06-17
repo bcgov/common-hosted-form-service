@@ -15,7 +15,7 @@
                   v-bind="attrs"
                   v-on="on"
                 >
-                  <v-icon>view_list</v-icon>
+                  <v-icon>list_alt</v-icon>
                 </v-btn>
               </router-link>
             </template>

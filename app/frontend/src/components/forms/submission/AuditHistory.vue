@@ -13,7 +13,7 @@
           <v-icon>history</v-icon>
         </v-btn>
       </template>
-      <span>View History of Edits</span>
+      <span>View Edit History</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">

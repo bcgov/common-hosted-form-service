@@ -15,7 +15,7 @@
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="12">
-            <label>Update Status</label>
+            <label>Assign or Update Status</label>
             <v-select
               dense
               outlined
