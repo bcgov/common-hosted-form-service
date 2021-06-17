@@ -1,31 +1,13 @@
 <template>
-  <div class="form-wrapper">
-    <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-      <div v-if="displayTitle">
-        <div v-if="!isFormPublic(form)" class="text-right" cols="12" sm="6">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <router-link
-                :to="{ name: 'UserSubmissions', query: { f: form.id } }"
-              >
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon>list_alt</v-icon>
-                </v-btn>
-              </router-link>
-            </template>
-            <span>View your Previous Submissions</span>
-          </v-tooltip>
-        </div>
-
-        <h1 class="mb-6 text-center">{{ form.name }}</h1>
+  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+    <div v-if="displayTitle">
+      <div v-if="!isFormPublic(form)">
+        <FormViewerActions :formId="form.id" />
       </div>
 
+      <h1 class="my-6 text-center">{{ form.name }}</h1>
+    </div>
+    <div class="form-wrapper">
       <slot name="alert" v-bind:form="form" />
 
       <Form
@@ -38,8 +20,8 @@
         :options="viewerOptions"
       />
       <p v-if="version" class="text-right">Version: {{ version }}</p>
-    </v-skeleton-loader>
-  </div>
+    </div>
+  </v-skeleton-loader>
 </template>
 
 <script>
@@ -48,6 +30,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
 import { formService } from '@/services';
+import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { NotificationTypes, SubmissionStates } from '@/utils/constants';
 import { isFormPublic } from '@/utils/permissionUtils';
 import formioUtils from 'formiojs/utils';
@@ -56,6 +39,7 @@ export default {
   name: 'FormViewer',
   components: {
     Form,
+    FormViewerActions,
   },
   props: {
     displayTitle: {
@@ -229,8 +213,9 @@ export default {
     },
     async onBeforeSubmit(submission, next) {
       // Normalize the submission state in case a form is somehow designed where the state is lowercased
-      if(submission.state) submission.state = submission.state.toUpperCase();
-      this.savingDraft = submission.state && submission.state === SubmissionStates.DRAFT;
+      if (submission.state) submission.state = submission.state.toUpperCase();
+      this.savingDraft =
+        submission.state && submission.state === SubmissionStates.DRAFT;
       if (this.preview) {
         return;
       }
@@ -264,7 +249,10 @@ export default {
         if ([200, 201].includes(response.status)) {
           // all is good, let's just call next() and carry on...
           // store our submission result...
-          this.submissionRecord = Object.assign({}, this.submissionId ? response.data.submission : response.data);
+          this.submissionRecord = Object.assign(
+            {},
+            this.submissionId ? response.data.submission : response.data
+          );
           // console.info(`onBeforeSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
           next();
         } else {
