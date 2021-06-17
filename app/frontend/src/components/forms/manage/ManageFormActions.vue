@@ -1,7 +1,7 @@
 <template>
   <div>
     <span>
-      <ShareForm :formId="form.id" :warning="!hasVersions"/>
+      <ShareForm :formId="form.id" :warning="!isPublished" />
     </span>
 
     <span v-if="canViewSubmissions">
@@ -9,7 +9,7 @@
         <template #activator="{ on, attrs }">
           <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
             <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
-              <v-icon class="mr-1">view_list</v-icon>
+              <v-icon class="mr-1">list_alt</v-icon>
             </v-btn>
           </router-link>
         </template>
@@ -93,13 +93,17 @@ export default {
     canViewSubmissions() {
       const perms = [
         FormPermissions.SUBMISSION_READ,
-        FormPermissions.SUBMISSION_UPDATE
+        FormPermissions.SUBMISSION_UPDATE,
       ];
-      return this.permissions.some(p => perms.includes(p));
+      return this.permissions.some((p) => perms.includes(p));
     },
-    hasVersions() {
-      return this.form.versions && this.form.versions.length;
-    }
+    isPublished() {
+      return (
+        this.form.versions &&
+        this.form.versions.length &&
+        this.form.versions.some((v) => v.published)
+      );
+    },
   },
   methods: {
     ...mapActions('form', ['deleteCurrentForm']),

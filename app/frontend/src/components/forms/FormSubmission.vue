@@ -1,8 +1,6 @@
 <template>
   <div class="mt-5">
-    <div v-if="loading">
-      <v-skeleton-loader type="article" />
-    </div>
+    <v-skeleton-loader v-if="loading" type="article" />
     <div v-else>
       <v-row no-gutters>
         <v-col cols="12" sm="6">
@@ -32,7 +30,7 @@
                     v-bind="attrs"
                     v-on="on"
                   >
-                    <v-icon class="mr-1">view_list</v-icon>
+                    <v-icon class="mr-1">list_alt</v-icon>
                   </v-btn>
                 </router-link>
               </template>
@@ -52,6 +50,16 @@
         :md="form.enableStatusUpdates ? 8 : 12"
         class="pl-0 pt-0"
       >
+        <v-alert
+          color="primary"
+          dense
+          text
+          transition="scale-transition"
+          type="info"
+          :value="!submissionReadOnly"
+        >
+          <strong>After editing, re-submit the form to save your changes.</strong>
+        </v-alert>
         <v-card outlined class="review-form">
           <v-row no-gutters>
             <v-col cols="12" sm="6">
@@ -112,7 +120,7 @@
         order="first"
         order-md="last"
       >
-        <v-card outlined class="review-form">
+        <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Status</h2>
           <StatusPanel
             :submissionId="submissionId"
@@ -120,7 +128,7 @@
             @note-updated="refreshNotes"
           />
         </v-card>
-        <v-card outlined class="review-form">
+        <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Notes</h2>
           <NotesPanel :submissionId="submissionId" ref="notesPanel" />
         </v-card>

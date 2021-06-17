@@ -23,7 +23,12 @@
           <hr />
           <p class="mb-5">Copy the link below or download the QR code.</p>
 
-          <v-alert v-if="warning" dense border="left" type="warning">
+          <v-alert
+            dense
+            type="warning"
+            transition="scale-transition"
+            :value="warning"
+          >
             There is no published version of the form at this time. The link
             below will not be reachable until a version is published.
           </v-alert>
@@ -44,7 +49,7 @@
                 </template>
               </v-text-field></v-col
             >
-            <v-col cols="1" class="pt-1">
+            <v-col cols="1" class="pt-1 pl-1">
               <BaseCopyToClipboard
                 :copyText="formLink"
                 tooltipText="Copy URL to clipboard"
