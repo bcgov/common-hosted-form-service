@@ -9,13 +9,15 @@
       <span class="mr-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <router-link
-              :to="{ name: 'FormSubmissions', query: { f: formId } }"
+            <v-btn
+              @click="saveDraft"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
             >
-              <v-btn color="primary" icon v-bind="attrs" v-on="on">
-                <v-icon>save</v-icon>
-              </v-btn>
-            </router-link>
+              <v-icon>save</v-icon>
+            </v-btn>
           </template>
           <span>Save as a Draft</span>
         </v-tooltip>
@@ -139,6 +141,11 @@ export default {
     formId: {
       type: String,
       required: true,
+    },
+  },
+  methods: {
+    saveDraft() {
+      alert('tbd');
     },
   },
 };
