@@ -76,42 +76,71 @@
             <p class="mt-5">
               <strong>Team members for this submission:</strong>
             </p>
-            <ul>
-              <li>Lucas O'Neil (owner? not sure text here)</li>
-              <li>
-                Chris
-                <v-btn
-                  @click="onRemoveClick(item.userId)"
-                  color="red"
-                  :disabled="updating"
-                  icon
-                >
-                  <v-icon>remove_circle</v-icon>
-                </v-btn>
-              </li>
-              <li>
-                Mina
-                <v-btn
-                  @click="onRemoveClick(item.userId)"
-                  color="red"
-                  :disabled="updating"
-                  icon
-                >
-                  <v-icon>remove_circle</v-icon>
-                </v-btn>
-              </li>
-              <li>
-                etc
-                <v-btn
-                  @click="onRemoveClick(item.userId)"
-                  color="red"
-                  :disabled="updating"
-                  icon
-                >
-                  <v-icon>remove_circle</v-icon>
-                </v-btn>
-              </li>
-            </ul>
+            <v-simple-table>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">Name</th>
+                    <th class="text-left">Email</th>
+                    <th class="text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Lucas</td>
+                    <td>a@a.com</td>
+                    <td>
+                      <v-btn
+                        color="red"
+                        :disabled="updating"
+                        icon
+                      >
+                        <v-icon>remove_circle</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Mina</td>
+                    <td>a@a.com</td>
+                    <td>
+                      <v-btn
+                        color="red"
+                        :disabled="updating"
+                        icon
+                      >
+                        <v-icon>remove_circle</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Chris</td>
+                    <td>a@a.com</td>
+                    <td>
+                      <v-btn
+                        color="red"
+                        :disabled="updating"
+                        icon
+                      >
+                        <v-icon>remove_circle</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>etc</td>
+                    <td>a@a.com</td>
+                    <td>
+                      <v-btn
+                        color="red"
+                        :disabled="updating"
+                        icon
+                      >
+                        <v-icon>remove_circle</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
           </v-card-text>
 
           <v-card-actions class="justify-center">
