@@ -12,6 +12,7 @@ module.exports = {
     'vuetify'
   ],
   devServer: {
+    compress: true,
     proxy: {
       '/api': proxyObject,
       '/config': proxyObject
