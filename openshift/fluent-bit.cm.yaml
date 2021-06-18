@@ -1,0 +1,108 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "${REPO_NAME}-app-dc-template"
+metadata:
+  name: "${REPO_NAME}-app-dc"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: fluent-bit-config
+      namespace: ${NAMESPACE}
+    data:
+      # Configuration files: server, input, filters and output
+      fluent-bit.conf: |
+        [SERVICE]
+          Flush         5
+          Daemon        Off
+          # define the log format (see additional config map key/value)
+          Parsers_File  parsers.conf
+          Log_Level     info
+          HTTP_Server   On
+          HTTP_Listen   0.0.0.0
+          HTTP_Port     2020
+
+        [INPUT]
+          # get logs from file written by node app
+          Name  tail
+          Path  /var/log/*
+          Tag   app
+
+        [FILTER]
+          # exclude kube probe logs from app logs
+          name     grep
+          match    app
+          Exclude  agent kube-probe*
+
+        [FILTER]
+          name          parser
+          match         app
+          Key_Name      log
+          Parser        json
+          Reserve_Data  On
+          Preserve_Key  On
+
+        [FILTER]
+          # modify log entry to include more key/value pairs
+          name    record_modifier
+          match   app
+          # add pod name
+          Record  hostname ${HOSTNAME}
+          # add productname (eg: 'chefs')
+          Record  product ${APP_NAME}
+          # add namespace
+          Record  namespace ${NAMESPACE}
+
+        [OUTPUT]
+          # send logs to external fluentd service endpoint
+          Name    http
+          Match   app
+          Host    ${LOGGING_HOST_NAME}
+          Port    80
+          Format  json
+          # the URI becomes the Tag available in fluentd
+          URI     /app
+          # we can also send tag as a header
+          #header_tag  app
+
+        # [OUTPUT]
+        #   # send logs to AWS Opensearch service
+
+        [OUTPUT]
+          # show all fluent-bit logs in standard out
+          Name   stdout
+          Match  *
+      parsers.conf: |
+        [PARSER]
+          Name             json
+          Format           json
+          Time_Key         time
+          Time_Format      %Y-%m-%dT%H:%M:%S %z
+          Decode_Field_as  escaped_utf8 log do_next
+          Decode_Field_as  json log
+
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+    value: master
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'b160aa-dev')
+    displayName: Target Namespace
+    required: true
+  - name: LOGGING_HOST_NAME
+    description: The hostname of our FLuentd service running further down the monitoring pipeline
+    displayName: Logging host name
+    required: true

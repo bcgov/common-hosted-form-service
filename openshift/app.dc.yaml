@@ -191,6 +191,8 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-objectstorage-secret"
+                - name: SERVER_LOGFILE
+                  value: "/var/log/app.log"
               envFrom:
                 - configMapRef:
                     name: "${APP_NAME}-frontend-config"
@@ -200,15 +202,56 @@ objects:
                     name: "${APP_NAME}-server-config"
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
-          #            volumeMounts:
-          #              - mountPath: "${DATA_DIR}"
-          #                name: app-data
+              volumeMounts:
+                - name: log-storage
+                  mountPath: /var/log
+            # Fluent-bit log aggregator/forwarder
+            - name: fluent-bit
+              image: docker.io/fluent/fluent-bit:1.5
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                httpGet:
+                  path: /
+                  port: 2020
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+              ports:
+                - containerPort: 2020
+                  name: metrics
+                  protocol: TCP
+                - containerPort: 80
+                  name: http-plugin
+                  protocol: TCP
+              readinessProbe:
+                httpGet:
+                  path: /
+                  port: 2020
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+              resources:
+                requests:
+                  cpu: "${LOGGING_CPU_REQUEST}"
+                  memory: "${LOGGING_MEMORY_REQUEST}"
+                limits:
+                  cpu: "${LOGGING_CPU_LIMIT}"
+                  memory: "${LOGGING_MEMORY_LIMIT}"
+              volumeMounts:
+                - name: log-storage
+                  mountPath: /var/log
+                - name: fluent-bit-config
+                  mountPath: /fluent-bit/etc/
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
-      #        volumes:
-      #          - name: app-data
-      #            persistentVolumeClaim:
-      #              claimName: "${APP_NAME}-data-${JOB_NAME}"
+          volumes:
+            - name: log-storage
+              emptyDir: {}
+            - name: fluent-bit-config
+              configMap:
+                name: fluent-bit-config
       test: false
       triggers:
         - type: ConfigChange
@@ -324,3 +367,20 @@ parameters:
     description: The storage class of the volume
     displayName: Persistent Volume Class name
     value: netapp-file-standard
+  # parameters for fluent-bit
+  - name: LOGGING_CPU_LIMIT
+    description: Limit Peak CPU per pod (in millicores ex. 1000m)
+    displayName: CPU Limit
+    value: 50m
+  - name: LOGGING_CPU_REQUEST
+    description: Requested CPU per pod (in millicores ex. 500m)
+    displayName: CPU Request
+    value: 10m
+  - name: LOGGING_MEMORY_LIMIT
+    description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
+    displayName: Memory Limit
+    value: 64Mi
+  - name: LOGGING_MEMORY_REQUEST
+    description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
+    displayName: Memory Request
+    value: 16Mi
