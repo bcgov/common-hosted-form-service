@@ -198,7 +198,6 @@ export default {
     ID_PROVIDERS() {
       return IdentityProviders;
     },
-
     designerOptions() {
       return {
         sanitizeConfig: {
