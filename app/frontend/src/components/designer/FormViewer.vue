@@ -129,6 +129,22 @@ export default {
         this.loadingSubmission = false;
       }
     },
+    // Attaches attributes to <a> Link tags to open in a new tab.
+    attachAttributesToLinks() {
+      let simpleContentComponents = formioUtils.searchComponents(this.formSchema.components, {
+        type: 'simplecontent'
+      });
+      let advancedContent = formioUtils.searchComponents(this.formSchema.components,{
+        type: 'content'
+      });
+      console.log('simpleContentComponents: ', simpleContentComponents);
+      const combinedLinks = [...simpleContentComponents, ...advancedContent];
+      combinedLinks.map((component) => {
+        if (component.html && component.html.includes('<a ')) {
+          component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
+        }
+      });
+    },
     // Get the form definition/schema
     async getFormSchema() {
       try {
@@ -171,18 +187,7 @@ export default {
         }
         // Attaching attributes to links to open them in new tab
         if(this.forceNewTabLinks) {
-          let simpleContentComponents = formioUtils.findComponents(this.formSchema.components, {
-            type: 'simplecontent'
-          });
-          let advancedContent = formioUtils.findComponents(this.formSchema.components,{
-            type: 'content'
-          });
-          const combinedLinks = [...simpleContentComponents, ...advancedContent];
-          combinedLinks.map((component) => {
-            if (component.html && component.html.includes('<a ')) {
-              component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
-            }
-          });
+          this.attachAttributesToLinks();
         }
       } catch (error) {
         if (this.authenticated) {
