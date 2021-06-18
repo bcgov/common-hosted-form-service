@@ -88,6 +88,10 @@ export default {
     ...mapGetters('auth', ['authenticated', 'token']),
     viewerOptions() {
       return {
+        sanitizeConfig: {
+          addTags: ['iframe'],
+          ALLOWED_TAGS: ['iframe'],
+        },
         readOnly: this.readOnly,
         hooks: {
           beforeSubmit: this.onBeforeSubmit,
