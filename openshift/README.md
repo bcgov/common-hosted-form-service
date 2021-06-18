@@ -26,6 +26,11 @@ export NAMESPACE=<yournamespace>
 oc process -n $NAMESPACE -f https://raw.githubusercontent.com/wiki/bcgov/nr-get-token/assets/templates/default.np.yaml | oc apply -n $NAMESPACE -f -
 ```
 
+### Sidecar Logging
+
+Our deployment on OpenShift uses a Fluent Bit sidecar to collect logs from the CHEFS application. The sidecar deployment is included in the main app.dc.yaml file.
+Additional details for configuring the sidecar can be seen on the [wiki](https://github.com/bcgov/nr-get-token/wiki/Logging-to-a-Sidecar).
+
 ## Environment Setup - ConfigMaps and Secrets
 
 There are some requirements in the target Openshift namespace/project which are **outside** of the CI/CD pipeline process. This application requires that a few Secrets as well as Config Maps are already present in the environment before it is able to function as intended. Otherwise the Jenkins pipeline will fail the deployment by design.
@@ -41,7 +46,9 @@ In order to prepare an environment, you will need to ensure that all of the foll
 ```sh
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
+export LOGGING_HOST_NAME=<yourfluentdendpoint>
 export PUBLIC_KEY=<yourkeycloakpublickey>
+export REPO_NAME=common-hosted-form-service
 
 oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
   --from-literal=FRONTEND_APIPATH=api/v1 \
@@ -86,6 +93,10 @@ oc create -n $NAMESPACE configmap $APP_NAME-files-config \
   --from-literal=FILES_OBJECTSTORAGE_BUCKET=egejyy \
   --from-literal=FILES_OBJECTSTORAGE_ENDPOINT=https://nrs.objectstore.gov.bc.ca \
   --from-literal=FILES_OBJECTSTORAGE_KEY=chefs/dev/ \
+```
+
+```sh
+oc process -n $NAMESPACE -f https://raw.githubusercontent.com/bcgov/$REPO_NAME/master/openshift/fluent-bit.cm.yaml -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p REPO_NAME=$REPO_NAME -p LOGGING_HOST_NAME=$LOGGING_HOST_NAME -o yaml | oc -n $NAMESPACE apply -f -
 ```
 
 ### Secrets
