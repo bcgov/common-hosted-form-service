@@ -89,11 +89,12 @@ const service = {
 
   },
 
-  // get the audit history metadata
+  // get the audit history metadata (nothing that edited a draft for now)
   listEdits: async (submissionId) => {
     return SubmissionAudit.query()
       .select('id', 'updatedByUsername', 'actionTimestamp', 'action')
-      .where('submissionId', submissionId)
+      .modify('filterSubmissionId', submissionId)
+      .modify('filterDraft', false)
       .modify('orderDefault');
   },
   // --------------------------------------------------------------------------------------------/Submissions

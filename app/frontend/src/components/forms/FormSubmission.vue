@@ -110,9 +110,10 @@
           </v-row>
           <FormViewer
             :displayTitle="false"
-            :submissionId="submissionId"
-            :readOnly="submissionReadOnly"
             :key="reRenderSubmission"
+            :readOnly="submissionReadOnly"
+            :staffEditMode="true"
+            :submissionId="submissionId"
             @submission-updated="toggleSubmissionEdit(false)"
           />
         </v-card>

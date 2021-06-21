@@ -8,6 +8,7 @@
       </router-link>
     </v-col>
     <v-col class="text-right">
+      <!-- Save a draft -->
       <span v-if="canSaveDraft" class="ml-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
@@ -23,6 +24,32 @@
           </template>
           <span>Save as a Draft</span>
         </v-tooltip>
+      </span>
+
+      <!-- Go to draft edit -->
+      <span v-if="showEditToggle" class="ml-2">
+        <router-link
+          :to="{
+            name: 'UserFormDraftEdit',
+            query: {
+              s: submissionId,
+            },
+          }"
+        >
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>mode_edit</v-icon>
+              </v-btn>
+            </template>
+            <span>Edit this Draft</span>
+          </v-tooltip>
+        </router-link>
       </span>
       <!-- Add team member stub, in next release-->
       <!-- <span>
@@ -146,19 +173,25 @@
 </template>
 
 <script>
+import { FormPermissions } from '@/utils/constants';
+
 export default {
   name: 'MySubmissionsActions',
   props: {
     formId: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     permissions: {
-      type: Array
+      type: Array,
     },
     readOnly: {
       type: Boolean,
       default: false,
+    },
+    submissionId: {
+      type: String,
+      default: undefined,
     },
   },
   data() {
@@ -169,7 +202,13 @@ export default {
   computed: {
     canSaveDraft() {
       return !this.readOnly;
-    }
+    },
+    showEditToggle() {
+      return (
+        this.readOnly &&
+        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
+      );
+    },
   },
 };
 </script>

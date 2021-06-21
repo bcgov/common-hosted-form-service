@@ -886,6 +886,9 @@ class SubmissionAudit extends Model {
           query.where('submissionId', value);
         }
       },
+      filterDraft(query, value) {
+        query.whereRaw('("originalData"->>\'draft\')::boolean = ?', value);
+      },
       orderDefault(builder) {
         builder.orderBy('actionTimestamp', 'DESC');
       }
