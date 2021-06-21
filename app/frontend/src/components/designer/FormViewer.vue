@@ -4,12 +4,14 @@
       <div v-if="displayTitle">
         <!-- TODO: Consider refactoring this into a slot -->
         <!-- action buttons may make better sense on views than components -->
-        <div v-if="!isFormPublic(form)" class="text-right d-print-none" cols="12" sm="6">
+        <div
+          v-if="!isFormPublic(form)"
+          class="text-right d-print-none"
+          cols="12"
+          sm="6"
+        >
           <span>
-            <!-- Cannot wrap this button in a tooltip as it breaks print view -->
-            <v-btn @click="printSubmission" class="mx-1" color="primary" icon>
-              <v-icon>print</v-icon>
-            </v-btn>
+            <BasePrintButton />
           </span>
 
           <span>
@@ -296,9 +298,6 @@ export default {
       alert(
         `Custom button events not supported yet. Event Type: ${event.type}`
       );
-    },
-    printSubmission() {
-      window.print();
     },
   },
   created() {
