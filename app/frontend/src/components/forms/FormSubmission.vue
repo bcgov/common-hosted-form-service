@@ -18,10 +18,7 @@
         <v-spacer />
         <v-col class="text-sm-right d-print-none" cols="12" sm="6">
           <span>
-            <!-- Cannot wrap this button in a tooltip as it breaks print view -->
-            <v-btn @click="printSubmission" class="mx-1" color="primary" icon>
-              <v-icon>print</v-icon>
-            </v-btn>
+            <BasePrintButton />
           </span>
 
           <span>
@@ -66,7 +63,9 @@
           type="info"
           :value="!submissionReadOnly"
         >
-          <strong>After editing, re-submit the form to save your changes.</strong>
+          <strong>
+            After editing, re-submit the form to save your changes.
+          </strong>
         </v-alert>
         <v-card outlined class="review-form">
           <v-row no-gutters>
@@ -176,9 +175,6 @@ export default {
   computed: mapGetters('form', ['form', 'formSubmission', 'permissions']),
   methods: {
     ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
-    printSubmission() {
-      window.print();
-    },
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
     },
