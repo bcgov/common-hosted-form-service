@@ -16,7 +16,14 @@
           </p>
         </v-col>
         <v-spacer />
-        <v-col class="text-sm-right" cols="12" sm="6">
+        <v-col class="text-sm-right d-print-none" cols="12" sm="6">
+          <span>
+            <!-- Cannot wrap this button in a tooltip as it breaks print view -->
+            <v-btn @click="printSubmission" class="mx-1" color="primary" icon>
+              <v-icon>print</v-icon>
+            </v-btn>
+          </span>
+
           <span>
             <v-tooltip bottom>
               <template #activator="{ on, attrs }">
@@ -30,7 +37,7 @@
                     v-bind="attrs"
                     v-on="on"
                   >
-                    <v-icon class="mr-1">list_alt</v-icon>
+                    <v-icon>list_alt</v-icon>
                   </v-btn>
                 </router-link>
               </template>
@@ -51,6 +58,7 @@
         class="pl-0 pt-0"
       >
         <v-alert
+          class="d-print-none"
           color="primary"
           dense
           text
@@ -68,7 +76,7 @@
             <v-spacer />
             <v-col
               v-if="form.enableStatusUpdates"
-              class="text-sm-right"
+              class="text-sm-right d-print-none"
               cols="12"
               sm="6"
             >
@@ -168,6 +176,9 @@ export default {
   computed: mapGetters('form', ['form', 'formSubmission', 'permissions']),
   methods: {
     ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
+    printSubmission() {
+      window.print();
+    },
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
     },
