@@ -200,6 +200,10 @@ export default {
     },
     designerOptions() {
       return {
+        sanitizeConfig: {
+          addTags: ['iframe'],
+          ALLOWED_TAGS: ['iframe'],
+        },
         noDefaultSubmitButton: false,
         builder: {
           basic: false,
