@@ -1,6 +1,11 @@
 <template>
   <v-skeleton-loader :loading="loading" type="article">
-    <FormViewer displayTitle :readOnly="readOnly" :submissionId="submissionId" />
+    <FormViewer
+      displayTitle
+      :readOnly="readOnly"
+      :saved="saved"
+      :submissionId="submissionId"
+    />
   </v-skeleton-loader>
 </template>
 
@@ -17,6 +22,10 @@ export default {
   props: {
     submissionId: String,
     readOnly: { type: Boolean, default: true },
+    saved: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {

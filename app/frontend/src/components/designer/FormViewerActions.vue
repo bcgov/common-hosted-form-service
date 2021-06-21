@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col>
+    <v-col v-if="formId">
       <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
         <v-btn color="primary" outlined>
           <span>View All Submissions</span>
@@ -8,11 +8,11 @@
       </router-link>
     </v-col>
     <v-col class="text-right">
-      <span class="mr-2">
+      <span v-if="canSaveDraft" class="ml-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="saveDraft"
+              @click="$emit('save-draft')"
               color="primary"
               icon
               v-bind="attrs"
@@ -24,7 +24,8 @@
           <span>Save as a Draft</span>
         </v-tooltip>
       </span>
-      <span>
+      <!-- Add team member stub, in next release-->
+      <!-- <span>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -139,7 +140,7 @@
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog>
+      </v-dialog> -->
     </v-col>
   </v-row>
 </template>
@@ -147,21 +148,28 @@
 <script>
 export default {
   name: 'MySubmissionsActions',
+  props: {
+    formId: {
+      type: String,
+      default: undefined
+    },
+    permissions: {
+      type: Array
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       dialog: false,
     };
   },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-  },
-  methods: {
-    saveDraft() {
-      alert('tbd');
-    },
+  computed: {
+    canSaveDraft() {
+      return !this.readOnly;
+    }
   },
 };
 </script>

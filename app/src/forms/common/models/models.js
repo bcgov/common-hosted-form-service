@@ -778,6 +778,11 @@ class UserSubmissions extends Model {
           query.where('formId', value);
         }
       },
+      filterFormSubmissionId(query, value) {
+        if (value) {
+          query.where('formSubmissionId', value);
+        }
+      },
       filterUserId(query, value) {
         if (value) {
           query.where('userId', value);
