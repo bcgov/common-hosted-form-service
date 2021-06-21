@@ -2,25 +2,36 @@
   <div class="form-wrapper">
     <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
       <div v-if="displayTitle">
-        <div v-if="!isFormPublic(form)" class="text-right" cols="12" sm="6">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <router-link
-                :to="{ name: 'UserSubmissions', query: { f: form.id } }"
-              >
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
+        <!-- TODO: Consider refactoring this into a slot -->
+        <!-- action buttons may make better sense on views than components -->
+        <div v-if="!isFormPublic(form)" class="text-right d-print-none" cols="12" sm="6">
+          <span>
+            <!-- Cannot wrap this button in a tooltip as it breaks print view -->
+            <v-btn @click="printSubmission" class="mx-1" color="primary" icon>
+              <v-icon>print</v-icon>
+            </v-btn>
+          </span>
+
+          <span>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <router-link
+                  :to="{ name: 'UserSubmissions', query: { f: form.id } }"
                 >
-                  <v-icon>list_alt</v-icon>
-                </v-btn>
-              </router-link>
-            </template>
-            <span>View your Previous Submissions</span>
-          </v-tooltip>
+                  <v-btn
+                    class="mx-1"
+                    color="primary"
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon>list_alt</v-icon>
+                  </v-btn>
+                </router-link>
+              </template>
+              <span>View your Previous Submissions</span>
+            </v-tooltip>
+          </span>
         </div>
 
         <h1 class="mb-6 text-center">{{ form.name }}</h1>
@@ -285,6 +296,9 @@ export default {
       alert(
         `Custom button events not supported yet. Event Type: ${event.type}`
       );
+    },
+    printSubmission() {
+      window.print();
     },
   },
   created() {
