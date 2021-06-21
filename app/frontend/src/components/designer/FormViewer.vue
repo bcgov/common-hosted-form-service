@@ -4,7 +4,9 @@
       <div v-if="!isFormPublic(form)">
         <FormViewerActions
           :formId="form.id"
+          :permissions="permissions"
           :readOnly="readOnly"
+          :submissionId="submissionId"
           @save-draft="saveDraft"
         />
       </div>
@@ -12,7 +14,6 @@
       <h1 class="my-6 text-center">{{ form.name }}</h1>
     </div>
     <div class="form-wrapper">
-      {{ saved }}
       <v-alert
         :color="saving ? 'primary' : undefined"
         dense

@@ -259,7 +259,7 @@ const service = {
           Permissions.SUBMISSION_CREATE,
           Permissions.SUBMISSION_READ
         ];
-        if (data.submission.state === SubmissionStates.DRAFT) {
+        if (data.draft) {
           perms.push(Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE);
         }
 
