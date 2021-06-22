@@ -2,38 +2,25 @@
   <div class="form-wrapper">
     <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
       <div v-if="displayTitle">
-        <!-- TODO: Consider refactoring this into a slot -->
-        <!-- action buttons may make better sense on views than components -->
-        <div
-          v-if="!isFormPublic(form)"
-          class="text-right d-print-none"
-          cols="12"
-          sm="6"
-        >
-          <span>
-            <BasePrintButton />
-          </span>
-
-          <span>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <router-link
-                  :to="{ name: 'UserSubmissions', query: { f: form.id } }"
+        <div v-if="!isFormPublic(form)" class="text-right" cols="12" sm="6">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link
+                :to="{ name: 'UserSubmissions', query: { f: form.id } }"
+              >
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
                 >
-                  <v-btn
-                    class="mx-1"
-                    color="primary"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <v-icon>list_alt</v-icon>
-                  </v-btn>
-                </router-link>
-              </template>
-              <span>View your Previous Submissions</span>
-            </v-tooltip>
-          </span>
+                  <v-icon>list_alt</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>View your Previous Submissions</span>
+          </v-tooltip>
         </div>
 
         <h1 class="mb-6 text-center">{{ form.name }}</h1>
