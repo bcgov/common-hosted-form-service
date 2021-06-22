@@ -1,5 +1,5 @@
 <template>
-  <div v-if="keycloakReady">
+  <div v-if="keycloakReady" class="d-print-none">
     <v-btn v-if="authenticated" dark outlined @click="logout">
       <span>Logout</span>
     </v-btn>
