@@ -480,6 +480,13 @@ a,
   }
 }
 
+// allow dropdowns to continue expanding downwards within a modal
+.formio-dialog-content {
+  .component-edit-container {
+    overflow: visible;
+  }
+}
+
 // formio component buttons
 .btn-primary.formcomponent.drag-copy,
 .btn-primary.formcomponent.drag-copy:hover,
