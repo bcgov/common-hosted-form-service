@@ -3,6 +3,7 @@
     <div v-if="displayTitle">
       <div v-if="!isFormPublic(form)">
         <FormViewerActions
+          :draftEnabled="form.enableSubmitterDraft"
           :formId="form.id"
           :permissions="permissions"
           :readOnly="readOnly"
