@@ -7,7 +7,7 @@
         </v-btn>
       </router-link>
     </v-col>
-    <v-col class="text-right">
+    <v-col v-if="draftEnabled" class="text-right">
       <!-- Save a draft -->
       <span v-if="canSaveDraft" class="ml-2">
         <v-tooltip bottom>
@@ -38,12 +38,7 @@
         >
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
+              <v-btn color="primary" icon v-bind="attrs" v-on="on">
                 <v-icon>mode_edit</v-icon>
               </v-btn>
             </template>
@@ -178,6 +173,10 @@ import { FormPermissions } from '@/utils/constants';
 export default {
   name: 'MySubmissionsActions',
   props: {
+    draftEnabled: {
+      type: Boolean,
+      default: false,
+    },
     formId: {
       type: String,
       default: undefined,
