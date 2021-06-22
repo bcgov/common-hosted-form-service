@@ -2,7 +2,6 @@ const previousMigration = require('./20210528134214_016-submission-submitters-vw
 
 exports.up = function (knex) {
   return Promise.resolve()
-
     // Add a status update flag
     .then(() => knex.schema.alterTable('form', table => {
       table.boolean('enableSubmitterDraft').notNullable().defaultTo(false).comment('When true, submitters can save drafts');
@@ -32,17 +31,19 @@ exports.up = function (knex) {
     fv."id" = sub."formVersionId"
   INNER JOIN form f ON
     fv."formId" = f."id"`));
+
 };
 
 exports.down = function (knex) {
   return Promise.resolve()
-    // undo the new field add
-    .then(() => knex.schema.alterTable('form', table => {
-      table.dropColumn('enableSubmitterDraft');
-    }))
 
     // drop the modified 'submissions_vw' view
     .then(() => knex.schema.raw('drop view submissions_submitters_vw'))
     // recreate dependent view 'submissions_data_vw' from migration 16
-    .then(() => previousMigration(knex));
+    .then(() => previousMigration(knex))
+
+    // undo the new field add
+    .then(() => knex.schema.alterTable('form', table => {
+      table.dropColumn('enableSubmitterDraft');
+    }));
 };

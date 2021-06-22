@@ -274,7 +274,7 @@ const service = {
         await FormSubmissionUser.query(trx).insert(itemsToInsert);
       }
 
-      if (data.submission.state !== SubmissionStates.DRAFT) {
+      if (!data.draft) {
         // Add a SUBMITTED status if it's not a draft
         const stObj = {
           id: uuidv4(),
