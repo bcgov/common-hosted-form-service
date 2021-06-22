@@ -80,6 +80,16 @@ hr {
   }
 }
 
+// General Transition Animation Behavior
+.component-fade-enter-active,
+.component-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.component-fade-enter,
+.component-fade-leave-to {
+  opacity: 0;
+}
+
 // Anchor and Tab Behavior
 a,
 .v-tab {

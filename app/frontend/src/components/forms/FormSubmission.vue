@@ -16,7 +16,11 @@
           </p>
         </v-col>
         <v-spacer />
-        <v-col class="text-sm-right" cols="12" sm="6">
+        <v-col class="text-sm-right d-print-none" cols="12" sm="6">
+          <span>
+            <BasePrintButton />
+          </span>
+
           <span>
             <v-tooltip bottom>
               <template #activator="{ on, attrs }">
@@ -30,7 +34,7 @@
                     v-bind="attrs"
                     v-on="on"
                   >
-                    <v-icon class="mr-1">list_alt</v-icon>
+                    <v-icon>list_alt</v-icon>
                   </v-btn>
                 </router-link>
               </template>
@@ -51,6 +55,7 @@
         class="pl-0 pt-0"
       >
         <v-alert
+          class="d-print-none"
           color="primary"
           dense
           text
@@ -58,7 +63,9 @@
           type="info"
           :value="!submissionReadOnly"
         >
-          <strong>After editing, re-submit the form to save your changes.</strong>
+          <strong>
+            After editing, re-submit the form to save your changes.
+          </strong>
         </v-alert>
         <v-card outlined class="review-form">
           <v-row no-gutters>
@@ -68,7 +75,7 @@
             <v-spacer />
             <v-col
               v-if="form.enableStatusUpdates"
-              class="text-sm-right"
+              class="text-sm-right d-print-none"
               cols="12"
               sm="6"
             >

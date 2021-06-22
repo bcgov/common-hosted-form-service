@@ -32,5 +32,6 @@ describe('Success.vue', () => {
     Success.beforeRouteEnter.call(wrapper.vm, { query: { s: 's' } }, undefined, next);
 
     expect(determineFormNeedsAuth).toHaveBeenCalledTimes(1);
+    expect(determineFormNeedsAuth).toHaveBeenCalledWith(undefined, 's', next);
   });
 });
