@@ -135,13 +135,12 @@ export default {
     },
     // Attaches attributes to <a> Link tags to open in a new tab.
     attachAttributesToLinks() {
-      let simpleContentComponents = formioUtils.searchComponents(this.formSchema.components, {
+      const simpleContentComponents = formioUtils.searchComponents(this.formSchema.components, {
         type: 'simplecontent'
       });
-      let advancedContent = formioUtils.searchComponents(this.formSchema.components,{
+      const advancedContent = formioUtils.searchComponents(this.formSchema.components, {
         type: 'content'
       });
-      console.log('simpleContentComponents: ', simpleContentComponents);
       const combinedLinks = [...simpleContentComponents, ...advancedContent];
       combinedLinks.map((component) => {
         if (component.html && component.html.includes('<a ')) {
