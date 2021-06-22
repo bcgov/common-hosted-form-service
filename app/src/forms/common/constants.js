@@ -41,8 +41,4 @@ module.exports = Object.freeze({
     OBJECT_STORAGE: 'objectStorage',
     LOCAL_STORES: ['uploads', 'localStorage']
   },
-  // For now only draft is supported but could expand to others
-  SubmissionStates: {
-    DRAFT: 'DRAFT'
-  },
 });
