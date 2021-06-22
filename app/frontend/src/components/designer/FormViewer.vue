@@ -49,6 +49,7 @@ import { Form } from 'vue-formio';
 
 import { formService } from '@/services';
 import { isFormPublic } from '@/utils/permissionUtils';
+import formioUtils from 'formiojs/utils';
 
 export default {
   name: 'FormViewer',
@@ -82,6 +83,7 @@ export default {
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      forceNewTabLinks: true,
     };
   },
   computed: {
@@ -131,6 +133,22 @@ export default {
         this.loadingSubmission = false;
       }
     },
+    // Attaches attributes to <a> Link tags to open in a new tab.
+    attachAttributesToLinks() {
+      let simpleContentComponents = formioUtils.searchComponents(this.formSchema.components, {
+        type: 'simplecontent'
+      });
+      let advancedContent = formioUtils.searchComponents(this.formSchema.components,{
+        type: 'content'
+      });
+      console.log('simpleContentComponents: ', simpleContentComponents);
+      const combinedLinks = [...simpleContentComponents, ...advancedContent];
+      combinedLinks.map((component) => {
+        if (component.html && component.html.includes('<a ')) {
+          component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
+        }
+      });
+    },
     // Get the form definition/schema
     async getFormSchema() {
       try {
@@ -170,6 +188,10 @@ export default {
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
+        }
+        // Attaching attributes to links to open them in new tab
+        if(this.forceNewTabLinks) {
+          this.attachAttributesToLinks();
         }
       } catch (error) {
         if (this.authenticated) {
