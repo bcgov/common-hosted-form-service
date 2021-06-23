@@ -141,7 +141,7 @@ export default {
         this.formSchema = response.data.version.schema;
         this.version = response.data.version.version;
         // Get permissions
-        if (!this.staffEditMode) {
+        if (!this.staffEditMode && !isFormPublic(this.form)) {
           const permRes = await rbacService.getUserSubmissions({
             formSubmissionId: this.submissionId,
           });
