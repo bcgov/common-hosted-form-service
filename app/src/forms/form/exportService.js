@@ -41,42 +41,54 @@ const EXPORT_FORMATS = Object.freeze({
 });
 
 const service = {
-
+  /**
+   * @function _readSchemaFields
+   * Returns a flattened, ordered array of relevant content field names with topology
+   * @param {Object} schema A form.io schema
+   * @returns {String[]} An array of strings
+   */
   _readSchemaFields: (schema) => {
+    /**
+     * @function findFields
+     * Recursively traverses the form.io schema to extract all relevant content field names
+     * @param {Object} obj A form.io schema or subset of it
+     * @returns {String[]} An array of strings
+     */
+    const findFields = (obj) => {
+      const fields = [];
 
-    const fields = [];
-
-    // function to recursively find all input field names
-    const findFields = function (obj) {
-      // if component is an input field showing in the form,
-      if (obj.input && !obj.hidden) {
+      // Handle current object level
+      if (obj.key && obj.input && !obj.hidden) {
+        // Add current field key if it is non-hidden input field
         fields.push(obj.key);
-
-        // if object is a checkbox group
-        if (obj.values && obj.type && obj.type.includes('checkbox')) {
-          // add checkbox fields now
-          obj.values.forEach(element => fields.push(obj.key + '.' + element.value));
+        // Look-ahead and add all sub-values as fields if type is simplecheckbox or checkbox
+        // TODO: there may be more cases where attribute is an object tree
+        if (obj.type && obj.type.includes('checkbox')) {
+          if (obj.values) obj.values.forEach(e => fields.push(`${obj.key}.${e.value}`));
         }
       }
 
-      // else not an input (eg: panel, column, etc)
-      else {
-        // for each property of the component
-        Object.keys(obj).forEach(function (prop) {
-          // if an array (that might contain other components)
-          if (Array.isArray(obj[prop]) && obj[prop].length) {
-            // repeat this function recursively
-            obj[prop].map(e => findFields(e));
+      // Recursively traverse children array levels
+      Object.entries(obj).forEach(([k, v]) => {
+        if (Array.isArray(v) && v.length) {
+          // Enumerate children fields
+          const children = obj[k].flatMap(e => {
+            const cFields = findFields(e);
+            // Prepend current key to field name if datagrid
+            // TODO: Figure out which attribute is needed for skipping key prepend
+            return (obj.type && obj.type.includes('datagrid')) ?
+              cFields.flatMap(c => `${obj.key}.${c}`) : cFields;
+          });
+          if (children.length) {
+            Array.prototype.push.apply(fields, children); // concat into first argument
           }
-        });
-      }
+        }
+      });
+
+      return fields;
     };
 
-    schema.components.forEach(function (item) {
-      findFields(item);
-    });
-
-    return fields;
+    return findFields(schema);
   },
 
   _buildCsvHeaders: async (form, data) => {
