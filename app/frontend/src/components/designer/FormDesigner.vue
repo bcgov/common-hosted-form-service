@@ -1,12 +1,14 @@
 <template>
   <div>
     <v-row class="mt-6" no-gutters>
-      <v-col cols="12" sm="6">
+      <v-col cols="12" sm="6" order-md="1">
         <h1>Form Design</h1>
+      </v-col>
+      <v-col cols="12" sm="12" order-md="3">
         <h3 v-if="name">{{ name }}</h3>
       </v-col>
       <v-spacer />
-      <v-col class="text-sm-right" cols="12" sm="6">
+      <v-col class="text-sm-right" cols="12" sm="6" order-md="1">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
