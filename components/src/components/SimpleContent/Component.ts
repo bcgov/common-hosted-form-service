@@ -9,26 +9,26 @@ const ID = 'simplecontent';
 const DISPLAY = 'Static Text';
 
 export default class Component extends (ParentComponent as any) {
-    static schema(...extend) {
-        return ParentComponent.schema({
-            type: ID,
-            label: DISPLAY,
-            key: ID,
-            input: false,
-            html: ''
-        }, ...extend);
-    }
+  static schema(...extend) {
+    return ParentComponent.schema({
+      type: ID,
+      label: DISPLAY,
+      key: ID,
+      input: false,
+      html: ''
+    }, ...extend);
+  }
 
-    public static editForm = editForm;
+  public static editForm = editForm;
 
-    static get builderInfo() {
-        return {
-            title: DISPLAY,
-            group: 'simple',
-            icon: 'pencil-square-o',
-            weight: 40,
-            documentation: Constants.DEFAULT_HELP_LINK,
-            schema: Component.schema()
-        };
-    }
+  static get builderInfo() {
+    return {
+      title: DISPLAY,
+      group: 'simple',
+      icon: 'pencil-square-o',
+      weight: 40,
+      documentation: Constants.DEFAULT_HELP_LINK,
+      schema: Component.schema()
+    };
+  }
 }
