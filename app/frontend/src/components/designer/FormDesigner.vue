@@ -1,18 +1,21 @@
 <template>
   <div>
     <v-row class="mt-6" no-gutters>
-      <v-col cols="12" sm="6" order-md="1">
+      <!-- page title -->
+      <v-col cols="12" md="6" order-sm="1">
         <h1>Form Design</h1>
       </v-col>
-      <v-col cols="12" sm="12" order-md="3">
+      <!-- form name -->
+      <v-col cols="12" order-md="3" order-sm="2">
         <h3 v-if="name">{{ name }}</h3>
       </v-col>
       <v-spacer />
-      <v-col class="text-sm-right" cols="12" sm="6" order-md="1">
+      <!-- buttons -->
+      <v-col class="text-md-right text-sm-left" cols="12" md="6" order="4" order-md="2" order-sm="4">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              class="mx-1"
+              class="mx-md-1 mx-0"
               @click="submitFormSchema"
               color="primary"
               icon
@@ -82,11 +85,11 @@
           <span>Manage Form</span>
         </v-tooltip>
       </v-col>
+      <!-- version number-->
+      <v-col class="mb-3" cols="12" order-md="4" order-sm="3">
+        <em>Version: {{ this.displayVersion }}</em>
+      </v-col>
     </v-row>
-
-    <p class="mb-3">
-      <em>Version: {{ this.displayVersion }}</em>
-    </p>
 
     <v-alert
       :color="saving ? 'primary' : undefined"
@@ -95,6 +98,7 @@
       transition="scale-transition"
       :type="saving ? 'info' : 'success'"
       :value="saved || saving"
+      class="mt-md-0 mt-3"
     >
       <div v-if="saving">
         <v-progress-linear indeterminate />
