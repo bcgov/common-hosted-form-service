@@ -22,6 +22,11 @@ Create, edit and publish forms.
     components/                - Form.io Custom Components Library
     load-test/                 - Standalone CHEFS load testing utility
     openshift/                 - OpenShift-deployment and shared pipeline files
+    tests/                     - External test frameworks
+    ├── functional/            - Supporting functional tests
+    │   └── cypress/           - Cypress functional test suite
+    └── load/                  - Supporting load tests
+        └── load-test/         - Chefs API load test suite
     CODE-OF-CONDUCT.md         - Code of Conduct
     COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
     CONTRIBUTING.md            - Contributing Guidelines
@@ -35,6 +40,8 @@ Create, edit and publish forms.
 * [Application Readme](app/README.md)
 * [Frontend Readme](app/frontend/README.md)
 * [Openshift Readme](openshift/README.md)
+* [Cypress Test Readme](tests/functional/cypress/README.md)
+* [CHEFS Load Test Readme](tests/load/load-test/README.md)
 * [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
 * [Product Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Product-Roadmap)
 
