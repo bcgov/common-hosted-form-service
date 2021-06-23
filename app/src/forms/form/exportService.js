@@ -41,16 +41,63 @@ const EXPORT_FORMATS = Object.freeze({
 });
 
 const service = {
+  /**
+   * @function _readSchemaFields
+   * Returns a flattened, ordered array of relevant content field names with topology
+   * @param {Object} schema A form.io schema
+   * @returns {String[]} An array of strings
+   */
+  _readSchemaFields: (schema) => {
+    /**
+     * @function findFields
+     * Recursively traverses the form.io schema to extract all relevant content field names
+     * @param {Object} obj A form.io schema or subset of it
+     * @returns {String[]} An array of strings
+     */
+    const findFields = (obj) => {
+      const fields = [];
+
+      // Handle current object level
+      if (obj.key && obj.input && !obj.hidden) {
+        // Add current field key if it is non-hidden input field
+        fields.push(obj.key);
+        // Look-ahead and add all sub-values as fields if type is simplecheckbox or checkbox
+        // TODO: there may be more cases where attribute is an object tree
+        if (obj.type && obj.type.includes('checkbox')) {
+          if (obj.values) obj.values.forEach(e => fields.push(`${obj.key}.${e.value}`));
+        }
+      }
+
+      // Recursively traverse children array levels
+      Object.entries(obj).forEach(([k, v]) => {
+        if (Array.isArray(v) && v.length) {
+          // Enumerate children fields
+          const children = obj[k].flatMap(e => {
+            const cFields = findFields(e);
+            // Prepend current key to field name if datagrid
+            // TODO: Figure out which attribute is needed for skipping key prepend
+            return (obj.type && obj.type.includes('datagrid')) ?
+              cFields.flatMap(c => `${obj.key}.${c}`) : cFields;
+          });
+          if (children.length) {
+            Array.prototype.push.apply(fields, children); // concat into first argument
+          }
+        }
+      });
+
+      return fields;
+    };
+
+    return findFields(schema);
+  },
 
   _buildCsvHeaders: async (form, data) => {
     // -- get column order to match field order in form design
     // object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
+
     // get correctly ordered field names (keys) from latest form version
     const latestFormDesign = await service._readLatestFormSchema(form.id);
-
-    const fieldNames = latestFormDesign.components
-      .filter(x => x.input === true)
-      .map(({key}) => key);
+    const fieldNames = await service._readSchemaFields(latestFormDesign);
 
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data[0].form);
