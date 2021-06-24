@@ -61,7 +61,6 @@ const service = {
         await FormSubmissionUser.query(trx).delete()
           .where('formSubmissionId', formSubmissionId)
           .whereIn('permission', [Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE]);
-
       }
       await trx.commit();
       const result = await service.read(formSubmissionId);

@@ -4,8 +4,7 @@
       <v-row class="mt-6" no-gutters>
         <v-col class="text-center" cols="12" sm="10" offset-sm="1">
           <h1>Previous Submissions</h1>
-          <h2 v-if="formId">{{ form.name }}</h2>
-          <h2 v-else>All Forms</h2>
+          <h2>{{ formId ? form.name : 'All Forms' }}</h2>
         </v-col>
         <v-col class="text-right" cols="12" sm="1">
           <v-tooltip bottom>
@@ -158,7 +157,7 @@ export default {
       // Get the created date of the most recent occurence of a specified status
       if (record.submissionStatus) {
         const submittedStatus = record.submissionStatus.find(
-          (stat) => stat.code == statusCode
+          (stat) => stat.code === statusCode
         );
         if (submittedStatus) return submittedStatus.createdAt;
       }

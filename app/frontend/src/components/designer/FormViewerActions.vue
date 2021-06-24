@@ -76,11 +76,6 @@ export default {
       default: undefined,
     },
   },
-  data() {
-    return {
-      dialog: false,
-    };
-  },
   computed: {
     canSaveDraft() {
       return !this.readOnly;

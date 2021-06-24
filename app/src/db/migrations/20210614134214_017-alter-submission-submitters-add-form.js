@@ -31,12 +31,10 @@ exports.up = function (knex) {
     fv."id" = sub."formVersionId"
   INNER JOIN form f ON
     fv."formId" = f."id"`));
-
 };
 
 exports.down = function (knex) {
   return Promise.resolve()
-
     // drop the modified 'submissions_vw' view
     .then(() => knex.schema.raw('drop view submissions_submitters_vw'))
     // recreate dependent view 'submissions_data_vw' from migration 16
