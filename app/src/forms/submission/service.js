@@ -1,4 +1,5 @@
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
+const { Permissions, Statuses } = require('../common/constants');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUser, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 
 const { transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
@@ -42,7 +43,25 @@ const service = {
     try {
       trx = await transaction.start(FormSubmission.knex());
 
+      // Patch the submission record with the updated changes
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
+
+      if (!data.draft) {
+        // If there is not a submission status here already (IE we're taking a non-submitted, like a draft, and finalizing to submitted state)
+        // Write a SUBMITTED status
+        const statuses = await FormSubmissionStatus.query()
+          .modify('filterSubmissionId', formSubmissionId);
+        if (!statuses || !statuses.length) {
+          await service._createSubmissionStatus(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser);
+        }
+
+        // If the state is finalized to submitted, then remove permissions that would allow an edit or delete for submitters
+        // Danger be here, do not mess up the where clauses
+        // (always always always ensure submission id is enforced and you know what KNEX is doing about chaining the where clauses as to if it's making an AND or an OR)
+        await FormSubmissionUser.query(trx).delete()
+          .where('formSubmissionId', formSubmissionId)
+          .whereIn('permission', [Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE]);
+      }
       await trx.commit();
       const result = await service.read(formSubmissionId);
       return result;
@@ -69,11 +88,12 @@ const service = {
 
   },
 
-  // get the audit history metadata
+  // get the audit history metadata (nothing that edited a draft for now)
   listEdits: async (submissionId) => {
     return SubmissionAudit.query()
       .select('id', 'updatedByUsername', 'actionTimestamp', 'action')
-      .where('submissionId', submissionId)
+      .modify('filterSubmissionId', submissionId)
+      .modify('filterDraft', false)
       .modify('orderDefault');
   },
   // --------------------------------------------------------------------------------------------/Submissions

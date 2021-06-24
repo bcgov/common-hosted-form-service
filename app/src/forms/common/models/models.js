@@ -111,6 +111,7 @@ class Form extends Timestamps(Model) {
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         enableStatusUpdates: { type: 'boolean' },
+        enableSubmitterDraft: { type: 'boolean' },
         ...stamps
       },
       additionalProperties: false
@@ -777,6 +778,11 @@ class UserSubmissions extends Model {
           query.where('formId', value);
         }
       },
+      filterFormSubmissionId(query, value) {
+        if (value) {
+          query.where('formSubmissionId', value);
+        }
+      },
       filterUserId(query, value) {
         if (value) {
           query.where('userId', value);
@@ -879,6 +885,9 @@ class SubmissionAudit extends Model {
         if (value) {
           query.where('submissionId', value);
         }
+      },
+      filterDraft(query, value) {
+        query.whereRaw('("originalData"->>\'draft\')::boolean = ?', value);
       },
       orderDefault(builder) {
         builder.orderBy('actionTimestamp', 'DESC');

@@ -1,30 +1,34 @@
 <template>
-  <div class="form-wrapper">
-    <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-      <div v-if="displayTitle">
-        <div v-if="!isFormPublic(form)" class="text-right" cols="12" sm="6">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <router-link
-                :to="{ name: 'UserSubmissions', query: { f: form.id } }"
-              >
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon>list_alt</v-icon>
-                </v-btn>
-              </router-link>
-            </template>
-            <span>View your Previous Submissions</span>
-          </v-tooltip>
-        </div>
-
-        <h1 class="mb-6 text-center">{{ form.name }}</h1>
+  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+    <div v-if="displayTitle">
+      <div v-if="!isFormPublic(form)">
+        <FormViewerActions
+          :draftEnabled="form.enableSubmitterDraft"
+          :formId="form.id"
+          :permissions="permissions"
+          :readOnly="readOnly"
+          :submissionId="submissionId"
+          @save-draft="saveDraft"
+        />
       </div>
+
+      <h1 class="my-6 text-center">{{ form.name }}</h1>
+    </div>
+    <div class="form-wrapper">
+      <v-alert
+        :color="saving ? 'primary' : undefined"
+        dense
+        text
+        transition="scale-transition"
+        :type="saving ? 'info' : 'success'"
+        :value="saved || saving"
+      >
+        <div v-if="saving">
+          <v-progress-linear indeterminate />
+          Saving
+        </div>
+        <div v-else>Draft Saved</div>
+      </v-alert>
 
       <slot name="alert" v-bind:form="form" />
 
@@ -38,8 +42,8 @@
         :options="viewerOptions"
       />
       <p v-if="version" class="text-right">Version: {{ version }}</p>
-    </v-skeleton-loader>
-  </div>
+    </div>
+  </v-skeleton-loader>
 </template>
 
 <script>
@@ -47,7 +51,8 @@ import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
-import { formService } from '@/services';
+import { formService, rbacService } from '@/services';
+import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import formioUtils from 'formiojs/utils';
 
@@ -55,6 +60,7 @@ export default {
   name: 'FormViewer',
   components: {
     Form,
+    FormViewerActions,
   },
   props: {
     displayTitle: {
@@ -68,18 +74,28 @@ export default {
       default: false,
     },
     preview: Boolean,
+    staffEditMode: {
+      type: Boolean,
+      default: false,
+    },
+    saved: {
+      type: Boolean,
+      default: false,
+    },
     submissionId: String,
     versionId: String,
   },
   data() {
     return {
+      currentForm: {},
       form: {},
       formSchema: {},
+      loadingSubmission: false,
+      permissions: [],
+      saving: false,
       submission: {
         data: {},
       },
-      currentForm: {},
-      loadingSubmission: false,
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
@@ -124,6 +140,13 @@ export default {
         this.form = response.data.form;
         this.formSchema = response.data.version.schema;
         this.version = response.data.version.version;
+        // Get permissions
+        if (!this.staffEditMode && !isFormPublic(this.form)) {
+          const permRes = await rbacService.getUserSubmissions({
+            formSubmissionId: this.submissionId,
+          });
+          this.permissions = permRes.data[0] ? permRes.data[0].permissions : [];
+        }
       } catch (error) {
         this.addNotification({
           message: 'An error occurred fetching the submission for this form',
@@ -201,6 +224,58 @@ export default {
         }
       }
     },
+    async saveDraft() {
+      try {
+        this.saving = true;
+        const response = await this.sendSubmission(true, this.submission);
+        if (this.submissionId) {
+          // Editing an existing draft
+          // Update this route with saved flag
+          if (!this.saved) {
+            this.$router.replace({
+              name: 'UserFormDraftEdit',
+              query: { ...this.$route.query, sv: true },
+            });
+          }
+          this.saving = false;
+        } else {
+          // Creating a new submission in draft state
+          // Go to the user form draft page
+          this.$router.push({
+            name: 'UserFormDraftEdit',
+            query: {
+              s: response.data.id,
+              sv: true,
+            },
+          });
+        }
+      } catch (error) {
+        this.addNotification({
+          message: 'An error occurred while saving a draft',
+          consoleError: `Error saving draft. SubmissionId: ${this.submissionId}. Error: ${error}`,
+        });
+      }
+    },
+    async sendSubmission(isDraft, submission) {
+      const body = {
+        draft: isDraft,
+        submission: submission,
+      };
+
+      let response;
+      if (this.submissionId) {
+        // Updating an existing submission
+        response = await formService.updateSubmission(this.submissionId, body);
+      } else {
+        // Adding a new submission
+        response = await formService.createSubmission(
+          this.formId,
+          this.versionIdToSubmitTo,
+          body
+        );
+      }
+      return response;
+    },
 
     // -----------------------------------------------------------------------------------------
     // FormIO Events
@@ -231,31 +306,15 @@ export default {
 
       const errors = [];
       try {
-        const body = {
-          draft: false,
-          submission: submission,
-        };
-
-        let response;
-        if (this.submissionId) {
-          // Updating an existing submission
-          response = await formService.updateSubmission(
-            this.submissionId,
-            body
-          );
-        } else {
-          // Adding a new submission
-          response = await formService.createSubmission(
-            this.formId,
-            this.versionIdToSubmitTo,
-            body
-          );
-        }
+        const response = await this.sendSubmission(false, submission);
 
         if ([200, 201].includes(response.status)) {
           // all is good, let's just call next() and carry on...
           // store our submission result...
-          this.submissionRecord = Object.assign({}, response.data);
+          this.submissionRecord = Object.assign(
+            {},
+            this.submissionId ? response.data.submission : response.data
+          );
           // console.info(`onBeforeSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
           next();
         } else {
@@ -288,8 +347,8 @@ export default {
       // really nothing to do, the formio button has consumed the event and updated its display
       // is there anything here for us to do?
       // console.info('onSubmitDone()') ; // eslint-disable-line no-console
-      if (this.submissionId) {
-        // updating an existing submission
+      if (this.staffEditMode) {
+        // updating an existing submission on the staff side
         this.$emit('submission-updated');
       } else {
         // User created new submission

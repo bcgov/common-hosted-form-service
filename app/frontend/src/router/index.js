@@ -178,6 +178,29 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "designer" */ '@/views/user/Root.vue')
           },
           {
+            path: 'draft',
+            name: 'UserFormDraftEdit',
+            component: () => import(/* webpackChunkName: "userformdraftedit" */ '@/views/user/SubmissionDraftEdit.vue'),
+            meta: {
+              breadcrumbTitle: 'Edit Draft',
+              formSubmitMode: true,
+            },
+            props: createProps
+          },
+          // For when we have the recieve->review->send-back flow
+          // This route can be used for the submitter to edit and see status stuff about their submission
+          // Different from the draft one above, which can be used to simply edit drafts
+          // {
+          //   path: 'Edit',
+          //   name: 'UserFormEdit',
+          //   component: () => import(/* webpackChunkName: "userformtedit" */ '@/views/user/SubmissionEdit.vue'),
+          //   meta: {
+          //     breadcrumbTitle: 'Edit Submission',
+          //     formSubmitMode: true,
+          //   },
+          //   props: createProps
+          // },
+          {
             path: 'forms',
             name: 'UserForms',
             component: () => import(/* webpackChunkName: "userforms" */ '@/views/user/Forms.vue'),

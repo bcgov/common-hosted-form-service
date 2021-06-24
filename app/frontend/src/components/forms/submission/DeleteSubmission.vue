@@ -6,6 +6,7 @@
           class="mx-1"
           @click="showDeleteDialog = true"
           color="red"
+          :disabled="disabled"
           icon
           v-bind="attrs"
           v-on="on"
@@ -13,7 +14,7 @@
           <v-icon>delete</v-icon>
         </v-btn>
       </template>
-      <span>Delete This Submission</span>
+      <span>Delete This {{ isDraft ? 'Draft' : 'Submission' }}</span>
     </v-tooltip>
 
     <BaseDialog
@@ -24,7 +25,8 @@
     >
       <template #title>Confirm Deletion</template>
       <template #text>
-        Are you sure you wish to delete this form submission?
+        Are you sure you wish to delete this
+        {{ isDraft ? 'draft' : 'form submission' }}?
       </template>
       <template #button-text-continue>
         <span>Delete</span>
@@ -38,6 +40,14 @@ import { mapActions, mapGetters } from 'vuex';
 
 export default {
   props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
     submissionId: {
       type: String,
       required: true,
@@ -55,12 +65,7 @@ export default {
     async delSub() {
       await this.deleteSubmission(this.submissionId);
       this.showDeleteDialog = false;
-      this.$router.push({
-        name: 'FormSubmissions',
-        query: {
-          f: this.form.id,
-        },
-      });
+      this.$emit('deleted');
     },
   },
 };
