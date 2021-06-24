@@ -2,16 +2,11 @@
   <div>
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
-      <v-col cols="12" sm="6" md="6" order-sm="1">
+      <v-col cols="12" sm="6" md="6" order="2" order-sm="1">
         <h1>Form Design</h1>
       </v-col>
-      <!-- form name -->
-      <v-col cols="12" order-md="3" order-sm="3">
-        <h3 v-if="name">{{ name }}</h3>
-      </v-col>
-      <v-spacer />
       <!-- buttons -->
-      <v-col class="text-md-right text-sm-right" cols="12" sm="6" md="6" order="4" order-md="2" order-sm="2">
+      <v-col class="text-left text-sm-right" cols="12" sm="6" md="6" order="1" order-sm="2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -85,8 +80,12 @@
           <span>Manage Form</span>
         </v-tooltip>
       </v-col>
+      <!-- form name -->
+      <v-col cols="12" order="3">
+        <h3 v-if="name">{{ name }}</h3>
+      </v-col>
       <!-- version number-->
-      <v-col class="mb-3" cols="12" order-md="4" order-sm="4">
+      <v-col class="mb-3" cols="12" order="4">
         <em>Version: {{ this.displayVersion }}</em>
       </v-col>
     </v-row>
