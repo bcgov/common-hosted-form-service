@@ -56,6 +56,7 @@
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
+      no-data-text="There are no submissions for this form"
     >
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}

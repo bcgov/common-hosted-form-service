@@ -241,15 +241,11 @@ export default {
    * @function listSubmissions
    * Get the submissions for a form
    * @param {string} formId The form uuid
-   * @param {Boolean} deleted TRUE to show deleted submissions, FALSE to show only active ones
+   * @param {Object} params the query parameters
    * @returns {Promise} An axios response
    */
-  listSubmissions(formId, deleted = false) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/submissions`, {
-      params: {
-        deleted: deleted,
-      }
-    });
+  listSubmissions(formId, params = {}) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/submissions`, { params });
   },
 
   /**

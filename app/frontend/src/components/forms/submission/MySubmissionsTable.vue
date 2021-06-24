@@ -4,7 +4,7 @@
       <v-row class="mt-6" no-gutters>
         <v-col class="text-center" cols="12" sm="10" offset-sm="1">
           <h1>Previous Submissions</h1>
-          <h2>{{ form.name }}</h2>
+          <h2>{{ formId ? form.name : 'All Forms' }}</h2>
         </v-col>
         <v-col class="text-right" cols="12" sm="1">
           <v-tooltip bottom>
@@ -67,25 +67,10 @@
         {{ item.completedDate | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
-        <span>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <router-link
-                :to="{
-                  name: 'UserFormView',
-                  query: {
-                    s: item.submissionId,
-                  },
-                }"
-              >
-                <v-btn color="primary" icon v-bind="attrs" v-on="on">
-                  <v-icon>remove_red_eye</v-icon>
-                </v-btn>
-              </router-link>
-            </template>
-            <span>View Submission</span>
-          </v-tooltip>
-        </span>
+        <MySubmissionsActions
+          @draft-deleted="populateSubmissionsTable"
+          :submission="item"
+        />
       </template>
     </v-data-table>
   </div>
@@ -94,8 +79,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
+import MySubmissionsActions from '@/components/forms/submission/MySubmissionsActions.vue';
+
 export default {
   name: 'MySubmissionsTable',
+  components: {
+    MySubmissionsActions,
+  },
   props: {
     formId: {
       type: String,
@@ -114,6 +104,7 @@ export default {
     headers() {
       let headers = [
         { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
+        { text: 'Status', align: 'start', value: 'status' },
         {
           text: 'Submission Date',
           align: 'start',
@@ -128,16 +119,18 @@ export default {
           sortable: false,
         },
       ];
-      if (this.showStatus) {
-        headers.splice(0, 0, {
-          text: 'Status',
-          align: 'start',
-          value: 'status',
-        });
+      if (this.showStatus || !this.formId) {
         headers.splice(3, 0, {
           text: 'Completed Date',
           align: 'start',
           value: 'completedDate',
+        });
+      }
+      if (!this.formId) {
+        headers.splice(0, 0, {
+          text: 'Form Title',
+          align: 'start',
+          value: 'name',
         });
       }
       return headers;
@@ -150,31 +143,42 @@ export default {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
 
     // Status columns in the table
-    getCurrentStatus(history) {
-      // Current status is most recent status (top in array, query returns in status created desc)
-      return history && history[0] ? history[0].code : 'N/A';
+    getCurrentStatus(record) {
+      if (record.draft) {
+        return 'DRAFT';
+      } else {
+        // Current status is most recent status (top in array, query returns in status created desc)
+        return record.submissionStatus && record.submissionStatus[0]
+          ? record.submissionStatus[0].code
+          : 'N/A';
+      }
     },
-    getStatusDate(history, statusCode) {
+    getStatusDate(record, statusCode) {
       // Get the created date of the most recent occurence of a specified status
-      if (history) {
-        const submittedStatus = history.find((stat) => stat.code == statusCode);
+      if (record.submissionStatus) {
+        const submittedStatus = record.submissionStatus.find(
+          (stat) => stat.code === statusCode
+        );
         if (submittedStatus) return submittedStatus.createdAt;
       }
       return '';
     },
 
     async populateSubmissionsTable() {
+      this.loading = true;
       // Get the submissions for this form
       await this.fetchSubmissions({ formId: this.formId, userView: true });
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
           return {
-            completedDate: this.getStatusDate(s.submissionStatus, 'COMPLETED'),
+            completedDate: this.getStatusDate(s, 'COMPLETED'),
             confirmationId: s.confirmationId,
-            status: this.getCurrentStatus(s.submissionStatus),
+            name: s.name,
+            permissions: s.permissions,
+            status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
-            submittedDate: this.getStatusDate(s.submissionStatus, 'SUBMITTED'),
+            submittedDate: this.getStatusDate(s, 'SUBMITTED'),
           };
         });
         this.submissionTable = tableRows;

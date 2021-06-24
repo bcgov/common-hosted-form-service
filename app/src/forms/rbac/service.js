@@ -139,6 +139,7 @@ const service = {
       .skipUndefined()
       .withGraphFetched('submissionStatus(orderDescending)')
       .modify('filterFormId', params.formId)
+      .modify('filterFormSubmissionId', params.formSubmissionId)
       .modify('filterUserId', currentUser.id)
       .modify('filterActive', params.active)
       .modify('orderDefault');

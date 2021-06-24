@@ -42,7 +42,7 @@
             </v-tooltip>
           </span>
 
-          <DeleteSubmission :submissionId="submissionId" />
+          <DeleteSubmission @deleted="onDelete" :submissionId="submissionId" />
         </v-col>
       </v-row>
     </div>
@@ -110,9 +110,10 @@
           </v-row>
           <FormViewer
             :displayTitle="false"
-            :submissionId="submissionId"
-            :readOnly="submissionReadOnly"
             :key="reRenderSubmission"
+            :readOnly="submissionReadOnly"
+            :staffEditMode="true"
+            :submissionId="submissionId"
             @submission-updated="toggleSubmissionEdit(false)"
           />
         </v-card>
@@ -175,6 +176,14 @@ export default {
   computed: mapGetters('form', ['form', 'formSubmission', 'permissions']),
   methods: {
     ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
+    onDelete() {
+      this.$router.push({
+        name: 'FormSubmissions',
+        query: {
+          f: this.form.id,
+        },
+      });
+    },
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
     },
