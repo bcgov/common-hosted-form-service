@@ -68,6 +68,30 @@ describe('Form Service', () => {
     });
   });
 
+  describe('Forms/{formId}/statusCodes', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/statusCodes`;
+
+    it('calls read endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.getStatusCodes(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+  describe('Forms/{formId}/version', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/version`;
+
+    it('calls read published endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.readPublished(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
 
   //
   // Form Drafts
@@ -299,6 +323,53 @@ describe('Form Service', () => {
       mockAxios.onPost(endpoint).reply(200, data);
 
       const result = await formService.requestReceiptEmail(zeroUuid, data);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(data);
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
+  //
+  // Notes and Status
+  //
+  describe('submission/{submissionId}/email', () => {
+    const endpoint = `${ApiRoutes.SUBMISSION}/${zeroUuid}/notes`;
+
+    it('calls get endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.getSubmissionNotes(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+
+    it('calls post endpoint', async () => {
+      const data = { test: 'testdata' };
+      mockAxios.onPost(endpoint).reply(200, data);
+
+      const result = await formService.addNote(zeroUuid, data);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(data);
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
+  describe('submission/{submissionId}/status', () => {
+    const endpoint = `${ApiRoutes.SUBMISSION}/${zeroUuid}/status`;
+
+    it('calls get endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.getSubmissionStatuses(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+
+    it('calls post endpoint', async () => {
+      const data = { test: 'testdata' };
+      mockAxios.onPost(endpoint).reply(200, data);
+
+      const result = await formService.updateSubmissionStatus(zeroUuid, data);
       expect(result).toBeTruthy();
       expect(result.data).toEqual(data);
       expect(mockAxios.history.post).toHaveLength(1);

@@ -33,6 +33,7 @@
       v-model="userType"
       :mandatory="false"
       :rules="loginRequiredRules"
+      @change="userTypeChanged"
     >
       <v-radio label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
       <v-radio label="Log-in Required" value="login"></v-radio>
@@ -70,6 +71,18 @@
         You can specify users on the form's management screen once created.
       </v-row>
     </v-radio-group>
+
+    <v-checkbox
+      v-model="enableSubmitterDraft"
+      :disabled="userType === ID_MODE.PUBLIC"
+    >
+      <template #label>
+        <span>
+          Enable submitters of this form to
+          <strong>Save and Edit Draft</strong> submissions
+        </span>
+      </template>
+    </v-checkbox>
 
     <v-checkbox v-model="enableStatusUpdates">
       <template #label>
@@ -200,6 +213,7 @@ export default {
   computed: {
     ...mapFields('form', [
       'form.description',
+      'form.enableSubmitterDraft',
       'form.enableStatusUpdates',
       'form.id',
       'form.idps',
@@ -216,6 +230,14 @@ export default {
       return IdentityProviders;
     },
   },
-  methods: mapActions('form', ['fetchForm']),
+  methods: {
+    ...mapActions('form', ['fetchForm']),
+    userTypeChanged() {
+      // if they checked enable drafts then went back to public, uncheck it
+      if (this.userType === this.ID_MODE.PUBLIC) {
+        this.enableSubmitterDraft = false;
+      }
+    },
+  },
 };
 </script>
