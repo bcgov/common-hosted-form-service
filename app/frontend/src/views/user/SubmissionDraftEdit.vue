@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <UserSubmission :saved="sv" :submissionId="s" :readOnly="false" />
-  </div>
+  <UserSubmission :saved="sv" :submissionId="s" :readOnly="false" />
 </template>
 
 <script>

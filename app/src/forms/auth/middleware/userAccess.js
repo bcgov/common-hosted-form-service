@@ -97,6 +97,8 @@ const hasSubmissionPermissions = (permissions) => {
       return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
     }
 
+    // TODO: consider whether DRAFT submissions are restricted as deleted above
+
     // Public (annonymous) forms are publicly viewable
     const publicAllowed = submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
     if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
