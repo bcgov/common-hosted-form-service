@@ -14,7 +14,6 @@ jobs:
       fail-fast: true
       matrix:
         node-version:
-          - 10.x
           - 12.x
           - 14.x
     steps:
@@ -62,7 +61,6 @@ jobs:
       fail-fast: true
       matrix:
         node-version:
-          - 10.x
           - 12.x
           - 14.x
     steps:
