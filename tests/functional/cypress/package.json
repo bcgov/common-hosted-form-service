@@ -1,0 +1,21 @@
+{
+  "name": "chefs-cypress",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cypress functional test suite for CHEFS",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf **/screenshots **/videos",
+    "test": "cypress run --headless",
+    "test:interactive": "cypress open"
+  },
+  "keywords": [
+    "chefs",
+    "cypress"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cypress": "^7.6.0"
+  }
+}
