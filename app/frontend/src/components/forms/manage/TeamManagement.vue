@@ -1,11 +1,12 @@
 <template>
   <div>
     <v-row class="mt-6" no-gutters>
-      <v-col cols="12" sm="6">
+      <!-- page title -->
+      <v-col cols="12" sm="6" order="2" order-sm="1">
         <h1>Team Management</h1>
       </v-col>
-      <v-spacer />
-      <v-col class="text-sm-right" cols="12" sm="6">
+      <!-- buttons -->
+      <v-col class="text-right text-sm-right" cols="12" sm="6" order="1" order-sm="2">
         <span>
           <AddTeamMember
             :disabled="!canManageTeam"
