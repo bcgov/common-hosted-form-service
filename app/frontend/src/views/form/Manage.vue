@@ -2,11 +2,11 @@
   <BaseSecure>
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
-      <v-col cols="12" sm="6" md="6" order="2" order-sm="1">
+      <v-col cols="12" sm="6" order="2" order-sm="1">
         <h1>Manage Form</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-left text-sm-right" cols="12" sm="6" md="6" order="1" order-sm="2">
+      <v-col class="text-right text-sm-right" cols="12" sm="6" order="1" order-sm="2">
         <v-skeleton-loader :loading="loading" type="actions">
           <ManageFormActions />
         </v-skeleton-loader>

@@ -2,38 +2,17 @@
   <div class="mt-5">
     <v-skeleton-loader v-if="loading" type="article" />
     <div v-else>
-      <v-row no-gutters>
-        <v-col cols="12" sm="6">
-          <h1>{{ form.name }}</h1>
-          <p>
-            <strong>Submitted: </strong>
-            {{ formSubmission.createdAt | formatDateLong }} <br />
-            <strong>Confirmation ID: </strong>
-            {{ formSubmission.confirmationId }}
-            <br />
-            <strong>Submitted By: </strong> {{ formSubmission.createdBy }}
-            <br />
-          </p>
-        </v-col>
-        <v-spacer />
-        <v-col class="text-sm-right d-print-none" cols="12" sm="6">
+      <v-row class="mt-6" no-gutters>
+        <!-- buttons -->
+        <v-col class="text-right text-sm-right" cols="12" sm="12">
           <span>
             <BasePrintButton />
           </span>
-
           <span>
             <v-tooltip bottom>
               <template #activator="{ on, attrs }">
-                <router-link
-                  :to="{ name: 'FormSubmissions', query: { f: form.id } }"
-                >
-                  <v-btn
-                    class="mx-1"
-                    color="primary"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                  >
+                <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
+                  <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                     <v-icon>list_alt</v-icon>
                   </v-btn>
                 </router-link>
@@ -41,19 +20,29 @@
               <span>View All Submissions</span>
             </v-tooltip>
           </span>
-
           <DeleteSubmission @deleted="onDelete" :submissionId="submissionId" />
+        </v-col>
+        <!-- page title -->
+        <v-col cols="12">
+          <h1>{{ form.name }}</h1>
+          <p>
+            <strong>Submitted:</strong>
+            {{ formSubmission.createdAt | formatDateLong }}
+            <br />
+            <strong>Confirmation ID:</strong>
+            {{ formSubmission.confirmationId }}
+            <br />
+            <strong>Submitted By:</strong>
+            {{ formSubmission.createdBy }}
+            <br />
+          </p>
         </v-col>
       </v-row>
     </div>
-
+    <br />
     <v-row>
       <!-- The form submission -->
-      <v-col
-        cols="12"
-        :md="form.enableStatusUpdates ? 8 : 12"
-        class="pl-0 pt-0"
-      >
+      <v-col cols="12" :md="form.enableStatusUpdates ? 8 : 12" class="pl-0 pt-0">
         <v-alert
           class="d-print-none"
           color="primary"
@@ -63,9 +52,7 @@
           type="info"
           :value="!submissionReadOnly"
         >
-          <strong>
-            After editing, re-submit the form to save your changes.
-          </strong>
+          <strong>After editing, re-submit the form to save your changes.</strong>
         </v-alert>
         <v-card outlined class="review-form">
           <v-row no-gutters>
@@ -98,12 +85,7 @@
                   <span>Edit This Submission</span>
                 </v-tooltip>
               </span>
-              <v-btn
-                v-else
-                outlined
-                color="textLink"
-                @click="toggleSubmissionEdit(false)"
-              >
+              <v-btn v-else outlined color="textLink" @click="toggleSubmissionEdit(false)">
                 <span>CANCEL</span>
               </v-btn>
             </v-col>
@@ -130,11 +112,7 @@
       >
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Status</h2>
-          <StatusPanel
-            :submissionId="submissionId"
-            :formId="form.id"
-            @note-updated="refreshNotes"
-          />
+          <StatusPanel :submissionId="submissionId" :formId="form.id" @note-updated="refreshNotes" />
         </v-card>
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Notes</h2>
