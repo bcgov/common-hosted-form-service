@@ -23,51 +23,54 @@
           <hr />
           <v-row>
             <v-col cols="9">
-              <v-autocomplete
-                v-model="userSearchSelection"
-                clearable
-                dense
-                :filter="filterObject"
-                hide-details
-                :items="userSearchResults"
-                label="Enter a name, email, or username"
-                :loading="isLoadingDropdown"
-                return-object
-                :search-input.sync="findUsers"
-              >
-                <!-- no data -->
-                <template #no-data>
-                  <div class="px-2">
-                    Can't find someone? They may not have joined the site.<br />
-                    Kindly send them a link to the site and ask them to log in.
-                  </div>
-                </template>
-                <!-- selected user -->
-                <template #selection="data">
-                  <span
-                    v-bind="data.attrs"
-                    :input-value="data.selected"
-                    close
-                    @click="data.select"
-                    @click:close="remove(data.item)"
-                  >
-                    {{ data.item.fullName }}
-                  </span>
-                </template>
-                <!-- users found in dropdown -->
-                <template #item="data">
-                  <template v-if="typeof data.item !== 'object'">
-                    <v-list-item-content v-text="data.item" />
+              <form autocomplete="off">
+                <v-autocomplete
+                  v-model="userSearchSelection"
+                  clearable
+                  dense
+                  :filter="filterObject"
+                  hide-details
+                  :items="userSearchResults"
+                  label="Enter a name, e-mail, or username"
+                  :loading="isLoadingDropdown"
+                  return-object
+                  :search-input.sync="findUsers"
+                >
+                  <!-- no data -->
+                  <template #no-data>
+                    <div class="px-2">
+                      Can't find someone? They may not have joined the site.<br />
+                      Kindly send them a link to the site and ask them to log
+                      in.
+                    </div>
                   </template>
-                  <template v-else>
-                    <v-list-item-content>
-                      <v-list-item-title v-html="data.item.fullName" />
-                      <v-list-item-subtitle v-html="data.item.username" />
-                      <v-list-item-subtitle v-html="data.item.email" />
-                    </v-list-item-content>
+                  <!-- selected user -->
+                  <template #selection="data">
+                    <span
+                      v-bind="data.attrs"
+                      :input-value="data.selected"
+                      close
+                      @click="data.select"
+                      @click:close="remove(data.item)"
+                    >
+                      {{ data.item.fullName }}
+                    </span>
                   </template>
-                </template>
-              </v-autocomplete>
+                  <!-- users found in dropdown -->
+                  <template #item="data">
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-item-content v-text="data.item" />
+                    </template>
+                    <template v-else>
+                      <v-list-item-content>
+                        <v-list-item-title v-html="data.item.fullName" />
+                        <v-list-item-subtitle v-html="data.item.username" />
+                        <v-list-item-subtitle v-html="data.item.email" />
+                      </v-list-item-content>
+                    </template>
+                  </template>
+                </v-autocomplete>
+              </form>
             </v-col>
             <v-col cols="3">
               <v-btn
