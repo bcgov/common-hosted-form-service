@@ -46,15 +46,24 @@
           </v-tooltip>
         </router-link>
       </span>
+
+      <!-- Go to draft edit -->
+      <span v-if="submissionId" class="ml-2">
+        <ManageSubmissionUsers />
+      </span>
     </v-col>
   </v-row>
 </template>
 
 <script>
 import { FormPermissions } from '@/utils/constants';
+import ManageSubmissionUsers from '@/components/forms/submission/ManageSubmissionUsers.vue';
 
 export default {
   name: 'MySubmissionsActions',
+  components: {
+    ManageSubmissionUsers,
+  },
   props: {
     draftEnabled: {
       type: Boolean,
