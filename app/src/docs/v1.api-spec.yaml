@@ -1231,6 +1231,58 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /rbac/current/submissions:
+    get:
+      summary: Get submissions/roles/permissions for current user
+      operationId: getCurrentUserSubmissions
+      tags:
+        - RBAC
+      parameters:
+        - in: query
+          name: formId
+          schema:
+            type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
+          description: form ID
+        - in: query
+          name: formSubmissionId
+          schema:
+            type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
+          description: submission ID
+        - in: query
+          name: userId
+          schema:
+            type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
+          description: user ID
+        - in: query
+          name: active
+          schema:
+            type: boolean
+          example: true
+          description: to include active or deleted submissions or not
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/UserSubmission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /rbac/idps:
     get:
       summary: Get a list of identity providers
@@ -2626,6 +2678,70 @@ components:
             - team_manager
           items:
             type: string
+    UserSubmission:
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: If the submission is active
+          example: true
+        confirmationId:
+          type: string
+          description: The submission's Confirmation ID
+          example: B6F3E0EB
+        createdAt:
+          type: string
+          example: 2020-06-04T18:49:20.672Z
+        description:
+          type: string
+          description: The form description
+          example: A form that allows a user to fill out a survey
+        enableStatusUpdates:
+          type: boolean
+          description: If the form uses status flow
+          example: true
+        enableSubmitterDraft:
+          type: boolean
+          description: If the form's submissions can be saved as draft
+          example: true
+        formId:
+          type: string
+          format: uuid
+          description: ID of the form
+          example: d9249b52-d97c-4d28-90e3-a39a94c847ea
+        formSubmissionId:
+          type: string
+          format: uuid
+          description: ID of the submission
+          example: b6f3e0eb-52e5-4c02-833e-d514e4610d1f
+        name:
+          type: string
+          description: The form name
+          example: NR survey form
+        permissions:
+          type: array
+          description: the permission codes this user has on this submission
+          example:
+            - submission_create
+            - submission_read
+            - submission_delete
+            - submission_update
+          items:
+            type: string
+        submissionStatus:
+          type: array
+          description: the permission codes this user has on this submission
+          items:
+            $ref: "#/components/schemas/SubmissionStatus"
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user
+          example: b6f3e0eb-52e5-4c02-833e-d514e4610d1f
+        version:
+          type: integer
+          description: The version number of the form for a submission
+          example: 1
     ValidationError:
       allOf:
         - $ref: "#/components/schemas/Problem"
