@@ -11,19 +11,15 @@ import simplecontent from './SimpleContent/Component';
 import simpledatetime from './SimpleDateTime/Component';
 import simpleday from './SimpleDay/Component';
 import simpleemail from './SimpleEmail/Component';
-import simplefieldset from './SimpleFieldSet/Component';
 import simplefile from './SimpleFile/Component';
-import simpleheading from './SimpleHeading/Component';
 import simplenumber from './SimpleNumber/Component';
 import simplepanel from './SimplePanel/Component';
-import simpleparagraph from './SimpleParagraph/Component';
 import simplephonenumber from './SimplePhoneNumber/Component';
 import simpleradios from './SimpleRadios/Component';
 import simpleselect from './SimpleSelect/Component';
 import simpletabs from './SimpleTabs/Component';
 import simpletextarea from './SimpleTextArea/Component';
 import simpletextfield from './SimpleTextField/Component';
-import simpletime from './SimpleTime/Component';
 
 export default {
   orgbook,
@@ -38,17 +34,13 @@ export default {
   simpledatetime,
   simpleday,
   simpleemail,
-  simplefieldset,
   simplefile,
-  simpleheading,
   simplenumber,
   simplepanel,
-  simpleparagraph,
   simplephonenumber,
   simpleradios,
   simpleselect,
   simpletabs,
   simpletextarea,
   simpletextfield,
-  simpletime
 };

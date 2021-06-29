@@ -1,4 +1,6 @@
+import common from '../../Common/Simple.edit.display';
 export default [
+    ...common,
     {
         key: 'labelPosition',
         ignore: true
@@ -16,19 +18,7 @@ export default [
         ignore: true
     },
     {
-        key: 'autofocus',
-        ignore: true
-    },
-    {
-        key: 'tabindex',
-        ignore: true
-    },
-    {
         key: 'disabled',
-        ignore: true
-    },
-    {
-        key: 'tableView',
         ignore: true
     },
     {
@@ -47,10 +37,6 @@ export default [
         }
     },
     {
-        key: 'tabindex',
-        hidden: true,
-    },
-    {
         weight: 1,
         type: 'textfield',
         input: true,
@@ -58,15 +44,6 @@ export default [
         label: 'Title',
         key: 'title',
         tooltip: 'The title text that appears in the header of this panel.'
-    },
-    {
-        weight: 20,
-        type: 'textarea',
-        input: true,
-        key: 'tooltip',
-        label: 'Tooltip',
-        placeholder: 'To add a tooltip to this field, enter text here.',
-        tooltip: 'Adds a tooltip to the side of this field.'
     },
     {
         weight: 650,
@@ -86,5 +63,24 @@ export default [
         conditional: {
             json: { '===': [{ var: 'data.collapsible' }, true] }
         }
-    }
+    },
+    {
+      type: 'select',
+      key: 'theme',
+      label: 'Theme',
+      input: true,
+      tooltip: 'The color theme of this button.',
+      dataSrc: 'values',
+      weight: 140,
+      data: {
+        values: [
+          { label: 'Primary', value: 'primary' },
+          { label: 'Secondary', value: 'secondary' },
+          { label: 'Info', value: 'info' },
+          { label: 'Success', value: 'success' },
+          { label: 'Danger', value: 'danger' },
+          { label: 'Warning', value: 'warning' },
+        ],
+      },
+    },
 ];
