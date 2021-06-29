@@ -19,7 +19,7 @@
           </p>
         </v-col>
         <!-- buttons -->
-        <v-col class="text-right text-sm-right" cols="12" sm="6" order="1" order-sm="2">
+        <v-col class="text-right text-sm-right d-print-none" cols="12" sm="6" order="1" order-sm="2">
           <span>
             <BasePrintButton />
           </span>
@@ -28,7 +28,7 @@
               <template #activator="{ on, attrs }">
                 <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
                   <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
-                    <v-icon class="d-print-none">list_alt</v-icon>
+                    <v-icon>list_alt</v-icon>
                   </v-btn>
                 </router-link>
               </template>
