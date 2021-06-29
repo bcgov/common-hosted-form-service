@@ -487,6 +487,18 @@ a,
   }
 }
 
+.choices.form-group.formio-choices {
+  .choices__list.choices__list--dropdown {
+    overflow: auto;
+  }
+}
+
+.choices__list.choices__list--dropdown {
+  div {
+    max-height: 175px;
+  }
+}
+
 // formio component buttons
 .btn-primary.formcomponent.drag-copy,
 .btn-primary.formcomponent.drag-copy:hover,
