@@ -264,16 +264,18 @@ export default {
    * @param {string} minDate The form uuid
    * @param {string} maxDate The form uuid
    * @param {string} format The file format csv or json
+   * @param {string} showDeleted should deleted submissions be included in export? true or false
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, minDate, maxDate, format) {
+  exportSubmissions(formId, minDate, maxDate, format, showDeleted) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
       {
         params: {
           format: format,
           type: 'submissions',
           minDate: minDate ? minDate : undefined,
-          maxDate: maxDate ? maxDate : undefined
+          maxDate: maxDate ? maxDate : undefined,
+          showDeleted: showDeleted ? showDeleted : false
         },
         responseType: 'blob'
       }

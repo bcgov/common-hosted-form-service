@@ -22,6 +22,11 @@ class SubmissionData extends Model {
           query.where('createdAt', '<=', maxDate);
         }
       },
+      filterDeleted(query, showDeleted) {
+        if(showDeleted == 'false') {
+          query.where('deleted', false);
+        }
+      },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
       }
@@ -188,7 +193,7 @@ const service = {
     return SubmissionData.query()
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
-      .where('deleted', false)
+      .modify('filterDeleted', params.showDeleted)
       .modify('filterCreatedAt', params.minDate, params.maxDate)
       .modify('orderDefault');
   },
