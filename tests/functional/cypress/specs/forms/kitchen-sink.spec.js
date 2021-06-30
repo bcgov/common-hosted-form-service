@@ -112,8 +112,8 @@ describe('Kitchen Sink Example Form', () => {
 
       // dateTime1
       cy.get('#eb683f').contains('label', 'Date / Time 1');
-      // TODO: Figure out date time selectors
-      // cy.get('#eb683f > .input');
+      cy.get('#eb683f .form-control.input').click();
+      cy.get('.flatpickr-day.today').click();
 
       // day1
       cy.get('#e619db6').contains('label', 'Day 1');
