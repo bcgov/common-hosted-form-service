@@ -35,7 +35,7 @@
               <span>View All Submissions</span>
             </v-tooltip>
           </span>
-          <DeleteSubmission class="d-print-none" @deleted="onDelete" :submissionId="submissionId" />
+          <DeleteSubmission @deleted="onDelete" :submissionId="submissionId" />
         </v-col>
       </v-row>
     </div>
