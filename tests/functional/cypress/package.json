@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf **/screenshots **/videos",
     "test": "cypress run --headless",
-    "test:interactive": "cypress open"
+    "test:dev": "cypress open"
   },
   "keywords": [
     "chefs",
