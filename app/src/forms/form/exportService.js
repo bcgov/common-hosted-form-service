@@ -188,6 +188,7 @@ const service = {
     return SubmissionData.query()
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
+      .where('deleted', false)
       .modify('filterCreatedAt', params.minDate, params.maxDate)
       .modify('orderDefault');
   },
