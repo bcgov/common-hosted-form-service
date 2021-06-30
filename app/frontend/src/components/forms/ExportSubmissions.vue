@@ -168,11 +168,16 @@ export default {
               .utc()
               .format()
             : undefined;
+
+        // include deleted submissions in export. Default to false, but this could be set by user if implemented)
+        const showDeleted = false;
+
         const response = await formService.exportSubmissions(
           this.form.id,
           from,
           to,
-          this.exportFormat
+          this.exportFormat,
+          showDeleted
         );
         if (response && response.data) {
           const blob = new Blob([response.data], {
