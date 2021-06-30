@@ -361,6 +361,19 @@ a,
     }
   }
 
+  // Removing default (optional) flag on Custom Day Component
+  label[for$="simpleday"]:after {
+    content: "";
+  }
+
+  // Adding (optional) flag to Checkbox cases
+  :is(.form-check.checkbox) label {
+      &:after {
+        content: " (optional)";
+        color: inherit;
+      }
+  }
+
   // Data Grid
   .formio-component-datagrid {
     thead th.field-required:after {
