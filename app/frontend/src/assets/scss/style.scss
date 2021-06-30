@@ -484,18 +484,14 @@ a,
 .formio-dialog-content {
   .component-edit-container {
     overflow: visible;
-  }
-}
 
-.choices.form-group.formio-choices {
-  .choices__list.choices__list--dropdown {
-    overflow: auto;
-  }
-}
+    .choices__list.choices__list--dropdown {
+      overflow: auto;
 
-.choices__list.choices__list--dropdown {
-  div {
-    max-height: 175px;
+      div.choices__list {
+        max-height: 175px;
+      }
+    }
   }
 }
 
