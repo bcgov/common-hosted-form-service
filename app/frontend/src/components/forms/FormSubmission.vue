@@ -3,8 +3,23 @@
     <v-skeleton-loader v-if="loading" type="article" />
     <div v-else>
       <v-row class="mt-6" no-gutters>
+        <!-- page title -->
+        <v-col cols="12" sm="6" order="2" order-sm="1">
+          <h1>{{ form.name }}</h1>
+          <p>
+            <strong>Submitted:</strong>
+            {{ formSubmission.createdAt | formatDateLong }}
+            <br />
+            <strong>Confirmation ID:</strong>
+            {{ formSubmission.confirmationId }}
+            <br />
+            <strong>Submitted By:</strong>
+            {{ formSubmission.createdBy }}
+            <br />
+          </p>
+        </v-col>
         <!-- buttons -->
-        <v-col class="text-right text-sm-right" cols="12" sm="12">
+        <v-col class="text-right text-sm-right d-print-none" cols="12" sm="6" order="1" order-sm="2">
           <span>
             <BasePrintButton />
           </span>
@@ -21,21 +36,6 @@
             </v-tooltip>
           </span>
           <DeleteSubmission @deleted="onDelete" :submissionId="submissionId" />
-        </v-col>
-        <!-- page title -->
-        <v-col cols="12">
-          <h1>{{ form.name }}</h1>
-          <p>
-            <strong>Submitted:</strong>
-            {{ formSubmission.createdAt | formatDateLong }}
-            <br />
-            <strong>Confirmation ID:</strong>
-            {{ formSubmission.confirmationId }}
-            <br />
-            <strong>Submitted By:</strong>
-            {{ formSubmission.createdBy }}
-            <br />
-          </p>
         </v-col>
       </v-row>
     </div>
