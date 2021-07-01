@@ -3,18 +3,19 @@ const depEnv = 'app';
 const formId = '897e2ca1-d81c-4079-a135-63b930f98590';
 
 describe('Kitchen Sink Example Form', () => {
-  before(() => {
+  beforeEach(() => {
     cy.intercept('GET', `/${depEnv}/api/v1/forms/${formId}`, {
       fixture: 'kitchen-sink.json'
-    });
+    }).as('formMeta');
     cy.intercept('GET', `/${depEnv}/api/v1/forms/${formId}/version`, {
       fixture: 'kitchen-sink-version.json'
-    });
+    }).as('formVersion');
+
+    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
+    cy.wait(['@formMeta', '@formVersion']);
   });
 
   it('Visits the kitchen sink form', () => {
-    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
-
     // Title
     cy.contains('h1', 'Kitchen Sink Simple');
 
@@ -25,7 +26,6 @@ describe('Kitchen Sink Example Form', () => {
 
   describe('Layout & Static Content', () => {
     beforeEach(() => {
-      cy.visit(`/${depEnv}/form/submit?f=${formId}`);
       cy.contains('span', 'Layout & Static Content').click();
     });
 
@@ -74,7 +74,6 @@ describe('Kitchen Sink Example Form', () => {
 
   describe('Form Fields', () => {
     beforeEach(() => {
-      cy.visit(`/form/submit?f=${formId}`);
       cy.contains('span', 'Form Fields').click();
     });
 
