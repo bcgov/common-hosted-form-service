@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://chefs-test.apps.silver.devops.gov.bc.ca/app",
+  "baseUrl": "https://chefs-test.apps.silver.devops.gov.bc.ca",
   "pluginsFile": "plugins/index.js",
   "video": false
 }

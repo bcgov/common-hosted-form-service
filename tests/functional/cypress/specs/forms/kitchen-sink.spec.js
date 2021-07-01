@@ -1,9 +1,19 @@
 // TODO: Parameterize formId variable
+const depEnv = 'app';
 const formId = '897e2ca1-d81c-4079-a135-63b930f98590';
 
 describe('Kitchen Sink Example Form', () => {
+  before(() => {
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/${formId}`, {
+      fixture: 'kitchen-sink.json'
+    });
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/${formId}/version`, {
+      fixture: 'kitchen-sink-version.json'
+    });
+  });
+
   it('Visits the kitchen sink form', () => {
-    cy.visit(`/form/submit?f=${formId}`);
+    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
 
     // Title
     cy.contains('h1', 'Kitchen Sink Simple');
@@ -15,7 +25,7 @@ describe('Kitchen Sink Example Form', () => {
 
   describe('Layout & Static Content', () => {
     beforeEach(() => {
-      cy.visit(`/form/submit?f=${formId}`);
+      cy.visit(`/${depEnv}/form/submit?f=${formId}`);
       cy.contains('span', 'Layout & Static Content').click();
     });
 
