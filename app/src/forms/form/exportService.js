@@ -27,6 +27,11 @@ class SubmissionData extends Model {
           query.where('deleted', false);
         }
       },
+      filterDrafts(query, showDrafts) {
+        if(showDrafts == 'false') {
+          query.where('draft', false);
+        }
+      },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
       }
@@ -194,6 +199,7 @@ const service = {
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterDeleted', params.showDeleted)
+      .modify('filterDrafts', params.showDrafts)
       .modify('filterCreatedAt', params.minDate, params.maxDate)
       .modify('orderDefault');
   },
