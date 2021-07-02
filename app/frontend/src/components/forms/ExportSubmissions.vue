@@ -169,19 +169,15 @@ export default {
               .format()
             : undefined;
 
-        // include deleted submissions in export. Default to false, but this could be set by user if implemented)
-        const showDeleted = false;
-
-        // include draft submissions in export. Default to false, but this could be set by user if implemented)
-        const showDrafts = false;
-
         const response = await formService.exportSubmissions(
           this.form.id,
-          from,
-          to,
           this.exportFormat,
-          showDeleted,
-          showDrafts
+          {
+            minDate: from,
+            maxDate: to,
+            // deleted: true,
+            // drafts: true
+          }
         );
         if (response && response.data) {
           const blob = new Blob([response.data], {
