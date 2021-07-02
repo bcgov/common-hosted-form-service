@@ -261,23 +261,18 @@ export default {
   /**
    * @function exportSubmissions
    * Get the export file for a range of form submittions
-   * @param {string} minDate The form uuid
-   * @param {string} maxDate The form uuid
-   * @param {string} format The file format csv or json
-   * @param {string} showDeleted should deleted submissions be included in export? true or false
-   * @param {string} showDrafts should draft submissions be included in export? true or false
+   * @param {string} formId The form uuid
+   * @param {string} format The export file format csv or json
+   * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, minDate, maxDate, format, showDeleted, showDrafts) {
+  exportSubmissions(formId, format, options = {}) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
       {
         params: {
           format: format,
           type: 'submissions',
-          minDate: minDate ? minDate : undefined,
-          maxDate: maxDate ? maxDate : undefined,
-          showDeleted: showDeleted ? showDeleted : false,
-          showDrafts: showDrafts ? showDrafts : false
+          ...options
         },
         responseType: 'blob'
       }
