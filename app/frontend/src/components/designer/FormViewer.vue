@@ -54,7 +54,7 @@ import { Form } from 'vue-formio';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
-import formioUtils from 'formiojs/utils';
+import { attachAttributesToLinks } from '@/utils/transformUtils';
 
 export default {
   name: 'FormViewer',
@@ -147,6 +147,10 @@ export default {
           });
           this.permissions = permRes.data[0] ? permRes.data[0].permissions : [];
         }
+        // Attaching attributes to links to open them in new tab
+        if(this.forceNewTabLinks) {
+          attachAttributesToLinks(this.formSchema.components);
+        }
       } catch (error) {
         this.addNotification({
           message: 'An error occurred fetching the submission for this form',
@@ -155,21 +159,6 @@ export default {
       } finally {
         this.loadingSubmission = false;
       }
-    },
-    // Attaches attributes to <a> Link tags to open in a new tab.
-    attachAttributesToLinks() {
-      const simpleContentComponents = formioUtils.searchComponents(this.formSchema.components, {
-        type: 'simplecontent'
-      });
-      const advancedContent = formioUtils.searchComponents(this.formSchema.components, {
-        type: 'content'
-      });
-      const combinedLinks = [...simpleContentComponents, ...advancedContent];
-      combinedLinks.map((component) => {
-        if (component.html && component.html.includes('<a ')) {
-          component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
-        }
-      });
     },
     // Get the form definition/schema
     async getFormSchema() {
@@ -213,7 +202,7 @@ export default {
         }
         // Attaching attributes to links to open them in new tab
         if(this.forceNewTabLinks) {
-          this.attachAttributesToLinks();
+          attachAttributesToLinks(this.formSchema.components);
         }
       } catch (error) {
         if (this.authenticated) {
