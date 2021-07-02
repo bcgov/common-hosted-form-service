@@ -480,6 +480,21 @@ a,
   }
 }
 
+// allow dropdowns to continue expanding downwards within a modal
+.formio-dialog-content {
+  .component-edit-container {
+    overflow: visible;
+
+    .choices__list.choices__list--dropdown {
+      overflow: auto;
+
+      div.choices__list {
+        max-height: 175px;
+      }
+    }
+  }
+}
+
 // formio component buttons
 .btn-primary.formcomponent.drag-copy,
 .btn-primary.formcomponent.drag-copy:hover,
