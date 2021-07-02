@@ -11,7 +11,6 @@
           @save-draft="saveDraft"
         />
       </div>
-
       <h1 class="my-6 text-center">{{ form.name }}</h1>
     </div>
     <div class="form-wrapper">
@@ -147,10 +146,6 @@ export default {
           });
           this.permissions = permRes.data[0] ? permRes.data[0].permissions : [];
         }
-        // Attaching attributes to links to open them in new tab
-        if(this.forceNewTabLinks) {
-          attachAttributesToLinks(this.formSchema.components);
-        }
       } catch (error) {
         this.addNotification({
           message: 'An error occurred fetching the submission for this form',
@@ -199,10 +194,6 @@ export default {
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
-        }
-        // Attaching attributes to links to open them in new tab
-        if(this.forceNewTabLinks) {
-          attachAttributesToLinks(this.formSchema.components);
         }
       } catch (error) {
         if (this.authenticated) {
@@ -365,6 +356,12 @@ export default {
       if (!this.preview) {
         window.onbeforeunload = () => true;
       }
+    }
+  },
+  beforeUpdate() {
+    // This needs to be ran whenever we have a formSchema change
+    if(this.forceNewTabLinks) {
+      attachAttributesToLinks(this.formSchema.components);
     }
   },
 };
