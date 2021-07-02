@@ -1,4 +1,5 @@
 import { IdentityMode } from '@/utils/constants';
+import formioUtils from 'formiojs/utils';
 
 //
 // Transformation Functions for converting form objects
@@ -41,4 +42,25 @@ export function parseIdps(identityProviders) {
     }
   }
   return result;
+}
+
+/**
+ * @function attachAttributesToLinks
+ * Attaches attributes to <a> Link tags to open in a new tab
+ * @param {Component[]} formSchemaComponents An array of Components
+ * @returns {void} Does not return anything. Simply transforms the Components using FormIO Utils.
+ */
+export function attachAttributesToLinks(formSchemaComponents) {
+  const simpleContentComponents = formioUtils.searchComponents(formSchemaComponents, {
+    type: 'simplecontent'
+  });
+  const advancedContent = formioUtils.searchComponents(formSchemaComponents, {
+    type: 'content'
+  });
+  const combinedLinks = [...simpleContentComponents, ...advancedContent];
+  combinedLinks.map((component) => {
+    if (component.html && component.html.includes('<a ')) {
+      component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
+    }
+  });
 }
