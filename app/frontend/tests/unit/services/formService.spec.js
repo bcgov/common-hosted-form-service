@@ -306,7 +306,7 @@ describe('Form Service', () => {
     it('calls get on endpoint', async () => {
       mockAxios.onGet(endpoint).reply(200);
 
-      const result = await formService.exportSubmissions(zeroUuid, '2010', '2011', 'csv', false);
+      const result = await formService.exportSubmissions(zeroUuid, '2010', '2011', 'csv', false, false);
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });
