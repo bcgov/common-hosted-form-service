@@ -350,7 +350,8 @@ a,
   }
 
   // Adding (optional) flag to labels and removing for non-required components
-  label:not(.form-check-label), .form-check.checkbox label {
+  label:not(.form-check-label),
+  .form-check.checkbox label {
     &:after {
       content: " (optional)";
       color: inherit;
