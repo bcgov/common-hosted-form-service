@@ -6,7 +6,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'simplecontent';
-const DISPLAY = 'Static Text';
+const DISPLAY = 'Text/Images';
 
 export default class Component extends (ParentComponent as any) {
   static schema(...extend) {
