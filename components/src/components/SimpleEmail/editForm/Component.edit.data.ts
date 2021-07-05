@@ -16,7 +16,8 @@ export default [
           {
               value: 'uppercase',
               label: 'Uppercase'
-          },{
+          },
+          {
               value: 'lowercase',
               label: 'Lowercase'
           }
