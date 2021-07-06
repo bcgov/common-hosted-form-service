@@ -4,6 +4,7 @@ const routes = require('express').Router();
 const currentUser = require('../auth/middleware/userAccess').currentUser;
 const controller = require('./controller');
 const hasFormPermissions = require('../auth/middleware/userAccess').hasFormPermissions;
+const hasSubmissionPermissions = require('../auth/middleware/userAccess').hasSubmissionPermissions;
 const keycloak = require('../../components/keycloak');
 const P = require('../common/constants').Permissions;
 
@@ -27,6 +28,14 @@ routes.get('/forms', hasFormPermissions(P.TEAM_READ), async (req, res, next) => 
 
 routes.put('/forms', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) => {
   await controller.setFormUsers(req, res, next);
+});
+
+routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+  await controller.getSubmissionUsers(req, res, next);
+});
+
+routes.put('/submissions', hasFormPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
+  await controller.setSubmissionUsers(req, res, next);
 });
 
 routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
