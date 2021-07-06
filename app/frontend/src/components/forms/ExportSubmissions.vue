@@ -168,11 +168,16 @@ export default {
               .utc()
               .format()
             : undefined;
+
         const response = await formService.exportSubmissions(
           this.form.id,
-          from,
-          to,
-          this.exportFormat
+          this.exportFormat,
+          {
+            minDate: from,
+            maxDate: to,
+            // deleted: true,
+            // drafts: true
+          }
         );
         if (response && response.data) {
           const blob = new Blob([response.data], {
