@@ -1,4 +1,4 @@
-const depEnv = 'app';
+const depEnv = Cypress.env('depEnv');
 
 describe('Application About Page', () => {
   it('Visits the app about page', () => {

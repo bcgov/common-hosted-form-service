@@ -1,5 +1,5 @@
-// TODO: Parameterize formId variable
-const depEnv = 'app';
+const depEnv = Cypress.env('depEnv');
+// TODO: Parameterize formId, submissionId and versionId for full e2e test (no cypress.intercepts variant)
 const formId = '897e2ca1-d81c-4079-a135-63b930f98590';
 const submissionId = '3d2d6833-6e78-43e3-b332-6e66b6b8879c';
 const versionId = 'e7b20c83-416b-479d-9ff8-65fcd72a2bff';
