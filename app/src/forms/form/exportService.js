@@ -5,7 +5,6 @@ const Problem = require('api-problem');
 const { Form, FormVersion } = require('../common/models');
 const Permissions = require('../common/constants').Permissions;
 
-
 class SubmissionData extends Model {
   static get tableName() {
     return 'submissions_data_vw';
@@ -20,6 +19,16 @@ class SubmissionData extends Model {
           query.where('createdAt', '>=', minDate);
         } else if (maxDate) {
           query.where('createdAt', '<=', maxDate);
+        }
+      },
+      filterDeleted(query, value) {
+        if(!value) {
+          query.where('deleted', false);
+        }
+      },
+      filterDrafts(query, value) {
+        if(!value) {
+          query.where('draft', false);
         }
       },
       orderDefault(builder) {
@@ -184,11 +193,13 @@ const service = {
 
   _getSubmissions: (form, params, currentUser) => {
     service._checkPermission(currentUser, form.id, Permissions.SUBMISSION_READ, EXPORT_TYPES.submissions);
-    // possible params for this export include minDate and maxDate (full timestamp dates).
+    // params for this export include minDate and maxDate (full timestamp dates).
     return SubmissionData.query()
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterCreatedAt', params.minDate, params.maxDate)
+      .modify('filterDeleted', params.deleted)
+      .modify('filterDrafts', params.drafts)
       .modify('orderDefault');
   },
 
