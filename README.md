@@ -20,7 +20,6 @@ Create, edit and publish forms.
     │   └── forms/             - Models, Controllers, Routes for the forms
     └── tests/                 - Node.js backend web application tests
     components/                - Form.io Custom Components Library
-    load-test/                 - Standalone CHEFS load testing utility
     openshift/                 - OpenShift-deployment and shared pipeline files
     tests/                     - External test frameworks
     ├── functional/            - Supporting functional tests
