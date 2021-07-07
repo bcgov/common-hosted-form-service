@@ -129,21 +129,6 @@ describe('Form Service', () => {
   describe('Forms/{formId}/drafts', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/drafts`;
 
-    it('calls list endpoint and includes params with schema', async () => {
-      const schema = true;
-      mockAxios.onGet(endpoint, {
-        params: {
-          schema: schema,
-        }
-      }).reply(200);
-
-      const result = await formService.listDrafts(zeroUuid, schema);
-
-      expect(result).toBeTruthy();
-      expect(result.config.params.schema).toBeTruthy();
-      expect(mockAxios.history.get).toHaveLength(1);
-    });
-
     it('calls list endpoint', async () => {
       mockAxios.onGet(endpoint).reply(200);
 

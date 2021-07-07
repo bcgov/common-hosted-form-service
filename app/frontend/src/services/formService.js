@@ -90,12 +90,8 @@ export default {
    * @param {boolean} [schema=undefined] Require schema in the response
    * @returns {Promise} An axios response
    */
-  listDrafts(formId, schema = undefined) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/drafts`, {
-      params: {
-        schema: schema,
-      }
-    });
+  listDrafts(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/drafts`);
   },
 
   /**

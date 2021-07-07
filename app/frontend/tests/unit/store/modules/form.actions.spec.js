@@ -83,20 +83,16 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
 
-    it.only('fetchDrafts should include schema', async () => {
-      formService.listDrafts.mockResolvedValue({ data: [{ schema: {} }] });
-      await store.actions.fetchDrafts(mockStore, { formId: 'dId', schema: true });
-
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_DRAFTS', expect.arrayContaining([{ schema: {} }]));
-    });
-
     it('fetchDrafts should commit to SET_DRAFTS', async () => {
       formService.listDrafts.mockResolvedValue({ data: [] });
       await store.actions.fetchDrafts(mockStore, 'dId');
 
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_DRAFTS', expect.any(Array));
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_DRAFTS', expect.not.arrayContaining([
+        expect.objectContaining({
+          schema: {}
+        })
+      ]));
     });
 
     it('fetchDrafts should dispatch to notifications/addNotification', async () => {
