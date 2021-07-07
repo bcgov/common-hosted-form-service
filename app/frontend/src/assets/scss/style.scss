@@ -349,8 +349,9 @@ a,
     font-size: 0.875rem;
   }
 
-  // labels
-  label:not(.form-check-label) {
+  // Adding (optional) flag to labels and removing for non-required components
+  label:not(.form-check-label),
+  .form-check.checkbox label {
     &:after {
       content: " (optional)";
       color: inherit;
@@ -359,6 +360,11 @@ a,
     &.field-required:after {
       content: "";
     }
+  }
+
+  // Removing default (optional) flag on Custom Day Component
+  label[for$="simpleday"]:after {
+    content: "";
   }
 
   // Data Grid

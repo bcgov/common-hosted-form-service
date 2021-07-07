@@ -1,4 +1,6 @@
+import common from '../../Common/Simple.edit.display';
 export default [
+    ...common,
     {
         key: 'labelPosition',
         ignore: true
@@ -16,27 +18,11 @@ export default [
         ignore: true
     },
     {
-        key: 'autofocus',
-        ignore: true
-    },
-    {
-        key: 'tabindex',
-        ignore: true
-    },
-    {
         key: 'disabled',
         ignore: true
     },
     {
-        key: 'tableView',
-        ignore: true
-    },
-    {
         key: 'hideLabel',
-        ignore: true
-    },
-    {
-        key: 'modalEdit',
         ignore: true
     },
     {
