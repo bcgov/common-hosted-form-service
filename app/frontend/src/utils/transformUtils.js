@@ -57,7 +57,8 @@ export function attachAttributesToLinks(formSchemaComponents) {
     type: 'content'
   });
   const combinedLinks = [...simpleContentComponents, ...advancedContent];
-  combinedLinks.map((component) => {
+
+  combinedLinks.forEach((component) => {
     if (component.html && component.html.includes('<a ')) {
       component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
     }
