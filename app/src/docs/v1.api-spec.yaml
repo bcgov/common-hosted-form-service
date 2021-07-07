@@ -376,9 +376,6 @@ paths:
         - Draft
       parameters:
         - $ref: "#/components/parameters/formIdParam"
-
-# CHANGES
-
       requestBody:
         required: true
         content:

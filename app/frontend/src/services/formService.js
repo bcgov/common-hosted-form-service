@@ -87,7 +87,6 @@ export default {
    * @function listDrafts
    * Get any drafts for a form
    * @param {string} formId The form uuid
-   * @param {boolean} [schema=undefined] Require schema in the response
    * @returns {Promise} An axios response
    */
   listDrafts(formId) {
