@@ -11,7 +11,6 @@
           @save-draft="saveDraft"
         />
       </div>
-
       <h1 class="my-6 text-center">{{ form.name }}</h1>
     </div>
     <div class="form-wrapper">
@@ -54,7 +53,7 @@ import { Form } from 'vue-formio';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
-import formioUtils from 'formiojs/utils';
+import { attachAttributesToLinks } from '@/utils/transformUtils';
 
 export default {
   name: 'FormViewer',
@@ -156,21 +155,6 @@ export default {
         this.loadingSubmission = false;
       }
     },
-    // Attaches attributes to <a> Link tags to open in a new tab.
-    attachAttributesToLinks() {
-      const simpleContentComponents = formioUtils.searchComponents(this.formSchema.components, {
-        type: 'simplecontent'
-      });
-      const advancedContent = formioUtils.searchComponents(this.formSchema.components, {
-        type: 'content'
-      });
-      const combinedLinks = [...simpleContentComponents, ...advancedContent];
-      combinedLinks.map((component) => {
-        if (component.html && component.html.includes('<a ')) {
-          component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
-        }
-      });
-    },
     // Get the form definition/schema
     async getFormSchema() {
       try {
@@ -210,10 +194,6 @@ export default {
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
-        }
-        // Attaching attributes to links to open them in new tab
-        if(this.forceNewTabLinks) {
-          this.attachAttributesToLinks();
         }
       } catch (error) {
         if (this.authenticated) {
@@ -376,6 +356,12 @@ export default {
       if (!this.preview) {
         window.onbeforeunload = () => true;
       }
+    }
+  },
+  beforeUpdate() {
+    // This needs to be ran whenever we have a formSchema change
+    if(this.forceNewTabLinks) {
+      attachAttributesToLinks(this.formSchema.components);
     }
   },
 };
