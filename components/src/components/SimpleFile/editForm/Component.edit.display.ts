@@ -1,18 +1,8 @@
+import common from '../../Common/Simple.edit.display';
 export default [
+    ...common,
     {
         key: 'placeholder',
-        ignore: true
-    },
-    {
-        key: 'tableView',
-        ignore: true
-    },
-    {
-        key: 'hidden',
-        ignore: true
-    },
-    {
-        key: 'modalEdit',
         ignore: true
     },
     {
@@ -46,5 +36,5 @@ export default [
     {
         key: 'showCharCount',
         ignore: true,
-    }
+    },
 ];

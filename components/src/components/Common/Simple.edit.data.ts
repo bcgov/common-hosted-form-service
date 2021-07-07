@@ -17,42 +17,5 @@ export default [
         tooltip: 'The will be the value for this field, before user interaction. Having a default value will override the placeholder text.',
         input: true
     },
-    {
-        type: 'select',
-        input: true,
-        key: 'redrawOn',
-        label: 'Redraw On',
-        weight: 600,
-        tooltip: 'Redraw this component if another component changes. This is useful if interpolating parts of the component like the label.',
-        dataSrc: 'custom',
-        valueProperty: 'value',
-        data: {
-            custom(context) {
-                const values = [];
-                values.push({ label: 'Any Change', value: 'data' });
-                context.utils.eachComponent(context.instance.options.editForm.components, (component, path) => {
-                    if (component.key !== context.data.key) {
-                        values.push({
-                            label: component.label || component.key,
-                            value: path
-                        });
-                    }
-                });
-                return values;
-            }
-        },
-        conditional: {
-            json: { '!' : [{ var: 'data.dataSrc' }] },
-        },
-    },
-    {
-        weight: 700,
-        type: 'checkbox',
-        label: 'Clear Value When Hidden',
-        key: 'clearOnHide',
-        defaultValue: true,
-        tooltip: 'When a field is hidden, clear the value.',
-        input: true
-    },
 ];
 /* eslint-enable max-len */

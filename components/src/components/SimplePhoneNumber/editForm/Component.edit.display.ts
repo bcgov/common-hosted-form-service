@@ -1,16 +1,6 @@
+import common from '../../Common/Simple.edit.display';
 export default [
-    {
-        key: 'tableView',
-        ignore: true
-    },
-    {
-        key: 'hidden',
-        ignore: true
-    },
-    {
-        key: 'modalEdit',
-        ignore: true
-    },
+    ...common,
     {
         key: 'refreshOnChange',
         ignore: true
@@ -26,6 +16,10 @@ export default [
     {
         key: 'suffix',
         ignore: true
+    },
+    {
+      key: 'placeholder',
+      ignore: true
     },
     {
         weight: 410,

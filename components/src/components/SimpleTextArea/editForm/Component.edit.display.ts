@@ -1,16 +1,6 @@
+import common from '../../Common/Simple.edit.display';
 export default [
-    {
-        key: 'tableView',
-        ignore: true
-    },
-    {
-        key: 'hidden',
-        ignore: true
-    },
-    {
-        key: 'modalEdit',
-        ignore: true
-    },
+    ...common,
     {
         key: 'refreshOnChange',
         ignore: true
@@ -67,6 +57,22 @@ export default [
         label: 'Auto Expand',
         tooltip: 'This will make the TextArea auto expand it\'s height as the user is typing into the area.',
         weight: 415
+    },
+    {
+        weight: 1200,
+        type: 'checkbox',
+        label: 'Show Word Counter',
+        tooltip: 'Show a live count of the number of words.',
+        key: 'showWordCount',
+        input: true
+    },
+    {
+        weight: 1201,
+        type: 'checkbox',
+        label: 'Show Character Counter',
+        tooltip: 'Show a live count of the number of characters.',
+        key: 'showCharCount',
+        input: true
     },
     {
         key: 'isUploadEnabled',
