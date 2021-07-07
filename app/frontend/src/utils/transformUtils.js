@@ -1,3 +1,4 @@
+import formioUtils from 'formiojs/utils';
 import { IdentityMode } from '@/utils/constants';
 
 //
@@ -41,4 +42,25 @@ export function parseIdps(identityProviders) {
     }
   }
   return result;
+}
+
+/**
+ * @function attachAttributesToLinks
+ * Attaches attributes to <a> Link tags to open in a new tab
+ * @param {Object[]} formSchemaComponents An array of Components
+ */
+export function attachAttributesToLinks(formSchemaComponents) {
+  const simpleContentComponents = formioUtils.searchComponents(formSchemaComponents, {
+    type: 'simplecontent'
+  });
+  const advancedContent = formioUtils.searchComponents(formSchemaComponents, {
+    type: 'content'
+  });
+  const combinedLinks = [...simpleContentComponents, ...advancedContent];
+
+  combinedLinks.forEach((component) => {
+    if (component.html && component.html.includes('<a ')) {
+      component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
+    }
+  });
 }
