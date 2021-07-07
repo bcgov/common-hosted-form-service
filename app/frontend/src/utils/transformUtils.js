@@ -1,5 +1,5 @@
-import { IdentityMode } from '@/utils/constants';
 import formioUtils from 'formiojs/utils';
+import { IdentityMode } from '@/utils/constants';
 
 //
 // Transformation Functions for converting form objects
@@ -47,8 +47,7 @@ export function parseIdps(identityProviders) {
 /**
  * @function attachAttributesToLinks
  * Attaches attributes to <a> Link tags to open in a new tab
- * @param {Component[]} formSchemaComponents An array of Components
- * @returns {void} Does not return anything. Simply transforms the Components using FormIO Utils.
+ * @param {Object[]} formSchemaComponents An array of Components
  */
 export function attachAttributesToLinks(formSchemaComponents) {
   const simpleContentComponents = formioUtils.searchComponents(formSchemaComponents, {
