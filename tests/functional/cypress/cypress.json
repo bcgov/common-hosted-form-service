@@ -1,0 +1,8 @@
+{
+  "baseUrl": "https://chefs-test.apps.silver.devops.gov.bc.ca",
+  "env": {
+    "depEnv": "app"
+  },
+  "pluginsFile": "plugins/index.js",
+  "video": false
+}
