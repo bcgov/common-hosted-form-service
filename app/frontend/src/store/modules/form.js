@@ -159,10 +159,10 @@ export default {
         }, { root: true });
       }
     },
-    async fetchDrafts({ commit, dispatch }, formId) {
+    async fetchDrafts({ commit, dispatch }, { formId, schema }) {
       try {
         // Get any drafts for this form from the api
-        const { data } = await formService.listDrafts(formId);
+        const { data } = await formService.listDrafts(formId, schema);
         commit('SET_DRAFTS', data);
       } catch (error) {
         dispatch('notifications/addNotification', {

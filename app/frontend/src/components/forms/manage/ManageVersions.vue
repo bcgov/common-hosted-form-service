@@ -337,7 +337,10 @@ export default {
           draftId: this.publishOpts.id,
         });
         // Refresh draft in form version list
-        this.fetchDrafts(this.form.id);
+        this.fetchDrafts({
+          formId: this.form.id,
+          schema: false,
+        });
       }
       // else, we toggle status of a version
       else {
@@ -358,7 +361,10 @@ export default {
         formId: this.form.id,
         draftId: this.drafts[0].id,
       });
-      this.fetchDrafts(this.form.id);
+      this.fetchDrafts({
+        formId: this.form.id,
+        schema: false,
+      });
     },
 
     async onExportClick(id, isDraft) {

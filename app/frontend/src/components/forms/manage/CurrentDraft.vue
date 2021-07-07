@@ -92,6 +92,7 @@
 </template>
 
 <script>
+// TODO: This file is unused and unnecessary since it has been replaced by the ManageVersions.vue file. We should consider removing this file.
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
@@ -121,13 +122,19 @@ export default {
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;
       await this.deleteDraft({ formId: this.form.id, draftId: this.draft.id });
-      this.fetchDrafts(this.form.id);
+      this.fetchDrafts({
+        formId: this.form.id,
+        schema: true,
+      });
     },
     async publishThisVersion() {
       await this.publishDraft({ formId: this.form.id, draftId: this.draft.id });
       // Refresh form version and drafts details
       this.fetchForm(this.form.id);
-      this.fetchDrafts(this.form.id);
+      this.fetchDrafts({
+        formId: this.form.id,
+        schema: true,
+      });
     },
   },
 };

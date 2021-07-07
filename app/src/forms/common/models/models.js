@@ -210,9 +210,15 @@ class FormVersionDraft extends Timestamps(Model) {
           query.where('formVersionId', value);
         }
       },
+      omitSchema(query, value) {
+        // TODO: Consider other QA Cases and Sanitize values (True, 'true', TRUE, 42, etc...)
+        if (value === undefined || typeof value === 'string' && value.toLowerCase() === 'false') {
+          query.select('id', 'formId', 'formVersionId', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt');
+        }
+      },
       orderDescending(builder) {
         builder.orderBy('updatedAt', 'desc');
-      }
+      },
     };
   }
 
