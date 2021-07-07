@@ -88,11 +88,7 @@ describe('form actions', () => {
       await store.actions.fetchDrafts(mockStore, 'dId');
 
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_DRAFTS', expect.not.arrayContaining([
-        expect.objectContaining({
-          schema: {}
-        })
-      ]));
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_DRAFTS', expect.any(Array));
     });
 
     it('fetchDrafts should dispatch to notifications/addNotification', async () => {
