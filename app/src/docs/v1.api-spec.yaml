@@ -352,12 +352,6 @@ paths:
         - Draft
       parameters:
         - $ref: "#/components/parameters/formIdParam"
-        - in: query
-          name: schema
-          schema:
-            type: boolean
-            example: false
-          description: Include or remove form schema in the response.
       responses:
         "200":
           description: "OK"
@@ -382,6 +376,9 @@ paths:
         - Draft
       parameters:
         - $ref: "#/components/parameters/formIdParam"
+
+# CHANGES
+
       requestBody:
         required: true
         content:
@@ -2033,7 +2030,6 @@ components:
               format: uuid
               description: ID of the FormVersion this submission is for.
               example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
-        - $ref: "#/components/schemas/FormSchema"
         - $ref: "#/components/schemas/TimeStampUserData"
     FormRoleUser:
       type: object
