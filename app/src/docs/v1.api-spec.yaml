@@ -352,6 +352,12 @@ paths:
         - Draft
       parameters:
         - $ref: "#/components/parameters/formIdParam"
+        - in: query
+          name: schema
+          schema:
+            type: boolean
+            example: false
+          description: Include or remove form schema in the response.
       responses:
         "200":
           description: "OK"

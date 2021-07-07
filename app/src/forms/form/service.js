@@ -318,6 +318,7 @@ const service = {
     return FormVersionDraft.query()
       .where('formId', formId)
       .modify('filterFormVersionId', params.formVersionId)
+      .modify('omitSchema', params.schema)
       .modify('orderDescending');
   },
 

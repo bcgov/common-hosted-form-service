@@ -57,7 +57,10 @@ export default {
     await Promise.all([
       // Get the form for this management page
       this.fetchForm(this.f),
-      this.fetchDrafts(this.f),
+      this.fetchDrafts({
+        formId: this.f,
+        schema: false,
+      }),
       // Get the permissions for this form
       this.getFormPermissionsForUser(this.f),
     ]);
