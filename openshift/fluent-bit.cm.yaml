@@ -25,18 +25,21 @@ objects:
           HTTP_Listen   0.0.0.0
           HTTP_Port     2020
 
+        # read logs from app log file
         [INPUT]
           # get logs from file written by node app
           Name  tail
           Path  /var/log/*
           Tag   app
 
+        # exclude kube probe logs from app logs
         [FILTER]
           # exclude kube probe logs from app logs
           name     grep
           match    app
           Exclude  agent kube-probe*
 
+        # parse app record a JSON
         [FILTER]
           name          parser
           match         app
@@ -45,8 +48,8 @@ objects:
           Reserve_Data  On
           Preserve_Key  On
 
+        # modify record to include more key/value pairs
         [FILTER]
-          # modify log entry to include more key/value pairs
           name    record_modifier
           match   app
           # add pod name
@@ -56,8 +59,22 @@ objects:
           # add namespace
           Record  namespace ${NAMESPACE}
 
+        # append tag corresponding to log level
+        [FILTER]
+          Name          rewrite_tag
+          Match         app
+          Rule          $level ([a-zA-Z]*)$ $TAG.$level true
+          Emitter_Name  re_emitted
+
+        # map app.http logs to ECS format
+        [FILTER]
+          Name    lua
+          Match   app.http
+          script  script.lua
+          call    ecsMap
+
+        # send records tagged with just 'app' to external fluentd service endpoint
         [OUTPUT]
-          # send logs to external fluentd service endpoint
           Name    http
           Match   app
           Host    ${LOGGING_HOST_NAME}
@@ -68,13 +85,16 @@ objects:
           # we can also send tag as a header
           #header_tag  app
 
+        # send http level logs (with tag: 'app.http') to AWS Opensearch
         # [OUTPUT]
-        #   # send logs to AWS Opensearch service
+        #   Name http
+        #   Match app.http
 
         [OUTPUT]
-          # show all fluent-bit logs in standard out
+          # show all fluent-bit logs to standard output
           Name   stdout
           Match  *
+
       parsers.conf: |
         [PARSER]
           Name             json
@@ -83,6 +103,69 @@ objects:
           Time_Format      %Y-%m-%dT%H:%M:%S %z
           Decode_Field_as  escaped_utf8 log do_next
           Decode_Field_as  json log
+
+      script.lua: |
+        --[[
+          returns: code, timestamp, record
+          where:
+          - code     : -1 record must be deleted
+                        0 record not modified, keep the original
+                        1 record was modified, replace timestamp and record.
+                        2 record was modified, replace record and keep timestamp.
+          - timestamp: Unix timestamp with precision (double)
+          - record   : Table with multiple key/val
+        ]]
+
+        -- Compose a new JSON map and report it
+        function ecsMap(tag, timestamp, record)
+          new_record = {
+            ["@timestamp"] = record["timestamp"],
+            ["azp"] = record["azp"],
+            ["ecs"] = {
+              ["version"] = "1.5.0"
+            },
+            ["event"] = {
+              ["original"] = record["log"],
+              ["module"] = "express",
+              ["dataset"] = "express.access",
+              ["kind"] = "event",
+              ["categoty"] = {"network", "web"},
+              ["type"] = "access"
+            },
+            ["host"] = {
+              ["hostname"] = record["hostname"],
+              ["namespace"] = record["namespace"]
+            },
+            ["http"] = {
+              ["request"] = {
+                ["method"] = record["method"]
+              },
+              ["response"] = {
+                ["body"] = {
+                  ["bytes"] = record["contentLength"]
+                },
+                ["status_code"] = record["statusCode"],
+                ["time"] = record["responseTime"]
+              },
+              ["version"] = record["httpVersion"]
+            },
+            ["query"] = record["query"],
+            ["message"] = record["message"],
+            ["product"] = record["product"],
+            ["source"] = {
+              ["address"] = record["todo"],
+              ["ip"] = record["todo"]
+            },
+            ["url"] = {
+              ["original"] = record["path"]
+            },
+            ["user_agent"] = {
+              ["original"] = record["userAgent"]
+            }
+          }
+
+          return 2, timestamp, new_record
+        end
 
 parameters:
   - name: APP_NAME
