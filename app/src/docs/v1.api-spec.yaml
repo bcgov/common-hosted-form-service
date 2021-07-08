@@ -2027,7 +2027,6 @@ components:
               format: uuid
               description: ID of the FormVersion this submission is for.
               example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
-        - $ref: "#/components/schemas/FormSchema"
         - $ref: "#/components/schemas/TimeStampUserData"
     FormRoleUser:
       type: object

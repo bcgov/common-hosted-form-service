@@ -316,6 +316,7 @@ const service = {
   listDrafts: async (formId, params) => {
     await service.readForm(formId, queryUtils.defaultActiveOnly(params));
     return FormVersionDraft.query()
+      .select('id', 'formId', 'formVersionId', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt')
       .where('formId', formId)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('orderDescending');

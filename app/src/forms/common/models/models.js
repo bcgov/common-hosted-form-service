@@ -212,7 +212,7 @@ class FormVersionDraft extends Timestamps(Model) {
       },
       orderDescending(builder) {
         builder.orderBy('updatedAt', 'desc');
-      }
+      },
     };
   }
 
