@@ -19,8 +19,10 @@
         <v-card-title class="headline pb-0">
           Manage Team Members For This Submission
         </v-card-title>
+
         <v-card-text>
           <hr />
+
           <v-row>
             <v-col cols="9">
               <form autocomplete="off">
@@ -75,52 +77,50 @@
             <v-col cols="3">
               <v-btn
                 color="primary"
-                class="ml-2"
                 :disabled="!userSearchSelection"
                 :loading="isLoadingDropdown"
-                @click="save"
+                @click="addUser"
               >
                 <span>Add</span>
               </v-btn>
             </v-col>
           </v-row>
+
           <p class="mt-5">
             <strong>Team members for this submission:</strong>
           </p>
-          <v-simple-table dense>
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">Name</th>
-                  <th class="text-left">Username</th>
-                  <th class="text-left">Email</th>
-                  <th class="text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Lucas O'Neil</td>
-                  <td>loneil</td>
-                  <td>lucas@oneil.gov.bc.ca</td>
-                  <td>
-                    <v-btn color="red" icon disabled>
-                      <v-icon>remove_circle</v-icon>
-                    </v-btn>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Jane Smith</td>
-                  <td>jxsmith</td>
-                  <td>jane@smith.gov.bc.ca</td>
-                  <td>
-                    <v-btn color="red" icon>
-                      <v-icon>remove_circle</v-icon>
-                    </v-btn>
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
+
+          <v-skeleton-loader :loading="isLoadingTable" type="table-row">
+            <v-simple-table dense>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">Name</th>
+                    <th class="text-left">Username</th>
+                    <th class="text-left">Email</th>
+                    <th class="text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr :key="item.userId" v-for="item in userTableList">
+                    <td>{{ item.fullName }}</td>
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>
+                      <v-btn
+                        color="red"
+                        icon
+                        :disabled="item.isOwner"
+                        @click="removeUser(item)"
+                      >
+                        <v-icon>remove_circle</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </v-skeleton-loader>
         </v-card-text>
 
         <v-card-actions class="justify-center">
@@ -129,26 +129,58 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+
+      <BaseDialog
+        v-model="showDeleteDialog"
+        type="CONTINUE"
+        @close-dialog="showDeleteDialog = false"
+        @continue-dialog="modifyPermissions(userToDelete.id, [])"
+      >
+        <template #title>Remove {{ userToDelete.username }}</template>
+        <template #text>
+          Are you sure you wish to remove
+          <strong>{{ userToDelete.username }}</strong
+          >? They will no longer have permissions for this submission.
+        </template>
+        <template #button-text-continue>
+          <span>Remove</span>
+        </template>
+      </BaseDialog>
     </v-dialog>
   </span>
 </template>
 
 <script>
-import { userService } from '@/services';
+import { mapActions } from 'vuex';
+
+import { FormPermissions } from '@/utils/constants';
+import { rbacService, userService } from '@/services';
 
 export default {
   name: 'ManageSubmissionUsers',
+  props: {
+    submissionId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       dialog: false,
-      isLoadingDropdown: false,
       isLoadingTable: true,
+      showDeleteDialog: false,
+      userTableList: [],
+      userToDelete: {},
+
+      // search box
       findUsers: null,
+      isLoadingDropdown: false,
       userSearchResults: [],
       userSearchSelection: null,
     };
   },
   methods: {
+    ...mapActions('notifications', ['addNotification']),
     // show users in dropdown that have a text match on multiple properties
     filterObject(item, queryText) {
       // eslint-disable-next-line
@@ -161,13 +193,48 @@ export default {
         }
       }
     },
-
-    save() {
+    async getSubmissionUsers() {
+      this.isLoadingTable = true;
+      try {
+        const response = await rbacService.getSubmissionUsers({
+          formSubmissionId: this.submissionId,
+        });
+        if (response.data) {
+          this.userTableList = response.data.map((su) => {
+            return {
+              email: su.user.email,
+              fullName: su.user.fullName,
+              id: su.userId,
+              isOwner: !su.permissions.includes(
+                FormPermissions.SUBMISSION_CREATE
+              ),
+              username: su.user.username,
+            };
+          });
+        }
+      } catch (error) {
+        this.addNotification({
+          message:
+            'An error occured while trying to fetch users for this submission.',
+          consoleError: `Error getting users for ${this.submissionId}: ${error}`,
+        });
+      } finally {
+        this.isLoadingTable = false;
+      }
+    },
+    addUser() {
       // emit user (object) to the parent component
       this.$emit('new-users', [this.model]);
       // reset search field
       this.model = null;
       this.addingUsers = false;
+    },
+    modifyPermissions(userId, permissions) {
+      alert(`${userId} + ${permissions.length}`);
+    },
+    removeUser(userRow) {
+      this.userToDelete = userRow;
+      this.showDeleteDialog = true;
     },
   },
   watch: {
@@ -184,6 +251,9 @@ export default {
         this.isLoadingDropdown = false;
       }
     },
+  },
+  created() {
+    this.getSubmissionUsers();
   },
 };
 </script>

@@ -34,8 +34,8 @@ routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (r
   await controller.getSubmissionUsers(req, res, next);
 });
 
-routes.put('/submissions', hasFormPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
-  await controller.setSubmissionUsers(req, res, next);
+routes.put('/submissions', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
+  await controller.setSubmissionUserPermissions(req, res, next);
 });
 
 routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {

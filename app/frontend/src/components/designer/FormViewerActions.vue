@@ -49,7 +49,7 @@
 
       <!-- Go to draft edit -->
       <span v-if="submissionId" class="ml-2">
-        <ManageSubmissionUsers />
+        <ManageSubmissionUsers :submissionId="submissionId"/>
       </span>
     </v-col>
   </v-row>
