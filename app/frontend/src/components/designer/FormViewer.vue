@@ -5,6 +5,7 @@
         <FormViewerActions
           :draftEnabled="form.enableSubmitterDraft"
           :formId="form.id"
+          :isDraft="submissionRecord.draft"
           :permissions="permissions"
           :readOnly="readOnly"
           :submissionId="submissionId"

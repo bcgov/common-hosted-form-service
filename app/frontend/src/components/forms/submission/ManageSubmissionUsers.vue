@@ -12,7 +12,7 @@
           <v-icon>person_add</v-icon>
         </v-btn>
       </template>
-      <span>Add Team Member</span>
+      <span>Manage Team Members</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card>
@@ -23,7 +23,7 @@
         <v-card-text>
           <hr />
 
-          <v-row>
+          <v-row v-if="isDraft">
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
@@ -85,6 +85,9 @@
               </v-btn>
             </v-col>
           </v-row>
+          <div v-else>
+            You cannot manage team members after the form has been submitted
+          </div>
 
           <p class="mt-5">
             <strong>Team members for this submission:</strong>
@@ -98,7 +101,7 @@
                     <th class="text-left">Name</th>
                     <th class="text-left">Username</th>
                     <th class="text-left">Email</th>
-                    <th class="text-left">Actions</th>
+                    <th class="text-left" v-if="isDraft">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -106,7 +109,7 @@
                     <td>{{ item.fullName }}</td>
                     <td>{{ item.username }}</td>
                     <td>{{ item.email }}</td>
-                    <td>
+                    <td v-if="isDraft">
                       <v-btn
                         color="red"
                         icon
@@ -159,6 +162,10 @@ import { rbacService, userService } from '@/services';
 export default {
   name: 'ManageSubmissionUsers',
   props: {
+    isDraft: {
+      type: Boolean,
+      required: true,
+    },
     submissionId: {
       type: String,
       required: true,
