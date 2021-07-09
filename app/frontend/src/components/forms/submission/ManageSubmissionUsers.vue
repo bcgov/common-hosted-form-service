@@ -17,7 +17,7 @@
     <v-dialog v-model="dialog" width="600">
       <v-card>
         <v-card-title class="headline pb-0">
-          Manage Team Members For This Submission
+          Manage Team Members
         </v-card-title>
 
         <v-card-text>
@@ -86,7 +86,7 @@
             </v-col>
           </v-row>
           <div v-else>
-            You cannot manage team members after the form has been submitted
+            You can invite and manage team members while this form is a draft
           </div>
 
           <p class="mt-5">
