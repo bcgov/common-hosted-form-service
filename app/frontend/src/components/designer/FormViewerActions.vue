@@ -49,7 +49,7 @@
 
       <!-- Go to draft edit -->
       <span v-if="submissionId" class="ml-2">
-        <ManageSubmissionUsers :submissionId="submissionId"/>
+        <ManageSubmissionUsers :isDraft="isDraft" :submissionId="submissionId" />
       </span>
     </v-col>
   </v-row>
@@ -73,6 +73,10 @@ export default {
       type: String,
       default: undefined,
     },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
     permissions: {
       type: Array,
     },
@@ -87,10 +91,11 @@ export default {
   },
   computed: {
     canSaveDraft() {
-      return !this.readOnly;
+      return this.isDraft && !this.readOnly;
     },
     showEditToggle() {
       return (
+        this.isDraft &&
         this.readOnly &&
         this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
       );
