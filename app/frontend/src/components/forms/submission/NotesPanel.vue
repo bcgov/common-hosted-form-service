@@ -71,8 +71,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import formService from '@/services/formService';
-import { rbacService } from '@/services';
+import { formService, rbacService } from '@/services';
 
 export default {
   name: 'NotesPanel',
@@ -101,7 +100,7 @@ export default {
         const user = await rbacService.getCurrentUser();
         const body = {
           note: this.newNote,
-          userId: user.data.id
+          userId: user.data.id,
         };
         const response = await formService.addNote(this.submissionId, body);
         if (!response.data) {

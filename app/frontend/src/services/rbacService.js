@@ -69,5 +69,30 @@ export default {
    */
   setUserForms(requestBody, params = {}) {
     return appAxios().put(`${ApiRoutes.RBAC}/users`, requestBody, { params });
-  }
+  },
+
+  //
+  // Submission Management calls
+  //
+
+  /**
+   * @function getSubmissionUsers
+   * Get the list of associated users for a submission
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  getSubmissionUsers(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/submissions`, { params });
+  },
+
+  /**
+   * @function setFormUsers
+   * Set permissions for a user on the form
+   * @param {Object} requestBody The request body containing the permissions list
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  setSubmissionUserPermissions(requestBody, params = {}) {
+    return appAxios().put(`${ApiRoutes.RBAC}/submissions`, requestBody, { params });
+  },
 };

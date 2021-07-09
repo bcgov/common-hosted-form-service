@@ -767,6 +767,14 @@ class UserSubmissions extends Model {
           from: 'submissions_submitters_vw.formSubmissionId',
           to: 'form_submission_status.submissionId'
         }
+      },
+      user: {
+        relation: Model.HasOneRelation,
+        modelClass: User,
+        join: {
+          from: 'submissions_submitters_vw.userId',
+          to: 'user.id'
+        }
       }
     };
   }
