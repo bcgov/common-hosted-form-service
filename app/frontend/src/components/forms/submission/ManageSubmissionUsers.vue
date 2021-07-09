@@ -134,7 +134,7 @@
         v-model="showDeleteDialog"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"
-        @continue-dialog="modifyPermissions(userToDelete.id, [])"
+        @continue-dialog="modifyPermissions(userToDelete.id, []); showDeleteDialog = false"
       >
         <template #title>Remove {{ userToDelete.username }}</template>
         <template #text>
@@ -218,18 +218,7 @@ export default {
           formSubmissionId: this.submissionId,
         });
         if (response.data) {
-          this.userTableList = response.data.map((su) => {
-            return {
-              email: su.user.email,
-              fullName: su.user.fullName,
-              id: su.userId,
-              isOwner: su.permissions.includes(
-                FormPermissions.SUBMISSION_CREATE
-              ),
-              username: su.user.username,
-            };
-          });
-          this.userTableList.sort((a, b) => a.isOwner - b.isOwner);
+          this.userTableList = this.transformResponseToTable(response.data);
         }
       } catch (error) {
         this.addNotification({
@@ -253,17 +242,7 @@ export default {
           }
         );
         if (response.data) {
-          this.userTableList = response.data.map((su) => {
-            return {
-              email: su.user.email,
-              fullName: su.user.fullName,
-              id: su.userId,
-              isOwner: !su.permissions.includes(
-                FormPermissions.SUBMISSION_CREATE
-              ),
-              username: su.user.username,
-            };
-          });
+          this.userTableList = this.transformResponseToTable(response.data);
         }
       } catch (error) {
         this.addNotification({
@@ -278,6 +257,21 @@ export default {
     removeUser(userRow) {
       this.userToDelete = userRow;
       this.showDeleteDialog = true;
+    },
+    transformResponseToTable(responseData) {
+      return responseData
+        .map((su) => {
+          return {
+            email: su.user.email,
+            fullName: su.user.fullName,
+            id: su.userId,
+            isOwner: su.permissions.includes(
+              FormPermissions.SUBMISSION_CREATE
+            ),
+            username: su.user.username,
+          };
+        })
+        .sort((a, b) => b.isOwner - a.isOwner);
     },
   },
   watch: {
