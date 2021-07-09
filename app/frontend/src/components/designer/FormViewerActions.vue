@@ -91,11 +91,10 @@ export default {
   },
   computed: {
     canSaveDraft() {
-      return this.isDraft && !this.readOnly;
+      return !this.readOnly;
     },
     showEditToggle() {
       return (
-        this.isDraft &&
         this.readOnly &&
         this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
       );
