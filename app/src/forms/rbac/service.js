@@ -2,6 +2,7 @@ const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess
 const { queryUtils } = require('../common/utils');
 
 const { transaction } = require('objection');
+const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
 
 const authService = require('../auth/service');
@@ -234,8 +235,8 @@ const service = {
   },
 
   modifySubmissionUser: async (formSubmissionId, userId, body, currentUser) => {
-    if (!formSubmissionId || !userId || !body.permissions) {
-      throw new Error('Submission ID, user ID, or permisssions missing');
+    if (!userId || !body.permissions) {
+      throw new Problem(422, 'User ID or permissions missing from request');
     }
 
     let trx;
@@ -248,17 +249,13 @@ const service = {
         .where('userId', userId);
 
       // create the batch and insert. So if permissions is empty it removes the user from the submission
-      let permissions = body ? body.permissions : [];
-      if (permissions && permissions !== []) {
-        if (!Array.isArray(permissions)) {
-          permissions = [permissions];
-        }
+      if (body.permissions !== []) {
         // add ids and save them
-        const items = permissions.map(perm => { return { id: uuidv4(), formSubmissionId: formSubmissionId, userId: userId, createdBy: currentUser.username, ...perm }; });
+        const items = body.permissions.map(perm => { return { id: uuidv4(), formSubmissionId: formSubmissionId, userId: userId, createdBy: currentUser.username, permission: perm }; });
         await FormSubmissionUser.query(trx).insert(items);
       }
       await trx.commit();
-      return service.getSubmissionUsers({ userId: userId, formSubmissionId: formSubmissionId });
+      return service.getSubmissionUsers({ formSubmissionId: formSubmissionId });
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
