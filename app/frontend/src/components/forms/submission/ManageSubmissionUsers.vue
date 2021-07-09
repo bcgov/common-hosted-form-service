@@ -9,7 +9,7 @@
           v-bind="attrs"
           v-on="on"
         >
-          <v-icon>person_add</v-icon>
+          <v-icon>group</v-icon>
         </v-btn>
       </template>
       <span>Manage Team Members</span>
