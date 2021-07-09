@@ -182,6 +182,24 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     // show users in dropdown that have a text match on multiple properties
+    async addUser() {
+      if (this.userSearchSelection) {
+        const id = this.userSearchSelection.id;
+        if (this.userTableList.some((u) => u.id === id)) {
+          this.addNotification({
+            type: 'warning',
+            message: `User ${this.userSearchSelection.username} is already in the list of team members.`,
+          });
+        } else {
+          this.modifyPermissions(id, [
+            FormPermissions.SUBMISSION_UPDATE,
+            FormPermissions.SUBMISSION_READ,
+          ]);
+        }
+      }
+      // reset search field
+      this.userSearchSelection = null;
+    },
     filterObject(item, queryText) {
       // eslint-disable-next-line
       for (const [key, value] of Object.entries(item)) {
@@ -205,12 +223,13 @@ export default {
               email: su.user.email,
               fullName: su.user.fullName,
               id: su.userId,
-              isOwner: !su.permissions.includes(
+              isOwner: su.permissions.includes(
                 FormPermissions.SUBMISSION_CREATE
               ),
               username: su.user.username,
             };
           });
+          this.userTableList.sort((a, b) => a.isOwner - b.isOwner);
         }
       } catch (error) {
         this.addNotification({
@@ -222,15 +241,39 @@ export default {
         this.isLoadingTable = false;
       }
     },
-    addUser() {
-      // emit user (object) to the parent component
-      this.$emit('new-users', [this.model]);
-      // reset search field
-      this.model = null;
-      this.addingUsers = false;
-    },
-    modifyPermissions(userId, permissions) {
-      alert(`${userId} + ${permissions.length}`);
+    async modifyPermissions(userId, permissions) {
+      this.isLoadingTable = true;
+      try {
+        // Add the selected user with read/update permissions on this submission
+        const response = await rbacService.setSubmissionUserPermissions(
+          { permissions: permissions },
+          {
+            formSubmissionId: this.submissionId,
+            userId: userId,
+          }
+        );
+        if (response.data) {
+          this.userTableList = response.data.map((su) => {
+            return {
+              email: su.user.email,
+              fullName: su.user.fullName,
+              id: su.userId,
+              isOwner: !su.permissions.includes(
+                FormPermissions.SUBMISSION_CREATE
+              ),
+              username: su.user.username,
+            };
+          });
+        }
+      } catch (error) {
+        this.addNotification({
+          message:
+            'An error occured while trying to update users for this submission.',
+          consoleError: `Error setting user permissions. Sub: ${this.submissionId} User: ${userId} Error: ${error}`,
+        });
+      } finally {
+        this.isLoadingTable = false;
+      }
     },
     removeUser(userRow) {
       this.userToDelete = userRow;
