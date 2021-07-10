@@ -39,6 +39,8 @@
         @submitDone="onSubmitDone"
         @submitButton="onSubmitButton"
         @customEvent="onCustomEvent"
+        @change="onChangeMethod"
+        @initialized="init"
         :options="viewerOptions"
       />
       <p v-if="version" class="text-right">Version: {{ version }}</p>
@@ -100,6 +102,7 @@ export default {
       version: 0,
       versionIdToSubmitTo: this.versionId,
       forceNewTabLinks: true,
+      isPastFirstInit: true,
     };
   },
   computed: {
@@ -266,6 +269,23 @@ export default {
     // onBeforeSubmit
     // if no errors: onSubmit -> onSubmitDone
     // else onSubmitError
+
+    init() {
+      // Since change is triggered during loading
+      this.setDirtyFlag(false);
+      this.isPastFirstInit = true;
+    },
+
+    onChangeMethod() {
+      // Checks to see if the first init() call was made. Fixes issue where Form automatically sets isDirty = true.
+      if (this.isPastFirstInit) {
+        this.setDirtyFlag(true);
+      } else {
+        this.setDirtyFlag(false);
+        this.isPastFirstInit = false;
+      }
+    },
+
     onSubmitButton(event) {
       if (this.preview) {
         alert('Submission disabled during form preview');

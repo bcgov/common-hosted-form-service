@@ -2,11 +2,12 @@
   <div>
     <v-skeleton-loader :loading="loading" type="heading">
       <v-row class="mt-6" no-gutters>
-        <v-col class="text-center" cols="12" sm="10" offset-sm="1">
+        <!-- page title -->
+        <v-col cols="12" sm="6" order="2" order-sm="1">
           <h1>Previous Submissions</h1>
-          <h2>{{ formId ? form.name : 'All Forms' }}</h2>
         </v-col>
-        <v-col class="text-right" cols="12" sm="1">
+        <!-- buttons -->
+        <v-col class="text-right text-sm-right" cols="12" sm="6" order="1" order-sm="2">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <router-link
@@ -29,6 +30,10 @@
             <span>Create a New Submission</span>
           </v-tooltip>
         </v-col>
+        <!-- form name -->
+        <v-col cols="12" order="3">
+          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
+        </v-col>
       </v-row>
     </v-skeleton-loader>
 
@@ -48,7 +53,6 @@
         </div>
       </v-col>
     </v-row>
-
     <!-- table header -->
     <v-data-table
       class="submissions-table"
@@ -60,6 +64,9 @@
       loading-text="Loading... Please wait"
       no-data-text="You have no submissions"
     >
+      <template #[`item.lastEdited`]="{ item }">
+        {{ item.lastEdited | formatDateLong }}
+      </template>
       <template #[`item.submittedDate`]="{ item }">
         {{ item.submittedDate | formatDateLong }}
       </template>
@@ -119,11 +126,20 @@ export default {
           sortable: false,
         },
       ];
-      if (this.showStatus || !this.formId) {
-        headers.splice(3, 0, {
-          text: 'Completed Date',
+      // Uncomment if you want to add the Completed Date column back to the list
+      // if (this.showStatus || !this.formId) {
+      //   headers.splice(3, 0, {
+      //     text: 'Completed Date',
+      //     align: 'start',
+      //     value: 'completedDate',
+      //   });
+      // }
+      if (this.showDraftLastEdited || !this.formId) {
+        headers.splice(2, 0, {
+          text: 'Draft Last Edited',
           align: 'start',
-          value: 'completedDate',
+          value: 'lastEdited',
+          sortable: true,
         });
       }
       if (!this.formId) {
@@ -137,6 +153,9 @@ export default {
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
+    },
+    showDraftLastEdited() {
+      return this.form && this.form.enableSubmitterDraft;
     },
   },
   methods: {
@@ -153,7 +172,11 @@ export default {
           : 'N/A';
       }
     },
-    getStatusDate(record, statusCode) {
+    getStatusDate(record, statusCode = undefined) {
+      // Get the date that this submission draft was last saved
+      if (record.draft) {
+        return record.createdAt;
+      }
       // Get the created date of the most recent occurence of a specified status
       if (record.submissionStatus) {
         const submittedStatus = record.submissionStatus.find(
@@ -172,13 +195,14 @@ export default {
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
           return {
-            completedDate: this.getStatusDate(s, 'COMPLETED'),
+            // completedDate: this.getStatusDate(s, 'COMPLETED'),
             confirmationId: s.confirmationId,
+            lastEdited: this.getStatusDate(s),
             name: s.name,
             permissions: s.permissions,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
-            submittedDate: this.getStatusDate(s, 'SUBMITTED'),
+            submittedDate: s.draft ? null : this.getStatusDate(s, 'SUBMITTED')
           };
         });
         this.submissionTable = tableRows;
