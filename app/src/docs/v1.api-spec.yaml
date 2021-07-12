@@ -1443,6 +1443,90 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /rbac/submissions:
+    get:
+      summary: Get a list of users and permissions for a submission
+      operationId: getSubmissionUsers
+      tags:
+        - RBAC
+      parameters:
+        - in: query
+          name: formSubmissionId
+          schema:
+            type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
+          description: submission ID
+          required: true
+        - in: query
+          name: userId
+          schema:
+            type: string
+          description: user ID
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAccessSubmission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Set premissions for a user on a submission
+      operationId: setSubmissionUser
+      tags:
+        - RBAC
+      parameters:
+        - in: query
+          name: formSubmissionId
+          schema:
+            type: string
+            format: uuid
+            example: c6455376-382c-439d-a811-0381a012d696
+          description: submission id
+          required: true
+        - in: query
+          name: userId
+          schema:
+            type: string
+          description: user ID
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                example: "SUBMISSION_UPDATE"
+              description: an array of the sumbission permissions to apply to this user. [] to remove.
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAccessSubmission"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /rbac/users:
     get:
       summary: Get a list of forms and roles for a user
@@ -2079,6 +2163,7 @@ components:
               format: uuid
               description: ID of the FormVersion this submission is for.
               example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
+        - $ref: "#/components/schemas/FormSchema"
         - $ref: "#/components/schemas/TimeStampUserData"
     FormRoleUser:
       type: object
@@ -2607,6 +2692,52 @@ components:
             - submission_create
           items:
             type: string
+    UserAccessSubmission:
+      type: object
+      properties:
+        active:
+          type: boolean
+          example: true
+        confirmationId:
+          type: string
+          example: 5DAD1EC9
+        createdAt:
+          type: string
+          example: 2020-06-04T18:49:20.672Z
+        description:
+          type: string
+          example: A BC Hunting licence application
+        draft:
+          type: boolean
+          example: true
+        enableStatusUpdates:
+          type: boolean
+          example: true
+        enableSubmitterDraft:
+          type: boolean
+          example: true
+        formId:
+          type: string
+          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+        formSubmissionId:
+          type: string
+          example: 6dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+        name:
+          type: string
+          example: Licence Application
+        permissions:
+          type: array
+          description: the permission codes this user has on this form
+          example:
+            - submission_delete
+            - submission_create
+          items:
+            type: string
+        user:
+          $ref: "#/components/schemas/User"
+        userId:
+          type: string
+          example: 7dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
     UserForm:
       type: object
       properties:
