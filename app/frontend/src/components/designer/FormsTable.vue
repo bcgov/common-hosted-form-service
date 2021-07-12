@@ -126,8 +126,10 @@ export default {
   name: 'FormsTable',
   data() {
     return {
+      // Assigning width: '1%' to dynamically assign width to the Table's Columns as described by this post on Stack Overflow:
+      // https://stackoverflow.com/questions/51527489/change-the-default-width-of-a-vuetifyjs-datatable-cell
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name', width: '1%', },
+        { text: 'Form Title', align: 'start', value: 'name', width: '1%',},
         {
           text: 'Actions',
           align: 'end',
