@@ -100,7 +100,6 @@ export default {
       version: 0,
       versionIdToSubmitTo: this.versionId,
       forceNewTabLinks: true,
-      isPastFirstInit: true,
     };
   },
   computed: {
@@ -266,7 +265,6 @@ export default {
     // onBeforeSubmit
     // if no errors: onSubmit -> onSubmitDone
     // else onSubmitError
-
     onSubmitButton(event) {
       if (this.preview) {
         alert('Submission disabled during form preview');
