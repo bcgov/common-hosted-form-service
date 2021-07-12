@@ -127,13 +127,14 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name' },
+        { text: 'Form Title', align: 'start', value: 'name', width: '1%', },
         {
           text: 'Actions',
           align: 'end',
           value: 'actions',
           filterable: false,
           sortable: false,
+          width: '1%',
         },
       ],
       loading: true,
