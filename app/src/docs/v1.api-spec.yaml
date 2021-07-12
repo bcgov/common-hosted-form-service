@@ -1271,10 +1271,9 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - type: array
-                    items:
-                      $ref: "#/components/schemas/UserSubmission"
+                - type: array
+                  items:
+                    $ref: "#/components/schemas/UserSubmission"
         "403":
           $ref: "#/components/responses/Forbidden"
         default:
@@ -1509,7 +1508,7 @@ paths:
               items:
                 type: string
                 example: "SUBMISSION_UPDATE"
-              description: an array of the sumbission permissions to apply to this user. [] to remove.
+              description: an array of the sumbission permissions to apply to this user. Set an empty array to remove.
       responses:
         "200":
           description: "OK"

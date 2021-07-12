@@ -25,6 +25,12 @@ userAccess.hasFormPermissions = jest.fn(() => {
     next();
   });
 });
+userAccess.hasSubmissionPermissions = jest.fn(() => {
+  return jest.fn((req, res, next) => {
+    next();
+  });
+});
+
 
 //
 // we will mock the underlying data service calls...
@@ -276,6 +282,75 @@ describe(`PUT ${basePath}/users`, () => {
     service.setUserForms = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).put(`${basePath}/users`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+});
+
+
+describe(`GET ${basePath}/submissions`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.getSubmissionUsers = jest.fn().mockReturnValue([]);
+
+    const response = await request(app).get(`${basePath}/submissions`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.getSubmissionUsers = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).get(`${basePath}/submissions`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.getSubmissionUsers = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).get(`${basePath}/submissions`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+});
+
+describe(`PUT ${basePath}/submissions`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.modifySubmissionUser = jest.fn().mockReturnValue([]);
+
+    const response = await request(app).put(`${basePath}/submissions`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.modifySubmissionUser = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).put(`${basePath}/submissions`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.modifySubmissionUser = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).put(`${basePath}/submissions`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();

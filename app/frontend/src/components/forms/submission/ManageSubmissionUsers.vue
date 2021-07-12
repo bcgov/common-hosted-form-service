@@ -86,7 +86,7 @@
             </v-col>
           </v-row>
           <div v-else>
-            You can invite and manage team members while this form is a draft
+            You can only invite and manage team members while this form is a draft
           </div>
 
           <p class="mt-5">
@@ -95,7 +95,7 @@
 
           <v-skeleton-loader :loading="isLoadingTable" type="table-row">
             <v-simple-table dense>
-              <template v-slot:default>
+              <template>
                 <thead>
                   <tr>
                     <th class="text-left">Name</th>
@@ -189,7 +189,7 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     // show users in dropdown that have a text match on multiple properties
-    async addUser() {
+    addUser() {
       if (this.userSearchSelection) {
         const id = this.userSearchSelection.id;
         if (this.userTableList.some((u) => u.id === id)) {
@@ -208,15 +208,7 @@ export default {
       this.userSearchSelection = null;
     },
     filterObject(item, queryText) {
-      // eslint-disable-next-line
-      for (const [key, value] of Object.entries(item)) {
-        if (
-          value !== null &&
-          value.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
-        ) {
-          return true;
-        }
-      }
+      return Object.values(item).some((v) => v !== null && v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()));
     },
     async getSubmissionUsers() {
       this.isLoadingTable = true;
