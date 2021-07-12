@@ -18,7 +18,7 @@ export default {
 
 <style scoped>
 .notification-container {
-  z-index: 99;
+  z-index: 999;
   position: fixed;
   top: 0;
   left: 25%;

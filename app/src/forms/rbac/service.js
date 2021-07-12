@@ -1,7 +1,8 @@
-const { FormRoleUser, IdentityProvider, User, UserFormAccess, UserSubmissions } = require('../common/models');
+const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess, UserSubmissions } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const { transaction } = require('objection');
+const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
 
 const authService = require('../auth/service');
@@ -165,6 +166,18 @@ const service = {
     return items;
   },
 
+  getSubmissionUsers: async (params) => {
+    params = queryUtils.defaultActiveOnly(params);
+    const items = await UserSubmissions.query()
+      .skipUndefined()
+      .withGraphFetched('user')
+      .modify('filterFormSubmissionId', params.formSubmissionId)
+      .modify('filterUserId', params.userId)
+      .modify('filterActive', params.active)
+      .modify('orderDefault');
+    return items;
+  },
+
   getUserForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserFormAccess.query()
@@ -215,6 +228,40 @@ const service = {
       await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       return service.getFormUsers({ userId: userId, formId: formId });
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  modifySubmissionUser: async (formSubmissionId, userId, body, currentUser) => {
+    if (!userId || !body.permissions) {
+      throw new Problem(422, 'User ID or permissions missing from request');
+    }
+
+    let trx;
+    try {
+      trx = await transaction.start(FormSubmissionUser.knex());
+      // remove existing mappings for the user...
+      await FormSubmissionUser.query(trx)
+        .delete()
+        .where('formSubmissionId', formSubmissionId)
+        .where('userId', userId);
+
+      // create the batch and insert. So if permissions is empty it removes the user from the submission
+      if (body.permissions !== []) {
+        // add ids and save them
+        const items = body.permissions.map(perm => ({
+          id: uuidv4(),
+          formSubmissionId: formSubmissionId,
+          userId: userId,
+          createdBy: currentUser.username,
+          permission: perm
+        }));
+        await FormSubmissionUser.query(trx).insert(items);
+      }
+      await trx.commit();
+      return service.getSubmissionUsers({ formSubmissionId: formSubmissionId });
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

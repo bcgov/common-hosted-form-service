@@ -75,6 +75,22 @@ module.exports = {
       next(error);
     }
   },
+  getSubmissionUsers:  async (req, res, next) => {
+    try {
+      const response = await service.getSubmissionUsers(req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  setSubmissionUserPermissions:  async (req, res, next) => {
+    try {
+      const response = await service.modifySubmissionUser(req.query.formSubmissionId, req.query.userId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   getUserForms:  async (req, res, next) => {
     try {
       const response = await service.getUserForms(req.query);
