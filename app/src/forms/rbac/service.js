@@ -251,7 +251,13 @@ const service = {
       // create the batch and insert. So if permissions is empty it removes the user from the submission
       if (body.permissions !== []) {
         // add ids and save them
-        const items = body.permissions.map(perm => { return { id: uuidv4(), formSubmissionId: formSubmissionId, userId: userId, createdBy: currentUser.username, permission: perm }; });
+        const items = body.permissions.map(perm => ({
+          id: uuidv4(),
+          formSubmissionId: formSubmissionId,
+          userId: userId,
+          createdBy: currentUser.username,
+          permission: perm
+        }));
         await FormSubmissionUser.query(trx).insert(items);
       }
       await trx.commit();
