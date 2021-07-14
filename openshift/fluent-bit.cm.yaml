@@ -25,18 +25,21 @@ objects:
           HTTP_Listen   0.0.0.0
           HTTP_Port     2020
 
+        # read logs from app log file
         [INPUT]
           # get logs from file written by node app
           Name  tail
           Path  /var/log/*
           Tag   app
 
+        # exclude kube probe logs from app logs
         [FILTER]
           # exclude kube probe logs from app logs
           name     grep
           match    app
           Exclude  agent kube-probe*
 
+        # parse app record as JSON
         [FILTER]
           name          parser
           match         app
@@ -45,8 +48,8 @@ objects:
           Reserve_Data  On
           Preserve_Key  On
 
+        # modify record to include more key/value pairs
         [FILTER]
-          # modify log entry to include more key/value pairs
           name    record_modifier
           match   app
           # add pod name
@@ -56,8 +59,28 @@ objects:
           # add namespace
           Record  namespace ${NAMESPACE}
 
+        # append tag corresponding to log level
+        # and copy to a new 'ECS record', for pushing to AWS ElasticSearch service.
+        [FILTER]
+          Name          rewrite_tag
+          Match         app
+          Rule          $level ([a-zA-Z]*)$ $TAG.$level true
+          Emitter_Name  re_emitted
+
+        # modify ECS records to include more key/value pairs for output to AWS ElasticSearch
+        [FILTER]
+          Name    lua
+          Match   app.http
+          script  script.lua
+          call    ecsMap
+
+        # send http level ECS records (with tag: 'app.http') to AWS ElasticSearch
+        # [OUTPUT]
+        #   Name http
+        #   Match app.http
+
+        # send all records tagged with just 'app' to external fluentd service endpoint
         [OUTPUT]
-          # send logs to external fluentd service endpoint
           Name    http
           Match   app
           Host    ${LOGGING_HOST_NAME}
@@ -68,13 +91,11 @@ objects:
           # we can also send tag as a header
           #header_tag  app
 
-        # [OUTPUT]
-        #   # send logs to AWS Opensearch service
-
         [OUTPUT]
-          # show all fluent-bit logs in standard out
+          # show all fluent-bit logs to standard output
           Name   stdout
           Match  *
+
       parsers.conf: |
         [PARSER]
           Name             json
@@ -83,6 +104,43 @@ objects:
           Time_Format      %Y-%m-%dT%H:%M:%S %z
           Decode_Field_as  escaped_utf8 log do_next
           Decode_Field_as  json log
+
+      script.lua: |
+        --[[
+          returns: code, timestamp, record
+          where:
+          - code     : -1 record must be deleted
+                        0 record not modified, keep the original
+                        1 record was modified, replace timestamp and record.
+                        2 record was modified, replace record and keep timestamp.
+          - timestamp: Unix timestamp with precision (double)
+          - record   : Table with multiple key/val
+
+          Uppon return if code == 1 (modified), then filter_lua plugin
+          will replace the original timestamp and record with the returned
+          values. If code == 0 the original record is kept otherwise if
+          code == -1, the original record will be deleted.
+        ]]
+
+
+        -- add extra ECS fields
+        function ecsMap(tag, timestamp, record)
+
+          new_record = record
+          new_record["event"] = {
+              ["module"] = "node.css",
+              ["dataset"] = "node.css." .. record["level"],
+              ["kind"] = "event",
+              ["type"] = record["level"]
+            }
+
+            new_record["agent"] = {
+              ["type"] = "fluentbit"
+            }
+
+          return 2, timestamp, new_record
+
+        end
 
 parameters:
   - name: APP_NAME
