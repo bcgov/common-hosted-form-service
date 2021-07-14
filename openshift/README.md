@@ -41,7 +41,7 @@ In order to prepare an environment, you will need to ensure that all of the foll
 ```sh
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
-export LOGGING_HOST_NAME=<yourfluentdendpoint>
+export FLUENTD=<yourfluentdendpoint>
 export PUBLIC_KEY=<yourkeycloakpublickey>
 export REPO_NAME=common-hosted-form-service
 
@@ -91,7 +91,7 @@ oc create -n $NAMESPACE configmap $APP_NAME-files-config \
 ```
 
 ```sh
-oc process -n $NAMESPACE -f https://raw.githubusercontent.com/bcgov/$REPO_NAME/master/openshift/fluent-bit.cm.yaml -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p REPO_NAME=$REPO_NAME -p LOGGING_HOST_NAME=$LOGGING_HOST_NAME -o yaml | oc -n $NAMESPACE apply -f -
+oc process -n $NAMESPACE -f https://raw.githubusercontent.com/bcgov/$REPO_NAME/master/openshift/fluent-bit.cm.yaml -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p REPO_NAME=$REPO_NAME -p FLUENTD=$FLUENTD -o yaml | oc -n $NAMESPACE apply -f -
 ```
 
 ### Secrets
