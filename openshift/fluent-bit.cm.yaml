@@ -31,6 +31,8 @@ objects:
           Name  tail
           Path  /var/log/*
           Tag   app
+          Offset_Key  logFileOffset
+          Path_Key    logFilePath
 
         # exclude kube probe logs from app logs
         [FILTER]
