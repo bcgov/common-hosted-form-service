@@ -76,14 +76,16 @@ objects:
 
         # send http level ECS records (with tag: 'app.http') to AWS ElasticSearch
         # [OUTPUT]
-        #   Name http
-        #   Match app.http
+        #   Name   http
+        #   Match  app.http
+        #   Host   ${AWS}
+        #   Port    80
 
         # send all records tagged with just 'app' to external fluentd service endpoint
         [OUTPUT]
           Name    http
           Match   app
-          Host    ${LOGGING_HOST_NAME}
+          Host    ${FLUENTD}
           Port    80
           Format  json
           # the URI becomes the Tag available in fluentd
@@ -122,7 +124,6 @@ objects:
           code == -1, the original record will be deleted.
         ]]
 
-
         -- add extra ECS fields
         function ecsMap(tag, timestamp, record)
 
@@ -160,7 +161,11 @@ parameters:
     description: Target namespace reference (i.e. 'b160aa-dev')
     displayName: Target Namespace
     required: true
-  - name: LOGGING_HOST_NAME
-    description: The hostname of our FLuentd service running further down the monitoring pipeline
-    displayName: Logging host name
+  - name: FLUENTD
+    description: The hostname of our Fluentd service running further down the monitoring pipeline
+    displayName: Flunetd host name
     required: true
+  - name: AWS
+    description: The hostname of AWS Opensearch service
+    displayName: AWS host name
+    required: false
