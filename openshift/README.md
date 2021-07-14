@@ -213,7 +213,11 @@ oc rollout -n $NAMESPACE latest dc/<buildname>-master
 
 *Note: Remember to swap out the bracketed values with the appropriate values!*
 
+<<<<<<< HEAD
 ### Sidecar Logging
+=======
+## Sidecar Logging
+>>>>>>> format logs for AWS OpenSearch
 
 Our deployment on OpenShift uses a Fluent-bit sidecar to collect logs from the CHEFS application. The sidecar deployment is included in the main app.dc.yaml file.
 Our NodeJS apps output logs to a configurable file path (for example app/app.log ). This is done using using a logger script. For example see our [CHEFS app logger](https://github.com/bcgov/common-hosted-form-service/blob/master/app/src/components/log.js)
