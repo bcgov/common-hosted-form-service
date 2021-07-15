@@ -172,11 +172,7 @@ export default {
           : 'N/A';
       }
     },
-    getStatusDate(record, statusCode = undefined) {
-      // Get the date that this submission draft was last saved
-      if (record.draft) {
-        return record.createdAt;
-      }
+    getStatusDate(record, statusCode) {
       // Get the created date of the most recent occurence of a specified status
       if (record.submissionStatus) {
         const submittedStatus = record.submissionStatus.find(
@@ -197,12 +193,12 @@ export default {
           return {
             // completedDate: this.getStatusDate(s, 'COMPLETED'),
             confirmationId: s.confirmationId,
-            lastEdited: this.getStatusDate(s),
+            lastEdited: s.draft ? s.createdAt : undefined,
             name: s.name,
             permissions: s.permissions,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
-            submittedDate: s.draft ? null : this.getStatusDate(s, 'SUBMITTED')
+            submittedDate: this.getStatusDate(s, 'SUBMITTED')
           };
         });
         this.submissionTable = tableRows;
