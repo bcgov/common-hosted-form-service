@@ -81,7 +81,9 @@ objects:
         #   Name   http
         #   Match  app.http
         #   Host   ${AWS}
-        #   Port    80
+        #   format json_lines
+        #   json_date_key logStreamDate
+        #   json_date_format  iso8601
 
         # send all records tagged with just 'app' to external fluentd service endpoint
         [OUTPUT]
@@ -94,11 +96,17 @@ objects:
           URI     /app
           # we can also send tag as a header
           #header_tag  app
+          format json_lines
+          json_date_key logStreamDate
+          json_date_format  iso8601
 
         [OUTPUT]
           # show all fluent-bit logs to standard output
           Name   stdout
           Match  *
+          Format json_lines
+          json_date_key logStreamDate
+          json_date_format  iso8601
 
       parsers.conf: |
         [PARSER]
@@ -136,7 +144,6 @@ objects:
               ["kind"] = "event",
               ["type"] = record["level"]
             }
-
             new_record["agent"] = {
               ["type"] = "fluentbit"
             }
