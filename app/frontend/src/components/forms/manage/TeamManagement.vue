@@ -248,10 +248,7 @@ export default {
       }
     },
     canRemoveOwner(userId) {
-      if (
-        this.tableData.reduce((acc, user) => (user.owner ? acc + 1 : acc), 0) <
-        2
-      ) {
+      if (this.tableData.reduce((acc, user) => (user.owner ? acc + 1 : acc), 0) < 2) {
         this.addNotification({
           message: 'There must always be at least one form owner',
           consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
@@ -414,8 +411,7 @@ export default {
         await this.getFormUsers();
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to update all user roles',
+          message: 'An error occurred while attempting to update all user roles',
           consoleError: `Error setting all user roles for form ${this.formId}: ${error}`,
         });
       }
@@ -439,8 +435,7 @@ export default {
         await this.getFormUsers();
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to update roles for a user',
+          message: 'An error occurred while attempting to update roles for a user',
           consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
         });
       }

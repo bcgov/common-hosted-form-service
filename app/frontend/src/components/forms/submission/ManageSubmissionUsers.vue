@@ -156,7 +156,7 @@
 <script>
 import { mapActions } from 'vuex';
 
-import { FormPermissions } from '@/utils/constants';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
 import { rbacService, userService } from '@/services';
 
 export default {
@@ -194,7 +194,7 @@ export default {
         const id = this.userSearchSelection.id;
         if (this.userTableList.some((u) => u.id === id)) {
           this.addNotification({
-            type: 'warning',
+            ...NotificationTypes.WARNING,
             message: `User ${this.userSearchSelection.username} is already in the list of team members.`,
           });
         } else {
@@ -221,8 +221,7 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occured while trying to fetch users for this submission.',
+          message: 'An error occured while trying to fetch users for this submission.',
           consoleError: `Error getting users for ${this.submissionId}: ${error}`,
         });
       } finally {
@@ -245,8 +244,7 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occured while trying to update users for this submission.',
+          message: 'An error occured while trying to update users for this submission.',
           consoleError: `Error setting user permissions. Sub: ${this.submissionId} User: ${userId} Error: ${error}`,
         });
       } finally {

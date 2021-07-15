@@ -1,7 +1,9 @@
+
 <template>
   <v-alert
-    :type="notification.type"
-    prominent
+    :class="notification.class"
+    :color="notification.color"
+    :icon="notification.icon"
     dismissible
     @input="alertClosed"
     transition="slide-y-transition"
@@ -16,8 +18,10 @@ export default {
   name: 'BaseNotificationBar',
   props: {
     notification: {
-      type: Object,
-      required: true,
+      class: Object,
+      color: Object,
+      icon: Object,
+      message: Object,
     },
   },
   data() {

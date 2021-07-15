@@ -202,6 +202,63 @@ a,
   }
 }
 
+/////////////////////////////////////////
+// Override Vuetify v-alert Components
+/////////////////////////////////////////
+
+// BCGov Styled Error Notification Override
+.v-alert.alert-error {
+  .v-alert__wrapper {
+    i,
+    div {
+      color: #a12622;
+    }
+  }
+}
+
+// BCGov Styled Warning Alerts Override
+.v-alert.alert-warning {
+  .v-alert__wrapper {
+    i,
+    div {
+      color: #6c4a00;
+    }
+  }
+}
+
+// BCGov Styled Info Notification Override
+.v-alert.alert-info {
+  .v-alert__wrapper {
+    i,
+    div {
+      color: #313132;
+    }
+  }
+}
+
+// BCGov Styled Success Notification Override
+.v-alert.alert-success {
+  .v-alert__wrapper {
+    i,
+    div {
+      color: #2d4821;
+    }
+  }
+}
+
+// BCGov Alert Style Override
+.v-alert {
+  font-family: "BC Sans", "Noto Sans", Arial, "sans serif";
+  line-height: 1.5em;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding: 15px;
+  div {
+    font-size: 18px;
+  }
+}
+
 /////////////////////////////////
 ///  override formio styles:
 /////////////////////////////////

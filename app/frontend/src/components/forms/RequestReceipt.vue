@@ -66,7 +66,7 @@ export default {
             to: this.to,
           });
           this.addNotification({
-            type: NotificationTypes.SUCCESS,
+            ...NotificationTypes.SUCCESS,
             message: `An email has been sent to ${this.to}.`,
           });
         } catch (error) {

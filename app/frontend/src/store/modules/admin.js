@@ -43,8 +43,7 @@ export default {
         commit('SET_FORMLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching forms.',
+          message: 'An error occurred while fetching forms.',
           consoleError: `Error getting admin form data: ${error}`,
         }, { root: true });
       }
@@ -57,8 +56,7 @@ export default {
         commit('SET_FORM', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching this form.',
+          message: 'An error occurred while fetching this form.',
           consoleError: `Error getting admin form ${formId} data: ${error}`,
         }, { root: true });
       }
@@ -70,8 +68,7 @@ export default {
         commit('SET_FORM', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while restoring this form.',
+          message: 'An error occurred while restoring this form.',
           consoleError: `Error restoring form ${formId} data: ${error}`,
         }, { root: true });
       }
@@ -88,8 +85,7 @@ export default {
         commit('SET_USERLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching users.',
+          message: 'An error occurred while fetching users.',
           consoleError: `Error getting admin users data: ${error}`,
         }, { root: true });
       }
@@ -102,8 +98,7 @@ export default {
         commit('SET_USER', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching this user.',
+          message: 'An error occurred while fetching this user.',
           consoleError: `Error getting admin user ${userId} data: ${error}`,
         }, { root: true });
       }
