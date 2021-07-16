@@ -6,7 +6,7 @@
         <h1>Submissions</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right text-sm-right" cols="12" sm="6" order="1" order-sm="2">
+      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
         <span v-if="checkFormManage">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
