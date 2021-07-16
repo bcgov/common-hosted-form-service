@@ -137,17 +137,37 @@ objects:
         -- add extra ECS fields
         function ecsMap(tag, timestamp, record)
 
+          -- map existing fields to a new variable
           new_record = record
+
+          -- derive full environment (stage) name from namespace
+          -- see: https://www.lua.org/pil/20.3.html
+          _, _, part1, environmentAbbrivation = string.find(record["namespace"], "([a-zA-Z0-9_+-]+)-([a-zA-Z0-9_+-]+)")
+
+          environemntsArray = {
+            ["dev"] = "development",
+            ["test"] = "test",
+            ["prod"] = "production"
+          }
+
+          new_record["labels"] = {
+            ["env"] = environemntsArray[environmentAbbrivation]
+          }
+
+          -- add more ECS fields
           new_record["event"] = {
               ["module"] = "node.css",
               ["dataset"] = "node.css." .. record["level"],
               ["kind"] = "event",
-              ["type"] = record["level"]
-            }
-            new_record["agent"] = {
-              ["type"] = "fluentbit"
+              ["type"] = record["level"],
+              ["category"] = "web"
             }
 
+          new_record["agent"] = {
+              ["type"] = "fluentbit"
+          }
+
+          -- return the transformed new record
           return 2, timestamp, new_record
 
         end
