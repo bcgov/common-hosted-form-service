@@ -7,7 +7,7 @@
           <h1>Previous Submissions</h1>
         </v-col>
         <!-- buttons -->
-        <v-col class="text-right text-sm-right" cols="12" sm="6" order="1" order-sm="2">
+        <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <router-link
@@ -193,7 +193,7 @@ export default {
           return {
             // completedDate: this.getStatusDate(s, 'COMPLETED'),
             confirmationId: s.confirmationId,
-            lastEdited: s.draft ? s.createdAt : undefined,
+            lastEdited: s.draft ? s.updatedAt : undefined,
             name: s.name,
             permissions: s.permissions,
             status: this.getCurrentStatus(s),

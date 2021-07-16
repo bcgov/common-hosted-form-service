@@ -19,7 +19,7 @@
           </p>
         </v-col>
         <!-- buttons -->
-        <v-col class="text-right text-sm-right d-print-none" cols="12" sm="6" order="1" order-sm="2">
+        <v-col class="text-right d-print-none" cols="12" sm="6" order="1" order-sm="2">
           <span>
             <BasePrintButton />
           </span>
