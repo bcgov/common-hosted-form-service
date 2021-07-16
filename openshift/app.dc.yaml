@@ -207,7 +207,7 @@ objects:
                   mountPath: /var/log
             # Fluent-bit log aggregator/forwarder
             - name: fluent-bit
-              image: docker.io/fluent/fluent-bit:1.5
+              image: docker.io/fluent/fluent-bit:1.7
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:
