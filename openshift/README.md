@@ -42,6 +42,7 @@ In order to prepare an environment, you will need to ensure that all of the foll
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
 export FLUENTD=<yourfluentdendpoint>
+export AWS=<aws log ingestion service url>
 export PUBLIC_KEY=<yourkeycloakpublickey>
 export REPO_NAME=common-hosted-form-service
 
@@ -91,7 +92,7 @@ oc create -n $NAMESPACE configmap $APP_NAME-files-config \
 ```
 
 ```sh
-oc process -n $NAMESPACE -f https://raw.githubusercontent.com/bcgov/$REPO_NAME/master/openshift/fluent-bit.cm.yaml -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p REPO_NAME=$REPO_NAME -p FLUENTD=$FLUENTD -o yaml | oc -n $NAMESPACE apply -f -
+oc process -n $NAMESPACE -f https://raw.githubusercontent.com/bcgov/$REPO_NAME/master/openshift/fluent-bit.cm.yaml -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p REPO_NAME=$REPO_NAME -p FLUENTD=$FLUENTD -p AWS=$AWS -o yaml | oc -n $NAMESPACE apply -f -
 ```
 
 ### Secrets
@@ -213,11 +214,7 @@ oc rollout -n $NAMESPACE latest dc/<buildname>-master
 
 *Note: Remember to swap out the bracketed values with the appropriate values!*
 
-<<<<<<< HEAD
-### Sidecar Logging
-=======
 ## Sidecar Logging
->>>>>>> format logs for AWS OpenSearch
 
 Our deployment on OpenShift uses a Fluent-bit sidecar to collect logs from the CHEFS application. The sidecar deployment is included in the main app.dc.yaml file.
 Our NodeJS apps output logs to a configurable file path (for example app/app.log ). This is done using using a logger script. For example see our [CHEFS app logger](https://github.com/bcgov/common-hosted-form-service/blob/master/app/src/components/log.js)
