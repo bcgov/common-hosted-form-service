@@ -77,7 +77,7 @@ const httpLogger = logger({
       azp: token && token.azp || undefined,
       contentLength: res.get('content-length'),
       httpVersion: req.httpVersion,
-      ip: req.ip,
+      hostIp: req.ip,
       method: req.method,
       path: req.path,
       query: Object.keys(req.query).length ? req.query : undefined,
