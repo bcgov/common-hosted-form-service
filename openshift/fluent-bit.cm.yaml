@@ -172,7 +172,7 @@ parameters:
     required: true
   - name: FLUENTD
     description: The hostname of our Fluentd service running further down the monitoring pipeline
-    displayName: Flunetd host name
+    displayName: Fluentd host name
     required: true
   - name: AWS
     description: The hostname of AWS Opensearch service
