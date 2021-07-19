@@ -23,7 +23,13 @@ describe('notifications actions', () => {
     store.actions.addNotification(mockStore, obj);
     expect(mockConsoleError).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith('PUSH', obj);
+    expect(mockStore.commit).toHaveBeenCalledWith('PUSH', {
+      type: 'error',
+      class: 'alert-error',
+      color: '#f2dede',
+      icon: 'error',
+      ...obj
+    });
   });
 
   it('deleteNotification should commit to DELETE', () => {

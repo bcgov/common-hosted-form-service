@@ -1,6 +1,8 @@
+
 <template>
   <v-alert
-    :type="notification.type"
+    :class="notification.class"
+    :icon="notification.icon"
     prominent
     dismissible
     @input="alertClosed"
@@ -16,8 +18,9 @@ export default {
   name: 'BaseNotificationBar',
   props: {
     notification: {
-      type: Object,
-      required: true,
+      class: Object,
+      icon: Object,
+      message: Object,
     },
   },
   data() {
@@ -32,10 +35,10 @@ export default {
     },
   },
   mounted() {
-    this.timeout = setTimeout(
-      () => this.deleteNotification(this.notification),
-      10000
-    );
+    // this.timeout = setTimeout(
+    //   () => this.deleteNotification(this.notification),
+    //   10000
+    // );
   },
   beforeDestroy() {
     // Prevent memory leak if component destroyed before timeout up

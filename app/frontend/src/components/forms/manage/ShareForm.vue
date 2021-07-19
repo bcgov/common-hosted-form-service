@@ -22,17 +22,16 @@
         <v-card-text>
           <hr />
           <p class="mb-5">Copy the link below or download the QR code.</p>
-
           <v-alert
-            dense
-            type="warning"
-            transition="scale-transition"
             :value="warning"
+            :class="NOTIFICATIONS_TYPES.WARNING.class"
+            :color="NOTIFICATIONS_TYPES.WARNING.color"
+            :icon="NOTIFICATIONS_TYPES.WARNING.icon"
+            transition='scale-transition'
           >
             There is no published version of the form at this time. The link
             below will not be reachable until a version is published.
           </v-alert>
-
           <v-row no-gutters class="mt-5">
             <v-col cols="11">
               <v-text-field
@@ -99,6 +98,7 @@
 
 <script>
 import QrcodeVue from 'qrcode.vue';
+import { NotificationTypes } from '@/utils/constants';
 
 export default {
   components: {
@@ -125,6 +125,9 @@ export default {
     formLink() {
       // TODO: Consider using vue-router to generate this url string instead
       return `${window.location.origin}${process.env.BASE_URL}form/submit?f=${this.formId}`;
+    },
+    NOTIFICATIONS_TYPES() {
+      return NotificationTypes;
     },
   },
   methods: {
