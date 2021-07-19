@@ -2,8 +2,8 @@
 <template>
   <v-alert
     :class="notification.class"
-    :color="notification.color"
     :icon="notification.icon"
+    prominent
     dismissible
     @input="alertClosed"
     transition="slide-y-transition"
@@ -19,7 +19,6 @@ export default {
   props: {
     notification: {
       class: Object,
-      color: Object,
       icon: Object,
       message: Object,
     },
@@ -36,10 +35,10 @@ export default {
     },
   },
   mounted() {
-    this.timeout = setTimeout(
-      () => this.deleteNotification(this.notification),
-      10000
-    );
+    // this.timeout = setTimeout(
+    //   () => this.deleteNotification(this.notification),
+    //   10000
+    // );
   },
   beforeDestroy() {
     // Prevent memory leak if component destroyed before timeout up

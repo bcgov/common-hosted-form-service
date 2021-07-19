@@ -184,8 +184,8 @@ export default {
           await this.updateForm();
           this.formSettingsDisabled = true;
           this.addNotification({
-            ...NotificationTypes.SUCCESS,
             message: 'Your form settings have been updated successfully.',
+            ...NotificationTypes.SUCCESS,
           });
           this.fetchForm(this.form.id);
         }
