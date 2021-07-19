@@ -207,7 +207,8 @@ a,
 /////////////////////////////////////////
 
 // BCGov Styled Error Notification Override
-.v-alert.alert-error {
+.v-alert.v-sheet.theme--light.v-alert.alert-error {
+  background-color: #f2dede;
   .v-alert__wrapper {
     i,
     div {
@@ -217,7 +218,8 @@ a,
 }
 
 // BCGov Styled Warning Alerts Override
-.v-alert.alert-warning {
+.v-alert.v-sheet.theme--light.v-alert.alert-warning {
+  background-color: #f9f1c6;
   .v-alert__wrapper {
     i,
     div {
@@ -227,7 +229,8 @@ a,
 }
 
 // BCGov Styled Info Notification Override
-.v-alert.alert-info {
+.v-alert.v-sheet.theme--light.v-alert.alert-info {
+  background-color: #d9eaf7;
   .v-alert__wrapper {
     i,
     div {
@@ -237,7 +240,8 @@ a,
 }
 
 // BCGov Styled Success Notification Override
-.v-alert.alert-success {
+.v-alert.v-sheet.theme--light.v-alert.alert-success {
+  background-color: #dff0d8;
   .v-alert__wrapper {
     i,
     div {

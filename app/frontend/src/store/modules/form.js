@@ -139,8 +139,8 @@ export default {
       try {
         await formService.deleteForm(state.form.id);
         dispatch('notifications/addNotification', {
-          ...NotificationTypes.SUCCESS,
           message: `Form "${state.form.name}" has been deleted successfully.`,
+          ...NotificationTypes.SUCCESS,
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -255,8 +255,8 @@ export default {
         // Get this submission
         await formService.deleteSubmission(submissionId);
         dispatch('notifications/addNotification', {
-          ...NotificationTypes.SUCCESS,
           message: 'Submission deleted successfully.',
+          ...NotificationTypes.SUCCESS,
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
