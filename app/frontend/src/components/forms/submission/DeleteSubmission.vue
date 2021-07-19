@@ -3,7 +3,6 @@
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
-          class="mx-1"
           @click="showDeleteDialog = true"
           color="red"
           :disabled="disabled"

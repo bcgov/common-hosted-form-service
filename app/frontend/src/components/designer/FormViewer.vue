@@ -128,7 +128,6 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['setDirtyFlag']),
     isFormPublic: isFormPublic,
     // Get the data for a form submission
     async getFormData() {
@@ -353,10 +352,10 @@ export default {
       this.getFormData();
     } else {
       this.getFormSchema();
-      // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-      if (!this.preview) {
-        window.onbeforeunload = () => true;
-      }
+    }
+    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
+    if (!this.preview && !this.readOnly) {
+      window.onbeforeunload = () => true;
     }
   },
   beforeUpdate() {
