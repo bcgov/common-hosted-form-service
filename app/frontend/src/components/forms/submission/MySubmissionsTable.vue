@@ -126,14 +126,6 @@ export default {
           sortable: false,
         },
       ];
-      // Uncomment if you want to add the Completed Date column back to the list
-      // if (this.showStatus || !this.formId) {
-      //   headers.splice(3, 0, {
-      //     text: 'Completed Date',
-      //     align: 'start',
-      //     value: 'completedDate',
-      //   });
-      // }
       if (this.showDraftLastEdited || !this.formId) {
         headers.splice(2, 0, {
           text: 'Draft Last Edited',
@@ -191,7 +183,6 @@ export default {
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
           return {
-            // completedDate: this.getStatusDate(s, 'COMPLETED'),
             confirmationId: s.confirmationId,
             lastEdited: s.draft ? s.updatedAt : undefined,
             name: s.name,
