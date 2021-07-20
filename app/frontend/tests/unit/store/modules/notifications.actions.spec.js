@@ -26,7 +26,6 @@ describe('notifications actions', () => {
     expect(mockStore.commit).toHaveBeenCalledWith('PUSH', {
       type: 'error',
       class: 'alert-error',
-      color: '#f2dede',
       icon: 'error',
       ...obj
     });

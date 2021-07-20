@@ -67,25 +67,21 @@ describe('Constants', () => {
       ERROR: {
         type: 'error',
         class: 'alert-error',
-        color: '#f2dede',
         icon: 'error',
       },
       SUCCESS: {
         type: 'success',
         class: 'alert-success',
-        color: '#dff0d8',
         icon: 'check_circle',
       },
       INFO: {
         type: 'info',
         class: 'alert-info',
-        color: '#d9eaf7',
         icon: 'info',
       },
       WARNING: {
         type: 'warning',
         class:'alert-warning',
-        color: '#f9f1c6',
         icon: 'warning',
       },
     });
