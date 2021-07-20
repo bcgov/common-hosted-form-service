@@ -1,7 +1,7 @@
 
 <template>
   <v-alert
-    :class="notification.class"
+    :class="'target-notification ' + notification.class"
     :icon="notification.icon"
     prominent
     dismissible
@@ -35,10 +35,10 @@ export default {
     },
   },
   mounted() {
-    // this.timeout = setTimeout(
-    //   () => this.deleteNotification(this.notification),
-    //   10000
-    // );
+    this.timeout = setTimeout(
+      () => this.deleteNotification(this.notification),
+      10000
+    );
   },
   beforeDestroy() {
     // Prevent memory leak if component destroyed before timeout up
@@ -46,3 +46,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .target-notification >>> .v-alert__icon.v-icon:after {
+    display: none;
+  }
+</style>
