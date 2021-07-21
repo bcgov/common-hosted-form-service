@@ -18,6 +18,13 @@ $bcgov-error: #d8292f;
 $bcgov-link: #1a5a96;
 $bcgov-link-hover: #3b99fc;
 $bcgov-input-placeholder: #606060;
+$bcgov-font-error: #a12622;
+$bcgov-font-warning: #6c4a00;
+$bcgov-font-success: #2d4821;
+$bcgov-alert-error: #f2dede;
+$bcgov-alert-warning: #f9f1c6;
+$bcgov-alert-info: #d9eaf7;
+$bcgov-alert-success: #dff0d8;
 
 // Sticky Footer
 body {
@@ -208,44 +215,44 @@ a,
 
 // BCGov Styled Error Notification Override
 .v-alert.v-sheet.theme--light.v-alert.alert-error {
-  background-color: #f2dede;
+  background-color: $bcgov-alert-error;
   .v-alert__wrapper {
     i,
     div {
-      color: #a12622;
+      color: $bcgov-font-error;
     }
   }
 }
 
 // BCGov Styled Warning Alerts Override
 .v-alert.v-sheet.theme--light.v-alert.alert-warning {
-  background-color: #f9f1c6;
+  background-color: $bcgov-alert-warning;
   .v-alert__wrapper {
     i,
     div {
-      color: #6c4a00;
+      color: $bcgov-font-warning;
     }
   }
 }
 
 // BCGov Styled Info Notification Override
 .v-alert.v-sheet.theme--light.v-alert.alert-info {
-  background-color: #d9eaf7;
+  background-color: $bcgov-alert-info;
   .v-alert__wrapper {
     i,
     div {
-      color: #313132;
+      color: $bcgov-font;
     }
   }
 }
 
 // BCGov Styled Success Notification Override
 .v-alert.v-sheet.theme--light.v-alert.alert-success {
-  background-color: #dff0d8;
+  background-color: $bcgov-alert-success;
   .v-alert__wrapper {
     i,
     div {
-      color: #2d4821;
+      color: $bcgov-font-success;
     }
   }
 }

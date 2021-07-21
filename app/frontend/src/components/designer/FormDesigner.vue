@@ -195,11 +195,11 @@ export default {
       'form.userType',
       'form.versions',
     ]),
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
     ID_MODE() {
       return IdentityMode;
+    },
+    NOTIFICATIONS_TYPES() {
+      return NotificationTypes;
     },
     designerOptions() {
       return {

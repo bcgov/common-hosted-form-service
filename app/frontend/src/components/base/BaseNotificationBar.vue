@@ -1,4 +1,3 @@
-
 <template>
   <v-alert
     :class="'target-notification ' + notification.class"
