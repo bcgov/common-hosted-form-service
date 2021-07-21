@@ -19,7 +19,7 @@
     padding: 0.5em 1em;
   }
   .v-card__text {
-    padding: 1em 1em 0 1em;
+    padding: 1.5em;
   }
 }
 </style>

@@ -2,7 +2,7 @@
   <v-container class="px-0">
     <v-row>
       <v-col cols="12" md="6">
-        <BasePanel class="fill-height" >
+        <BasePanel class="fill-height">
           <template #title>Form Title</template>
           <v-text-field
             dense
@@ -29,17 +29,17 @@
       </v-col>
 
       <v-col cols="12" md="6">
-        <BasePanel class="fill-height" >
+        <BasePanel class="fill-height">
           <template #title>Type of submitters</template>
           <v-radio-group
-            class="ma-0"
+            class="my-0"
             v-model="userType"
             :mandatory="false"
             :rules="loginRequiredRules"
             @change="userTypeChanged"
           >
-            <v-radio label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
-            <v-radio label="Log-in Required" value="login"></v-radio>
+            <v-radio class="mb-4" label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
+            <v-radio class="mb-4" label="Log-in Required" value="login" />
             <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6 mb-2">
               <v-checkbox
                 v-model="idps"
@@ -80,10 +80,10 @@
 
     <v-row>
       <v-col cols="12" md="6">
-        <BasePanel class="fill-height" >
+        <BasePanel class="fill-height">
           <template #title>Add form's functionality</template>
           <v-checkbox
-            class="mt-0"
+            class="my-0"
             v-model="enableSubmitterDraft"
             :disabled="userType === ID_MODE.PUBLIC"
           >
@@ -95,7 +95,7 @@
             </template>
           </v-checkbox>
 
-          <v-checkbox v-model="enableStatusUpdates">
+          <v-checkbox class="my-0" v-model="enableStatusUpdates">
             <template #label>
               <span>
                 Reviewers can <strong>Update the Status</strong> of this form
@@ -107,9 +107,9 @@
       </v-col>
 
       <v-col cols="12" md="6">
-        <BasePanel class="fill-height" >
+        <BasePanel class="fill-height">
           <template #title>After Submission</template>
-          <v-checkbox class="mt-0" v-model="showSubmissionConfirmation">
+          <v-checkbox class="my-0" v-model="showSubmissionConfirmation">
             <template #label>
               Show the submission confirmation details
               <v-tooltip bottom>
@@ -134,7 +134,7 @@
             </template>
           </v-checkbox>
 
-          <v-checkbox v-model="sendSubRecieviedEmail">
+          <v-checkbox class="my-0" v-model="sendSubRecieviedEmail">
             <template #label>
               Send my team a notification email
               <v-tooltip bottom>
