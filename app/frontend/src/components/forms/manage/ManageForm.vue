@@ -123,7 +123,7 @@ export default {
   components: { ApiKey, FormSettings, ManageVersions },
   data() {
     return {
-      apiKeyPanel: 0,
+      apiKeyPanel: 1,
       formSettingsDisabled: true,
       settingsFormValid: false,
       settingsPanel: 1,
