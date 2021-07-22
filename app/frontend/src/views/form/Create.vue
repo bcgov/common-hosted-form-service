@@ -3,9 +3,13 @@
     <h1 class="my-6 text-center">Create New Form</h1>
     <v-stepper v-model="creatorStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">Set up Form</v-stepper-step>
+        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
+          Set up Form
+        </v-stepper-step>
         <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">Design Form</v-stepper-step>
+        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
+          Design Form
+        </v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -13,10 +17,17 @@
           <v-form ref="settingsForm" v-model="settingsFormValid">
             <h1>Form Settings</h1>
             <FormSettings />
-            <v-card outlined class="pa-4">
+
+            <BasePanel class="my-6">
+              <template #title>Disclaimer</template>
               <FormDisclaimer />
-            </v-card>
-            <v-checkbox class="mb-6" :rules="disclaimerRules" required label="I agree to the disclaimer and statement of responsibility for Form Designers" />
+
+              <v-checkbox
+                :rules="disclaimerRules"
+                required
+                label="I agree to the disclaimer and statement of responsibility for Form Designers"
+              />
+            </BasePanel>
           </v-form>
           <v-btn
             class="py-4"
@@ -53,7 +64,7 @@ export default {
   components: {
     FormDesigner,
     FormSettings,
-    FormDisclaimer
+    FormDisclaimer,
   },
   computed: mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
   data() {
@@ -61,8 +72,8 @@ export default {
       creatorStep: 1,
       settingsFormValid: false,
       disclaimerRules: [
-        (v) => !!v || 'You must agree to the privacy disclaimer shown above.'
-      ]
+        (v) => !!v || 'You must agree to the privacy disclaimer shown above.',
+      ],
     };
   },
   methods: mapActions('form', ['resetForm']),
@@ -77,7 +88,11 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.isDirty
-      ? next(window.confirm('Do you really want to leave this page? Changes you made will not be saved.'))
+      ? next(
+        window.confirm(
+          'Do you really want to leave this page? Changes you made will not be saved.'
+        )
+      )
       : next();
   },
 };
