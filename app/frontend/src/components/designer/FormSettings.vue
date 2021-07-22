@@ -30,7 +30,7 @@
 
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>Type of submitters</template>
+          <template #title>Form Access</template>
           <v-radio-group
             class="my-0"
             v-model="userType"
@@ -81,7 +81,7 @@
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>Add form's functionality</template>
+          <template #title>Form Functionality</template>
           <v-checkbox
             class="my-0"
             v-model="enableSubmitterDraft"
