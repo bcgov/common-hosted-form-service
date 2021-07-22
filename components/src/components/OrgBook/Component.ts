@@ -6,7 +6,6 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'orgbook';
-
 export default class Component extends (SelectComponent as any) {
     static schema(...extend) {
         return SelectComponent.schema({
@@ -18,7 +17,7 @@ export default class Component extends (SelectComponent as any) {
             data: {
                 values: [],
                 json: '',
-                url: 'https://orgbook.gov.bc.ca/api/v2/search/autocomplete',
+                url: 'https://orgbook.gov.bc.ca/api/v3/search/autocomplete',
                 resource: '',
                 custom: ''
             },
@@ -26,11 +25,11 @@ export default class Component extends (SelectComponent as any) {
             logic: [],
             filter: 'latest=true&inactive=false&revoked=false',
             dataType: 'string',
-            template: '{{ item.names[0].text }}',
+            template: '{{ item.value }}',
             placeholder: 'Start typing to search BC Registered Businesses database',
             searchField: 'q',
             selectValues: 'results',
-            valueProperty: 'names[0].text',
+            valueProperty: 'value',
             selectFields: '',
             searchThreshold: 3,
             minSearch: 3,
