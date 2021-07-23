@@ -1,4 +1,4 @@
-const { FileStorage, Form, FormApiKey, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata, FormApiKey } = require('../common/models');
+const { FileStorage, Form, FormApiKey, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -430,7 +430,7 @@ const service = {
   },
 
   // Add an API key to the form, delete any existing key
-  createOrReplaceApiKey: async (formId) => {
+  createOrReplaceApiKey: async (formId, currentUser) => {
     let trx;
     try {
       const currentKey = await service.readApiKey(formId);
