@@ -62,10 +62,10 @@
           </template>
           <div class="header">
             <strong>API Key</strong>
-            <span v-if="form.apiKey">
+            <span v-if="apiKey">
               <small>
-                Created: {{ form.apiKey.createdAt | formatDate }} ({{
-                  form.apiKey.createdBy
+                Created: {{ apiKey.createdAt }} ({{
+                  apiKey.createdBy
                 }})
               </small>
             </span>
@@ -131,7 +131,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['drafts', 'form', 'permissions']),
+    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions']),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },

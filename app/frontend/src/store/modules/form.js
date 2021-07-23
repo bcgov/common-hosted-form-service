@@ -1,7 +1,7 @@
 import { getField, updateField } from 'vuex-map-fields';
 
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { formService, rbacService } from '@/services';
+import { apiKeyService, formService, rbacService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 const genInitialForm = () => ({
@@ -26,6 +26,7 @@ const genInitialForm = () => ({
 export default {
   namespaced: true,
   state: {
+    apiKey: null,
     drafts: [],
     form: genInitialForm(),
     formList: [],
@@ -41,6 +42,7 @@ export default {
   },
   getters: {
     getField, // vuex-map-fields
+    apiKey: state => state.apiKey,
     drafts: state => state.drafts,
     form: state => state.form,
     formList: state => state.formList,
@@ -56,6 +58,9 @@ export default {
     },
     ADD_SUBMISSION_TO_LIST(state, submission) {
       state.submissionList.push(submission);
+    },
+    SET_API_KEY(state, apiKey) {
+      state.apiKey = apiKey;
     },
     SET_DRAFTS(state, drafts) {
       state.drafts = drafts;
@@ -174,6 +179,7 @@ export default {
     },
     async fetchForm({ commit, dispatch }, formId) {
       try {
+        commit('SET_API_KEY', null);
         // Get the form definition from the api
         const { data } = await formService.readForm(formId);
         const identityProviders = parseIdps(data.identityProviders);
@@ -324,6 +330,37 @@ export default {
           consoleError: `Error getting version ${versionId} for form ${formId}: ${error}`,
         }, { root: true });
       }
-    }
+    },
+
+    // API Keys
+    async generateApiKey({ commit, dispatch }, formId) {
+      try {
+        const { data } = await apiKeyService.generateApiKey(formId);
+        commit('SET_API_KEY', data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while trying to generate an API Key.',
+          consoleError: `Error generating API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async deleteApiKey({ commit, dispatch }, formId) {
+      try {
+        await apiKeyService.deleteApiKey(formId);
+        commit('SET_API_KEY', null);
+        dispatch('notifications/addNotification', {
+          message:
+            'The API Key for this form has been deleted.',
+          type: NotificationTypes.SUCCESS
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while trying to delete the API Key.',
+          consoleError: `Error deleting API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
   },
 };

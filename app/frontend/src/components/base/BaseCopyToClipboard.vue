@@ -4,6 +4,7 @@
       <template #activator="{ on, attrs }">
         <v-btn
           color="primary"
+          :disabled="disabled"
           icon
           v-clipboard:copy="copyText"
           v-clipboard:success="clipboardSuccessHandler"
@@ -48,16 +49,24 @@ Vue.use(VueClipboard);
 export default {
   name: 'BaseCopyToClipboard',
   props: {
+    buttonText: {
+      type: String,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     copyText: {
       required: true,
       type: String,
     },
+    snackBarText: {
+      type: String,
+      default: 'Link copied to clipboard',
+    },
     tooltipText: {
       type: String,
       default: 'Copy to Clipboard',
-    },
-    buttonText: {
-      type: String,
     },
   },
   data() {
@@ -71,7 +80,7 @@ export default {
   methods: {
     clipboardSuccessHandler() {
       this.clipSnackbar.on = true;
-      this.clipSnackbar.text = 'Link copied to clipboard';
+      this.clipSnackbar.text = this.snackBarText;
       this.clipSnackbar.color = 'info';
       this.$emit('copied');
     },
