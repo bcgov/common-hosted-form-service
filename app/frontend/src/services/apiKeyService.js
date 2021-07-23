@@ -1,0 +1,51 @@
+// import { appAxios } from '@/services/interceptors';
+// import { ApiRoutes } from '@/utils/constants';
+
+export default {
+  /**
+   * @function readApiKey
+   * Get the current api key for the form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readForm(formId) {
+    // return appAxios().get(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+    return {
+      data: {
+        formId: formId,
+        secret: `random test ${Math.random().toString(36).substring(7)}`,
+        createdBy: 'userIdir',
+        createdAt: Date.now()
+      }
+    };
+  },
+
+  /**
+   * @function generateApiKey
+   * Create a new API key for a form, will overwrite any existing key
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  generateApiKey(formId) {
+    // return appAxios().put(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+    return {
+      data: {
+        formId: formId,
+        secret: `random test ${Math.random().toString(36).substring(7)}`,
+        createdBy: 'userIdir',
+        createdAt: Date.now()
+      }
+    };
+  },
+
+  /**
+   * @function deleteApiKey
+   * Hard delete an API Key
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  deleteApiKey(formId) {
+    // return appAxios().delete(`${ApiRoutes.FORMS}/${formId}`);
+    return formId;
+  },
+};

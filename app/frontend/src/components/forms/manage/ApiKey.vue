@@ -1,89 +1,191 @@
 <template>
   <div>
-    <h3 class="mt-3">Disclaimer?</h3>
+    <div v-if="!canGenerateKey" class="mt-3 mb-6">
+      <v-icon class="mr-1" color="primary">info</v-icon> You must br the
+      <strong>Form Owner</strong> to manage API Keys.
+    </div>
+    <h3 class="mt-3">Disclaimer</h3>
     <ul>
-      <li>Store secret correctly</li>
-      <li>Don't give out API key</li>
-      <li>Don't use api key for USER based access (only system)</li>
+      <li>
+        Ensure that your API key secret is stored in a secure location (i.e. key
+        vault).
+      </li>
+      <li>
+        Your API key grants unrestricted access to your form. Do not give out
+        your API key to anyone.
+      </li>
+      <li>
+        The API key should ONLY be used for automated system interactions. Do
+        not use your API key for user based access.
+      </li>
     </ul>
 
-    <v-row class="mt-5">
-      <v-col cols="12" sm="4" lg="3" xl="2">
-        <v-btn
-          block
-          color="primary"
-          :disabled="!canGenerateKey()"
-          @click="createKey"
-        >
-          <span>Generate api key</span>
-        </v-btn>
-      </v-col>
-      <v-col cols="12" sm="5" xl="3">
-        <v-text-field
-          dense
-          flat
-          outlined
-          solid
-          readonly
-          hide-details
-          disabled
-          label="Secret"
-          data-test="text-name"
-          v-model="name"
-        />
-      </v-col>
-      <v-col cols="12" sm="3">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              small
-              icon
-              color="primary"
-              :disabled="!canGenerateKey()"
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>edit</v-icon>
-            </v-btn>
-          </template>
-          <span>Show Key</span>
-        </v-tooltip>
+    <v-skeleton-loader :loading="loading" type="button">
+      <v-row class="mt-5">
+        <v-col cols="12" sm="4" lg="3" xl="2">
+          <v-btn
+            block
+            color="primary"
+            :disabled="!canGenerateKey"
+            @click="showConfirmationDialog = true"
+          >
+            <span>{{ apiKey ? 'Regenerate' : 'Generate' }} api key</span>
+          </v-btn>
+        </v-col>
+        <v-col cols="12" sm="5" xl="3">
+          <v-text-field
+            dense
+            disabled
+            flat
+            hide-details
+            label="Secret"
+            outlined
+            solid
+            readonly
+            :type="showSecret ? 'text' : 'password'"
+            :value="secret"
+          />
+        </v-col>
+        <v-col cols="12" sm="3">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                :disabled="!canReadSecret"
+                icon
+                small
+                v-bind="attrs"
+                v-on="on"
+                @click="showHideKey"
+              >
+                <v-icon v-if="showSecret">visibility_off</v-icon>
+                <v-icon v-else>visibility</v-icon>
+              </v-btn>
+            </template>
+            <span v-if="showSecret">Hide Secret</span>
+            <span v-else>Show Secret</span>
+          </v-tooltip>
 
-        <v-btn small icon color="primary" :disabled="!canGenerateKey()">
-          <v-icon>edit</v-icon>
-        </v-btn>
+          <BaseCopyToClipboard
+            :disabled="!canReadSecret || !showSecret"
+            class="ml-2"
+            :copyText="secret"
+            snackBarText="Secret copied to clipboard"
+            tooltipText="Copy secret to clipboard"
+          />
 
-        <v-btn small icon color="primary" :disabled="!canDeleteKey()">
-          <v-icon>edit</v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                class="ml-2"
+                color="red"
+                :disabled="!canDeleteKey"
+                icon
+                small
+                v-bind="attrs"
+                v-on="on"
+                @click="showDeleteDialog = true"
+              >
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </template>
+            <span>Delete Key</span>
+          </v-tooltip>
+        </v-col>
+      </v-row>
+    </v-skeleton-loader>
+
+    <!-- Generate/regen confirmation -->
+    <BaseDialog
+      v-model="showConfirmationDialog"
+      type="CONTINUE"
+      @close-dialog="showConfirmationDialog = false"
+      @continue-dialog="createKey"
+    >
+      <template #title>Confirm Key Generation</template>
+      <template #text>
+        <span v-if="!apiKey">
+          Create an API Key for this form? <br />
+          Ensure you follow the Dislaimer on this page.
+        </span>
+        <span v-else>
+          Regenerate the API Key? <br />
+          <strong>Continuing will delete your current API Key access.</strong>.
+        </span>
+      </template>
+      <template #button-text-continue>
+        <span>{{ apiKey ? 'Regenerate' : 'Generate' }} Key</span>
+      </template>
+    </BaseDialog>
+
+    <!-- Delete confirmation -->
+    <BaseDialog
+      v-model="showDeleteDialog"
+      type="CONTINUE"
+      @close-dialog="showDeleteDialog = false"
+      @continue-dialog="deleteKey"
+    >
+      <template #title>Confirm Deletion</template>
+      <template #text> Are you sure you wish to delete your API Key? </template>
+      <template #button-text-continue>
+        <span>Delete</span>
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { FormPermissions } from '@/utils/constants';
 
 export default {
   name: 'ApiKey',
   data() {
     return {
+      loading: false,
+      showConfirmationDialog: false,
+      showDeleteDialog: false,
       showSecret: false,
-      showPublishDialog: false,
-      showDeleteDraftDialog: false,
-      rerenderTable: 0,
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
+    ...mapGetters('form', ['apiKey', 'form', 'permissions']),
+    canDeleteKey() {
+      return (
+        this.permissions.includes(FormPermissions.FORM_API_DELETE) &&
+        this.apiKey
+      );
+    },
+    canReadSecret() {
+      return (
+        this.permissions.includes(FormPermissions.FORM_API_READ) && this.apiKey
+      );
+    },
+    canGenerateKey() {
+      return this.permissions.includes(FormPermissions.FORM_API_CREATE);
+    },
+    secret() {
+      return this.apiKey && this.apiKey.secret ? this.apiKey.secret : undefined;
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    canDeleteKey() {
-      return false;
+    ...mapActions('form', ['deleteApiKey', 'generateApiKey']),
+    async createKey() {
+      this.loading = true;
+      await this.generateApiKey(this.form.id);
+      this.showSecret = false;
+      this.loading = false;
+      this.showConfirmationDialog = false;
     },
-    canGenerateKey() {
-      return false;
+    async deleteKey() {
+      this.loading = true;
+      await this.deleteApiKey(this.form.id);
+      this.loading = false;
+      this.showDeleteDialog = false;
+    },
+    showHideKey() {
+      this.showSecret = !this.showSecret;
     },
   },
 };
