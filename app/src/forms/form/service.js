@@ -443,8 +443,8 @@ const service = {
       };
 
       // delete existing key for the form.
-      if (currentKey.length) {
-        await FormApiKey.query(trx).deleteById(currentKey[0].id);
+      if (currentKey) {
+        await FormApiKey.query(trx).deleteById(currentKey.id);
       }
 
       // add a record using this schema, mark as published and increment the version number
@@ -464,7 +464,7 @@ const service = {
   deleteApiKey: async (formId) => {
     const currentKey = await service.readApiKey(formId);
     return FormApiKey.query()
-      .deleteById(currentKey[0].id)
+      .deleteById(currentKey.id)
       .throwIfNotFound();
   },
   // ----------------------------------------------------------------------Api Key

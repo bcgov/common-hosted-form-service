@@ -8,7 +8,7 @@ export default {
    * @param {string} formId The form uuid
    * @returns {Promise} An axios response
    */
-  readForm(formId) {
+  readApiKey(formId) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
 
