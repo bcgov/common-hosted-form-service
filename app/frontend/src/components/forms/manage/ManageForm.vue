@@ -64,7 +64,7 @@
             <strong>API Key</strong>
             <span v-if="apiKey">
               <small>
-                Created: {{ apiKey.createdAt }} ({{
+                Created: {{ apiKey.createdAt | formatDate }} ({{
                   apiKey.createdBy
                 }})
               </small>

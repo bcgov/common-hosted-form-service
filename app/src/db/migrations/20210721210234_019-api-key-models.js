@@ -109,7 +109,7 @@ exports.up = function (knex) {
     .then(() => knex.schema.raw(`CREATE OR REPLACE FUNCTION public.form_api_key_audited_func() RETURNS trigger AS $body$
     BEGIN
         if (TG_OP = 'UPDATE') then
-            insert into public.form_api_key_audit ("keyId", "formId", "dbUser", "updatedByUsername", "actionTimestamp", "action", "originalData")
+            insert into public.form_api_key_audit ("keyId", "formId", "dbUser", "updatedByUsername", "actionTimestamp", "action")
             values (
             OLD.id,
             OLD."formId",
@@ -119,22 +119,24 @@ exports.up = function (knex) {
             'U');
             RETURN NEW;
         elsif (TG_OP = 'INSERT') then
-            insert into public.form_api_key_audit ("keyId", "formId", "dbUser", "actionTimestamp", "action", "originalData")
+            insert into public.form_api_key_audit ("keyId", "formId", "dbUser", "updatedByUsername", "actionTimestamp", "action")
             values (
-            OLD.id,
+            NEW.id,
             NEW."formId",
             SESSION_USER,
+            NEW."createdBy",
             now(),
             'I');
             RETURN NEW;
         elsif (TG_OP = 'DELETE') then
-            insert into public.form_api_key_audit ("keyId", "formId", "dbUser", "actionTimestamp", "action", "originalData")
+            insert into public.form_api_key_audit ("keyId", "formId", "dbUser", "actionTimestamp", "action")
             values (
             OLD.id,
             OLD."formId",
             SESSION_USER,
             now(),
             'D');
+            RETURN NEW;
         end if;
     END;
     $body$ LANGUAGE plpgsql`))
