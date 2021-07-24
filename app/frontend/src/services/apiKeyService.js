@@ -1,5 +1,5 @@
-// import { appAxios } from '@/services/interceptors';
-// import { ApiRoutes } from '@/utils/constants';
+import { appAxios } from '@/services/interceptors';
+import { ApiRoutes } from '@/utils/constants';
 
 export default {
   /**
@@ -9,15 +9,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readForm(formId) {
-    // return appAxios().get(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
-    return {
-      data: {
-        formId: formId,
-        secret: `random test ${Math.random().toString(36).substring(7)}`,
-        createdBy: 'userIdir',
-        createdAt: Date.now()
-      }
-    };
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
 
   /**
@@ -27,15 +19,7 @@ export default {
    * @returns {Promise} An axios response
    */
   generateApiKey(formId) {
-    // return appAxios().put(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
-    return {
-      data: {
-        formId: formId,
-        secret: `random test ${Math.random().toString(36).substring(7)}`,
-        createdBy: 'userIdir',
-        createdAt: Date.now()
-      }
-    };
+    return appAxios().put(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
 
   /**
@@ -45,7 +29,6 @@ export default {
    * @returns {Promise} An axios response
    */
   deleteApiKey(formId) {
-    // return appAxios().delete(`${ApiRoutes.FORMS}/${formId}`);
-    return formId;
+    return appAxios().delete(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
 };
