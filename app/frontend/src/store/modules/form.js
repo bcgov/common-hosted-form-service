@@ -333,18 +333,6 @@ export default {
     },
 
     // API Keys
-    async generateApiKey({ commit, dispatch }, formId) {
-      try {
-        const { data } = await apiKeyService.generateApiKey(formId);
-        commit('SET_API_KEY', data);
-      } catch (error) {
-        dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while trying to generate an API Key.',
-          consoleError: `Error generating API Key for form ${formId}: ${error}`,
-        }, { root: true });
-      }
-    },
     async deleteApiKey({ commit, dispatch }, formId) {
       try {
         await apiKeyService.deleteApiKey(formId);
@@ -359,6 +347,35 @@ export default {
           message:
             'An error occurred while trying to delete the API Key.',
           consoleError: `Error deleting API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async generateApiKey({ commit, dispatch }, formId) {
+      try {
+        const { data } = await apiKeyService.generateApiKey(formId);
+        commit('SET_API_KEY', data);
+        dispatch('notifications/addNotification', {
+          message:
+            'An API Key for this form has been created.',
+          type: NotificationTypes.SUCCESS
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while trying to generate an API Key.',
+          consoleError: `Error generating API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async readApiKey({ commit, dispatch }, formId) {
+      try {
+        const { data } = await apiKeyService.readApiKey(formId);
+        commit('SET_API_KEY', data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message:
+            'An error occurred while trying to fetch the API Key.',
+          consoleError: `Error getting API Key for form ${formId}: ${error}`,
         }, { root: true });
       }
     },

@@ -170,7 +170,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['deleteApiKey', 'generateApiKey']),
+    ...mapActions('form', ['deleteApiKey', 'generateApiKey', 'readApiKey']),
     async createKey() {
       this.loading = true;
       await this.generateApiKey(this.form.id);
@@ -184,9 +184,19 @@ export default {
       this.loading = false;
       this.showDeleteDialog = false;
     },
+    async readKey() {
+      this.loading = true;
+      await this.readApiKey(this.form.id);
+      this.loading = false;
+    },
     showHideKey() {
       this.showSecret = !this.showSecret;
     },
+  },
+  created() {
+    if (this.canGenerateKey) {
+      this.readKey();
+    }
   },
 };
 </script>
