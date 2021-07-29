@@ -5,6 +5,7 @@
 /** API Route paths */
 export const ApiRoutes = Object.freeze({
   ADMIN: '/admin',
+  APIKEY: '/apiKey',
   FORMS: '/forms',
   RBAC: '/rbac',
   ROLES: '/roles',
@@ -24,6 +25,11 @@ export const FormRoleCodes = Object.freeze({
 
 /** Permissions a user can have on a form. These are defined in the DB and sent from the API */
 export const FormPermissions = Object.freeze({
+  FORM_API_CREATE: 'form_api_create',
+  FORM_API_READ: 'form_api_read',
+  FORM_API_UPDATE: 'form_api_update',
+  FORM_API_DELETE: 'form_api_delete',
+
   FORM_READ: 'form_read',
   FORM_UPDATE: 'form_update',
   FORM_DELETE: 'form_delete',

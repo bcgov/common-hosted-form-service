@@ -4,6 +4,7 @@ describe('Constants', () => {
   it('ApiRoutes has the right values defined', () => {
     expect(constants.ApiRoutes).toEqual({
       ADMIN: '/admin',
+      APIKEY: '/apiKey',
       FORMS: '/forms',
       RBAC: '/rbac',
       ROLES: '/roles',
@@ -24,6 +25,10 @@ describe('Constants', () => {
 
   it('FormPermissions has the right values defined', () => {
     expect(constants.FormPermissions).toEqual({
+      FORM_API_CREATE: 'form_api_create',
+      FORM_API_READ: 'form_api_read',
+      FORM_API_UPDATE: 'form_api_update',
+      FORM_API_DELETE: 'form_api_delete',
       FORM_READ: 'form_read',
       FORM_UPDATE: 'form_update',
       FORM_DELETE: 'form_delete',

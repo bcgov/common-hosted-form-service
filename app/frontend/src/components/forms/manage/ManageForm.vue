@@ -6,6 +6,7 @@
       class="nrmc-expand-collapse"
     >
       <v-expansion-panel flat>
+        <!-- Form Settings -->
         <v-expansion-panel-header>
           <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
@@ -40,27 +41,49 @@
             <FormSettings :disabled="formSettingsDisabled" />
           </v-form>
 
-          <div
-            v-if="canEditForm && !formSettingsDisabled"
-            class="mb-5"
-          >
-            <v-btn
-              class="mr-5"
-              color="primary"
-              @click="updateSettings"
-            >
+          <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
+            <v-btn class="mr-5" color="primary" @click="updateSettings">
               <span>Update</span>
             </v-btn>
-            <v-btn
-              outlined
-              @click="cancelSettingsEdit"
-            >
+            <v-btn outlined @click="cancelSettingsEdit">
               <span>Cancel</span>
             </v-btn>
           </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
+
+    <!-- Api Key -->
+    <!-- TODO: Remove v-if feature toggle when feature is ready to release -->
+    <v-expansion-panels v-if="false" v-model="apiKeyPanel" flat class="nrmc-expand-collapse">
+      <v-expansion-panel flat>
+        <v-expansion-panel-header>
+          <template v-slot:actions>
+            <v-icon class="icon">$expand</v-icon>
+          </template>
+          <div class="header">
+            <strong>API Key</strong>
+            <span v-if="apiKey">
+              <small v-if="apiKey.updatedBy">
+                Updated: {{ apiKey.updatedAt | formatDate }} ({{
+                  apiKey.updatedBy
+                }})
+              </small>
+              <small v-else>
+                Created: {{ apiKey.createdAt | formatDate }} ({{
+                  apiKey.createdBy
+                }})
+              </small>
+            </span>
+          </div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <ApiKey />
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <!-- Form Design -->
     <v-expansion-panels
       v-model="versionsPanel"
       flat
@@ -97,14 +120,16 @@
 import { mapGetters, mapActions } from 'vuex';
 
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
+import ApiKey from '@/components/forms/manage/ApiKey.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import ManageVersions from '@/components/forms/manage/ManageVersions.vue';
 
 export default {
   name: 'ManageForm',
-  components: { FormSettings, ManageVersions },
+  components: { ApiKey, FormSettings, ManageVersions },
   data() {
     return {
+      apiKeyPanel: 1,
       formSettingsDisabled: true,
       settingsFormValid: false,
       settingsPanel: 1,
@@ -112,7 +137,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['drafts', 'form', 'permissions']),
+    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions']),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
