@@ -139,9 +139,8 @@ export default {
       try {
         await formService.deleteForm(state.form.id);
         dispatch('notifications/addNotification', {
-          message:
-            `Form "${state.form.name}" has been deleted successfully.`,
-          type: NotificationTypes.SUCCESS
+          message: `Form "${state.form.name}" has been deleted successfully.`,
+          ...NotificationTypes.SUCCESS,
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -194,8 +193,7 @@ export default {
         await formService.publishDraft(formId, draftId);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while publishing.',
+          message: 'An error occurred while publishing.',
           consoleError: `Error publishing ${draftId}: ${error}`,
         }, { root: true });
       }
@@ -257,9 +255,8 @@ export default {
         // Get this submission
         await formService.deleteSubmission(submissionId);
         dispatch('notifications/addNotification', {
-          message:
-            'Submission deleted successfully.',
-          type: NotificationTypes.SUCCESS
+          message: 'Submission deleted successfully.',
+          ...NotificationTypes.SUCCESS,
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {

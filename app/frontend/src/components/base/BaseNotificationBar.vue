@@ -1,6 +1,7 @@
 <template>
   <v-alert
-    :type="notification.type"
+    :class="'target-notification ' + notification.class"
+    :icon="notification.icon"
     prominent
     dismissible
     @input="alertClosed"
@@ -16,8 +17,9 @@ export default {
   name: 'BaseNotificationBar',
   props: {
     notification: {
-      type: Object,
-      required: true,
+      class: Object,
+      icon: Object,
+      message: Object,
     },
   },
   data() {
@@ -43,3 +45,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .target-notification >>> .v-alert__icon.v-icon:after {
+    display: none;
+  }
+</style>

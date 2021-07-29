@@ -90,13 +90,11 @@
       </v-col>
     </v-row>
     <v-alert
-      :color="saving ? 'primary' : undefined"
-      dense
-      text
-      transition="scale-transition"
-      :type="saving ? 'info' : 'success'"
       :value="saved || saving"
-      class="mt-md-0 mt-3"
+      :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
+      :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
+      :icon="saving ? NOTIFICATIONS_TYPES.INFO.icon : NOTIFICATIONS_TYPES.SUCCESS.icon"
+      transition='scale-transition'
     >
       <div v-if="saving">
         <v-progress-linear indeterminate />
@@ -148,7 +146,7 @@ import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
 
 import { formService } from '@/services';
-import { IdentityMode, IdentityProviders } from '@/utils/constants';
+import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
 
 export default {
@@ -200,8 +198,8 @@ export default {
     ID_MODE() {
       return IdentityMode;
     },
-    ID_PROVIDERS() {
-      return IdentityProviders;
+    NOTIFICATIONS_TYPES() {
+      return NotificationTypes;
     },
     designerOptions() {
       return {
@@ -388,8 +386,7 @@ export default {
       } catch (error) {
         await this.setDirtyFlag(true);
         this.addNotification({
-          message:
-            'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
+          message: 'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
           consoleError: `Error updating or creating form (FormID: ${this.formId}, versionId: ${this.versionId}, draftId: ${this.draftId}) Error: ${error}`,
         });
       } finally {

@@ -44,15 +44,13 @@
       <!-- The form submission -->
       <v-col cols="12" :md="form.enableStatusUpdates ? 8 : 12" class="pl-0 pt-0">
         <v-alert
-          class="d-print-none"
-          color="primary"
-          dense
-          text
-          transition="scale-transition"
-          type="info"
           :value="!submissionReadOnly"
+          :class="'d-print-none ' + NOTIFICATIONS_TYPES.INFO.class"
+          :color="NOTIFICATIONS_TYPES.INFO.color"
+          :icon="NOTIFICATIONS_TYPES.INFO.icon"
+          transition='scale-transition'
         >
-          <strong>After editing, re-submit the form to save your changes.</strong>
+          After editing, re-submit the form to save your changes.
         </v-alert>
         <v-card outlined class="review-form">
           <v-row no-gutters>
@@ -131,6 +129,7 @@ import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue
 import FormViewer from '@/components/designer/FormViewer.vue';
 import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
 import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
+import { NotificationTypes } from '@/utils/constants';
 
 export default {
   name: 'FormSubmission',
@@ -151,7 +150,12 @@ export default {
       submissionReadOnly: true,
     };
   },
-  computed: mapGetters('form', ['form', 'formSubmission', 'permissions']),
+  computed: {
+    ...mapGetters('form', ['form', 'formSubmission', 'permissions']),
+    NOTIFICATIONS_TYPES() {
+      return NotificationTypes;
+    },
+  },
   methods: {
     ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
     onDelete() {
