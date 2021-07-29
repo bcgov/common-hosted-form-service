@@ -116,7 +116,7 @@ exports.up = function (knex) {
             SESSION_USER,
             NEW."updatedBy",
             now(),
-            'U');
+            TG_OP);
             RETURN NEW;
         elsif (TG_OP = 'INSERT') then
             insert into public.form_api_key_audit ("keyId", "formId", "dbUser", "updatedByUsername", "actionTimestamp", "action")
@@ -126,7 +126,7 @@ exports.up = function (knex) {
             SESSION_USER,
             NEW."createdBy",
             now(),
-            'I');
+            TG_OP);
             RETURN NEW;
         elsif (TG_OP = 'DELETE') then
             insert into public.form_api_key_audit ("keyId", "formId", "dbUser", "actionTimestamp", "action")
@@ -135,7 +135,7 @@ exports.up = function (knex) {
             OLD."formId",
             SESSION_USER,
             now(),
-            'D');
+            TG_OP);
             RETURN NEW;
         end if;
     END;

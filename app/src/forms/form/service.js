@@ -436,24 +436,25 @@ const service = {
       const currentKey = await service.readApiKey(formId);
       trx = await transaction.start(FormApiKey.knex());
 
-      const newKey = {
-        formId: formId,
-        secret: uuidv4(),
-        createdBy: currentUser.username
-      };
-
-      // delete existing key for the form.
       if (currentKey) {
-        await FormApiKey.query(trx).deleteById(currentKey.id);
+        // Replace API key for the form
+        await FormApiKey.query(trx)
+          .modify('filterFormId', formId)
+          .update({
+            secret: uuidv4(),
+            updatedBy: currentUser.username
+          });
+      } else {
+        // Add new API key for the form
+        await FormApiKey.query(trx).insert({
+          formId: formId,
+          secret: uuidv4(),
+          createdBy: currentUser.username
+        });
       }
 
-      // add a record using this schema, mark as published and increment the version number
-      await FormApiKey.query(trx).insert(newKey);
-
       await trx.commit();
-
-      // return the new key
-      return await service.readApiKey(formId);
+      return service.readApiKey(formId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
