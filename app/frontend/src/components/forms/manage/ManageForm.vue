@@ -63,7 +63,12 @@
           <div class="header">
             <strong>API Key</strong>
             <span v-if="apiKey">
-              <small>
+              <small v-if="apiKey.updatedBy">
+                Updated: {{ apiKey.updatedAt | formatDate }} ({{
+                  apiKey.updatedBy
+                }})
+              </small>
+              <small v-else>
                 Created: {{ apiKey.createdAt | formatDate }} ({{
                   apiKey.createdBy
                 }})

@@ -108,8 +108,7 @@ export default {
         commit('SET_FORMLIST', forms);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching your forms.',
+          message: 'An error occurred while fetching your forms.',
           consoleError: `Error getting user data: ${error}`,
         }, { root: true });
       }
@@ -127,8 +126,7 @@ export default {
         }
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching your user data for this form.',
+          message: 'An error occurred while fetching your user data for this form.',
           consoleError: `Error getting user data using formID ${formId}: ${error}`,
         }, { root: true });
       }
@@ -147,8 +145,7 @@ export default {
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            `An error occurred while attempting to delete "${state.form.name}".`,
+          message: `An error occurred while attempting to delete "${state.form.name}".`,
           consoleError: `Error deleting form ${state.form.id}: ${error}`,
         }, { root: true });
       }
@@ -158,8 +155,7 @@ export default {
         await formService.deleteDraft(formId, draftId);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while deleting this draft.',
+          message: 'An error occurred while deleting this draft.',
           consoleError: `Error deleting ${draftId}: ${error}`,
         }, { root: true });
       }
@@ -171,8 +167,7 @@ export default {
         commit('SET_DRAFTS', data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while scanning for drafts for this form.',
+          message: 'An error occurred while scanning for drafts for this form.',
           consoleError: `Error getting drafts for form ${formId}: ${error}`,
         }, { root: true });
       }
@@ -189,8 +184,7 @@ export default {
         commit('SET_FORM', data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching this form.',
+          message: 'An error occurred while fetching this form.',
           consoleError: `Error getting form ${formId}: ${error}`,
         }, { root: true });
       }
@@ -211,8 +205,7 @@ export default {
         await formService.publishVersion(formId, versionId, publish);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            `An error occurred while ${publish ? 'publishing' : 'unpublishing'}.`,
+          message: `An error occurred while ${publish ? 'publishing' : 'unpublishing'}.`,
           consoleError: `Error in toggleVersionPublish ${versionId} ${publish}: ${error}`,
         }, { root: true });
       }
@@ -250,8 +243,7 @@ export default {
         });
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while updating the settings for this form.',
+          message: 'An error occurred while updating the settings for this form.',
           consoleError: `Error updating form ${state.form.id}: ${error}`,
         }, { root: true });
       }
@@ -271,8 +263,7 @@ export default {
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while deleting this submission.',
+          message: 'An error occurred while deleting this submission.',
           consoleError: `Error deleting submission ${submissionId}: ${error}`,
         }, { root: true });
       }
@@ -287,8 +278,7 @@ export default {
         commit('SET_FORM', response.data.form);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching this submission.',
+          message: 'An error occurred while fetching this submission.',
           consoleError: `Error getting submission ${submissionId}: ${error}`,
         }, { root: true });
       }
@@ -303,8 +293,7 @@ export default {
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching submissions for this form.',
+          message: 'An error occurred while fetching submissions for this form.',
           consoleError: `Error getting submissions for ${formId}: ${error}`,
         }, { root: true });
       }
@@ -325,8 +314,7 @@ export default {
         commit('SET_VERSION', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while fetching this form.',
+          message: 'An error occurred while fetching this form.',
           consoleError: `Error getting version ${versionId} for form ${formId}: ${error}`,
         }, { root: true });
       }
@@ -344,8 +332,7 @@ export default {
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while trying to delete the API Key.',
+          message: 'An error occurred while trying to delete the API Key.',
           consoleError: `Error deleting API Key for form ${formId}: ${error}`,
         }, { root: true });
       }
@@ -361,8 +348,7 @@ export default {
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while trying to generate an API Key.',
+          message: 'An error occurred while trying to generate an API Key.',
           consoleError: `Error generating API Key for form ${formId}: ${error}`,
         }, { root: true });
       }
@@ -373,8 +359,7 @@ export default {
         commit('SET_API_KEY', data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message:
-            'An error occurred while trying to fetch the API Key.',
+          message: 'An error occurred while trying to fetch the API Key.',
           consoleError: `Error getting API Key for form ${formId}: ${error}`,
         }, { root: true });
       }

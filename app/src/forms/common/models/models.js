@@ -1157,7 +1157,7 @@ class Note extends Timestamps(Model) {
   }
 }
 
-class FormApiKey extends Model {
+class FormApiKey extends Timestamps(Model) {
   static get tableName() {
     return 'form_api_key';
   }

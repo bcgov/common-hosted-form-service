@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
-      <v-icon class="mr-1" color="primary">info</v-icon> You must br the
+      <v-icon class="mr-1" color="primary">info</v-icon> You must be the
       <strong>Form Owner</strong> to manage API Keys.
     </div>
     <h3 class="mt-3">Disclaimer</h3>
@@ -35,7 +35,6 @@
         <v-col cols="12" sm="5" xl="3">
           <v-text-field
             dense
-            disabled
             flat
             hide-details
             label="Secret"
@@ -77,7 +76,6 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                class="ml-2"
                 color="red"
                 :disabled="!canDeleteKey"
                 icon
@@ -105,12 +103,12 @@
       <template #title>Confirm Key Generation</template>
       <template #text>
         <span v-if="!apiKey">
-          Create an API Key for this form? <br />
-          Ensure you follow the Dislaimer on this page.
+          Create an API Key for this form?<br />
+          Ensure you follow the Disclaimer on this page.
         </span>
         <span v-else>
           Regenerate the API Key? <br />
-          <strong>Continuing will delete your current API Key access.</strong>.
+          <strong>Continuing will delete your current API Key access</strong>.
         </span>
       </template>
       <template #button-text-continue>
@@ -126,7 +124,7 @@
       @continue-dialog="deleteKey"
     >
       <template #title>Confirm Deletion</template>
-      <template #text> Are you sure you wish to delete your API Key? </template>
+      <template #text>Are you sure you wish to delete your API Key?</template>
       <template #button-text-continue>
         <span>Delete</span>
       </template>
@@ -156,13 +154,13 @@ export default {
         this.apiKey
       );
     },
+    canGenerateKey() {
+      return this.permissions.includes(FormPermissions.FORM_API_CREATE);
+    },
     canReadSecret() {
       return (
         this.permissions.includes(FormPermissions.FORM_API_READ) && this.apiKey
       );
-    },
-    canGenerateKey() {
-      return this.permissions.includes(FormPermissions.FORM_API_CREATE);
     },
     secret() {
       return this.apiKey && this.apiKey.secret ? this.apiKey.secret : undefined;
