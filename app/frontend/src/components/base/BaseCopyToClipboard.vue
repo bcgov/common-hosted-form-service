@@ -18,7 +18,7 @@
       </template>
       <span>{{ tooltipText }}</span>
     </v-tooltip>
-    <v-snackbar
+    <!-- <v-snackbar
       v-model="clipSnackbar.on"
       right
       top
@@ -35,13 +35,15 @@
       >
         <v-icon>close</v-icon>
       </v-btn>
-    </v-snackbar>
+    </v-snackbar> -->
   </span>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import Vue from 'vue';
 import VueClipboard from 'vue-clipboard2';
+import { NotificationTypes } from '@/utils/constants';
 
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
@@ -78,16 +80,24 @@ export default {
     };
   },
   methods: {
+    ...mapActions('notifications', ['addNotification']),
     clipboardSuccessHandler() {
-      this.clipSnackbar.on = true;
-      this.clipSnackbar.text = this.snackBarText;
-      this.clipSnackbar.color = 'info';
+      // this.clipSnackbar.on = true;
+      // this.clipSnackbar.text = this.snackBarText;
+      // this.clipSnackbar.color = 'info';
       this.$emit('copied');
+      this.addNotification({
+        message: 'Link copied to clipboard.',
+        ...NotificationTypes.INFO,
+      });
     },
     clipboardErrorHandler() {
-      this.clipSnackbar.on = true;
-      this.clipSnackbar.text = 'Error attempting to copy to clipboard';
-      this.clipSnackbar.color = 'error';
+      // this.clipSnackbar.on = true;
+      // this.clipSnackbar.text = 'Error attempting to copy to clipboard';
+      // this.clipSnackbar.color = 'error';
+      this.addNotification({
+        message: 'Error attempting to copy to clipboard.'
+      });
     },
   },
 };

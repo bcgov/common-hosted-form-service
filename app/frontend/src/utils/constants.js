@@ -72,10 +72,28 @@ export const IdentityProviders = Object.freeze({
   IDIR: 'idir' // IDIR
 });
 
-/** Corresponds to vuetfy alert classes for notification types */
+/** Corresponds to vuetify alert classes for notification types */
 export const NotificationTypes = Object.freeze({
-  ERROR: 'error',
-  SUCCESS: 'success'
+  ERROR: {
+    type: 'error',
+    class: 'alert-error',
+    icon: 'error',
+  },
+  SUCCESS: {
+    type: 'success',
+    class: 'alert-success',
+    icon: 'check_circle',
+  },
+  INFO: {
+    type: 'info',
+    class: 'alert-info',
+    icon: 'info',
+  },
+  WARNING: {
+    type: 'warning',
+    class:'alert-warning',
+    icon: 'warning',
+  },
 });
 
 export const Regex = Object.freeze({

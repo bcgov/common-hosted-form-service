@@ -9,6 +9,13 @@ localVue.use(Vuex);
 describe('BaseNotificationBar.vue', () => {
   let mockDeleteNotification = jest.fn();
   let store;
+  const notificationProperties = {
+    type: 'error',
+    class: 'alert-error',
+    color: '#f2dede',
+    icon: 'error',
+    message: 'test',
+  };
 
   beforeEach(() => {
     store = new Vuex.Store({
@@ -28,21 +35,28 @@ describe('BaseNotificationBar.vue', () => {
   });
 
   it('renders', () => {
-    const msg = 'test';
     const wrapper = shallowMount(BaseNotificationBar, {
       localVue,
-      propsData: { notification: { message: msg, type: 'error' } },
+      propsData: {
+        notification: {
+          ...notificationProperties,
+        }
+      },
       store
     });
 
     expect(wrapper.html()).toMatch('v-alert');
-    expect(wrapper.text()).toMatch(msg);
+    expect(wrapper.text()).toMatch(notificationProperties.message);
   });
 
   it('alertClosed behaves correctly', () => {
     const wrapper = shallowMount(BaseNotificationBar, {
       localVue,
-      propsData: { notification: { message: 'test', type: 'error' } },
+      propsData: {
+        notification: {
+          ...notificationProperties,
+        }
+      },
       store
     });
     wrapper.vm.alertClosed();
@@ -53,7 +67,11 @@ describe('BaseNotificationBar.vue', () => {
   it('clears timeout before destroy', () => {
     const wrapper = shallowMount(BaseNotificationBar, {
       localVue,
-      propsData: { notification: { message: 'test', type: 'error' } },
+      propsData: {
+        notification: {
+          ...notificationProperties,
+        }
+      },
       store
     });
     wrapper.destroy();

@@ -16,12 +16,11 @@
     </div>
     <div class="form-wrapper">
       <v-alert
-        :color="saving ? 'primary' : undefined"
-        dense
-        text
-        transition="scale-transition"
-        :type="saving ? 'info' : 'success'"
         :value="saved || saving"
+        :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
+        :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
+        :icon="saving ? NOTIFICATIONS_TYPES.INFO.icon : NOTIFICATIONS_TYPES.SUCCESS.icon"
+        transition="scale-transition"
       >
         <div v-if="saving">
           <v-progress-linear indeterminate />
@@ -55,6 +54,7 @@ import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
+import { NotificationTypes } from '@/utils/constants';
 
 export default {
   name: 'FormViewer',
@@ -104,6 +104,9 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['authenticated', 'token']),
+    NOTIFICATIONS_TYPES() {
+      return NotificationTypes;
+    },
     viewerOptions() {
       return {
         sanitizeConfig: {

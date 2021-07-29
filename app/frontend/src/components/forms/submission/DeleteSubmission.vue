@@ -60,7 +60,6 @@ export default {
   computed: mapGetters('form', ['form']),
   methods: {
     ...mapActions('form', ['deleteSubmission']),
-    ...mapActions('notifications', ['addNotification']),
     async delSub() {
       await this.deleteSubmission(this.submissionId);
       this.showDeleteDialog = false;

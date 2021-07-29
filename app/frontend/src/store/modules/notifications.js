@@ -26,7 +26,7 @@ export default {
   actions: {
     addNotification({ commit }, notification) {
       if (notification.consoleError) console.error(notification.consoleError); // eslint-disable-line no-console
-      if (!notification.type) notification.type = NotificationTypes.ERROR; // Error (red) by default
+      if (!notification.type) notification = { ...notification, ...NotificationTypes.ERROR }; // Error (red) by default
       commit('PUSH', notification);
     },
     deleteNotification({ commit }, notificationToRemove) {

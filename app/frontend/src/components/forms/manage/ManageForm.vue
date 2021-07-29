@@ -184,15 +184,14 @@ export default {
           await this.updateForm();
           this.formSettingsDisabled = true;
           this.addNotification({
-            type: NotificationTypes.SUCCESS,
             message: 'Your form settings have been updated successfully.',
+            ...NotificationTypes.SUCCESS,
           });
           this.fetchForm(this.form.id);
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to update the settings for this form.',
+          message: 'An error occurred while attempting to update the settings for this form.',
           consoleError: `Error updating settings for ${this.form.id}: ${error}`,
         });
       }

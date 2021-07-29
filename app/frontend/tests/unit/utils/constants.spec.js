@@ -64,8 +64,26 @@ describe('Constants', () => {
 
   it('NotificationTypes has the right values defined', () => {
     expect(constants.NotificationTypes).toEqual({
-      ERROR: 'error',
-      SUCCESS: 'success'
+      ERROR: {
+        type: 'error',
+        class: 'alert-error',
+        icon: 'error',
+      },
+      SUCCESS: {
+        type: 'success',
+        class: 'alert-success',
+        icon: 'check_circle',
+      },
+      INFO: {
+        type: 'info',
+        class: 'alert-info',
+        icon: 'info',
+      },
+      WARNING: {
+        type: 'warning',
+        class:'alert-warning',
+        icon: 'warning',
+      },
     });
   });
 });
