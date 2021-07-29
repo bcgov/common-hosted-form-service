@@ -71,7 +71,8 @@ describe('form actions', () => {
       formService.readForm.mockResolvedValue({ data: { form: {} } });
       await store.actions.fetchForm(mockStore, { formId: 'fId' });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_API_KEY', expect.any(Object));
       expect(mockStore.commit).toHaveBeenCalledWith('SET_FORM', expect.any(Object));
     });
 

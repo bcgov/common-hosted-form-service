@@ -1,4 +1,4 @@
-const { FileStorage, Form, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
+const { FileStorage, Form, FormApiKey, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -416,6 +416,59 @@ const service = {
       .withGraphFetched('statusCode')
       .where('formId', formId);
   },
+
+  // -----------------------------------------------------------------------------
+  // API Key
+  // -----------------------------------------------------------------------------
+  // Modification actions are audited in form_api_key_audit via a trigger
+
+  // Get the current key for a form
+  readApiKey: async (formId) => {
+    return FormApiKey.query()
+      .modify('filterFormId', formId)
+      .first();
+  },
+
+  // Add an API key to the form, delete any existing key
+  createOrReplaceApiKey: async (formId, currentUser) => {
+    let trx;
+    try {
+      const currentKey = await service.readApiKey(formId);
+      trx = await transaction.start(FormApiKey.knex());
+
+      if (currentKey) {
+        // Replace API key for the form
+        await FormApiKey.query(trx)
+          .modify('filterFormId', formId)
+          .update({
+            secret: uuidv4(),
+            updatedBy: currentUser.username
+          });
+      } else {
+        // Add new API key for the form
+        await FormApiKey.query(trx).insert({
+          formId: formId,
+          secret: uuidv4(),
+          createdBy: currentUser.username
+        });
+      }
+
+      await trx.commit();
+      return service.readApiKey(formId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  // Hard delete the current key for a form
+  deleteApiKey: async (formId) => {
+    const currentKey = await service.readApiKey(formId);
+    return FormApiKey.query()
+      .deleteById(currentKey.id)
+      .throwIfNotFound();
+  },
+  // ----------------------------------------------------------------------Api Key
 };
 
 module.exports = service;

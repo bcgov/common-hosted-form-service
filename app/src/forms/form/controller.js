@@ -169,6 +169,30 @@ module.exports = {
     } catch (error) {
       next(error);
     }
-  }
+  },
+  readApiKey: async (req, res, next) => {
+    try {
+      const response = await service.readApiKey(req.params.formId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  createOrReplaceApiKey: async (req, res, next) => {
+    try {
+      const response = await service.createOrReplaceApiKey(req.params.formId, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteApiKey: async (req, res, next) => {
+    try {
+      const response = await service.deleteApiKey(req.params.formId);
+      res.status(204).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 
 };

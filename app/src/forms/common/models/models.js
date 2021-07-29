@@ -1157,10 +1157,27 @@ class Note extends Timestamps(Model) {
   }
 }
 
+class FormApiKey extends Timestamps(Model) {
+  static get tableName() {
+    return 'form_api_key';
+  }
+
+  static get modifiers() {
+    return {
+      filterFormId(query, value) {
+        if (value) {
+          query.where('formId', value);
+        }
+      },
+    };
+  }
+}
+
 
 module.exports = {
   FileStorage: FileStorage,
   Form: Form,
+  FormApiKey: FormApiKey,
   FormIdentityProvider: FormIdentityProvider,
   FormSubmission: FormSubmission,
   FormStatusCode: FormStatusCode,

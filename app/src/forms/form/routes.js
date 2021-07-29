@@ -104,4 +104,16 @@ routes.get('/:formId/statusCodes', currentUser, hasFormPermissions([P.FORM_READ]
   await controller.getStatusCodes(req, res, next);
 });
 
+routes.get('/:formId/apiKey', currentUser, hasFormPermissions(P.FORM_API_READ), async (req, res, next) => {
+  await controller.readApiKey(req, res, next);
+});
+
+routes.put('/:formId/apiKey', currentUser, hasFormPermissions(P.FORM_API_CREATE), async (req, res, next) => {
+  await controller.createOrReplaceApiKey(req, res, next);
+});
+
+routes.delete('/:formId/apiKey', currentUser, hasFormPermissions(P.FORM_API_DELETE), async (req, res, next) => {
+  await controller.deleteApiKey(req, res, next);
+});
+
 module.exports = routes;
