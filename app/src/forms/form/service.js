@@ -423,7 +423,7 @@ const service = {
   // Modification actions are audited in form_api_key_audit via a trigger
 
   // Get the current key for a form
-  readApiKey: async (formId) => {
+  readApiKey: (formId) => {
     return FormApiKey.query()
       .modify('filterFormId', formId)
       .first();
