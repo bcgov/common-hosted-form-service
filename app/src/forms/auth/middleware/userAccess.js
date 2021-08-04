@@ -38,6 +38,11 @@ const currentUser = async (req, res, next) => {
 
 const hasFormPermissions = (permissions) => {
   return (req, res, next) => {
+    // Skip permission checks if requesting as API entity
+    if(req.apiUser) {
+      return next();
+    }
+
     if (!req.currentUser) {
       // cannot find the currentUser... guess we don't have access... FAIL!
       return new Problem(401, { detail: 'Current user not found on request.' }).send(res);
