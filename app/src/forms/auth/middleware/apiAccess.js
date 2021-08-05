@@ -2,7 +2,7 @@ const Problem = require('api-problem');
 const basicAuth = require('express-basic-auth');
 const { validate: uuidValidate } = require('uuid');
 
-const { readApiKey } = require('../../form/service');
+const service = require('../../form/service');
 
 module.exports = async (req, res, next) => {
   // Check if authorization header is basic auth
@@ -12,8 +12,8 @@ module.exports = async (req, res, next) => {
     let secret = ''; // Must be initialized as a string
 
     if (params.formId && uuidValidate(params.formId)) {
-      const result = await readApiKey(params.formId);
-      secret = result.secret;
+      const result = await service.readApiKey(params.formId);
+      secret = (result && result.secret) ? result.secret : '';
     }
 
     const checkCredentials = basicAuth({
@@ -21,14 +21,15 @@ module.exports = async (req, res, next) => {
       authorizer: (username, password) => {
         const userMatch = params.formId && basicAuth.safeCompare(username, params.formId);
         const pwMatch = secret && basicAuth.safeCompare(password, secret);
-        return userMatch & pwMatch;
+
+        req.apiUser = userMatch & pwMatch; // Flag current request as an API entity
+        return req.apiUser;
       },
       unauthorizedResponse: () => {
         return new Problem(401, { detail: 'Invalid authorization credentials.' });
       }
     });
 
-    req.apiUser = true; // Flag current request as an API entity
     return checkCredentials(req, res, next);
   } else {
     next();
