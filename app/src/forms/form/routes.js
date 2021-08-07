@@ -55,7 +55,7 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
   await controller.readVersion(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/fields', async (req, res, next) => {
+routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readVersionFields(req, res, next);
 });
 
@@ -75,7 +75,7 @@ routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPe
   await controller.createSubmission(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/submissions/discover', (req, res, next) => {
+routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
   controller.listSubmissionFields(req, res, next);
 });
 
