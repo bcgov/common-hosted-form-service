@@ -330,12 +330,12 @@ const service = {
 
   listSubmissionFields: (formVersionId, fields) => {
     return FormSubmission.query()
-      .select(fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))))
+      .select('id', fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))))
       .where('formVersionId', formVersionId)
       .modify('orderDescending');
   },
 
-  readSubmission: async (id) => {
+  readSubmission: (id) => {
     return FormSubmission.query()
       .findById(id)
       .throwIfNotFound();
