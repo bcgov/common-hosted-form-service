@@ -215,7 +215,7 @@ const service = {
     }
   },
 
-  readVersion: async (formVersionId) => {
+  readVersion: (formVersionId) => {
     return FormVersion.query()
       .findById(formVersionId)
       .throwIfNotFound();
@@ -235,10 +235,7 @@ const service = {
       return fields.flat();
     };
 
-    const { schema } = await FormVersion.query()
-      .findById(formVersionId)
-      .throwIfNotFound();
-
+    const { schema } = await service.readVersion(formVersionId);
     return schema.components.flatMap(c => findFields(c));
   },
 
