@@ -31,7 +31,7 @@ describe(`GET ${basePath}/docs`, () => {
     const response = await request(app).get(`${basePath}/docs`);
 
     expect(response.statusCode).toBe(200);
-    expect(response.text).toContain('<title>Common Hosted Forms - Documentation ');
+    expect(response.text).toContain('<title>Common Hosted Form Service - Documentation ');
   });
 });
 
