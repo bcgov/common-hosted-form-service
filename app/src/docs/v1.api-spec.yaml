@@ -11,13 +11,13 @@ info:
     export, as well as notifications, document generation and reporting.
   license:
     name: Apache 2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   contact:
     name: NR Common Service Showcase
     email: NR.CommonServiceShowcase@gov.bc.ca
 externalDocs:
   description: Project Readmes
-  url: 'https://github.com/bcgov/common-hosted-form-service'
+  url: https://github.com/bcgov/common-hosted-form-service
 servers:
   - url: /api/v1
     description: This Server
@@ -146,7 +146,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}':
+  /forms/{formId}:
     get:
       summary: Get details of a form (and metadata for versions)
       operationId: readForm
@@ -165,6 +165,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -197,6 +199,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -223,6 +227,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormBasic'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -231,7 +237,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/apiKey':
+  /forms/{formId}/apiKey:
     get:
       summary: Get current API Key
       description: Get the active api key secret for a form
@@ -297,7 +303,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/export':
+  /forms/{formId}/export:
     get:
       summary: Export submissions for a form
       operationId: export
@@ -353,6 +359,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmissionExport'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -361,7 +369,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/versions':
+  /forms/{formId}/versions:
     get:
       summary: List all versions of a form
       operationId: listVersions
@@ -382,6 +390,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormVersion'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -390,7 +400,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/versions/{formVersionId}':
+  /forms/{formId}/versions/{formVersionId}:
     get:
       summary: Get a single form version
       operationId: readVersion
@@ -410,6 +420,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersion'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -418,7 +430,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/version':
+  /forms/{formId}/versions/{formVersionId}/fields:
+    get:
+      summary: Get a list of valid form fields in this form version
+      operationId: readVersionFields
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Version
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/formVersionIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormVersionFields'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/version:
     get:
       summary: Get published version of a form
       operationId: readPublishedForm
@@ -437,6 +479,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -445,7 +489,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/versions/{formVersionId}/publish':
+  /forms/{formId}/versions/{formVersionId}/publish:
     post:
       summary: Publish a version of a form
       operationId: publishVersion
@@ -472,6 +516,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersionBasic'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -480,7 +526,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/drafts':
+  /forms/{formId}/drafts:
     get:
       summary: List drafts for a form
       operationId: listDrafts
@@ -501,6 +547,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormDraft'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -541,6 +589,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -549,7 +599,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/drafts/{formVersionDraftId}':
+  /forms/{formId}/drafts/{formVersionDraftId}:
     get:
       summary: Get a form draft
       operationId: readDraft
@@ -569,6 +619,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -598,7 +650,6 @@ paths:
               properties:
                 schema:
                   $ref: '#/components/schemas/FormSchema'
-                  description: this is the json for the form design.
       responses:
         '200':
           description: OK
@@ -606,6 +657,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -629,6 +682,8 @@ paths:
       responses:
         '204':
           description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -637,7 +692,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/drafts/{formVersionDraftId}/publish':
+  /forms/{formId}/drafts/{formVersionDraftId}/publish:
     post:
       summary: Publish a form draft
       operationId: publishDraft
@@ -657,6 +712,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersionBasic'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -665,7 +722,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/submissions':
+  /forms/{formId}/submissions:
     get:
       summary: List submissions for a form
       operationId: listFormSubmissions
@@ -686,6 +743,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmissionSummary'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -694,7 +753,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/versions/{formVersionId}/submissions':
+  /forms/{formId}/versions/{formVersionId}/submissions:
     get:
       summary: List submissions from a form version
       operationId: listSubmissions
@@ -716,6 +775,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmission'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -749,6 +810,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormSubmission'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -757,7 +820,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/submissions/{formSubmissionId}':
+  /forms/{formId}/versions/{formVersionId}/submissions/discover:
+    get:
+      summary: List field value submissions from a form version
+      description: >-
+        A queryable endpoint for acquiring a specific subset of data from the
+        submissions
+      operationId: listDiscoverSubmissions
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/formVersionIdParam'
+        - in: query
+          name: fields
+          schema:
+            type: string
+            example: textField1,checkbox1,radioGroup1,email1
+          description: >-
+            A list of form fields to search on. Refer to the related `/fields`
+            endpoint for a list of valid values to query for. The list can be
+            comma separated or by repeating the same fields query multiple
+            times.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormSubmissionDiscover'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /submissions/{formSubmissionId}:
     get:
       summary: Get a form submission
       operationId: readSubmission
@@ -830,7 +938,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/submissions/{formSubmissionId}/email':
+  /submissions/{formSubmissionId}/email:
     post:
       summary: Email a message with link to a submission
       operationId: emailSubmission
@@ -873,7 +981,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/submissions/{formSubmissionId}/edits':
+  /submissions/{formSubmissionId}/edits:
     get:
       summary: Get an audit list of edits to a submission
       operationId: readSubmissionEdits
@@ -898,7 +1006,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/forms/{formId}/statusCodes':
+  /forms/{formId}/statusCodes:
     get:
       summary: List status codes for a form
       operationId: getStatusCodes
@@ -923,7 +1031,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/submissions/{formSubmissionId}/status':
+  /submissions/{formSubmissionId}/status:
     get:
       summary: Get the list of status history for a submission
       operationId: readSubmissionStatus
@@ -978,7 +1086,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/submissions/{formSubmissionId}/notes':
+  /submissions/{formSubmissionId}/notes:
     get:
       summary: Get the list of notes for a submission
       operationId: readSubmissioNotes
@@ -1071,7 +1179,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/files/{fileId}':
+  /files/{fileId}:
     get:
       summary: Get a file
       operationId: fileGet
@@ -1170,7 +1278,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/permissions/{code}':
+  /permissions/{code}:
     get:
       summary: Get a permission
       operationId: readPermission
@@ -1293,7 +1401,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/roles/{code}':
+  /roles/{code}:
     get:
       summary: Get a role
       operationId: getRole
@@ -1385,7 +1493,7 @@ paths:
           name: accessLevels
           schema:
             type: string
-          description: 'filter on the user access level for the form (public, idp, team)'
+          description: filter on the user access level for the form (public, idp, team)
       responses:
         '200':
           description: OK
@@ -1889,7 +1997,7 @@ paths:
           name: search
           schema:
             type: string
-          description: 'string to match against  username, fullName and Email'
+          description: string to match against  username, fullName and Email
       responses:
         '200':
           description: OK
@@ -1907,7 +2015,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/users/{userId}':
+  /users/{userId}:
     get:
       summary: Get a user and their roles
       operationId: readUser
@@ -1971,7 +2079,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/admin/forms/{formId}':
+  /admin/forms/{formId}:
     get:
       summary: Get top level details of a form
       operationId: adminReadForm
@@ -1997,7 +2105,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/admin/forms/{formId}/restore':
+  /admin/forms/{formId}/restore:
     put:
       summary: Un-delete a soft deleted form
       operationId: adminRestoreForm
@@ -2075,7 +2183,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  '/admin/users/{userId}':
+  /admin/users/{userId}:
     get:
       summary: Get a user
       operationId: adminReadUser
@@ -2118,7 +2226,7 @@ components:
       bearerFormat: JWT
     OpenID:
       type: openIdConnect
-      openIdConnectUrl: 'https://example.com/.well-known/openid-configuration'
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
   parameters:
     fileIdParam:
       in: path
@@ -2176,7 +2284,7 @@ components:
             title:
               example: Bad Request
             type:
-              example: 'https://httpstatuses.com/400'
+              example: https://httpstatuses.com/400
     Conflict:
       allOf:
         - $ref: '#/components/schemas/Problem'
@@ -2187,7 +2295,7 @@ components:
             title:
               example: Conflict
             type:
-              example: 'https://httpstatuses.com/409'
+              example: https://httpstatuses.com/409
     CurrentUser:
       type: object
       properties:
@@ -2248,7 +2356,7 @@ components:
             title:
               example: Internal Server Error
             type:
-              example: 'https://httpstatuses.com/500'
+              example: https://httpstatuses.com/500
     FileUpload:
       type: object
       properties:
@@ -2412,7 +2520,7 @@ components:
               example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
             confirmationId:
               type: string
-              description: 'shortend version of the id, useful for visual representation'
+              description: shortend version of the id, useful for visual representation
               example: AEB3B705
             deleted:
               type: boolean
@@ -2432,6 +2540,18 @@ components:
               type: object
               description: this is the json for the form submission.
         - $ref: '#/components/schemas/TimeStampUserData'
+    FormSubmissionDiscover:
+      type: object
+      properties:
+        id:
+          type: string
+          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+      example:
+        id: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+        textField1: foo
+        checkbox1: bar
+        radioGroup1: baz
+        email1: test@email.com
     FormSubmissionExport:
       allOf:
         - type: object
@@ -2441,7 +2561,7 @@ components:
               properties:
                 confirmationId:
                   type: string
-                  description: 'shortend version of the id, useful for visual representation'
+                  description: shortend version of the id, useful for visual representation
                   example: AEB3B705
                 formName:
                   type: string
@@ -2492,7 +2612,7 @@ components:
               example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
             confirmationId:
               type: string
-              description: 'shortend version of the id, useful for visual representation'
+              description: shortend version of the id, useful for visual representation
               example: AEB3B705
             deleted:
               type: boolean
@@ -2546,6 +2666,15 @@ components:
               type: boolean
               example: true
         - $ref: '#/components/schemas/TimeStampUserData'
+    FormVersionFields:
+      type: array
+      example:
+        - textField1
+        - checkbox1
+        - radioGroup1
+        - email1
+      items:
+        type: string
     IdentityProvider:
       allOf:
         - type: object
@@ -2590,7 +2719,7 @@ components:
             title:
               example: Not Found
             type:
-              example: 'https://httpstatuses.com/404'
+              example: https://httpstatuses.com/404
     PermissionBasic:
       allOf:
         - type: object
@@ -2627,10 +2756,10 @@ components:
       properties:
         type:
           type: string
-          description: 'What type of problem, link to explanation of problem'
+          description: What type of problem, link to explanation of problem
         title:
           type: string
-          description: 'Title of problem, generally the Http Status Code description'
+          description: Title of problem, generally the Http Status Code description
         status:
           type: string
           description: The Http Status code
@@ -2766,8 +2895,6 @@ components:
         updatedAt:
           type: string
           example: 2020-06-04T18:49:20.672Z
-    UnauthorizedError:
-      description: Access token is missing or invalid
     User:
       allOf:
         - type: object
@@ -3096,7 +3223,7 @@ components:
             title:
               example: Unprocessable Entity
             type:
-              example: 'https://httpstatuses.com/422'
+              example: https://httpstatuses.com/422
   responses:
     Accepted:
       description: Accepted
@@ -3129,7 +3256,7 @@ components:
           schema:
             $ref: '#/components/schemas/NotFound'
     UnauthorizedError:
-      description: Access token is missing or invalid
+      description: Invalid authorization credentials
     UnprocessableEntity:
       description: >-
         The server was unable to process the contained instructions. Generally
