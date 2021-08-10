@@ -167,7 +167,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions('notifications', ['addNotification']),
     ...mapActions('form', ['deleteApiKey', 'generateApiKey', 'readApiKey']),
     async createKey() {
       this.loading = true;

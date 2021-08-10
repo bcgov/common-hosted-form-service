@@ -54,8 +54,7 @@
     </v-expansion-panels>
 
     <!-- Api Key -->
-    <!-- TODO: Remove v-if feature toggle when feature is ready to release -->
-    <v-expansion-panels v-if="false" v-model="apiKeyPanel" flat class="nrmc-expand-collapse">
+    <v-expansion-panels v-model="apiKeyPanel" flat class="nrmc-expand-collapse">
       <v-expansion-panel flat>
         <v-expansion-panel-header>
           <template v-slot:actions>

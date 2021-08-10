@@ -325,7 +325,7 @@ export default {
         dispatch('notifications/addNotification', {
           message:
             'The API Key for this form has been deleted.',
-          type: NotificationTypes.SUCCESS
+          ...NotificationTypes.SUCCESS
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -341,7 +341,7 @@ export default {
         dispatch('notifications/addNotification', {
           message:
             'An API Key for this form has been created.',
-          type: NotificationTypes.SUCCESS
+          ...NotificationTypes.SUCCESS
         }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {

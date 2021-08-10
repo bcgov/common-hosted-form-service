@@ -12,41 +12,46 @@ const getToken = req => {
   }
 };
 
-const currentUser = async (request, response, next) => {
+const setUser = async (req, _res, next) => {
+  const token = getToken(req);
+  // we can limit the form list from query string or url params.  Url params override query params
+  // ex. /forms/:formId=ABC/version?formId=123
+  // the ABC in the url will be used... so don't do that.
+  const params = { ...req.query, ...req.params };
+  req.currentUser = await service.login(token, params);
+  next();
+};
 
-  const setUser = async (req, res, next) => {
-    const token = getToken(req);
-    // we can limit the form list from query string or url params.  Url params override query params
-    // ex. /forms/:formId=ABC/version?formId=123
-    // the ABC in the url will be used... so don't do that.
-    const params = Object.assign({}, req.query, req.params);
-    req.currentUser = await service.login(token, params);
-    next();
-  };
-
-  if (request.headers && request.headers.authorization) {
-    // need to check keycloak, ensure the authorization header is valid
-    const token = request.headers.authorization.substring(7);
+const currentUser = async (req, res, next) => {
+  // Check if authorization header is a bearer token
+  if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    // need to check keycloak, ensure the bearer token is valid
+    const token = req.headers.authorization.substring(7);
     const ok = await keycloak.grantManager.validateAccessToken(token);
     if (!ok) {
-      return next(new Problem(403, { detail: 'Authorization token is invalid.' }));
+      return new Problem(403, { detail: 'Authorization token is invalid.' }).send(res);
     }
   }
-  return setUser(request, response, next);
+
+  return setUser(req, res, next);
 };
 
 const hasFormPermissions = (permissions) => {
   return (req, res, next) => {
+    // Skip permission checks if requesting as API entity
+    if(req.apiUser) {
+      return next();
+    }
 
     if (!req.currentUser) {
       // cannot find the currentUser... guess we don't have access... FAIL!
-      return next(new Problem(401, { detail: 'Current user not found on request.' }));
+      return new Problem(401, { detail: 'Current user not found on request.' }).send(res);
     }
     // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
     const formId = req.params.formId || req.query.formId;
     if (!formId) {
       // No form provided to this route that secures based on form... that's a problem!
-      return next(new Problem(401, { detail: 'Form Id not found on request.' }));
+      return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
     }
     let form = req.currentUser.forms.find(f => f.formId === formId);
     if (!form) {
@@ -56,7 +61,7 @@ const hasFormPermissions = (permissions) => {
       }
       if (!form) {
         // cannot find the form... guess we don't have access... FAIL!
-        return next(new Problem(401, { detail: 'Current user has no access to form.' }));
+        return new Problem(401, { detail: 'Current user has no access to form.' }).send(res);
       }
     }
 
@@ -69,7 +74,7 @@ const hasFormPermissions = (permissions) => {
     });
 
     if (intersection.length !== permissions.length) {
-      return next(new Problem(401, { detail: 'Current user does not have required permission(s) on form' }));
+      return new Problem(401, { detail: 'Current user does not have required permission(s) on form' }).send(res);
     } else {
       return next();
     }
@@ -77,7 +82,7 @@ const hasFormPermissions = (permissions) => {
 };
 
 const hasSubmissionPermissions = (permissions) => {
-  return async (req, res, next) => {
+  return async (req, _res, next) => {
     if (!Array.isArray(permissions)) {
       permissions = [permissions];
     }
@@ -128,8 +133,6 @@ const hasSubmissionPermissions = (permissions) => {
     return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
   };
 };
-
-
 
 module.exports.currentUser = currentUser;
 module.exports.hasFormPermissions = hasFormPermissions;
