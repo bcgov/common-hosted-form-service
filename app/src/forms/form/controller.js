@@ -124,16 +124,21 @@ module.exports = {
   },
   listSubmissionFields: async (req, res, next) => {
     try {
-      const fields = [];
+      let fields = [];
       if (req.query.fields) {
+        let splitFields = [];
         if (Array.isArray(req.query.fields)) {
-          fields.push(req.query.fields.flatMap(f => f.split(',').map(s => s.trim())));
+          splitFields = req.query.fields.flatMap(f => f.split(',').map(s => s.trim()));
         } else {
-          fields.push(req.query.fields.split(',').map(s => s.trim()));
+          splitFields = req.query.fields.split(',').map(s => s.trim());
         }
+
+        // Drop invalid fields
+        const validFields = await service.readVersionFields(req.params.formVersionId);
+        fields = splitFields.filter(f => validFields.includes(f));
       }
 
-      const response = await service.listSubmissionFields(req.params.formVersionId, fields.flat());
+      const response = await service.listSubmissionFields(req.params.formVersionId, fields);
       res.status(200).json(response);
     } catch (error) {
       next(error);
