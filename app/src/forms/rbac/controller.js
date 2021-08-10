@@ -1,5 +1,6 @@
+const emailService = require('../email/emailService');
+const formService = require('../../../../app/src/forms/submission/service');
 const service = require('./service');
-
 module.exports = {
   list: async (req, res, next) => {
     try {
@@ -85,7 +86,13 @@ module.exports = {
   },
   setSubmissionUserPermissions:  async (req, res, next) => {
     try {
+      const submission = await formService.read(req.query.formSubmissionId, req.currentUser);
       const response = await service.modifySubmissionUser(req.query.formSubmissionId, req.query.userId, req.body, req.currentUser);
+
+      JSON.parse(req.query.isAssigned) ?
+        emailService.submissionAssigned(submission.form.id, response[0], req.body.email, req.headers.referer).catch(() => { })
+        :
+        emailService.submissionUnassigned(submission.form.id, response[0], req.body.email, req.headers.referer).catch(() => { });
       res.status(200).json(response);
     } catch (error) {
       next(error);

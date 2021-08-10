@@ -12,20 +12,28 @@ const generateContexts = (type, configData, submission, referer) => {
   let userTypePath = '';
   if (type === 'sendStatusAssigned') {
     contextToVal = [configData.assignmentNotificationEmail];
-    userTypePath = '/view?s=';
+    userTypePath = 'form/view?s=';
+  } else if (type === 'sendSubmissionAssigned') {
+    contextToVal = [configData.emailAddress];
+    userTypePath = 'user/view?s=';
+  } else if (type === 'sendSubmissionUnassigned') {
+    contextToVal = [configData.emailAddress];
+    userTypePath = 'user/view?s=';
   } else if (type === 'sendSubmissionConfirmation' && configData.form.showSubmissionConfirmation) {
-    contextToVal = [configData.body.to];
-    userTypePath = '/success?s=';
+    contextToVal = configData.form.submissionReceivedEmails;
+    userTypePath = 'form/view?s=';
   } else if (type === 'sendSubmissionReceived' && configData.form.submissionReceivedEmails) {
     contextToVal = configData.form.submissionReceivedEmails;
-    userTypePath = '/view?s=';
+    userTypePath = 'form/success?s=';
   }
   return [{
     context: {
       confirmationNumber: submission.confirmationId,
       title: configData.title,
       messageLinkText: configData.messageLinkText,
-      messageLinkUrl: `${service._appUrl(referer)}/form${userTypePath}${submission.id}`,
+      messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}${submission.id}`,
+      allFormSubmissionUrl: `${service._appUrl(referer)}/form/submissions?f=${configData.form.id}`,
+      form: configData.form,
     },
     to: contextToVal
   }];
@@ -68,6 +76,7 @@ const service = {
     return result;
   },
 
+  // Sends email using chesService.merge
   _sendEmailTemplate: (type, configData, submission, referer) => {
     try {
       const mergedHtml = service._mergeEmailTemplate(configData.bodyTemplate);
@@ -88,6 +97,53 @@ const service = {
     }
   },
 
+  // Assigning user to Submission Draft
+  submissionAssigned: async (formId, currentStatus, emailAddress, referer) => {
+    try {
+      const form = await formService.readForm(formId);
+      const submission = await formService.readSubmission(currentStatus.formSubmissionId);
+      const configData = {
+        bodyTemplate: 'submission-assigned.html',
+        title: `Invited to ${form.name} Draft`,
+        subject: 'Invited to Submission Draft',
+        messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
+        priority: 'normal',
+        emailAddress,
+        form,
+      };
+      return service._sendEmailTemplate('sendSubmissionAssigned', configData, submission, referer);
+    } catch (e) {
+      log.error(`status: ${currentStatus}, referer: ${referer}`, { function: 'statusAssigned' });
+      log.error(e.message, { function: 'submissionAssigned' });
+      log.error(e);
+      throw e;
+    }
+  },
+
+  // Unassigning user to Submission Draft
+  submissionUnassigned: async (formId, currentStatus, emailAddress, referer) => {
+    try {
+      const form = await formService.readForm(formId);
+      const submission = await formService.readSubmission(currentStatus.formSubmissionId);
+      const configData = {
+        bodyTemplate: 'submission-unassigned.html',
+        title: `Uninvited From ${form.name} Draft`,
+        subject: 'Uninvited From Submission Draft',
+        messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
+        priority: 'normal',
+        emailAddress,
+        form,
+      };
+      return service._sendEmailTemplate('sendSubmissionUnassigned', configData, submission, referer);
+    } catch (e) {
+      log.error(`status: ${currentStatus}, referer: ${referer}`, { function: 'statusAssigned' });
+      log.error(e.message, { function: 'submissionUnassigned' });
+      log.error(e);
+      throw e;
+    }
+  },
+
+  // Assigning status to user on Submission
   statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
       const form = await formService.readForm(formId);
@@ -96,9 +152,10 @@ const service = {
         bodyTemplate: 'send-status-assigned-email-body.html',
         title: `${form.name} Submission Assignment`,
         subject: 'Form Submission Assignment',
-        messageLinkText: 'You have been assigned to review this submission.',
+        messageLinkText: `You have been assigned to a ${form.name} submission. Please login to review it.`,
         priority: 'normal',
         assignmentNotificationEmail,
+        form,
       };
       return service._sendEmailTemplate('sendStatusAssigned', configData, submission, referer);
     } catch (e) {
@@ -109,7 +166,8 @@ const service = {
     }
   },
 
-  submissionConfirmation: async (formId, submissionId, body, referer) => {
+  // Submitting Form
+  submissionReceived: async (formId, submissionId, body, referer) => {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(submissionId);
@@ -117,6 +175,7 @@ const service = {
         bodyTemplate: 'submission-confirmation.html',
         title: `${form.name} Submission`,
         subject: `${form.name} Submission`,
+        messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
         priority: 'normal',
         body,
         form,
@@ -130,7 +189,8 @@ const service = {
     }
   },
 
-  submissionReceived: async (formId, submissionId, referer) => {
+  // Sending confirmation of Form Submission
+  submissionConfirmation: async (formId, submissionId, referer) => {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(submissionId);
@@ -139,7 +199,7 @@ const service = {
         title: `${form.name} Accepted`,
         subject: `${form.name} Accepted`,
         priority: 'normal',
-        messageLinkText: `Please login to view the details of this ${form.name} submission`,
+        messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
         form,
       };
       return service._sendEmailTemplate('sendSubmissionReceived', configData, submission, referer);
