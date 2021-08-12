@@ -87,6 +87,14 @@ module.exports = {
       next(error);
     }
   },
+  readVersionFields: async (req, res, next) => {
+    try {
+      const response = await service.readVersionFields(req.params.formVersionId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   publishVersion: async (req, res, next) => {
     try {
       const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.query, req.currentUser);
@@ -110,6 +118,28 @@ module.exports = {
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
       fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => { });
       res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  listSubmissionFields: async (req, res, next) => {
+    try {
+      let fields = [];
+      if (req.query.fields) {
+        let splitFields = [];
+        if (Array.isArray(req.query.fields)) {
+          splitFields = req.query.fields.flatMap(f => f.split(',').map(s => s.trim()));
+        } else {
+          splitFields = req.query.fields.split(',').map(s => s.trim());
+        }
+
+        // Drop invalid fields
+        const validFields = await service.readVersionFields(req.params.formVersionId);
+        fields = splitFields.filter(f => validFields.includes(f));
+      }
+
+      const response = await service.listSubmissionFields(req.params.formVersionId, fields);
+      res.status(200).json(response);
     } catch (error) {
       next(error);
     }
