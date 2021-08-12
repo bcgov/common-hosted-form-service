@@ -5,7 +5,7 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const Problem = require('api-problem');
-const { transaction } = require('objection');
+const { ref, transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 
 const service = {
@@ -215,10 +215,28 @@ const service = {
     }
   },
 
-  readVersion: async (formVersionId) => {
+  readVersion: (formVersionId) => {
     return FormVersion.query()
       .findById(formVersionId)
       .throwIfNotFound();
+  },
+
+  readVersionFields: async (formVersionId) => {
+    // Recursively find all field key names
+    // TODO: Consider if this should be a form utils function instead?
+    const findFields = (obj) => {
+      const fields = [];
+      // Only add key if it is an input and visible
+      if (obj.input && !obj.hidden) fields.push(obj.key);
+      // Check children components that aren't inputs
+      else if (!obj.hidden && obj.components && obj.components.length) {
+        fields.push(obj.components.flatMap(o => findFields(o)));
+      }
+      return fields.flat();
+    };
+
+    const { schema } = await service.readVersion(formVersionId);
+    return schema.components.flatMap(c => findFields(c));
   },
 
   listSubmissions: async (formVersionId) => {
@@ -307,7 +325,14 @@ const service = {
     }
   },
 
-  readSubmission: async (id) => {
+  listSubmissionFields: (formVersionId, fields) => {
+    return FormSubmission.query()
+      .select('id', fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))))
+      .where('formVersionId', formVersionId)
+      .modify('orderDescending');
+  },
+
+  readSubmission: (id) => {
     return FormSubmission.query()
       .findById(id)
       .throwIfNotFound();
