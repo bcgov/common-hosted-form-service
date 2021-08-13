@@ -115,6 +115,7 @@ describe('_sendEmailTemplate', () => {
 describe('public methods', () => {
   const currentStatus = {
     submissionId: '456',
+    formSubmissionId: '123',
   };
   const form = {
     id: 'xxx-yyy',
@@ -156,9 +157,10 @@ describe('public methods', () => {
         bodyTemplate: 'send-status-assigned-email-body.html',
         title: `${form.name} Submission Assignment`,
         subject: 'Form Submission Assignment',
-        messageLinkText: 'You have been assigned to review this submission.',
+        messageLinkText: `You have been assigned to a ${form.name} submission. Please login to review it.`,
         priority: 'normal',
         assignmentNotificationEmail,
+        form,
       }),
       submission,
       referer
@@ -173,7 +175,6 @@ describe('public methods', () => {
     const result = await emailService.submissionConfirmation(
       form.id,
       submission.id,
-      body,
       referer
     );
     expect(result).toEqual('ret');
@@ -185,11 +186,11 @@ describe('public methods', () => {
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
       'sendSubmissionConfirmation',
       expect.objectContaining({
-        bodyTemplate: 'submission-confirmation.html',
-        title: `${form.name} Submission`,
-        subject: `${form.name} Submission`,
+        bodyTemplate: 'submission-received-confirmation.html',
+        title: `${form.name} Accepted`,
+        subject: `${form.name} Accepted`,
         priority: 'normal',
-        body,
+        messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
         form,
       }),
       submission,
@@ -205,6 +206,7 @@ describe('public methods', () => {
     const result = await emailService.submissionReceived(
       form.id,
       submission.id,
+      body,
       referer
     );
     expect(result).toEqual('ret');
@@ -217,11 +219,78 @@ describe('public methods', () => {
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
       'sendSubmissionReceived',
       expect.objectContaining({
-        bodyTemplate: 'submission-received-confirmation.html',
-        title: `${form.name} Accepted`,
-        subject: `${form.name} Accepted`,
+        bodyTemplate: 'submission-confirmation.html',
+        title: `${form.name} Submission`,
+        subject: `${form.name} Submission`,
+        messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
         priority: 'normal',
-        messageLinkText: `Please login to view the details of this ${form.name} submission`,
+        body,
+        form,
+      }),
+      submission,
+      referer
+    );
+  });
+
+  it('submissionUnassigned should send a uninvited email', async () => {
+    formService.readForm = jest.fn().mockReturnValue(form);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+
+    const result = await emailService.submissionUnassigned(
+      form.id,
+      currentStatus,
+      assignmentNotificationEmail,
+      referer
+    );
+    expect(result).toEqual('ret');
+    expect(formService.readForm).toHaveBeenCalledTimes(1);
+    expect(formService.readForm).toHaveBeenCalledWith(form.id);
+    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
+    expect(formService.readSubmission).toHaveBeenCalledWith(currentStatus.formSubmissionId);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
+      'sendSubmissionUnassigned',
+      expect.objectContaining({
+        bodyTemplate: 'submission-unassigned.html',
+        title: `Uninvited From ${form.name} Draft`,
+        subject: 'Uninvited From Submission Draft',
+        messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
+        priority: 'normal',
+        assignmentNotificationEmail,
+        form,
+      }),
+      submission,
+      referer
+    );
+  });
+
+  it('submissionAssigned should send a uninvited email', async () => {
+    formService.readForm = jest.fn().mockReturnValue(form);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+
+    const result = await emailService.submissionAssigned(
+      form.id,
+      currentStatus,
+      assignmentNotificationEmail,
+      referer
+    );
+    expect(result).toEqual('ret');
+    expect(formService.readForm).toHaveBeenCalledTimes(1);
+    expect(formService.readForm).toHaveBeenCalledWith(form.id);
+    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
+    expect(formService.readSubmission).toHaveBeenCalledWith(currentStatus.formSubmissionId);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
+      'sendSubmissionAssigned',
+      expect.objectContaining({
+        bodyTemplate: 'submission-assigned.html',
+        title: `Invited to ${form.name} Draft`,
+        subject: 'Invited to Submission Draft',
+        messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
+        priority: 'normal',
+        assignmentNotificationEmail,
         form,
       }),
       submission,

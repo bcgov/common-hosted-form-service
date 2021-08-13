@@ -14,17 +14,17 @@ const generateContexts = (type, configData, submission, referer) => {
     contextToVal = [configData.assignmentNotificationEmail];
     userTypePath = 'form/view?s=';
   } else if (type === 'sendSubmissionAssigned') {
-    contextToVal = [configData.emailAddress];
+    contextToVal = [configData.assignmentNotificationEmail];
     userTypePath = 'user/view?s=';
   } else if (type === 'sendSubmissionUnassigned') {
-    contextToVal = [configData.emailAddress];
+    contextToVal = [configData.assignmentNotificationEmail];
     userTypePath = 'user/view?s=';
   } else if (type === 'sendSubmissionConfirmation' && configData.form.showSubmissionConfirmation) {
     contextToVal = configData.form.submissionReceivedEmails;
-    userTypePath = 'form/view?s=';
+    userTypePath = 'form/success?s=';
   } else if (type === 'sendSubmissionReceived' && configData.form.submissionReceivedEmails) {
     contextToVal = configData.form.submissionReceivedEmails;
-    userTypePath = 'form/success?s=';
+    userTypePath = 'form/view?s=';
   }
   return [{
     context: {
@@ -98,7 +98,7 @@ const service = {
   },
 
   // Assigning user to Submission Draft
-  submissionAssigned: async (formId, currentStatus, emailAddress, referer) => {
+  submissionAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(currentStatus.formSubmissionId);
@@ -108,7 +108,7 @@ const service = {
         subject: 'Invited to Submission Draft',
         messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
         priority: 'normal',
-        emailAddress,
+        assignmentNotificationEmail,
         form,
       };
       return service._sendEmailTemplate('sendSubmissionAssigned', configData, submission, referer);
@@ -121,7 +121,7 @@ const service = {
   },
 
   // Unassigning user to Submission Draft
-  submissionUnassigned: async (formId, currentStatus, emailAddress, referer) => {
+  submissionUnassigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(currentStatus.formSubmissionId);
@@ -131,7 +131,7 @@ const service = {
         subject: 'Uninvited From Submission Draft',
         messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
         priority: 'normal',
-        emailAddress,
+        assignmentNotificationEmail,
         form,
       };
       return service._sendEmailTemplate('sendSubmissionUnassigned', configData, submission, referer);
@@ -180,10 +180,10 @@ const service = {
         body,
         form,
       };
-      return service._sendEmailTemplate('sendSubmissionConfirmation', configData, submission, referer);
+      return service._sendEmailTemplate('sendSubmissionReceived', configData, submission, referer);
     } catch (e) {
       log.error(`formId: ${formId}, submissionId: ${submissionId}, body: ${JSON.stringify(body)}, referer: ${referer}`, { function: 'submissionConfirmation' });
-      log.error(e.message, { function: 'submissionConfirmation' });
+      log.error(e.message, { function: 'submissionReceived' });
       log.error(e);
       throw e;
     }
@@ -202,10 +202,10 @@ const service = {
         messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
         form,
       };
-      return service._sendEmailTemplate('sendSubmissionReceived', configData, submission, referer);
+      return service._sendEmailTemplate('sendSubmissionConfirmation', configData, submission, referer);
     } catch (e) {
       log.error(`formId: ${formId}, submissionId: ${submissionId}, referer: ${referer}`, { function: 'submissionReceived' });
-      log.error(e.message, { function: 'submissionReceived' });
+      log.error(e.message, { function: 'submissionConfirmation' });
       log.error(e);
       throw e;
     }
