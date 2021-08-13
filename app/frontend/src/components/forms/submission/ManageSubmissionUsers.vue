@@ -231,17 +231,22 @@ export default {
     async modifyPermissions(userId, permissions) {
       this.isLoadingTable = true;
       try {
+        const selectedEmail = permissions.length ? this.userSearchSelection.email : this.userToDelete.email;
         // Add the selected user with read/update permissions on this submission
         const response = await rbacService.setSubmissionUserPermissions(
           { permissions: permissions },
           {
             formSubmissionId: this.submissionId,
             userId: userId,
-            selectedUserEmail: permissions.length ? this.userSearchSelection.email : this.userToDelete.email,
+            selectedUserEmail: selectedEmail,
           }
         );
         if (response.data) {
           this.userTableList = this.transformResponseToTable(response.data);
+          this.addNotification({
+            ...NotificationTypes.SUCCESS,
+            message: permissions.length ? `Invite email sent to ${selectedEmail}` : `Sent uninvited email to ${selectedEmail}`,
+          });
         }
       } catch (error) {
         this.addNotification({
