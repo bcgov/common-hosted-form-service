@@ -88,11 +88,13 @@ module.exports = {
     try {
       const submission = await formService.read(req.query.formSubmissionId, req.currentUser);
       const response = await service.modifySubmissionUser(req.query.formSubmissionId, req.query.userId, req.body, req.currentUser);
-
-      JSON.parse(req.query.isAssigned) ?
-        emailService.submissionAssigned(submission.form.id, response[0], req.body.email, req.headers.referer).catch(() => { })
-        :
-        emailService.submissionUnassigned(submission.form.id, response[0], req.body.email, req.headers.referer).catch(() => { });
+      if (req.body && Array.isArray(req.body.permissions) && req.query.selectedUserEmail) {
+        // Check if we are adding or removing a user from the draft invite list. empty permissions signifies that we are removing permissions from a user.
+        req.body.permissions.length ?
+          emailService.submissionAssigned(submission.form.id, response[0], req.query.selectedUserEmail, req.headers.referer).catch(() => { })
+          :
+          emailService.submissionUnassigned(submission.form.id, response[0], req.query.selectedUserEmail, req.headers.referer).catch(() => { });
+      }
       res.status(200).json(response);
     } catch (error) {
       next(error);

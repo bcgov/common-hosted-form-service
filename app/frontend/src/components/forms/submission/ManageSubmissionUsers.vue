@@ -137,7 +137,7 @@
         v-model="showDeleteDialog"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"
-        @continue-dialog="modifyPermissions(userToDelete.id, [], false); showDeleteDialog = false"
+        @continue-dialog="modifyPermissions(userToDelete.id, []); showDeleteDialog = false"
       >
         <template #title>Remove {{ userToDelete.username }}</template>
         <template #text>
@@ -201,8 +201,7 @@ export default {
           this.modifyPermissions(id, [
             FormPermissions.SUBMISSION_UPDATE,
             FormPermissions.SUBMISSION_READ,
-          ],
-          true);
+          ]);
         }
       }
       // reset search field
@@ -229,7 +228,7 @@ export default {
         this.isLoadingTable = false;
       }
     },
-    async modifyPermissions(userId, permissions, isAssigned) {
+    async modifyPermissions(userId, permissions) {
       this.isLoadingTable = true;
       try {
         // Add the selected user with read/update permissions on this submission
@@ -238,7 +237,7 @@ export default {
           {
             formSubmissionId: this.submissionId,
             userId: userId,
-            isAssigned: isAssigned,
+            selectedUserEmail: permissions.length ? this.userSearchSelection.email : this.userToDelete.email,
           }
         );
         if (response.data) {
