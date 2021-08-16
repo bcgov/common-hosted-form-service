@@ -2,14 +2,14 @@ const { Model } = require('objection');
 const { Timestamps } = require('../mixins');
 const stamps = require('../jsonSchema').stamps;
 
-const Role = require('./role');
-
 class Permission extends Timestamps(Model) {
   static get tableName() {
     return 'permission';
   }
 
   static get relationMappings() {
+    const Role = require('./role');
+
     return {
       roles: {
         relation: Model.ManyToManyRelation,

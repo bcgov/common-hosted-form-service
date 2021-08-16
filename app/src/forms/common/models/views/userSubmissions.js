@@ -1,14 +1,14 @@
 const { Model } = require('objection');
 
-const FormSubmissionStatus = require('../tables/formSubmissionStatus');
-const User = require('../tables/user');
-
 class UserSubmissions extends Model {
   static get tableName() {
     return 'submissions_submitters_vw';
   }
 
   static get relationMappings() {
+    const FormSubmissionStatus = require('../tables/formSubmissionStatus');
+    const User = require('../tables/user');
+
     return {
       submissionStatus: {
         relation: Model.HasManyRelation,
