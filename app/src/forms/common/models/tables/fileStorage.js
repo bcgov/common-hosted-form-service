@@ -2,14 +2,14 @@ const { Model } = require('objection');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-const FormSubmission = require('./formSubmission');
-
 class FileStorage extends Model {
   static get tableName() {
     return 'file_storage';
   }
 
   static get relationMappings() {
+    const FormSubmission = require('./formSubmission');
+
     return {
       submission: {
         relation: Model.HasOneRelation,

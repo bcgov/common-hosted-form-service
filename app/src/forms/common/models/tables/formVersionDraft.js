@@ -3,14 +3,14 @@ const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-const FormVersion = require('./formVersion');
-
 class FormVersionDraft extends Timestamps(Model) {
   static get tableName() {
     return 'form_version_draft';
   }
 
   static get relationMappings() {
+    const FormVersion = require('./formVersion');
+
     return {
       version: {
         relation: Model.HasManyRelation,

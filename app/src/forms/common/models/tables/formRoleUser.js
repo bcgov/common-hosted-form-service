@@ -3,16 +3,16 @@ const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-const Form = require('./form');
-const Role = require('./role');
-const User = require('./user');
-
 class FormRoleUser extends Timestamps(Model) {
   static get tableName() {
     return 'form_role_user';
   }
 
   static get relationMappings() {
+    const Form = require('./form');
+    const Role = require('./role');
+    const User = require('./user');
+
     return {
       form: {
         relation: Model.HasOneRelation,
