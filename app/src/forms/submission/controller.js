@@ -66,7 +66,7 @@ module.exports = {
   email: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId, req.currentUser);
-      const response = await emailService.submissionConfirmation(submission.form.id, req.params.formSubmissionId, req.headers.referer);
+      const response = await emailService.submissionConfirmation(submission.form.id, req.params.formSubmissionId, req.body, req.headers.referer);
       res.status(200).json(response);
     } catch (error) {
       next(error);
