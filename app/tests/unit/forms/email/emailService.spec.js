@@ -175,6 +175,7 @@ describe('public methods', () => {
     const result = await emailService.submissionConfirmation(
       form.id,
       submission.id,
+      body,
       referer
     );
     expect(result).toEqual('ret');
@@ -191,6 +192,7 @@ describe('public methods', () => {
         subject: `${form.name} Accepted`,
         priority: 'normal',
         messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+        body,
         form,
       }),
       submission,

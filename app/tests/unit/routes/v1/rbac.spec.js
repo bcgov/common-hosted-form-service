@@ -340,6 +340,9 @@ describe(`PUT ${basePath}/submissions`, () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
+
+    emailService.submissionAssigned.mockReset();
+    emailService.submissionUnassigned.mockReset();
   });
 
   it('should handle 401', async () => {
