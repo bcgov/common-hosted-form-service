@@ -1,17 +1,23 @@
-const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
+const { v4: uuidv4 } = require('uuid');
+
+const {
+  Form,
+  FormSubmissionUserPermissions,
+  PublicFormAccess,
+  SubmissionMetadata,
+  User,
+  UserFormAccess
+} = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
-
-const { transaction } = require('objection');
-const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
   createUser: async (data) => {
     let trx;
     try {
-      trx = await transaction.start(User.knex());
+      trx = await User.startTransaction();
 
       const obj = Object.assign({}, {
         id: uuidv4(),
@@ -43,7 +49,7 @@ const service = {
     let trx;
     try {
       const obj = await service.readUser(id);
-      trx = await transaction.start(User.knex());
+      trx = await User.startTransaction();
 
       const update = {
         keycloakId: data.keycloakId,
