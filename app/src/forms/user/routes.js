@@ -15,4 +15,16 @@ routes.get('/:userId', async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
+routes.get('/preferences/forms/:formId', async (req, res, next) => {
+  await controller.readUserFormPreferences(req, res, next);
+});
+
+routes.put('/preferences/forms/:formId', async (req, res, next) => {
+  await controller.updateUserFormPreferences(req, res, next);
+});
+
+routes.delete('/preferences/forms/:formId', async (req, res, next) => {
+  await controller.deleteUserFormPreferences(req, res, next);
+});
+
 module.exports = routes;

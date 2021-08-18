@@ -18,6 +18,7 @@ module.exports = {
   StatusCode: require('./tables/statusCode'),
   SubmissionAudit: require('./tables/submissionAudit'),
   User: require('./tables/user'),
+  UserFormPreferences: require('./tables/userFormPreferences'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
