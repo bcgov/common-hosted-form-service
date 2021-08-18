@@ -1,17 +1,17 @@
 const config = require('config');
+const { v4: uuidv4 } = require('uuid');
+
 const { FileStorage } = require('../common/models');
-const {transaction} = require('objection');
-const {v4: uuidv4} = require('uuid');
+const storageService = require('./storage/storageService');
 
 const PERMANENT_STORAGE = config.get('files.permanent');
-const storageService = require('./storage/storageService');
 
 const service = {
 
   create: async (data, currentUser) => {
     let trx;
     try {
-      trx = await transaction.start(FileStorage.knex());
+      trx = await FileStorage.startTransaction();
 
       const obj = {};
       obj.id = uuidv4();
@@ -46,7 +46,7 @@ const service = {
   delete: async (id) => {
     let trx;
     try {
-      trx = await transaction.start(FileStorage.knex());
+      trx = FileStorage.startTransaction();
       const obj = await service.read(id);
 
       await FileStorage.query(trx)
@@ -68,7 +68,7 @@ const service = {
   moveSubmissionFiles: async (submissionId, currentUser) => {
     let trx;
     try {
-      trx = await transaction.start(FileStorage.knex());
+      trx = await FileStorage.startTransaction();
 
       // fetch all the File Storage records for a submission id
       // move them to permanent storage

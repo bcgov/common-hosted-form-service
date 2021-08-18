@@ -1,5 +1,3 @@
-const { transaction } = require('objection');
-
 const { User, UserFormPreferences } = require('../common/models');
 
 const service = {
@@ -40,7 +38,7 @@ const service = {
       let result;
 
       const current = await service.readUserFormPreferences(currentUser, formId);
-      trx = await transaction.start(UserFormPreferences.knex());
+      trx = await UserFormPreferences.startTransaction();
 
       if (current) {
         result = await UserFormPreferences.query(trx)
