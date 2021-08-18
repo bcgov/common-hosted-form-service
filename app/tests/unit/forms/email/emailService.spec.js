@@ -121,7 +121,12 @@ describe('public methods', () => {
     id: 'xxx-yyy',
     showSubmissionConfirmation: true,
     name: '123',
-    submissionReceivedEmails: ['a@b.com','z@y.com']
+    submissionReceivedEmails: ['a@b.com','z@y.com'],
+    identityProviders: [
+      {
+        idp: 'public',
+      }
+    ],
   };
   const submission = {
     confirmationId: 'abc',
@@ -187,7 +192,7 @@ describe('public methods', () => {
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
       'sendSubmissionConfirmation',
       expect.objectContaining({
-        bodyTemplate: 'submission-received-confirmation.html',
+        bodyTemplate: 'submission-received-confirmation-public.html',
         title: `${form.name} Accepted`,
         subject: `${form.name} Accepted`,
         priority: 'normal',
