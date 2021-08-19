@@ -1,6 +1,11 @@
+const Problem = require('api-problem');
+
 const { User, UserFormPreferences } = require('../common/models');
 
 const service = {
+  //
+  // User
+  //
   list: (params) => {
     return User.query()
       .skipUndefined()
@@ -20,6 +25,63 @@ const service = {
       .throwIfNotFound();
   },
 
+  //
+  // User Preferences
+  //
+  deleteUserPreferences: (currentUser) => {
+    return UserFormPreferences.query()
+      .delete()
+      .where('userId', currentUser.id)
+      .throwIfNotFound();
+  },
+
+  readUserPreferences: (currentUser) => {
+    return UserFormPreferences.query()
+      .where('userId', currentUser.id);
+  },
+
+  updateUserPreferences: async (currentUser, body) => {
+    let trx;
+    try {
+      if (!body || !body.forms || !Array.isArray(body.forms)) {
+        throw new Problem(422, {
+          detail: 'Could not update user preferences. Invalid options provided'
+        });
+      }
+
+      trx = await UserFormPreferences.startTransaction();
+
+      body.forms.forEach(async (form) => {
+        const current = await service.readUserFormPreferences(currentUser, form.formId);
+
+        if (current) {
+          await UserFormPreferences.query(trx)
+            .patchAndFetchById([currentUser.id, form.formId], {
+              preferences: form.preferences,
+              updatedBy: currentUser.username
+            });
+        } else {
+          await UserFormPreferences.query(trx)
+            .insert({
+              userId: currentUser.id,
+              formId: form.formId,
+              preferences: form.preferences,
+              createdBy: currentUser.username
+            });
+        }
+      });
+
+      await trx.commit();
+      return service.readUserPreferences(currentUser);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  //
+  // User Form Preferences
+  //
   deleteUserFormPreferences: (currentUser, formId) => {
     return UserFormPreferences.query()
       .deleteById([currentUser.id, formId])

@@ -1,6 +1,9 @@
 const service = require('./service');
 
 module.exports = {
+  //
+  // User
+  //
   list: async (req, res, next) => {
     try {
       const response = await service.list(req.query);
@@ -9,6 +12,7 @@ module.exports = {
       next(error);
     }
   },
+
   read:  async (req, res, next) => {
     try {
       const response = await service.read(req.params.userId);
@@ -17,6 +21,7 @@ module.exports = {
       next(error);
     }
   },
+
   update: async (req, res, next) => {
     try {
       const response = await service.update(req.params.userId, req.body, req.currentUser);
@@ -26,6 +31,45 @@ module.exports = {
     }
   },
 
+  //
+  // User Preferences
+  //
+  deleteUserPreferences: async (req, res, next) => {
+    try {
+      await service.deleteUserPreferences(req.currentUser);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  readUserPreferences: async (req, res, next) => {
+    try {
+      const response = await service.readUserPreferences(req.currentUser);
+      res.status(200).json({
+        forms: response,
+        preferences: {}
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  updateUserPreferences: async (req, res, next) => {
+    try {
+      const response = await service.updateUserPreferences(req.currentUser, req.body);
+      res.status(200).json({
+        forms: response,
+        preferences: {}
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  //
+  // User Form Preferences
+  //
   deleteUserFormPreferences: async (req, res, next) => {
     try {
       await service.deleteUserFormPreferences(req.currentUser, req.params.formId);
