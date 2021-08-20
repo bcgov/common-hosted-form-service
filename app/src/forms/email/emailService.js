@@ -32,7 +32,7 @@ const generateContexts = (type, configData, submission, referer) => {
       title: configData.title,
       messageLinkText: configData.messageLinkText,
       messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
-      allFormSubmissionUrl: `${service._appUrl(referer)}/form/submissions?f=${configData.form.id}`,
+      allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
       form: configData.form,
     },
     to: contextToVal
@@ -192,7 +192,7 @@ const service = {
         function: 'submissionReceived',
         formId: formId,
         submissionId: submissionId,
-        body: JSON.stringify(body),
+        body: body,
         referer: referer
       });
       throw e;
@@ -204,7 +204,7 @@ const service = {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(submissionId);
-      const bodyTemplate = form.identityProviders[0].idp.includes('public') ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
+      const bodyTemplate = form.identityProviders.length > 0 && form.identityProviders[0].idp.includes('public') ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
 
       const configData = {
         bodyTemplate: bodyTemplate,
@@ -221,7 +221,7 @@ const service = {
         function: 'submissionConfirmation',
         formId: formId,
         submissionId: submissionId,
-        body: JSON.stringify(body),
+        body: body,
         referer: referer
       });
       throw e;
