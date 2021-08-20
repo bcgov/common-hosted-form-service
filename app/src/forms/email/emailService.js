@@ -204,7 +204,7 @@ const service = {
     try {
       const form = await formService.readForm(formId);
       const submission = await formService.readSubmission(submissionId);
-      const bodyTemplate = form.identityProviders.length > 0 && form.identityProviders[0].idp.includes('public') ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
+      const bodyTemplate = form.identityProviders.length > 0 && form.identityProviders[0].idp ==='public' ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
 
       const configData = {
         bodyTemplate: bodyTemplate,
