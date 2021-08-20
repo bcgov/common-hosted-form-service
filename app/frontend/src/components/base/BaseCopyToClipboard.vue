@@ -87,7 +87,7 @@ export default {
       // this.clipSnackbar.color = 'info';
       this.$emit('copied');
       this.addNotification({
-        message: 'Link copied to clipboard.',
+        message: this.snackBarText,
         ...NotificationTypes.INFO,
       });
     },
