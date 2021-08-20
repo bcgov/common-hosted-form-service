@@ -31,6 +31,8 @@ userAccess.hasSubmissionPermissions = jest.fn(() => {
   });
 });
 
+const emailService = require('../../../../../app/src/forms/email/emailService');
+const formService = require('../../../../../app/src/forms/submission/service');
 
 //
 // we will mock the underlying data service calls...
@@ -327,13 +329,20 @@ describe(`GET ${basePath}/submissions`, () => {
 describe(`PUT ${basePath}/submissions`, () => {
 
   it('should return 200', async () => {
+    formService.read = jest.fn().mockReturnValue([]);
     // mock a success return value...
     service.modifySubmissionUser = jest.fn().mockReturnValue([]);
+
+    emailService.submissionAssigned = jest.fn().mockReturnValue([]);
+    emailService.submissionUnassigned = jest.fn().mockReturnValue([]);
 
     const response = await request(app).put(`${basePath}/submissions`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
+
+    emailService.submissionAssigned.mockReset();
+    emailService.submissionUnassigned.mockReset();
   });
 
   it('should handle 401', async () => {

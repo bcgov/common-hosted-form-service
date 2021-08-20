@@ -1,5 +1,6 @@
+const emailService = require('../email/emailService');
+const formService = require('../../../../app/src/forms/submission/service');
 const service = require('./service');
-
 module.exports = {
   list: async (req, res, next) => {
     try {
@@ -85,7 +86,16 @@ module.exports = {
   },
   setSubmissionUserPermissions:  async (req, res, next) => {
     try {
+      const submission = await formService.read(req.query.formSubmissionId, req.currentUser);
       const response = await service.modifySubmissionUser(req.query.formSubmissionId, req.query.userId, req.body, req.currentUser);
+      if (req.body && Array.isArray(req.body.permissions) && req.query.selectedUserEmail) {
+        // Check if we are adding or removing a user from the draft invite list. empty permissions signifies that we are removing permissions from a user.
+        if (req.body.permissions.length) {
+          emailService.submissionAssigned(submission.form.id, response[0], req.query.selectedUserEmail, req.headers.referer);
+        } else {
+          emailService.submissionUnassigned(submission.form.id, response[0], req.query.selectedUserEmail, req.headers.referer);
+        }
+      }
       res.status(200).json(response);
     } catch (error) {
       next(error);
