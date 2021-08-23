@@ -31,8 +31,22 @@
 
       <slot name="alert" v-bind:form="form" />
 
+      <BaseDialog
+        v-model="showSubmitConfirmDialog"
+        type="CONTINUE"
+        @close-dialog="showSubmitConfirmDialog = false"
+        @continue-dialog="continueSubmit"
+      >
+        <template #title>Please Confirm</template>
+        <template #text>Are you sure you wish to submit your form?</template>
+        <template #button-text-continue>
+          <span>Submit</span>
+        </template>
+      </BaseDialog>
+
       <Form
         :form="formSchema"
+        :key="reRenderFormIo"
         :submission="submission"
         @submit="onSubmit"
         @submitDone="onSubmitDone"
@@ -87,19 +101,22 @@ export default {
   },
   data() {
     return {
+      confirmSubmit: false,
       currentForm: {},
+      forceNewTabLinks: true,
       form: {},
       formSchema: {},
       loadingSubmission: false,
       permissions: [],
+      reRenderFormIo: 0,
       saving: false,
+      showSubmitConfirmDialog: false,
       submission: {
         data: {},
       },
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
-      forceNewTabLinks: true,
     };
   },
   computed: {
@@ -278,15 +295,22 @@ export default {
       // console.info('onSubmitButton()') ; // eslint-disable-line no-console
       this.currentForm = event.instance.parent.root;
       this.currentForm.form.action = undefined;
-    },
-    async onBeforeSubmit(submission, next) {
-      if (this.preview) {
-        return;
+
+      // if form has drafts enabled in form settings, show 'confirm submit?' dialog
+      if (this.form.enableSubmitterDraft) {
+        this.showSubmitConfirmDialog = true;
       }
-      // console.info(`onBeforeSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
+    },
+
+    continueSubmit() {
+      this.confirmSubmit = true;
+      this.showSubmitConfirmDialog = false;
+    },
+
+    async doSubmit(submission, next) {
+      // console.info(`doSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
       // since we are not using formio api
       // we should do the actual submit here, and return next or parse our errors and show with next(errors)
-
       const errors = [];
       try {
         const response = await this.sendSubmission(false, submission);
@@ -298,7 +322,7 @@ export default {
             {},
             this.submissionId ? response.data.submission : response.data
           );
-          // console.info(`onBeforeSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
+          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
           next();
         } else {
           // console.error(response); // eslint-disable-line no-console
@@ -313,6 +337,32 @@ export default {
         next(errors);
       }
     },
+
+    async onBeforeSubmit(submission, next) {
+      // dont do anything if previewing the form
+      if (this.preview) {
+        // Force re-render form.io to reset submit button state
+        this.reRenderFormIo += 1;
+        return;
+      }
+
+      // if form has drafts enabled in form setttings,
+      if (this.form.enableSubmitterDraft) {
+        // while 'confirm submit?' dialog is open..
+        while (this.showSubmitConfirmDialog) {
+          // await a promise that never resolves to block this thread
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        if (this.confirmSubmit) {
+          this.doSubmit(submission, next);
+        }
+        // Force re-render form.io to reset submit button state
+        this.reRenderFormIo += 1;
+      } else {
+        this.doSubmit(submission, next);
+      }
+    },
+
     // eslint-disable-next-line no-unused-vars
     async onSubmit(submission) {
       if (this.preview) {
@@ -363,7 +413,7 @@ export default {
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change
-    if(this.forceNewTabLinks) {
+    if (this.forceNewTabLinks) {
       attachAttributesToLinks(this.formSchema.components);
     }
   },
