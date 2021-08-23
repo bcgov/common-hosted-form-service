@@ -68,13 +68,13 @@ class Form extends Timestamps(Model) {
     return {
       filterName(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('name', 'ilike', `%${value}%`);
         }
       },
       filterDescription(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('description', 'ilike', `%${value}%`);
         }
       },
