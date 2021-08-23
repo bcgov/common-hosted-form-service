@@ -17,31 +17,31 @@ class User extends Timestamps(Model) {
       },
       filterUsername(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('username', 'ilike', `%${value}%`);
         }
       },
       filterFirstName(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('firstName', 'ilike', `%${value}%`);
         }
       },
       filterLastName(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('lastName', 'ilike', `%${value}%`);
         }
       },
       filterFullName(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('fullName', 'ilike', `%${value}%`);
         }
       },
       filterEmail(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('email', 'ilike', `%${value}%`);
         }
       },

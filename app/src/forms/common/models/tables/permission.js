@@ -30,13 +30,13 @@ class Permission extends Timestamps(Model) {
     return {
       filterCode(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('code', 'ilike', `%${value}%`);
         }
       },
       filterDisplay(query, value) {
         if (value) {
-          // ilike is postrges case insensitive like
+          // ilike is postgres case insensitive like
           query.where('display', 'ilike', `%${value}%`);
         }
       },
