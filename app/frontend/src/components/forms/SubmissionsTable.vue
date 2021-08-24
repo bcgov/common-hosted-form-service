@@ -7,6 +7,8 @@
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+        <ColumnPreferences />
+
         <span v-if="checkFormManage">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -94,11 +96,13 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 
+import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
 export default {
   name: 'SubmissionsTable',
   components: {
+    ColumnPreferences,
     ExportSubmissions,
   },
   props: {
@@ -121,6 +125,8 @@ export default {
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
+        { text: 'firstName', align: 'start' },
+        { text: 'phoneNumber', align: 'start'},
         {
           text: 'Actions',
           align: 'end',
