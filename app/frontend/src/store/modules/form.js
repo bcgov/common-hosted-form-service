@@ -29,6 +29,7 @@ export default {
     apiKey: null,
     drafts: [],
     form: genInitialForm(),
+    formFields: [],
     formList: [],
     formSubmission: {
       confirmationId: '',
@@ -45,6 +46,7 @@ export default {
     apiKey: state => state.apiKey,
     drafts: state => state.drafts,
     form: state => state.form,
+    formFields: state => state.formFields,
     formList: state => state.formList,
     formSubmission: state => state.formSubmission,
     permissions: state => state.permissions,
@@ -67,6 +69,9 @@ export default {
     },
     SET_FORM(state, form) {
       state.form = form;
+    },
+    SET_FORM_FIELDS(state, formFields) {
+      state.formFields = formFields;
     },
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
@@ -184,6 +189,18 @@ export default {
       } catch (error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching this form.',
+          consoleError: `Error getting form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async fetchFormFields({ commit, dispatch }, { formId, formVersionId }) {
+      try {
+        commit('SET_FORM_FIELDS', []);
+        const { data } = await formService.readVersionFields(formId, formVersionId);
+        commit('SET_FORM_FIELDS', data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching the list of fields for this form.',
           consoleError: `Error getting form ${formId}: ${error}`,
         }, { root: true });
       }
@@ -317,7 +334,9 @@ export default {
       }
     },
 
+    //
     // API Keys
+    //
     async deleteApiKey({ commit, dispatch }, formId) {
       try {
         await apiKeyService.deleteApiKey(formId);
