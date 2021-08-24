@@ -12,7 +12,7 @@ module.exports = {
   },
   update: async (req, res, next) => {
     try {
-      const response = await service.update(req.params.formSubmissionId, req.body, req.currentUser);
+      const response = await service.update(req.params.formSubmissionId, req.body, req.currentUser, req.headers.referer);
       res.status(200).json(response);
     } catch (error) {
       next(error);

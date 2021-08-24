@@ -1,5 +1,6 @@
 const { Permissions, Statuses } = require('../common/constants');
 const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUser, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
+const emailService = require('../email/emailService');
 
 const { transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
@@ -38,12 +39,13 @@ const service = {
 
   read: (formSubmissionId) => service._fetchSubmissionData(formSubmissionId),
 
-  update: async (formSubmissionId, data, currentUser) => {
+  update: async (formSubmissionId, data, currentUser, referrer) => {
     let trx;
     try {
       trx = await transaction.start(FormSubmission.knex());
 
       // Patch the submission record with the updated changes
+      const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
 
       if (!data.draft) {
@@ -53,6 +55,8 @@ const service = {
           .modify('filterSubmissionId', formSubmissionId);
         if (!statuses || !statuses.length) {
           await service._createSubmissionStatus(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser);
+          // If finalizing a draft to submitted, send the submission email (quiet fail if anything goes wrong)
+          emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => { });
         }
 
         // If the state is finalized to submitted, then remove permissions that would allow an edit or delete for submitters

@@ -530,6 +530,36 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
 
     const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
 
+    expect(emailService.submissionReceived).toHaveBeenCalledTimes(1);
+    expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should not call email service if it is a draft', async () => {
+    // mock a success return value...
+    service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
+    emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
+    fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
+
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).send({ draft: true });
+
+    expect(emailService.submissionReceived).toHaveBeenCalledTimes(0);
+    expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should call email service if draft is provided and false', async () => {
+    // mock a success return value...
+    service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
+    emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
+    fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
+
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).send({ draft: false });
+
+    expect(emailService.submissionReceived).toHaveBeenCalledTimes(1);
+    expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
     expect(response.statusCode).toBe(201);
     expect(response.body).toBeTruthy();
   });
