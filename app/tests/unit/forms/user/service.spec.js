@@ -1,4 +1,5 @@
-const MockModel = require('../../../common/mockModel');
+const { MockModel, MockTransaction } = require('../../../common/dbHelper');
+
 jest.mock('../../../../src/forms/common/models/tables/user', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/userFormPreferences', () => MockModel);
 
@@ -6,9 +7,11 @@ const service = require('../../../../src/forms/user/service');
 
 const formId = '4d33f4cb-0b72-4c3d-9e41-f2651805fee1';
 const userId = 'cc8c64b7-a457-456e-ade0-09ff7ee75a2b';
+const preferences = { columnList: [] };
 
 beforeEach(() => {
   MockModel.mockReset();
+  MockTransaction.mockReset();
 });
 
 describe('list', () => {
@@ -103,5 +106,128 @@ describe('readUserFormPreferences', () => {
     expect(MockModel.findById).toHaveBeenCalledWith([userId, formId]);
     expect(MockModel.first).toHaveBeenCalledTimes(1);
     expect(MockModel.first).toHaveBeenCalledWith();
+  });
+});
+
+describe('updateUserPreferences', () => {
+  const body = {
+    forms: [{
+      formId: formId,
+      preferences: preferences
+    }]
+  };
+  const readUserPreferencesSpy = jest.spyOn(service, 'readUserPreferences');
+  const readUserFormPreferencesSpy = jest.spyOn(service, 'readUserFormPreferences');
+
+  beforeEach(() => {
+    readUserPreferencesSpy.mockReset();
+    readUserFormPreferencesSpy.mockReset();
+  });
+
+  it('should throw when invalid options are provided', () => {
+    MockModel.mockResolvedValue(undefined);
+    const fn = (currentUser, body) => service.updateUserPreferences(currentUser, body);
+
+    expect(fn({ id: userId }, undefined)).rejects.toThrow();
+    expect(fn({ id: userId }, {})).rejects.toThrow();
+    expect(fn({ id: userId }, { forms: {} })).rejects.toThrow();
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
+    expect(MockModel.query).toHaveBeenCalledTimes(0);
+  });
+
+  it('should insert preferences', async () => {
+    MockModel.mockResolvedValue(undefined);
+    readUserPreferencesSpy.mockResolvedValue(undefined);
+    readUserFormPreferencesSpy.mockResolvedValue(undefined);
+
+    await service.updateUserPreferences({ id: userId }, body);
+
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
+    expect(MockModel.insert).toHaveBeenCalledTimes(1);
+    expect(MockModel.insert).toHaveBeenCalledWith({
+      userId: userId,
+      formId: formId,
+      preferences: preferences,
+      createdBy: undefined
+    });
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+  });
+
+  it('should update preferences', async () => {
+    MockModel.mockResolvedValue({});
+    readUserPreferencesSpy.mockResolvedValue({});
+    readUserFormPreferencesSpy.mockResolvedValue({});
+
+    await service.updateUserPreferences({ id: userId }, body);
+
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
+    expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
+    expect(MockModel.patchAndFetchById).toHaveBeenCalledWith([userId, formId], {
+      preferences: preferences,
+      updatedBy: undefined
+    });
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('updateUserFormPreferences', () => {
+  const readUserFormPreferencesSpy = jest.spyOn(service, 'readUserFormPreferences');
+
+  beforeEach(() => {
+    readUserFormPreferencesSpy.mockReset();
+  });
+
+  it('should insert preferences', async () => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+
+
+    MockModel.mockResolvedValue(undefined);
+    readUserFormPreferencesSpy.mockResolvedValue(undefined);
+    await service.updateUserFormPreferences({ id: userId }, formId, preferences);
+
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
+    expect(MockModel.insertAndFetch).toHaveBeenCalledTimes(1);
+    expect(MockModel.insertAndFetch).toHaveBeenCalledWith({
+      userId: userId,
+      formId: formId,
+      preferences: preferences,
+      createdBy: undefined
+    });
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+  });
+
+  it('should update preferences', async () => {
+    MockModel.mockResolvedValue({});
+    readUserFormPreferencesSpy.mockResolvedValue({});
+
+    await service.updateUserFormPreferences({ id: userId }, formId, preferences);
+
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
+    expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
+    expect(MockModel.patchAndFetchById).toHaveBeenCalledWith([userId, formId], {
+      preferences: preferences,
+      updatedBy: undefined
+    });
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle errors gracefully', async () => {
+    MockModel.mockResolvedValue(undefined);
+    readUserFormPreferencesSpy.mockImplementation(() => { throw new Error(); });
+
+    const fn = () => service.updateUserFormPreferences({ id: userId }, formId, preferences);
+
+    await expect(fn()).rejects.toThrow();
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
+    expect(MockModel.query).toHaveBeenCalledTimes(0);
   });
 });
