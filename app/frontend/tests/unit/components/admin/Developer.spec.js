@@ -43,7 +43,7 @@ describe('Developer.vue', () => {
     });
     await localVue.nextTick();
 
-    expect(wrapper.text()).toMatch('Design TBD');
+    expect(wrapper.text()).toMatch('Developer Resources');
     expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.apiRes).toEqual(data);
   });
@@ -59,7 +59,7 @@ describe('Developer.vue', () => {
     });
     await localVue.nextTick();
 
-    expect(wrapper.text()).toMatch('Design TBD');
+    expect(wrapper.text()).toMatch('Developer Resources');
     expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.apiRes).toMatch('');
   });

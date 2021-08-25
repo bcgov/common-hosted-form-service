@@ -1,10 +1,15 @@
-const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess, UserSubmissions } = require('../common/models');
-const { queryUtils } = require('../common/utils');
-
-const { transaction } = require('objection');
 const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
 
+const {
+  FormRoleUser,
+  FormSubmissionUser,
+  IdentityProvider,
+  User,
+  UserFormAccess,
+  UserSubmissions
+} = require('../common/models');
+const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
 
 const service = {
@@ -19,7 +24,7 @@ const service = {
   create: async (data) => {
     let trx;
     try {
-      trx = await transaction.start(FormRoleUser.knex());
+      trx = await FormRoleUser.startTransaction();
 
       const obj = Object.assign({}, data);
       obj.id = uuidv4();
@@ -38,7 +43,7 @@ const service = {
     let trx;
     try {
       const obj = await service.read(id);
-      trx = await transaction.start(FormRoleUser.knex());
+      trx = await FormRoleUser.startTransaction();
 
       const update = {
         formId: data.formId,
@@ -73,7 +78,7 @@ const service = {
   createUser: async (data) => {
     let trx;
     try {
-      trx = await transaction.start(User.knex());
+      trx = await User.startTransaction();
 
       const obj = Object.assign({}, data);
       obj.id = uuidv4();
@@ -98,7 +103,7 @@ const service = {
     let trx;
     try {
       const obj = await service.readUser(id);
-      trx = await transaction.start(User.knex());
+      trx = await User.startTransaction();
 
       const update = {
         keycloakId: data.keycloakId,
@@ -206,7 +211,7 @@ const service = {
 
     let trx;
     try {
-      trx = await transaction.start(FormRoleUser.knex());
+      trx = await FormRoleUser.startTransaction();
       // remove existing mappings...
       await FormRoleUser.query(trx)
         .skipUndefined()
@@ -241,7 +246,7 @@ const service = {
 
     let trx;
     try {
-      trx = await transaction.start(FormSubmissionUser.knex());
+      trx = await FormSubmissionUser.startTransaction();
       // remove existing mappings for the user...
       await FormSubmissionUser.query(trx)
         .delete()
@@ -276,7 +281,7 @@ const service = {
 
     let trx;
     try {
-      trx = await transaction.start(FormRoleUser.knex());
+      trx = await FormRoleUser.startTransaction();
       // remove existing mappings...
       await FormRoleUser.query(trx)
         .skipUndefined()

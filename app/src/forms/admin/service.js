@@ -1,8 +1,6 @@
 const { Form, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
-const { transaction } = require('objection');
-
 const service = {
 
   //
@@ -27,7 +25,7 @@ const service = {
     let trx;
     try {
       const obj = await service.readForm(formId);
-      trx = await transaction.start(Form.knex());
+      trx = await Form.startTransaction();
       const upd = {
         active: true,
         updatedBy: 'ADMIN'
