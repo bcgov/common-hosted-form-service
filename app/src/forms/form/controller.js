@@ -90,7 +90,7 @@ module.exports = {
   readVersionFields: async (req, res, next) => {
     try {
       const response = await service.readVersionFields(req.params.formVersionId);
-      res.status(200).json(response);
+      res.status(200).json(response.filter(f => f !== 'submit'));
     } catch (error) {
       next(error);
     }

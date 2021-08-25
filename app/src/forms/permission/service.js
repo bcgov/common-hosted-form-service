@@ -1,7 +1,6 @@
-const { Permission } = require('../common/models');
+const { v4: uuidv4 } = require('uuid');
 
-const {transaction} = require('objection');
-const {v4: uuidv4} = require('uuid');
+const { Permission } = require('../common/models');
 
 const service = {
   list: async () => {
@@ -14,7 +13,7 @@ const service = {
   create: async (data, currentUser) => {
     let trx;
     try {
-      trx = await transaction.start(Permission.knex());
+      trx = await Permission.startTransaction();
 
 
       // TODO: validate permission code is unique
@@ -42,20 +41,25 @@ const service = {
     let trx;
     try {
       const obj = await service.read(code);
-      await transaction(Permission.knex(), async (trx) => {
-        if (obj.display !== data.display || obj.description != data.description || obj.active != obj.active) {
-          // update name/description...
-          await Permission.query().patchAndFetchById(obj.code, {display: data.display, description: data.description, active: data.active, updatedBy: currentUser.username});
-        }
-        // clean out existing roles...
-        await trx.raw(`delete from role_permission where "permission" = '${obj.code}'`);
-        // set to specified roles...
-        for (const r of data.roles) {
-          await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${r.code}', '${obj.code}', '${currentUser.username}');`);
-        }
-      });
-      const result = await service.read(obj.code);
-      return result;
+      trx = await Permission.startTransaction();
+      if (obj.display !== data.display || obj.description != data.description || obj.active != obj.active) {
+        // update name/description...
+        await Permission.query(trx).patchAndFetchById(obj.code, {
+          display: data.display,
+          description: data.description,
+          active: data.active,
+          updatedBy: currentUser.username
+        });
+      }
+      // clean out existing roles...
+      await trx.raw(`delete from role_permission where "permission" = '${obj.code}'`);
+      // set to specified roles...
+      for (const r of data.roles) {
+        await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${r.code}', '${obj.code}', '${currentUser.username}');`);
+      }
+      await trx.commit();
+      
+      return await service.read(obj.code);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

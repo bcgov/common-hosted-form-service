@@ -1,9 +1,17 @@
-const { Permissions, Statuses } = require('../common/constants');
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUser, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
-const emailService = require('../email/emailService');
-
-const { transaction } = require('objection');
 const { v4: uuidv4 } = require('uuid');
+
+const { Permissions, Statuses } = require('../common/constants');
+const {
+  Form,
+  FormVersion,
+  FormSubmission,
+  FormSubmissionStatus,
+  FormSubmissionUser,
+  Note,
+  SubmissionAudit,
+  SubmissionMetadata
+} = require('../common/models');
+const emailService = require('../email/emailService');
 
 const service = {
 
@@ -42,7 +50,7 @@ const service = {
   update: async (formSubmissionId, data, currentUser, referrer) => {
     let trx;
     try {
-      trx = await transaction.start(FormSubmission.knex());
+      trx = await FormSubmission.startTransaction();
 
       // Patch the submission record with the updated changes
       const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
@@ -79,12 +87,13 @@ const service = {
   delete: async (formSubmissionId, currentUser) => {
     let trx;
     try {
-      trx = await transaction.start(FormSubmission.knex());
-
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: true, updatedBy: currentUser.username });
+      trx = await FormSubmission.startTransaction();
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
+        deleted: true,
+        updatedBy: currentUser.username
+      });
       await trx.commit();
-      const result = await service.read(formSubmissionId);
-      return result;
+      return await service.read(formSubmissionId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
@@ -108,19 +117,17 @@ const service = {
   _createNote: async (submissionId, data, currentUser) => {
     let trx;
     try {
-      trx = await transaction.start(Note.knex());
-      const obj = {};
-      obj.id = uuidv4();
-      obj.submissionId = submissionId;
-      obj.submissionStatusId = data.submissionStatusId;
-      obj.note = data.note;
-      obj.userId = data.userId;
-      obj.createdBy = currentUser.username;
-
-      await Note.query(trx).insert(obj);
-
+      trx = await Note.startTransaction();
+      const result = await Note.query(trx).insertAndFetch({
+        id: uuidv4(),
+        submissionId: submissionId,
+        submissionStatusId: data.submissionStatusId,
+        note: data.note,
+        userId: data.userId,
+        createdBy: currentUser.username,
+      });
       await trx.commit();
-      const result = await service.getNote(obj.id);
+
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -154,20 +161,18 @@ const service = {
   _createSubmissionStatus: async (submissionId, data, currentUser) => {
     let trx;
     try {
-      trx = await transaction.start(FormSubmissionStatus.knex());
-      const obj = {};
-      obj.id = uuidv4();
-      obj.submissionId = submissionId;
-      obj.code = data.code;
-      obj.assignedToUserId = data.assignedToUserId;
-      obj.actionDate = data.actionDate;
-      obj.createdBy = currentUser.username;
-
-      await FormSubmissionStatus.query(trx).insert(obj);
-
+      trx = await FormSubmissionStatus.startTransaction();
+      await FormSubmissionStatus.query(trx).insert({
+        id: uuidv4(),
+        submissionId: submissionId,
+        code: data.code,
+        assignedToUserId: data.assignedToUserId,
+        actionDate: data.actionDate,
+        createdBy: currentUser.username
+      });
       await trx.commit();
-      const result = await service.getStatus(submissionId);
-      return result;
+
+      return await service.getStatus(submissionId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

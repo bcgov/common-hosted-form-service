@@ -1,12 +1,26 @@
-const { FileStorage, Form, FormApiKey, FormIdentityProvider, FormRoleUser, FormVersion, FormVersionDraft, FormStatusCode, FormSubmission, FormSubmissionStatus, FormSubmissionUser, IdentityProvider, SubmissionMetadata } = require('../common/models');
-const { falsey, queryUtils } = require('../common/utils');
-
-const { Permissions, Roles, Statuses } = require('../common/constants');
-const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
-
 const Problem = require('api-problem');
-const { ref, transaction } = require('objection');
+const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
+
+const {
+  FileStorage,
+  Form,
+  FormApiKey,
+  FormIdentityProvider,
+  FormRoleUser,
+  FormVersion,
+  FormVersionDraft,
+  FormStatusCode,
+  FormSubmission,
+  FormSubmissionStatus,
+  FormSubmissionUser,
+  IdentityProvider,
+  SubmissionMetadata
+} = require('../common/models');
+const { falsey, queryUtils } = require('../common/utils');
+const { Permissions, Roles, Statuses } = require('../common/constants');
+
+const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const service = {
 
@@ -24,7 +38,7 @@ const service = {
   createForm: async (data, currentUser) => {
     let trx;
     try {
-      trx = await transaction.start(Form.knex());
+      trx = await Form.startTransaction();
       const obj = {};
       obj.id = uuidv4();
       obj.name = data.name;
@@ -88,7 +102,7 @@ const service = {
     let trx;
     try {
       const obj = await service.readForm(formId);
-      trx = await transaction.start(Form.knex());
+      trx = await Form.startTransaction();
       // do not update the active flag, that should be done via DELETE
       const upd = {
         name: data.name,
@@ -120,7 +134,7 @@ const service = {
     let trx;
     try {
       const obj = await service.readForm(formId);
-      trx = await transaction.start(Form.knex());
+      trx = await Form.startTransaction();
       // for now, only handle a soft delete, we could pass in a param to do a hard delete later
       await Form.query(trx).patchAndFetchById(formId, { active: false, updatedBy: currentUser.username });
 
@@ -187,7 +201,7 @@ const service = {
       // allow an unpublish if they pass in unpublish parameter with an affirmative
       const publish = params.unpublish ? falsey(params.unpublish) : true;
       const form = await service.readForm(formId);
-      trx = await transaction.start(FormVersion.knex());
+      trx = await FormVersion.startTransaction();
 
       await FormVersion.query(trx)
         .patch({
@@ -251,7 +265,7 @@ const service = {
       const formVersion = await service.readVersion(formVersionId);
       const { identityProviders } = await service.readForm(formVersion.formId);
 
-      trx = await transaction.start(FormSubmission.knex());
+      trx = await FormSubmission.startTransaction();
 
       // Ensure we only record the user if the form is not public facing
       const isPublicForm = identityProviders.some(idp => idp.code === 'public');
@@ -351,7 +365,7 @@ const service = {
     let trx;
     try {
       const form = await service.readForm(formId);
-      trx = await transaction.start(FormVersionDraft.knex());
+      trx = await FormVersionDraft.startTransaction();
 
       // data.schema, maybe data.formVersionId
       const obj = Object.assign({}, data);
@@ -373,7 +387,7 @@ const service = {
     let trx;
     try {
       const obj = await service.readDraft(formVersionDraftId);
-      trx = await transaction.start(FormVersionDraft.knex());
+      trx = await FormVersionDraft.startTransaction();
       await FormVersionDraft.query(trx).patchAndFetchById(formVersionDraftId, {
         schema: data.schema,
         formVersionId: data.formVersionId,
@@ -404,7 +418,7 @@ const service = {
     try {
       const form = await service.readForm(formId);
       const draft = await service.readDraft(formVersionDraftId);
-      trx = await transaction.start(FormVersionDraft.knex());
+      trx = await FormVersionDraft.startTransaction();
 
       const version = {
         id: uuidv4(),
@@ -459,7 +473,7 @@ const service = {
     let trx;
     try {
       const currentKey = await service.readApiKey(formId);
-      trx = await transaction.start(FormApiKey.knex());
+      trx = await FormApiKey.startTransaction();
 
       if (currentKey) {
         // Replace API key for the form
