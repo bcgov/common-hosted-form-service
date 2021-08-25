@@ -239,6 +239,17 @@ objects:
                 limits:
                   cpu: "${LOGGING_CPU_LIMIT}"
                   memory: "${LOGGING_MEMORY_LIMIT}"
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: AWS_ACCESS_KEY_ID
+                      name: "${APP_NAME}-aws-es"
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: AWS_SECRET_ACCESS_KEY
+                      name: "${APP_NAME}-aws-es"
               volumeMounts:
                 - name: log-storage
                   mountPath: /var/log
