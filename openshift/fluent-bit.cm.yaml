@@ -76,14 +76,14 @@ objects:
           script  script.lua
           call    ecsMap
 
-        # send http level ECS records (with tag: 'app.http') to AWS ElasticSearch
-        # [OUTPUT]
-        #   Name   http
-        #   Match  app.http
-        #   Host   ${AWS}
-        #   format json_lines
-        #   json_date_key logStreamDate
-        #   json_date_format  iso8601
+        # send http level records (with tag: 'app.http') to AWS Kinesis Stream
+        [OUTPUT]
+          Name kinesis_streams
+          Match  app.http
+          region ${AWS_DEFAULT_REGION}
+          stream ${AWS_KINESIS_STREAM}
+          time_key @timestamp
+          role_arn ${AWS_ROLE_ARN}
 
         # send all records tagged with just 'app' to external fluentd service endpoint
         [OUTPUT]
@@ -167,6 +167,10 @@ objects:
               ["type"] = "fluentbit"
           }
 
+          -- for chefs, the IP's are just k8 pods
+          new_record["clientIp"] = record["ip"]
+          new_record["hostIp"] = record["ip"]
+
           -- return the transformed new record
           return 2, timestamp, new_record
 
@@ -194,7 +198,15 @@ parameters:
     description: The hostname of our Fluentd service running further down the monitoring pipeline
     displayName: Fluentd host name
     required: true
-  - name: AWS
-    description: The hostname of AWS Opensearch service
-    displayName: AWS host name
-    required: false
+  - name: AWS_DEFAULT_REGION
+    description: Default AWS region for Opensearch logging stack
+    displayName: AWS Default Region
+    value: ca-central-1
+  - name: AWS_KINESIS_STREAM
+    description: AWS Kinesis Stream identifier
+    displayName: AWS Kinesis Stream
+    value: nress-prod-iit-logs
+  - name: AWS_ROLE_ARN
+    description: AWS OpenSearch/Kinesis Resource Name
+    displayName: AWS Role ARN
+
