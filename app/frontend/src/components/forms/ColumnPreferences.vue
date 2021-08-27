@@ -2,32 +2,40 @@
   <span>
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
-        <v-btn
-          class="mx-1"
-          @click="openPrefs()"
-          color="primary"
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
-          <v-icon>view_column</v-icon>
-        </v-btn>
+        <span v-bind="attrs" v-on="on">
+          <v-btn
+            class="mx-1"
+            @click="openPrefs()"
+            color="primary"
+            :disabled="!canSetColumnPrefs"
+            icon
+          >
+            <v-icon>view_column</v-icon>
+          </v-btn>
+        </span>
       </template>
-      <span>Customize Columns</span>
+      <span v-if="canSetColumnPrefs">Select Columns</span>
+      <span v-else>No published form version</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="headline pb-0">Customize Columns</v-card-title>
+        <v-card-title class="headline pb-0">Select Columns</v-card-title>
         <v-card-text>
           <hr />
-          <v-checkbox
-            v-for="field in formFields"
-            v-model="selectedFields"
-            :key="field"
-            :label="field"
-            :value="field"
-          />
+          <v-skeleton-loader :loading="loading" type="list-item-three-line">
+            <div>
+              <v-checkbox
+                v-for="field in formFields"
+                v-model="selectedFields"
+                dense
+                hide-details
+                :key="field"
+                :label="field"
+                :value="field"
+              />
+            </div>
+          </v-skeleton-loader>
         </v-card-text>
 
         <v-card-actions class="justify-center">
@@ -56,6 +64,9 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['form', 'formFields', 'userFormPreferences']),
+    canSetColumnPrefs() {
+      return this.form.versions && this.form.versions[0];
+    },
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
@@ -67,6 +78,7 @@ export default {
       'updateFormPreferencesForCurrentUser',
     ]),
     async openPrefs() {
+      this.loading = true;
       this.dialog = true;
       await this.fetchFormFields({
         formId: this.form.id,
@@ -78,14 +90,17 @@ export default {
           : [];
       this.loading = false;
     },
-    saveColumns() {
+    async saveColumns() {
       const userPrefs = {
         columnList: this.selectedFields,
       };
-      this.updateFormPreferencesForCurrentUser({
+      this.loading = true;
+      await this.updateFormPreferencesForCurrentUser({
         formId: this.form.id,
         preferences: userPrefs,
       });
+      // Update the parent if the note was updated
+      this.$emit('preferences-saved');
       this.dialog = false;
     },
   },
