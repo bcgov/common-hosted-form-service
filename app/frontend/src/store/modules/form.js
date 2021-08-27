@@ -1,7 +1,7 @@
 import { getField, updateField } from 'vuex-map-fields';
 
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { apiKeyService, formService, rbacService } from '@/services';
+import { apiKeyService, formService, rbacService, userService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 const genInitialForm = () => ({
@@ -39,6 +39,7 @@ export default {
     },
     permissions: [],
     submissionList: [],
+    userFormPreferences: {},
     version: {}
   },
   getters: {
@@ -51,6 +52,7 @@ export default {
     formSubmission: state => state.formSubmission,
     permissions: state => state.permissions,
     submissionList: state => state.submissionList,
+    userFormPreferences: state => state.userFormPreferences,
     version: state => state.version
   },
   mutations: {
@@ -87,6 +89,9 @@ export default {
     },
     SET_SUBMISSIONLIST(state, submissions) {
       state.submissionList = submissions;
+    },
+    SET_USER_FORM_PREFERENCES(state, userFormPreferences) {
+      state.userFormPreferences = userFormPreferences;
     },
     SET_VERSION(state, version) {
       state.version = version;
@@ -133,6 +138,28 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching your user data for this form.',
           consoleError: `Error getting user data using formID ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async getFormPreferencesForCurrentUser({ commit, dispatch }, formId) {
+      try {
+        const response = await userService.getUserFormPreferences(formId);
+        commit('SET_USER_FORM_PREFERENCES', response.data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching your preferences for this form.',
+          consoleError: `Error getting user form prefs using formID ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async updateFormPreferencesForCurrentUser({ commit, dispatch }, { formId, preferences }) {
+      try {
+        const response = await userService.updateUserFormPreferences(formId, preferences);
+        commit('SET_USER_FORM_PREFERENCES', response.data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while saving your preferences for this form.',
+          consoleError: `Error updating user form prefs using formID ${formId}, and prefs ${preferences}: ${error}`,
         }, { root: true });
       }
     },

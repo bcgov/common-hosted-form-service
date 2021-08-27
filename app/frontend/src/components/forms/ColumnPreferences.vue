@@ -23,9 +23,10 @@
           <hr />
           <v-checkbox
             v-for="field in formFields"
-            multiple
+            v-model="selectedFields"
             :key="field"
             :label="field"
+            :value="field"
           />
         </v-card-text>
 
@@ -48,42 +49,44 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
   data() {
     return {
-      dateRange: false,
       dialog: false,
-      endDate: '',
-      endDateMenu: false,
-      exportFormat: 'csv',
-      startDate: '',
       loading: true,
+      selectedFields: [],
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'formFields']),
+    ...mapGetters('form', ['form', 'formFields', 'userFormPreferences']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['fetchFormFields']),
+    ...mapActions('form', [
+      'fetchFormFields',
+      'updateFormPreferencesForCurrentUser',
+    ]),
     async openPrefs() {
       this.dialog = true;
       await this.fetchFormFields({
         formId: this.form.id,
         formVersionId: this.form.versions[0].id,
       });
+      this.selectedFields =
+        this.userFormPreferences && this.userFormPreferences.preferences
+          ? this.userFormPreferences.preferences.columnList
+          : [];
       this.loading = false;
     },
-    async saveColumns() {
-      try {
-        alert('save');
-      } catch (error) {
-        this.addNotification({
-          message:
-            'An error occurred while attempting to update your column preferences.',
-          consoleError: `Error saving preferences for form ${this.form.id}: ${error}`,
-        });
-      }
+    saveColumns() {
+      const userPrefs = {
+        columnList: this.selectedFields,
+      };
+      this.updateFormPreferencesForCurrentUser({
+        formId: this.form.id,
+        preferences: userPrefs,
+      });
+      this.dialog = false;
     },
   },
 };

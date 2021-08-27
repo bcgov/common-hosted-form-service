@@ -119,14 +119,17 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'submissionList', 'permissions']),
+    ...mapGetters('form', [
+      'form',
+      'permissions',
+      'submissionList',
+      'userFormPreferences',
+    ]),
     headers() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
-        { text: 'firstName', align: 'start' },
-        { text: 'phoneNumber', align: 'start'},
         {
           text: 'Actions',
           align: 'end',
@@ -153,6 +156,7 @@ export default {
       'fetchForm',
       'fetchSubmissions',
       'getFormPermissionsForUser',
+      'getFormPreferencesForCurrentUser',
     ]),
 
     checkFormManage() {
@@ -161,6 +165,8 @@ export default {
 
     async populateSubmissionsTable() {
       try {
+        // Get user prefs for this form
+        await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
         await this.fetchSubmissions({ formId: this.formId });
         // Build up the list of forms for the table
