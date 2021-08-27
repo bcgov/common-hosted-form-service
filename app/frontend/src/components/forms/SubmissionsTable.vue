@@ -7,7 +7,7 @@
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <ColumnPreferences />
+        <ColumnPreferences @preferences-saved="populateSubmissionsTable" />
 
         <span v-if="checkFormManage">
           <v-tooltip bottom>
@@ -130,13 +130,6 @@ export default {
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-        },
       ];
       if (this.showStatus) {
         headers.splice(3, 0, {
@@ -145,6 +138,26 @@ export default {
           value: 'status',
         });
       }
+      if (
+        this.userFormPreferences &&
+        this.userFormPreferences.preferences &&
+        this.userFormPreferences.preferences.columnList
+      ) {
+        this.userFormPreferences.preferences.columnList.forEach((col) => {
+          headers.push({
+            text: col,
+            align: 'end',
+            value: col,
+          });
+        });
+      }
+      headers.push({
+        text: 'Actions',
+        align: 'end',
+        value: 'actions',
+        filterable: false,
+        sortable: false,
+      });
       return headers;
     },
     showStatus() {
@@ -165,6 +178,7 @@ export default {
 
     async populateSubmissionsTable() {
       try {
+        this.loading = true;
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
