@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
 
-import { formService, rbacService } from '@/services';
+import { formService, rbacService, userService } from '@/services';
 import store from '@/store/modules/form';
 
 jest.mock('@/services');
@@ -64,6 +64,48 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
+
+    it('getFormPreferencesForCurrentUser should commit to SET_USER_FORM_PREFERENCES', async () => {
+      userService.getUserFormPreferences.mockResolvedValue({
+        data: {
+          preferences: ['foo', 'bar'],
+          userId: '123'
+        }
+      });
+      await store.actions.getFormPreferencesForCurrentUser(mockStore, 'fId');
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_USER_FORM_PREFERENCES', expect.any(Object));
+    });
+
+    it('getFormPreferencesForCurrentUser should dispatch to notifications/addNotification', async () => {
+      userService.getUserFormPreferences.mockRejectedValue('');
+      await store.actions.getFormPreferencesForCurrentUser(mockStore, 'fId');
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('updateFormPreferencesForCurrentUser should commit to SET_USER_FORM_PREFERENCES', async () => {
+      userService.updateUserFormPreferences.mockResolvedValue({
+        data: {
+          preferences: ['foo', 'bar'],
+          userId: '123'
+        }
+      });
+      await store.actions.updateFormPreferencesForCurrentUser(mockStore, { formId: 'fId', preferences: {} });
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_USER_FORM_PREFERENCES', expect.any(Object));
+    });
+
+    it('updateFormPreferencesForCurrentUser should dispatch to notifications/addNotification', async () => {
+      userService.updateUserFormPreferences.mockRejectedValue('');
+      await store.actions.updateFormPreferencesForCurrentUser(mockStore, { formId: 'fId', preferences: {} });
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
   });
 
   describe('form', () => {
@@ -79,6 +121,22 @@ describe('form actions', () => {
     it('fetchForm should dispatch to notifications/addNotification', async () => {
       formService.readForm.mockRejectedValue('');
       await store.actions.fetchSubmission(mockStore, { formId: 'fId' });
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('fetchFormFields should commit to SET_FORM_FIELDS', async () => {
+      formService.readVersionFields.mockResolvedValue({ data: { form: {} } });
+      await store.actions.fetchFormFields(mockStore, { formId: 'fId', formVersionId: 'vid' });
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FORM_FIELDS', expect.any(Object));
+    });
+
+    it('fetchForm should dispatch to notifications/addNotification', async () => {
+      formService.readVersionFields.mockRejectedValue('');
+      await store.actions.fetchFormFields(mockStore, { formId: 'fId', formVersionId: 'vid' });
 
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));

@@ -27,6 +27,15 @@ describe('form mutations', () => {
     expect(state.submissionList).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
   });
 
+  it('SET_API_KEY should update apiKey state', () => {
+    const obj = { foo: 'bar' };
+    store.mutations.SET_API_KEY(state, [obj]);
+
+    expect(state.apiKey).toBeTruthy();
+    expect(state.apiKey).toHaveLength(1);
+    expect(state.apiKey).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
+  });
+
   it('SET_DRAFTS should update drafts state', () => {
     const obj = { foo: 'bar' };
     store.mutations.SET_DRAFTS(state, [obj]);
@@ -70,6 +79,15 @@ describe('form mutations', () => {
     expect(state.formList).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
   });
 
+  it('SET_FORM_FIELDS should update formFields state', () => {
+    const obj = { foo: 'bar' };
+    store.mutations.SET_FORM_FIELDS(state, [obj]);
+
+    expect(state.formFields).toBeTruthy();
+    expect(state.formFields).toHaveLength(1);
+    expect(state.formFields).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
+  });
+
   it('SET_FORMSUBMISSION should update formSubmission state', () => {
     const obj = { foo: 'bar' };
     store.mutations.SET_FORMSUBMISSION(state, obj);
@@ -85,6 +103,15 @@ describe('form mutations', () => {
     expect(state.submissionList).toBeTruthy();
     expect(state.submissionList).toHaveLength(1);
     expect(state.submissionList).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
+  });
+
+  it('SET_USER_FORM_PREFERENCES should update userFormPreferences state', () => {
+    const obj = { foo: 'bar' };
+    store.mutations.SET_USER_FORM_PREFERENCES(state, [obj]);
+
+    expect(state.userFormPreferences).toBeTruthy();
+    expect(state.userFormPreferences).toHaveLength(1);
+    expect(state.userFormPreferences).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
   });
 
   it('SET_VERSION should update form state', () => {
