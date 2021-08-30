@@ -38,6 +38,10 @@ describe('form getters', () => {
     store.replaceState(cloneDeep(sampleState));
   });
 
+  it('apiKey should return the state apiKey', () => {
+    expect(store.getters.apiKey).toEqual(sampleState.apiKey);
+  });
+
   it('drafts should return the state drafts', () => {
     expect(store.getters.drafts).toEqual(sampleState.drafts);
   });
@@ -48,6 +52,10 @@ describe('form getters', () => {
 
   it('formList should return the state formList', () => {
     expect(store.getters.formList).toEqual(sampleState.formList);
+  });
+
+  it('formFields should return the state formFields', () => {
+    expect(store.getters.formFields).toEqual(sampleState.formFields);
   });
 
   it('formSubmission should return the state formSubmission', () => {
@@ -64,6 +72,10 @@ describe('form getters', () => {
 
   it('submissionList should return the state submissionList', () => {
     expect(store.getters.submissionList).toEqual(sampleState.submissionList);
+  });
+
+  it('userFormPreferences should return the state userFormPreferences', () => {
+    expect(store.getters.userFormPreferences).toEqual(sampleState.userFormPreferences);
   });
 
   it('version should return the state version', () => {

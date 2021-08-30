@@ -11,6 +11,27 @@ export default {
   */
   getUsers(params = {}) {
     return appAxios().get(`${ApiRoutes.USERS}/`, { params });
+  },
+
+  /**
+  * @function getUserFormPreferences
+  * Get the preferences for a the current user for a specific form
+  * @param {String} formId The form
+  * @returns {Promise} An axios response
+  */
+  getUserFormPreferences(formId) {
+    return appAxios().get(`${ApiRoutes.USERS}/preferences/forms/${formId}`);
+  },
+
+  /**
+  * @function updateUserFormPreferences
+  * Set the preferences for a the current user for a specific form
+  * @param {String} formId The form
+  * @param {Object} body The user form preferences
+  * @returns {Promise} An axios response
+  */
+  updateUserFormPreferences(formId, body) {
+    return appAxios().put(`${ApiRoutes.USERS}/preferences/forms/${formId}`, body);
   }
 
 };
