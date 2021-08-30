@@ -18,24 +18,6 @@
       </template>
       <span>{{ tooltipText }}</span>
     </v-tooltip>
-    <!-- <v-snackbar
-      v-model="clipSnackbar.on"
-      right
-      top
-      :timeout="6000"
-      :color="clipSnackbar.color"
-    >
-      <span>{{ clipSnackbar.text }}</span>
-      <v-btn
-        color="white"
-        class="float-right"
-        @click="clipSnackbar.on = false"
-        icon
-        small
-      >
-        <v-icon>close</v-icon>
-      </v-btn>
-    </v-snackbar> -->
   </span>
 </template>
 
@@ -82,9 +64,6 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     clipboardSuccessHandler() {
-      // this.clipSnackbar.on = true;
-      // this.clipSnackbar.text = this.snackBarText;
-      // this.clipSnackbar.color = 'info';
       this.$emit('copied');
       this.addNotification({
         message: this.snackBarText,
@@ -92,9 +71,6 @@ export default {
       });
     },
     clipboardErrorHandler() {
-      // this.clipSnackbar.on = true;
-      // this.clipSnackbar.text = 'Error attempting to copy to clipboard';
-      // this.clipSnackbar.color = 'error';
       this.addNotification({
         message: 'Error attempting to copy to clipboard.'
       });

@@ -27,34 +27,47 @@
             :class="NOTIFICATIONS_TYPES.WARNING.class"
             :color="NOTIFICATIONS_TYPES.WARNING.color"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
-            transition='scale-transition'
+            transition="scale-transition"
           >
             There is no published version of the form at this time. The link
             below will not be reachable until a version is published.
           </v-alert>
-          <v-row no-gutters class="mt-5">
-            <v-col cols="11">
-              <v-text-field
-                readonly
-                dense
-                flat
-                outlined
-                label="URL"
-                data-test="text-shareUrl"
-                :value="formLink"
-              >
-                <template #prepend>
-                  <v-icon>link</v-icon>
-                </template>
-              </v-text-field></v-col
-            >
-            <v-col cols="1" class="pt-1 pl-1">
+          <v-text-field
+            readonly
+            dense
+            flat
+            outlined
+            label="URL"
+            data-test="text-shareUrl"
+            :value="formLink"
+          >
+            <template #prepend>
+              <v-icon>link</v-icon>
+            </template>
+            <template #append-outer>
               <BaseCopyToClipboard
+                class="mt-n1"
                 :copyText="formLink"
                 tooltipText="Copy URL to clipboard"
               />
-            </v-col>
-          </v-row>
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    class="mt-n1"
+                    color="primary"
+                    :href="formLink"
+                    icon
+                    target="_blank"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon class="mr-1">open_in_new</v-icon>
+                  </v-btn>
+                </template>
+                <span>Open this form</span>
+              </v-tooltip>
+            </template>
+          </v-text-field>
 
           <v-row no-gutters align="end" justify="center">
             <v-col cols="auto">
