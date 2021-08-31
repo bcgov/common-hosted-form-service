@@ -243,13 +243,13 @@ objects:
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
-                      key: AWS_ACCESS_KEY_ID
-                      name: "${APP_NAME}-aws-es"
+                      key: username
+                      name: "${APP_NAME}-aws-kinesis-secret"
                 - name: AWS_SECRET_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: AWS_SECRET_ACCESS_KEY
-                      name: "${APP_NAME}-aws-es"
+                      key: password
+                      name: "${APP_NAME}-aws-kinesis-secret"
               volumeMounts:
                 - name: log-storage
                   mountPath: /var/log

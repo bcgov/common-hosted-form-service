@@ -128,7 +128,7 @@ objects:
           - timestamp: Unix timestamp with precision (double)
           - record   : Table with multiple key/val
 
-          Uppon return if code == 1 (modified), then filter_lua plugin
+          Upon return if code == 1 (modified), then filter_lua plugin
           will replace the original timestamp and record with the returned
           values. If code == 0 the original record is kept otherwise if
           code == -1, the original record will be deleted.
@@ -142,16 +142,16 @@ objects:
 
           -- derive full environment (stage) name from namespace
           -- see: https://www.lua.org/pil/20.3.html
-          _, _, part1, environmentAbbrivation = string.find(record["namespace"], "([a-zA-Z0-9_+-]+)-([a-zA-Z0-9_+-]+)")
+          _, _, part1, environmentAbbreviation = string.find(record["namespace"], "([a-zA-Z0-9_+-]+)-([a-zA-Z0-9_+-]+)")
 
-          environemntsArray = {
+          environmentsArray = {
             ["dev"] = "development",
             ["test"] = "test",
             ["prod"] = "production"
           }
 
           new_record["labels"] = {
-            ["env"] = environemntsArray[environmentAbbrivation]
+            ["env"] = environmentsArray[environmentAbbreviation]
           }
 
           -- add more ECS fields
@@ -167,7 +167,7 @@ objects:
               ["type"] = "fluentbit"
           }
 
-          -- for chefs, the IP's are just k8 pods
+          -- for chefs, the IP's are just k8s pods
           new_record["clientIp"] = record["ip"]
           new_record["hostIp"] = record["ip"]
 
@@ -201,12 +201,13 @@ parameters:
   - name: AWS_DEFAULT_REGION
     description: Default AWS region for Opensearch logging stack
     displayName: AWS Default Region
-    value: ca-central-1
+    required: true
   - name: AWS_KINESIS_STREAM
     description: AWS Kinesis Stream identifier
     displayName: AWS Kinesis Stream
-    value: nress-prod-iit-logs
+    required: true
   - name: AWS_ROLE_ARN
     description: AWS OpenSearch/Kinesis Resource Name
     displayName: AWS Role ARN
+    required: true
 
