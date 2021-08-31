@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-tooltip bottom v-if="false">
+    <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <span v-bind="attrs" v-on="on">
           <v-btn
