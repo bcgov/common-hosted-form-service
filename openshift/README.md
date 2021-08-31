@@ -41,10 +41,13 @@ In order to prepare an environment, you will need to ensure that all of the foll
 ```sh
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
-export FLUENTD=<yourfluentdendpoint>
-export AWS=<aws log ingestion service url>
 export PUBLIC_KEY=<yourkeycloakpublickey>
 export REPO_NAME=common-hosted-form-service
+# parameters for Fluent-bit container
+export FLUENTD=<yourfluentdendpoint>
+export AWS_DEFAULT_REGION=<AWS region>
+export AWS_KINESIS_STREAM=<AWS Kinesis stream name>
+export AWS_ROLE_ARN=<AWS credential>
 
 oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
   --from-literal=FRONTEND_APIPATH=api/v1 \
@@ -91,8 +94,19 @@ oc create -n $NAMESPACE configmap $APP_NAME-files-config \
   --from-literal=FILES_OBJECTSTORAGE_KEY=chefs/dev/ \
 ```
 
+The following command creates an OpenShift config map that contains configuration files for our [Fluent-bit log forwarder](#sidecar-logging).
+
 ```sh
-oc process -n $NAMESPACE -f https://raw.githubusercontent.com/bcgov/$REPO_NAME/master/openshift/fluent-bit.cm.yaml -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p REPO_NAME=$REPO_NAME -p FLUENTD=$FLUENTD -p AWS=$AWS -o yaml | oc -n $NAMESPACE apply -f -
+oc process -n $NAMESPACE -f fluent-bit.cm.yaml \
+  -p NAMESPACE=$NAMESPACE \
+  -p APP_NAME=$APP_NAME \
+  -p REPO_NAME=$REPO_NAME \
+  -p JOB_NAME=$JOB_NAME \
+  -p FLUENTD=$FLUENTD \
+  -p AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
+  -p AWS_KINESIS_STREAM=$AWS_KINESIS_STREAM \
+  -p AWS_ROLE_ARN=$AWS_ROLE_ARN \
+  -o yaml | oc -n $NAMESPACE apply -f -
 ```
 
 ### Secrets
@@ -219,7 +233,36 @@ oc rollout -n $NAMESPACE latest dc/<buildname>-master
 Our deployment on OpenShift uses a Fluent-bit sidecar to collect logs from the CHEFS application. The sidecar deployment is included in the main app.dc.yaml file.
 Our NodeJS apps output logs to a configurable file path (for example app/app.log ). This is done using using a logger script. For example see our [CHEFS app logger](https://github.com/bcgov/common-hosted-form-service/blob/master/app/src/components/log.js)
 
+The Fluent-bit configuration is kept in the openshift config map [fluent-bit.cm.yaml](/openshift/fluent-bit.cm.yaml)
+
 Additional details for configuring the sidecar can be seen on the [wiki](https://github.com/bcgov/nr-get-token/wiki/Logging-to-a-Sidecar).
+
+### Logs sent to AWS Opensearch
+
+We currently forward our application logs from Fluent-bit to an AWS OpenSearch service.
+the AWS connection credentials are found using environment variables in the fluent-bit container (aws credentials stored in 'chefs-aws-kinesis-secret' secret.)
+
+to create this secret on OpenShift:
+
+```sh
+export NAMESPACE=<yournamespace>
+export APP_NAME=<yourappshortname>
+
+export username=<AWS access key ID>
+export password=<AWS secret access key>
+
+oc create -n $NAMESPACE secret generic $APP_NAME-aws-kinesis-secret \
+  --type=kubernetes.io/basic-auth \
+  --from-literal=username=$username \
+  --from-literal=password=$password
+```
+
+The Fluent-bit configuration includes the output plugin 'kinesis streams' where we define our AWS region, arn_role and stream name.
+A further parser for our logs was added to a node app running on an [AWS Lambda service](https://github.com/BCDevOps/nr-elasticsearch-stack/tree/master/event-stream-processing/src)
+
+### Error Notifications
+
+We currently also output logs to a Fluentd service where we can trigger error notifications to our Discord channel. See our [Wiki](https://github.com/bcgov/nr-get-token/wiki/Aggregate-logs-with-Fluentd) from more details.
 
 ## Pull Request Cleanup
 
