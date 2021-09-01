@@ -207,7 +207,7 @@ objects:
                   mountPath: /var/log
             # Fluent-bit log aggregator/forwarder
             - name: fluent-bit
-              image: docker.io/fluent/fluent-bit:1.7
+              image: docker.io/fluent/fluent-bit:1.8
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:
@@ -239,6 +239,17 @@ objects:
                 limits:
                   cpu: "${LOGGING_CPU_LIMIT}"
                   memory: "${LOGGING_MEMORY_LIMIT}"
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: "${APP_NAME}-aws-kinesis-secret"
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: "${APP_NAME}-aws-kinesis-secret"
               volumeMounts:
                 - name: log-storage
                   mountPath: /var/log
