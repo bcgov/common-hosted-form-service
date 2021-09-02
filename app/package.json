@@ -8,7 +8,7 @@
     "debug": "nodemon --inspect ./bin/www",
     "build": "cd frontend && npm run build",
     "start": "node ./bin/www",
-    "test": "jest --verbose --forceExit --detectOpenHandles",
+    "test": "",
     "lint": "eslint . **/www --no-fix --ext .js",
     "lint:fix": "eslint . **/www --fix --ext .js",
     "pretest": "npm run lint",

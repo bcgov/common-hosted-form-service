@@ -11,7 +11,7 @@ const P = require('../common/constants').Permissions;
 routes.use(currentUser);
 
 routes.get('/current', keycloak.protect(), async (req, res, next) => {
-  await controller.getCurrentUser(req, res, next);
+  await controller.getCurrentUserDebug1(req, res, next);
 });
 
 routes.get('/current/submissions', keycloak.protect(), async (req, res, next) => {
