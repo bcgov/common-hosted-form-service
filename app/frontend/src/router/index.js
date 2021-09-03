@@ -243,6 +243,11 @@ export default function getRouter(basePath = '/') {
         }
       },
       {
+        path: '/login',
+        name: 'Login',
+        component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
+      },
+      {
         path: '/404',
         alias: '*',
         name: 'NotFound',

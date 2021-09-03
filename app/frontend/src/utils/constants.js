@@ -66,7 +66,8 @@ export const IdentityMode = Object.freeze({
 
 /** Identitiy Providers a user can log in as and a form can be allowed for */
 export const IdentityProviders = Object.freeze({
-  BCEID: 'bceid', // BCeID
+  BCEIDBASIC: 'bceid-basic', // Basic BCeID
+  BCEIDBUSINESS: 'bceid-business', // Business BCeID
   BCSC: 'bcsc', // Services Card
   GITHUB: 'github', // Github
   IDIR: 'idir' // IDIR
