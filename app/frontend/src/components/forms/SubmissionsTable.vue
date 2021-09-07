@@ -131,6 +131,8 @@ export default {
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
       ];
+
+      // If status flow enabled add that column
       if (this.showStatus) {
         headers.splice(3, 0, {
           text: 'Status',
@@ -138,19 +140,21 @@ export default {
           value: 'status',
         });
       }
-      if (
-        this.userFormPreferences &&
-        this.userFormPreferences.preferences &&
-        this.userFormPreferences.preferences.columnList
-      ) {
-        this.userFormPreferences.preferences.columnList.forEach((col) => {
-          headers.push({
-            text: col,
-            align: 'end',
-            value: col,
-          });
+
+      // Add any custom columns if the user has them
+      const maxHeaderLength = 25;
+      this.userColumnList.forEach((col) => {
+        headers.push({
+          text:
+            col.length > maxHeaderLength
+              ? `${col.substring(0, maxHeaderLength)}...`
+              : col,
+          align: 'end',
+          value: col,
         });
-      }
+      });
+
+      // Actions column at the end
       headers.push({
         text: 'Actions',
         align: 'end',
@@ -162,6 +166,17 @@ export default {
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
+    },
+    userColumnList() {
+      if (
+        this.userFormPreferences &&
+        this.userFormPreferences.preferences &&
+        this.userFormPreferences.preferences.columnList
+      ) {
+        return this.userFormPreferences.preferences.columnList;
+      } else {
+        return [];
+      }
     },
   },
   methods: {
@@ -186,7 +201,7 @@ export default {
         // Build up the list of forms for the table
         if (this.submissionList) {
           const tableRows = this.submissionList.map((s) => {
-            return {
+            const fields = {
               confirmationId: s.confirmationId,
               date: s.createdAt,
               formId: s.formId,
@@ -195,6 +210,11 @@ export default {
               submitter: s.createdBy,
               versionId: s.formVersionId,
             };
+            // Add any custom columns
+            this.userColumnList.forEach((col) => {
+              fields[col] = s[col];
+            });
+            return fields;
           });
           this.submissionTable = tableRows;
         }
