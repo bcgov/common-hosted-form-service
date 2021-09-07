@@ -142,10 +142,13 @@ export default {
       }
 
       // Add any custom columns if the user has them
-      const clm = 25;
+      const maxHeaderLength = 25;
       this.userColumnList.forEach((col) => {
         headers.push({
-          text: col.length > clm ? `${col.substring(0, clm)}...` : col,
+          text:
+            col.length > maxHeaderLength
+              ? `${col.substring(0, maxHeaderLength)}...`
+              : col,
           align: 'end',
           value: col,
         });
