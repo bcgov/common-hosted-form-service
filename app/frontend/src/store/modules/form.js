@@ -324,13 +324,15 @@ export default {
         }, { root: true });
       }
     },
-    async fetchSubmissions({ commit, dispatch }, { formId, userView }) {
+    async fetchSubmissions({ commit, dispatch, state }, { formId, userView }) {
       try {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of active submissions for this form (for either all submissions, or just single user)
+        const fields = state.userFormPreferences &&
+          state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columnList : undefined;
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
-          : await formService.listSubmissions(formId, { deleted: false, draft: false });
+          : await formService.listSubmissions(formId, { deleted: false, draft: false, fields: fields });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {

@@ -173,8 +173,8 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params) => {
-    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
-    return SubmissionMetadata.query()
+    // await service.readForm(formId, queryUtils.defaultActiveOnly(params));
+    const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
       .modify('filterConfirmationId', params.confirmationId)
@@ -184,6 +184,22 @@ const service = {
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
       .modify('orderDefault');
+
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId'];
+    if (params.fields && params.fields.length) {
+      let fields = [];
+      if (Array.isArray(params.fields)) {
+        fields = params.fields.flatMap(f => f.split(',').map(s => s.trim()));
+      } else {
+        fields = params.fields.split(',').map(s => s.trim());
+      }
+
+      query.select(selection, fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))));
+    } else {
+      query.select(selection);
+    }
+
+    return query;
   },
 
   listVersions: async (formId, params) => {
