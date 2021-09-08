@@ -24,6 +24,18 @@ const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.S
 
 const service = {
 
+  // Get the list of file IDs from the submission
+  _findFileIds: (schema, data) => {
+    return schema.components
+      // Get the file controls
+      .filter(x => x.type === 'simplefile')
+      // for the file controls, get their respective data element (skip if it's not in data)
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap#for_adding_and_removing_items_during_a_map
+      .flatMap(x => data.submission.data[x.key] ? data.submission.data[x.key] : [])
+      // get the id from the data
+      .map(x => x.data.id);
+  },
+
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
@@ -337,11 +349,7 @@ const service = {
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.
       // use the schema to determine if there are uploads, fetch the ids from the submission data...
-      const fileIds = formVersion.schema.components
-        .filter(x => x.type === 'simplefile')
-        .flatMap(x => data.submission.data[x.key])
-        .map(x => x.data.id);
-
+      const fileIds = service._findFileIds(formVersion.schema, data);
       for (const fileId of fileIds) {
         await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: obj.id, updatedBy: currentUser.username });
       }
