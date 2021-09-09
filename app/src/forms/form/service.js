@@ -268,11 +268,17 @@ const service = {
     // TODO: Consider if this should be a form utils function instead?
     const findFields = (obj) => {
       const fields = [];
-      // Only add key if it is an input and visible
-      if (obj.input && !obj.hidden) fields.push(obj.key);
-      // Check children components that aren't inputs
-      else if (!obj.hidden && obj.components && obj.components.length) {
-        fields.push(obj.components.flatMap(o => findFields(o)));
+      if (!obj.hidden) {
+        // Only add key if it is an input and visible
+        if (obj.input) fields.push(obj.key);
+        // Recursively check all children attributes that are arrays
+        else {
+          Object.keys(obj).forEach(key => {
+            if (Array.isArray(obj[key]) && obj[key].length) {
+              fields.push(obj[key].flatMap(o => findFields(o)));
+            }
+          });
+        }
       }
       return fields.flat();
     };
