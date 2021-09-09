@@ -251,3 +251,73 @@ describe('_findFileIds', () => {
   });
 
 });
+
+describe('readVersionFields', () => {
+
+  it('should return right number of fields without columns',  async () => {
+    const schema = {
+      type: 'form',
+      components: [
+        {
+          type: 'textfield',
+          input: true,
+          key: 'firstName'
+        }
+      ]
+    };
+
+    // mock readVersion function
+    service.readVersion = jest.fn().mockReturnValue( { schema } );
+    // get fields
+    const fields = await service.readVersionFields();
+    // test cases
+    expect(fields.length).toEqual(1);
+  });
+
+  it('should return right number of fields with columns',  async () => {
+    const schema = {
+      type: 'form',
+      components: [
+        {
+          type: 'textfield',
+          input: true,
+          key: 'firstName'
+        },
+        {
+          type: 'columns',
+          input: false,
+          key: 'myColumns',
+          columns: [
+            {
+              size: 'lg',
+              components: []
+            },
+            {
+              size: 'lg',
+              components: [
+                {
+                  type: 'textfield',
+                  input: true,
+                  key: 'lastName'
+                },
+              ]
+            },
+            {
+              size: 'lg',
+              components: []
+            }
+          ]
+        }
+      ]
+    };
+
+    // mock readVersion function
+    service.readVersion = jest.fn().mockReturnValue( { schema } );
+    // get fields
+    const fields = await service.readVersionFields();
+    // test cases
+    expect(fields.length).toEqual(2);
+  });
+
+});
+
