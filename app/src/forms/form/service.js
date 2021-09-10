@@ -185,7 +185,6 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params) => {
-    // await service.readForm(formId, queryUtils.defaultActiveOnly(params));
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
