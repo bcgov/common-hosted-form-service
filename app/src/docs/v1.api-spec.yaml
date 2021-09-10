@@ -734,6 +734,15 @@ paths:
         - Submission
       parameters:
         - $ref: '#/components/parameters/formIdParam'
+        - in: query
+          name: fields
+          schema:
+            type: string
+            example: textField1,checkbox1,radioGroup1,email1
+          description: >-
+            A list of form fields to search on. Refer to the related
+            `versions/{formVersionId}/fields` endpoint for a list of valid
+            values to query for. The list should be comma separated.
       responses:
         '200':
           description: OK
@@ -2736,6 +2745,9 @@ components:
       allOf:
         - type: object
           properties:
+            textField1:
+              type: string
+              example: the contents of the field called 'textField1' from the 'fields' query param
             submissionId:
               type: string
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
@@ -2875,7 +2887,7 @@ components:
               example: Design Update
             description:
               type: string
-              example: '''Can edit/update the form design'''
+              example: "'Can edit/update the form design'"
             active:
               type: boolean
               example: true
@@ -2930,7 +2942,7 @@ components:
               example: Form Designer
             description:
               type: string
-              example: '''Designs the form'''
+              example: "'Designs the form'"
             active:
               type: boolean
               example: true
