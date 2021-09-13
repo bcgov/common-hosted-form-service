@@ -41,5 +41,33 @@ export default {
     userName: () => Vue.prototype.$keycloak.userName
   },
   mutations: {},
-  actions: {}
+  actions: {
+    login({ getters, rootGetters }, idpHint = undefined) {
+      if (getters.keycloakReady) {
+        const { idps } = rootGetters['form/form'];
+        const options = {};
+        // Determine idpHint based on input or form
+        if (idpHint && typeof idpHint === 'string') options.idpHint = idpHint;
+        else if (idps.length) options.idpHint = idps[0];
+
+        if (options.idpHint) {
+          // Redirect to Keycloak if idpHint is available
+          window.location.replace(getters.createLoginUrl(options));
+        } else {
+          // Navigate to internal login page if no idpHint specified
+          const basePath = Vue.prototype.$config.basePath;
+          window.location.replace(`${basePath}/login`);
+        }
+      }
+    },
+    logout({ getters }) {
+      if (getters.keycloakReady) {
+        window.location.replace(
+          getters.createLogoutUrl({
+            redirectUri: `${location.origin}/${Vue.prototype.$config.basePath}`
+          })
+        );
+      }
+    }
+  }
 };

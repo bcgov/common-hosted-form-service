@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'BaseSecure',
@@ -64,11 +64,7 @@ export default {
     },
   },
   methods: {
-    login() {
-      if (this.keycloakReady) {
-        window.location.replace(this.createLoginUrl({ idpHint: 'idir' }));
-      }
-    },
+    ...mapActions('auth', ['login'])
   },
 };
 </script>
