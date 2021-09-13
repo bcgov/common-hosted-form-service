@@ -246,6 +246,7 @@ export default function getRouter(basePath = '/') {
         path: '/login',
         name: 'Login',
         component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
+        props: createProps
       },
       {
         path: '/404',
@@ -287,7 +288,6 @@ export default function getRouter(basePath = '/') {
       && !router.app.$keycloak.authenticated) {
       const redirect = location.origin + basePath + to.path + location.search;
       const loginUrl = router.app.$keycloak.createLoginUrl({
-        idpHint: 'idir',
         redirectUri: redirect
       });
       window.location.replace(loginUrl);

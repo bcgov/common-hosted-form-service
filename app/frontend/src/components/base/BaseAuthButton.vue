@@ -10,37 +10,18 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'BaseAuthButton',
   computed: {
-    ...mapGetters('auth', [
-      'authenticated',
-      'createLoginUrl',
-      'createLogoutUrl',
-      'keycloakReady'
-    ]),
+    ...mapGetters('auth', ['authenticated', 'keycloakReady']),
     hasLogin() {
       return this.$route && this.$route.meta && this.$route.meta.hasLogin;
     }
   },
   methods: {
-    login() {
-      if (this.keycloakReady) {
-        window.location.replace(this.createLoginUrl({ idpHint: 'idir' }));
-      }
-    },
-    logout() {
-      if (this.keycloakReady) {
-        window.location.replace(
-          this.createLogoutUrl({
-            idpHint: 'idir',
-            redirectUri: `${location.origin}/${this.$config.basePath}`
-          })
-        );
-      }
-    }
+    ...mapActions('auth', ['login', 'logout'])
   }
 };
 </script>
