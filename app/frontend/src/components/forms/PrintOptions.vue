@@ -179,12 +179,6 @@ export default {
         this.submissionRecord = submissionResponse.data.submission;
         parsedContexts = this.submissionRecord.submission.data;
 
-        console.log('parsedContexts: ', parsedContexts);
-        console.log('content: ', content);
-        console.log('contentFileType: ', contentFileType);
-        console.log('outputFileName: ', outputFileName);
-        console.log('outputFileType: ', outputFileType);
-
         const body = this.createBody(
           parsedContexts,
           content,
