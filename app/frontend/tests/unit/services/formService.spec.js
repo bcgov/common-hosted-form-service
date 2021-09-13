@@ -354,6 +354,40 @@ describe('Form Service', () => {
     });
   });
 
+  describe('submission/{submissionId}/template/render', () => {
+    const endpoint = `${ApiRoutes.SUBMISSION}/${zeroUuid}/template/render`;
+
+    it('calls post endpoint', async () => {
+      mockAxios.onPost(endpoint).reply(200);
+      const parsedContext = {
+        'firstName': 'Jane',
+        'lastName': 'Smith'
+      };
+      const content = 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK';
+      const contentFileType = 'txt';
+      const outputFileName = 'template_hello_world';
+      const outputFileType = 'pdf';
+
+      const mockBody = {
+        data: parsedContext,
+        options: {
+          reportName: outputFileName,
+          convertTo: outputFileType,
+          overwrite: true,
+        },
+        template: {
+          content: content,
+          encodingType: 'base64',
+          fileType: contentFileType,
+        },
+      };
+
+      const result = await formService.docGen(zeroUuid, mockBody);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
   describe('submission/{submissionId}/status', () => {
     const endpoint = `${ApiRoutes.SUBMISSION}/${zeroUuid}/status`;
 
