@@ -1,4 +1,5 @@
 const emailService = require('../email/emailService');
+const cdogsService = require('../../components/cdogsService');
 const service = require('./service');
 
 module.exports = {
@@ -68,6 +69,19 @@ module.exports = {
       const submission = await service.read(req.params.formSubmissionId, req.currentUser);
       const response = await emailService.submissionConfirmation(submission.form.id, req.params.formSubmissionId, req.body, req.headers.referer);
       res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  templateUploadAndRender: async (req, res, next) => {
+    try {
+      const { data, headers, status } = await cdogsService.templateUploadAndRender(req.body);
+      const contentDisposition = headers['content-disposition'];
+
+      res.status(status).set({
+        'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+        'Content-Type': headers['content-type']
+      }).send(data);
     } catch (error) {
       next(error);
     }
