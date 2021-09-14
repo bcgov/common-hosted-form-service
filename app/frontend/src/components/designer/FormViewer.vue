@@ -70,6 +70,57 @@ import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
 
+
+import { Templates } from 'vue-formio';
+
+// extend each existing template by first getting the current template function and then call that function in addition to your own.
+var inputTemplate = Templates.current.input.form;
+var checkboxTemplate = Templates.current.checkbox.form;
+var selectTemplate = Templates.current.select.form;
+var radioTemplate = Templates.current.radio.form;
+
+Templates.current = {
+  input: {
+    form: function (ctx) {
+      // if input is required, add 'aria-required = true' attribute to ctx.input.attr object
+      if(ctx.component.validate.required) {
+        ctx.input.attr['aria-required'] = 'true';
+        ctx.input.attr['required'] = 'required';
+      }
+      return inputTemplate(ctx);
+    }
+  },
+  checkbox: {
+    form: function (ctx) {
+      if(ctx.component.validate.required) {
+        ctx.input.attr['aria-required'] = 'true';
+        ctx.input.attr['required'] = 'required';
+      }
+      return checkboxTemplate(ctx);
+    }
+  },
+  select: {
+    form: function (ctx) {
+      // console.log('ctx', ctx);
+      if(ctx.component.validate.required) {
+        ctx.input.attr['aria-required'] = 'true';
+        ctx.input.attr['required'] = 'required';
+      }
+      return selectTemplate(ctx);
+    }
+  },
+  radio: {
+    form: function (ctx) {
+      if(ctx.component.validate.required) {
+        ctx.input.attr['required'] = 'required';
+      }
+      return '<div role="radiogroup" aria-required="true">' + radioTemplate(ctx) + '</div>';
+    }
+  }
+};
+
+
+
 export default {
   name: 'FormViewer',
   components: {
