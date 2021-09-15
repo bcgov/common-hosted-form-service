@@ -20,8 +20,6 @@ export default {
       return this.$route && this.$route.meta && this.$route.meta.hasLogin;
     }
   },
-  methods: {
-    ...mapActions('auth', ['login', 'logout'])
-  }
+  methods: mapActions('auth', ['login', 'logout']),
 };
 </script>

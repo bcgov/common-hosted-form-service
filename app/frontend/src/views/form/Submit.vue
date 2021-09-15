@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import { determineFormNeedsAuth } from '@/utils/permissionUtils';
 import FormViewer from '@/components/designer/FormViewer.vue';
 
 export default {
@@ -13,9 +12,6 @@ export default {
   },
   props: {
     f: String,
-  },
-  beforeRouteEnter(to, from, next) {
-    determineFormNeedsAuth(to.query.f, undefined, next);
   },
 };
 </script>

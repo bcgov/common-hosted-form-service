@@ -5,9 +5,7 @@
         <h1 class="my-8">401: Unauthorized. :(</h1>
         <p>You do not have permission to access this page.</p>
       </div>
-      <div v-else>
-        <slot />
-      </div>
+      <slot v-else />
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
@@ -52,7 +50,6 @@ export default {
   computed: {
     ...mapGetters('auth', [
       'authenticated',
-      'createLoginUrl',
       'isAdmin',
       'isUser',
       'keycloakReady',
@@ -63,8 +60,6 @@ export default {
       )}.`;
     },
   },
-  methods: {
-    ...mapActions('auth', ['login'])
-  },
+  methods: mapActions('auth', ['login']),
 };
 </script>

@@ -35,7 +35,6 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import { determineFormNeedsAuth } from '@/utils/permissionUtils';
 import FormViewer from '@/components/designer/FormViewer.vue';
 import RequestReceipt from '@/components/forms/RequestReceipt.vue';
 
@@ -48,9 +47,6 @@ export default {
     FormViewer,
     RequestReceipt,
   },
-  computed: mapGetters('auth', ['email']),
-  beforeRouteEnter(to, from, next) {
-    determineFormNeedsAuth(undefined, to.query.s, next);
-  },
+  computed: mapGetters('auth', ['email'])
 };
 </script>
