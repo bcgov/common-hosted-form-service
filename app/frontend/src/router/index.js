@@ -1,11 +1,14 @@
 import NProgress from 'nprogress';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+
 import store from '@/store';
+import { determineFormNeedsAuth } from '@/utils/permissionUtils';
 
 Vue.use(VueRouter);
 
 let isFirstTransition = true;
+let router = undefined;
 
 /**
  * @function createProps
@@ -22,7 +25,11 @@ const createProps = route => ({ ...route.query, ...route.params });
  * @returns {object} a Vue Router object
  */
 export default function getRouter(basePath = '/') {
-  const router = new VueRouter({
+  // Return existing router object if already instantiated
+  if (router) return router;
+
+  // Create new router definition
+  router = new VueRouter({
     base: basePath,
     mode: 'history',
     routes: [
@@ -132,7 +139,10 @@ export default function getRouter(basePath = '/') {
               breadcrumbTitle: 'Submit Form',
               formSubmitMode: true
             },
-            props: createProps
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              determineFormNeedsAuth(to.query.f, undefined, next);
+            },
           },
           {
             path: 'success',
@@ -142,7 +152,10 @@ export default function getRouter(basePath = '/') {
               breadcrumbTitle: 'Submit Success',
               formSubmitMode: true
             },
-            props: createProps
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              determineFormNeedsAuth(undefined, to.query.s, next);
+            },
           },
           {
             path: 'teams',
@@ -246,7 +259,12 @@ export default function getRouter(basePath = '/') {
         path: '/login',
         name: 'Login',
         component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
-        props: createProps
+        props: createProps,
+        beforeEnter(_to, _from, next) {
+          // Block navigation to login page if already authenticated
+          NProgress.done();
+          next(!store.getters['auth/authenticated']);
+        },
       },
       {
         path: '/404',
@@ -281,16 +299,17 @@ export default function getRouter(basePath = '/') {
 
     // Force login redirect if not authenticated
     // Note some pages (Submit and Success) only require auth if the form being loaded is secured
-    // in those cases, see the navigation gaurds in their views for auth loop
+    // in those cases, see the beforeEnter navigation guards for auth loop determination
     if (to.matched.some(route => route.meta.requiresAuth)
       && router.app.$keycloak
       && router.app.$keycloak.ready
       && !router.app.$keycloak.authenticated) {
-      const redirect = location.origin + basePath + to.path + location.search;
-      const loginUrl = router.app.$keycloak.createLoginUrl({
-        redirectUri: redirect
-      });
-      window.location.replace(loginUrl);
+      const redirectUri = location.origin + basePath + to.path + location.search;
+      store.commit('auth/SET_REDIRECTURI', redirectUri);
+
+      const form = store.getters['form/form'];
+      const idpHint = form.idps.length ? form.idps[0] : undefined;
+      store.dispatch('auth/login', idpHint);
     }
 
     // Update document title if applicable

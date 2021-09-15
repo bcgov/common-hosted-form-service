@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import getRouter from '@/router';
 
 /**
  * @function hasRoles
@@ -13,7 +14,11 @@ function hasRoles(tokenRoles, roles = []) {
 
 export default {
   namespaced: true,
-  state: {},
+  state: {
+    // In most cases, when this becomes populated, we end up doing a redirect flow,
+    // so when we return to the app, it is fresh again and undefined
+    redirectUri: undefined
+  },
   getters: {
     authenticated: () => Vue.prototype.$keycloak.authenticated,
     createLoginUrl: () => options => Vue.prototype.$keycloak.createLoginUrl(options),
@@ -35,18 +40,29 @@ export default {
     keycloakSubject: () => Vue.prototype.$keycloak.subject,
     moduleLoaded: () => !!Vue.prototype.$keycloak,
     realmAccess: () => Vue.prototype.$keycloak.tokenParsed.realm_access,
+    redirectUri: state => state.redirectUri,
     resourceAccess: () => Vue.prototype.$keycloak.tokenParsed.resource_access,
     token: () => Vue.prototype.$keycloak.token,
     tokenParsed: () => Vue.prototype.$keycloak.tokenParsed,
     userName: () => Vue.prototype.$keycloak.userName
   },
-  mutations: {},
+  mutations: {
+    SET_REDIRECTURI(state, redirectUri) {
+      state.redirectUri = redirectUri;
+    }
+  },
   actions: {
-    login({ getters, rootGetters }, idpHint = undefined) {
+    login({ commit, getters, rootGetters }, idpHint = undefined) {
+      // Use existing redirect uri if available
+      if (!getters.redirectUri) commit('SET_REDIRECTURI', location.toString());
+
       if (getters.keycloakReady) {
-        const { idps } = rootGetters['form/form'];
-        const options = {};
+        const options = {
+          redirectUri: getters.redirectUri
+        };
+
         // Determine idpHint based on input or form
+        const { idps } = rootGetters['form/form'];
         if (idpHint && typeof idpHint === 'string') options.idpHint = idpHint;
         else if (idps.length) options.idpHint = idps[0];
 
@@ -55,8 +71,8 @@ export default {
           window.location.replace(getters.createLoginUrl(options));
         } else {
           // Navigate to internal login page if no idpHint specified
-          const basePath = Vue.prototype.$config.basePath;
-          window.location.replace(`${basePath}/login`);
+          const router = getRouter(Vue.prototype.$config.basePath);
+          router.replace({ name: 'Login' });
         }
       }
     },

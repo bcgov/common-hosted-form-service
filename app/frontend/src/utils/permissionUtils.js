@@ -65,9 +65,8 @@ export async function determineFormNeedsAuth(formId, submissionId, next) {
     } catch (error) {
       // If there's a 401 trying to get this form, make that user log in
       if (error.response && error.response.status === 401) {
-        window.location.replace(
-          store.getters['auth/createLoginUrl']({ idpHint: 'idir' })
-        );
+        // TODO: Figure out way to determine idpHint before starting login flow
+        store.dispatch('auth/login');
       } else {
         // Other errors raise an issue
         store.dispatch('notifications/addNotification', {

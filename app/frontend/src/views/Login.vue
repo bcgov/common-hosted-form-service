@@ -41,19 +41,13 @@ export default {
       default: undefined,
     },
   },
-  beforeRouteEnter(_to, from, next) {
-    next(vm => {
-      if (vm.authenticated) {
-        // Only bounce back to previous page if caused by SPA navigation
-        if (from && from.name) vm.$router.replace({ name: from.name });
-      } else if (vm.idpHint) {
-        vm.login(vm.idpHint, from.fullPath);
-      }
-    });
+  created() {
+    // If component gets idpHint, invoke login flow via vuex
+    if (this.idpHint) this.login(this.idpHint);
   },
   computed: {
     ...mapGetters('auth', ['authenticated', 'createLoginUrl', 'keycloakReady']),
-    buttons: [
+    buttons: () => ([
       {
         disabled: false,
         label: 'IDIR',
@@ -69,7 +63,7 @@ export default {
         label: 'Business BCeID',
         type: IdentityProviders.BCEIDBUSINESS,
       },
-    ],
+    ]),
   },
   methods: {
     ...mapActions('auth', ['login'])
