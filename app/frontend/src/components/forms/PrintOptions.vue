@@ -11,62 +11,50 @@
 
     <v-dialog v-model="dialog" width="900" content-class="export-submissions-dlg">
       <v-card>
-        <v-card-title class="headline pb-0">Printing Options</v-card-title>
+        <v-card-title class="headline pb-0">Download Options</v-card-title>
         <v-card-text>
           <hr />
-          <p>Select a print option.</p>
-
-          <p>You can either print the page from the browser, or upload a Template file to have a structured PDF version of this submission.</p>
-          <div v-if="showTemplateUpload">
-            <v-file-input
-              counter
-              :clearable="true"
-              label="Upload template file"
-              persistent-hint
-              prepend-icon="attachment"
-              required
-              mandatory
-              show-size
-              v-model="templateForm.files"
-            />
-            <v-card-actions>
-              <v-spacer />
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    color="primary"
-                    class="btn-file-input-submit"
-                    :disabled="!templateForm.files"
-                    id="file-input-submit"
-                    :loading="loading"
-                    @click="generate"
-                    v-on="on"
-                  >
-                    <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
-                    <span v-if="$vuetify.breakpoint.smAndUp">Submit</span>
-                  </v-btn>
-                </template>
-                <span>Submit to CDOGS and Download</span>
-              </v-tooltip>
-            </v-card-actions>
-          </div>
-        </v-card-text>
-
-        <v-card-actions class="justify-center">
+          <p>
+            <strong>1.</strong> Print the page from your browser
+          </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span>Print via Browser</span>
+            <span>Browser Print</span>
           </v-btn>
-          <v-btn
-            class="mb-5 mr-5"
-            color="primary"
-            @click="showTemplateUpload = !showTemplateUpload"
-          >
-            <span>Use Template</span>
-          </v-btn>
-          <v-btn class="mb-5" outlined @click="dialog = false">
-            <span>Cancel</span>
-          </v-btn>
-        </v-card-actions>
+
+          <p>
+            <strong>2.</strong> Upload a <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload">CDOGS template</a> to have a structured version
+          </p>
+          <v-file-input
+            counter
+            :clearable="true"
+            label="Upload template file"
+            persistent-hint
+            prepend-icon="attachment"
+            required
+            mandatory
+            show-size
+            v-model="templateForm.files"
+          />
+          <v-card-actions>
+            <v-tooltip top>
+              <template #activator="{ on }">
+                <v-btn
+                  color="primary"
+                  class="btn-file-input-submit"
+                  :disabled="!templateForm.files"
+                  id="file-input-submit"
+                  :loading="loading"
+                  @click="generate"
+                  v-on="on"
+                >
+                  <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
+                  <span>Template Print</span>
+                </v-btn>
+              </template>
+              <span>Submit to CDOGS and Download</span>
+            </v-tooltip>
+          </v-card-actions>
+        </v-card-text>
       </v-card>
     </v-dialog>
   </span>
@@ -111,6 +99,7 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     async printBrowser() {
       this.dialog = false;
+      // Setting a timeout to allow the modal to close before opening the windows print
       setTimeout(() => {
         window.print();
       }, 100);
@@ -144,11 +133,7 @@ export default {
       });
     },
     getDispositionFilename(disposition) {
-      let filename = undefined;
-      if (disposition) {
-        filename = disposition.substring(disposition.indexOf('filename=') + 9);
-      }
-      return filename;
+      return disposition ? disposition.substring(disposition.indexOf('filename=') + 9) : undefined;
     },
     createDownload(blob, filename = undefined) {
       const url = window.URL.createObjectURL(blob);
@@ -167,20 +152,12 @@ export default {
         let content = '';
         let contentFileType = '';
         let outputFileName = '';
-        let parsedContexts = '';
 
         content = await this.fileToBase64(this.templateForm.files);
         contentFileType = this.templateForm.contentFileType;
         outputFileName = this.templateForm.outputFileName;
 
-        const submissionResponse = await formService.getSubmission(
-          this.submissionId
-        );
-        this.submissionRecord = submissionResponse.data.submission;
-        parsedContexts = this.submissionRecord.submission.data;
-
         const body = this.createBody(
-          parsedContexts,
           content,
           contentFileType,
           outputFileName,
@@ -214,15 +191,8 @@ export default {
         this.loading = false;
       }
     },
-    createBody(
-      contexts,
-      content,
-      contentFileType,
-      outputFileName,
-      outputFileType
-    ) {
+    createBody(content, contentFileType, outputFileName, outputFileType) {
       return {
-        data: contexts,
         options: {
           reportName: outputFileName,
           convertTo: outputFileType,

@@ -138,9 +138,9 @@ export default {
     AuditHistory,
     DeleteSubmission,
     FormViewer,
+    PrintOptions,
     NotesPanel,
     StatusPanel,
-    PrintOptions
   },
   props: {
     submissionId: String,
