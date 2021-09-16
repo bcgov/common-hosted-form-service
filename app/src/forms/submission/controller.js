@@ -1,5 +1,5 @@
-const emailService = require('../email/emailService');
 const cdogsService = require('../../components/cdogsService');
+const emailService = require('../email/emailService');
 const service = require('./service');
 
 module.exports = {
@@ -75,6 +75,8 @@ module.exports = {
   },
   templateUploadAndRender: async (req, res, next) => {
     try {
+      const submission = await service.read(req.params.formSubmissionId, req.currentUser);
+      req.body.data = submission.submission.submission.data;
       const { data, headers, status } = await cdogsService.templateUploadAndRender(req.body);
       const contentDisposition = headers['content-disposition'];
 
