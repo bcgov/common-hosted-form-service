@@ -138,8 +138,8 @@ export default {
     AuditHistory,
     DeleteSubmission,
     FormViewer,
-    PrintOptions,
     NotesPanel,
+    PrintOptions,
     StatusPanel,
   },
   props: {

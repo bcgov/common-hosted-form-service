@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import formService from '@/services/formService';
+import { formService } from '@/services';
 import { ApiRoutes } from '@/utils/constants';
 
 const mockInstance = axios.create();

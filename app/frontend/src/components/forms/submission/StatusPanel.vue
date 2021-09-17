@@ -156,10 +156,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-
 import { FormPermissions } from '@/utils/constants';
-import formService from '@/services/formService';
-import rbacService from '@/services/rbacService';
+import { formService, rbacService } from '@/services';
 import StatusTable from '@/components/forms/submission/StatusTable';
 
 export default {

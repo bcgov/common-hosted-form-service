@@ -44,7 +44,7 @@
 import { mapActions } from 'vuex';
 
 import { NotificationTypes } from '@/utils/constants';
-import formService from '@/services/formService';
+import { formService } from '@/services';
 
 export default {
   name: 'RequestReceipt',

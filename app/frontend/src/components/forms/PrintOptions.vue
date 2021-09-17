@@ -62,7 +62,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import formService from '@/services/formService';
+import { formService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
