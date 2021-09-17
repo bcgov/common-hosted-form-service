@@ -1130,36 +1130,11 @@ paths:
                 Indicates if a browser should render this resource inline or
                 treat as an attachment for download
               example: attachment; filename=file.pdf
-            Content-Length:
-              schema:
-                type: integer
-              description: >-
-                Length of content. This header is not always returned as it
-                depends on the Content-Type (i.e. text/plain, text/html will not
-                return anything)
-              example: 1234
             Content-Type:
               schema:
                 type: string
               description: The MIME-type of the binary file payload
               example: application/pdf
-            X-Report-Name:
-              schema:
-                type: string
-              description: name of the generated file.
-              example: file.pdf
-            X-Template-Hash:
-              schema:
-                type: string
-              description: UUID for template cached on server.
-              example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
-            X-Report-Hash:
-              schema:
-                type: string
-              description: >-
-                UUID for generated file cached on server. (only applies if
-                options.cacheReport = true)
-              example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
         '400':
           $ref: '#/components/responses/BadRequest'
         '422':
@@ -2964,7 +2939,7 @@ components:
               example: Design Update
             description:
               type: string
-              example: '''Can edit/update the form design'''
+              example: 'Can edit/update the form design'
             active:
               type: boolean
               example: true
@@ -3019,7 +2994,7 @@ components:
               example: Form Designer
             description:
               type: string
-              example: '''Designs the form'''
+              example: 'Designs the form'
             active:
               type: boolean
               example: true
@@ -3114,28 +3089,10 @@ components:
     TemplateRenderObject:
       type: object
       properties:
-        formatters:
-          type: string
-          description: >-
-            A string that can be transformed into an object. See
-            https://www.npmjs.com/package/telejson for transformations, and
-            https://carbone.io/documentation.html#formatters for more on
-            formatters.
-          example: >-
-            {"myFormatter":"_function_myFormatter|function(data) { return
-            data.slice(1);
-            }","myOtherFormatter":"_function_myOtherFormatter|function(data)
-            {return data.slice(2);}"}
         options:
           type: object
           description: Object containing processing options
           properties:
-            cacheReport:
-              type: boolean
-              description: >-
-                If true, cache the generated report on server, return the
-                hash/UUID for the file.
-              example: true
             convertTo:
               type: string
               description: >-
@@ -3143,12 +3100,6 @@ components:
                 converting to other types of document. If not supplied, will
                 just use the original contentFileType.
               example: pdf
-            overwrite:
-              type: boolean
-              description: >-
-                For inline template uploading, will allow the template to
-                overwrite if already cached.
-              example: true
             reportName:
               type: string
               description: >-
