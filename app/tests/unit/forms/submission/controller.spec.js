@@ -3,13 +3,14 @@ const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
 const cdogsService = require('../../../../src/components/cdogsService');
 
+const req = {
+  params: { formSubmissionId: '1' },
+  body: {},
+  currentUser: {},
+  headers: { referer: 'a' },
+};
+
 describe('addStatus', () => {
-  const req = {
-    params: { formSubmissionId: '1' },
-    body: {},
-    currentUser: {},
-    headers: { referer: 'a' },
-  };
   it('should not call email service if no email specified', async () => {
     service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
     service.createStatus = jest.fn().mockReturnValue([1, 2, 3]);
@@ -34,18 +35,13 @@ describe('addStatus', () => {
 });
 
 describe('templateUploadAndRender', () => {
-  const parsedContext = {
-    'firstName': 'Jane',
-    'lastName': 'Smith'
-  };
   const content = 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK';
   const contentFileType = 'txt';
   const outputFileName = 'template_hello_world';
   const outputFileType = 'pdf';
 
-  const req = {
+  const templateBody = {
     body: {
-      data: parsedContext,
       options: {
         reportName: outputFileName,
         convertTo: outputFileType,
@@ -56,8 +52,10 @@ describe('templateUploadAndRender', () => {
         encodingType: 'base64',
         fileType: contentFileType,
       },
-    }
+    },
   };
+
+  const templateReq = { ...req, ...templateBody };
 
   const mockCdogsResponse = {
     data: {},
@@ -65,13 +63,30 @@ describe('templateUploadAndRender', () => {
     status: 200
   };
 
+  const mockTemplateReadResponse = {
+    form: {
+      id: '123'
+    },
+    submission: {
+      submission: {
+        submission: {
+          data: {
+            simpletextfield: 'fistName lastName',
+            submit: true
+          }
+        }
+      }
+    }
+  };
+
   mockCdogsResponse.headers['content-disposition'] = 'attachment; filename=template_hello_world.pdf';
 
   it('should call cdogs service if a body specified', async () => {
+    service.read = jest.fn().mockReturnValue(mockTemplateReadResponse);
     cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
-    await controller.templateUploadAndRender(req, {}, jest.fn());
+    await controller.templateUploadAndRender(templateReq, {}, jest.fn());
 
     expect(cdogsService.templateUploadAndRender).toHaveBeenCalledTimes(1);
-    expect(cdogsService.templateUploadAndRender).toHaveBeenCalledWith(req.body);
+    expect(cdogsService.templateUploadAndRender).toHaveBeenCalledWith(templateReq.body);
   });
 });

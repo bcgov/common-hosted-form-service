@@ -96,5 +96,4 @@ module.exports = {
       next(error);
     }
   },
-
 };
