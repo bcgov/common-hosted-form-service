@@ -330,7 +330,7 @@ export default {
   * @function docGen
   * Upload a template to generate PDF from CDOGS API
   * @param {string} submissionId The form submission identifier
-  * @param {Object} data The request body
+  * @param {Object} body The request body
   * @returns {Promise} An axios response
   */
   docGen(submissionId, body) {
