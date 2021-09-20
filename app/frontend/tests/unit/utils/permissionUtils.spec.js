@@ -133,7 +133,8 @@ describe('determineFormNeedsAuth', () => {
     });
 
     await permissionUtils.determineFormNeedsAuth('f', undefined, mockNext);
-    expect(window.location.replace).toHaveBeenCalledTimes(1);
+    expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/login');
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 
@@ -145,6 +146,7 @@ describe('determineFormNeedsAuth', () => {
 
     await permissionUtils.determineFormNeedsAuth('f', undefined, mockNext);
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 });

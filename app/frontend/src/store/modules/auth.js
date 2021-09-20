@@ -53,10 +53,10 @@ export default {
   },
   actions: {
     login({ commit, getters, rootGetters }, idpHint = undefined) {
-      // Use existing redirect uri if available
-      if (!getters.redirectUri) commit('SET_REDIRECTURI', location.toString());
-
       if (getters.keycloakReady) {
+        // Use existing redirect uri if available
+        if (!getters.redirectUri) commit('SET_REDIRECTURI', location.toString());
+
         const options = {
           redirectUri: getters.redirectUri
         };
