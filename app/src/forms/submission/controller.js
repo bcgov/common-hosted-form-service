@@ -53,7 +53,7 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
-      const submission = await service.read(req.params.formSubmissionId, req.currentUser);
+      const submission = await service.read(req.params.formSubmissionId);
       const response = await service.createStatus(req.params.formSubmissionId, req.body, req.currentUser);
       // send an email (async in the background)
       if (req.body.assignmentNotificationEmail) {
@@ -66,7 +66,7 @@ module.exports = {
   },
   email: async (req, res, next) => {
     try {
-      const submission = await service.read(req.params.formSubmissionId, req.currentUser);
+      const submission = await service.read(req.params.formSubmissionId);
       const response = await emailService.submissionConfirmation(submission.form.id, req.params.formSubmissionId, req.body, req.headers.referer);
       res.status(200).json(response);
     } catch (error) {
@@ -75,7 +75,7 @@ module.exports = {
   },
   templateUploadAndRender: async (req, res, next) => {
     try {
-      const submission = await service.read(req.params.formSubmissionId, req.currentUser);
+      const submission = await service.read(req.params.formSubmissionId);
       const templateBody = { ...req.body, data: submission.submission.submission.data };
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];

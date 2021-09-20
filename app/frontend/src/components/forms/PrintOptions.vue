@@ -22,7 +22,7 @@
           </v-btn>
 
           <p>
-            <strong>2.</strong> Upload a <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload">CDOGS template</a> to have a structured version
+            <strong>2.</strong> Upload a <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload" target="blank">CDOGS template</a> to have a structured version
           </p>
           <v-file-input
             counter
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import { formService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
@@ -69,17 +69,9 @@ export default {
   data() {
     return {
       dialog: false,
-      showTemplateUpload: false,
-      exportFormat: 'csv',
-      submissionRecord: {},
-      validFileInput: null,
       loading: false,
       templateForm: {
-        contexts: '{}',
-        contextFiles: null,
-        convertToPDF: null,
         files: null,
-        templateContent: '',
         contentFileType: null,
         outputFileName: '',
         outputFileType: null,
@@ -90,7 +82,6 @@ export default {
     submissionId: String,
   },
   computed: {
-    ...mapGetters('form', ['form']),
     files() {
       return this.templateForm.files;
     },
@@ -103,14 +94,6 @@ export default {
       setTimeout(() => {
         window.print();
       }, 500);
-    },
-    toTextObject(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsText(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
     },
     splitFileName(filename = undefined) {
       let name = undefined;
@@ -179,12 +162,12 @@ export default {
         // Generate Temporary Download Link
         this.createDownload(blob, filename);
         this.addNotification({
-          message: 'Parsed successfully',
+          message: 'Document generated successfully',
           ...NotificationTypes.SUCCESS,
         });
       } catch (e) {
         this.addNotification({
-          message: 'Failed upload Template',
+          message: 'Failed to generate Document',
           consoleError: `Error submitting template: ${e.message}`,
         });
       } finally {
