@@ -49,13 +49,13 @@ export const FormPermissions = Object.freeze({
 });
 
 /** Permissions a user needs to Manage a Form */
-export const FormManagePermissions = [
+export const FormManagePermissions = Object.freeze([
   FormPermissions.FORM_UPDATE,
   FormPermissions.FORM_DELETE,
   FormPermissions.DESIGN_UPDATE,
   FormPermissions.DESIGN_DELETE,
   FormPermissions.TEAM_UPDATE
-];
+]);
 
 /** Identity modes that a form can operate in regards to user identification */
 export const IdentityMode = Object.freeze({

@@ -86,7 +86,7 @@ export default {
         this.$refs.settingsForm.validate();
     },
   },
-  beforeRouteLeave(to, from, next) {
+  beforeRouteLeave(_to, _from, next) {
     this.isDirty
       ? next(
         window.confirm(
