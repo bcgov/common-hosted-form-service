@@ -102,7 +102,7 @@ export default {
       // Setting a timeout to allow the modal to close before opening the windows print
       setTimeout(() => {
         window.print();
-      }, 100);
+      }, 500);
     },
     toTextObject(file) {
       return new Promise((resolve, reject) => {
