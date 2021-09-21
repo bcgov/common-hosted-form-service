@@ -46,9 +46,9 @@
   },
   "dependencies": {
     "api-problem": "^7.0.2",
-    "aws-sdk": "^2.928.0",
-    "axios": "^0.21.1",
-    "axios-oauth-client": "^1.4.2",
+    "aws-sdk": "^2.992.0",
+    "axios": "^0.21.4",
+    "axios-oauth-client": "^1.4.3",
     "axios-token-interceptor": "^0.2.0",
     "body-parser": "^1.19.0",
     "bytes": "^3.1.0",
@@ -57,8 +57,8 @@
     "crypto": "^1.0.1",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
-    "express-rate-limit": "^5.2.6",
-    "express-winston": "^4.1.0",
+    "express-rate-limit": "^5.3.0",
+    "express-winston": "^4.2.0",
     "falsey": "^1.0.0",
     "fs-extra": "^10.0.0",
     "js-yaml": "^4.1.0",
@@ -66,20 +66,20 @@
     "jsonwebtoken": "^8.5.1",
     "keycloak-connect": "^12.0.4",
     "knex": "^0.21.19",
-    "mime-types": "^2.1.31",
+    "mime-types": "^2.1.32",
     "moment": "^2.29.1",
-    "multer": "^1.4.2",
-    "objection": "^2.2.15",
-    "pg": "^8.6.0",
+    "multer": "^1.4.3",
+    "objection": "^2.2.16",
+    "pg": "^8.7.1",
     "uuid": "^8.3.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "eslint": "^7.28.0",
+    "eslint": "^7.32.0",
     "eslint-config-recommended": "^4.1.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "jest": "^27.0.4",
-    "nodemon": "^2.0.7",
-    "supertest": "^6.1.3"
+    "jest": "^27.2.1",
+    "nodemon": "^2.0.12",
+    "supertest": "^6.1.6"
   }
 }

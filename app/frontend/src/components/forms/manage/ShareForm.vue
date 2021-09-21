@@ -18,7 +18,7 @@
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="headline pb-0">Share Link</v-card-title>
+        <v-card-title class="text-h5 pb-0">Share Link</v-card-title>
         <v-card-text>
           <hr />
           <p class="mb-5">Copy the link below or download the QR code.</p>

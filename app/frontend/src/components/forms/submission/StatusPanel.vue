@@ -125,7 +125,7 @@
               </template>
 
               <v-card v-if="historyDialog">
-                <v-card-title class="headline pb-0">
+                <v-card-title class="text-h5 pb-0">
                   Status History
                 </v-card-title>
 
