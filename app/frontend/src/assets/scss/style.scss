@@ -437,6 +437,13 @@ a,
     color: $bcgov-error;
   }
 
+  // hide asterisks after input in Data Grid when labels appear as table headers
+  .formio-component-datagrid {
+    label.field-required.control-label--hidden::after {
+      content: "";
+    }
+  }
+
   // dropdowns
   .choices__list--dropdown {
     .choices__item {
