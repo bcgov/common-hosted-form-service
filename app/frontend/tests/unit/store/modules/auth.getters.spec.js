@@ -189,6 +189,15 @@ describe('auth getters', () => {
     expect(typeof store.getters.realmAccess).toBe('object');
   });
 
+  it('realmAccess should return a string', () => {
+    const uri = 'http://foo.bar';
+    store.replaceState({ redirectUri: uri });
+
+    expect(store.getters.redirectUri).toBeTruthy();
+    expect(typeof store.getters.redirectUri).toBe('string');
+    expect(store.getters.redirectUri).toEqual(uri);
+  });
+
   it('resourceAccess should return an object', () => {
     expect(store.getters.resourceAccess).toBeTruthy();
     expect(typeof store.getters.resourceAccess).toBe('object');
