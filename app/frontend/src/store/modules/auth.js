@@ -62,9 +62,11 @@ export default {
         };
 
         // Determine idpHint based on input or form
-        const { idps } = rootGetters['form/form'];
         if (idpHint && typeof idpHint === 'string') options.idpHint = idpHint;
-        else if (idps.length) options.idpHint = idps[0];
+        else {
+          const { idps } = rootGetters['form/form'];
+          if (idps.length) options.idpHint = idps[0];
+        }
 
         if (options.idpHint) {
           // Redirect to Keycloak if idpHint is available
