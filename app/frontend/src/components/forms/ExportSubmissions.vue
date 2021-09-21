@@ -22,7 +22,7 @@
       content-class="export-submissions-dlg"
     >
       <v-card>
-        <v-card-title class="headline pb-0">Export Submissions to File</v-card-title>
+        <v-card-title class="text-h5 pb-0">Export Submissions to File</v-card-title>
         <v-card-text>
           <hr />
           <p>Select the submission date</p>

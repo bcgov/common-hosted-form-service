@@ -15,7 +15,7 @@
       <h1
         v-if="!formSubmitMode"
         data-test="btn-header-title"
-        class="font-weight-bold title d-none d-md-flex pl-4"
+        class="font-weight-bold text-h6 d-none d-md-flex pl-4"
       >
         {{ appTitle }}
       </h1>
@@ -49,7 +49,7 @@ export default {
   @media not print {
     border-bottom: 2px solid #fcba19;
   }
-  .title {
+  .text-h6 {
     font-family: inherit !important;
     color: #ffffff;
     overflow: hidden;
