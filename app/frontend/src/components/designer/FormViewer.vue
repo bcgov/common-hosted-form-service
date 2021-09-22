@@ -17,9 +17,21 @@
     <div class="form-wrapper">
       <v-alert
         :value="saved || saving"
-        :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
-        :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
-        :icon="saving ? NOTIFICATIONS_TYPES.INFO.icon : NOTIFICATIONS_TYPES.SUCCESS.icon"
+        :class="
+          saving
+            ? NOTIFICATIONS_TYPES.INFO.class
+            : NOTIFICATIONS_TYPES.SUCCESS.class
+        "
+        :color="
+          saving
+            ? NOTIFICATIONS_TYPES.INFO.color
+            : NOTIFICATIONS_TYPES.SUCCESS.color
+        "
+        :icon="
+          saving
+            ? NOTIFICATIONS_TYPES.INFO.icon
+            : NOTIFICATIONS_TYPES.SUCCESS.icon
+        "
         transition="scale-transition"
       >
         <div v-if="saving">
@@ -280,6 +292,7 @@ export default {
     // -----------------------------------------------------------------------------------------
     // FormIO Events
     // -----------------------------------------------------------------------------------------
+    // https://help.form.io/developers/form-renderer#form-events
     // event order is:
     // onSubmitButton
     // onBeforeSubmit
@@ -302,42 +315,14 @@ export default {
       }
     },
 
+    // If the confirm modal pops up on drafts
     continueSubmit() {
       this.confirmSubmit = true;
       this.showSubmitConfirmDialog = false;
     },
 
-    async doSubmit(submission, next) {
-      // console.info(`doSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
-      // since we are not using formio api
-      // we should do the actual submit here, and return next or parse our errors and show with next(errors)
-      const errors = [];
-      try {
-        const response = await this.sendSubmission(false, submission);
-
-        if ([200, 201].includes(response.status)) {
-          // all is good, let's just call next() and carry on...
-          // store our submission result...
-          this.submissionRecord = Object.assign(
-            {},
-            this.submissionId ? response.data.submission : response.data
-          );
-          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
-          next();
-        } else {
-          // console.error(response); // eslint-disable-line no-console
-          errors.push('An error occurred submitting this form');
-        }
-      } catch (error) {
-        // console.error(error); // eslint-disable-line no-console
-        errors.push('An error occurred submitting this form');
-      }
-
-      if (errors.length) {
-        next(errors);
-      }
-    },
-
+    // formIO hook, prior to a submission occurring
+    // We can cancel a formIO submission event here, or go on
     async onBeforeSubmit(submission, next) {
       // dont do anything if previewing the form
       if (this.preview) {
@@ -354,27 +339,69 @@ export default {
           await new Promise((resolve) => setTimeout(resolve, 500));
         }
         if (this.confirmSubmit) {
-          this.doSubmit(submission, next);
+          this.confirmSubmit = false; // clear for next attempt
+          next();
+        } else {
+          // Force re-render form.io to reset submit button state
+          this.reRenderFormIo += 1;
         }
-        // Force re-render form.io to reset submit button state
-        this.reRenderFormIo += 1;
       } else {
-        this.doSubmit(submission, next);
+        next();
       }
     },
 
+    // FormIO submit event
     // eslint-disable-next-line no-unused-vars
     async onSubmit(submission) {
       if (this.preview) {
         alert('Submission disabled during form preview');
         return;
       }
+
+      const errors = await this.doSubmit(submission);
+
       // if we are here, the submission has been saved to our db
       // the passed in submission is the formio submission, not our db persisted submission record...
       // fire off the submitDone event.
       // console.info(`onSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
-      this.currentForm.events.emit('formio.submitDone');
+      if (errors) {
+        this.addNotification({
+          message: errors,
+          consoleError: `Error submiting the form: ${errors}`,
+        });
+      } else {
+        this.currentForm.events.emit('formio.submitDone');
+      }
     },
+
+    // Not a formIO event, our saving routine to POST the submission to our API
+    async doSubmit(submission) {
+      // console.info(`doSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
+      // since we are not using formio api
+      // we should do the actual submit here, and return any error that occurrs to handle in the submit event
+      let errMsg = undefined;
+      try {
+        const response = await this.sendSubmission(false, submission);
+
+        if ([200, 201].includes(response.status)) {
+          // all is good, flag no errors and carry on...
+          // store our submission result...
+          this.submissionRecord = Object.assign(
+            {},
+            this.submissionId ? response.data.submission : response.data
+          );
+          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
+        } else {
+          // console.error(response); // eslint-disable-line no-console
+          errMsg = 'An error occurred submitting this form';
+        }
+      } catch (error) {
+        console.error(error); // eslint-disable-line no-console
+        errMsg = 'An error occurred submitting this form';
+      }
+      return errMsg;
+    },
+
     async onSubmitDone() {
       // huzzah!
       // really nothing to do, the formio button has consumed the event and updated its display
