@@ -43,6 +43,10 @@ routes.get('/:formSubmissionId/edits', hasSubmissionPermissions(P.SUBMISSION_REA
   await controller.listEdits(req, res, next);
 });
 
+routes.post('/:formSubmissionId/template/render', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+  await controller.templateUploadAndRender(req, res, next);
+});
+
 // Implement this when we want to fetch a specific audit row including the whole old submission record
 // routes.get('/:formSubmissionId/edits/:auditId', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
 //   await controller.listEdits(req, res, next);

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import formService from '@/services/formService';
+import { formService } from '@/services';
 import { ApiRoutes } from '@/utils/constants';
 
 const mockInstance = axios.create();
@@ -350,6 +350,40 @@ describe('Form Service', () => {
       const result = await formService.addNote(zeroUuid, data);
       expect(result).toBeTruthy();
       expect(result.data).toEqual(data);
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
+  describe('submission/{submissionId}/template/render', () => {
+    const endpoint = `${ApiRoutes.SUBMISSION}/${zeroUuid}/template/render`;
+
+    it('calls post endpoint', async () => {
+      mockAxios.onPost(endpoint).reply(200);
+      const parsedContext = {
+        'firstName': 'Jane',
+        'lastName': 'Smith'
+      };
+      const content = 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK';
+      const contentFileType = 'txt';
+      const outputFileName = 'template_hello_world';
+      const outputFileType = 'pdf';
+
+      const mockBody = {
+        data: parsedContext,
+        options: {
+          reportName: outputFileName,
+          convertTo: outputFileType,
+          overwrite: true,
+        },
+        template: {
+          content: content,
+          encodingType: 'base64',
+          fileType: contentFileType,
+        },
+      };
+
+      const result = await formService.docGen(zeroUuid, mockBody);
+      expect(result).toBeTruthy();
       expect(mockAxios.history.post).toHaveLength(1);
     });
   });

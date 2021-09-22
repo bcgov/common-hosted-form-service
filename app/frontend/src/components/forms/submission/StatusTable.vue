@@ -28,7 +28,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import formService from '@/services/formService';
+import { formService } from '@/services';
 
 export default {
   name: 'StatusTable',
