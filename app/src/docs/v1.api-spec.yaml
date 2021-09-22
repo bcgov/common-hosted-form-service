@@ -1095,6 +1095,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /submissions/{formSubmissionId}/template/render:
+    post:
+      summary: Generate document from inline Template
+      description: >-
+        This endpoint accepts a document template and a set (or multiple sets)
+        of substitution variables and merges them into the document.
+      operationId: uploadTemplateAndRenderReport
+      tags:
+        - Template
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+      requestBody:
+        description: Fields required to generate a document
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRenderObject'
+      responses:
+        '200':
+          description: Returns the supplied document with variables merged in
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Raw binary-encoded response
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: >-
+                Indicates if a browser should render this resource inline or
+                treat as an attachment for download
+              example: attachment; filename=file.pdf
+            Content-Type:
+              schema:
+                type: string
+              description: The MIME-type of the binary file payload
+              example: application/pdf
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /submissions/{formSubmissionId}/notes:
     get:
       summary: Get the list of notes for a submission
@@ -2747,7 +2797,9 @@ components:
           properties:
             textField1:
               type: string
-              example: the contents of the field called 'textField1' from the 'fields' query param
+              example: >-
+                the contents of the field called 'textField1' from the 'fields'
+                query param
             submissionId:
               type: string
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
@@ -2887,7 +2939,7 @@ components:
               example: Design Update
             description:
               type: string
-              example: "'Can edit/update the form design'"
+              example: 'Can edit/update the form design'
             active:
               type: boolean
               example: true
@@ -2942,7 +2994,7 @@ components:
               example: Form Designer
             description:
               type: string
-              example: "'Designs the form'"
+              example: 'Designs the form'
             active:
               type: boolean
               example: true
@@ -3034,6 +3086,27 @@ components:
             user:
               $ref: '#/components/schemas/User'
         - $ref: '#/components/schemas/TimeStampUserData'
+    TemplateRenderObject:
+      type: object
+      properties:
+        options:
+          type: object
+          description: Object containing processing options
+          properties:
+            convertTo:
+              type: string
+              description: >-
+                The desired file extension of the generated document, used for
+                converting to other types of document. If not supplied, will
+                just use the original contentFileType.
+              example: pdf
+            reportName:
+              type: string
+              description: >-
+                The desired file name of the generated document, can accept
+                template substitution fields from the contexts. If not supplied,
+                will use a random UUID.  Extension will be from convertTo.
+              example: abc_123_{d.firstName}_{d.lastName}
     TimeStampUserData:
       type: object
       properties:

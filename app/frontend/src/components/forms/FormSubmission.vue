@@ -21,7 +21,7 @@
         <!-- buttons -->
         <v-col class="text-right d-print-none" cols="12" sm="6" order="1" order-sm="2">
           <span>
-            <BasePrintButton />
+            <PrintOptions :submissionId="submissionId" />
           </span>
           <span>
             <v-tooltip bottom>
@@ -129,6 +129,7 @@ import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue
 import FormViewer from '@/components/designer/FormViewer.vue';
 import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
 import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
+import PrintOptions from '@/components/forms/PrintOptions.vue';
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
@@ -138,6 +139,7 @@ export default {
     DeleteSubmission,
     FormViewer,
     NotesPanel,
+    PrintOptions,
     StatusPanel,
   },
   props: {
