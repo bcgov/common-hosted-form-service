@@ -39,6 +39,14 @@ module.exports = {
       next(error);
     }
   },
+  readFormOptions: async (req, res, next) => {
+    try {
+      const response = await service.readFormOptions(req.params.formId, req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   readPublishedForm: async (req, res, next) => {
     try {
       const response = await service.readPublishedForm(req.params.formId, req.query);
