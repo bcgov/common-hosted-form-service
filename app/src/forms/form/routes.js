@@ -27,6 +27,10 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
   await controller.export(req, res, next);
 });
 
+routes.get('/:formId/options', async (req, res, next) => {
+  await controller.readFormOptions(req, res, next);
+});
+
 routes.get('/:formId/version', apiAccess, hasFormPermissions(P.FORM_READ), async (req, res, next) => {
   await controller.readPublishedForm(req, res, next);
 });
