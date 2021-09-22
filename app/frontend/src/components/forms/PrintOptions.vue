@@ -11,7 +11,7 @@
 
     <v-dialog v-model="dialog" width="900" content-class="export-submissions-dlg">
       <v-card>
-        <v-card-title class="headline pb-0">Download Options</v-card-title>
+        <v-card-title class="text-h5 pb-0">Download Options</v-card-title>
         <v-card-text>
           <hr />
           <p>

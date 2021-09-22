@@ -20,7 +20,7 @@
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="headline pb-0">Select Columns</v-card-title>
+        <v-card-title class="text-h5 pb-0">Select Columns</v-card-title>
         <v-card-text>
           <hr />
           <v-skeleton-loader :loading="loading" type="list-item-three-line">
