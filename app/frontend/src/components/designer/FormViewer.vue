@@ -393,7 +393,7 @@ export default {
           // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
           // console.error(response); // eslint-disable-line no-console
-          errMsg = 'An error occurred submitting this form';
+          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
         console.error(error); // eslint-disable-line no-console
