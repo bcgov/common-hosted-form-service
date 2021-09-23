@@ -369,6 +369,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/{formId}/options:
+    get:
+      summary: Get pre-flight details for a form
+      operationId: readFormOptions
+      tags:
+        - Form
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormOptions'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /forms/{formId}/versions:
     get:
       summary: List all versions of a form
@@ -1009,6 +1030,27 @@ paths:
                   $ref: '#/components/schemas/SubmissionEditMetadata'
         '403':
           $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /submissions/{formSubmissionId}/options:
+    get:
+      summary: Get pre-flight details for a form submission
+      operationId: readSubmissionOptions
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionFormVersionOptions'
         default:
           description: Unexpected error
           content:
@@ -2619,14 +2661,9 @@ components:
         - $ref: '#/components/schemas/TimeStampUserData'
     FormBasic:
       allOf:
+        - $ref: '#/components/schemas/FormCore'
         - type: object
           properties:
-            name:
-              type: string
-              example: My First Form
-            description:
-              type: string
-              example: I built this survey form. It is amazing.
             identityProviders:
               type: array
               items:
@@ -2647,6 +2684,15 @@ components:
             enableSubmitterDraft:
               type: boolean
               example: true
+    FormCore:
+      type: object
+      properties:
+        name:
+          type: string
+          example: My First Form
+        description:
+          type: string
+          example: I built this survey form. It is amazing.
     FormDraft:
       allOf:
         - type: object
@@ -2666,6 +2712,23 @@ components:
               example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
         - $ref: '#/components/schemas/FormSchema'
         - $ref: '#/components/schemas/TimeStampUserData'
+    FormOptions:
+      allOf:
+        - $ref: '#/components/schemas/FormCore'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            idpHints:
+              type: array
+              example:
+                - idir
+              items:
+                type: string
+            snake:
+              type: string
+              example: my-survey-form
     FormRoleUser:
       type: object
       properties:
@@ -2710,15 +2773,9 @@ components:
     FormSubmission:
       allOf:
         - $ref: '#/components/schemas/FormSubmissionBasic'
+        - $ref: '#/components/schemas/FormSubmissionCore'
         - type: object
           properties:
-            id:
-              type: string
-              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
-            formVersionId:
-              type: string
-              description: ID of the FormVersion this submission is for.
-              example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
             confirmationId:
               type: string
               description: shortend version of the id, useful for visual representation
@@ -2741,6 +2798,16 @@ components:
               type: object
               description: this is the json for the form submission.
         - $ref: '#/components/schemas/TimeStampUserData'
+    FormSubmissionCore:
+      type: object
+      properties:
+        id:
+          type: string
+          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+        formVersionId:
+          type: string
+          description: ID of the FormVersion this submission is for.
+          example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
     FormSubmissionDiscover:
       type: object
       properties:
@@ -2855,16 +2922,9 @@ components:
         - $ref: '#/components/schemas/FormSchema'
     FormVersionBasic:
       allOf:
+        - $ref: '#/components/schemas/FormVersionCore'
         - type: object
           properties:
-            id:
-              type: string
-              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
-            formId:
-              type: string
-              format: uuid
-              description: ID of the form
-              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             version:
               type: integer
               example: 1
@@ -2872,6 +2932,17 @@ components:
               type: boolean
               example: true
         - $ref: '#/components/schemas/TimeStampUserData'
+    FormVersionCore:
+      type: object
+      properties:
+        id:
+          type: string
+          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+        formId:
+          type: string
+          format: uuid
+          description: ID of the form
+          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
     FormVersionFields:
       type: array
       example:
@@ -2939,7 +3010,7 @@ components:
               example: Design Update
             description:
               type: string
-              example: 'Can edit/update the form design'
+              example: Can edit/update the form design
             active:
               type: boolean
               example: true
@@ -2994,7 +3065,7 @@ components:
               example: Form Designer
             description:
               type: string
-              example: 'Designs the form'
+              example: Designs the form
             active:
               type: boolean
               example: true
@@ -3045,10 +3116,23 @@ components:
           type: string
           example: U
     SubmissionFormVersion:
-      allOf:
-        - $ref: '#/components/schemas/Form'
-        - $ref: '#/components/schemas/FormSubmission'
-        - $ref: '#/components/schemas/FormVersion'
+      type: object
+      properties:
+        submission:
+          $ref: '#/components/schemas/FormSubmission'
+        version:
+          $ref: '#/components/schemas/FormVersion'
+        form:
+          $ref: '#/components/schemas/Form'
+    SubmissionFormVersionOptions:
+      type: object
+      properties:
+        submission:
+          $ref: '#/components/schemas/FormSubmissionCore'
+        version:
+          $ref: '#/components/schemas/FormVersionCore'
+        form:
+          $ref: '#/components/schemas/FormOptions'
     SubmissionStatus:
       type: object
       properties:
