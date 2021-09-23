@@ -22,12 +22,12 @@ class SubmissionData extends Model {
         }
       },
       filterDeleted(query, value) {
-        if(!value) {
+        if (!value) {
           query.where('deleted', false);
         }
       },
       filterDrafts(query, value) {
-        if(!value) {
+        if (!value) {
           query.where('draft', false);
         }
       },
@@ -65,17 +65,44 @@ const service = {
      */
     const findFields = (obj) => {
       const fields = [];
+      const fieldsDefinedInSubmission = ['datamap', 'tree'];
 
-      // Handle current object level
-      if (obj.key && obj.input && !obj.hidden) {
-        // Add current field key if it is non-hidden input field
-        fields.push(obj.key);
-        // Look-ahead and add all sub-values as fields if type is simplecheckbox or checkbox
-        // TODO: there may be more cases where attribute is an object tree
-        if (obj.type && obj.type.includes('checkbox')) {
-          if (obj.values) obj.values.forEach(e => fields.push(`${obj.key}.${e.value}`));
+      // if an input component (not hidden or a button)
+      if (obj.key && obj.input && !obj.hidden && obj.type !== 'button') {
+
+        // if the fieldname we want is defined in component's sub-values
+        const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'address'];
+        if (obj.type && componentsWithSubValues.includes(obj.type)) {
+          // for survey component, get field name from obj.questions.value
+          if (obj.type === 'survey') {
+            obj.questions.forEach(e => fields.push(`${obj.key}.${e.value}`));
+          }
+          // for checkboxes and selectboxes, get field name from obj.values.value
+          else if (obj.values) obj.values.forEach(e => fields.push(`${obj.key}.${e.value}`));
+          // else push the parent field
+          else {
+            fields.push(obj.key);
+          }
         }
+
+        // get these sub-vales so they appear in ordered columns
+        else if (obj.type === 'simplefile') {
+          fields.push(`${obj.key}.url`, `${obj.key}.url`, `${obj.key}.data.id`, `${obj.key}.size`, `${obj.key}.storage`, `${obj.key}.originalName`);
+        }
+
+        /**
+         * component's 'tree' property is true for input components with child inputs,
+         * which we get recursively.
+         * also exclude fieldnames defined in submission
+         * eg datagrid, container, tree
+         */
+        else if (!obj.tree && !fieldsDefinedInSubmission.includes(obj.type)) {
+          // Add current field key
+          fields.push(obj.key);
+        }
+
       }
+
 
       // Recursively traverse children array levels
       Object.entries(obj).forEach(([k, v]) => {
@@ -83,9 +110,10 @@ const service = {
           // Enumerate children fields
           const children = obj[k].flatMap(e => {
             const cFields = findFields(e);
-            // Prepend current key to field name if datagrid
-            // TODO: Figure out which attribute is needed for skipping key prepend
-            return (obj.type && obj.type.includes('datagrid')) ?
+            // Prepend current key to field name if component's 'tree' property is true
+            // eg: datagrid1.textFieldInDataGrid1
+            // TODO: find fields in 'table' component
+            return ((obj.tree) && !fieldsDefinedInSubmission.includes(obj.type)) ?
               cFields.flatMap(c => `${obj.key}.${c}`) : cFields;
           });
           if (children.length) {
@@ -101,8 +129,10 @@ const service = {
   },
 
   _buildCsvHeaders: async (form, data) => {
-    // -- get column order to match field order in form design
-    // object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
+    /**
+     * get column order to match field order in form design
+     * object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
+     */
 
     // get correctly ordered field names (keys) from latest form version
     const latestFormDesign = await service._readLatestFormSchema(form.id);
@@ -112,10 +142,11 @@ const service = {
     const metaKeys = Object.keys(data[0].form);
     const metaHeaders = metaKeys.map(x => 'form.' + x);
 
-    // -- make other changes to headers here if required
-    // eg: use field labels as headers
-    // see: https://github.com/kaue/jsonexport
-
+    /**
+     * make other changes to headers here if required
+     * eg: use field labels as headers
+     * see: https://github.com/kaue/jsonexport
+     */
     return metaHeaders.concat(fieldNames);
   },
 
