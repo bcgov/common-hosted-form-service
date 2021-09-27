@@ -34,6 +34,7 @@ export default {
       }
       return false; // There are roles to check, but nothing in token to check against
     },
+    identityProvider: () => Vue.prototype.$keycloak.tokenParsed.identity_provider,
     isAdmin: (_state, getters) => getters.hasResourceRoles('chefs', ['admin']),
     isUser: (_state, getters) => getters.hasResourceRoles('chefs', ['user']),
     keycloakReady: () => Vue.prototype.$keycloak.ready,
