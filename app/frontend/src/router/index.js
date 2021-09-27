@@ -3,7 +3,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import store from '@/store';
-import { determineFormNeedsAuth } from '@/utils/permissionUtils';
+import { preFlightAuth } from '@/utils/permissionUtils';
 
 Vue.use(VueRouter);
 
@@ -141,7 +141,7 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
             beforeEnter(to, _from, next) {
-              determineFormNeedsAuth(to.query.f, undefined, next);
+              preFlightAuth({ formId: to.query.f }, next);
             },
           },
           {
@@ -154,7 +154,7 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
             beforeEnter(to, _from, next) {
-              determineFormNeedsAuth(undefined, to.query.s, next);
+              preFlightAuth({ submissionId: to.query.s }, next);
             },
           },
           {
