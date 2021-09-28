@@ -73,6 +73,16 @@ export default function getRouter(basePath = '/') {
         }
       },
       {
+        path: '/error',
+        name: 'Error',
+        component: () => import(/* webpackChunkName: "error" */ '@/views/Error.vue'),
+        meta: {
+          formSubmitMode: true,
+          hasLogin: true
+        },
+        props: createProps
+      },
+      {
         path: '/form',
         component: () => import(/* webpackChunkName: "form" */ '@/views/Form.vue'),
         children: [

@@ -77,6 +77,7 @@ export async function preFlightAuth(options = {}, next) {
       message: 'An error occurred while loading this form.',
       consoleError: `Error while loading ${JSON.stringify(options)}: ${error}`,
     });
+    store.dispatch('auth/errorNavigate'); // Halt user with error page
     return; // Short circuit this function - no point executing further logic
   }
 
@@ -88,10 +89,12 @@ export async function preFlightAuth(options = {}, next) {
     } else if (isValidIdp(idpHint) && userIdp === idpHint) {
       next(); // Permit navigation if idps match
     } else {
+      const msg = `This form requires ${idpHint.toUpperCase()} authentication. Please re-login and try again.`;
       store.dispatch('notifications/addNotification', {
-        message: `This form requires ${idpHint.toUpperCase()} authentication. Please re-login and try again.`,
+        message: msg,
         consoleError: `Form IDP mismatch. Form requires ${idpHint} but user has ${userIdp}.`,
       });
+      store.dispatch('auth/errorNavigate', msg); // Halt user with idp mismatch error page
     }
   } else {
     if (idpHint === IdentityMode.PUBLIC) {

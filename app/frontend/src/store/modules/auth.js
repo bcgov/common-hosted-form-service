@@ -53,6 +53,11 @@ export default {
     }
   },
   actions: {
+    // TODO: Ideally move this to notifications module, but some strange interactions with lazy loading in unit tests
+    errorNavigate(_store, msg) {
+      const router = getRouter(Vue.prototype.$config.basePath);
+      router.replace({ name: 'Error', params: { msg: msg } });
+    },
     login({ commit, getters, rootGetters }, idpHint = undefined) {
       if (getters.keycloakReady) {
         // Use existing redirect uri if available
