@@ -38,36 +38,27 @@
             :rules="loginRequiredRules"
             @change="userTypeChanged"
           >
-            <v-radio class="mb-4" label="Public (anonymous)" :value="ID_MODE.PUBLIC" />
+            <v-radio
+              class="mb-4"
+              label="Public (anonymous)"
+              :value="ID_MODE.PUBLIC"
+            />
             <v-radio class="mb-4" label="Log-in Required" value="login" />
             <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6 mb-2">
-              <v-checkbox
-                v-model="idps"
-                class="mx-4"
-                label="IDIR"
-                :value="ID_PROVIDERS.IDIR"
-              />
-              <v-checkbox
-                disabled
-                v-model="idps"
-                class="mx-4"
-                label="BCeID"
-                :value="ID_PROVIDERS.BCEID"
-              />
-              <v-checkbox
-                disabled
-                v-model="idps"
-                class="mx-4"
-                label="BC Services Card"
-                :value="ID_PROVIDERS.BCSC"
-              />
-              <v-checkbox
-                disabled
-                v-model="idps"
-                class="mx-4"
-                label="Github"
-                :value="ID_PROVIDERS.GITHUB"
-              />
+              <v-radio-group class="my-0" v-model="idps[0]">
+                <v-radio class="mx-2" label="IDIR" :value="ID_PROVIDERS.IDIR" />
+                <v-radio
+                  class="mx-2"
+                  label="Basic BCeID"
+                  :value="ID_PROVIDERS.BCEIDBASIC"
+                />
+                <v-radio
+                  class="mx-2"
+                  disabled
+                  label="Business BCeID"
+                  :value="ID_PROVIDERS.BCEIDBUSINESS"
+                />
+              </v-radio-group>
             </v-row>
             <v-radio
               label="Specific Team Members (You can specify users on the form's management screen once created.)"
@@ -203,8 +194,8 @@ export default {
       loginRequiredRules: [
         (v) =>
           v !== 'login' ||
-          this.idps.length > 0 ||
-          'Please select at least 1 log-in type',
+          this.idps.length === 1 ||
+          'Please select 1 log-in type',
       ],
       descriptionRules: [
         (v) =>
