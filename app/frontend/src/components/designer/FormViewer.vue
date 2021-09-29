@@ -81,6 +81,10 @@ import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
+import templateExtensions from '@/plugins/templateExtensions';
+
+// override Formio component html templates
+Form.use(templateExtensions);
 
 export default {
   name: 'FormViewer',
