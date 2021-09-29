@@ -9,10 +9,7 @@ import SimpleValidation from '../Common/Simple.edit.validation';
 
 export default function(...extend) {
     return baseEditForm([
-        {
-            key: 'display',
-            components: EditDisplay
-        },
+        EditDisplay,
         {
             key: 'data',
             ignore: true,

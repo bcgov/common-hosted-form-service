@@ -138,7 +138,6 @@ describe('hasFormPermissions', () => {
     mw(req, testRes, nxt);
     expect(nxt).toHaveBeenCalledTimes(0);
     // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Current user not found on request.' }));
-
   });
 
   it('401s if the request has no formId', async () => {
