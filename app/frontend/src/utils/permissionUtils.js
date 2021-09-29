@@ -67,8 +67,8 @@ export async function preFlightAuth(options = {}, next) {
       const { data } = await formService.readFormOptions(options.formId);
       idpHint = getIdpHint(data.idpHints);
     } else if (options.submissionId) {
-      const result = await formService.getSubmissionOptions(options.submissionId);
-      idpHint = getIdpHint(result.form.idpHints);
+      const { data } = await formService.getSubmissionOptions(options.submissionId);
+      idpHint = getIdpHint(data.form.idpHints);
     } else {
       throw new Error('Options missing both formId and submissionId');
     }
