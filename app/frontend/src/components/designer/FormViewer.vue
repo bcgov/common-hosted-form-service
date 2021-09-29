@@ -76,6 +76,7 @@ import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
+import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
@@ -142,6 +143,7 @@ export default {
           addTags: ['iframe'],
           ALLOWED_TAGS: ['iframe'],
         },
+        templates: templateExtensions,
         readOnly: this.readOnly,
         hooks: {
           beforeSubmit: this.onBeforeSubmit,
