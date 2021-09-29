@@ -9,10 +9,7 @@ import SimpleConditional from '../Common/Simple.edit.conditional';
 
 export default function(...extend) {
     return radioEditForm([
-        {
-            key: 'display',
-            components: EditDisplay
-        },
+        EditDisplay,
         {
             key: 'data',
             ignore: true

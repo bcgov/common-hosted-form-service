@@ -151,10 +151,6 @@ describe('public methods', () => {
       referer
     );
     expect(result).toEqual('ret');
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(
-      currentStatus.submissionId
-    );
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
       'sendStatusAssigned',
@@ -253,8 +249,6 @@ describe('public methods', () => {
     expect(result).toEqual('ret');
     expect(formService.readForm).toHaveBeenCalledTimes(1);
     expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(currentStatus.formSubmissionId);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
       'sendSubmissionUnassigned',

@@ -9,10 +9,7 @@ import SimpleConditional from '../Common/Simple.edit.conditional';
 
 export default function(...extend) {
     return baseEditForm([
-        {
-            key: 'display',
-            components: EditDisplay
-        },
+        EditDisplay,
         {
             key: 'data',
             ignore: true

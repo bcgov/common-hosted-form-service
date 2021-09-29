@@ -15,7 +15,6 @@ const service = {
     try {
       trx = await Permission.startTransaction();
 
-
       // TODO: validate permission code is unique
       data.createdBy = currentUser.username;
 
@@ -58,7 +57,7 @@ const service = {
         await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${r.code}', '${obj.code}', '${currentUser.username}');`);
       }
       await trx.commit();
-      
+
       return await service.read(obj.code);
     } catch (err) {
       if (trx) await trx.rollback();
