@@ -1,0 +1,84 @@
+[
+  {
+    "form": {
+      "confirmationId": "75B7FC7F",
+      "formName": "kitchen sink",
+      "version": 1,
+      "createdAt": "2021-09-22T21:08:38.837Z",
+      "fullName": "John Smith",
+      "username": "jsmith",
+      "email": "john.smith@gov.bc.ca",
+      "status": "SUBMITTED",
+      "assignee": null,
+      "assigneeEmail": null
+    },
+    "day1": "01/01/2021",
+    "time1": "01:01:00",
+    "email1": "email@abc.com",
+    "email2": "email@abc.com",
+    "number": 456,
+    "submit": true,
+    "number2": 123,
+    "checkbox1": false,
+    "dateTime1": "2021-01-01T13:01:00-08:00",
+    "textField1": "abcdefg",
+    "textField3": "abcdef",
+    "radioGroup1": "radio1",
+    "selectList1": "selection1",
+    "selectList2": [
+      "select1"
+    ],
+    "phoneNumber1": "(456) 000-0000",
+    "phoneNumber2": "(123) 000-0000",
+    "checkboxGroup1": {
+      "check1": true,
+      "check2": false,
+      "check3": false
+    },
+    "multiLineText1": "multi text abc",
+    "textFieldNested1": "abc",
+    "textFieldNested2": "abcd",
+    "textFieldInFieldset1": "abcde",
+    "selectListInFieldset1": 1,
+    "registeredBusinessName1": "ABC WOODWORKS"
+  },
+  {
+    "form": {
+      "confirmationId": "058633F9",
+      "formName": "kitchen sink",
+      "version": 1,
+      "createdAt": "2021-06-16T19:09:12.823Z",
+      "fullName": "Jane Smith",
+      "username": "jasmith",
+      "email": "jane.smith@gov.bc.ca",
+      "status": "SUBMITTED",
+      "assignee": null,
+      "assigneeEmail": null
+    },
+    "day1": "00/00/0000",
+    "time1": "",
+    "email1": "",
+    "email2": "",
+    "submit": true,
+    "checkbox1": false,
+    "dateTime1": "",
+    "textField1": "",
+    "textField3": "",
+    "radioGroup1": "",
+    "selectList1": "choose",
+    "selectList2": [],
+    "phoneNumber1": "",
+    "phoneNumber2": "",
+    "checkboxGroup1": {
+      "check1": false,
+      "check2": false,
+      "check3": false
+    },
+    "multiLineText1": "",
+    "textFieldNested1": "text field nested 1",
+    "textFieldNested2": "text field nested 2",
+    "textFieldInFieldset1": "",
+    "selectListInFieldset1": "",
+    "registeredBusinessName1": ""
+  }
+]
