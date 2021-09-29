@@ -18,8 +18,7 @@ import store from '@/store';
 // No idea why, probably a polyfill clash
 import { Formio } from 'vue-formio';
 import BcGovFormioComponents from '@/formio/lib';
-import templateExtensions from '@/plugins/templateExtensions';
-Formio.use(BcGovFormioComponents, templateExtensions);
+Formio.use(BcGovFormioComponents);
 
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
