@@ -76,15 +76,12 @@ import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
 
+import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
-import templateExtensions from '@/plugins/templateExtensions';
-
-// override Formio component html templates
-Form.use(templateExtensions);
 
 export default {
   name: 'FormViewer',
@@ -146,6 +143,7 @@ export default {
           addTags: ['iframe'],
           ALLOWED_TAGS: ['iframe'],
         },
+        templates: templateExtensions,
         readOnly: this.readOnly,
         hooks: {
           beforeSubmit: this.onBeforeSubmit,
