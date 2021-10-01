@@ -5,6 +5,10 @@
         <h1 class="my-8">401: Unauthorized. :(</h1>
         <p>You do not have permission to access this page.</p>
       </div>
+      <div v-else-if="idp && identityProvider !== idp" class="text-center">
+        <h1 class="my-8">403: Forbidden. :(</h1>
+        <p>This page requires {{ idp.toUpperCase() }} authentication.</p>
+      </div>
       <slot v-else />
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
@@ -46,10 +50,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    idp: {
+      type: String,
+      default: undefined
+    }
   },
   computed: {
     ...mapGetters('auth', [
       'authenticated',
+      'identityProvider',
       'isAdmin',
       'isUser',
       'keycloakReady',
