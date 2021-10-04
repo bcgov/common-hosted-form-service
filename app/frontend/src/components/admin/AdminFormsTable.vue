@@ -33,12 +33,13 @@
       :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
+      no-data-text="There are no forms in your system"
     >
-      <template #[`item.created`]="{ item }">
-        {{ item.createdAt | formatDate }} - {{ item.createdBy }}
+      <template #[`item.createdAt`]="{ item }">
+        {{ item.createdAt | formatDateLong }} - {{ item.createdBy }}
       </template>
-      <template #[`item.deleted`]="{ item }">
-        {{ item.updatedAt | formatDate }} - {{ item.updatedBy }}
+      <template #[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | formatDateLong }} - {{ item.updatedBy }}
       </template>
       <template #[`item.actions`]="{ item }">
         <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
@@ -75,8 +76,8 @@ export default {
       activeOnly: false,
       headers: [
         { text: 'Form Title', align: 'start', value: 'name' },
-        { text: 'Created', align: 'start', value: 'created' },
-        { text: 'Deleted', align: 'start', value: 'deleted' },
+        { text: 'Created', align: 'start', value: 'createdAt' },
+        { text: 'Deleted', align: 'start', value: 'updatedAt' },
         {
           text: 'Actions',
           align: 'end',
@@ -93,7 +94,7 @@ export default {
     ...mapGetters('admin', ['formList']),
     calcHeaders() {
       return this.headers.filter(
-        (x) => x.value !== 'deleted' || this.activeOnly
+        (x) => x.value !== 'updatedAt' || this.activeOnly
       );
     },
   },
