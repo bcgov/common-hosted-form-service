@@ -19,12 +19,20 @@ routes.use(currentUser);
 //
 // Forms
 //
+routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
+  await controller.deleteApiKey(req, res, next);
+});
+
 routes.get('/forms', async (req, res, next) => {
   await controller.listForms(req, res, next);
 });
 
 routes.get('/forms/:formId', async (req, res, next) => {
   await controller.readForm(req, res, next);
+});
+
+routes.get('/forms/:formId/apiKey', async (req, res, next) => {
+  await controller.readApiDetails(req, res, next);
 });
 
 routes.put('/forms/:formId/restore', async (req, res, next) => {
