@@ -1,3 +1,4 @@
+import { NotificationTypes } from '@/utils/constants';
 import { adminService } from '@/services';
 
 /**
@@ -6,18 +7,23 @@ import { adminService } from '@/services';
 export default {
   namespaced: true,
   state: {
+    apiKey: null,
     form: {},
     formList: [],
     user: {},
     userList: []
   },
   getters: {
+    apiKey: state => state.apiKey,
     form: state => state.form,
     formList: state => state.formList,
     user: state => state.user,
     userList: state => state.userList
   },
   mutations: {
+    SET_API_KEY(state, apiKey) {
+      state.apiKey = apiKey;
+    },
     SET_FORM(state, form) {
       state.form = form;
     },
@@ -35,6 +41,23 @@ export default {
     //
     // Forms
     //
+    async deleteApiKey({ commit, dispatch }, formId) {
+      try {
+        await adminService.deleteApiKey(formId);
+        commit('SET_API_KEY', null);
+        dispatch('notifications/addNotification', {
+          message:
+            'The API Key for this form has been deleted.',
+          ...NotificationTypes.SUCCESS
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while trying to delete the API Key.',
+          consoleError: `Error deleting API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+
     async getForms({ commit, dispatch }, activeOnly) {
       try {
         commit('SET_FORMLIST', []);
@@ -54,6 +77,19 @@ export default {
         // Get specific form
         const response = await adminService.readForm(formId);
         commit('SET_FORM', response.data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching this form.',
+          consoleError: `Error getting admin form ${formId} data: ${error}`,
+        }, { root: true });
+      }
+    },
+    async readApiDetails({ commit, dispatch }, formId) {
+      try {
+        commit('SET_API_KEY', {});
+        // Get specific form
+        const response = await adminService.readApiDetails(formId);
+        commit('SET_API_KEY', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching this form.',

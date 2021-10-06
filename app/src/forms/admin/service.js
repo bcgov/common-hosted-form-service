@@ -1,4 +1,4 @@
-const { Form, User, UserFormAccess } = require('../common/models');
+const { Form, FormApiKey, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const service = {
@@ -6,6 +6,14 @@ const service = {
   //
   // Forms
   //
+  // Hard delete the current key for a form
+  deleteApiKey: async (formId) => {
+    const currentKey = await service.readApiKey(formId);
+    return FormApiKey.query()
+      .deleteById(currentKey.id)
+      .throwIfNotFound();
+  },
+
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
@@ -21,6 +29,21 @@ const service = {
       .findById(formId)
       .throwIfNotFound();
   },
+
+  readApiDetails: (formId) => {
+    return FormApiKey.query()
+      .modify('filterFormId', formId)
+      .modify('selectWithoutSecret')
+      .first();
+  },
+
+  // Get the current key for a form
+  readApiKey: (formId) => {
+    return FormApiKey.query()
+      .modify('filterFormId', formId)
+      .first();
+  },
+
   restoreForm: async (formId) => {
     let trx;
     try {

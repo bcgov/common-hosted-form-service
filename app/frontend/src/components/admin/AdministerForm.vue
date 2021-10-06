@@ -5,13 +5,7 @@
 
     <div v-if="form.active === false" class="red--text mb-6">
       (DELETED)
-      <v-btn
-        color="primary"
-        class="mt-0"
-        @click="showRestoreDialog = true"
-        text
-        small
-      >
+      <v-btn color="primary" class="mt-0" @click="showRestoreDialog = true" text small>
         <v-icon class="mr-1">build_circle</v-icon>
         <span class="d-none d-sm-flex">Restore this form</span>
       </v-btn>
@@ -19,6 +13,14 @@
 
     <h4>Form Details</h4>
     <pre>{{ form }}</pre>
+
+    <div v-if="apiKey">
+      <h4>API Key Details</h4>
+      <pre>{{ apiKey }}</pre>
+      <v-btn block color="primary" :disabled="!canDeleteKey" @click="showDeleteDialog = true">
+        <span>Delete API Key</span>
+      </v-btn>
+    </div>
 
     <BaseDialog
       v-model="showRestoreDialog"
@@ -29,16 +31,28 @@
       <template #title>Confirm Restore</template>
       <template #text>
         <div v-if="restoreInProgress" class="text-center">
-          <v-progress-circular indeterminate color="primary" :size="100">
-            Restoring
-          </v-progress-circular>
+          <v-progress-circular indeterminate color="primary" :size="100">Restoring</v-progress-circular>
         </div>
         <div v-else>
-          Restore <strong>{{ form.name }}</strong> to active state?
+          Restore
+          <strong>{{ form.name }}</strong> to active state?
         </div>
       </template>
       <template #button-text-continue>
         <span>Restore</span>
+      </template>
+    </BaseDialog>
+    <!-- Delete confirmation -->
+    <BaseDialog
+      v-model="showDeleteDialog"
+      type="CONTINUE"
+      @close-dialog="showDeleteDialog = false"
+      @continue-dialog="deleteKey"
+    >
+      <template #title>Confirm Deletion</template>
+      <template #text>Are you sure you wish to delete your API Key?</template>
+      <template #button-text-continue>
+        <span>Delete</span>
       </template>
     </BaseDialog>
   </div>
@@ -59,22 +73,36 @@ export default {
     return {
       showRestoreDialog: false,
       restoreInProgress: false,
+      showDeleteDialog: false,
     };
   },
   computed: {
-    ...mapGetters('admin', ['form']),
+    ...mapGetters('admin', ['form', 'apiKey']),
+    canDeleteKey() {
+      return this.apiKey;
+    },
   },
   methods: {
-    ...mapActions('admin', ['readForm', 'restoreForm']),
+    ...mapActions('admin', [
+      'deleteApiKey',
+      'readApiDetails',
+      'readForm',
+      'restoreForm',
+    ]),
     async restore() {
       this.restoreInProgress = true;
       await this.restoreForm(this.form.id);
       this.restoreInProgress = false;
       this.showRestoreDialog = false;
     },
+    async deleteKey() {
+      await this.deleteApiKey(this.form.id);
+      this.showDeleteDialog = false;
+    },
   },
   async mounted() {
     await this.readForm(this.formId);
+    await this.readApiDetails(this.formId);
   },
 };
 </script>
