@@ -44,22 +44,51 @@
               :value="ID_MODE.PUBLIC"
             />
             <v-radio class="mb-4" label="Log-in Required" value="login" />
-            <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6 mb-2">
-              <v-radio-group class="my-0" v-model="idps[0]">
-                <v-radio class="mx-2" label="IDIR" :value="ID_PROVIDERS.IDIR" />
-                <v-radio
-                  class="mx-2"
-                  label="Basic BCeID"
-                  :value="ID_PROVIDERS.BCEIDBASIC"
-                />
-                <v-radio
-                  class="mx-2"
-                  disabled
-                  label="Business BCeID"
-                  :value="ID_PROVIDERS.BCEIDBUSINESS"
-                />
-              </v-radio-group>
-            </v-row>
+            <v-expand-transition>
+              <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6">
+                <v-radio-group class="my-0" v-model="idps[0]">
+                  <v-radio class="mx-2" label="IDIR" :value="ID_PROVIDERS.IDIR" />
+                  <v-radio
+                    class="mx-2"
+                    label="Basic BCeID"
+                    :value="ID_PROVIDERS.BCEIDBASIC"
+                  />
+                  <!-- Commented out as per IDIM request -->
+                  <!-- <v-radio
+                    class="mx-2"
+                    disabled
+                    label="Business BCeID"
+                    :value="ID_PROVIDERS.BCEIDBUSINESS"
+                  /> -->
+                  <!-- Mandatory BCeID process notification -->
+                  <v-expand-transition>
+                    <BaseInfoCard
+                      v-if="idps[0] && idps[0] === ID_PROVIDERS.BCEIDBASIC"
+                      class="mr-4"
+                    >
+                      <h4 class="primary--text">
+                        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+                      </h4>
+                      <p class="my-2">
+                        You must notify the Identity Information Management (IDIM)
+                        team by email (<a href="mailto:IDIM.Consulting@gov.bc.ca"
+                        >IDIM.Consulting@gov.bc.ca</a
+                        >) your intent to leverage BCeID to verify the identities of
+                        your form submitters.
+                      </p>
+                      <p class="mt-2 mb-0">
+                        Please reference our
+                        <a
+                          href="https://github.com/bcgov/common-hosted-form-service/wiki/Quick-Start-Guide"
+                        >user guide</a
+                        >
+                        for more details.
+                      </p>
+                    </BaseInfoCard>
+                  </v-expand-transition>
+                </v-radio-group>
+              </v-row>
+            </v-expand-transition>
             <v-radio
               label="Specific Team Members (You can specify users on the form's management screen once created.)"
               value="team"

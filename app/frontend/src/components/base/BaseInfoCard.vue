@@ -15,7 +15,7 @@
   border-left: 15px solid #38598a;
   border-radius: 0;
   background-color: #f2f2f2;
-  padding: 35px 24px;
+  padding: 1.5rem;
   .v-icon {
     color: #38598a;
     margin-right: 0.5em;
