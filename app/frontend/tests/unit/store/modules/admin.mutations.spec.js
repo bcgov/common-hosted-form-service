@@ -9,6 +9,14 @@ describe('admin mutations', () => {
     state = cloneDeep(store.state);
   });
 
+  it('SET_API_KEY should update apiKey state', () => {
+    const obj = { foo: 'bar' };
+    store.mutations.SET_API_KEY(state, obj);
+
+    expect(state.apiKey).toBeTruthy();
+    expect(state.apiKey).toEqual(expect.objectContaining(obj));
+  });
+
   it('SET_FORM should update form state', () => {
     const obj = { foo: 'bar' };
     store.mutations.SET_FORM(state, obj);
