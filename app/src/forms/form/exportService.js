@@ -3,7 +3,6 @@ const { Model } = require('objection');
 const Problem = require('api-problem');
 
 const { Form, FormVersion } = require('../common/models');
-const Permissions = require('../common/constants').Permissions;
 
 class SubmissionData extends Model {
   static get tableName() {
@@ -150,13 +149,6 @@ const service = {
     return metaHeaders.concat(fieldNames);
   },
 
-  _checkPermission: (currentUser, formId, permission, exportType) => {
-    const form = currentUser.forms.find(x => x.formId === formId);
-    if (!form || !form.permissions.includes(permission)) {
-      throw new Problem(401, { detail: `Current user does not have required permission(s) to export ${exportType} data for this form.` });
-    }
-  },
-
   _exportType: (params = {}) => {
     let result = EXPORT_TYPES[params.type];
     return result ? result : EXPORT_TYPES.default;
@@ -197,9 +189,9 @@ const service = {
     return Form.query().findById(formId).throwIfNotFound();
   },
 
-  _getData: (exportType, form, params = {}, currentUser) => {
+  _getData: (exportType, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return service._getSubmissions(form, params, currentUser);
+      return service._getSubmissions(form, params);
     }
     return {};
   },
@@ -222,8 +214,7 @@ const service = {
     throw new Problem(422, { detail: 'Could not create an export for this form. Invalid options provided' });
   },
 
-  _getSubmissions: (form, params, currentUser) => {
-    service._checkPermission(currentUser, form.id, Permissions.SUBMISSION_READ, EXPORT_TYPES.submissions);
+  _getSubmissions: (form, params) => {
     // params for this export include minDate and maxDate (full timestamp dates).
     return SubmissionData.query()
       .column(service._submissionsColumns(form, params))
@@ -290,16 +281,15 @@ const service = {
       .then((row) => row.schema);
   },
 
-  export: async (formId, params = {}, currentUser) => {
-    //ok, let's determine what we are exporting and do it!!!!
+  export: async (formId, params = {}) => {
+    // ok, let's determine what we are exporting and do it!!!!
     // what operation?
     // what output format?
-    // we may need to look at the currentuser to determine if they can actually perform the operation.
     const exportType = service._exportType(params);
     const exportFormat = service._exportFormat(params);
 
     const form = await service._getForm(formId);
-    const data = await service._getData(exportType, form, params, currentUser);
+    const data = await service._getData(exportType, form, params);
     const result = await service._formatData(exportFormat, exportType, form, data);
 
     return { data: result.data, headers: result.headers };
