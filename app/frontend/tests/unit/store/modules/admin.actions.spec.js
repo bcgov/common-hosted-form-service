@@ -25,6 +25,22 @@ describe('admin actions', () => {
   });
 
   describe('admin forms actions', () => {
+    it('deleteApiKey should commit to SET_API_KEY', async () => {
+      adminService.deleteApiKey.mockResolvedValue({ data: { form: {} } });
+      await store.actions.deleteApiKey(mockStore, 'fId');
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_API_KEY', expect.any(Object));
+    });
+
+    it('deleteApiKey should dispatch to notifications/addNotification', async () => {
+      adminService.deleteApiKey.mockRejectedValue('');
+      await store.actions.deleteApiKey(mockStore, 'fId');
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
     it('readForm should commit to SET_FORM', async () => {
       adminService.readForm.mockResolvedValue({ data: { form: {} } });
       await store.actions.readForm(mockStore, 'fId');
@@ -36,6 +52,22 @@ describe('admin actions', () => {
     it('readForm should dispatch to notifications/addNotification', async () => {
       adminService.readForm.mockRejectedValue('');
       await store.actions.readForm(mockStore, 'fId');
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('readApiDetails should commit to SET_API_KEY', async () => {
+      adminService.readApiDetails.mockResolvedValue({ data: { form: {} } });
+      await store.actions.readApiDetails(mockStore, 'fId');
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_API_KEY', expect.any(Object));
+    });
+
+    it('readApiDetails should dispatch to notifications/addNotification', async () => {
+      adminService.readApiDetails.mockRejectedValue('');
+      await store.actions.readApiDetails(mockStore, 'fId');
 
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));

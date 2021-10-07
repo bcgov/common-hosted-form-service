@@ -25,6 +25,7 @@ export default {
   listForms(active = true) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}`, { params: { active: active } });
   },
+
   /**
    * @function readForm
    * Get a form
@@ -56,7 +57,7 @@ export default {
   },
 
   //
-  // USer calls
+  // User calls
   //
 
   /**

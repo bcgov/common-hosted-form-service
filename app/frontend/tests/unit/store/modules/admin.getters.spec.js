@@ -11,6 +11,7 @@ describe('admin getters', () => {
   let store;
 
   const sampleState = {
+    apiKey: null,
     form: {},
     formList: [],
     user: {},
@@ -20,6 +21,10 @@ describe('admin getters', () => {
   beforeEach(() => {
     store = new Vuex.Store(cloneDeep(adminStore));
     store.replaceState(cloneDeep(sampleState));
+  });
+
+  it('apiKey should return the state apiKey', () => {
+    expect(store.getters.apiKey).toEqual(sampleState.apiKey);
   });
 
   it('form should return the state form', () => {
