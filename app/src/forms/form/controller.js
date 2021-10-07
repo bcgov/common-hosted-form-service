@@ -6,7 +6,7 @@ const fileService = require('../file/service');
 module.exports = {
   export: async (req, res, next) => {
     try {
-      const result = await exportService.export(req.params.formId, req.query, req.currentUser);
+      const result = await exportService.export(req.params.formId, req.query);
       ['Content-Disposition', 'Content-Type'].forEach(h => {
         res.setHeader(h, result.headers[h.toLowerCase()]);
       });
