@@ -2098,7 +2098,12 @@ paths:
           name: search
           schema:
             type: string
-          description: string to match against  username, fullName and Email
+          description: string to match against username, fullName and Email
+        - in: query
+          name: idpCode
+          schema:
+            type: string
+          description: Filter results to only users with specified idpCode
       responses:
         '200':
           description: OK
@@ -3233,7 +3238,10 @@ components:
               example: Smith
             email:
               type: string
-              example: jsmith@gov.bc.ca
+              example: jsmith@gov.bc.
+            idpCode:
+              type: string
+              example: idir
         - $ref: '#/components/schemas/TimeStampUserData'
     UserAccess:
       type: object
