@@ -57,17 +57,18 @@ describe(`GET ${basePath}/forms/formId/apiKey`, () => {
     // mock an authentication/permission issue...
     service.deleteApiKey = jest.fn(() => { throw new Problem(401); });
 
-    const response = await request(app).get(`${basePath}/forms/formId/apiKey`);
+    const response = await request(app).delete(`${basePath}/forms/formId/apiKey`);
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
   });
 
+
   it('should handle 500', async () => {
     // mock an unexpected error...
     service.deleteApiKey = jest.fn(() => { throw new Error(); });
 
-    const response = await request(app).get(`${basePath}/forms/formId/apiKey`);
+    const response = await request(app).delete(`${basePath}/forms/formId/apiKey`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
