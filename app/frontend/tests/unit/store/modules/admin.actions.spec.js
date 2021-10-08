@@ -25,12 +25,12 @@ describe('admin actions', () => {
   });
 
   describe('admin forms actions', () => {
-    it('deleteApiKey should commit to SET_API_KEY', async () => {
+    it.only('deleteApiKey should commit to SET_API_KEY', async () => {
       adminService.deleteApiKey.mockResolvedValue({ data: { form: {} } });
       await store.actions.deleteApiKey(mockStore, 'fId');
 
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_API_KEY', expect.any(Object));
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_API_KEY', undefined);
     });
 
     it('deleteApiKey should dispatch to notifications/addNotification', async () => {
@@ -61,7 +61,7 @@ describe('admin actions', () => {
       adminService.readApiDetails.mockResolvedValue({ data: { form: {} } });
       await store.actions.readApiDetails(mockStore, 'fId');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_API_KEY', expect.any(Object));
     });
 

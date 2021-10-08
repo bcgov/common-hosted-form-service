@@ -2354,7 +2354,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /admin/forms/{formId}/apiKey:
     get:
-      summary: Get current API Key
+      summary: Get Form API Key
       description: Get the active api key details for a form
       operationId: adminReadApiDetails
       tags:
@@ -2377,7 +2377,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     delete:
-      summary: Delete API Key
+      summary: Delete Form API Key
       description: Delete the api key secret for a form
       operationId: adminDeleteApiKey
       tags:

@@ -26,7 +26,7 @@ const genInitialForm = () => ({
 export default {
   namespaced: true,
   state: {
-    apiKey: null,
+    apiKey: undefined,
     drafts: [],
     form: genInitialForm(),
     formFields: [],
