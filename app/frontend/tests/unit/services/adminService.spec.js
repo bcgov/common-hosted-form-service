@@ -27,6 +27,14 @@ describe('Admin Service', () => {
   describe('admin/forms/{formId}/apiKey', () => {
     const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}${ApiRoutes.APIKEY}`;
 
+    it('calls get on endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await adminService.readApiDetails(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+
     it('calls delete on endpoint', async () => {
       mockAxios.onDelete(endpoint).reply(200);
 
@@ -55,18 +63,6 @@ describe('Admin Service', () => {
       mockAxios.onGet(endpoint).reply(200);
 
       const result = await adminService.readForm(zeroUuid);
-      expect(result).toBeTruthy();
-      expect(mockAxios.history.get).toHaveLength(1);
-    });
-  });
-
-  describe('admin/forms/{formId}/apiKey', () => {
-    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}${ApiRoutes.APIKEY}`;
-
-    it('calls get on endpoint', async () => {
-      mockAxios.onGet(endpoint).reply(200);
-
-      const result = await adminService.readApiDetails(zeroUuid);
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });
