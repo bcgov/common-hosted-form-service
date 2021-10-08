@@ -53,7 +53,6 @@
                       :input-value="data.selected"
                       close
                       @click="data.select"
-                      @click:close="remove(data.item)"
                     >
                       {{ data.item.fullName }}
                     </span>
@@ -65,9 +64,15 @@
                     </template>
                     <template v-else>
                       <v-list-item-content>
-                        <v-list-item-title v-html="data.item.fullName" />
-                        <v-list-item-subtitle v-html="data.item.username" />
-                        <v-list-item-subtitle v-html="data.item.email" />
+                        <v-list-item-title>
+                          {{ data.item.fullName }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                          {{ data.item.username }} ({{ data.item.idpCode }})
+                        </v-list-item-subtitle>
+                        <v-list-item-subtitle>
+                          {{ data.item.email }}
+                        </v-list-item-subtitle>
                       </v-list-item-content>
                     </template>
                   </template>
@@ -208,7 +213,11 @@ export default {
       this.userSearchSelection = null;
     },
     filterObject(item, queryText) {
-      return Object.values(item).some((v) => v !== null && v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()));
+      return Object.values(item)
+        .filter((v) => v)
+        .some((v) =>
+          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+        );
     },
     async getSubmissionUsers() {
       this.isLoadingTable = true;
