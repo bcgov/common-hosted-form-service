@@ -1,4 +1,5 @@
 const service = require('./service');
+const formService = require('../../../../app/src/forms/form/service.js');
 
 module.exports = {
   //
@@ -6,7 +7,7 @@ module.exports = {
   //
   deleteApiKey: async (req, res, next) => {
     try {
-      const response = await service.deleteApiKey(req.params.formId);
+      const response = await formService.deleteApiKey(req.params.formId);
       res.status(204).json(response);
     } catch (error) {
       next(error);
@@ -30,7 +31,8 @@ module.exports = {
   },
   readApiDetails: async (req, res, next) => {
     try {
-      const response = await service.readApiDetails(req.params.formId);
+      const response = await formService.readApiKey(req.params.formId);
+      delete response.secret;
       res.status(200).json(response);
     } catch (error) {
       next(error);

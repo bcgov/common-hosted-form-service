@@ -38,12 +38,12 @@ export default {
 
   /**
    * @function readApiDetails
-   * Get a form
+   * Gets the form's API Key details
    * @param {string} formId The GUID
    * @returns {Promise} An axios response
    */
   readApiDetails(formId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/${ApiRoutes.APIKEY}`);
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
 
   /**

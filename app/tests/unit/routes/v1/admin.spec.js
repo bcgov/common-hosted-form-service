@@ -41,41 +41,6 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe(`GET ${basePath}/forms/formId/apiKey`, () => {
-
-  it('should return 204', async () => {
-    // mock a success return value...
-    service.deleteApiKey = jest.fn().mockReturnValue([]);
-
-    const response = await request(app).delete(`${basePath}/forms/formId/apiKey`);
-
-    expect(response.statusCode).toBe(204);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 401', async () => {
-    // mock an authentication/permission issue...
-    service.deleteApiKey = jest.fn(() => { throw new Problem(401); });
-
-    const response = await request(app).delete(`${basePath}/forms/formId/apiKey`);
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toBeTruthy();
-  });
-
-
-  it('should handle 500', async () => {
-    // mock an unexpected error...
-    service.deleteApiKey = jest.fn(() => { throw new Error(); });
-
-    const response = await request(app).delete(`${basePath}/forms/formId/apiKey`);
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toBeTruthy();
-  });
-
-});
-
 describe(`GET ${basePath}/forms`, () => {
 
   it('should return 200', async () => {
@@ -137,41 +102,6 @@ describe(`GET ${basePath}/forms/formId`, () => {
     service.readForm = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).get(`${basePath}/forms/formId`);
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toBeTruthy();
-  });
-
-});
-
-
-describe(`GET ${basePath}/forms/formId/apiKey`, () => {
-
-  it('should return 200', async () => {
-    // mock a success return value...
-    service.readApiDetails = jest.fn().mockReturnValue([]);
-
-    const response = await request(app).get(`${basePath}/forms/formId/apiKey`);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 401', async () => {
-    // mock an authentication/permission issue...
-    service.readApiDetails = jest.fn(() => { throw new Problem(401); });
-
-    const response = await request(app).get(`${basePath}/forms/formId/apiKey`);
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 500', async () => {
-    // mock an unexpected error...
-    service.readApiDetails = jest.fn(() => { throw new Error(); });
-
-    const response = await request(app).get(`${basePath}/forms/formId/apiKey`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();

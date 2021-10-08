@@ -7,7 +7,7 @@ import { adminService } from '@/services';
 export default {
   namespaced: true,
   state: {
-    apiKey: null,
+    apiKey: undefined,
     form: {},
     formList: [],
     user: {},
@@ -44,7 +44,7 @@ export default {
     async deleteApiKey({ commit, dispatch }, formId) {
       try {
         await adminService.deleteApiKey(formId);
-        commit('SET_API_KEY', null);
+        commit('SET_API_KEY', undefined);
         dispatch('notifications/addNotification', {
           message:
             'The API Key for this form has been deleted.',
@@ -57,7 +57,6 @@ export default {
         }, { root: true });
       }
     },
-
     async getForms({ commit, dispatch }, activeOnly) {
       try {
         commit('SET_FORMLIST', []);
@@ -86,14 +85,13 @@ export default {
     },
     async readApiDetails({ commit, dispatch }, formId) {
       try {
-        commit('SET_API_KEY', {});
-        // Get specific form
+        // Get form's api details
         const response = await adminService.readApiDetails(formId);
         commit('SET_API_KEY', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching this form.',
-          consoleError: `Error getting admin form ${formId} data: ${error}`,
+          message: 'An error occurred while fetching this form\'s API details.',
+          consoleError: `Error getting admin API details from form ${formId} data: ${error}`,
         }, { root: true });
       }
     },

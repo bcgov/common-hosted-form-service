@@ -11,7 +11,7 @@ describe('admin getters', () => {
   let store;
 
   const sampleState = {
-    apiKey: null,
+    apiKey: undefined,
     form: {},
     formList: [],
     user: {},

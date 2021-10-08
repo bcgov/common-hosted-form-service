@@ -61,7 +61,7 @@ describe('Admin Service', () => {
   });
 
   describe('admin/forms/{formId}/apiKey', () => {
-    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}/${ApiRoutes.APIKEY}`;
+    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}${ApiRoutes.APIKEY}`;
 
     it('calls get on endpoint', async () => {
       mockAxios.onGet(endpoint).reply(200);
@@ -71,7 +71,6 @@ describe('Admin Service', () => {
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
-
 
   describe('admin/forms/{formId}', () => {
     const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}/restore`;
@@ -84,7 +83,6 @@ describe('Admin Service', () => {
       expect(mockAxios.history.put).toHaveLength(1);
     });
   });
-
 
   //
   // User
@@ -112,6 +110,5 @@ describe('Admin Service', () => {
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
-
 
 });

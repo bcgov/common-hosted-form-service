@@ -15,9 +15,6 @@ class FormApiKey extends Timestamps(Model) {
           query.where('formId', value);
         }
       },
-      selectWithoutSecret(builder) {
-        builder.select('id', 'formId', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt');
-      },
     };
   }
 

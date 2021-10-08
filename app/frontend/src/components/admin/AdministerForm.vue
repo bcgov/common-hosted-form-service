@@ -17,7 +17,7 @@
     <div v-if="apiKey">
       <h4>API Key Details</h4>
       <pre>{{ apiKey }}</pre>
-      <v-btn block color="primary" :disabled="!canDeleteKey" @click="showDeleteDialog = true">
+      <v-btn color="primary" :disabled="!canDeleteKey" @click="showDeleteDialog = true">
         <span>Delete API Key</span>
       </v-btn>
     </div>
@@ -50,7 +50,7 @@
       @continue-dialog="deleteKey"
     >
       <template #title>Confirm Deletion</template>
-      <template #text>Are you sure you wish to delete your API Key?</template>
+      <template #text>Are you sure you want to delete this API Key?</template>
       <template #button-text-continue>
         <span>Delete</span>
       </template>
@@ -100,9 +100,9 @@ export default {
       this.showDeleteDialog = false;
     },
   },
-  async mounted() {
-    await this.readForm(this.formId);
-    await this.readApiDetails(this.formId);
+  mounted() {
+    this.readForm(this.formId);
+    this.readApiDetails(this.formId);
   },
 };
 </script>

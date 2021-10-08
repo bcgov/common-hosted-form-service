@@ -6,13 +6,6 @@ const service = {
   //
   // Forms
   //
-  // Hard delete the current key for a form
-  deleteApiKey: async (formId) => {
-    const currentKey = await service.readApiKey(formId);
-    return FormApiKey.query()
-      .deleteById(currentKey.id)
-      .throwIfNotFound();
-  },
 
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
@@ -24,17 +17,11 @@ const service = {
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .modify('orderNameAscending');
   },
+
   readForm: async (formId) => {
     return Form.query()
       .findById(formId)
       .throwIfNotFound();
-  },
-
-  readApiDetails: (formId) => {
-    return FormApiKey.query()
-      .modify('filterFormId', formId)
-      .modify('selectWithoutSecret')
-      .first();
   },
 
   // Get the current key for a form
