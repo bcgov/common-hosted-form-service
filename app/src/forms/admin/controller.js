@@ -32,7 +32,9 @@ module.exports = {
   readApiDetails: async (req, res, next) => {
     try {
       const response = await formService.readApiKey(req.params.formId);
-      delete response.secret;
+      if (response) {
+        delete response.secret;
+      }
       res.status(200).json(response);
     } catch (error) {
       next(error);
