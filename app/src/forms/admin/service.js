@@ -1,4 +1,4 @@
-const { Form, FormApiKey, User, UserFormAccess } = require('../common/models');
+const { Form, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const service = {
@@ -22,13 +22,6 @@ const service = {
     return Form.query()
       .findById(formId)
       .throwIfNotFound();
-  },
-
-  // Get the current key for a form
-  readApiKey: (formId) => {
-    return FormApiKey.query()
-      .modify('filterFormId', formId)
-      .first();
   },
 
   restoreForm: async (formId) => {

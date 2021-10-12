@@ -25,7 +25,7 @@ describe('admin actions', () => {
   });
 
   describe('admin forms actions', () => {
-    it.only('deleteApiKey should commit to SET_API_KEY', async () => {
+    it('deleteApiKey should commit to SET_API_KEY', async () => {
       adminService.deleteApiKey.mockResolvedValue({ data: { form: {} } });
       await store.actions.deleteApiKey(mockStore, 'fId');
 

@@ -17,7 +17,7 @@
     <div v-if="apiKey">
       <h4>API Key Details</h4>
       <pre>{{ apiKey }}</pre>
-      <v-btn color="primary" :disabled="!canDeleteKey" @click="showDeleteDialog = true">
+      <v-btn color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
         <span>Delete API Key</span>
       </v-btn>
     </div>
@@ -78,9 +78,6 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['form', 'apiKey']),
-    canDeleteKey() {
-      return this.apiKey;
-    },
   },
   methods: {
     ...mapActions('admin', [
@@ -89,6 +86,7 @@ export default {
       'readForm',
       'restoreForm',
     ]),
+
     async restore() {
       this.restoreInProgress = true;
       await this.restoreForm(this.form.id);
