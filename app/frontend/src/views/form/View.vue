@@ -1,9 +1,12 @@
 <template>
-  <FormSubmission :submissionId="s" />
+  <BaseSecure :idp="IDP.IDIR">
+    <FormSubmission :submissionId="s" />
+  </BaseSecure>
 </template>
 
 <script>
 import FormSubmission from '@/components/forms/FormSubmission.vue';
+import { IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormView',
@@ -13,5 +16,8 @@ export default {
   components: {
     FormSubmission,
   },
+  computed: {
+    IDP: () => IdentityProviders,
+  }
 };
 </script>
