@@ -7,7 +7,7 @@ const log = require('./log')(module.filename);
 const SERVICE = 'CHES';
 
 class ChesService {
-  constructor({tokenUrl, clientId, clientSecret, apiUrl}) {
+  constructor({ tokenUrl, clientId, clientSecret, apiUrl }) {
     log.debug(`Constructed with ${tokenUrl}, ${clientId}, clientSecret, ${apiUrl}`, { function: 'constructor' });
     if (!tokenUrl || !clientId || !clientSecret || !apiUrl) {
       log.error('Invalid configuration.', { function: 'constructor' });

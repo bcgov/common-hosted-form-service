@@ -1,36 +1,39 @@
 import common from '../../Common/Simple.edit.display';
-export default [
+export default {
+  key: 'display',
+  components: [
     ...common,
     {
-        key: 'refreshOnChange',
-        ignore: true
+      key: 'refreshOnChange',
+      ignore: true
     },
     {
-        key: 'className',
-        ignore: true,
+      key: 'className',
+      ignore: true,
     },
     {
-        key: 'prefix',
-        ignore: true
+      key: 'prefix',
+      ignore: true
     },
     {
-        key: 'suffix',
-        ignore: true
+      key: 'suffix',
+      ignore: true
     },
     {
-        key: 'inputMask',
-        ignore: true
+      key: 'inputMask',
+      ignore: true
     },
     {
-        key: 'allowMultipleMasks',
-        ignore: true
+      key: 'allowMultipleMasks',
+      ignore: true
     },
     {
-        key: 'showWordCount',
-        ignore: true,
+      key: 'showWordCount',
+      ignore: true,
     },
     {
-        key: 'showCharCount',
-        ignore: true,
+      key: 'showCharCount',
+      ignore: true,
     },
-];
+  ]
+}

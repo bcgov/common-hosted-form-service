@@ -39,6 +39,62 @@ const generateContexts = (type, configData, submission, referer) => {
   }];
 };
 
+const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
+  const form = await formService.readForm(formId);
+  const submission = await formService.readSubmission(formSubmissionId);
+  let configData = {};
+
+  if (templateType === 'submissionAssigned') {
+    configData = {
+      bodyTemplate: 'submission-assigned.html',
+      title: `Invited to ${form.name} Draft`,
+      subject: 'Invited to Submission Draft',
+      messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
+      priority: 'normal',
+      form,
+    };
+  } else if (templateType === 'submissionUnassigned') {
+    configData = {
+      bodyTemplate: 'submission-unassigned.html',
+      title: `Uninvited From ${form.name} Draft`,
+      subject: 'Uninvited From Submission Draft',
+      messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
+      priority: 'normal',
+      form,
+    };
+  } else if (templateType === 'statusAssigned') {
+    configData = {
+      bodyTemplate: 'send-status-assigned-email-body.html',
+      title: `${form.name} Submission Assignment`,
+      subject: 'Form Submission Assignment',
+      messageLinkText: `You have been assigned to a ${form.name} submission. Please login to review it.`,
+      priority: 'normal',
+      form,
+    };
+  } else if (templateType === 'submissionReceived') {
+    configData = {
+      bodyTemplate: 'submission-confirmation.html',
+      title: `${form.name} Submission`,
+      subject: `${form.name} Submission`,
+      messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
+      priority: 'normal',
+      form,
+    };
+  } else if (templateType === 'submissionConfirmation') {
+    const bodyTemplate = form.identityProviders.length > 0 && form.identityProviders[0].idp === 'public' ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
+    configData = {
+      bodyTemplate: bodyTemplate,
+      title: `${form.name} Accepted`,
+      subject: `${form.name} Accepted`,
+      priority: 'normal',
+      messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+      form,
+    };
+  }
+
+  return { configData, submission };
+};
+
 const service = {
   _appUrl: (referer) => {
     try {
@@ -100,17 +156,9 @@ const service = {
   // Assigning user to Submission Draft
   submissionAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const form = await formService.readForm(formId);
-      const submission = await formService.readSubmission(currentStatus.formSubmissionId);
-      const configData = {
-        bodyTemplate: 'submission-assigned.html',
-        title: `Invited to ${form.name} Draft`,
-        subject: 'Invited to Submission Draft',
-        messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
-        priority: 'normal',
-        assignmentNotificationEmail,
-        form,
-      };
+      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, 'submissionAssigned');
+      configData.assignmentNotificationEmail = assignmentNotificationEmail;
+
       return service._sendEmailTemplate('sendSubmissionAssigned', configData, submission, referer);
     } catch (e) {
       log.error(e.message, e, {
@@ -125,17 +173,9 @@ const service = {
   // Unassigning user to Submission Draft
   submissionUnassigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const form = await formService.readForm(formId);
-      const submission = await formService.readSubmission(currentStatus.formSubmissionId);
-      const configData = {
-        bodyTemplate: 'submission-unassigned.html',
-        title: `Uninvited From ${form.name} Draft`,
-        subject: 'Uninvited From Submission Draft',
-        messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
-        priority: 'normal',
-        assignmentNotificationEmail,
-        form,
-      };
+      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.submissionId, 'submissionUnassigned');
+      configData.assignmentNotificationEmail = assignmentNotificationEmail;
+
       return service._sendEmailTemplate('sendSubmissionUnassigned', configData, submission, referer);
     } catch (e) {
       log.error(e.message, e, {
@@ -150,17 +190,9 @@ const service = {
   // Assigning status to user on Submission
   statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const form = await formService.readForm(formId);
-      const submission = await formService.readSubmission(currentStatus.submissionId);
-      const configData = {
-        bodyTemplate: 'send-status-assigned-email-body.html',
-        title: `${form.name} Submission Assignment`,
-        subject: 'Form Submission Assignment',
-        messageLinkText: `You have been assigned to a ${form.name} submission. Please login to review it.`,
-        priority: 'normal',
-        assignmentNotificationEmail,
-        form,
-      };
+      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, 'statusAssigned');
+      configData.assignmentNotificationEmail = assignmentNotificationEmail;
+
       return service._sendEmailTemplate('sendStatusAssigned', configData, submission, referer);
     } catch (e) {
       log.error(e.message, e, {
@@ -175,17 +207,9 @@ const service = {
   // Submitting Form
   submissionReceived: async (formId, submissionId, body, referer) => {
     try {
-      const form = await formService.readForm(formId);
-      const submission = await formService.readSubmission(submissionId);
-      const configData = {
-        bodyTemplate: 'submission-confirmation.html',
-        title: `${form.name} Submission`,
-        subject: `${form.name} Submission`,
-        messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
-        priority: 'normal',
-        body,
-        form,
-      };
+      const { configData, submission } = await buildEmailTemplate(formId, submissionId, 'submissionReceived');
+      configData.body = body;
+
       return service._sendEmailTemplate('sendSubmissionReceived', configData, submission, referer);
     } catch (e) {
       log.error(e.message, e, {
@@ -202,19 +226,9 @@ const service = {
   // Sending confirmation of Form Submission
   submissionConfirmation: async (formId, submissionId, body, referer) => {
     try {
-      const form = await formService.readForm(formId);
-      const submission = await formService.readSubmission(submissionId);
-      const bodyTemplate = form.identityProviders.length > 0 && form.identityProviders[0].idp ==='public' ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
+      const { configData, submission } = await buildEmailTemplate(formId, submissionId, 'submissionConfirmation');
+      configData.body = body;
 
-      const configData = {
-        bodyTemplate: bodyTemplate,
-        title: `${form.name} Accepted`,
-        subject: `${form.name} Accepted`,
-        priority: 'normal',
-        messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
-        body,
-        form,
-      };
       return service._sendEmailTemplate('sendSubmissionConfirmation', configData, submission, referer);
     } catch (e) {
       log.error(e.message, e, {
