@@ -86,16 +86,15 @@ export default {
       'readForm',
       'restoreForm',
     ]),
-
+    async deleteKey() {
+      await this.deleteApiKey(this.form.id);
+      this.showDeleteDialog = false;
+    },
     async restore() {
       this.restoreInProgress = true;
       await this.restoreForm(this.form.id);
       this.restoreInProgress = false;
       this.showRestoreDialog = false;
-    },
-    async deleteKey() {
-      await this.deleteApiKey(this.form.id);
-      this.showDeleteDialog = false;
     },
   },
   mounted() {
