@@ -1,5 +1,12 @@
 const falsey = require('falsey');
 
+const setupMount = (type, app, routes, dataErrors) => {
+  const p = `/${type}`;
+  app.use(p, routes);
+  app.use(dataErrors);
+  return p;
+};
+
 const typeUtils = {
   isInt: x => {
     if (isNaN(x)) {
@@ -37,6 +44,7 @@ const queryUtils = {
 
 module.exports = {
   falsey: falsey,
+  setupMount: setupMount,
   queryUtils: queryUtils,
   typeUtils:  typeUtils,
 };

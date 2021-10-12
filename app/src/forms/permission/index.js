@@ -1,9 +1,7 @@
 const dataErrors = require('../common/middleware').dataErrors;
 const routes = require('./routes');
+const setupMount = require('../common/utils').setupMount;
 
 module.exports.mount = (app) => {
-  const p = '/permissions';
-  app.use(p, routes);
-  app.use(dataErrors);
-  return p;
+  return setupMount('permissions', app, routes, dataErrors);
 };
