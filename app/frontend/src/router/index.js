@@ -199,7 +199,10 @@ export default function getRouter(basePath = '/') {
           {
             path: '',
             name: 'User',
-            component: () => import(/* webpackChunkName: "designer" */ '@/views/user/Root.vue')
+            component: () => import(/* webpackChunkName: "designer" */ '@/views/user/Root.vue'),
+            meta: {
+              requiresAuth: true
+            }
           },
           {
             path: 'draft',
@@ -207,9 +210,12 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "userformdraftedit" */ '@/views/user/SubmissionDraftEdit.vue'),
             meta: {
               breadcrumbTitle: 'Edit Draft',
-              formSubmitMode: true,
+              formSubmitMode: true
             },
-            props: createProps
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ submissionId: to.query.s }, next);
+            },
           },
           // For when we have the recieve->review->send-back flow
           // This route can be used for the submitter to edit and see status stuff about their submission
@@ -229,7 +235,8 @@ export default function getRouter(basePath = '/') {
             name: 'UserForms',
             component: () => import(/* webpackChunkName: "userforms" */ '@/views/user/Forms.vue'),
             meta: {
-              breadcrumbTitle: 'My Forms'
+              breadcrumbTitle: 'My Forms',
+              requiresAuth: true
             }
           },
           {
@@ -237,7 +244,8 @@ export default function getRouter(basePath = '/') {
             name: 'UserHistory',
             component: () => import(/* webpackChunkName: "history" */ '@/views/user/History.vue'),
             meta: {
-              breadcrumbTitle: 'History'
+              breadcrumbTitle: 'History',
+              requiresAuth: true
             }
           },
           {
@@ -246,9 +254,12 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "usersubmissions" */ '@/views/user/Submissions.vue'),
             meta: {
               breadcrumbTitle: 'Previous Submissions',
-              formSubmitMode: true,
+              formSubmitMode: true
             },
-            props: createProps
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ formId: to.query.f }, next);
+            },
           },
           {
             path: 'view',
@@ -256,13 +267,15 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "userformview" */ '@/views/user/SubmissionView.vue'),
             meta: {
               breadcrumbTitle: 'Submission',
-              formSubmitMode: true,
+              formSubmitMode: true
             },
-            props: createProps
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ submissionId: to.query.s }, next);
+            },
           },
         ],
         meta: {
-          requiresAuth: true,
           hasLogin: true
         }
       },
