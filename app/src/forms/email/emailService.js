@@ -173,7 +173,7 @@ const service = {
   // Unassigning user to Submission Draft
   submissionUnassigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.submissionId, 'submissionUnassigned');
+      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, 'submissionUnassigned');
       configData.assignmentNotificationEmail = assignmentNotificationEmail;
 
       return service._sendEmailTemplate('sendSubmissionUnassigned', configData, submission, referer);
@@ -190,7 +190,7 @@ const service = {
   // Assigning status to user on Submission
   statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, 'statusAssigned');
+      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.submissionId, 'statusAssigned');
       configData.assignmentNotificationEmail = assignmentNotificationEmail;
 
       return service._sendEmailTemplate('sendStatusAssigned', configData, submission, referer);
