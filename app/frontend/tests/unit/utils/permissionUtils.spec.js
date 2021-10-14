@@ -58,97 +58,151 @@ describe('checkSubmissionView', () => {
   });
 });
 
-// TODO: This got completely rewritten - need to update tests completely
-describe.skip('preFlightAuth', () => {
-  const oldWindowLocation = window.location;
-
+describe('preFlightAuth', () => {
   const mockNext = jest.fn();
   const dispatchSpy = jest.spyOn(store, 'dispatch');
-  const getSubmissionSpy = jest.spyOn(formService, 'getSubmission');
-  const readFormSpy = jest.spyOn(formService, 'readForm');
-
-  beforeAll(() => {
-    delete window.location;
-    window.location = Object.defineProperties(
-      {},
-      {
-        ...Object.getOwnPropertyDescriptors(oldWindowLocation),
-        replace: {
-          configurable: true,
-          value: jest.fn(),
-        },
-      },
-    );
-
-    if (store.hasModule('auth')) store.unregisterModule('auth');
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => false,
-        createLoginUrl: () => () => { }
-      }
-    });
-  });
+  const getSubmissionOptionsSpy = jest.spyOn(formService, 'getSubmissionOptions');
+  const readFormOptionsSpy = jest.spyOn(formService, 'readFormOptions');
 
   beforeEach(() => {
+    if (store.hasModule('auth')) store.unregisterModule('auth');
     mockNext.mockReset();
     dispatchSpy.mockReset();
-    getSubmissionSpy.mockReset();
-    readFormSpy.mockReset();
+    getSubmissionOptionsSpy.mockReset();
+    readFormOptionsSpy.mockReset();
   });
 
   afterAll(() => {
-    window.location = oldWindowLocation;
     store.unregisterModule('auth');
     mockNext.mockRestore();
     dispatchSpy.mockRestore();
-    getSubmissionSpy.mockReset();
-    readFormSpy.mockRestore();
+    getSubmissionOptionsSpy.mockReset();
+    readFormOptionsSpy.mockRestore();
   });
 
-  it('should call readForm service', async () => {
-    readFormSpy.mockImplementation(() => { });
-    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
-    expect(readFormSpy).toHaveBeenCalledTimes(1);
-    expect(mockNext).toHaveBeenCalledTimes(1);
+  it('should create error notification if options are missing attributes', async () => {
+    await permissionUtils.preFlightAuth({}, mockNext);
+    expect(mockNext).toHaveBeenCalledTimes(0);
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate');
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
   });
 
-  it('should call getSubmission service', async () => {
-    getSubmissionSpy.mockImplementation(() => { });
-    await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
-    expect(getSubmissionSpy).toHaveBeenCalledTimes(1);
-    expect(mockNext).toHaveBeenCalledTimes(1);
-
-  });
-
-  it('should passthrough when nothing specified', async () => {
-    await permissionUtils.preFlightAuth(undefined, mockNext);
-    expect(mockNext).toHaveBeenCalledTimes(1);
-  });
-
-  it('should force a user login', async () => {
-    readFormSpy.mockImplementation(() => {
-      const error = new Error();
-      error.response = { status: 401 };
-      throw error;
+  it('should call readFormOptions and next callback if authenticated and public', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        identityProvider: () => IdentityMode.PUBLIC
+      }
     });
+    readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityMode.PUBLIC] } });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(dispatchSpy).toHaveBeenCalledTimes(0);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
+  });
+
+  it('should call readFormOptions and next callback if authenticated and idps match', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        identityProvider: () => IdentityProviders.IDIR
+      }
+    });
+    readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityProviders.IDIR] } });
+
+    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(dispatchSpy).toHaveBeenCalledTimes(0);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
+  });
+
+  it('should call readFormOptions and create error notification with idp mismatch', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        identityProvider: () => IdentityProviders.IDIR
+      }
+    });
+    readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityProviders.BCEIDBASIC] } });
+
+    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
+
+    expect(mockNext).toHaveBeenCalledTimes(0);
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate', expect.any(String));
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
+  });
+
+  it('should call getSubmissionOptions and next callback if not authenticated and public', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => false
+      }
+    });
+    getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: [IdentityMode.PUBLIC] } } });
+
+    await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(dispatchSpy).toHaveBeenCalledTimes(0);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it('should call getSubmissionOptions and login flow with idpHint', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => false
+      }
+    });
+    getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: [IdentityProviders.IDIR] } } });
+
+    await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
+
+    expect(mockNext).toHaveBeenCalledTimes(0);
+    expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/login', IdentityProviders.IDIR);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it('should call getSubmissionOptions and login flow without idpHint', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => false
+      }
+    });
+    getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: ['idp'] } } });
+
+    await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
+
+    expect(mockNext).toHaveBeenCalledTimes(0);
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
     expect(dispatchSpy).toHaveBeenCalledWith('auth/login');
-    expect(mockNext).toHaveBeenCalledTimes(1);
-  });
-
-  it('should raise an issue notification', async () => {
-    dispatchSpy.mockImplementation(() => { });
-    readFormSpy.mockImplementation(() => {
-      throw new Error();
-    });
-
-    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
-    expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
-    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
   });
 });
 
