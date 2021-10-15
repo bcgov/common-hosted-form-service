@@ -7,26 +7,10 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe('BaseSecure.vue', () => {
-  const { location } = window;
-  const mockReplace = jest.fn(cb => {
-    cb();
-  });
   let store;
 
-  beforeAll(() => {
-    delete window.location;
-    window.location = {
-      replace: mockReplace
-    };
-  });
-
   beforeEach(() => {
-    mockReplace.mockReset();
     store = new Vuex.Store();
-  });
-
-  afterAll(() => {
-    window.location = location;
   });
 
   it('renders nothing if authenticated, user', () => {
@@ -138,12 +122,15 @@ describe('BaseSecure.vue', () => {
   });
 
   it('login button redirects to login url', () => {
+    const mockLogin = jest.fn();
     store.registerModule('auth', {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        createLoginUrl: () => () => 'test',
         keycloakReady: () => true
+      },
+      actions: {
+        login: mockLogin
       }
     });
 
@@ -151,6 +138,7 @@ describe('BaseSecure.vue', () => {
     wrapper.vm.login();
 
     expect(wrapper.text()).toMatch('Login');
-    expect(mockReplace).toHaveBeenCalledTimes(1);
+    expect(mockLogin).toHaveBeenCalledTimes(1);
+    expect(mockLogin).toHaveBeenCalledWith(expect.any(Object), undefined);
   });
 });

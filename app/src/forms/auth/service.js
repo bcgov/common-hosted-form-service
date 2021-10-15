@@ -19,15 +19,16 @@ const service = {
     try {
       trx = await User.startTransaction();
 
-      const obj = Object.assign({}, {
+      const obj = {
         id: uuidv4(),
         keycloakId: data.keycloakId,
         username: data.username,
         fullName: data.fullName,
         email: data.email,
         firstName: data.firstName,
-        lastName: data.lastName
-      });
+        lastName: data.lastName,
+        idpCode: data.idp
+      };
 
       await User.query(trx).insert(obj);
       await trx.commit();
@@ -57,7 +58,8 @@ const service = {
         fullName: data.fullName,
         email: data.email,
         firstName: data.firstName,
-        lastName: data.lastName
+        lastName: data.lastName,
+        idpCode: data.idp
       };
 
       await User.query(trx).patchAndFetchById(obj.id, update);
@@ -110,10 +112,10 @@ const service = {
 
   getUserId: async (userInfo) => {
     if (userInfo.public) {
-      return Object.assign({}, { ...userInfo, id: 'public' });
+      return { id: 'public', ...userInfo };
     }
 
-    const obj = Object.assign({}, userInfo);
+    const obj = { ...userInfo };
 
     // if this user does not exists, add...
     let user = await User.query()
@@ -128,7 +130,7 @@ const service = {
       user = await service.updateUser(user.id, obj);
     }
     // return with the db id...
-    return Object.assign({}, { ...userInfo, id: user.id });
+    return { id: user.id, ...userInfo };
   },
 
   getUserForms: async (userInfo, params = {}) => {
@@ -220,7 +222,7 @@ const service = {
     const forms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
     params.active = false;
     const deletedForms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
-    return Object.assign({}, { ...user, forms: forms, deletedForms: deletedForms });
+    return { ...user, forms: forms, deletedForms: deletedForms };
   },
 
   // -------------------------------------------------------------------------------------------------------------

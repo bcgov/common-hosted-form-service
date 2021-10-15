@@ -24,7 +24,21 @@ describe('Form Service', () => {
   //
   // Forms
   //
-  describe('Forms/{id}', () => {
+  describe('Forms', () => {
+    const endpoint = `${ApiRoutes.FORMS}`;
+
+    it('calls create on endpoint', async () => {
+      const data = { test: 'testdata' };
+      mockAxios.onPost(endpoint).reply(200, data);
+
+      const result = await formService.createForm(zeroUuid, data);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(data);
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
+  describe('Forms/{formId}', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}`;
 
     it('calls forms endpoint', async () => {
@@ -54,17 +68,15 @@ describe('Form Service', () => {
     });
   });
 
-  describe('Forms', () => {
-    const endpoint = `${ApiRoutes.FORMS}`;
+  describe('Forms/{formId}/options', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/options`;
 
-    it('calls create on endpoint', async () => {
-      const data = { test: 'testdata' };
-      mockAxios.onPost(endpoint).reply(200, data);
+    it('calls read endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
 
-      const result = await formService.createForm(zeroUuid, data);
+      const result = await formService.readFormOptions(zeroUuid);
       expect(result).toBeTruthy();
-      expect(result.data).toEqual(data);
-      expect(mockAxios.history.post).toHaveLength(1);
+      expect(mockAxios.history.get).toHaveLength(1);
     });
   });
 
@@ -245,6 +257,18 @@ describe('Form Service', () => {
       mockAxios.onGet(endpoint).reply(200);
 
       const result = await formService.getSubmission(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+  describe('submissions/{submissionId}/options', () => {
+    const endpoint = `submissions/${zeroUuid}/options`;
+
+    it('calls get on endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.getSubmissionOptions(zeroUuid);
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });

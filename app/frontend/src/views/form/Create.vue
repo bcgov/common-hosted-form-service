@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure>
+  <BaseSecure :idp="IDP.IDIR">
     <h1 class="my-6 text-center">Create New Form</h1>
     <v-stepper v-model="creatorStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
@@ -57,7 +57,7 @@ import { mapFields } from 'vuex-map-fields';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
-import { IdentityMode } from '@/utils/constants';
+import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormCreate',
@@ -66,7 +66,10 @@ export default {
     FormSettings,
     FormDisclaimer,
   },
-  computed: mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
+  computed: {
+    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
+    IDP: () => IdentityProviders,
+  },
   data() {
     return {
       creatorStep: 1,
@@ -86,7 +89,7 @@ export default {
         this.$refs.settingsForm.validate();
     },
   },
-  beforeRouteLeave(to, from, next) {
+  beforeRouteLeave(_to, _from, next) {
     this.isDirty
       ? next(
         window.confirm(

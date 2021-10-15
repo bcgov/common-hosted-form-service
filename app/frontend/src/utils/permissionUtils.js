@@ -1,6 +1,11 @@
-import { FormPermissions, FormManagePermissions, IdentityMode, IdentityProviders } from '@/utils/constants';
 import { formService } from '@/services';
 import store from '@/store';
+import {
+  FormPermissions,
+  FormManagePermissions,
+  IdentityMode,
+  IdentityProviders
+} from '@/utils/constants';
 
 //
 // Utility Functions for determining permissions
@@ -43,41 +48,63 @@ export function checkSubmissionView(userForm) {
 }
 
 /**
- * @function determineFormNeedsAuth
- * When loading a form to fill out, determine if the user needs to log in to submit it
- * @param {Object} store The vuex store reference
- * @param {String} formId The form guid
- * @param {String} submissionId The submission guid
- * @param {Object} next The routing next object
+ * @function preFlightAuth
+ * Determines whether to enter a route based on user authentication state and idpHint
+ * @param {Object} options Object containing either a formId or submissionId attribute
+ * @param {Object} next The callback function
  */
-export async function determineFormNeedsAuth(formId, submissionId, next) {
-  // before this view is loaded, determine if this is a public form
-  // if it IS, they don't need to log in. If it's secured, go through auth loop
-  // If authed already skip all this
-  if (!store.getters['auth/authenticated']) {
-    try {
-      // Get this form or submission
-      if (formId) {
-        await formService.readForm(formId);
-      } else if (submissionId) {
-        await formService.getSubmission(submissionId);
-      }
-    } catch (error) {
-      // If there's a 401 trying to get this form, make that user log in
-      if (error.response && error.response.status === 401) {
-        window.location.replace(
-          store.getters['auth/createLoginUrl']({ idpHint: 'idir' })
-        );
-      } else {
-        // Other errors raise an issue
-        store.dispatch('notifications/addNotification', {
-          message: 'An error occurred while loading this form.',
-          consoleError: `Error loading form ${formId} or submission ${submissionId}: ${error}`,
-        });
-      }
+export async function preFlightAuth(options = {}, next) {
+  // Support lambda functions (Consider making them util functions?)
+  const getIdpHint = (values) => {
+    return (Array.isArray(values) && values.length) ? values[0] : undefined;
+  };
+  const isValidIdp = (value) => Object.values(IdentityProviders).includes(value);
+
+  // Determine current form or submission idpHint if available
+  let idpHint = undefined;
+  try {
+    if (options.formId) {
+      const { data } = await formService.readFormOptions(options.formId);
+      idpHint = getIdpHint(data.idpHints);
+    } else if (options.submissionId) {
+      const { data } = await formService.getSubmissionOptions(options.submissionId);
+      idpHint = getIdpHint(data.form.idpHints);
+    } else {
+      throw new Error('Options missing both formId and submissionId');
+    }
+  } catch (error) {
+    store.dispatch('notifications/addNotification', {
+      message: 'An error occurred while loading this form.',
+      consoleError: `Error while loading ${JSON.stringify(options)}: ${error}`,
+    });
+    store.dispatch('auth/errorNavigate'); // Halt user with error page
+    return; // Short circuit this function - no point executing further logic
+  }
+
+  if (store.getters['auth/authenticated']) {
+    const userIdp = store.getters['auth/identityProvider'];
+
+    if (idpHint === IdentityMode.PUBLIC || !idpHint) {
+      next(); // Permit navigation if public or team form
+    } else if (isValidIdp(idpHint) && userIdp === idpHint) {
+      next(); // Permit navigation if idps match
+    } else {
+      const msg = `This form requires ${idpHint.toUpperCase()} authentication. Please re-login and try again.`;
+      store.dispatch('notifications/addNotification', {
+        message: msg,
+        consoleError: `Form IDP mismatch. Form requires ${idpHint} but user has ${userIdp}.`,
+      });
+      store.dispatch('auth/errorNavigate', msg); // Halt user with idp mismatch error page
+    }
+  } else {
+    if (idpHint === IdentityMode.PUBLIC) {
+      next(); // Permit navigation if public form
+    } else if (isValidIdp(idpHint)) {
+      store.dispatch('auth/login', idpHint); // Force login flow with specified idpHint
+    } else {
+      store.dispatch('auth/login'); // Force login flow with user choice
     }
   }
-  next();
 }
 
 /**

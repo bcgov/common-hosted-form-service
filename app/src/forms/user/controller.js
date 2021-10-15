@@ -13,7 +13,7 @@ module.exports = {
     }
   },
 
-  read:  async (req, res, next) => {
+  read: async (req, res, next) => {
     try {
       const response = await service.read(req.params.userId);
       res.status(200).json(response);

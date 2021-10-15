@@ -8,11 +8,31 @@ class User extends Timestamps(Model) {
     return 'user';
   }
 
+  static get relationMappings() {
+    const IdentityProvider = require('./identityProvider');
+
+    return {
+      identityProvider: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: IdentityProvider,
+        join: {
+          from: 'user.idpCode',
+          to: 'identity_provider.code'
+        }
+      }
+    };
+  }
+
   static get modifiers() {
     return {
       filterKeycloakId(query, value) {
         if (value) {
           query.where('keycloakId', value);
+        }
+      },
+      filterIdpCode(query, value) {
+        if (value) {
+          query.where('idpCode', value);
         }
       },
       filterUsername(query, value) {
@@ -47,10 +67,13 @@ class User extends Timestamps(Model) {
       },
       filterSearch(query, value) {
         // use this field 'search' to OR across many fields
+        // must be written as subquery function to force parentheses grouping
         if (value) {
-          query.where('username', 'ilike', `%${value}%`)
-            .orWhere('fullName', 'ilike', `%${value}%`)
-            .orWhere('email', 'ilike', `%${value}%`);
+          query.where(subquery => {
+            subquery.where('username', 'ilike', `%${value}%`)
+              .orWhere('fullName', 'ilike', `%${value}%`)
+              .orWhere('email', 'ilike', `%${value}%`);
+          });
         }
       },
       orderLastFirstAscending(builder) {
@@ -71,6 +94,7 @@ class User extends Timestamps(Model) {
         lastName: { type: ['string', 'null'], maxLength: 255 },
         fullName: { type: ['string', 'null'], maxLength: 255 },
         email: { type: ['string', 'null'], maxLength: 255 },
+        idpCode: { type: ['string', 'null'], maxLength: 255 },
         ...stamps
       },
       additionalProperties: false

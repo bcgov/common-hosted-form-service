@@ -46,6 +46,7 @@ describe('auth getters', () => {
           token: 'token',
           tokenParsed: {
             email: 'e@mail.com',
+            identity_provider: 'idir',
             realm_access: {},
             resource_access: {
               chefs: {
@@ -139,6 +140,11 @@ describe('auth getters', () => {
     expect(store.getters.hasResourceRoles('app', roles)).toBeFalsy();
   });
 
+  it('identityProvider should return a string', () => {
+    expect(store.getters.identityProvider).toBeTruthy();
+    expect(typeof store.getters.identityProvider).toBe('string');
+  });
+
   it('isAdmin should return false if no admin role', () => {
     authenticated = true;
     roles = [];
@@ -187,6 +193,15 @@ describe('auth getters', () => {
   it('realmAccess should return an object', () => {
     expect(store.getters.realmAccess).toBeTruthy();
     expect(typeof store.getters.realmAccess).toBe('object');
+  });
+
+  it('realmAccess should return a string', () => {
+    const uri = 'http://foo.bar';
+    store.replaceState({ redirectUri: uri });
+
+    expect(store.getters.redirectUri).toBeTruthy();
+    expect(typeof store.getters.redirectUri).toBe('string');
+    expect(store.getters.redirectUri).toEqual(uri);
   });
 
   it('resourceAccess should return an object', () => {

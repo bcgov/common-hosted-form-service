@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure>
+  <BaseSecure :idp="IDP.IDIR">
     <FormDesigner
       class="mt-6"
       :draftId="d"
@@ -12,7 +12,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
+
 import FormDesigner from '@/components/designer/FormDesigner.vue';
+import { IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormDesign',
@@ -25,8 +27,11 @@ export default {
     sv: Boolean,
     v: String,
   },
-  computed: mapGetters('form', ['form']),
-  beforeRouteLeave(to, from, next) {
+  computed: {
+    ...mapGetters('form', ['form']),
+    IDP: () => IdentityProviders,
+  },
+  beforeRouteLeave(_to, _from, next) {
     this.form.isDirty
       ? next(
         window.confirm(

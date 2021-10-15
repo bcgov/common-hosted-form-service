@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import getRouter from '@/router';
 
 /**
  * @function hasRoles
@@ -13,7 +14,11 @@ function hasRoles(tokenRoles, roles = []) {
 
 export default {
   namespaced: true,
-  state: {},
+  state: {
+    // In most cases, when this becomes populated, we end up doing a redirect flow,
+    // so when we return to the app, it is fresh again and undefined
+    redirectUri: undefined
+  },
   getters: {
     authenticated: () => Vue.prototype.$keycloak.authenticated,
     createLoginUrl: () => options => Vue.prototype.$keycloak.createLoginUrl(options),
@@ -29,17 +34,64 @@ export default {
       }
       return false; // There are roles to check, but nothing in token to check against
     },
+    identityProvider: () => Vue.prototype.$keycloak.tokenParsed.identity_provider,
     isAdmin: (_state, getters) => getters.hasResourceRoles('chefs', ['admin']),
     isUser: (_state, getters) => getters.hasResourceRoles('chefs', ['user']),
     keycloakReady: () => Vue.prototype.$keycloak.ready,
     keycloakSubject: () => Vue.prototype.$keycloak.subject,
     moduleLoaded: () => !!Vue.prototype.$keycloak,
     realmAccess: () => Vue.prototype.$keycloak.tokenParsed.realm_access,
+    redirectUri: state => state.redirectUri,
     resourceAccess: () => Vue.prototype.$keycloak.tokenParsed.resource_access,
     token: () => Vue.prototype.$keycloak.token,
     tokenParsed: () => Vue.prototype.$keycloak.tokenParsed,
     userName: () => Vue.prototype.$keycloak.userName
   },
-  mutations: {},
-  actions: {}
+  mutations: {
+    SET_REDIRECTURI(state, redirectUri) {
+      state.redirectUri = redirectUri;
+    }
+  },
+  actions: {
+    // TODO: Ideally move this to notifications module, but some strange interactions with lazy loading in unit tests
+    errorNavigate(_store, msg) {
+      const router = getRouter(Vue.prototype.$config.basePath);
+      router.replace({ name: 'Error', params: { msg: msg } });
+    },
+    login({ commit, getters, rootGetters }, idpHint = undefined) {
+      if (getters.keycloakReady) {
+        // Use existing redirect uri if available
+        if (!getters.redirectUri) commit('SET_REDIRECTURI', location.toString());
+
+        const options = {
+          redirectUri: getters.redirectUri
+        };
+
+        // Determine idpHint based on input or form
+        if (idpHint && typeof idpHint === 'string') options.idpHint = idpHint;
+        else {
+          const { idps } = rootGetters['form/form'];
+          if (idps.length) options.idpHint = idps[0];
+        }
+
+        if (options.idpHint) {
+          // Redirect to Keycloak if idpHint is available
+          window.location.replace(getters.createLoginUrl(options));
+        } else {
+          // Navigate to internal login page if no idpHint specified
+          const router = getRouter(Vue.prototype.$config.basePath);
+          router.replace({ name: 'Login' });
+        }
+      }
+    },
+    logout({ getters }) {
+      if (getters.keycloakReady) {
+        window.location.replace(
+          getters.createLogoutUrl({
+            redirectUri: `${location.origin}/${Vue.prototype.$config.basePath}`
+          })
+        );
+      }
+    }
+  }
 };

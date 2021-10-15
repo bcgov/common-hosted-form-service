@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <v-tabs>
-      <v-tab>Forms</v-tab>
-      <v-tab>Users</v-tab>
-      <v-tab>Developer</v-tab>
+  <v-tabs>
+    <v-tab>Forms</v-tab>
+    <v-tab>Users</v-tab>
+    <v-tab>Developer</v-tab>
 
-      <v-tab-item> <AdminFormsTable /> </v-tab-item>
-      <v-tab-item> <AdminUsersTable /> </v-tab-item>
-      <v-tab-item> <Developer /> </v-tab-item>
-    </v-tabs>
-  </div>
+    <v-tab-item> <AdminFormsTable /> </v-tab-item>
+    <v-tab-item> <AdminUsersTable /> </v-tab-item>
+    <v-tab-item> <Developer /> </v-tab-item>
+  </v-tabs>
 </template>
 
 <script>

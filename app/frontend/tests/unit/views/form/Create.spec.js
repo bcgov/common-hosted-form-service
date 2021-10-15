@@ -43,7 +43,7 @@ describe('Create.vue', () => {
     const wrapper = shallowMount(Create, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner', 'FormSettings', 'FormDisclaimer']
+      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer']
     });
 
     expect(wrapper.html()).toMatch('basesecure');
@@ -55,7 +55,7 @@ describe('Create.vue', () => {
     const wrapper = shallowMount(Create, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner', 'FormSettings', 'FormDisclaimer']
+      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer']
     });
     Create.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 

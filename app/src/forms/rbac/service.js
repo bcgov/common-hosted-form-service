@@ -80,13 +80,14 @@ const service = {
     try {
       trx = await User.startTransaction();
 
-      const obj = Object.assign({}, data);
-      obj.id = uuidv4();
+      const obj = {
+        id: uuidv4(),
+        ...data
+      };
 
       await User.query(trx).insert(obj);
       await trx.commit();
-      const result = await service.read(obj.id);
-      return result;
+      return await service.read(obj.id);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
