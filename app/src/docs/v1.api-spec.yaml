@@ -2353,6 +2353,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /admin/forms/{formId}/apiKey:
+    get:
+      summary: Get Form API Key
+      description: Get the active api key details for a form
+      operationId: adminReadApiDetails
+      tags:
+        - Admin
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormApiDetails'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete Form API Key
+      description: Delete the api key secret for a form
+      operationId: adminDeleteApiKey
+      tags:
+        - Admin
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '204':
+          description: OK
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /admin/forms/{formId}/restore:
     put:
       summary: Un-delete a soft deleted form
@@ -2663,6 +2706,17 @@ components:
             secret:
               type: string
               example: dd7d1699-61ec-4037-aa33-727f8aa79c0a
+        - $ref: '#/components/schemas/TimeStampUserData'
+    FormApiDetails:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: number
+              example: 4
+            formId:
+              type: string
+              example: c6455376-382c-439d-a811-0381a012d696
         - $ref: '#/components/schemas/TimeStampUserData'
     FormBasic:
       allOf:
