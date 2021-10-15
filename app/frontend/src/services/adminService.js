@@ -7,6 +7,16 @@ export default {
   //
 
   /**
+   * @function deleteApiKey
+   * Hard delete an API Key
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  deleteApiKey(formId) {
+    return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+  },
+
+  /**
    * @function listForms
    * Read all the forms in the DB
    * @param {Boolean} active Don't show deleted forms
@@ -15,6 +25,7 @@ export default {
   listForms(active = true) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}`, { params: { active: active } });
   },
+
   /**
    * @function readForm
    * Get a form
@@ -24,6 +35,17 @@ export default {
   readForm(formId) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}`);
   },
+
+  /**
+   * @function readApiDetails
+   * Gets the form's API Key details
+   * @param {string} formId The GUID
+   * @returns {Promise} An axios response
+   */
+  readApiDetails(formId) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+  },
+
   /**
    * @function restoreForm
    * Restore a deleted form
@@ -35,7 +57,7 @@ export default {
   },
 
   //
-  // USer calls
+  // User calls
   //
 
   /**

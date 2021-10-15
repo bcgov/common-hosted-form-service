@@ -15,7 +15,6 @@ routes.use(currentUser);
 // As such, this should ALWAYS remain under the :admin role check and that KC role should not be given out
 // other than to people who have permission to read all data
 
-
 //
 // Forms
 //
@@ -27,6 +26,14 @@ routes.get('/forms/:formId', async (req, res, next) => {
   await controller.readForm(req, res, next);
 });
 
+routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
+  await controller.deleteApiKey(req, res, next);
+});
+
+routes.get('/forms/:formId/apiKey', async (req, res, next) => {
+  await controller.readApiDetails(req, res, next);
+});
+
 routes.put('/forms/:formId/restore', async (req, res, next) => {
   await controller.restoreForm(req, res, next);
 });
@@ -34,7 +41,6 @@ routes.put('/forms/:formId/restore', async (req, res, next) => {
 routes.get('/formusers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
 });
-
 
 //
 // Users
@@ -46,8 +52,5 @@ routes.get('/users', async (req, res, next) => {
 routes.get('/users/:userId', async (req, res, next) => {
   await userController.read(req, res, next);
 });
-
-
-
 
 module.exports = routes;

@@ -6,6 +6,7 @@ const service = {
   //
   // Forms
   //
+
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
@@ -16,11 +17,13 @@ const service = {
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .modify('orderNameAscending');
   },
+
   readForm: async (formId) => {
     return Form.query()
       .findById(formId)
       .throwIfNotFound();
   },
+
   restoreForm: async (formId) => {
     let trx;
     try {
