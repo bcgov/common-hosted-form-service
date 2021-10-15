@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure admin>
+  <BaseSecure admin :idp="IDP.IDIR">
     <v-container>
       <transition name="component-fade" mode="out-in">
         <router-view />
@@ -12,11 +12,13 @@
 import { mapGetters } from 'vuex';
 
 import admin from '@/store/modules/admin.js';
+import { IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'Admin',
   computed: {
     ...mapGetters('auth', ['isAdmin']),
+    IDP: () => IdentityProviders,
   },
   created() {
     if (this.$store.hasModule('admin')) {

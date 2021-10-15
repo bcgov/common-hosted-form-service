@@ -10,6 +10,7 @@ const service = {
     return User.query()
       .skipUndefined()
       .modify('filterKeycloakId', params.keycloakId)
+      .modify('filterIdpCode', params.idpCode)
       .modify('filterUsername', params.username)
       .modify('filterFullName', params.fullName)
       .modify('filterFirstName', params.firstName)

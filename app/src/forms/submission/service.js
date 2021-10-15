@@ -12,6 +12,7 @@ const {
   SubmissionMetadata
 } = require('../common/models');
 const emailService = require('../email/emailService');
+const formService = require('../form/service');
 
 const service = {
 
@@ -99,6 +100,27 @@ const service = {
       throw err;
     }
 
+  },
+
+  readOptions: async (formSubmissionId) => {
+    const meta = await SubmissionMetadata.query()
+      .where('submissionId', formSubmissionId)
+      .first()
+      .throwIfNotFound();
+
+    const form = await formService.readFormOptions(meta.formId);
+
+    return {
+      submission: {
+        id: meta.submissionId,
+        formVersionId: meta.formId
+      },
+      version: {
+        id: meta.formVersionId,
+        formId: meta.formId
+      },
+      form: form
+    };
   },
 
   // get the audit history metadata (nothing that edited a draft for now)

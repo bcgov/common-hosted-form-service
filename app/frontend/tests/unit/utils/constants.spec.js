@@ -45,6 +45,16 @@ describe('Constants', () => {
     });
   });
 
+  it('FormManagePermissions has the right values defined', () => {
+    expect(constants.FormManagePermissions).toEqual([
+      constants.FormPermissions.FORM_UPDATE,
+      constants.FormPermissions.FORM_DELETE,
+      constants.FormPermissions.DESIGN_UPDATE,
+      constants.FormPermissions.DESIGN_DELETE,
+      constants.FormPermissions.TEAM_UPDATE
+    ]);
+  });
+
   it('IdentityMode has the right values defined', () => {
     expect(constants.IdentityMode).toEqual({
       LOGIN: 'login',
@@ -55,7 +65,8 @@ describe('Constants', () => {
 
   it('IdentityProviders has the right values defined', () => {
     expect(constants.IdentityProviders).toEqual({
-      BCEID: 'bceid',
+      BCEIDBASIC: 'bceid-basic',
+      BCEIDBUSINESS: 'bceid-business',
       BCSC: 'bcsc',
       GITHUB: 'github',
       IDIR: 'idir'
@@ -84,6 +95,12 @@ describe('Constants', () => {
         class:'alert-warning',
         icon: 'warning',
       },
+    });
+  });
+
+  it('Regex has the right values defined', () => {
+    expect(constants.Regex).toEqual({
+      EMAIL: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
     });
   });
 });

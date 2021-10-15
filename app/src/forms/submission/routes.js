@@ -19,6 +19,10 @@ routes.delete('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_DELETE
   await controller.delete(req, res, next);
 });
 
+routes.get('/:formSubmissionId/options', async (req, res, next) => {
+  await controller.readOptions(req, res, next);
+});
+
 routes.get('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.getNotes(req, res, next);
 });

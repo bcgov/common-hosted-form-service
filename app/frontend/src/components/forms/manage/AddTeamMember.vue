@@ -15,8 +15,10 @@
       >
         <!-- no data -->
         <template #no-data>
-          <div class="px-2">Can't find someone? They may not have joined the site.<br/>
-            Kindly send them a link to the site and ask them to log in.</div>
+          <div class="px-2">
+            Can't find someone? They may not have joined the site.<br />
+            Kindly send them a link to the site and ask them to log in.
+          </div>
         </template>
         <!-- selected user -->
         <template #selection="data">
@@ -25,7 +27,6 @@
             :input-value="data.selected"
             close
             @click="data.select"
-            @click:close="remove(data.item)"
           >
             {{ data.item.fullName }}
           </span>
@@ -37,9 +38,15 @@
           </template>
           <template v-else>
             <v-list-item-content>
-              <v-list-item-title v-html="data.item.fullName" />
-              <v-list-item-subtitle v-html="data.item.username" />
-              <v-list-item-subtitle v-html="data.item.email" />
+              <v-list-item-title>
+                {{ data.item.fullName }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ data.item.username }} ({{ data.item.idpCode }})
+              </v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ data.item.email }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </template>
         </template>
@@ -101,15 +108,11 @@ export default {
   methods: {
     // show users in dropdown that have a text match on multiple properties
     filterObject(item, queryText) {
-      // eslint-disable-next-line
-      for (const [key, value] of Object.entries(item)) {
-        if (
-          value !== null &&
-          value.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
-        ) {
-          return true;
-        }
-      }
+      return Object.values(item)
+        .filter((v) => v)
+        .some((v) =>
+          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+        );
     },
 
     save() {
@@ -129,7 +132,10 @@ export default {
       if (!input) return;
       this.isLoading = true;
       try {
-        const response = await userService.getUsers({ search: input });
+        const response = await userService.getUsers({
+          idpCode: 'idir',
+          search: input,
+        });
         this.items = response.data;
       } catch (error) {
         console.error(`Error getting users: ${error}`); // eslint-disable-line no-console

@@ -23,7 +23,8 @@ describe('list', () => {
       keycloakId: 'keycloakId',
       lastName: 'lastName',
       search: 'search',
-      username: 'username'
+      username: 'username',
+      idpCode: 'idp'
     };
 
     await service.list(params);
@@ -32,8 +33,9 @@ describe('list', () => {
     expect(MockModel.query).toHaveBeenCalledWith();
     expect(MockModel.skipUndefined).toHaveBeenCalledTimes(1);
     expect(MockModel.skipUndefined).toHaveBeenCalledWith();
-    expect(MockModel.modify).toHaveBeenCalledTimes(8);
+    expect(MockModel.modify).toHaveBeenCalledTimes(9);
     expect(MockModel.modify).toHaveBeenCalledWith('filterKeycloakId', params.keycloakId);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterIdpCode', params.idpCode);
     expect(MockModel.modify).toHaveBeenCalledWith('filterUsername', params.username);
     expect(MockModel.modify).toHaveBeenCalledWith('filterFullName', params.fullName);
     expect(MockModel.modify).toHaveBeenCalledWith('filterFirstName', params.firstName);

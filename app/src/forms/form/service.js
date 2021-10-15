@@ -158,7 +158,7 @@ const service = {
     }
   },
 
-  readForm: async (formId, params = {}) => {
+  readForm: (formId, params = {}) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
       .findById(formId)
@@ -169,19 +169,35 @@ const service = {
       .throwIfNotFound();
   },
 
-  readPublishedForm: async (formId, params = {}) => {
+  readFormOptions: (formId, params = {}) => {
     params = queryUtils.defaultActiveOnly(params);
-    const form = await Form.query()
+    return Form.query()
+      .findById(formId)
+      .modify('filterActive', params.active)
+      .select(['id', 'name', 'description'])
+      .allowGraph('[idpHints]')
+      .withGraphFetched('idpHints')
+      .throwIfNotFound()
+      .then(form => {
+        form.idpHints = form.idpHints.map(idp => idp.code);
+        return form;
+      });
+  },
+
+  readPublishedForm: (formId, params = {}) => {
+    params = queryUtils.defaultActiveOnly(params);
+    return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(onlyPublished)')
-      .throwIfNotFound();
-
-    // there are some configs that we don't want returned here...
-    delete form.submissionReceivedEmails;
-    return form;
+      .throwIfNotFound()
+      .then(form => {
+        // there are some configs that we don't want returned here...
+        delete form.submissionReceivedEmails;
+        return form;
+      });
   },
 
   listFormSubmissions: async (formId, params) => {

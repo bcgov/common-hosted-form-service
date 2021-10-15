@@ -5,9 +5,11 @@
         <h1 class="my-8">401: Unauthorized. :(</h1>
         <p>You do not have permission to access this page.</p>
       </div>
-      <div v-else>
-        <slot />
+      <div v-else-if="idp && identityProvider !== idp" class="text-center">
+        <h1 class="my-8">403: Forbidden. :(</h1>
+        <p>This page requires {{ idp.toUpperCase() }} authentication.</p>
       </div>
+      <slot v-else />
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
@@ -39,7 +41,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'BaseSecure',
@@ -48,11 +50,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    idp: {
+      type: String,
+      default: undefined
+    }
   },
   computed: {
     ...mapGetters('auth', [
       'authenticated',
-      'createLoginUrl',
+      'identityProvider',
       'isAdmin',
       'isUser',
       'keycloakReady',
@@ -63,12 +69,6 @@ export default {
       )}.`;
     },
   },
-  methods: {
-    login() {
-      if (this.keycloakReady) {
-        window.location.replace(this.createLoginUrl({ idpHint: 'idir' }));
-      }
-    },
-  },
+  methods: mapActions('auth', ['login']),
 };
 </script>

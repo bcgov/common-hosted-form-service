@@ -10,26 +10,10 @@ localVue.use(router);
 localVue.use(Vuex);
 
 describe('BaseAuthButton.vue', () => {
-  const { location } = window;
-  const mockReplace = jest.fn(cb => {
-    cb();
-  });
   let store;
 
-  beforeAll(() => {
-    delete window.location;
-    window.location = {
-      replace: mockReplace
-    };
-  });
-
   beforeEach(() => {
-    mockReplace.mockReset();
     store = new Vuex.Store();
-  });
-
-  afterAll(() => {
-    window.location = location;
   });
 
   it('renders nothing when not authenticated and does not hasLogin', () => {
@@ -90,12 +74,15 @@ describe('BaseAuthButton.vue', () => {
   });
 
   it('login button redirects to login url', () => {
+    const mockLogin = jest.fn();
     store.registerModule('auth', {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        createLoginUrl: () => () => 'test',
         keycloakReady: () => true
+      },
+      actions: {
+        login: mockLogin
       }
     });
 
@@ -103,29 +90,28 @@ describe('BaseAuthButton.vue', () => {
     wrapper.vm.login();
 
     expect(wrapper.text()).toMatch('Login');
-    expect(mockReplace).toHaveBeenCalledTimes(1);
+    expect(mockLogin).toHaveBeenCalledTimes(1);
+    expect(mockLogin).toHaveBeenCalledWith(expect.any(Object), undefined);
   });
 
   it('logout button redirects to logout url', () => {
+    const mockLogout = jest.fn();
     store.registerModule('auth', {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        createLogoutUrl: () => () => 'test',
         keycloakReady: () => true
+      },
+      actions: {
+        logout: mockLogout
       }
     });
 
-    const wrapper = shallowMount(BaseAuthButton, {
-      localVue, router, store, mocks: {
-        $config: {
-          basePath: 'test'
-        }
-      }
-    });
+    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store });
     wrapper.vm.logout();
 
     expect(wrapper.text()).toMatch('Logout');
-    expect(mockReplace).toHaveBeenCalledTimes(1);
+    expect(mockLogout).toHaveBeenCalledTimes(1);
+    expect(mockLogout).toHaveBeenCalledWith(expect.any(Object), undefined);
   });
 });

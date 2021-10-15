@@ -48,6 +48,16 @@ export default {
   },
 
   /**
+   * @function readFormOptions
+   * Get pre-flight details for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readFormOptions(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/options`);
+  },
+
+  /**
   * @function getStatusCodes
   * Get the statuses that are available to a form
   * @param {string} formId The form identifier
@@ -218,13 +228,13 @@ export default {
   },
 
   /**
-  * @function deleteSubmission
-  * Soft delete a specific submission
-  * @param {string} submissionId The form submission identifier
-  * @returns {Promise} An axios response
-  */
+   * @function deleteSubmission
+   * Soft delete a specific submission
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
   deleteSubmission(submissionId) {
-    return appAxios().delete(`/submissions/${submissionId}`);
+    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionId}`);
   },
 
   /**
@@ -235,17 +245,27 @@ export default {
    * @returns {Promise} An axios response
    */
   updateSubmission(submissionId, requestBody) {
-    return appAxios().put(`/submissions/${submissionId}`, requestBody);
+    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}`, requestBody);
   },
 
   /**
-  * @function getSubmission
-  * Get the form data + version + submission data
-  * @param {string} submissionId The form submission identifier
-  * @returns {Promise} An axios response
-  */
+   * @function getSubmission
+   * Get the form data + version + submission data
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
   getSubmission(submissionId) {
-    return appAxios().get(`/submissions/${submissionId}`);
+    return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}`);
+  },
+
+  /**
+   * @function getSubmissionOptions
+   * Get pre-flight details for a form submission
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
+  getSubmissionOptions(submissionId) {
+    return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/options`);
   },
 
   /**
@@ -266,7 +286,7 @@ export default {
    * @returns {Promise} An axios response
    */
   listSubmissionEdits(submissionId) {
-    return appAxios().get(`/submissions/${submissionId}/edits`);
+    return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/edits`);
   },
 
   /**
@@ -302,7 +322,7 @@ export default {
   * @returns {Promise} An axios response
   */
   getSubmissionNotes(submissionId) {
-    return appAxios().get(`/submissions/${submissionId}/notes`);
+    return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/notes`);
   },
 
   /**
@@ -313,7 +333,7 @@ export default {
   * @returns {Promise} An axios response
   */
   addNote(submissionId, data) {
-    return appAxios().post(`/submissions/${submissionId}/notes`, data);
+    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/notes`, data);
   },
 
   /**
@@ -323,7 +343,7 @@ export default {
   * @returns {Promise} An axios response
   */
   getSubmissionStatuses(submissionId) {
-    return appAxios().get(`/submissions/${submissionId}/status`);
+    return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/status`);
   },
 
   /**
@@ -334,7 +354,7 @@ export default {
   * @returns {Promise} An axios response
   */
   docGen(submissionId, body) {
-    return appAxios().post(`/submissions/${submissionId}/template/render`, body, {
+    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/template/render`, body, {
       responseType: 'arraybuffer', // Needed for binaries unless you want pain
       timeout: 30000, // Override default timeout as this call could take a while
     });
@@ -348,7 +368,7 @@ export default {
   * @returns {Promise} An axios response
   */
   updateSubmissionStatus(submissionId, data) {
-    return appAxios().post(`/submissions/${submissionId}/status`, data);
+    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/status`, data);
   },
 
   //

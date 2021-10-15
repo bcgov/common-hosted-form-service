@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure>
+  <BaseSecure :idp="IDP.IDIR">
     <h1>
       PREVIEW
       <v-tooltip bottom>
@@ -20,6 +20,8 @@
 <script>
 import FormViewer from '@/components/designer/FormViewer.vue';
 
+import { IdentityProviders } from '@/utils/constants';
+
 export default {
   name: 'FormPreview',
   props: {
@@ -30,5 +32,8 @@ export default {
   components: {
     FormViewer,
   },
+  computed: {
+    IDP: () => IdentityProviders,
+  }
 };
 </script>
