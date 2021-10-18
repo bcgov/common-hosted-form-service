@@ -14,8 +14,6 @@
     <h4>Form Details</h4>
     <pre>{{ formDetails }}</pre>
 
-    <AdminVersions />
-
     <div v-if="apiKey">
       <h4>API Key Details</h4>
       <pre>{{ apiKey }}</pre>
@@ -23,6 +21,9 @@
         <span>Delete API Key</span>
       </v-btn>
     </div>
+
+    <br />
+    <AdminVersions />
 
     <BaseDialog
       v-model="showRestoreDialog"
