@@ -12,7 +12,9 @@
     </div>
 
     <h4>Form Details</h4>
-    <pre>{{ form }}</pre>
+    <pre>{{ formDetails }}</pre>
+
+    <AdminVersions />
 
     <div v-if="apiKey">
       <h4>API Key Details</h4>
@@ -60,9 +62,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import AdminVersions from './AdminVersions.vue';
 
 export default {
   name: 'AdministerForm',
+  components: { AdminVersions },
   props: {
     formId: {
       type: String,
@@ -74,6 +78,7 @@ export default {
       showRestoreDialog: false,
       restoreInProgress: false,
       showDeleteDialog: false,
+      formDetails: {},
     };
   },
   computed: {
@@ -97,9 +102,12 @@ export default {
       this.showRestoreDialog = false;
     },
   },
-  mounted() {
-    this.readForm(this.formId);
+  async mounted() {
+    await this.readForm(this.formId);
     this.readApiDetails(this.formId);
+
+    this.formDetails = this.form;
+    delete this.formDetails.versions;
   },
 };
 </script>

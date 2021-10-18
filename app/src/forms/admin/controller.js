@@ -1,5 +1,5 @@
 const service = require('./service');
-const formService = require('../../../../app/src/forms/form/service.js');
+const formService = require('../form/service');
 
 module.exports = {
   //
@@ -23,7 +23,7 @@ module.exports = {
   },
   readForm:  async (req, res, next) => {
     try {
-      const response = await service.readForm(req.params.formId);
+      const response = await formService.readForm(req.params.formId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
