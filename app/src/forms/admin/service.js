@@ -1,4 +1,4 @@
-const { Form, FormVersionDraft, User, UserFormAccess } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const service = {
@@ -18,9 +18,9 @@ const service = {
       .modify('orderNameAscending');
   },
 
-  readDraft: async (formVersionDraftId) => {
-    return FormVersionDraft.query()
-      .findById(formVersionDraftId)
+  readVersion: (formVersionId) => {
+    return FormVersion.query()
+      .findById(formVersionId)
       .throwIfNotFound();
   },
 

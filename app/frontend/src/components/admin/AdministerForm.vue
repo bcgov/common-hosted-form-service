@@ -13,15 +13,15 @@
 
     <v-container>
       <v-row no-gutters>
-        <v-col cols="6" sm="6">
+        <v-col cols="6">
           <h4>Form Details</h4>
-          <pre>{{ formDetails }}</pre>
+          <vue-json-pretty :data="formDetails"> </vue-json-pretty>
         </v-col>
 
-        <v-col cols="6" sm="6">
+        <v-col cols="6">
           <div v-if="apiKey">
             <h4>API Key Details</h4>
-            <pre>{{ apiKey }}</pre>
+            <vue-json-pretty :data="apiKey"> </vue-json-pretty>
             <v-btn color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
               <span>Delete API Key</span>
             </v-btn>
@@ -30,6 +30,7 @@
       </v-row>
     </v-container>
 
+    <h4>Form Versions</h4>
     <AdminVersions v-if="form.active" />
 
     <BaseDialog
@@ -72,9 +73,15 @@
 import { mapActions, mapGetters } from 'vuex';
 import AdminVersions from './AdminVersions.vue';
 
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
+
 export default {
   name: 'AdministerForm',
-  components: { AdminVersions },
+  components: {
+    AdminVersions,
+    VueJsonPretty
+  },
   props: {
     formId: {
       type: String,
