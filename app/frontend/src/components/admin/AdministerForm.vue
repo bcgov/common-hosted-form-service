@@ -11,19 +11,26 @@
       </v-btn>
     </div>
 
-    <h4>Form Details</h4>
-    <pre>{{ formDetails }}</pre>
+    <v-container>
+      <v-row no-gutters>
+        <v-col cols="6" sm="6">
+          <h4>Form Details</h4>
+          <pre>{{ formDetails }}</pre>
+        </v-col>
 
-    <div v-if="apiKey">
-      <h4>API Key Details</h4>
-      <pre>{{ apiKey }}</pre>
-      <v-btn color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
-        <span>Delete API Key</span>
-      </v-btn>
-    </div>
+        <v-col cols="6" sm="6">
+          <div v-if="apiKey">
+            <h4>API Key Details</h4>
+            <pre>{{ apiKey }}</pre>
+            <v-btn color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
+              <span>Delete API Key</span>
+            </v-btn>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
 
-    <br />
-    <AdminVersions />
+    <AdminVersions v-if="form.active" />
 
     <BaseDialog
       v-model="showRestoreDialog"
@@ -104,8 +111,10 @@ export default {
     },
   },
   async mounted() {
-    await this.readForm(this.formId);
-    this.readApiDetails(this.formId);
+    await Promise.all([
+      this.readForm(this.formId),
+      this.readApiDetails(this.formId)
+    ]);
 
     this.formDetails = this.form;
     delete this.formDetails.versions;

@@ -56,6 +56,17 @@ export default {
     return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/restore`);
   },
 
+  /**
+   * @function readDraft
+   * Get a specific draft for a form
+   * @param {string} formId The form uuid
+   * @param {string} formVersionDraftId The draft uuid
+   * @returns {Promise} An axios response
+   */
+  readDraft(formId, formVersionDraftId) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`);
+  },
+
   //
   // User calls
   //

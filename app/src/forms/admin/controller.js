@@ -21,6 +21,14 @@ module.exports = {
       next(error);
     }
   },
+  readDraft: async (req, res, next) => {
+    try {
+      const response = await service.readDraft(req.params.formVersionDraftId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   readForm:  async (req, res, next) => {
     try {
       const response = await formService.readForm(req.params.formId);
