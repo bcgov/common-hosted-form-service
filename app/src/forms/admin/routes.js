@@ -15,6 +15,10 @@ routes.use(currentUser);
 // As such, this should ALWAYS remain under the :admin role check and that KC role should not be given out
 // other than to people who have permission to read all data
 
+routes.get('/forms/:formId/drafts/:formVersionDraftId', async (req, res, next) => {
+  await controller.readDraft(req, res, next);
+});
+
 //
 // Forms
 //

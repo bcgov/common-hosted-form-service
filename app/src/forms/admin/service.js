@@ -1,4 +1,4 @@
-const { Form, User, UserFormAccess } = require('../common/models');
+const { Form, FormVersionDraft, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const service = {
@@ -16,6 +16,12 @@ const service = {
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .modify('orderNameAscending');
+  },
+
+  readDraft: async (formVersionDraftId) => {
+    return FormVersionDraft.query()
+      .findById(formVersionDraftId)
+      .throwIfNotFound();
   },
 
   readForm: async (formId) => {
