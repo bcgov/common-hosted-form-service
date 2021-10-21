@@ -57,14 +57,14 @@ export default {
   },
 
   /**
-   * @function readDraft
-   * Get a specific draft for a form
+   * @function readVersion
+   * Get a specific form version schema
    * @param {string} formId The form uuid
-   * @param {string} formVersionDraftId The draft uuid
+   * @param {string} formVersionId The form version uuid
    * @returns {Promise} An axios response
    */
-  readDraft(formId, formVersionDraftId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`);
+  readVersion(formId, formVersionId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
   },
 
   //

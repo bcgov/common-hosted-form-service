@@ -1,6 +1,5 @@
 <template>
   <v-data-table
-    :key="rerenderTable"
     class="submissions-table"
     :headers="headers"
     :items="versionList"
@@ -110,10 +109,6 @@ export default {
         version: '',
         id: '',
       },
-      showHasDraftsDialog: false,
-      showPublishDialog: false,
-      showDeleteDraftDialog: false,
-      rerenderTable: 0,
     };
   },
   computed: {
@@ -151,7 +146,7 @@ export default {
 
     async getFormSchema(id) {
       try {
-        let res = await adminService.readDraft(this.form.id, id);
+        const res = await adminService.readVersion(this.form.id, id);
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({

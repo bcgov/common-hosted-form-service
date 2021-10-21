@@ -29,9 +29,9 @@ module.exports = {
       next(error);
     }
   },
-  readForm:  async (req, res, next) => {
+  readVersion: async (req, res, next) => {
     try {
-      const response = await formService.readForm(req.params.formId);
+      const response = await service.readVersion(req.params.formVersionId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
