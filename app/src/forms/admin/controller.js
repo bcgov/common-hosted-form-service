@@ -31,7 +31,7 @@ module.exports = {
   },
   readForm: async (req, res, next) => {
     try {
-      const response = await service.readForm(req.params.formId, req.query);
+      const response = await formService.readForm(req.params.formId);
       res.status(200).json(response);
     } catch (error) {
       next(error);

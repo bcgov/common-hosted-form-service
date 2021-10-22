@@ -22,7 +22,7 @@
           <div v-if="apiKey">
             <h4>API Key Details</h4>
             <vue-json-pretty :data="apiKey"> </vue-json-pretty>
-            <v-btn color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
+            <v-btn class="mt-6" color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
               <span>Delete API Key</span>
             </v-btn>
           </div>
@@ -74,7 +74,6 @@ import { mapActions, mapGetters } from 'vuex';
 import AdminVersions from './AdminVersions.vue';
 
 import VueJsonPretty from 'vue-json-pretty';
-import 'vue-json-pretty/lib/styles.css';
 
 export default {
   name: 'AdministerForm',

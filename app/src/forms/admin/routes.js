@@ -15,10 +15,6 @@ routes.use(currentUser);
 // As such, this should ALWAYS remain under the :admin role check and that KC role should not be given out
 // other than to people who have permission to read all data
 
-routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
-  await controller.readVersion(req, res, next);
-});
-
 //
 // Forms
 //
@@ -40,6 +36,10 @@ routes.get('/forms/:formId/apiKey', async (req, res, next) => {
 
 routes.put('/forms/:formId/restore', async (req, res, next) => {
   await controller.restoreForm(req, res, next);
+});
+
+routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
+  await controller.readVersion(req, res, next);
 });
 
 routes.get('/formusers', async (req, res, next) => {
