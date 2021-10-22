@@ -33,7 +33,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readForm(formId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}`);
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}`);
   },
 
   /**
@@ -64,7 +64,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readVersion(formId, formVersionId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
   },
 
   //
