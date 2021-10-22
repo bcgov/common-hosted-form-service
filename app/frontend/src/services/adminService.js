@@ -33,7 +33,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readForm(formId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}`);
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}`);
   },
 
   /**
