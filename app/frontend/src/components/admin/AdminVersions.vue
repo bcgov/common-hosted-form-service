@@ -6,40 +6,12 @@
   >
     <!-- Version  -->
     <template #[`item.version`]="{ item }">
-      <router-link
-        :to="
-          item.isDraft
-            ? { name: 'FormPreview', query: { f: item.formId, d: item.id } }
-            : { name: 'FormPreview', query: { f: item.formId, v: item.id } }
-        "
-        class="mx-5"
-        target="_blank"
-      >
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <span v-bind="attrs" v-on="on">
-              Version {{ item.version }}
-              <v-chip
-                v-if="item.isDraft"
-                color="secondary"
-                class="mb-5 px-1"
-                x-small
-                text-color="black"
-              >
-                Draft
-              </v-chip>
-            </span>
-          </template>
-          <span>
-            Click to preview
-            <v-icon>open_in_new</v-icon>
-          </span>
-        </v-tooltip>
-      </router-link>
+      <span>
+        Version {{ item.version }}
+      </span>
     </template>
 
     <!-- Status  -->
-
     <template #[`item.status`]="{ item }">
       <label>{{ item.published ? 'Published' : 'Unpublished' }}</label>
     </template>
@@ -119,7 +91,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('admin', ['readForm', 'restoreForm']),
+    ...mapActions('admin', ['restoreForm']),
 
     // ----------------------------------------------------------------------/ Publish/unpublish actions
     async onExportClick(id, isDraft) {
