@@ -1,4 +1,5 @@
 const config = require('config');
+const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
 
 const { FileStorage } = require('../common/models');
@@ -9,6 +10,11 @@ const PERMANENT_STORAGE = config.get('files.permanent');
 const service = {
 
   create: async (data, currentUser) => {
+    // you can't do this if you are not authenticated as a USER
+    if (!currentUser || !currentUser.keycloakId) {
+      throw new Problem(403, { detail: 'Invalid authorization credentials.' });
+    }
+
     let trx;
     try {
       trx = await FileStorage.startTransaction();
