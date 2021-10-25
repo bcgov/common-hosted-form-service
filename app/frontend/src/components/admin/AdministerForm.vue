@@ -15,13 +15,13 @@
       <v-row no-gutters>
         <v-col cols="6">
           <h4>Form Details</h4>
-          <vue-json-pretty :data="formDetails"> </vue-json-pretty>
+          <vue-json-pretty :data="formDetails" />
         </v-col>
 
         <v-col cols="6">
           <div v-if="apiKey">
             <h4>API Key Details</h4>
-            <vue-json-pretty :data="apiKey"> </vue-json-pretty>
+            <vue-json-pretty :data="apiKey" />
             <v-btn class="mt-6" color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
               <span>Delete API Key</span>
             </v-btn>
@@ -30,8 +30,10 @@
       </v-row>
     </v-container>
 
-    <h4>Form Versions</h4>
-    <AdminVersions v-if="form.active" />
+    <div v-if="form.active">
+      <h4>Form Versions</h4>
+      <AdminVersions />
+    </div>
 
     <BaseDialog
       v-model="showRestoreDialog"
