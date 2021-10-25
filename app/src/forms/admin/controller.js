@@ -1,5 +1,5 @@
 const service = require('./service');
-const formService = require('../../../../app/src/forms/form/service.js');
+const formService = require('../form/service');
 
 module.exports = {
   //
@@ -21,9 +21,25 @@ module.exports = {
       next(error);
     }
   },
-  readForm:  async (req, res, next) => {
+  readDraft: async (req, res, next) => {
+    try {
+      const response = await service.readDraft(req.params.formVersionDraftId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  readForm: async (req, res, next) => {
     try {
       const response = await service.readForm(req.params.formId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  readVersion: async (req, res, next) => {
+    try {
+      const response = await service.readVersion(req.params.formVersionId);
       res.status(200).json(response);
     } catch (error) {
       next(error);

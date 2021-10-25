@@ -7,10 +7,12 @@ localVue.use(Vuex);
 
 describe('AdministerForm.vue', () => {
   const mockAdminGetter = jest.fn();
+  const mockApiKey = jest.fn();
   let store;
   const actions = {
     readForm: jest.fn(),
-    restoreForm: jest.fn()
+    restoreForm: jest.fn(),
+    readApiDetails: jest.fn(),
   };
 
   beforeEach(() => {
@@ -19,6 +21,7 @@ describe('AdministerForm.vue', () => {
         admin: {
           namespaced: true,
           getters: {
+            apiKey: mockApiKey,
             form: mockAdminGetter
           },
           actions: actions
@@ -39,7 +42,7 @@ describe('AdministerForm.vue', () => {
       localVue,
       store,
       propsData: { formId: 'f' },
-      stubs: ['BaseDialog']
+      stubs: ['BaseDialog', 'AdminVersions', 'VueJsonPretty']
     });
     await localVue.nextTick();
 
