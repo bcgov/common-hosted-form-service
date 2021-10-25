@@ -39,7 +39,7 @@ const currentUser = async (req, res, next) => {
 const hasFormPermissions = (permissions) => {
   return (req, res, next) => {
     // Skip permission checks if requesting as API entity
-    if(req.apiUser) {
+    if (req.apiUser) {
       return next();
     }
 

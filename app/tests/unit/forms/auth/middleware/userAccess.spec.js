@@ -301,6 +301,20 @@ describe('hasFormPermissions', () => {
     expect(nxt).toHaveBeenCalledWith();
   });
 
+  it('moves on if a valid API key user has already been set', async () => {
+    const mw = hasFormPermissions(['abc']);
+    const nxt = jest.fn();
+    const req = {
+      apiUser: {
+        formId: '123',
+      }
+    };
+
+    mw(req, testRes, nxt);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
+
 });
 
 describe('hasSubmissionPermissions', () => {
