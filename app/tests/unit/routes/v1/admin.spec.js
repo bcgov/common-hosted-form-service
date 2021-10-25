@@ -26,7 +26,6 @@ userAccess.currentUser = jest.fn((req, res, next) => {
 //
 const service = require('../../../../src/forms/admin/service');
 const userService = require('../../../../src/forms/user/service');
-const formService = require('../../../../src/forms/form/service');
 
 //
 // mocks are in place, create the router
@@ -79,7 +78,7 @@ describe(`GET ${basePath}/forms/formId`, () => {
 
   it('should return 200', async () => {
     // mock a success return value...
-    formService.readForm = jest.fn().mockReturnValue([]);
+    service.readForm = jest.fn().mockReturnValue([]);
 
     const response = await request(app).get(`${basePath}/forms/formId`);
 
@@ -89,7 +88,7 @@ describe(`GET ${basePath}/forms/formId`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    formService.readForm = jest.fn(() => { throw new Problem(401); });
+    service.readForm = jest.fn(() => { throw new Problem(401); });
 
     const response = await request(app).get(`${basePath}/forms/formId`);
 
@@ -99,7 +98,7 @@ describe(`GET ${basePath}/forms/formId`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    formService.readForm = jest.fn(() => { throw new Error(); });
+    service.readForm = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).get(`${basePath}/forms/formId`);
 

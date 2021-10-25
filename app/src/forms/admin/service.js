@@ -27,6 +27,8 @@ const service = {
   readForm: async (formId) => {
     return Form.query()
       .findById(formId)
+      .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
   },
 
