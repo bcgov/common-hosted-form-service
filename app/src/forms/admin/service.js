@@ -1,4 +1,4 @@
-const { Form, User, UserFormAccess } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const service = {
@@ -18,9 +18,17 @@ const service = {
       .modify('orderNameAscending');
   },
 
+  readVersion: (formVersionId) => {
+    return FormVersion.query()
+      .findById(formVersionId)
+      .throwIfNotFound();
+  },
+
   readForm: async (formId) => {
     return Form.query()
       .findById(formId)
+      .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
   },
 

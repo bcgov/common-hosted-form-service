@@ -56,6 +56,17 @@ export default {
     return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/restore`);
   },
 
+  /**
+   * @function readVersion
+   * Get a specific form version schema
+   * @param {string} formId The form uuid
+   * @param {string} formVersionId The form version uuid
+   * @returns {Promise} An axios response
+   */
+  readVersion(formId, formVersionId) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
+  },
+
   //
   // User calls
   //

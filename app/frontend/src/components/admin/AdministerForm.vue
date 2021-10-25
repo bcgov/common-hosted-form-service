@@ -11,15 +11,28 @@
       </v-btn>
     </div>
 
-    <h4>Form Details</h4>
-    <pre>{{ form }}</pre>
+    <v-container>
+      <v-row no-gutters>
+        <v-col cols="6">
+          <h4>Form Details</h4>
+          <vue-json-pretty :data="formDetails" />
+        </v-col>
 
-    <div v-if="apiKey">
-      <h4>API Key Details</h4>
-      <pre>{{ apiKey }}</pre>
-      <v-btn color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
-        <span>Delete API Key</span>
-      </v-btn>
+        <v-col cols="6">
+          <div v-if="apiKey">
+            <h4>API Key Details</h4>
+            <vue-json-pretty :data="apiKey" />
+            <v-btn class="mt-6" color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
+              <span>Delete API Key</span>
+            </v-btn>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <div v-if="form.active">
+      <h4>Form Versions</h4>
+      <AdminVersions />
     </div>
 
     <BaseDialog
@@ -60,9 +73,16 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import AdminVersions from './AdminVersions.vue';
+
+import VueJsonPretty from 'vue-json-pretty';
 
 export default {
   name: 'AdministerForm',
+  components: {
+    AdminVersions,
+    VueJsonPretty
+  },
   props: {
     formId: {
       type: String,
@@ -74,6 +94,7 @@ export default {
       showRestoreDialog: false,
       restoreInProgress: false,
       showDeleteDialog: false,
+      formDetails: {},
     };
   },
   computed: {
@@ -97,9 +118,14 @@ export default {
       this.showRestoreDialog = false;
     },
   },
-  mounted() {
-    this.readForm(this.formId);
-    this.readApiDetails(this.formId);
+  async mounted() {
+    await Promise.all([
+      this.readForm(this.formId),
+      this.readApiDetails(this.formId)
+    ]);
+
+    this.formDetails = this.form;
+    delete this.formDetails.versions;
   },
 };
 </script>

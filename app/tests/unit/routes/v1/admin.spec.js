@@ -27,7 +27,6 @@ userAccess.currentUser = jest.fn((req, res, next) => {
 const service = require('../../../../src/forms/admin/service');
 const userService = require('../../../../src/forms/user/service');
 
-
 //
 // mocks are in place, create the router
 //
