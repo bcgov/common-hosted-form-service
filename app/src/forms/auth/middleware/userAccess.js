@@ -137,4 +137,3 @@ const hasSubmissionPermissions = (permissions) => {
 module.exports = {
   currentUser, hasFormPermissions, hasSubmissionPermissions
 };
-
