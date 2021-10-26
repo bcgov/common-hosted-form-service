@@ -261,5 +261,6 @@ describe('hasFilePermissions', () => {
     mw(req, testRes, nxt);
     expect(subPermSpy).toHaveBeenCalledTimes(1);
     expect(subPermSpy).toHaveBeenCalledWith(perm);
+    expect(nxt).toHaveBeenCalledTimes(0);
   });
 });
