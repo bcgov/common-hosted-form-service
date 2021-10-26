@@ -1,7 +1,7 @@
 version: "2"
 exclude_patterns:
   - config/
-  - db/
+  - "**/db/"
   - dist/
   - features/
   - "**/node_modules/"
@@ -51,3 +51,13 @@ plugins:
     enabled: true
   sass-lint:
     enabled: true
+checks:
+  method-complexity:
+    config:
+      threshold: 6
+  method-lines:
+    config:
+      threshold: 40
+  file-lines:
+    config:
+      threshold: 500
