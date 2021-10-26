@@ -236,7 +236,7 @@ export default function getRouter(basePath = '/') {
             component: () => import(/* webpackChunkName: "userforms" */ '@/views/user/Forms.vue'),
             meta: {
               breadcrumbTitle: 'My Forms',
-              requiresAuth: true
+              requiresAuth: IdentityProviders.IDIR
             }
           },
           {
