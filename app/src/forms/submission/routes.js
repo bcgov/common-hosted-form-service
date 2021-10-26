@@ -1,9 +1,8 @@
 const routes = require('express').Router();
 
 const controller = require('./controller');
-const currentUser = require('../auth/middleware/userAccess').currentUser;
-const hasSubmissionPermissions = require('../auth/middleware/userAccess').hasSubmissionPermissions;
 const P = require('../common/constants').Permissions;
+const { currentUser, hasSubmissionPermissions } = require('../auth/middleware/userAccess');
 
 routes.use(currentUser);
 

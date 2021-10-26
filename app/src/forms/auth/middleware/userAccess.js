@@ -36,32 +36,6 @@ const currentUser = async (req, res, next) => {
   return setUser(req, res, next);
 };
 
-const validateRequest = (req, res) => {
-  if (!req.currentUser) {
-    // cannot find the currentUser... guess we don't have access... FAIL!
-    return new Problem(401, { detail: 'Current user not found on request.' }).send(res);
-  }
-  // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
-  const formId = req.params.formId || req.query.formId;
-  if (!formId) {
-    // No form provided to this route that secures based on form... that's a problem!
-    return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
-  }
-  let form = req.currentUser.forms.find(f => f.formId === formId);
-  if (!form) {
-    // check deleted... (this allows 404 on other queries later)
-    if (req.currentUser.deletedForms) {
-      form = req.currentUser.deletedForms.find(f => f.formId === formId);
-    }
-    if (!form) {
-      // cannot find the form... guess we don't have access... FAIL!
-      return new Problem(401, { detail: 'Current user has no access to form.' }).send(res);
-    }
-  }
-
-  return form;
-};
-
 const hasFormPermissions = (permissions) => {
   return (req, res, next) => {
     // Skip permission checks if requesting as API entity
@@ -69,42 +43,42 @@ const hasFormPermissions = (permissions) => {
       return next();
     }
 
-    const form = validateRequest(req, res);
-
-    if (form) {
-      if (!Array.isArray(permissions)) {
-        permissions = [permissions];
+    if (!req.currentUser) {
+      // cannot find the currentUser... guess we don't have access... FAIL!
+      return new Problem(401, { detail: 'Current user not found on request.' }).send(res);
+    }
+    // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
+    const formId = req.params.formId || req.query.formId;
+    if (!formId) {
+      // No form provided to this route that secures based on form... that's a problem!
+      return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
+    }
+    let form = req.currentUser.forms.find(f => f.formId === formId);
+    if (!form) {
+      // check deleted... (this allows 404 on other queries later)
+      if (req.currentUser.deletedForms) {
+        form = req.currentUser.deletedForms.find(f => f.formId === formId);
       }
-
-      const intersection = permissions.filter(p => {
-        return form.permissions.includes(p);
-      });
-
-      if (intersection.length !== permissions.length) {
-        return new Problem(401, { detail: 'Current user does not have required permission(s) on form' }).send(res);
-      } else {
-        return next();
+      if (!form) {
+        // cannot find the form... guess we don't have access... FAIL!
+        return new Problem(401, { detail: 'Current user has no access to form.' }).send(res);
       }
     }
+
+    if (!Array.isArray(permissions)) {
+      permissions = [permissions];
+    }
+
+    const intersection = permissions.filter(p => {
+      return form.permissions.includes(p);
+    });
+
+    if (intersection.length !== permissions.length) {
+      return new Problem(401, { detail: 'Current user does not have required permission(s) on form' }).send(res);
+    } else {
+      return next();
+    }
   };
-};
-
-const validateSubmission = async (req, next) => {
-  // Get the provided submission ID whether in a param or query (precedence to param)
-  const submissionId = req.params.formSubmissionId || req.query.formSubmissionId;
-  if (!submissionId) {
-    // No submission provided to this route that secures based on form... that's a problem!
-    return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
-  }
-
-  // Get the submission results so we know what form this submission is for
-  const submissionForm = await service.getSubmissionForm(submissionId);
-  // Deleted submissions are inaccessible
-  if (submissionForm.submission.deleted) {
-    return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
-  }
-
-  return { submissionId, submissionForm };
 };
 
 const hasSubmissionPermissions = (permissions) => {
@@ -113,41 +87,53 @@ const hasSubmissionPermissions = (permissions) => {
       permissions = [permissions];
     }
 
-    // TODO: consider whether DRAFT submissions are restricted as deleted above
-    const submission = await validateSubmission(req, next);
+    // Get the provided submission ID whether in a param or query (precedence to param)
+    const submissionId = req.params.formSubmissionId || req.query.formSubmissionId;
+    if (!submissionId) {
+      // No submission provided to this route that secures based on form... that's a problem!
+      return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
+    }
 
-    if (submission) {
-      // Public (annonymous) forms are publicly viewable
-      const publicAllowed = submission.submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
-      if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
-        return next();
-      }
+    // Get the submission results so we know what form this submission is for
+    const submissionForm = await service.getSubmissionForm(submissionId);
 
-      // Does the user have permissions for this submission due to their FORM permissions
-      if (req.currentUser) {
-        let formFromCurrentUser = req.currentUser.forms.find(f => f.formId === submission.submissionForm.form.id);
-        if (formFromCurrentUser) {
-
-          // Do they have the submission permissions being requested on this FORM
-          const intersection = permissions.filter(p => {
-            return formFromCurrentUser.permissions.includes(p);
-          });
-          if (intersection.length === permissions.length) {
-            return next();
-          }
-        }
-      }
-
-      // check against the submission level permissions assigned to the user...
-      const submissionPermission = await service.checkSubmissionPermission(req.currentUser, submission.submissionId, permissions);
-      if (submissionPermission) return next();
-
-      // no access to this submission...
+    // Deleted submissions are inaccessible
+    if (submissionForm.submission.deleted) {
       return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
     }
+
+    // TODO: consider whether DRAFT submissions are restricted as deleted above
+
+    // Public (annonymous) forms are publicly viewable
+    const publicAllowed = submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
+    if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
+      return next();
+    }
+
+    // Does the user have permissions for this submission due to their FORM permissions
+    if (req.currentUser) {
+      let formFromCurrentUser = req.currentUser.forms.find(f => f.formId === submissionForm.form.id);
+      if (formFromCurrentUser) {
+
+        // Do they have the submission permissions being requested on this FORM
+        const intersection = permissions.filter(p => {
+          return formFromCurrentUser.permissions.includes(p);
+        });
+        if (intersection.length === permissions.length) {
+          return next();
+        }
+      }
+    }
+
+    // check against the submission level permissions assigned to the user...
+    const submissionPermission = await service.checkSubmissionPermission(req.currentUser, submissionId, permissions);
+    if (submissionPermission) return next();
+
+    // no access to this submission...
+    return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
   };
 };
 
-module.exports.currentUser = currentUser;
-module.exports.hasFormPermissions = hasFormPermissions;
-module.exports.hasSubmissionPermissions = hasSubmissionPermissions;
+module.exports = {
+  currentUser, hasFormPermissions, hasSubmissionPermissions
+};

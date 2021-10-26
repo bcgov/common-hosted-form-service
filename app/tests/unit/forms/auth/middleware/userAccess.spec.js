@@ -1,6 +1,4 @@
-const currentUser = require('../../../../../src/forms/auth/middleware/userAccess').currentUser;
-const hasFormPermissions = require('../../../../../src/forms/auth/middleware/userAccess').hasFormPermissions;
-const hasSubmissionPermissions = require('../../../../../src/forms/auth/middleware/userAccess').hasSubmissionPermissions;
+const { currentUser, hasFormPermissions, hasSubmissionPermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
 const keycloak = require('../../../../../src/components/keycloak');
 const Problem = require('api-problem');
 const service = require('../../../../../src/forms/auth/service');
@@ -293,6 +291,20 @@ describe('hasFormPermissions', () => {
       },
       params: {
         formId: '123'
+      }
+    };
+
+    mw(req, testRes, nxt);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
+
+  it('moves on if a valid API key user has already been set', async () => {
+    const mw = hasFormPermissions(['abc']);
+    const nxt = jest.fn();
+    const req = {
+      apiUser: {
+        formId: '123',
       }
     };
 

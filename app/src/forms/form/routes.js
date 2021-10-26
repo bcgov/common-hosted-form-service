@@ -2,8 +2,7 @@ const config = require('config');
 const routes = require('express').Router();
 
 const apiAccess = require('../auth/middleware/apiAccess');
-const currentUser = require('../auth/middleware/userAccess').currentUser;
-const hasFormPermissions = require('../auth/middleware/userAccess').hasFormPermissions;
+const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 
 const keycloak = require('../../components/keycloak');
