@@ -1,8 +1,6 @@
 const Problem = require('api-problem');
 
-const currentFileRecord = require('../../../../../src/forms/file/middleware/filePermissions').currentFileRecord;
-const hasFileCreate = require('../../../../../src/forms/file/middleware/filePermissions').hasFileCreate;
-const hasFilePermissions = require('../../../../../src/forms/file/middleware/filePermissions').hasFilePermissions;
+const { currentFileRecord, hasFileCreate, hasFilePermissions } = require('../../../../../src/forms/file/middleware/filePermissions');
 const service = require('../../../../../src/forms/file/service');
 const userAccess = require('../../../../../src/forms/auth/middleware/userAccess');
 
