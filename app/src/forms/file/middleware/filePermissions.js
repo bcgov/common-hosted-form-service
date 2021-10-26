@@ -25,6 +25,16 @@ const currentFileRecord = async (req, res, next) => {
   next();
 };
 
+// Middleware to determine if this user can upload a file to the system
+const hasFileCreate = (req, res, next) => {
+  // You can't do this if you are not authenticated as a USER (not a public user)
+  // Can expand on this for API key access if ever needed
+  if (!req.currentUser || !req.currentUser.keycloakId) {
+    return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
+  }
+  next();
+};
+
 // Middleware to determine if the current user can do a specific permission on a file
 // This is generally based on the SUBMISSION permissions that the file is attached to
 // but has to handle management for files that are added before submit
@@ -51,16 +61,6 @@ const hasFilePermissions = (permissions) => {
   };
 };
 
-// Middleware to determine if this user can upload a file to the system
-const hasFileCreate = (req, res, next) => {
-  // You can't do this if you are not authenticated as a USER (not a public user)
-  // Can expand on this for API key access if ever needed
-  if (!req.currentUser || !req.currentUser.keycloakId) {
-    return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
-  }
-  next();
-};
-
-module.exports.hasFileCreate = hasFileCreate;
 module.exports.currentFileRecord = currentFileRecord;
+module.exports.hasFileCreate = hasFileCreate;
 module.exports.hasFilePermissions = hasFilePermissions;
