@@ -240,4 +240,26 @@ describe('hasFilePermissions', () => {
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith();
   });
+
+  it('returns the result of the submission checking middleware', async () => {
+    // Submission checking middleware is fully tested out in useraccess.spec.js
+    // treat as black box for this testing
+    const mw = hasFilePermissions(perm);
+    const nxt = jest.fn();
+    const req = {
+      query: {},
+      currentUser: {
+        keycloakId: zeroUuid,
+        username: 'jsmith@idir',
+      },
+      currentFileRecord: {
+        formSubmissionId: oneUuid,
+        name: 'unsubmitted file',
+      }
+    };
+
+    mw(req, testRes, nxt);
+    expect(subPermSpy).toHaveBeenCalledTimes(1);
+    expect(subPermSpy).toHaveBeenCalledWith(perm);
+  });
 });

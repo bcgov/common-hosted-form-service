@@ -54,7 +54,7 @@ plugins:
 checks:
   method-complexity:
     config:
-      threshold: 8
+      threshold: 6
   method-lines:
     config:
       threshold: 40

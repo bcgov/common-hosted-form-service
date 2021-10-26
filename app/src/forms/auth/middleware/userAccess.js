@@ -134,6 +134,7 @@ const hasSubmissionPermissions = (permissions) => {
   };
 };
 
-module.exports.currentUser = currentUser;
-module.exports.hasFormPermissions = hasFormPermissions;
-module.exports.hasSubmissionPermissions = hasSubmissionPermissions;
+module.exports = {
+  currentUser, hasFormPermissions, hasSubmissionPermissions
+};
+

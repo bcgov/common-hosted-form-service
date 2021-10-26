@@ -1,6 +1,4 @@
-const currentUser = require('../../../../../src/forms/auth/middleware/userAccess').currentUser;
-const hasFormPermissions = require('../../../../../src/forms/auth/middleware/userAccess').hasFormPermissions;
-const hasSubmissionPermissions = require('../../../../../src/forms/auth/middleware/userAccess').hasSubmissionPermissions;
+const { currentUser, hasFormPermissions, hasSubmissionPermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
 const keycloak = require('../../../../../src/components/keycloak');
 const Problem = require('api-problem');
 const service = require('../../../../../src/forms/auth/service');

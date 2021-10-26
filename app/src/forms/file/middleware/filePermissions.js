@@ -1,10 +1,14 @@
 const Problem = require('api-problem');
 
-const hasSubmissionPermissions = require('../../auth/middleware/userAccess').hasSubmissionPermissions;
+const userAccess = require('../../auth/middleware/userAccess');
 const log = require('../../../components/log')(module.filename);
 const service = require('../service');
 
-// Get the DB record for this file being accessed and store in request for use further down the chain
+/**
+ * @function currentFileRecord
+ * Get the DB record for this file being accessed and store in request for use further down the chain
+ * @returns {Function} a middleware function
+ */
 const currentFileRecord = async (req, res, next) => {
   let fileRecord = undefined;
   try {
@@ -25,7 +29,11 @@ const currentFileRecord = async (req, res, next) => {
   next();
 };
 
-// Middleware to determine if this user can upload a file to the system
+/**
+ * @function hasFileCreate
+ * Middleware to determine if this user can upload a file to the system
+ * @returns {Function} a middleware function
+ */
 const hasFileCreate = (req, res, next) => {
   // You can't do this if you are not authenticated as a USER (not a public user)
   // Can expand on this for API key access if ever needed
@@ -35,11 +43,16 @@ const hasFileCreate = (req, res, next) => {
   next();
 };
 
-// Middleware to determine if the current user can do a specific permission on a file
-// This is generally based on the SUBMISSION permissions that the file is attached to
-// but has to handle management for files that are added before submit
+/**
+ * @function hasFilePermissions
+ * Middleware to determine if the current user can do a specific permission on a file
+ * This is generally based on the SUBMISSION permissions that the file is attached to
+ * but has to handle management for files that are added before submit
+ * @param {string} permissions the permission to require on this route
+ * @returns {Function} a middleware function
+ */
 const hasFilePermissions = (permissions) => {
-  return async (req, _res, next) => {
+  return async (req, res, next) => {
     // Gaurd against unauthed (or public) users
     if (!req.currentUser || !req.currentUser.keycloakId) {
       return next(new Problem(403, { detail: 'Unauthorized to read file' }));
@@ -53,14 +66,14 @@ const hasFilePermissions = (permissions) => {
       req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
 
       // Trigger submission permission checker
-      const subPermCheck = hasSubmissionPermissions(permissions);
-      return subPermCheck(req, _res, next);
+      const subPermCheck = userAccess.hasSubmissionPermissions(permissions);
+      return subPermCheck(req, res, next);
     }
 
     next();
   };
 };
 
-module.exports.currentFileRecord = currentFileRecord;
-module.exports.hasFileCreate = hasFileCreate;
-module.exports.hasFilePermissions = hasFilePermissions;
+module.exports = {
+  currentFileRecord, hasFileCreate, hasFilePermissions
+};
