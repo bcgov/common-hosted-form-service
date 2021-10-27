@@ -22,7 +22,7 @@ const service = {
       const obj = {
         id: uuidv4(),
         keycloakId: data.keycloakId,
-        username: data.username,
+        username: `${data.username}@${data.idp}`,
         fullName: data.fullName,
         email: data.email,
         firstName: data.firstName,
@@ -83,11 +83,15 @@ const service = {
         family_name: lastName,
         sub: keycloakId,
         name: fullName,
-        email } = token.content;
+        email
+      } = token.content;
+
+      const userIdentity = identity ? identity : username;
+      const userIdp = idp ? `${userIdentity}@${idp}` : userIdentity;
 
       return {
         keycloakId: keycloakId,
-        username: identity ? identity : username,
+        username: userIdp,
         firstName: firstName,
         lastName: lastName,
         fullName: fullName,
