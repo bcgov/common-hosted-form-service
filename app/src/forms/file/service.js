@@ -46,7 +46,7 @@ const service = {
   delete: async (id) => {
     let trx;
     try {
-      trx = FileStorage.startTransaction();
+      trx = await FileStorage.startTransaction();
       const obj = await service.read(id);
 
       await FileStorage.query(trx)
