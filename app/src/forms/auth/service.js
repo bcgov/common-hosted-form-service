@@ -19,10 +19,12 @@ const service = {
     try {
       trx = await User.startTransaction();
 
+      const userIdp = data.idp ? `${data.username}@${data.idp}` : data.username;
+
       const obj = {
         id: uuidv4(),
         keycloakId: data.keycloakId,
-        username: `${data.username}@${data.idp}`,
+        username: userIdp,
         fullName: data.fullName,
         email: data.email,
         firstName: data.firstName,
