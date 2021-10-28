@@ -1,8 +1,9 @@
 const { Model } = require('objection');
+const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-class FileStorage extends Model {
+class FileStorage extends Timestamps(Model) {
   static get tableName() {
     return 'file_storage';
   }
