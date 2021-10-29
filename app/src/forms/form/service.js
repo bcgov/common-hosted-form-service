@@ -150,6 +150,11 @@ const service = {
       // for now, only handle a soft delete, we could pass in a param to do a hard delete later
       await Form.query(trx).patchAndFetchById(formId, { active: false, updatedBy: currentUser.username });
 
+      // If there's a current API key, hard delete that
+      if (await service.readApiKey(formId)) {
+        await service.deleteApiKey(formId);
+      }
+
       await trx.commit();
       return await service.readForm(obj.id, { active: false });
     } catch (err) {
