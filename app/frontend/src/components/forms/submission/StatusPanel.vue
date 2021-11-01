@@ -197,7 +197,7 @@ export default {
 
     // State Machine
     showAsignee() {
-      return ['ASSIGNED'].includes(this.statusToSet);
+      return ['ASSIGNED'].includes(this.statusToSet) || ['RETURN TO USER'].includes(this.statusToSet);
     },
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
@@ -254,6 +254,7 @@ export default {
             (sc) => sc.code === this.currentStatus.code
           ).statusCode;
           this.items = this.currentStatus.statusCodeDetail.nextCodes;
+          this.items.push('RETURN TO USER');
         }
       } catch (error) {
         this.addNotification({
