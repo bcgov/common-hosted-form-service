@@ -38,6 +38,7 @@ module.exports = Object.freeze({
     SUBMITTED: 'SUBMITTED',
     ASSIGNED: 'ASSIGNED',
     COMPLETED: 'COMPLETED',
+    REVISING: 'REVISING'
   },
   StorageTypes: {
     UPLOADS: 'uploads',

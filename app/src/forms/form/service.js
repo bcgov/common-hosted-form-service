@@ -90,14 +90,14 @@ const service = {
       };
       await FormVersionDraft.query(trx).insert(draft);
 
-      // Map the status codes to the form
-      // TODO: this is hardcoded to the default submitted->assigned->complete for now
-      // We could make this more dynamic and settable by the user if that feature is required
-      const defaultStatuses = [
-        { id: uuidv4(), formId: obj.id, code: Statuses.SUBMITTED, createdBy: currentUser.usernameIdp },
-        { id: uuidv4(), formId: obj.id, code: Statuses.ASSIGNED, createdBy: currentUser.usernameIdp },
-        { id: uuidv4(), formId: obj.id, code: Statuses.COMPLETED, createdBy: currentUser.usernameIdp }
-      ];
+      // Map all status codes to the form - hardcoded to include all states
+      // TODO: Could make this more dynamic and settable by the user if that feature is required
+      const defaultStatuses = Object.values(Statuses).map((status) => ({
+        id: uuidv4(),
+        formId: obj.id,
+        code: status,
+        createdBy: currentUser.usernameIdp
+      }));
       await FormStatusCode.query(trx).insert(defaultStatuses);
 
       await trx.commit();
