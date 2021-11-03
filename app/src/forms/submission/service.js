@@ -53,18 +53,15 @@ const service = {
     try {
       trx = await FormSubmission.startTransaction();
 
-      // Patch the submission record with the updated changes
-      const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.usernameIdp });
-
       if (!data.draft) {
-        // If there is not a submission status here already (IE we're taking a non-submitted, like a draft, and finalizing to submitted state)
-        // Write a SUBMITTED status
+        // Write a SUBMITTED status only if this is in REVISING state OR is a brand new submission
         const statuses = await FormSubmissionStatus.query()
-          .modify('filterSubmissionId', formSubmissionId);
-        if (!statuses || !statuses.length) {
+          .modify('filterSubmissionId', formSubmissionId)
+          .modify('orderDescending');
+        if (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING) {
           await service._createSubmissionStatus(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser);
-          // If finalizing a draft to submitted, send the submission email (quiet fail if anything goes wrong)
+          // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
+          const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
           emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => { });
         }
 
@@ -75,9 +72,13 @@ const service = {
           .where('formSubmissionId', formSubmissionId)
           .whereIn('permission', [Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE]);
       }
+
+      // Patch the submission record with the updated changes
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
+
       await trx.commit();
-      const result = await service.read(formSubmissionId);
-      return result;
+
+      return await service.read(formSubmissionId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
@@ -192,6 +193,13 @@ const service = {
         actionDate: data.actionDate,
         createdBy: currentUser.usernameIdp
       });
+
+      // Toggle draft flag on submission - force true if revising, false otherwise
+      await FormSubmission.query(trx).patchAndFetchById(submissionId, {
+        draft: data.code === Statuses.REVISING,
+        updatedBy: currentUser.username
+      });
+
       await trx.commit();
 
       return await service.getStatus(submissionId);
@@ -210,8 +218,8 @@ const service = {
   },
 
   // Add a status history for a specific submission
-  createStatus: async (formSubmissionId, data, currentUser) => {
-    return await service._createSubmissionStatus(formSubmissionId, data, currentUser);
+  createStatus: (formSubmissionId, data, currentUser) => {
+    return service._createSubmissionStatus(formSubmissionId, data, currentUser);
   },
   // -------------------------------------------------------------------------------------------------/Notes
 };
