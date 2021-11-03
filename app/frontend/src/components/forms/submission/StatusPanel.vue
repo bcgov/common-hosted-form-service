@@ -28,19 +28,79 @@
             />
 
             <div v-show="statusFields">
+              <div v-if="showRevising">
+                <!-- {{ formReviewers }} -->
+                <label>
+                  Submitter's Email
+                </label>
+                <v-autocomplete
+                  v-model="assignee"
+                  clearable
+                  dense
+                  :filter="autoCompleteFilter"
+                  :items="formReviewers"
+                  :loading="loading"
+                  no-data-text="No Form Reviewers found with search. Add Form Reviewers on the Manage page."
+                  outlined
+                  return-object
+                  :rules="[(v) => !!v || 'Assignee is required']"
+                >
+                  <!-- selected user -->
+                  <template #selection="data">
+                    <span
+                      v-bind="data.attrs"
+                      :input-value="data.selected"
+                      close
+                      @click="data.select"
+                      @click:close="remove(data.item)"
+                    >
+                      {{ data.item.fullName }}
+                    </span>
+                  </template>
+                  <!-- users found in dropdown -->
+                  <template #item="data">
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-item-content v-text="data.item" />
+                    </template>
+                    <template v-else>
+                      <v-list-item-content>
+                        <v-list-item-title v-html="data.item.fullName" />
+                        <v-list-item-subtitle v-html="data.item.username" />
+                        <v-list-item-subtitle v-html="data.item.email" />
+                      </v-list-item-content>
+                    </template>
+                  </template>
+                </v-autocomplete>
+                <span v-if="assignee">Email: {{ assignee.email }}</span>
+                <div>
+                  <label>Email Comment</label>
+                  <v-textarea
+                    v-model="emailComment"
+                    :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+                    rows="1"
+                    counter
+                    auto-grow
+                    dense
+                    flat
+                    outlined
+                    solid
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div v-show="statusFields">
               <div v-if="showAsignee">
                 <!-- {{ formReviewers }} -->
                 <label>
                   Assign To
                   <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
-                      <v-icon color="primary" v-bind="attrs" v-on="on">
-                        help_outline
-                      </v-icon>
+                      <v-icon color="primary" v-bind="attrs" v-on="on">help_outline</v-icon>
                     </template>
                     <span>
-                      Submissions can be assigned to Form Reviewers. <br />
-                      To add more team members as Form Reviewers, go to the
+                      Submissions can be assigned to Form Reviewers.
+                      <br />To add more team members as Form Reviewers, go to the
                       Manage page for this form.
                     </span>
                   </v-tooltip>
@@ -98,19 +158,20 @@
                   </v-btn>
                 </div>
               </div>
-
-              <label>Note (Optional)</label>
-              <v-textarea
-                v-model="note"
-                :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
-                rows="1"
-                counter
-                auto-grow
-                dense
-                flat
-                outlined
-                solid
-              />
+              <div v-if="!showRevising">
+                <label>Note (Optional)</label>
+                <v-textarea
+                  v-model="note"
+                  :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+                  rows="1"
+                  counter
+                  auto-grow
+                  dense
+                  flat
+                  outlined
+                  solid
+                />
+              </div>
             </div>
           </v-col>
         </v-row>
@@ -125,9 +186,7 @@
               </template>
 
               <v-card v-if="historyDialog">
-                <v-card-title class="text-h5 pb-0">
-                  Status History
-                </v-card-title>
+                <v-card-title class="text-h5 pb-0">Status History</v-card-title>
 
                 <v-card-text>
                   <hr />
@@ -186,6 +245,7 @@ export default {
       items: [],
       loading: true,
       note: '',
+      emailComment: '',
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
@@ -194,10 +254,12 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['keycloakSubject']),
-
+    showRevising() {
+      return ['REVISING'].includes(this.statusToSet);
+    },
     // State Machine
     showAsignee() {
-      return ['ASSIGNED'].includes(this.statusToSet) || ['RETURN TO USER'].includes(this.statusToSet);
+      return ['ASSIGNED'].includes(this.statusToSet);
     },
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
@@ -254,7 +316,7 @@ export default {
             (sc) => sc.code === this.currentStatus.code
           ).statusCode;
           this.items = this.currentStatus.statusCodeDetail.nextCodes;
-          this.items.push('RETURN TO USER');
+          this.items.push('REVISING');
         }
       } catch (error) {
         this.addNotification({
