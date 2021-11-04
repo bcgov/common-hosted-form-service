@@ -131,9 +131,8 @@ const service = {
       user = await service.updateUser(user.id, obj);
     }
 
-    const usernameIdp = user.idpCode ? `${user.username}@${user.idpCode}` : user.username;
     // return with the db id...
-    return { id: user.id, usernameIdp: usernameIdp,  ...userInfo };
+    return { id: user.id, usernameIdp: user.idpCode ? `${user.username}@${user.idpCode}` : user.username,  ...userInfo };
   },
 
   getUserForms: async (userInfo, params = {}) => {
