@@ -1724,6 +1724,11 @@ paths:
             type: string
           description: user username
         - in: query
+          name: usernameIdp
+          schema:
+            type: string
+          description: user username with idp type appended
+        - in: query
           name: fullName
           schema:
             type: string
@@ -1937,6 +1942,11 @@ paths:
             type: string
           description: user username
         - in: query
+          name: usernameIdp
+          schema:
+            type: string
+          description: user username with idp type appended
+        - in: query
           name: fullName
           schema:
             type: string
@@ -2074,6 +2084,11 @@ paths:
           schema:
             type: string
           description: user username
+        - in: query
+          name: usernameIdp
+          schema:
+            type: string
+          description: user username with idp type appended
         - in: query
           name: fullName
           schema:
@@ -2602,6 +2617,10 @@ components:
           type: string
           description: Username of this user
           example: jsmith
+        usernameIdp:
+          type: string
+          description: Username of this user with the IDP type appended at the end
+          example: jsmith@idp
         firstName:
           type: string
           example: Jane
@@ -3281,6 +3300,10 @@ components:
               type: string
               description: Username of this user
               example: jsmith
+            usernameIdp:
+              type: string
+              description: Username of this user with the IDP type appended at the end
+              example: jsmith@idp
             firstName:
               type: string
               example: Jane
@@ -3312,6 +3335,10 @@ components:
           type: string
           description: Username of this user
           example: jsmith
+        usernameIdp:
+          type: string
+          description: Username of this user with the IDP type appended at the end
+          example: jsmith@idp
         firstName:
           type: string
           example: Jane
@@ -3497,6 +3524,10 @@ components:
         username:
           type: string
           example: jsmith
+        usernameIdp:
+          type: string
+          description: Username of this user with the IDP type appended at the end
+          example: jsmith@idp
         roles:
           type: array
           description: the role codes this user has on this form
