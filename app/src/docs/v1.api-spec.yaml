@@ -2675,7 +2675,7 @@ components:
           example: '2020-06-04T18:49:20.672Z'
         createdBy:
           type: string
-          example: jsmith
+          example: jsmith@idir
         id:
           type: string
           format: uuid
@@ -3274,13 +3274,13 @@ components:
       properties:
         createdBy:
           type: string
-          example: bsmith
+          example: bsmith@idir
         createdAt:
           type: string
           example: '2020-06-04T18:49:20.672Z'
         updatedBy:
           type: string
-          example: jsmith
+          example: jsmith@idir
         updatedAt:
           type: string
           example: '2020-06-04T18:49:20.672Z'
