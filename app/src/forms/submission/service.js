@@ -55,7 +55,7 @@ const service = {
 
       // Patch the submission record with the updated changes
       const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.username });
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.usernameIdp });
 
       if (!data.draft) {
         // If there is not a submission status here already (IE we're taking a non-submitted, like a draft, and finalizing to submitted state)
@@ -91,7 +91,7 @@ const service = {
       trx = await FormSubmission.startTransaction();
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
         deleted: true,
-        updatedBy: currentUser.username
+        updatedBy: currentUser.usernameIdp
       });
       await trx.commit();
       return await service.read(formSubmissionId);
@@ -146,7 +146,7 @@ const service = {
         submissionStatusId: data.submissionStatusId,
         note: data.note,
         userId: data.userId,
-        createdBy: currentUser.username,
+        createdBy: currentUser.usernameIdp,
       });
       await trx.commit();
 
@@ -190,7 +190,7 @@ const service = {
         code: data.code,
         assignedToUserId: data.assignedToUserId,
         actionDate: data.actionDate,
-        createdBy: currentUser.username
+        createdBy: currentUser.usernameIdp
       });
       await trx.commit();
 

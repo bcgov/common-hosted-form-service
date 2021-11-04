@@ -17,7 +17,7 @@ const service = {
       trx = await Role.startTransaction();
 
       // TODO: validate role code is unique
-      data.createdBy = currentUser.username;
+      data.createdBy = currentUser.usernameIdp;
 
       await Role.query(trx).insert(data);
       await trx.commit();
@@ -49,14 +49,14 @@ const service = {
           display: data.display,
           description: data.description,
           active: data.active,
-          updatedBy: currentUser.username
+          updatedBy: currentUser.usernameIdp
         });
       }
       // clean out existing permissions...
       await trx.raw(`delete from role_permission where "role" = '${obj.code}'`);
       // set to specified permissions...
       for (const p of data.permissions) {
-        await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${obj.code}', '${p.code}', '${currentUser.username}');`);
+        await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${obj.code}', '${p.code}', '${currentUser.usernameIdp}');`);
       }
 
       await trx.commit();
