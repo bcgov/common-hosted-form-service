@@ -230,7 +230,7 @@ const service = {
         data = data.filter(d => d.userId === userId);
       }
       // add an id and save them
-      const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.username, ...d }; });
+      const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d }; });
       await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       return service.getFormUsers({ userId: userId, formId: formId });
@@ -261,7 +261,7 @@ const service = {
           id: uuidv4(),
           formSubmissionId: formSubmissionId,
           userId: userId,
-          createdBy: currentUser.username,
+          createdBy: currentUser.usernameIdp,
           permission: perm
         }));
         await FormSubmissionUser.query(trx).insert(items);
@@ -300,7 +300,7 @@ const service = {
         data = data.filter(d => d.formId === formId);
       }
       // add an id and save them
-      const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.username, ...d }; });
+      const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d }; });
       await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       // return the new mappings

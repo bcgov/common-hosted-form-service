@@ -83,7 +83,8 @@ const service = {
         family_name: lastName,
         sub: keycloakId,
         name: fullName,
-        email } = token.content;
+        email
+      } = token.content;
 
       return {
         keycloakId: keycloakId,
@@ -129,8 +130,9 @@ const service = {
       // what if name or email changed?
       user = await service.updateUser(user.id, obj);
     }
+
     // return with the db id...
-    return { id: user.id, ...userInfo };
+    return { id: user.id, usernameIdp: user.idpCode ? `${user.username}@${user.idpCode}` : user.username,  ...userInfo };
   },
 
   getUserForms: async (userInfo, params = {}) => {
