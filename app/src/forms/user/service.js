@@ -59,7 +59,7 @@ const service = {
           await UserFormPreferences.query(trx)
             .patchAndFetchById([currentUser.id, form.formId], {
               preferences: form.preferences,
-              updatedBy: currentUser.username
+              updatedBy: currentUser.usernameIdp
             });
         } else {
           await UserFormPreferences.query(trx)
@@ -67,7 +67,7 @@ const service = {
               userId: currentUser.id,
               formId: form.formId,
               preferences: form.preferences,
-              createdBy: currentUser.username
+              createdBy: currentUser.usernameIdp
             });
         }
       });
@@ -107,7 +107,7 @@ const service = {
         result = await UserFormPreferences.query(trx)
           .patchAndFetchById([currentUser.id, formId], {
             preferences: preferences,
-            updatedBy: currentUser.username
+            updatedBy: currentUser.usernameIdp
           });
       } else {
         result = await UserFormPreferences.query(trx)
@@ -115,7 +115,7 @@ const service = {
             userId: currentUser.id,
             formId: formId,
             preferences: preferences,
-            createdBy: currentUser.username
+            createdBy: currentUser.usernameIdp
           });
       }
 

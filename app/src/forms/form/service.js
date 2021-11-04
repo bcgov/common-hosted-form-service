@@ -61,7 +61,7 @@ const service = {
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
-      obj.createdBy = currentUser.username;
+      obj.createdBy = currentUser.usernameIdp;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -71,13 +71,13 @@ const service = {
           if (!exists) {
             throw new Problem(422, `${p.code} is not a valid Identity Provider code`);
           }
-          fips.push({ id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username });
+          fips.push({ id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.usernameIdp });
         }
         await FormIdentityProvider.query(trx).insert(fips);
       }
       // make this user have ALL the roles...
       const userRoles = Rolenames.map(r => {
-        return { id: uuidv4(), createdBy: currentUser.username, userId: currentUser.id, formId: obj.id, role: r };
+        return { id: uuidv4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
       });
       await FormRoleUser.query(trx).insert(userRoles);
 
@@ -85,7 +85,7 @@ const service = {
       const draft = {
         id: uuidv4(),
         formId: obj.id,
-        createdBy: currentUser.username,
+        createdBy: currentUser.usernameIdp,
         schema: data.schema
       };
       await FormVersionDraft.query(trx).insert(draft);
@@ -94,9 +94,9 @@ const service = {
       // TODO: this is hardcoded to the default submitted->assigned->complete for now
       // We could make this more dynamic and settable by the user if that feature is required
       const defaultStatuses = [
-        { id: uuidv4(), formId: obj.id, code: Statuses.SUBMITTED, createdBy: currentUser.username },
-        { id: uuidv4(), formId: obj.id, code: Statuses.ASSIGNED, createdBy: currentUser.username },
-        { id: uuidv4(), formId: obj.id, code: Statuses.COMPLETED, createdBy: currentUser.username }
+        { id: uuidv4(), formId: obj.id, code: Statuses.SUBMITTED, createdBy: currentUser.usernameIdp },
+        { id: uuidv4(), formId: obj.id, code: Statuses.ASSIGNED, createdBy: currentUser.usernameIdp },
+        { id: uuidv4(), formId: obj.id, code: Statuses.COMPLETED, createdBy: currentUser.usernameIdp }
       ];
       await FormStatusCode.query(trx).insert(defaultStatuses);
 
@@ -124,14 +124,14 @@ const service = {
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
-        updatedBy: currentUser.username
+        updatedBy: currentUser.usernameIdp
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
 
       // remove any existing links to identity providers, and the updated ones
       await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
-      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return { id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.username }; }));
+      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return { id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.usernameIdp }; }));
 
       await trx.commit();
       const result = await service.readForm(obj.id);
@@ -148,7 +148,7 @@ const service = {
       const obj = await service.readForm(formId);
       trx = await Form.startTransaction();
       // for now, only handle a soft delete, we could pass in a param to do a hard delete later
-      await Form.query(trx).patchAndFetchById(formId, { active: false, updatedBy: currentUser.username });
+      await Form.query(trx).patchAndFetchById(formId, { active: false, updatedBy: currentUser.usernameIdp });
 
       // If there's a current API key, hard delete that
       if (await service.readApiKey(formId)) {
@@ -254,7 +254,7 @@ const service = {
       await FormVersion.query(trx)
         .patch({
           published: false,
-          updatedBy: currentUser.username
+          updatedBy: currentUser.usernameIdp
         })
         .where('formId', form.id)
         .where('published', publish);
@@ -263,7 +263,7 @@ const service = {
         .findById(formVersionId)
         .patch({
           published: publish,
-          updatedBy: currentUser.username
+          updatedBy: currentUser.usernameIdp
         });
 
       await trx.commit();
@@ -323,7 +323,7 @@ const service = {
 
       // Ensure we only record the user if the form is not public facing
       const isPublicForm = identityProviders.some(idp => idp.code === 'public');
-      const createdBy = isPublicForm ? 'public' : currentUser.username;
+      const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
 
       const submissionId = uuidv4();
       const obj = Object.assign({
@@ -377,7 +377,7 @@ const service = {
       // use the schema to determine if there are uploads, fetch the ids from the submission data...
       const fileIds = service._findFileIds(formVersion.schema, data);
       for (const fileId of fileIds) {
-        await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: obj.id, updatedBy: currentUser.username });
+        await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: obj.id, updatedBy: currentUser.usernameIdp });
       }
 
       await trx.commit();
@@ -421,7 +421,7 @@ const service = {
       const obj = Object.assign({}, data);
       obj.id = uuidv4();
       obj.formId = form.id;
-      obj.createdBy = currentUser.username;
+      obj.createdBy = currentUser.usernameIdp;
 
       await FormVersionDraft.query(trx).insert(obj);
       await trx.commit();
@@ -441,7 +441,7 @@ const service = {
       await FormVersionDraft.query(trx).patchAndFetchById(formVersionDraftId, {
         schema: data.schema,
         formVersionId: data.formVersionId,
-        updatedBy: currentUser.username
+        updatedBy: currentUser.usernameIdp
       });
       await trx.commit();
       return await service.readDraft(obj.id);
@@ -474,7 +474,7 @@ const service = {
         id: uuidv4(),
         formId: form.id,
         version: form.versions.length ? form.versions[0].version + 1 : 1,
-        createdBy: currentUser.username,
+        createdBy: currentUser.usernameIdp,
         schema: draft.schema,
         published: true
       };
@@ -531,14 +531,14 @@ const service = {
           .modify('filterFormId', formId)
           .update({
             secret: uuidv4(),
-            updatedBy: currentUser.username
+            updatedBy: currentUser.usernameIdp
           });
       } else {
         // Add new API key for the form
         await FormApiKey.query(trx).insert({
           formId: formId,
           secret: uuidv4(),
-          createdBy: currentUser.username
+          createdBy: currentUser.usernameIdp
         });
       }
 
