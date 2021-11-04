@@ -7,9 +7,9 @@
         <br />
         <strong>Assigned To:</strong>
         {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-        <span v-if="currentStatus.user">
-          ({{ currentStatus.user.email }})
-        </span>
+        <span
+          v-if="currentStatus.user"
+        >({{ currentStatus.user.email }})</span>
       </p>
 
       <v-form ref="form" v-model="valid" lazy-validation>
@@ -29,10 +29,7 @@
 
             <div v-show="statusFields">
               <div v-if="showRevising">
-                <!-- {{ formReviewers }} -->
-                <label>
-                  Submitter's Email
-                </label>
+                <label>Submitter's Email</label>
                 <v-autocomplete
                   v-model="assignee"
                   clearable
@@ -53,9 +50,7 @@
                       close
                       @click="data.select"
                       @click:close="remove(data.item)"
-                    >
-                      {{ data.item.fullName }}
-                    </span>
+                    >{{ data.item.fullName }}</span>
                   </template>
                   <!-- users found in dropdown -->
                   <template #item="data">
@@ -72,7 +67,8 @@
                   </template>
                 </v-autocomplete>
                 <span v-if="assignee">Email: {{ assignee.email }}</span>
-                <div>
+                <v-checkbox v-model="addComment" :label="'Add Comment to Email'"></v-checkbox>
+                <div v-if="addComment">
                   <label>Email Comment</label>
                   <v-textarea
                     v-model="emailComment"
@@ -125,9 +121,7 @@
                       close
                       @click="data.select"
                       @click:close="remove(data.item)"
-                    >
-                      {{ data.item.fullName }}
-                    </span>
+                    >{{ data.item.fullName }}</span>
                   </template>
                   <!-- users found in dropdown -->
                   <template #item="data">
@@ -239,6 +233,7 @@ export default {
       // TODO: use a better name than "on" if possible, check multiple usage in template though...
       on: false,
       assignee: null,
+      addComment: false,
       currentStatus: {},
       formReviewers: [],
       historyDialog: false,
