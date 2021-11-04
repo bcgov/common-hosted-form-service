@@ -24,12 +24,13 @@ describe('addNote', () => {
 
 describe('createStatus', () => {
   it('should call the internal _createSubmissionStatus method', async () => {
+    const trx = {};
     service._createSubmissionStatus = jest.fn().mockReturnValue({ a: 'b' });
-    const res = await service.createStatus('abc', { data: true }, { user: 'me' });
+    const res = await service.createStatus('abc', { data: true }, { user: 'me' }, trx);
 
     expect(res).toEqual({ a: 'b' });
     expect(service._createSubmissionStatus).toHaveBeenCalledTimes(1);
-    expect(service._createSubmissionStatus).toHaveBeenCalledWith('abc', { data: true }, { user: 'me' });
+    expect(service._createSubmissionStatus).toHaveBeenCalledWith('abc', { data: true }, { user: 'me' }, trx);
   });
 });
 
