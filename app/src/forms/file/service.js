@@ -20,7 +20,7 @@ const service = {
       obj.mimeType = data.mimetype;
       obj.size = data.size;
       obj.path = data.path;
-      obj.createdBy = currentUser.username;
+      obj.createdBy = currentUser.usernameIdp;
 
       const uploadResult = await storageService.upload(obj);
       obj.path = uploadResult.path;
@@ -84,7 +84,7 @@ const service = {
         await FileStorage.query(trx).patchAndFetchById(item.id, {
           storage: PERMANENT_STORAGE,
           path: newPath,
-          updatedBy: currentUser.username
+          updatedBy: currentUser.usernameIdp
         });
       }
       await trx.commit();

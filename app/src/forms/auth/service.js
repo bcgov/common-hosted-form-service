@@ -19,12 +19,10 @@ const service = {
     try {
       trx = await User.startTransaction();
 
-      const userIdp = data.idp ? `${data.username}@${data.idp}` : data.username;
-
       const obj = {
         id: uuidv4(),
         keycloakId: data.keycloakId,
-        username: userIdp,
+        username: data.username,
         fullName: data.fullName,
         email: data.email,
         firstName: data.firstName,
@@ -88,12 +86,9 @@ const service = {
         email
       } = token.content;
 
-      const userIdentity = identity ? identity : username;
-      const userIdp = idp ? `${userIdentity}@${idp}` : userIdentity;
-
       return {
         keycloakId: keycloakId,
-        username: userIdp,
+        username: identity ? identity : username,
         firstName: firstName,
         lastName: lastName,
         fullName: fullName,
@@ -135,8 +130,10 @@ const service = {
       // what if name or email changed?
       user = await service.updateUser(user.id, obj);
     }
+
+    const usernameIdp = user.idpCode ? `${user.username}@${user.idpCode}` : user.username;
     // return with the db id...
-    return { id: user.id, ...userInfo };
+    return { id: user.id, usernameIdp: usernameIdp,  ...userInfo };
   },
 
   getUserForms: async (userInfo, params = {}) => {
