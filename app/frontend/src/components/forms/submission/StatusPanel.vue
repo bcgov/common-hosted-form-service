@@ -29,44 +29,7 @@
 
             <div v-show="statusFields">
               <div v-if="showRevising">
-                <label>Submitter's Email</label>
-                <v-autocomplete
-                  v-model="assignee"
-                  clearable
-                  dense
-                  :filter="autoCompleteFilter"
-                  :items="formReviewers"
-                  :loading="loading"
-                  no-data-text="No Form Reviewers found with search. Add Form Reviewers on the Manage page."
-                  outlined
-                  return-object
-                  :rules="[(v) => !!v || 'Assignee is required']"
-                >
-                  <!-- selected user -->
-                  <template #selection="data">
-                    <span
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      close
-                      @click="data.select"
-                      @click:close="remove(data.item)"
-                    >{{ data.item.fullName }}</span>
-                  </template>
-                  <!-- users found in dropdown -->
-                  <template #item="data">
-                    <template v-if="typeof data.item !== 'object'">
-                      <v-list-item-content v-text="data.item" />
-                    </template>
-                    <template v-else>
-                      <v-list-item-content>
-                        <v-list-item-title v-html="data.item.fullName" />
-                        <v-list-item-subtitle v-html="data.item.username" />
-                        <v-list-item-subtitle v-html="data.item.email" />
-                      </v-list-item-content>
-                    </template>
-                  </template>
-                </v-autocomplete>
-                <span v-if="assignee">Email: {{ assignee.email }}</span>
+                <span v-if="showRevising">Email: submitteremail@outloook.com</span>
                 <v-checkbox v-model="addComment" :label="'Add Comment to Email'"></v-checkbox>
                 <div v-if="addComment">
                   <label>Email Comment</label>
