@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row class="d-print-none">
     <v-col v-if="formId">
       <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
         <v-btn color="primary" outlined>
