@@ -30,7 +30,7 @@
             <div v-show="statusFields">
               <div v-if="showRevising">
                 <span v-if="showRevising">Email: submitteremail@outloook.com</span>
-                <v-checkbox v-model="addComment" :label="'Add Comment to Email'"></v-checkbox>
+                <v-checkbox v-model="addComment" :label="'Attach Comment to Email'"></v-checkbox>
                 <div v-if="addComment">
                   <label>Email Comment</label>
                   <v-textarea
