@@ -13,22 +13,22 @@ const req = {
 describe('addStatus', () => {
   it('should not call email service if no email specified', async () => {
     service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
-    service.createStatus = jest.fn().mockReturnValue([1, 2, 3]);
+    service.changeStatusState = jest.fn().mockReturnValue([1, 2, 3]);
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
     await controller.addStatus(req, {}, jest.fn());
 
-    expect(service.createStatus).toHaveBeenCalledTimes(1);
+    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
     expect(emailService.statusAssigned).toHaveBeenCalledTimes(0);
   });
 
   it('should call email service if an email specified', async () => {
     req.body.assignmentNotificationEmail = 'a@a.com';
     service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
-    service.createStatus = jest.fn().mockReturnValue([1, 2, 3]);
+    service.changeStatusState = jest.fn().mockReturnValue([1, 2, 3]);
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
     await controller.addStatus(req, {}, jest.fn());
 
-    expect(service.createStatus).toHaveBeenCalledTimes(1);
+    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
     expect(emailService.statusAssigned).toHaveBeenCalledTimes(1);
     expect(emailService.statusAssigned).toHaveBeenCalledWith('123', 1, 'a@a.com', 'a');
   });
