@@ -205,7 +205,6 @@ const service = {
    * Get status history for a specific submission
    * @param {string} The submission id
    * @returns The current status object
-   * @throws The error encountered upon db failure
    */
   getStatus: (formSubmissionId) => {
     return FormSubmissionStatus.query()
