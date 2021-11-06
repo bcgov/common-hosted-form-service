@@ -1108,9 +1108,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      summary: >-
-        Add a new status to a form, send an email to the assignee if an email
-        address is specified
+      summary: Add a new status to a submission
+      description: |-
+        Adds a new status to a submission, and optionally provides email notification depending
+        on the status being assigned.
       operationId: addSubmissionStatus
       tags:
         - Status
@@ -3196,19 +3197,39 @@ components:
           $ref: '#/components/schemas/FormOptions'
     SubmissionStatus:
       type: object
+      required:
+        - code
       properties:
         code:
           type: string
+          description: |-
+            Status code to assign. Check the `/forms/{formId}/statusCodes` endpoint for valid
+            codes.
           example: ASSIGNED
         assignedToUserId:
           type: string
+          description: Optional UserID assignment. Only applicable when `code` is `ASSIGNED`.
           example: ccb5b715-1de5-4f4e-a4e6-0716b7671034
         assignmentNotificationEmail:
           type: string
+          description: |-
+            Optional email for dispatching assignment notifications. If this property is falsy, no notification will be sent.
           example: jsmith@gov.bc.ca
         actionDate:
           type: string
+          description: |-
+            Optional time this status comes into effect. Defaults to now if unspecified.
           example: '2020-06-04T18:49:20.672Z'
+        revisionNotificationEmail:
+          type: string
+          description: |-
+            Optional email for dispatching revision requests. If this property is falsy, no notification will be sent.
+          example: bsmith@gov.bc.ca
+        revisionNotificationEmailContent:
+          type: string
+          description: |-
+            Optional revision request email content. This plaintext string will be added to the revision requests email body contents.
+          example: foo bar
     SubmissionStatusHistory:
       allOf:
         - type: object
