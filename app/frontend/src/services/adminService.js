@@ -37,6 +37,15 @@ export default {
   },
 
   /**
+   * @function readRoles
+   * Get roles for form user
+   * @returns {Promise} An axios response
+   */
+  readRoles() {
+    return appAxios().get(`${ApiRoutes.ADMIN}/formusers`);
+  },
+
+  /**
    * @function readApiDetails
    * Gets the form's API Key details
    * @param {string} formId The GUID

@@ -17,7 +17,10 @@
           <h4>Form Details</h4>
           <vue-json-pretty :data="formDetails" />
         </v-col>
-
+        <v-col cols="6">
+          <h4>Form Users</h4>
+          <vue-json-pretty :data="roleDetails.users" />
+        </v-col>
         <v-col cols="6">
           <div v-if="apiKey">
             <h4>API Key Details</h4>
@@ -95,16 +98,18 @@ export default {
       restoreInProgress: false,
       showDeleteDialog: false,
       formDetails: {},
+      roleDetails: {},
     };
   },
   computed: {
-    ...mapGetters('admin', ['form', 'apiKey']),
+    ...mapGetters('admin', ['form', 'roles', 'apiKey']),
   },
   methods: {
     ...mapActions('admin', [
       'deleteApiKey',
       'readApiDetails',
       'readForm',
+      'readRoles',
       'restoreForm',
     ]),
     async deleteKey() {
@@ -121,8 +126,13 @@ export default {
   async mounted() {
     await Promise.all([
       this.readForm(this.formId),
-      this.readApiDetails(this.formId)
+      this.readApiDetails(this.formId),
+      this.readRoles()
     ]);
+
+    this.roleDetails = this.roles.find((role) => {
+      return role.formName === this.form.name;
+    });
 
     this.formDetails = this.form;
     delete this.formDetails.versions;
