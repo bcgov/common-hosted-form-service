@@ -1,3 +1,4 @@
+const { Statuses } = require('../common/constants');
 const cdogsService = require('../../components/cdogsService');
 const emailService = require('../email/emailService');
 const service = require('./service');
@@ -64,8 +65,10 @@ module.exports = {
       const submission = await service.read(req.params.formSubmissionId);
       const response = await service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser);
       // send an email (async in the background)
-      if (req.body.assignmentNotificationEmail) {
+      if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
         emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
+      } else if (req.body.code === Statuses.REVISING && req.body.revisionNotificationEmail) {
+        emailService.statusRevising(submission.form.id, response[0], req.body.revisionNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
       }
       res.status(200).json(response);
     } catch (error) {
