@@ -13,6 +13,9 @@ const generateContexts = (type, configData, submission, referer) => {
   if (type === 'sendStatusAssigned') {
     contextToVal = [configData.assignmentNotificationEmail];
     userTypePath = 'form/view';
+  } else if (type === 'sendStatusRevising') {
+    contextToVal = [configData.revisionNotificationEmail];
+    userTypePath = 'user/view';
   } else if (type === 'sendSubmissionAssigned') {
     contextToVal = [configData.assignmentNotificationEmail];
     userTypePath = 'user/view';
@@ -28,12 +31,13 @@ const generateContexts = (type, configData, submission, referer) => {
   }
   return [{
     context: {
+      allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
       confirmationNumber: submission.confirmationId,
-      title: configData.title,
+      form: configData.form,
       messageLinkText: configData.messageLinkText,
       messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
-      allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
-      form: configData.form,
+      revisionNotificationEmailContent: configData.revisionNotificationEmailContent,
+      title: configData.title
     },
     to: contextToVal
   }];
@@ -68,6 +72,15 @@ const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
       title: `${form.name} Submission Assignment`,
       subject: 'Form Submission Assignment',
       messageLinkText: `You have been assigned to a ${form.name} submission. Please login to review it.`,
+      priority: 'normal',
+      form,
+    };
+  } else if (templateType === 'statusRevising') {
+    configData = {
+      bodyTemplate: 'send-status-revising-email-body.html',
+      title: `${form.name} Submission Revision Requested`,
+      subject: 'Form Submission Revision Request',
+      messageLinkText: `You have been asked to revise a ${form.name} submission. Please login to review it.`,
       priority: 'normal',
       form,
     };
@@ -197,6 +210,33 @@ const service = {
     } catch (e) {
       log.error(e.message, e, {
         function: 'statusAssigned',
+        status: currentStatus,
+        referer: referer
+      });
+      throw e;
+    }
+  },
+
+  /**
+   * @function statusRevising
+   * Revising status to submission form owner
+   * @param {string} formId The form id
+   * @param {string} currentStatus The current status
+   * @param {string} revisionNotificationEmail The email address to send to
+   * @param {string} revisionNotificationEmailContent The optional content to send as a comment
+   * @param {string} referer The currently logged in user
+   * @returns The result of the email merge operation
+   */
+  statusRevising: async (formId, currentStatus, revisionNotificationEmail, revisionNotificationEmailContent, referer) => {
+    try {
+      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.submissionId, 'statusRevising');
+      configData.revisionNotificationEmail = revisionNotificationEmail;
+      configData.revisionNotificationEmailContent = revisionNotificationEmailContent;
+
+      return service._sendEmailTemplate('sendStatusRevising', configData, submission, referer);
+    } catch (e) {
+      log.error(e.message, e, {
+        function: 'statusRevising',
         status: currentStatus,
         referer: referer
       });
