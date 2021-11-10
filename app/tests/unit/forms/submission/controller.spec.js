@@ -1,3 +1,4 @@
+const { Statuses } = require('../../../../src/forms/common/constants');
 const controller = require('../../../../src/forms/submission/controller');
 const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
@@ -5,7 +6,7 @@ const cdogsService = require('../../../../src/components/cdogsService');
 
 const req = {
   params: { formSubmissionId: '1' },
-  body: {},
+  body: { code: Statuses.ASSIGNED },
   currentUser: {},
   headers: { referer: 'a' },
 };
@@ -32,6 +33,8 @@ describe('addStatus', () => {
     expect(emailService.statusAssigned).toHaveBeenCalledTimes(1);
     expect(emailService.statusAssigned).toHaveBeenCalledWith('123', 1, 'a@a.com', 'a');
   });
+
+  // TODO: Add test for statusRevising code branch
 });
 
 describe('templateUploadAndRender', () => {
