@@ -42,7 +42,7 @@ routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
   await controller.readVersion(req, res, next);
 });
 
-routes.get('/formusers', async (req, res, next) => {
+routes.get('/formUsers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
 });
 
