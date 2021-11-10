@@ -21,7 +21,7 @@
           <h4>Form Users</h4>
           <vue-json-pretty :data="roleDetails.users" />
         </v-col>
-        <v-col cols="6">
+        <v-col cols="6 mt-6">
           <div v-if="apiKey">
             <h4>API Key Details</h4>
             <vue-json-pretty :data="apiKey" />

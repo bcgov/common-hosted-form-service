@@ -90,7 +90,6 @@ export default {
     },
     async readRoles({ commit, dispatch }) {
       try {
-        commit('SET_ROLES', {});
         // Get specific roles
         const response = await adminService.readRoles();
         commit('SET_ROLES', response.data);

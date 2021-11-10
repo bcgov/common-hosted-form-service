@@ -15,13 +15,12 @@
         <br />
         <h4>JWT Contents
           <BaseCopyToClipboard
-            :copyText="tokenParsed"
+            :copyText="JSON.stringify(tokenParsed)"
             snackBarText="JWT Contents copied to clipboard"
             tooltipText="Copy JWT Contents to clipboard"
           />
         </h4>
-
-        <pre>{{ tokenParsed }}</pre>
+        <vue-json-pretty :data="tokenParsed" />
         <h4>JWT Token
           <BaseCopyToClipboard
             :copyText="token"
@@ -36,12 +35,13 @@
         <br />
         <h4>/rbac/current
           <BaseCopyToClipboard
-            :copyText="apiRes"
+            :copyText="JSON.stringify(apiRes)"
             snackBarText="RBAC Response copied to clipboard"
             tooltipText="Copy RBAC Response to clipboard"
           />
         </h4>
-        <pre>{{ apiRes }}</pre>
+        <vue-json-pretty :data="apiRes" />
+
       </v-col>
     </v-row>
   </div>
@@ -51,8 +51,13 @@
 import { mapActions, mapGetters } from 'vuex';
 import { rbacService } from '@/services';
 
+import VueJsonPretty from 'vue-json-pretty';
+
 export default {
   name: 'Developer',
+  components: {
+    VueJsonPretty
+  },
   data() {
     return {
       apiRes: '',

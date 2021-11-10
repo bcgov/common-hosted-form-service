@@ -42,7 +42,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readRoles() {
-    return appAxios().get(`${ApiRoutes.ADMIN}/formusers`);
+    return appAxios().get(`${ApiRoutes.ADMIN}/formUsers`);
   },
 
   /**
