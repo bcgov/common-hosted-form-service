@@ -2422,7 +2422,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /admin/formusers:
+  /admin/formUsers:
     get:
       summary: Get the list of users for the active forms in the system
       operationId: adminReadFormUsers
