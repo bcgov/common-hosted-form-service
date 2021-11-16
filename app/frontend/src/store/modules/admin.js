@@ -10,6 +10,7 @@ export default {
     apiKey: undefined,
     form: {},
     formList: [],
+    roles: [],
     user: {},
     userList: []
   },
@@ -17,6 +18,7 @@ export default {
     apiKey: state => state.apiKey,
     form: state => state.form,
     formList: state => state.formList,
+    roles: state => state.roles,
     user: state => state.user,
     userList: state => state.userList
   },
@@ -29,6 +31,9 @@ export default {
     },
     SET_FORMLIST(state, forms) {
       state.formList = forms;
+    },
+    SET_ROLES(state, roles) {
+      state.roles = roles;
     },
     SET_USER(state, user) {
       state.user = user;
@@ -80,6 +85,18 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching this form.',
           consoleError: `Error getting admin form ${formId} data: ${error}`,
+        }, { root: true });
+      }
+    },
+    async readRoles({ commit, dispatch }) {
+      try {
+        // Get specific roles
+        const response = await adminService.readRoles();
+        commit('SET_ROLES', response.data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching these roles.',
+          consoleError: `Error getting admin roles data: ${error}`,
         }, { root: true });
       }
     },
