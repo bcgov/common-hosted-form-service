@@ -8,7 +8,6 @@ const service = {
   //
   list: (params) => {
     return User.query()
-      .skipUndefined()
       .modify('filterKeycloakId', params.keycloakId)
       .modify('filterIdpCode', params.idpCode)
       .modify('filterUsername', params.username)

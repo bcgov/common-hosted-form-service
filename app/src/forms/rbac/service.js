@@ -143,7 +143,6 @@ const service = {
   getCurrentUserSubmissions: async (currentUser, params) => {
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserSubmissions.query()
-      .skipUndefined()
       .withGraphFetched('submissionStatus(orderDescending)')
       .modify('filterFormId', params.formId)
       .modify('filterFormSubmissionId', params.formSubmissionId)
@@ -156,7 +155,6 @@ const service = {
   getFormUsers: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserFormAccess.query()
-      .skipUndefined()
       .modify('filterUserId', params.userId)
       .modify('filterKeycloakId', params.keycloakId)
       .modify('filterUsername', params.username)
@@ -175,7 +173,6 @@ const service = {
   getSubmissionUsers: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserSubmissions.query()
-      .skipUndefined()
       .withGraphFetched('user')
       .modify('filterFormSubmissionId', params.formSubmissionId)
       .modify('filterUserId', params.userId)
@@ -187,7 +184,6 @@ const service = {
   getUserForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserFormAccess.query()
-      .skipUndefined()
       .modify('filterUserId', params.userId)
       .modify('filterKeycloakId', params.keycloakId)
       .modify('filterUsername', params.username)
@@ -215,7 +211,6 @@ const service = {
       trx = await FormRoleUser.startTransaction();
       // remove existing mappings...
       await FormRoleUser.query(trx)
-        .skipUndefined()
         .delete()
         .where('formId', formId)
         .where('userId', userId);
@@ -285,7 +280,6 @@ const service = {
       trx = await FormRoleUser.startTransaction();
       // remove existing mappings...
       await FormRoleUser.query(trx)
-        .skipUndefined()
         .delete()
         .where('userId', userId)
         .where('formId', formId);
@@ -312,9 +306,8 @@ const service = {
     }
   },
 
-  getIdentityProviders: async (params) => {
+  getIdentityProviders: (params) => {
     return IdentityProvider.query()
-      .skipUndefined()
       .modify('filterActive', params.active)
       .modify('orderDefault');
   }

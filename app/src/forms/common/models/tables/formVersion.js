@@ -55,7 +55,7 @@ class FormVersion extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         version: { type: 'integer' },
-        schema: { type: 'jsonb' },
+        schema: { type: 'object' },
         published: { type: 'boolean' },
         ...stamps
       },

@@ -16,7 +16,6 @@ const service = {
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
-      .skipUndefined()
       .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
@@ -89,7 +88,6 @@ const service = {
    */
   getUsers: async (params) => {
     return User.query()
-      .skipUndefined()
       .modify('filterUsername', params.username)
       .modify('filterFirstName', params.firstName)
       .modify('filterLastName', params.lastName)
