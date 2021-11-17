@@ -49,7 +49,9 @@ MockModel.patchAndFetchById = jest.fn().mockReturnThis();
 MockModel.query = jest.fn().mockReturnThis();
 MockModel.resolve = jest.fn().mockResolvedValue(returnValue);
 MockModel.returning = jest.fn().mockReturnThis();
-MockModel.skipUndefined = jest.fn().mockReturnThis();
+MockModel.skipUndefined = jest.fn(() => {
+  throw new Error('skipUndefined() is deprecated in Objection 3.0. Refactor to not use this method!');
+}),
 MockModel.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
 MockModel.then = jest.fn((done) => { done(returnValue); });
 MockModel.throwIfNotFound = jest.fn().mockReturnThis();

@@ -31,7 +31,7 @@ class FormSubmission extends Timestamps(Model) {
         confirmationId: { type: 'string', pattern: Regex.CONFIRMATION_ID },
         draft: { type: 'boolean' },
         deleted: { type: 'boolean' },
-        submission: { type: 'jsonb' },
+        submission: { type: 'object' },
         ...stamps
       },
       additionalProperties: false

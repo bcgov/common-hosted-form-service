@@ -39,7 +39,6 @@ const service = {
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
-      .skipUndefined()
       .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')

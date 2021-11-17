@@ -20,7 +20,7 @@ class UserFormPreferences extends Timestamps(Model) {
       properties: {
         userId: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
-        preferences: { type: 'jsonb' },
+        preferences: { type: 'object' },
         ...stamps
       },
       additionalProperties: false
