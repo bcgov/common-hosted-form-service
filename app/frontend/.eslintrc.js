@@ -21,7 +21,7 @@ module.exports = {
   rules: {
     'eol-last': ['error', 'always'],
     indent: ['error', 2, {
-      'SwitchCase': 1
+      SwitchCase: 1
     }],
     'linebreak-style': ['error', 'unix'],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
@@ -77,5 +77,9 @@ module.exports = {
         jest: true
       }
     }
+  ],
+  extends: [
+    'plugin:vue/essential',
+    'eslint:recommended'
   ]
 };
