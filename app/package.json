@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "api-problem": "^7.0.3",
-    "aws-sdk": "^2.1031.0",
+    "aws-sdk": "^2.1032.0",
     "axios": "^0.24.0",
     "axios-oauth-client": "^1.4.4",
     "axios-token-interceptor": "^0.2.0",
