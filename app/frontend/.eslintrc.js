@@ -56,6 +56,7 @@ module.exports = {
         }
       }
     ],
+    'vue/multi-word-component-names': 'off',
     'vue/no-multi-spaces': [
       'error',
       {
