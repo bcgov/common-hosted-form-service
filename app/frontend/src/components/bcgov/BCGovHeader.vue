@@ -1,26 +1,22 @@
 <template>
   <header :class="{ 'gov-header': true }">
-    <!-- header for browser print only -->
-    <div class="printHeader">
-      <img src="@/assets/images/bc_logo_print.png" alt="Government of B.C." title="Government of B.C." class="mr-1">
-      <h1
-        v-if="!formSubmitMode"
-        data-test="btn-header-title"
-        class="font-weight-bold text-h6 d-none d-md-flex pl-4"
-      >
-        {{ appTitle }}
-      </h1>
-    </div>
-
-    <v-toolbar color="#003366" flat class="px-md-12">
+    <v-toolbar flat class="gov-toolbar px-md-12">
       <!-- Navbar content -->
       <a href="https://www2.gov.bc.ca" data-test="btn-header-logo">
         <v-img
           alt="B.C. Government Logo"
-          class="d-flex"
+          class="d-flex d-print-none"
           contain
           height="3.5rem"
           src="@/assets/images/bc_logo.svg"
+          width="10rem"
+        />
+        <v-img
+          alt="B.C. Government Logo"
+          class="d-none d-print-block"
+          contain
+          height="3.5rem"
+          src="@/assets/images/bc_logo_print.svg"
           width="10rem"
         />
       </a>
@@ -58,27 +54,18 @@ export default {
 @import '@/assets/scss/style.scss';
 
 .gov-header {
-  @media print {
-    header {
-      display: none; // force header to be hidden for @print media
-    }
-    .printHeader {
-      display: flex;
-      align-items: center;
-      .text-h6 {
-        color: inherit;
-      }
-    }
-  }
   @media not print {
     border-bottom: 2px solid #fcba19;
-    .printHeader {
-      display: none; // hide print-only header when not in @print media
+    .gov-toolbar.theme--light{
+      background-color: #003366;
     }
+    .text-h6 {
+      color: #ffffff;
+    }
+
   }
   .text-h6 {
     font-family: inherit !important;
-    color: #ffffff;
     overflow: hidden;
     margin-bottom: 0;
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
