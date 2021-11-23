@@ -84,7 +84,8 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
   }
 
   return {
-    configData, [{
+    configData,
+    contexts: [{
       context: {
         allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
         confirmationNumber: submission.confirmationId,
@@ -95,7 +96,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
         title: configData.title
       },
       to: contextToVal
-    }] : []
+    }]
   };
 };
 
