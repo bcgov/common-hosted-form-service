@@ -28,8 +28,8 @@
             />
 
             <div v-show="statusFields" v-if="showRevising">
-              <v-text-field v-model="revisionEmail" label="Recipient Email" outlined></v-text-field>
-              <v-checkbox v-model="addComment" :label="'Attach Comment to Email'"></v-checkbox>
+              <v-text-field v-model="revisionEmail" label="Recipient Email" outlined />
+              <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
               <div v-if="addComment">
                 <label>Email Comment</label>
                 <v-textarea
