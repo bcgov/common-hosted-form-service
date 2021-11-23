@@ -285,13 +285,13 @@ export default {
     },
     resetForm() {
       this.addComment = false;
+      this.emailComment = '';
       this.statusFields = false;
       this.$refs.form.resetValidation();
+      this.revisionEmail = '';
       this.statusToSet = null;
       this.statusFields = false;
       this.note = '';
-      this.revisionNotificationEmail = '';
-      this.revisionNotificationEmailContent = '';
     },
     async updateStatus() {
       try {
