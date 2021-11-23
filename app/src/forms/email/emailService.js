@@ -83,20 +83,20 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
     };
   }
 
-  const contexts = [{
-    context: {
-      allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
-      confirmationNumber: submission.confirmationId,
-      form: configData.form,
-      messageLinkText: configData.messageLinkText,
-      messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
-      revisionNotificationEmailContent: additionalProperties.revisionNotificationEmailContent,
-      title: configData.title
-    },
-    to: contextToVal
-  }];
-
-  return { configData, contexts };
+  return {
+    configData, [{
+      context: {
+        allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
+        confirmationNumber: submission.confirmationId,
+        form: configData.form,
+        messageLinkText: configData.messageLinkText,
+        messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
+        revisionNotificationEmailContent: additionalProperties.revisionNotificationEmailContent,
+        title: configData.title
+      },
+      to: contextToVal
+    }] : []
+  };
 };
 
 const service = {
