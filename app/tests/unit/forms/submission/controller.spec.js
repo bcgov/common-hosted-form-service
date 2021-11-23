@@ -34,7 +34,19 @@ describe('addStatus', () => {
     expect(emailService.statusAssigned).toHaveBeenCalledWith('123', 1, 'a@a.com', 'a');
   });
 
-  // TODO: Add test for statusRevising code branch
+  it('should call statusRevising if email specified', async () => {
+    req.body.revisionNotificationEmail = 'a@a.com';
+    req.body.revisionNotificationEmailContent = 'Email content';
+    req.body.code = Statuses.REVISING;
+    service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
+    service.changeStatusState = jest.fn().mockReturnValue([1, 2, 3]);
+    emailService.statusRevising = jest.fn().mockReturnValue(true);
+    await controller.addStatus(req, {}, jest.fn());
+
+    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
+    expect(emailService.statusRevising).toHaveBeenCalledTimes(1);
+    expect(emailService.statusRevising).toHaveBeenCalledWith('123', 1, 'a@a.com', 'Email content', 'a');
+  });
 });
 
 describe('templateUploadAndRender', () => {
