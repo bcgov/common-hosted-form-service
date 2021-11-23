@@ -3,52 +3,19 @@ const path = require('path');
 
 const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
-const { EmailProperties } = require('../common/constants');
+const { EmailProperties, EmailTypes } = require('../common/constants');
 const formService = require('../form/service');
 
-// Helper function used to generate contexts for the ches.merge data argument
-const generateContexts = (type, configData, submission, referer) => {
-  let contextToVal = [];
-  let userTypePath = '';
-  if (type === 'sendStatusAssigned') {
-    contextToVal = [configData.assignmentNotificationEmail];
-    userTypePath = 'form/view';
-  } else if (type === 'sendStatusRevising') {
-    contextToVal = [configData.revisionNotificationEmail];
-    userTypePath = 'user/view';
-  } else if (type === 'sendSubmissionAssigned') {
-    contextToVal = [configData.assignmentNotificationEmail];
-    userTypePath = 'user/view';
-  } else if (type === 'sendSubmissionUnassigned') {
-    contextToVal = [configData.assignmentNotificationEmail];
-    userTypePath = 'user/view';
-  } else if (type === 'sendSubmissionConfirmation' && configData.form.showSubmissionConfirmation) {
-    contextToVal = [configData.body.to];
-    userTypePath = 'form/success';
-  } else if (type === 'sendSubmissionReceived' && configData.form.submissionReceivedEmails) {
-    contextToVal = configData.form.submissionReceivedEmails;
-    userTypePath = 'form/view';
-  }
-  return [{
-    context: {
-      allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
-      confirmationNumber: submission.confirmationId,
-      form: configData.form,
-      messageLinkText: configData.messageLinkText,
-      messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
-      revisionNotificationEmailContent: configData.revisionNotificationEmailContent,
-      title: configData.title
-    },
-    to: contextToVal
-  }];
-};
-
-const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
+const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
   const submission = await formService.readSubmission(formSubmissionId);
   let configData = {};
+  let contextToVal = [];
+  let userTypePath = '';
 
-  if (templateType === 'submissionAssigned') {
+  if (emailType === EmailTypes.SUBMISSION_ASSIGNED) {
+    contextToVal = [additionalProperties.assignmentNotificationEmail];
+    userTypePath = 'user/view';
     configData = {
       bodyTemplate: 'submission-assigned.html',
       title: `Invited to ${form.name} Draft`,
@@ -57,7 +24,9 @@ const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
       priority: 'normal',
       form,
     };
-  } else if (templateType === 'submissionUnassigned') {
+  } else if (emailType === EmailTypes.SUBMISSION_UNASSIGNED) {
+    contextToVal = [additionalProperties.assignmentNotificationEmail];
+    userTypePath = 'user/view';
     configData = {
       bodyTemplate: 'submission-unassigned.html',
       title: `Uninvited From ${form.name} Draft`,
@@ -66,7 +35,9 @@ const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
       priority: 'normal',
       form,
     };
-  } else if (templateType === 'statusAssigned') {
+  } else if (emailType === EmailTypes.STATUS_ASSIGNED) {
+    contextToVal = [additionalProperties.assignmentNotificationEmail];
+    userTypePath = 'form/view';
     configData = {
       bodyTemplate: 'send-status-assigned-email-body.html',
       title: `${form.name} Submission Assignment`,
@@ -75,7 +46,9 @@ const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
       priority: 'normal',
       form,
     };
-  } else if (templateType === 'statusRevising') {
+  } else if (emailType === EmailTypes.STATUS_REVISING) {
+    contextToVal = [additionalProperties.revisionNotificationEmail];
+    userTypePath = 'user/view';
     configData = {
       bodyTemplate: 'send-status-revising-email-body.html',
       title: `${form.name} Submission Revision Requested`,
@@ -84,8 +57,11 @@ const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
       priority: 'normal',
       form,
     };
-  } else if (templateType === 'submissionReceived') {
+  } else if (emailType === EmailTypes.SUBMISSION_RECEIVED) {
+    contextToVal = form.submissionReceivedEmails;
+    userTypePath = 'form/view';
     configData = {
+      body: additionalProperties.body,
       bodyTemplate: 'submission-confirmation.html',
       title: `${form.name} Submission`,
       subject: `${form.name} Submission`,
@@ -93,7 +69,9 @@ const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
       priority: 'normal',
       form,
     };
-  } else if (templateType === 'submissionConfirmation') {
+  } else if (emailType === EmailTypes.SUBMISSION_CONFIRMATION) {
+    contextToVal = [additionalProperties.body.to];
+    userTypePath = 'form/success';
     const bodyTemplate = form.identityProviders.length > 0 && form.identityProviders[0].idp === 'public' ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
     configData = {
       bodyTemplate: bodyTemplate,
@@ -105,10 +83,28 @@ const buildEmailTemplate = async (formId, formSubmissionId, templateType) => {
     };
   }
 
-  return { configData, submission };
+  const contexts = [{
+    context: {
+      allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
+      confirmationNumber: submission.confirmationId,
+      form: configData.form,
+      messageLinkText: configData.messageLinkText,
+      messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
+      revisionNotificationEmailContent: additionalProperties.revisionNotificationEmailContent,
+      title: configData.title
+    },
+    to: contextToVal
+  }];
+
+  return { configData, contexts };
 };
 
 const service = {
+  /**
+   * @function _appUrl
+   * @param {string} referer
+   * @returns base url for the application
+   */
   _appUrl: (referer) => {
     try {
       const url = new URL(referer);
@@ -122,7 +118,12 @@ const service = {
     }
   },
 
-  // Function that merges the template and body HTML files to allow dynamic content in the emails.
+  /**
+   * @function _mergeEmailTemplate
+   * merges the template and body HTML files to allow dynamic content in the emails
+   * @param {*} bodyTemplate
+   * @returns joined template files
+   */
   _mergeEmailTemplate: (bodyTemplate) => {
     const template = fs.readFileSync(
       `${path.join(
@@ -145,14 +146,20 @@ const service = {
     return result;
   },
 
-  // Sends email using chesService.merge
-  _sendEmailTemplate: (type, configData, submission, referer) => {
+  /**
+   * @function _sendEmailTemplate
+   * Sends email using chesService.merge
+   * @param {string} configData
+   * @param {string} contexts
+   * @returns The result of the email merge operation
+   */
+  _sendEmailTemplate: (configData, contexts) => {
     try {
       const mergedHtml = service._mergeEmailTemplate(configData.bodyTemplate);
       const data = {
         body: mergedHtml,
         bodyType: 'html',
-        contexts: generateContexts(type, configData, submission, referer),
+        contexts: contexts,
         from: EmailProperties.FROM_EMAIL,
         subject: configData.subject,
         title: configData.title,
@@ -166,16 +173,23 @@ const service = {
     }
   },
 
-  // Assigning user to Submission Draft
+  /**
+   * @function submissionAssigned
+   * Assigning user to Submission Draft
+   * @param {string} formId
+   * @param {string} currentStatus
+   * @param {string} assignmentNotificationEmail
+   * @param {string} referer
+   * @returns The result of the email merge operation
+   */
   submissionAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, 'submissionAssigned');
-      configData.assignmentNotificationEmail = assignmentNotificationEmail;
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_ASSIGNED, referer, { assignmentNotificationEmail });
 
-      return service._sendEmailTemplate('sendSubmissionAssigned', configData, submission, referer);
+      return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {
-        function: 'submissionAssigned',
+        function: EmailTypes.SUBMISSION_ASSIGNED,
         status: currentStatus,
         referer: referer
       });
@@ -183,16 +197,23 @@ const service = {
     }
   },
 
-  // Unassigning user to Submission Draft
+  /**
+   * @function submissionUnassigned
+   * Unassigning user from Submission Draft
+   * @param {string} formId
+   * @param {string} currentStatus
+   * @param {string} assignmentNotificationEmail
+   * @param {string} referer
+   * @returns The result of the email merge operation
+   */
   submissionUnassigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, 'submissionUnassigned');
-      configData.assignmentNotificationEmail = assignmentNotificationEmail;
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_UNASSIGNED, referer, { assignmentNotificationEmail });
 
-      return service._sendEmailTemplate('sendSubmissionUnassigned', configData, submission, referer);
+      return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {
-        function: 'submissionUnassigned',
+        function: EmailTypes.SUBMISSION_UNASSIGNED,
         status: currentStatus,
         referer: referer
       });
@@ -200,16 +221,23 @@ const service = {
     }
   },
 
-  // Assigning status to user on Submission
+  /**
+   * @function statusAssigned
+   * Setting Assigned status to user on Submission
+   * @param {string} formId
+   * @param {string} currentStatus
+   * @param {string} assignmentNotificationEmail
+   * @param {string} referer
+   * @returns The result of the email merge operation
+   */
   statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.submissionId, 'statusAssigned');
-      configData.assignmentNotificationEmail = assignmentNotificationEmail;
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, referer, { assignmentNotificationEmail });
 
-      return service._sendEmailTemplate('sendStatusAssigned', configData, submission, referer);
+      return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {
-        function: 'statusAssigned',
+        function: EmailTypes.STATUS_ASSIGNED,
         status: currentStatus,
         referer: referer
       });
@@ -229,14 +257,12 @@ const service = {
    */
   statusRevising: async (formId, currentStatus, revisionNotificationEmail, revisionNotificationEmailContent, referer) => {
     try {
-      const { configData, submission } = await buildEmailTemplate(formId, currentStatus.submissionId, 'statusRevising');
-      configData.revisionNotificationEmail = revisionNotificationEmail;
-      configData.revisionNotificationEmailContent = revisionNotificationEmailContent;
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, { revisionNotificationEmail, revisionNotificationEmailContent });
 
-      return service._sendEmailTemplate('sendStatusRevising', configData, submission, referer);
+      return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {
-        function: 'statusRevising',
+        function: EmailTypes.STATUS_REVISING,
         status: currentStatus,
         referer: referer
       });
@@ -244,16 +270,23 @@ const service = {
     }
   },
 
-  // Submitting Form
+  /**
+   * @function submissionReceived
+   * Completing submission of a form
+   * @param {string} formId
+   * @param {string} submissionId
+   * @param {string} body
+   * @param {string} referer
+   * @returns The result of the email merge operation
+   */
   submissionReceived: async (formId, submissionId, body, referer) => {
     try {
-      const { configData, submission } = await buildEmailTemplate(formId, submissionId, 'submissionReceived');
-      configData.body = body;
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_RECEIVED, referer, { body });
 
-      return service._sendEmailTemplate('sendSubmissionReceived', configData, submission, referer);
+      return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {
-        function: 'submissionReceived',
+        function: EmailTypes.SUBMISSION_RECEIVED,
         formId: formId,
         submissionId: submissionId,
         body: body,
@@ -263,16 +296,23 @@ const service = {
     }
   },
 
-  // Sending confirmation of Form Submission
+  /**
+   * @function submissionConfirmation
+   * Manual email confirmation after form has been submitted
+   * @param {string} formId
+   * @param {string} submissionId
+   * @param {string} body
+   * @param {string} referer
+   * @returns The result of the email merge operation
+   */
   submissionConfirmation: async (formId, submissionId, body, referer) => {
     try {
-      const { configData, submission } = await buildEmailTemplate(formId, submissionId, 'submissionConfirmation');
-      configData.body = body;
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, { body: body });
 
-      return service._sendEmailTemplate('sendSubmissionConfirmation', configData, submission, referer);
+      return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {
-        function: 'submissionConfirmation',
+        function: EmailTypes.SUBMISSION_CONFIRMATION,
         formId: formId,
         submissionId: submissionId,
         body: body,

@@ -2,6 +2,14 @@ module.exports = Object.freeze({
   EmailProperties: {
     FROM_EMAIL: 'donotreplyCHEFS@gov.bc.ca'
   },
+  EmailTypes: {
+    SUBMISSION_ASSIGNED: 'submissionAssigned',
+    SUBMISSION_UNASSIGNED: 'submissionUnassigned',
+    STATUS_ASSIGNED: 'statusAssigned',
+    STATUS_REVISING: 'statusRevising',
+    SUBMISSION_RECEIVED: 'submissionReceived',
+    SUBMISSION_CONFIRMATION: 'submissionConfirmation'
+  },
   Permissions: {
     FORM_API_CREATE: 'form_api_create',
     FORM_API_READ: 'form_api_read',
