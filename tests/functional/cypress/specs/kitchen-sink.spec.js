@@ -1,3 +1,5 @@
+const { format } = require('date-fns');
+
 const depEnv = Cypress.env('depEnv');
 // TODO: Parameterize formId, submissionId and versionId for full e2e test (no cypress.intercepts variant)
 const formId = '897e2ca1-d81c-4079-a135-63b930f98590';
@@ -29,11 +31,8 @@ const data = {
   radioGroup1: "radio2",
   phoneNumber1: "(012) 345-6789",
   email1: "bar@baz.com",
-  dateTime1: (() => {
-    // Manually construct date format matching '2021-07-05T12:00:00-07:00'
-    const date = new Date();
-    return `${date.getFullYear()}-${('0'+(date.getMonth()+1)).slice(-2)}-${('0'+date.getDate()).slice(-2)}T12:00:00-07:00`;
-  })(),
+  // Date format should be '2021-07-05T12:00:00-07:00'
+  dateTime1: format(new Date(), 'yyyy-MM-dd\'T\'12:00:00xxx'),
   day1: "06/29/2021",
   time1: "11:30:00",
   submit: true,
@@ -112,12 +111,12 @@ function helperFormFields() {
 
   // checkboxGroup1
   cy.get('#eoqkh1').contains('label', 'Checkbox Group 1');
-  cy.get('#eoqkh1-check1').click();
-  cy.get('#eoqkh1-check3').click();
+  cy.get('[id*="eoqkh1--check1"]').click();
+  cy.get('[id*="eoqkh1--check3"]').click();
 
   // radioGroup1
   cy.get('#ev6fyvb').contains('label', 'Radio Group 1');
-  cy.get('[for="ev6fyvb-radio2"]').click();
+  cy.get('[for*="ev6fyvb--radio2"]').click();
 
   // number
   cy.get('#ebedo1d').contains('label', 'Number 1').type(data.number);
@@ -149,11 +148,11 @@ function helperFormFields() {
 describe('Kitchen Sink Example Form', () => {
   beforeEach(() => {
     // Form Load
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/${formId}`, {
-      fixture: 'kitchensink/meta.json'
-    }).as('formMeta');
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/${formId}/options`, {
+      fixture: 'kitchensink/formOptions.json'
+    }).as('formOptions');
     cy.intercept('GET', `/${depEnv}/api/v1/forms/${formId}/version`, {
-      fixture: 'kitchensink/version.json'
+      fixture: 'kitchensink/formVersion.json'
     }).as('formVersion');
 
     // Form Submit and Success
@@ -168,13 +167,16 @@ describe('Kitchen Sink Example Form', () => {
         submission: {}
       }
     }).as('formSubmit');
+    cy.intercept('GET', `/${depEnv}/api/v1/submissions/${submissionId}/options`, {
+      fixture: 'kitchensink/submissionOptions.json'
+    }).as('submissionOptions');
     cy.intercept('GET', `/${depEnv}/api/v1/submissions/${submissionId}`, {
       fixture: 'kitchensink/submission.json'
-    }).as('formSubmission');
+    }).as('submission');
 
     // Visit Page
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
-    cy.wait(['@formMeta', '@formVersion']);
+    cy.wait(['@formOptions', '@formVersion']);
     cy.location('pathname').should('eq', `/${depEnv}/form/submit`);
     cy.location('search').should('eq', `?f=${formId}`);
   });
@@ -210,7 +212,7 @@ describe('Kitchen Sink Example Form', () => {
     });
 
     // Success
-    cy.wait('@formSubmission');
+    cy.wait('@submission');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.location('search').should('eq', `?s=${submissionId}`);
     cy.contains('h1', 'Your form has been submitted successfully');
