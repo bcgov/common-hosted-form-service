@@ -87,7 +87,7 @@ describe('Admin Service', () => {
     it('calls get on endpoint', async () => {
       mockAxios.onGet(endpoint).reply(200);
 
-      const result = await adminService.readApiDetails(zeroUuid);
+      const result = await adminService.readRoles(zeroUuid);
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });
