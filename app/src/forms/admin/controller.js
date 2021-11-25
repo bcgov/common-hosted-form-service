@@ -78,7 +78,7 @@ module.exports = {
   },
   getFormUserRoles: async (req, res, next) => {
     try {
-      const response = await service.getFormUserRoles(req.query);
+      const response = await service.getFormUserRoles(req.params.formId);
       res.status(200).json(response);
     } catch (error) {
       next(error);

@@ -39,10 +39,11 @@ export default {
   /**
    * @function readRoles
    * Get roles for form user
+   * @param {string} formId The GUID
    * @returns {Promise} An axios response
    */
-  readRoles() {
-    return appAxios().get(`${ApiRoutes.ADMIN}/formUsers`);
+  readRoles(formId) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/formUsers`);
   },
 
   /**
