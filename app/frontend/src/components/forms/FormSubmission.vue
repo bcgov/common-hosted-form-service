@@ -173,11 +173,7 @@ export default {
       this.$refs.notesPanel.getNotes();
     },
     setDraft(status) {
-      if (status === 'REVISING') {
-        this.isDraft = true;
-      } else {
-        this.isDraft = false;
-      }
+      this.isDraft = (status === 'REVISING');
     },
     toggleSubmissionEdit(editing) {
       this.submissionReadOnly = !editing;
