@@ -1,11 +1,17 @@
 <template>
-  <div>
+  <v-skeleton-loader :loading="loading" type="article">
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 
     <div v-if="form.active === false" class="red--text mb-6">
       (DELETED)
-      <v-btn color="primary" class="mt-0" @click="showRestoreDialog = true" text small>
+      <v-btn
+        color="primary"
+        class="mt-0"
+        @click="showRestoreDialog = true"
+        text
+        small
+      >
         <v-icon class="mr-1">build_circle</v-icon>
         <span class="d-none d-sm-flex">Restore this form</span>
       </v-btn>
@@ -19,13 +25,18 @@
         </v-col>
         <v-col cols="6">
           <h4>Form Users</h4>
-          <vue-json-pretty :data="roleDetails.users" />
+          <vue-json-pretty :data="roles" />
         </v-col>
         <v-col cols="6 mt-6">
           <div v-if="apiKey">
             <h4>API Key Details</h4>
             <vue-json-pretty :data="apiKey" />
-            <v-btn class="mt-6" color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
+            <v-btn
+              class="mt-6"
+              color="primary"
+              :disabled="!apiKey"
+              @click="showDeleteDialog = true"
+            >
               <span>Delete API Key</span>
             </v-btn>
           </div>
@@ -47,7 +58,9 @@
       <template #title>Confirm Restore</template>
       <template #text>
         <div v-if="restoreInProgress" class="text-center">
-          <v-progress-circular indeterminate color="primary" :size="100">Restoring</v-progress-circular>
+          <v-progress-circular indeterminate color="primary" :size="100">
+            Restoring
+          </v-progress-circular>
         </div>
         <div v-else>
           Restore
@@ -71,7 +84,7 @@
         <span>Delete</span>
       </template>
     </BaseDialog>
-  </div>
+  </v-skeleton-loader>
 </template>
 
 <script>
@@ -84,7 +97,7 @@ export default {
   name: 'AdministerForm',
   components: {
     AdminVersions,
-    VueJsonPretty
+    VueJsonPretty,
   },
   props: {
     formId: {
@@ -94,11 +107,12 @@ export default {
   },
   data() {
     return {
-      showRestoreDialog: false,
-      restoreInProgress: false,
-      showDeleteDialog: false,
       formDetails: {},
+      loading: true,
+      restoreInProgress: false,
       roleDetails: {},
+      showDeleteDialog: false,
+      showRestoreDialog: false,
     };
   },
   computed: {
@@ -127,15 +141,13 @@ export default {
     await Promise.all([
       this.readForm(this.formId),
       this.readApiDetails(this.formId),
-      this.readRoles()
+      this.readRoles(this.formId),
     ]);
-
-    this.roleDetails = this.roles.find((role) => {
-      return role.formName === this.form.name;
-    });
 
     this.formDetails = this.form;
     delete this.formDetails.versions;
+
+    this.loading = false;
   },
 };
 </script>
