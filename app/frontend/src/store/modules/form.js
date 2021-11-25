@@ -332,7 +332,7 @@ export default {
           state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columnList : undefined;
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
-          : await formService.listSubmissions(formId, { deleted: false, draft: false, fields: fields });
+          : await formService.listSubmissions(formId, { deleted: false, fields: fields });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
