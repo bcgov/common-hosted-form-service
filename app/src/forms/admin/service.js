@@ -7,6 +7,12 @@ const service = {
   // Forms
   //
 
+  /**
+   * @function listForms
+   * List all the forms in CHEFS
+   * @param {Object} params The query params. Specify 'active' bool to control active/deleted
+   * @returns {Promise} An objection query promise
+   */
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
@@ -18,12 +24,24 @@ const service = {
       .modify('orderNameAscending');
   },
 
+  /**
+   * @function readVersion
+   * Find a form version entry
+   * @param {String} formVersionId The version Id
+   * @returns {Promise} An objection query promise
+   */
   readVersion: (formVersionId) => {
     return FormVersion.query()
       .findById(formVersionId)
       .throwIfNotFound();
   },
 
+  /**
+   * @function readForm
+   * Find a form entry
+   * @param {String} formId The form Id
+   * @returns {Promise} An objection query promise
+   */
   readForm: async (formId) => {
     return Form.query()
       .findById(formId)
@@ -32,6 +50,12 @@ const service = {
       .throwIfNotFound();
   },
 
+  /**
+   * @function restoreForm
+   * Reactivate a soft-deleted form
+   * @param {String} formId The form Id
+   * @returns {Object} The form entry after the restore
+   */
   restoreForm: async (formId) => {
     let trx;
     try {
@@ -57,6 +81,12 @@ const service = {
   // Users
   //
 
+  /**
+   * @function getUsers
+   * Search for users
+   * @param {Object} params The query parameters
+   * @returns {Promise} An objection query promise
+   */
   getUsers: async (params) => {
     return User.query()
       .skipUndefined()
@@ -67,6 +97,12 @@ const service = {
       .modify('orderLastFirstAscending');
   },
 
+  /**
+   * @function getFormUserRoles
+   * For the given form, return users that have roles for that form
+   * @param {String} formId The form ID
+   * @returns {Promise} An objection query promise
+   */
   getFormUserRoles: async (formId) => {
     const formAccess = await UserFormAccess.query()
       .modify('filterFormId', formId)
