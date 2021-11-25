@@ -72,7 +72,7 @@
                       class="mx-1"
                       @click="toggleSubmissionEdit(true)"
                       color="primary"
-                      :disabled="!submissionReadOnly"
+                      :disabled="isDraft"
                       icon
                       v-bind="attrs"
                       v-on="on"
@@ -110,7 +110,7 @@
       >
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Status</h2>
-          <StatusPanel :submissionId="submissionId" :formId="form.id" @note-updated="refreshNotes" />
+          <StatusPanel :submissionId="submissionId" :formId="form.id" @note-updated="refreshNotes" @draft-enabled="setDraft" />
         </v-card>
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Notes</h2>
@@ -147,6 +147,7 @@ export default {
   },
   data() {
     return {
+      isDraft: true,
       loading: true,
       reRenderSubmission: 0,
       submissionReadOnly: true,
@@ -170,6 +171,13 @@ export default {
     },
     refreshNotes() {
       this.$refs.notesPanel.getNotes();
+    },
+    setDraft(status) {
+      if (status === 'REVISING') {
+        this.isDraft = true;
+      } else {
+        this.isDraft = false;
+      }
     },
     toggleSubmissionEdit(editing) {
       this.submissionReadOnly = !editing;
