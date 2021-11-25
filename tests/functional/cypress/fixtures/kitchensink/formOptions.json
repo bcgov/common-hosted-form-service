@@ -1,0 +1,9 @@
+{
+  "id": "897e2ca1-d81c-4079-a135-63b930f98590",
+  "name": "Kitchen Sink Simple",
+  "description": "Test complicated form with the simple design interface",
+  "idpHints": [
+    "public"
+  ],
+  "snake": "kitchen_sink_simple"
+}
