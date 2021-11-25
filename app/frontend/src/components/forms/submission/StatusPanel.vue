@@ -255,6 +255,9 @@ export default {
         const statuses = await formService.getSubmissionStatuses(
           this.submissionId
         );
+
+        this.$emit('draft-enabled', statuses.data[0].code);
+
         this.statusHistory = statuses.data;
         if (!this.statusHistory.length || !this.statusHistory[0]) {
           throw new Error('No statuses found');
