@@ -276,6 +276,9 @@ export default {
             (sc) => sc.code === this.currentStatus.code
           ).statusCode;
           this.items = this.currentStatus.statusCodeDetail.nextCodes;
+
+          // Hiding REVISING status until backend can receive submitter's email.
+          this.items = this.items.filter((item) => item !== 'REVISING');
         }
       } catch (error) {
         this.addNotification({
