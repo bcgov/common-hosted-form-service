@@ -67,27 +67,21 @@ const service = {
       .modify('orderLastFirstAscending');
   },
 
-  getFormUserRoles: async (params) => {
-    const accessItems = await UserFormAccess.query()
-      .skipUndefined()
-      .modify('filterFormId', params.formId)
-      .modify('filterFormName', params.formName)
+  getFormUserRoles: async (formId) => {
+    const formAccess = await UserFormAccess.query()
+      .modify('filterFormId', formId)
       .modify('orderDefault');
-    // do a quick transform into a simple structure...
-    const formIds = [...new Set(accessItems.map(x => x.formId))];
-    const results = formIds.map(formId => {
-      // grab all users that have roles on this form...
-      const users = [...new Set(accessItems.filter(x => x.formId === formId && x.roles.length))];
-      const form = accessItems.find(x => x.formId === formId);
-      const userRoles = users.map(x => ({ userId: x.userId, username: x.username, roles: x.roles }));
-      return {
-        formId: formId,
-        formName: form.formName,
-        users: userRoles
-      };
-    });
-
-    return results;
+    return formAccess
+      // grab all users that have roles on this form
+      .filter(fa => fa.roles.length)
+      // do a quick transform into a simple structure.
+      .map(fa => ({
+        userId: fa.userId,
+        keycloakId: fa.keycloakId,
+        username: fa.username,
+        email: fa.email,
+        roles: fa.roles
+      }));
   }
 };
 

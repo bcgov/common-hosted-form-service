@@ -88,14 +88,14 @@ export default {
         }, { root: true });
       }
     },
-    async readRoles({ commit, dispatch }) {
+    async readRoles({ commit, dispatch }, formId) {
       try {
         // Get specific roles
-        const response = await adminService.readRoles();
+        const response = await adminService.readRoles(formId);
         commit('SET_ROLES', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching these roles.',
+          message: 'An error occurred while fetching form user roles.',
           consoleError: `Error getting admin roles data: ${error}`,
         }, { root: true });
       }

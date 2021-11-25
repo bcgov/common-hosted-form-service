@@ -80,6 +80,20 @@ describe('Admin Service', () => {
     });
   });
 
+
+  describe('admin/forms/{formId}/formUsers', () => {
+    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}/formUsers`;
+
+    it('calls get on endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await adminService.readApiDetails(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+
   //
   // User
   //
