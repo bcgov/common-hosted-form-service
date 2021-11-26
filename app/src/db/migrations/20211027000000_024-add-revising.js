@@ -20,7 +20,7 @@ exports.up = function (knex) {
         code: 'REVISING',
         createdBy: CREATED_BY
       }));
-      return knex('form_status_code').insert(formStatuses);
+      if (formStatuses && formStatuses.length) return knex('form_status_code').insert(formStatuses);
     });
 };
 
