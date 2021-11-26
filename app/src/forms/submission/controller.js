@@ -62,12 +62,13 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
-      const submission = await service.read(req.params.formSubmissionId);
       const response = await service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser);
       // send an email (async in the background)
       if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
+        const submission = await service.read(req.params.formSubmissionId);
         emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
       } else if (req.body.code === Statuses.REVISING && req.body.revisionNotificationEmail) {
+        const submission = await service.read(req.params.formSubmissionId);
         emailService.statusRevising(submission.form.id, response[0], req.body.revisionNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
       }
       res.status(200).json(response);
