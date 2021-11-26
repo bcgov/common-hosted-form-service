@@ -1,3 +1,4 @@
+const { Statuses } = require('../../../../src/forms/common/constants');
 const controller = require('../../../../src/forms/submission/controller');
 const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
@@ -5,7 +6,7 @@ const cdogsService = require('../../../../src/components/cdogsService');
 
 const req = {
   params: { formSubmissionId: '1' },
-  body: {},
+  body: { code: Statuses.ASSIGNED },
   currentUser: {},
   headers: { referer: 'a' },
 };
@@ -13,24 +14,38 @@ const req = {
 describe('addStatus', () => {
   it('should not call email service if no email specified', async () => {
     service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
-    service.createStatus = jest.fn().mockReturnValue([1, 2, 3]);
+    service.changeStatusState = jest.fn().mockReturnValue([1, 2, 3]);
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
     await controller.addStatus(req, {}, jest.fn());
 
-    expect(service.createStatus).toHaveBeenCalledTimes(1);
+    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
     expect(emailService.statusAssigned).toHaveBeenCalledTimes(0);
   });
 
   it('should call email service if an email specified', async () => {
     req.body.assignmentNotificationEmail = 'a@a.com';
     service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
-    service.createStatus = jest.fn().mockReturnValue([1, 2, 3]);
+    service.changeStatusState = jest.fn().mockReturnValue([1, 2, 3]);
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
     await controller.addStatus(req, {}, jest.fn());
 
-    expect(service.createStatus).toHaveBeenCalledTimes(1);
+    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
     expect(emailService.statusAssigned).toHaveBeenCalledTimes(1);
     expect(emailService.statusAssigned).toHaveBeenCalledWith('123', 1, 'a@a.com', 'a');
+  });
+
+  it('should call statusRevising if email specified', async () => {
+    req.body.revisionNotificationEmail = 'a@a.com';
+    req.body.revisionNotificationEmailContent = 'Email content';
+    req.body.code = Statuses.REVISING;
+    service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
+    service.changeStatusState = jest.fn().mockReturnValue([1, 2, 3]);
+    emailService.statusRevising = jest.fn().mockReturnValue(true);
+    await controller.addStatus(req, {}, jest.fn());
+
+    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
+    expect(emailService.statusRevising).toHaveBeenCalledTimes(1);
+    expect(emailService.statusRevising).toHaveBeenCalledWith('123', 1, 'a@a.com', 'Email content', 'a');
   });
 });
 

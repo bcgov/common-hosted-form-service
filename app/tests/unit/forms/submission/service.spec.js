@@ -1,4 +1,13 @@
+const { MockModel, MockTransaction } = require('../../../common/dbHelper');
+
+jest.mock('../../../../src/forms/common/models/tables/formSubmissionStatus', () => MockModel);
+
 const service = require('../../../../src/forms/submission/service');
+
+beforeEach(() => {
+  MockModel.mockReset();
+  MockTransaction.mockReset();
+});
 
 describe('read', () => {
   it('should call the internal _fetchSubmissionData method', async () => {
@@ -23,13 +32,17 @@ describe('addNote', () => {
 });
 
 describe('createStatus', () => {
-  it('should call the internal _createSubmissionStatus method', async () => {
-    service._createSubmissionStatus = jest.fn().mockReturnValue({ a: 'b' });
-    const res = await service.createStatus('abc', { data: true }, { user: 'me' });
+  it('should perform appropriate db queries', async () => {
+    const trx = {};
+    service.getStatus = jest.fn().mockReturnValue({ a: 'b' });
+    const res = await service.createStatus('abc', { data: true }, { user: 'me' }, trx);
 
     expect(res).toEqual({ a: 'b' });
-    expect(service._createSubmissionStatus).toHaveBeenCalledTimes(1);
-    expect(service._createSubmissionStatus).toHaveBeenCalledWith('abc', { data: true }, { user: 'me' });
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
+    expect(MockModel.insert).toHaveBeenCalledTimes(1);
+    expect(MockModel.insert).toHaveBeenCalledWith(expect.anything());
   });
 });
 

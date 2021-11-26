@@ -143,29 +143,37 @@ describe('public methods', () => {
     formService.readForm = jest.fn().mockReturnValue(form);
     formService.readSubmission = jest.fn().mockReturnValue(submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
-
     const result = await emailService.statusAssigned(
       '123',
       currentStatus,
       assignmentNotificationEmail,
       referer
     );
+    const configData = {
+      bodyTemplate: 'send-status-assigned-email-body.html',
+      title: `${form.name} Submission Assignment`,
+      subject: 'Form Submission Assignment',
+      messageLinkText: `You have been assigned to a ${form.name} submission. Please login to review it.`,
+      priority: 'normal',
+      form,
+    };
+
+    const contexts = [{
+      context: {
+        allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+        confirmationNumber: 'abc',
+        form: form,
+        messageLinkText: 'You have been assigned to a 123 submission. Please login to review it.',
+        messageLinkUrl: 'https://form/view?s=123',
+        revisionNotificationEmailContent: undefined,
+        title: '123 Submission Assignment'
+      },
+      to: ['x@y.com']
+    }];
+
     expect(result).toEqual('ret');
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
-      'sendStatusAssigned',
-      expect.objectContaining({
-        bodyTemplate: 'send-status-assigned-email-body.html',
-        title: `${form.name} Submission Assignment`,
-        subject: 'Form Submission Assignment',
-        messageLinkText: `You have been assigned to a ${form.name} submission. Please login to review it.`,
-        priority: 'normal',
-        assignmentNotificationEmail,
-        form,
-      }),
-      submission,
-      referer
-    );
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 
   it('submissionConfirmation should call send a conf email', async () => {
@@ -179,26 +187,36 @@ describe('public methods', () => {
       body,
       referer
     );
+
+    const configData = {
+      bodyTemplate: 'submission-received-confirmation-public.html',
+      subject: `${form.name} Accepted`,
+      priority: 'normal',
+      messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+      title: `${form.name} Accepted`,
+      form,
+    };
+
+    const contexts = [{
+      context: {
+        allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+        confirmationNumber: 'abc',
+        form: form,
+        messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+        messageLinkUrl: `https://form/success?s=${form.name}`,
+        revisionNotificationEmailContent: undefined,
+        title: `${form.name} Accepted`
+      },
+      to: ['a@b.com']
+    }];
+
     expect(result).toEqual('ret');
     expect(formService.readForm).toHaveBeenCalledTimes(1);
     expect(formService.readForm).toHaveBeenCalledWith(form.id);
     expect(formService.readSubmission).toHaveBeenCalledTimes(1);
     expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
-      'sendSubmissionConfirmation',
-      expect.objectContaining({
-        bodyTemplate: 'submission-received-confirmation-public.html',
-        title: `${form.name} Accepted`,
-        subject: `${form.name} Accepted`,
-        priority: 'normal',
-        messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
-        body,
-        form,
-      }),
-      submission,
-      referer
-    );
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 
   it('submissionReceived should call send a submission email', async () => {
@@ -212,6 +230,30 @@ describe('public methods', () => {
       body,
       referer
     );
+
+    const configData = {
+      bodyTemplate: 'submission-confirmation.html',
+      title: `${form.name} Submission`,
+      subject: `${form.name} Submission`,
+      messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
+      priority: 'normal',
+      body,
+      form,
+    };
+
+    const contexts = [{
+      context: {
+        allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+        confirmationNumber: 'abc',
+        form: form,
+        messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
+        messageLinkUrl: `https://form/view?s=${form.name}`,
+        revisionNotificationEmailContent: undefined,
+        title: `${form.name} Submission`
+      },
+      to: ['a@b.com', 'z@y.com']
+    }];
+
     expect(result).toEqual('ret');
     expect(formService.readForm).toHaveBeenCalledTimes(1);
     expect(formService.readForm).toHaveBeenCalledWith(form.id);
@@ -219,20 +261,7 @@ describe('public methods', () => {
     expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(form.submissionReceivedEmails).toBeInstanceOf(Array);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
-      'sendSubmissionReceived',
-      expect.objectContaining({
-        bodyTemplate: 'submission-confirmation.html',
-        title: `${form.name} Submission`,
-        subject: `${form.name} Submission`,
-        messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
-        priority: 'normal',
-        body,
-        form,
-      }),
-      submission,
-      referer
-    );
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 
   it('submissionUnassigned should send a uninvited email', async () => {
@@ -246,24 +275,34 @@ describe('public methods', () => {
       assignmentNotificationEmail,
       referer
     );
+
+    const configData = {
+      bodyTemplate: 'submission-unassigned.html',
+      title: `Uninvited From ${form.name} Draft`,
+      subject: 'Uninvited From Submission Draft',
+      messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
+      priority: 'normal',
+      form,
+    };
+
+    const contexts = [{
+      context: {
+        allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+        confirmationNumber: 'abc',
+        form: form,
+        messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
+        messageLinkUrl: `https://user/view?s=${form.name}`,
+        revisionNotificationEmailContent: undefined,
+        title: `Uninvited From ${form.name} Draft`
+      },
+      to: ['x@y.com']
+    }];
+
     expect(result).toEqual('ret');
     expect(formService.readForm).toHaveBeenCalledTimes(1);
     expect(formService.readForm).toHaveBeenCalledWith(form.id);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
-      'sendSubmissionUnassigned',
-      expect.objectContaining({
-        bodyTemplate: 'submission-unassigned.html',
-        title: `Uninvited From ${form.name} Draft`,
-        subject: 'Uninvited From Submission Draft',
-        messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
-        priority: 'normal',
-        assignmentNotificationEmail,
-        form,
-      }),
-      submission,
-      referer
-    );
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 
   it('submissionAssigned should send a uninvited email', async () => {
@@ -277,25 +316,35 @@ describe('public methods', () => {
       assignmentNotificationEmail,
       referer
     );
+
+    const configData = {
+      bodyTemplate: 'submission-assigned.html',
+      title: `Invited to ${form.name} Draft`,
+      subject: 'Invited to Submission Draft',
+      messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
+      priority: 'normal',
+      form,
+    };
+
+    const contexts = [{
+      context: {
+        allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+        confirmationNumber: 'abc',
+        form: form,
+        messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
+        messageLinkUrl: `https://user/view?s=${form.name}`,
+        revisionNotificationEmailContent: undefined,
+        title: `Invited to ${form.name} Draft`
+      },
+      to: ['x@y.com']
+    }];
+
     expect(result).toEqual('ret');
     expect(formService.readForm).toHaveBeenCalledTimes(1);
     expect(formService.readForm).toHaveBeenCalledWith(form.id);
     expect(formService.readSubmission).toHaveBeenCalledTimes(1);
     expect(formService.readSubmission).toHaveBeenCalledWith(currentStatus.formSubmissionId);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(
-      'sendSubmissionAssigned',
-      expect.objectContaining({
-        bodyTemplate: 'submission-assigned.html',
-        title: `Invited to ${form.name} Draft`,
-        subject: 'Invited to Submission Draft',
-        messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
-        priority: 'normal',
-        assignmentNotificationEmail,
-        form,
-      }),
-      submission,
-      referer
-    );
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 });
