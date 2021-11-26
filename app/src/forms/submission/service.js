@@ -231,16 +231,21 @@ const service = {
       // Create a new status entry
       await service.createStatus(submissionId, data, currentUser, trx);
 
-      // Toggle draft flag on submission - force true if revising, false otherwise
+      // Determine draft flag state on submission - true if revising, false otherwise
       const draft = data.code === Statuses.REVISING;
-      await service.setDraftState(submissionId, draft, currentUser, trx);
+      const formSubmission = await FormSubmission.query(trx).findById(submissionId);
 
-      if (draft) {
-        // Allow submitter users to edit the draft again if Revising status
-        await permissionService.setUserEditable(submissionId, currentUser, trx);
-      } else {
-        // Prevent submitter users from editing the submission
-        await permissionService.setUserReadOnly(submissionId, trx);
+      // Only change draft state and permissions if draft state is getting toggled
+      if (formSubmission.draft !== draft) {
+        await service.setDraftState(submissionId, draft, currentUser, trx);
+
+        if (draft) {
+          // Allow submitter users to edit the draft again if Revising status
+          await permissionService.setUserEditable(submissionId, currentUser, trx);
+        } else {
+          // Prevent submitter users from editing the submission
+          await permissionService.setUserReadOnly(submissionId, trx);
+        }
       }
 
       if (!etrx) await trx.commit();
