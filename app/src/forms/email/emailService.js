@@ -173,10 +173,7 @@ const service = {
       };
       return chesService.merge(data);
     } catch (err) {
-      log.error(err.message, {
-        function: '_sendEmailTemplate',
-        referer: referer
-      });
+      log.error(err.message, { function: '_sendEmailTemplate' });
       throw err;
     }
   },
