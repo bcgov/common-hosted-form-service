@@ -290,7 +290,7 @@ describe(`POST ${basePath}/ID/status`, () => {
   const statRes = { code: 'SUBMITTED', user: {} };
   it('should return 200', async () => {
     // mock a success return value...
-    service.createStatus = jest.fn().mockReturnValue(statRes);
+    service.changeStatusState = jest.fn().mockReturnValue(statRes);
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
 
     const response = await request(app).post(`${basePath}/ID/status`, { code: 'SUBMITTED', user: {} });
@@ -302,7 +302,7 @@ describe(`POST ${basePath}/ID/status`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.createStatus = jest.fn(() => { throw new Problem(401); });
+    service.changeStatusState = jest.fn(() => { throw new Problem(401); });
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
 
     const response = await request(app).post(`${basePath}/ID/status`);
@@ -313,7 +313,7 @@ describe(`POST ${basePath}/ID/status`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error.
-    service.createStatus = jest.fn(() => { throw new Error(); });
+    service.changeStatusState = jest.fn(() => { throw new Error(); });
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
 
     const response = await request(app).post(`${basePath}/ID/status`);

@@ -200,22 +200,25 @@ export default {
         await this.fetchSubmissions({ formId: this.formId });
         // Build up the list of forms for the table
         if (this.submissionList) {
-          const tableRows = this.submissionList.map((s) => {
-            const fields = {
-              confirmationId: s.confirmationId,
-              date: s.createdAt,
-              formId: s.formId,
-              status: s.formSubmissionStatusCode,
-              submissionId: s.submissionId,
-              submitter: s.createdBy,
-              versionId: s.formVersionId,
-            };
-            // Add any custom columns
-            this.userColumnList.forEach((col) => {
-              fields[col] = s[col];
+          const tableRows = this.submissionList
+            // Filtering out all submissions that has no status. (User has not submitted)
+            .filter((s) => s.formSubmissionStatusCode)
+            .map((s) => {
+              const fields = {
+                confirmationId: s.confirmationId,
+                date: s.createdAt,
+                formId: s.formId,
+                status: s.formSubmissionStatusCode,
+                submissionId: s.submissionId,
+                submitter: s.createdBy,
+                versionId: s.formVersionId,
+              };
+              // Add any custom columns
+              this.userColumnList.forEach((col) => {
+                fields[col] = s[col];
+              });
+              return fields;
             });
-            return fields;
-          });
           this.submissionTable = tableRows;
         }
       } catch (error) {

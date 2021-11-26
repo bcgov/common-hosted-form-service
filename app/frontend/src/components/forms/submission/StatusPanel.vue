@@ -7,9 +7,9 @@
         <br />
         <strong>Assigned To:</strong>
         {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-        <span v-if="currentStatus.user">
-          ({{ currentStatus.user.email }})
-        </span>
+        <span
+          v-if="currentStatus.user"
+        >({{ currentStatus.user.email }})</span>
       </p>
 
       <v-form ref="form" v-model="valid" lazy-validation>
@@ -27,20 +27,36 @@
               @change="statusFields = true"
             />
 
+            <div v-show="statusFields" v-if="showRevising">
+              <v-text-field v-model="revisionEmail" label="Recipient Email" outlined dense />
+              <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
+              <div v-if="addComment">
+                <label>Email Comment</label>
+                <v-textarea
+                  v-model="emailComment"
+                  :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+                  rows="1"
+                  counter
+                  auto-grow
+                  dense
+                  flat
+                  outlined
+                  solid
+                />
+              </div>
+            </div>
+
             <div v-show="statusFields">
               <div v-if="showAsignee">
-                <!-- {{ formReviewers }} -->
                 <label>
                   Assign To
                   <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
-                      <v-icon color="primary" v-bind="attrs" v-on="on">
-                        help_outline
-                      </v-icon>
+                      <v-icon color="primary" v-bind="attrs" v-on="on">help_outline</v-icon>
                     </template>
                     <span>
-                      Submissions can be assigned to Form Reviewers. <br />
-                      To add more team members as Form Reviewers, go to the
+                      Submissions can be assigned to Form Reviewers.
+                      <br />To add more team members as Form Reviewers, go to the
                       Manage page for this form.
                     </span>
                   </v-tooltip>
@@ -65,8 +81,7 @@
                       close
                       @click="data.select"
                       @click:close="remove(data.item)"
-                    >
-                      {{ data.item.fullName }}
+                    >{{ data.item.fullName }}
                     </span>
                   </template>
                   <!-- users found in dropdown -->
@@ -98,19 +113,20 @@
                   </v-btn>
                 </div>
               </div>
-
-              <label>Note (Optional)</label>
-              <v-textarea
-                v-model="note"
-                :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
-                rows="1"
-                counter
-                auto-grow
-                dense
-                flat
-                outlined
-                solid
-              />
+              <div v-if="!showRevising">
+                <label>Note (Optional)</label>
+                <v-textarea
+                  v-model="note"
+                  :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+                  rows="1"
+                  counter
+                  auto-grow
+                  dense
+                  flat
+                  outlined
+                  solid
+                />
+              </div>
             </div>
           </v-col>
         </v-row>
@@ -125,9 +141,7 @@
               </template>
 
               <v-card v-if="historyDialog">
-                <v-card-title class="text-h5 pb-0">
-                  Status History
-                </v-card-title>
+                <v-card-title class="text-h5 pb-0">Status History</v-card-title>
 
                 <v-card-text>
                   <hr />
@@ -180,12 +194,15 @@ export default {
       // TODO: use a better name than "on" if possible, check multiple usage in template though...
       on: false,
       assignee: null,
+      addComment: false,
       currentStatus: {},
       formReviewers: [],
       historyDialog: false,
       items: [],
       loading: true,
       note: '',
+      emailComment: '',
+      revisionEmail: '',
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
@@ -194,8 +211,10 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['keycloakSubject']),
-
     // State Machine
+    showRevising() {
+      return ['REVISING'].includes(this.statusToSet);
+    },
     showAsignee() {
       return ['ASSIGNED'].includes(this.statusToSet);
     },
@@ -236,6 +255,9 @@ export default {
         const statuses = await formService.getSubmissionStatuses(
           this.submissionId
         );
+
+        this.$emit('draft-enabled', statuses.data[0].code);
+
         this.statusHistory = statuses.data;
         if (!this.statusHistory.length || !this.statusHistory[0]) {
           throw new Error('No statuses found');
@@ -254,6 +276,9 @@ export default {
             (sc) => sc.code === this.currentStatus.code
           ).statusCode;
           this.items = this.currentStatus.statusCodeDetail.nextCodes;
+
+          // Hiding REVISING status until backend can receive submitter's email.
+          this.items = this.items.filter((item) => item !== 'REVISING');
         }
       } catch (error) {
         this.addNotification({
@@ -265,8 +290,11 @@ export default {
       }
     },
     resetForm() {
+      this.addComment = false;
+      this.emailComment = '';
       this.statusFields = false;
       this.$refs.form.resetValidation();
+      this.revisionEmail = '';
       this.statusToSet = null;
       this.statusFields = false;
       this.note = '';
@@ -280,6 +308,8 @@ export default {
 
           const statusBody = {
             code: this.statusToSet,
+            revisionNotificationEmail: this.revisionEmail,
+            revisionNotificationEmailContent: this.emailComment,
           };
           if (this.showAsignee) {
             if (this.assignee) {
@@ -296,6 +326,7 @@ export default {
               'No response data from API while submitting status update form'
             );
           }
+
           if (this.note) {
             const submissionStatusId =
               statusResponse.data[0].submissionStatusId;
