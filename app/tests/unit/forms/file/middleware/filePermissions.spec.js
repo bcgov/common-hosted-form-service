@@ -242,6 +242,8 @@ describe('hasFilePermissions', () => {
   it('returns the result of the submission checking middleware', async () => {
     // Submission checking middleware is fully tested out in useraccess.spec.js
     // treat as black box for this testing
+    subPermSpy.mockReturnValue(jest.fn());
+
     const mw = hasFilePermissions(perm);
     const nxt = jest.fn();
     const req = {

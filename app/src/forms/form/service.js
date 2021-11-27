@@ -39,7 +39,6 @@ const service = {
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
-      .skipUndefined()
       .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
@@ -131,7 +130,15 @@ const service = {
 
       // remove any existing links to identity providers, and the updated ones
       await FormIdentityProvider.query(trx).delete().where('formId', obj.id);
-      await FormIdentityProvider.query(trx).insert(data.identityProviders.map(p => { return { id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.usernameIdp }; }));
+
+      // insert any new identity providers
+      const fIdps = data.identityProviders.map(p => ({
+        id: uuidv4(),
+        formId: obj.id,
+        code: p.code,
+        createdBy: currentUser.usernameIdp
+      }));
+      if (fIdps && fIdps.length) await FormIdentityProvider.query(trx).insert(fIdps);
 
       await trx.commit();
       const result = await service.readForm(obj.id);

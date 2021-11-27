@@ -31,8 +31,6 @@ describe('list', () => {
 
     expect(MockModel.query).toHaveBeenCalledTimes(1);
     expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.skipUndefined).toHaveBeenCalledTimes(1);
-    expect(MockModel.skipUndefined).toHaveBeenCalledWith();
     expect(MockModel.modify).toHaveBeenCalledTimes(9);
     expect(MockModel.modify).toHaveBeenCalledWith('filterKeycloakId', params.keycloakId);
     expect(MockModel.modify).toHaveBeenCalledWith('filterIdpCode', params.idpCode);

@@ -36,9 +36,9 @@ class SubmissionAudit extends Model {
         submissionId: { type: 'string', pattern: Regex.UUID },
         dbUser: { type: 'string', maxLength: 255 },
         updatedByUsername: { type: ['string', 'null'], maxLength: 255 },
-        actionTimestamp: { type: ['string', 'null'], format: 'date-time' },
+        actionTimestamp: { type: ['string', 'null'] },
         action: { type: 'string', maxLength: 255 },
-        originalData: { type: 'jsonb' }
+        originalData: { type: 'object' }
       },
       additionalProperties: false
     };
