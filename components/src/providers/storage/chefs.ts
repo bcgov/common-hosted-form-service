@@ -151,20 +151,13 @@ const chefs = (formio) => {
             fileName = 'unnamed.' + contentType.substring(contentType.indexOf('/')+1);
           }
 
-          if (window.navigator.msSaveOrOpenBlob) {
-            // Internet Explorer
-            window.navigator.msSaveOrOpenBlob(new Blob([blob], {type: contentType}), fileName);
-          } else {
-            const url = window.URL.createObjectURL(blob);
-            let el = document.createElement('a');
-            // @ts-ignore
-            el.href = url;
-            // @ts-ignore
-            el.download = fileName;
-            el.click();
-            window.URL.revokeObjectURL(url);
-            el.remove();
-          }
+          const url = window.URL.createObjectURL(blob);
+          let el = document.createElement('a');
+          el.href = url;
+          el.download = fileName;
+          el.click();
+          window.URL.revokeObjectURL(url);
+          el.remove();
         };
         xhr.send();
       });

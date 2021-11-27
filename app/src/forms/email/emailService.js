@@ -6,6 +6,7 @@ const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
 const formService = require('../form/service');
 
+/** Helper function used to build the email template based on email type and contents */
 const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
   const submission = await formService.readSubmission(formSubmissionId);
@@ -103,6 +104,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
 const service = {
   /**
    * @function _appUrl
+   * Attempts to parse out the base application url
    * @param {string} referer
    * @returns base url for the application
    */
@@ -113,15 +115,17 @@ const service = {
       const u = url.href.substring(0, url.href.indexOf(`/${p}`));
       return `${u}/${p}`;
     } catch (err) {
-      log.error(`URL = ${JSON.stringify(referer)}. Error: ${err.message}.`, { function: '_appUrl' });
-      log.error(err);
+      log.error(err.message, {
+        function: '_appUrl',
+        referer: referer
+      });
       throw err;
     }
   },
 
   /**
    * @function _mergeEmailTemplate
-   * merges the template and body HTML files to allow dynamic content in the emails
+   * Merges the template and body HTML files to allow dynamic content in the emails
    * @param {*} bodyTemplate
    * @returns joined template files
    */
@@ -169,7 +173,7 @@ const service = {
       };
       return chesService.merge(data);
     } catch (err) {
-      log.error(`Error: ${err.message}.`, { function: '_sendEmailTemplate' });
+      log.error(err.message, { function: '_sendEmailTemplate' });
       throw err;
     }
   },
@@ -189,7 +193,7 @@ const service = {
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
-      log.error(e.message, e, {
+      log.error(e.message, {
         function: EmailTypes.SUBMISSION_ASSIGNED,
         status: currentStatus,
         referer: referer
@@ -213,7 +217,7 @@ const service = {
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
-      log.error(e.message, e, {
+      log.error(e.message, {
         function: EmailTypes.SUBMISSION_UNASSIGNED,
         status: currentStatus,
         referer: referer
@@ -237,7 +241,7 @@ const service = {
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
-      log.error(e.message, e, {
+      log.error(e.message, {
         function: EmailTypes.STATUS_ASSIGNED,
         status: currentStatus,
         referer: referer
@@ -286,7 +290,7 @@ const service = {
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
-      log.error(e.message, e, {
+      log.error(e.message, {
         function: EmailTypes.SUBMISSION_RECEIVED,
         formId: formId,
         submissionId: submissionId,
@@ -312,7 +316,7 @@ const service = {
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
-      log.error(e.message, e, {
+      log.error(e.message, {
         function: EmailTypes.SUBMISSION_CONFIRMATION,
         formId: formId,
         submissionId: submissionId,

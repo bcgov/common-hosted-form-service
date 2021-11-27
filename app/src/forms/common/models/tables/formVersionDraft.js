@@ -49,7 +49,7 @@ class FormVersionDraft extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         formVersionId: { type: ['string', 'null'], pattern: Regex.UUID },
-        schema: { type: 'jsonb' },
+        schema: { type: 'object' },
         ...stamps
       },
       additionalProperties: false

@@ -55,7 +55,7 @@ apiRouter.use('/config', (_req, res, next) => {
     const frontend = config.get('frontend');
     // we will need to pass
     const uploads = config.get('files.uploads');
-    const feConfig = {...frontend, uploads: uploads };
+    const feConfig = { ...frontend, uploads: uploads };
     res.status(200).json(feConfig);
   } catch (err) {
     next(err);

@@ -48,7 +48,7 @@ exports.up = function (knex) {
         code: sc.code,
         createdBy: CREATED_BY
       })));
-      return knex('form_status_code').insert(formStatuses);
+      if (formStatuses && formStatuses.length) return knex('form_status_code').insert(formStatuses);
     })
 
     // add a form_submission_status table

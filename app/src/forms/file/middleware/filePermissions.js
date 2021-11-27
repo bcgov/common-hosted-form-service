@@ -52,13 +52,13 @@ const hasFileCreate = (req, res, next) => {
  * @returns {Function} a middleware function
  */
 const hasFilePermissions = (permissions) => {
-  return async (req, res, next) => {
-    // Gaurd against unauthed (or public) users
+  return (req, res, next) => {
+    // Guard against unauthed (or public) users
     if (!req.currentUser || !req.currentUser.keycloakId) {
       return next(new Problem(403, { detail: 'Unauthorized to read file' }));
     }
 
-    // check to see if this has been associated with a submission...
+    // Check to see if this has been associated with a submission...
     // like prior implementations, if a submission has not been posted, there's not
     // anything we can check permissions on so can only check authed
     if (req.currentFileRecord.formSubmissionId) {

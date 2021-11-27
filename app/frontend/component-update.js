@@ -20,7 +20,7 @@ try {
       break;
     case 'purge':
       console.log(`Purging "${FORMIO_DIR}"...`); // eslint-disable-line no-console
-      fs.rmdirSync(FORMIO_DIR, { recursive: true });
+      if (fs.existsSync(FORMIO_DIR)) fs.rmSync(FORMIO_DIR, { recursive: true });
       break;
     default:
       if (!fs.existsSync(FORMIO_DIR) || !fs.readdirSync(FORMIO_DIR).length) {
@@ -65,9 +65,9 @@ function buildComponents() {
  */
 function cleanComponents() {
   console.log(`Cleaning ${TITLE}...`); // eslint-disable-line no-console
-  fs.rmdirSync(`${COMPONENTS_DIR}/coverage`, { recursive: true });
-  fs.rmdirSync(`${COMPONENTS_DIR}/dist`, { recursive: true });
-  fs.rmdirSync(`${COMPONENTS_DIR}/lib`, { recursive: true });
+  if (fs.existsSync(`${COMPONENTS_DIR}/coverage`)) fs.rmSync(`${COMPONENTS_DIR}/coverage`, { recursive: true });
+  if (fs.existsSync(`${COMPONENTS_DIR}/dist`)) fs.rmSync(`${COMPONENTS_DIR}/dist`, { recursive: true });
+  if (fs.existsSync(`${COMPONENTS_DIR}/lib`)) fs.rmSync(`${COMPONENTS_DIR}/lib`, { recursive: true });
   console.log(`${TITLE} has been cleaned`); // eslint-disable-line no-console
 }
 
@@ -77,7 +77,7 @@ function cleanComponents() {
  */
 function deployComponents() {
   console.log(`Redeploying ${TITLE}...`); // eslint-disable-line no-console
-  fs.rmdirSync(FORMIO_DIR, { recursive: true });
+  if (fs.existsSync(FORMIO_DIR)) fs.rmSync(FORMIO_DIR, { recursive: true });
   copyDirRecursiveSync(`${COMPONENTS_DIR}/lib`, FORMIO_DIR);
   console.log(`${TITLE} has been redeployed`); // eslint-disable-line no-console
 }
