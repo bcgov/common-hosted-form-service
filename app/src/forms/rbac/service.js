@@ -226,7 +226,7 @@ const service = {
       }
       // add an id and save them
       const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d }; });
-      await FormRoleUser.query(trx).insert(items);
+      if(items && items.length) await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       return service.getFormUsers({ userId: userId, formId: formId });
     } catch (err) {
@@ -259,7 +259,7 @@ const service = {
           createdBy: currentUser.usernameIdp,
           permission: perm
         }));
-        await FormSubmissionUser.query(trx).insert(items);
+        if(items && items.length) await FormSubmissionUser.query(trx).insert(items);
       }
       await trx.commit();
       return service.getSubmissionUsers({ formSubmissionId: formSubmissionId });
@@ -295,7 +295,7 @@ const service = {
       }
       // add an id and save them
       const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d }; });
-      await FormRoleUser.query(trx).insert(items);
+      if(items && items.length) await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       // return the new mappings
       const result = await service.getUserForms({ userId: userId, formId: formId });

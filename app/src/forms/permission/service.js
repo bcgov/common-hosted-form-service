@@ -94,7 +94,8 @@ const service = {
         createdBy: currentUser.usernameIdp
       }));
 
-      const result = await FormSubmissionUser.query(trx).insert(itemsToInsert);
+      let result = undefined;
+      if (itemsToInsert && itemsToInsert.length) result = await FormSubmissionUser.query(trx).insert(itemsToInsert);
 
       if (!etrx) await trx.commit();
       return result;
