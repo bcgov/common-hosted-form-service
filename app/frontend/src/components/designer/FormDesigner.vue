@@ -91,10 +91,22 @@
     </v-row>
     <v-alert
       :value="saved || saving"
-      :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
-      :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
-      :icon="saving ? NOTIFICATIONS_TYPES.INFO.icon : NOTIFICATIONS_TYPES.SUCCESS.icon"
-      transition='scale-transition'
+      :class="
+        saving
+          ? NOTIFICATIONS_TYPES.INFO.class
+          : NOTIFICATIONS_TYPES.SUCCESS.class
+      "
+      :color="
+        saving
+          ? NOTIFICATIONS_TYPES.INFO.color
+          : NOTIFICATIONS_TYPES.SUCCESS.color
+      "
+      :icon="
+        saving
+          ? NOTIFICATIONS_TYPES.INFO.icon
+          : NOTIFICATIONS_TYPES.SUCCESS.icon
+      "
+      transition="scale-transition"
     >
       <div v-if="saving">
         <v-progress-linear indeterminate />
@@ -141,7 +153,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
 
@@ -182,6 +194,26 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('auth', ['authenticated', 'tokenParsed']),
+    user() {
+      const username = this.authenticated
+        ? this.tokenParsed.identity_provider_identity
+          ? this.tokenParsed.identity_provider_identity
+          : this.tokenParsed.preferred_username
+        : '';
+
+      const user = {
+        username,
+        firstName: this.authenticated ? this.tokenParsed.given_name : '',
+        lastName: this.authenticated ? this.tokenParsed.family_name : '',
+        fullName: this.authenticated ? this.tokenParsed.name : '',
+        email: this.authenticated ? this.tokenParsed.email : '',
+        idp: this.authenticated ? this.tokenParsed.identity_provider : 'public',
+        public: !!this.authenticated,
+      };
+
+      return user;
+    },
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
@@ -266,7 +298,7 @@ export default {
               button: true,
               // Prevent duplicate appearance of orgbook component
               orgbook: false,
-            }
+            },
           },
           data: {
             title: 'Advanced Data',
@@ -277,11 +309,15 @@ export default {
             weight: 60,
             components: {
               orgbook: true,
-              simplefile: this.userType !== this.ID_MODE.PUBLIC
+              simplefile: this.userType !== this.ID_MODE.PUBLIC,
             },
           },
         },
         templates: templateExtensions,
+        evalContext: {
+          token: this.tokenParsed,
+          user: this.user,
+        },
       };
     },
   },
@@ -388,7 +424,8 @@ export default {
       } catch (error) {
         await this.setDirtyFlag(true);
         this.addNotification({
-          message: 'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
+          message:
+            'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
           consoleError: `Error updating or creating form (FormID: ${this.formId}, versionId: ${this.versionId}, draftId: ${this.draftId}) Error: ${error}`,
         });
       } finally {
@@ -467,7 +504,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="scss" scoped>
 @import '~font-awesome/css/font-awesome.min.css';
