@@ -194,26 +194,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['authenticated', 'tokenParsed']),
-    user() {
-      const username = this.authenticated
-        ? this.tokenParsed.identity_provider_identity
-          ? this.tokenParsed.identity_provider_identity
-          : this.tokenParsed.preferred_username
-        : '';
-
-      const user = {
-        username,
-        firstName: this.authenticated ? this.tokenParsed.given_name : '',
-        lastName: this.authenticated ? this.tokenParsed.family_name : '',
-        fullName: this.authenticated ? this.tokenParsed.name : '',
-        email: this.authenticated ? this.tokenParsed.email : '',
-        idp: this.authenticated ? this.tokenParsed.identity_provider : 'public',
-        public: !!this.authenticated,
-      };
-
-      return user;
-    },
+    ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
