@@ -19,20 +19,15 @@
 
     <v-container>
       <v-row no-gutters>
-        <v-col cols="6">
+        <v-col md="6">
           <h4>Form Details</h4>
           <vue-json-pretty :data="formDetails" />
-        </v-col>
-        <v-col cols="6">
-          <h4>Form Users</h4>
-          <vue-json-pretty :data="roles" />
-        </v-col>
-        <v-col cols="6 mt-6">
-          <div v-if="apiKey">
+
+          <div v-if="apiKey" class="mt-6">
             <h4>API Key Details</h4>
             <vue-json-pretty :data="apiKey" />
             <v-btn
-              class="mt-6"
+              class="mt-6 mb-6"
               color="primary"
               :disabled="!apiKey"
               @click="showDeleteDialog = true"
@@ -41,10 +36,14 @@
             </v-btn>
           </div>
         </v-col>
+        <v-col md="6">
+          <h4>Form Users</h4>
+          <vue-json-pretty :data="roles" />
+        </v-col>
       </v-row>
     </v-container>
 
-    <div v-if="form.active">
+    <div v-if="form.active" class="mt-12">
       <h4>Form Versions</h4>
       <AdminVersions />
     </div>
@@ -71,6 +70,7 @@
         <span>Restore</span>
       </template>
     </BaseDialog>
+
     <!-- Delete confirmation -->
     <BaseDialog
       v-model="showDeleteDialog"
@@ -144,7 +144,7 @@ export default {
       this.readRoles(this.formId),
     ]);
 
-    this.formDetails = this.form;
+    this.formDetails = { ...this.form };
     delete this.formDetails.versions;
 
     this.loading = false;
