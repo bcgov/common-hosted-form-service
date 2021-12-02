@@ -159,8 +159,8 @@
           </v-col>
 
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-            <v-btn block color="primary" v-on="on" @click="updateStatus">
-              <span>UPDATE</span>
+            <v-btn block :disabled="!this.statusToSet" color="primary" v-on="on" @click="updateStatus">
+              <span>{{ !this.statusToSet ? 'UPDATE' : this.statusToSet}}</span>
             </v-btn>
           </v-col>
         </v-row>
