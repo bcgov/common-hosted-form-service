@@ -160,7 +160,7 @@
 
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
             <v-btn block :disabled="!this.statusToSet" color="primary" v-on="on" @click="updateStatus">
-              <span>{{ !this.statusToSet ? 'UPDATE' : this.statusToSet}}</span>
+              <span>{{ !this.statusFields ? 'UPDATE' : this.statusUpdateText }}</span>
             </v-btn>
           </v-col>
         </v-row>
@@ -207,6 +207,7 @@ export default {
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
+      statusUpdateText: '',
       valid: false,
     };
   },
@@ -259,6 +260,21 @@ export default {
           .toLocaleLowerCase()
           .includes(queryText.toLocaleLowerCase())
       );
+    },
+    changeStatus() {
+      this.statusFields = true;
+
+      switch (this.statusToSet) {
+        case 'ASSIGNED':
+          this.statusUpdateText = 'ASSIGN';
+          break;
+        case 'COMPLETED':
+          this.statusUpdateText = 'COMPLETE';
+          break;
+        case 'REVISED':
+          this.statusUpdateText = 'REVISE';
+          break;
+      }
     },
     async getStatus() {
       this.loading = true;
@@ -317,7 +333,6 @@ export default {
       this.$refs.form.resetValidation();
       this.revisionEmail = '';
       this.statusToSet = null;
-      this.statusFields = false;
       this.note = '';
     },
     async updateStatus() {
