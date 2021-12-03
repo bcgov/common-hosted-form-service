@@ -212,6 +212,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['keycloakSubject']),
+    ...mapGetters('form', ['formSubmission']),
     // State Machine
     showRevising() {
       return ['REVISING'].includes(this.statusToSet);
@@ -225,6 +226,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('form', ['fetchSubmission']),
     assignToCurrentUser() {
       this.assignee = this.formReviewers.find(
         (f) => f.keycloakId === this.keycloakSubject
@@ -277,9 +279,6 @@ export default {
             (sc) => sc.code === this.currentStatus.code
           ).statusCode;
           this.items = this.currentStatus.statusCodeDetail.nextCodes;
-
-          // Hiding REVISING status until backend can receive submitter's email.
-          this.items = this.items.filter((item) => item !== 'REVISING');
         }
       } catch (error) {
         this.addNotification({
@@ -288,6 +287,25 @@ export default {
         });
       } finally {
         this.loading = false;
+      }
+    },
+    async setRecipientEmail() {
+      try {
+        const response = await rbacService.getSubmissionUsers({
+          formSubmissionId: this.submissionId,
+        });
+
+        const submitterData = response.data.find((data) => {
+          const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
+          return username === this.formSubmission.createdBy;
+        });
+
+        this.revisionEmail = submitterData.user.email;
+      } catch (error) {
+        this.addNotification({
+          message: 'An error occured while trying to fetch recipient emails for this submission.',
+          consoleError: `Error getting recipient emails for ${this.submissionId}: ${error}`,
+        });
       }
     },
     resetForm() {
@@ -361,6 +379,7 @@ export default {
   },
   created() {
     this.getStatus();
+    this.setRecipientEmail();
   },
 };
 </script>
