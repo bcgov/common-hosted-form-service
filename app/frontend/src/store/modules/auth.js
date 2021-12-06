@@ -55,11 +55,15 @@ export default {
     tokenParsed: () => Vue.prototype.$keycloak.tokenParsed,
     userName: () => Vue.prototype.$keycloak.userName,
     user: (_state, getters) => {
-      const username = getters.authenticated
-        ? getters.tokenParsed.identity_provider_identity
-          ? getters.tokenParsed.identity_provider_identity
-          : getters.tokenParsed.preferred_username
-        : '';
+      let username = '';
+
+      if (getters.authenticated) {
+        if (getters.tokenParsed.identity_provider_identity) {
+          username = getters.tokenParsed.identity_provider_identity;
+        } else {
+          username = getters.tokenParsed.preferred_username;
+        }
+      }
 
       const user = {
         username,
