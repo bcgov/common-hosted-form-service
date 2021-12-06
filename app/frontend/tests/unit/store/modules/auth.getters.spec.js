@@ -45,8 +45,12 @@ describe('auth getters', () => {
           subject: zeroUuid,
           token: 'token',
           tokenParsed: {
+            given_name: 'John',
+            family_name: 'Doe',
+            name: 'John Doe',
             email: 'e@mail.com',
             identity_provider: 'idir',
+            preferred_username: 'johndoe',
             realm_access: {},
             resource_access: {
               chefs: {
@@ -222,5 +226,36 @@ describe('auth getters', () => {
   it('userName should return a string', () => {
     expect(store.getters.userName).toBeTruthy();
     expect(store.getters.userName).toMatch('uName');
+  });
+
+  it('creates an auth user when authenticated', () => {
+    expect(store.getters.user).toBeTruthy();
+    expect(store.getters.user).toEqual({
+      username: 'johndoe',
+      firstName: 'John',
+      lastName: 'Doe',
+      fullName: 'John Doe',
+      email: 'e@mail.com',
+      idp: 'idir',
+      public: false
+    });
+  });
+
+  it('creates a public user when not authenticated', () => {
+    keycloakHelper({
+      authenticated: false,
+      tokenParsed: undefined
+    });
+
+    expect(store.getters.user).toBeTruthy();
+    expect(store.getters.user).toEqual({
+      username: '',
+      firstName: '',
+      lastName: '',
+      fullName: '',
+      email: '',
+      idp: 'public',
+      public: true
+    });
   });
 });
