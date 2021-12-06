@@ -16,9 +16,7 @@
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card>
-        <v-card-title class="text-h5 pb-0">
-          Manage Team Members
-        </v-card-title>
+        <v-card-title class="text-h5 pb-0"> Manage Team Members </v-card-title>
 
         <v-card-text>
           <hr />
@@ -91,7 +89,8 @@
             </v-col>
           </v-row>
           <div v-else>
-            You can only invite and manage team members while this form is a draft
+            You can only invite and manage team members while this form is a
+            draft
           </div>
 
           <p class="mt-5">
@@ -142,7 +141,10 @@
         v-model="showDeleteDialog"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"
-        @continue-dialog="modifyPermissions(userToDelete.id, []); showDeleteDialog = false"
+        @continue-dialog="
+          modifyPermissions(userToDelete.id, []);
+          showDeleteDialog = false;
+        "
       >
         <template #title>Remove {{ userToDelete.username }}</template>
         <template #text>
@@ -159,7 +161,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
 import { rbacService, userService } from '@/services';
@@ -190,6 +192,9 @@ export default {
       userSearchResults: [],
       userSearchSelection: null,
     };
+  },
+  computed: {
+    ...mapGetters('form', ['form']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -230,7 +235,8 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'An error occured while trying to fetch users for this submission.',
+          message:
+            'An error occured while trying to fetch users for this submission.',
           consoleError: `Error getting users for ${this.submissionId}: ${error}`,
         });
       } finally {
@@ -240,7 +246,9 @@ export default {
     async modifyPermissions(userId, permissions) {
       this.isLoadingTable = true;
       try {
-        const selectedEmail = permissions.length ? this.userSearchSelection.email : this.userToDelete.email;
+        const selectedEmail = permissions.length
+          ? this.userSearchSelection.email
+          : this.userToDelete.email;
         // Add the selected user with read/update permissions on this submission
         const response = await rbacService.setSubmissionUserPermissions(
           { permissions: permissions },
@@ -254,12 +262,15 @@ export default {
           this.userTableList = this.transformResponseToTable(response.data);
           this.addNotification({
             ...NotificationTypes.SUCCESS,
-            message: permissions.length ? `Sent invite email to ${selectedEmail}` : `Sent uninvited email to ${selectedEmail}`,
+            message: permissions.length
+              ? `Sent invite email to ${selectedEmail}`
+              : `Sent uninvited email to ${selectedEmail}`,
           });
         }
       } catch (error) {
         this.addNotification({
-          message: 'An error occured while trying to update users for this submission.',
+          message:
+            'An error occured while trying to update users for this submission.',
           consoleError: `Error setting user permissions. Sub: ${this.submissionId} User: ${userId} Error: ${error}`,
         });
       } finally {
@@ -277,9 +288,7 @@ export default {
             email: su.user.email,
             fullName: su.user.fullName,
             id: su.userId,
-            isOwner: su.permissions.includes(
-              FormPermissions.SUBMISSION_CREATE
-            ),
+            isOwner: su.permissions.includes(FormPermissions.SUBMISSION_CREATE),
             username: su.user.username,
           };
         })
@@ -292,7 +301,15 @@ export default {
       if (!input) return;
       this.isLoadingDropdown = true;
       try {
-        const response = await userService.getUsers({ search: input });
+        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
+        const idp =
+          this.form.identityProviders && this.form.identityProviders.length
+            ? this.form.identityProviders[0].code
+            : 'idir';
+        const response = await userService.getUsers({
+          search: input,
+          idpCode: idp,
+        });
         this.userSearchResults = response.data;
       } catch (error) {
         console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
