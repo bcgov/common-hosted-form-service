@@ -44,7 +44,7 @@ const EditFormUtils = {
       content: '<p>The following variables are available in all scripts.</p>' +
       '<table class="table table-bordered table-condensed table-striped">' +
       additional +
-      '<tr><th>token</th><td>The parsed JWT token</td></tr>' +
+      '<tr><th>token</th><td>The decoded JWT token for the authenticated user.</td></tr>' +
       '<tr><th>user</th><td>The current logged in user</td></tr>' +
       '<tr><th>form</th><td>The complete form JSON object</td></tr>' +
       '<tr><th>submission</th><td>The complete submission object.</td></tr>' +
