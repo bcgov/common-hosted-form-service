@@ -143,8 +143,7 @@
         @close-dialog="showDeleteDialog = false"
         @continue-dialog="
           modifyPermissions(userToDelete.id, []);
-          showDeleteDialog = false;
-        "
+          showDeleteDialog = false;"
       >
         <template #title>Remove {{ userToDelete.username }}</template>
         <template #text>
@@ -163,7 +162,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import { FormPermissions, NotificationTypes } from '@/utils/constants';
+import { FormPermissions, IdentityProviders, NotificationTypes } from '@/utils/constants';
 import { rbacService, userService } from '@/services';
 
 export default {
@@ -305,7 +304,7 @@ export default {
         const idp =
           this.form.identityProviders && this.form.identityProviders.length
             ? this.form.identityProviders[0].code
-            : 'idir';
+            : IdentityProviders.IDIR;
         const response = await userService.getUsers({
           search: input,
           idpCode: idp,
