@@ -537,6 +537,7 @@ const service = {
         await FormApiKey.query(trx)
           .modify('filterFormId', formId)
           .update({
+            formId: formId,
             secret: uuidv4(),
             updatedBy: currentUser.usernameIdp
           });
