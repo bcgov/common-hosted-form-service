@@ -133,7 +133,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['authenticated', 'token']),
+    ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -156,6 +156,10 @@ export default {
               Authorization: `Bearer ${this.token}`,
             },
           },
+        },
+        evalContext: {
+          token: this.tokenParsed,
+          user: this.user,
         },
       };
     },
