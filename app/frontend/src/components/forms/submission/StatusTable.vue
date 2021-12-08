@@ -11,12 +11,7 @@
       class="status-table"
     >
       <template #[`item.createdAt`]="{ item }">
-        <v-tooltip bottom :disabled="item.code.toUpperCase() === 'SUBMITTED'">
-          <template v-slot:activator="{ on }">
-            <span v-on="on">{{ item.createdAt | formatDate }}</span>
-          </template>
-          <span>Status updated by {{ item.createdBy }}</span>
-        </v-tooltip>
+        <span>{{ item.createdAt | formatDate }}</span>
       </template>
 
       <template #[`item.user`]="{ item }">{{
@@ -42,7 +37,8 @@ export default {
     headers: [
       { text: 'Status', value: 'code' },
       { text: 'Date Status Changed', align: 'start', value: 'createdAt' },
-      { text: 'Assignee', value: 'user' }
+      { text: 'Assignee', value: 'user' },
+      { text: 'Updated By', value: 'createdBy' },
     ],
     statuses: [],
     loading: true,
