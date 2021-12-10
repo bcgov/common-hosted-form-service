@@ -314,7 +314,7 @@ export default {
         }, { root: true });
       }
     },
-    async fetchSubmissionUsers({ commit, dispatch }, { formSubmissionId }) {
+    async fetchSubmissionUsers({ commit, dispatch }, formSubmissionId) {
       try {
         // Get user list for this submission
         const response = await rbacService.getSubmissionUsers({ formSubmissionId });

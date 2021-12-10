@@ -24,7 +24,7 @@
               item-value="code"
               v-model="statusToSet"
               :rules="[(v) => !!v || 'Status is required']"
-              @change="onChange(statusToSet)"
+              @change="onStatusChange(statusToSet)"
             />
 
             <div v-show="statusFields" v-if="showRevising">
@@ -227,11 +227,11 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('form', ['fetchSubmissionUsers']),
-    async onChange(status) {
+    async onStatusChange(status) {
       this.statusFields = true;
       if (status === 'REVISING') {
         try {
-          await this.fetchSubmissionUsers({ formSubmissionId: this.submissionId });
+          await this.fetchSubmissionUsers(this.submissionId);
           const submitterData = this.submissionUsers.data.find((data) => {
             const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
             return username === this.formSubmission.createdBy;
