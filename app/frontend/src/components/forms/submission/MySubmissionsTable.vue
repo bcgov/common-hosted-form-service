@@ -156,6 +156,9 @@ export default {
     // Status columns in the table
     getCurrentStatus(record) {
       if (record.draft) {
+        if (record.submissionStatus[0].code === 'REVISING') {
+          return 'REVISING';
+        }
         return 'DRAFT';
       } else {
         // Current status is most recent status (top in array, query returns in status created desc)
