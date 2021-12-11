@@ -155,16 +155,14 @@ export default {
 
     // Status columns in the table
     getCurrentStatus(record) {
-      if (record.draft) {
-        if (record.submissionStatus[0].code === 'REVISING') {
-          return 'REVISING';
-        }
+      // Current status is most recent status (top in array, query returns in status created desc)
+      const status = record.submissionStatus && record.submissionStatus[0]
+        ? record.submissionStatus[0].code
+        : 'N/A';
+      if (record.draft && status !== 'REVISING') {
         return 'DRAFT';
       } else {
-        // Current status is most recent status (top in array, query returns in status created desc)
-        return record.submissionStatus && record.submissionStatus[0]
-          ? record.submissionStatus[0].code
-          : 'N/A';
+        return status;
       }
     },
     getStatusDate(record, statusCode) {
