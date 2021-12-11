@@ -2,6 +2,7 @@
   <span>
     <span v-if="addingUsers" class="d-flex justify-end">
       <v-autocomplete
+        autocomplete="autocomplete_off"
         v-model="model"
         clearable
         dense
