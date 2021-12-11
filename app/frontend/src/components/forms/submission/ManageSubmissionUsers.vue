@@ -25,6 +25,7 @@
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
+                  autocomplete="autocomplete_off"
                   v-model="userSearchSelection"
                   clearable
                   dense
