@@ -14,6 +14,9 @@
         <li>
           <a href="https://github.com/bcgov/common-hosted-form-service/wiki" target="_blank">Help</a>
         </li>
+        <li>
+          <a href="https://chefs-fider.apps.silver.devops.gov.bc.ca/" target="_blank">Feedback</a>
+        </li>
         <!-- <li>
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li> -->
