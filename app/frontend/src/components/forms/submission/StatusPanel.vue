@@ -62,6 +62,7 @@
                   </v-tooltip>
                 </label>
                 <v-autocomplete
+                  autocomplete="autocomplete_off"
                   v-model="assignee"
                   clearable
                   dense
