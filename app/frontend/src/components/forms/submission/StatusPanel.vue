@@ -299,7 +299,6 @@ export default {
           this.items = this.currentStatus.statusCodeDetail.nextCodes;
         }
         if (!this.form.enableSubmitterDraft) {
-          // Hiding REVISING status until backend can receive submitter's email.
           this.items = this.items.filter((item) => item !== 'REVISING');
         }
       } catch (error) {
