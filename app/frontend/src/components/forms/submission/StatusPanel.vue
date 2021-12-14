@@ -24,7 +24,7 @@
               item-value="code"
               v-model="statusToSet"
               :rules="[(v) => !!v || 'Status is required']"
-              @change="statusFields = true"
+              @change="onStatusChange(statusToSet)"
             />
 
             <div v-show="statusFields" v-if="showRevising">
@@ -212,6 +212,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['keycloakSubject']),
+    ...mapGetters('form', ['form', 'formSubmission', 'submissionUsers']),
     // State Machine
     showRevising() {
       return ['REVISING'].includes(this.statusToSet);
@@ -225,6 +226,25 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('form', ['fetchSubmissionUsers']),
+    async onStatusChange(status) {
+      this.statusFields = true;
+      if (status === 'REVISING') {
+        try {
+          await this.fetchSubmissionUsers(this.submissionId);
+          const submitterData = this.submissionUsers.data.find((data) => {
+            const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
+            return username === this.formSubmission.createdBy;
+          });
+          this.revisionEmail = submitterData.user.email;
+        } catch (error) {
+          this.addNotification({
+            message: 'An error occured while trying to fetch recipient emails for this submission.',
+            consoleError: `Error getting recipient emails for ${this.submissionId}: ${error}`,
+          });
+        }
+      }
+    },
     assignToCurrentUser() {
       this.assignee = this.formReviewers.find(
         (f) => f.keycloakId === this.keycloakSubject
@@ -277,8 +297,8 @@ export default {
             (sc) => sc.code === this.currentStatus.code
           ).statusCode;
           this.items = this.currentStatus.statusCodeDetail.nextCodes;
-
-          // Hiding REVISING status until backend can receive submitter's email.
+        }
+        if (!this.form.enableSubmitterDraft) {
           this.items = this.items.filter((item) => item !== 'REVISING');
         }
       } catch (error) {

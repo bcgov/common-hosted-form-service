@@ -39,6 +39,7 @@ export default {
     },
     permissions: [],
     submissionList: [],
+    submissionUsers: [],
     userFormPreferences: {},
     version: {}
   },
@@ -52,6 +53,7 @@ export default {
     formSubmission: state => state.formSubmission,
     permissions: state => state.permissions,
     submissionList: state => state.submissionList,
+    submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
     version: state => state.version
   },
@@ -89,6 +91,9 @@ export default {
     },
     SET_SUBMISSIONLIST(state, submissions) {
       state.submissionList = submissions;
+    },
+    SET_SUBMISSIONUSERS(state, users) {
+      state.submissionUsers = users;
     },
     SET_USER_FORM_PREFERENCES(state, userFormPreferences) {
       state.userFormPreferences = userFormPreferences;
@@ -306,6 +311,18 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while deleting this submission.',
           consoleError: `Error deleting submission ${submissionId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async fetchSubmissionUsers({ commit, dispatch }, formSubmissionId) {
+      try {
+        // Get user list for this submission
+        const response = await rbacService.getSubmissionUsers({ formSubmissionId });
+        commit('SET_SUBMISSIONUSERS', response);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching the recipient email for this submission.',
+          consoleError: `Error getting recipient email for submission ${formSubmissionId}: ${error}`,
         }, { root: true });
       }
     },

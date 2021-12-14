@@ -24,9 +24,9 @@
       </v-tooltip>
     </router-link>
 
-    <span v-if="submission.status === 'DRAFT'">
+    <span v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'">
       <router-link
-        v-if="submission.status === 'DRAFT'"
+        v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
         :to="{
           name: 'UserFormDraftEdit',
           query: {
@@ -50,6 +50,7 @@
         </v-tooltip>
       </router-link>
       <DeleteSubmission
+        v-if="submission.status !== 'REVISING'"
         @deleted="draftDeleted"
         :disabled="!hasDeletePerm()"
         isDraft
