@@ -26,7 +26,6 @@
               :rules="[(v) => !!v || 'Status is required']"
               @change="onStatusChange(statusToSet)"
             />
-            <!-- statusFields = true; -->
 
             <div v-show="statusFields" v-if="showRevising">
               <v-text-field v-model="revisionEmail" label="Recipient Email" outlined dense />
