@@ -24,7 +24,7 @@
               item-value="code"
               v-model="statusToSet"
               :rules="[(v) => !!v || 'Status is required']"
-              @change="onStatusChange(statusToSet)"
+              @change="statusFields = true;"
             />
 
             <div v-show="statusFields" v-if="showRevising">
@@ -160,7 +160,7 @@
 
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
             <v-btn block :disabled="!this.statusToSet" color="primary" v-on="on" @click="updateStatus">
-              <span>{{ !this.statusFields ? 'UPDATE' : this.statusUpdateText }}</span>
+              <span>{{ this.statusAction }}</span>
             </v-btn>
           </v-col>
         </v-row>
@@ -207,7 +207,6 @@ export default {
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
-      statusUpdateText: '',
       valid: false,
     };
   },
@@ -223,6 +222,15 @@ export default {
     },
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
+    },
+    statusAction() {
+      const obj = Object.freeze({
+        ASSIGNED: 'ASSIGN',
+        COMPLETED: 'COMPLETE',
+        REVISING: 'REVISE',
+        DEFAULT: 'UPDATE'
+      });
+      return obj[this.statusToSet] ? obj[this.statusToSet] : obj['DEFAULT'];
     },
   },
   methods: {
@@ -260,21 +268,6 @@ export default {
           .toLocaleLowerCase()
           .includes(queryText.toLocaleLowerCase())
       );
-    },
-    changeStatus() {
-      this.statusFields = true;
-
-      switch (this.statusToSet) {
-        case 'ASSIGNED':
-          this.statusUpdateText = 'ASSIGN';
-          break;
-        case 'COMPLETED':
-          this.statusUpdateText = 'COMPLETE';
-          break;
-        case 'REVISED':
-          this.statusUpdateText = 'REVISE';
-          break;
-      }
     },
     async getStatus() {
       this.loading = true;
