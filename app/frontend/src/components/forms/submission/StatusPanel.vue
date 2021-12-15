@@ -160,7 +160,7 @@
 
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
             <v-btn block :disabled="!this.statusToSet" color="primary" v-on="on" @click="updateStatus">
-              <span>{{ this.statusAction }}</span>
+              <span>{{ statusAction }}</span>
             </v-btn>
           </v-col>
         </v-row>
