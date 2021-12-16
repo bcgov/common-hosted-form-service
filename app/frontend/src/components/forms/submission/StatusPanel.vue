@@ -159,8 +159,8 @@
           </v-col>
 
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-            <v-btn block color="primary" v-on="on" @click="updateStatus">
-              <span>UPDATE</span>
+            <v-btn block :disabled="!this.statusToSet" color="primary" v-on="on" @click="updateStatus">
+              <span>{{ statusAction }}</span>
             </v-btn>
           </v-col>
         </v-row>
@@ -222,6 +222,15 @@ export default {
     },
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
+    },
+    statusAction() {
+      const obj = Object.freeze({
+        ASSIGNED: 'ASSIGN',
+        COMPLETED: 'COMPLETE',
+        REVISING: 'REVISE',
+        DEFAULT: 'UPDATE'
+      });
+      return obj[this.statusToSet] ? obj[this.statusToSet] : obj['DEFAULT'];
     },
   },
   methods: {
@@ -317,7 +326,6 @@ export default {
       this.$refs.form.resetValidation();
       this.revisionEmail = '';
       this.statusToSet = null;
-      this.statusFields = false;
       this.note = '';
     },
     async updateStatus() {
