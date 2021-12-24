@@ -53,9 +53,6 @@ const service = {
     try {
       trx = etrx ? etrx : await FormSubmission.startTransaction();
 
-      // Patch the submission record with the updated changes
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.usernameIdp });
-
       if (!data.draft) {
         // Write a SUBMITTED status only if this is in REVISING state OR is a brand new submission
         const statuses = await FormSubmissionStatus.query()
@@ -68,6 +65,9 @@ const service = {
           emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => { });
         }
       }
+
+      // Patch the submission record with the updated changes
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.usernameIdp });
 
       if (!etrx) await trx.commit();
 
