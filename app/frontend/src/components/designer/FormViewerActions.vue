@@ -27,7 +27,7 @@
       </span>
 
       <!-- Go to draft edit -->
-      <span v-if="showEditToggle" class="ml-2">
+      <span v-if="showEditToggle && isDraft" class="ml-2">
         <router-link
           :to="{
             name: 'UserFormDraftEdit',
