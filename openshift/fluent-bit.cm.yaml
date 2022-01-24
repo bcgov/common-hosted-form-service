@@ -13,169 +13,220 @@ objects:
       name: fluent-bit-config
       namespace: ${NAMESPACE}
     data:
-      # Configuration files: server, input, filters and output
-      fluent-bit.conf: |
+      fluent-bit.conf: |-
         [SERVICE]
-          Flush         5
-          Daemon        Off
+          Flush        5
+          Daemon       Off
           # define the log format (see additional config map key/value)
           Parsers_File  parsers.conf
-          Log_Level     info
+          Log_Level    info
           HTTP_Server   On
           HTTP_Listen   0.0.0.0
           HTTP_Port     2020
 
-        # read logs from app log file
         [INPUT]
-          # get logs from file written by node app
-          Name  tail
-          Path  /var/log/*
-          Tag   app
+          # get logs from file written by node app (eg: CDOGS)
+          Name   tail
+          Path   /var/log/*
+          Tag    app
           Offset_Key  logFileOffset
           Path_Key    logFilePath
 
-        # exclude kube probe logs from app logs
         [FILTER]
           # exclude kube probe logs from app logs
-          name     grep
-          match    app
-          Exclude  agent kube-probe*
+          name   grep
+          match  app
+          Exclude  agent kube*
 
-        # parse app record as JSON
         [FILTER]
-          name          parser
-          match         app
-          Key_Name      log
-          Parser        json
-          Reserve_Data  On
-          Preserve_Key  On
+          name parser
+          match app
+          Key_Name log
+          Parser json
+          Reserve_Data On
+          Preserve_Key On
 
-        # modify record to include more key/value pairs
         [FILTER]
+          # modify log entry to include more key/value pairs
           name    record_modifier
           match   app
           # add pod name
           Record  hostname ${HOSTNAME}
-          # add productname (eg: 'chefs')
+          # add productname
           Record  product ${APP_NAME}
           # add namespace
-          Record  namespace ${NAMESPACE}
+          Record namespace ${NAMESPACE}
 
-        # append tag corresponding to log level
-        # and copy to a new 'ECS record', for pushing to AWS ElasticSearch service.
         [FILTER]
           Name          rewrite_tag
           Match         app
           Rule          $level ([a-zA-Z]*)$ $TAG.$level true
           Emitter_Name  re_emitted
 
-        # modify ECS records to include more key/value pairs for output to AWS ElasticSearch
+        # for now just send out http level ('access') logs to AWS
         [FILTER]
           Name    lua
-          Match   app.http
+          Match   app.*
           script  script.lua
+          time_as_table True
           call    ecsMap
 
-        # send http level records (with tag: 'app.http') to AWS Kinesis Stream
+        # Note: only currently sending 'access' (level: http) logs to AWS
+        # TODO: format 'metrics' logs to match a 'fingerprint' in Lambda
         [OUTPUT]
           Name kinesis_streams
           Match  app.http
           region ${AWS_DEFAULT_REGION}
           stream ${AWS_KINESIS_STREAM}
-          time_key @timestamp
           role_arn ${AWS_ROLE_ARN}
+          time_key @timestamp
 
-        # send all records tagged with just 'app' to external fluentd service endpoint
         [OUTPUT]
+          #### send logs to fluentd:
           Name    http
           Match   app
-          Host    ${FLUENTD}
+          Host    ${LOGGING_HOST_NAME}
           Port    80
-          Format  json
+          Format json
           # the URI becomes the Tag available in fluentd
-          URI     /app
+          URI /app
           # we can also send tag as a header
           #header_tag  app
-          format json_lines
-          json_date_key logStreamDate
-          json_date_format  iso8601
+          json_date_key timestamp
+
+          ### security:
+          #tls                On
+          #tls.debug         4
+          #tls.verify        On
+          #tls.ca_file       /fluent-bit/ssl/ca.crt.pem
+          #tls.crt_file      /fluent-bit/ssl/client.crt.pem
+          #tls.key_file      /fluent-bit/ssl/client.key.pem
 
         [OUTPUT]
-          # show all fluent-bit logs to standard output
           Name   stdout
           Match  *
           Format json_lines
-          json_date_key logStreamDate
-          json_date_format  iso8601
 
       parsers.conf: |
         [PARSER]
           Name             json
           Format           json
-          Time_Key         time
-          Time_Format      %Y-%m-%dT%H:%M:%S %z
+          Time_Key         timestamp
           Decode_Field_as  escaped_utf8 log do_next
           Decode_Field_as  json log
 
       script.lua: |
-        --[[
-          returns: code, timestamp, record
-          where:
-          - code     : -1 record must be deleted
-                        0 record not modified, keep the original
-                        1 record was modified, replace timestamp and record.
-                        2 record was modified, replace record and keep timestamp.
-          - timestamp: Unix timestamp with precision (double)
-          - record   : Table with multiple key/val
-
-          Upon return if code == 1 (modified), then filter_lua plugin
-          will replace the original timestamp and record with the returned
-          values. If code == 0 the original record is kept otherwise if
-          code == -1, the original record will be deleted.
-        ]]
 
         -- add extra ECS fields
         function ecsMap(tag, timestamp, record)
 
           -- map existing fields to a new variable
-          new_record = record
+          new_record = {}
 
           -- derive full environment (stage) name from namespace
           -- see: https://www.lua.org/pil/20.3.html
           _, _, part1, environmentAbbreviation = string.find(record["namespace"], "([a-zA-Z0-9_+-]+)-([a-zA-Z0-9_+-]+)")
 
           environmentsArray = {
+            ["localhost"] = "development",
             ["dev"] = "development",
             ["test"] = "test",
             ["prod"] = "production"
           }
 
-          new_record["labels"] = {
-            ["env"] = environmentsArray[environmentAbbreviation]
+          -- get event.type from log.level
+          eventTypesArray = {
+            ["http"] = "access",
+            ["info"] = "info",
+            ["verbose"] = "metric"
           }
 
-          -- add more ECS fields
+          ---- for all logs:
+
+          new_record["ecs"] = {
+            ["version"] = "1.12"
+          }
+
+          new_record["log"] = {
+            ["file"] = {
+              ["path"] = record["logFilePath"]
+            },
+            ["level"] = record["level"]
+          }
+
+          new_record["service"] = {
+            ["environment"] = environmentsArray[environmentAbbreviation],
+            ["name"] = record["product"],
+            ["type"] = "node"
+          }
+
           new_record["event"] = {
-              ["module"] = "node.css",
-              ["dataset"] = "node.css." .. record["level"],
-              ["kind"] = "event",
-              ["type"] = record["level"],
-              ["category"] = "web"
-            }
+            ["kind"] = "event",
+            ["category"] = "web",
+            ["original"] = record["message"],
+            ["sequence"] = record["logFileOffset"],
+            ["created"] = (os.date("!%Y-%m-%dT%H:%M:%S", timestamp["sec"]) .. '.' .. math.floor(timestamp["nsec"] / 1000000) .. 'Z')
+          }
 
           new_record["agent"] = {
-              ["type"] = "fluentbit"
+            ["type"] = "fluentbit",
+            ["version"] = "1.8"
           }
 
-          -- for chefs, the IP's are just k8s pods
-          new_record["clientIp"] = record["ip"]
-          new_record["hostIp"] = record["ip"]
+          new_record["labels"] = {
+            ["project"] = record["product"]
+          }
+
+          new_record["host"] = {
+            ["hostname"] = record["hostname"],
+            ["ip"] = record["ip"],
+            ["namespace"] = record["namespace"]
+          }
+
+          new_record["user_agent"] = {
+            ["original"] = record["userAgent"]
+          }
+
+          ---- access logs:
+
+          if record["level"] == "http" then
+
+            new_record["event"]["type"] = eventTypesArray[record["level"]]
+            new_record["event"]["dataset"] = "express." .. eventTypesArray[record["level"]]
+
+            new_record["http"] = {
+              ["request"] = {
+                ["body"] = {
+                  ["bytes"] = record["contentLength"]
+                },
+                ["method"] = record["method"],
+                ["referrer"] = {
+                  ["uri"] = record["path"],
+                  ["azp"] = record["azp"]
+                }
+              },
+              ["response"] = {
+                ["status_code"] = record["statusCode"],
+                ["time"] = record["responseTime"]
+              },
+              ["version"] = record["httpVersion"]
+            }
+
+          end
+
+          ---- metrics logs
+
+          -- if log contains a 'metrics' field
+          if record["metrics"] ~= nill then
+
+            new_record["metrics"] = record["metrics"]
+            new_record["event"]["type"] = eventTypesArray[record["level"]]
+
+          end
 
           -- return the transformed new record
           return 2, timestamp, new_record
-
         end
-
 parameters:
   - name: APP_NAME
     description: Application name
@@ -189,25 +240,23 @@ parameters:
     description: Job identifier (i.e. 'pr-5' OR 'master')
     displayName: Job Branch Name
     required: true
-    value: master
   - name: NAMESPACE
-    description: Target namespace reference (i.e. 'b160aa-dev')
+    description: Target namespace reference
     displayName: Target Namespace
     required: true
-  - name: FLUENTD
+  - name: LOGGING_HOST_NAME
     description: The hostname of our Fluentd service running further down the monitoring pipeline
     displayName: Fluentd host name
-    required: true
+    required: false
   - name: AWS_DEFAULT_REGION
     description: Default AWS region for Opensearch logging stack
     displayName: AWS Default Region
-    required: true
+    required: false
   - name: AWS_KINESIS_STREAM
     description: AWS Kinesis Stream identifier
     displayName: AWS Kinesis Stream
-    required: true
+    required: false
   - name: AWS_ROLE_ARN
     description: AWS OpenSearch/Kinesis Resource Name
     displayName: AWS Role ARN
-    required: true
-
+    required: false
