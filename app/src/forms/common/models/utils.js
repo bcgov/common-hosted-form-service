@@ -13,8 +13,13 @@ const inArrayFilter = (column, values) => {
   return `(array_length("${column}", 1) > 0 and (${clause}))`;
 };
 
+const tableNames = (models) => {
+  return Object.values(models).map(model => model.tableName);
+};
+
 module.exports = {
   toArray: toArray,
   inArrayClause: inArrayClause,
-  inArrayFilter: inArrayFilter
+  inArrayFilter: inArrayFilter,
+  tableNames
 };
