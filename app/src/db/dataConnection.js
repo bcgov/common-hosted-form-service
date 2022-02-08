@@ -4,7 +4,11 @@ const { Model } = require('objection');
 const knexfile = require('../../knexfile');
 const log = require('../components/log')(module.filename);
 const models = require('../../../app/src/forms/common/models');
+<<<<<<< HEAD
 const { tableNames } = require('../../../app/src/forms/common/models/utils');
+=======
+const { tableNames } = require('../../../app/src/forms/common/models/utils.js');
+>>>>>>> c2a9ac0 (checkSchema change)
 
 class DataConnection {
   /**
