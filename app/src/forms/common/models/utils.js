@@ -18,8 +18,8 @@ const tableNames = (models) => {
 };
 
 module.exports = {
-  toArray: toArray,
-  inArrayClause: inArrayClause,
-  inArrayFilter: inArrayFilter,
+  toArray,
+  inArrayClause,
+  inArrayFilter,
   tableNames
 };

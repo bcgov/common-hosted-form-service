@@ -4,7 +4,7 @@ const { Model } = require('objection');
 const knexfile = require('../../knexfile');
 const log = require('../components/log')(module.filename);
 const models = require('../../../app/src/forms/common/models');
-const { tableNames } = require('../../../app/src/forms/common/models/utils.js');
+const { tableNames } = require('../../../app/src/forms/common/models/utils');
 
 class DataConnection {
   /**
