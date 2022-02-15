@@ -121,6 +121,7 @@ export default {
   computed: {
     ...mapGetters('form', [
       'form',
+      'formFields',
       'permissions',
       'submissionList',
       'userFormPreferences',
@@ -173,7 +174,8 @@ export default {
         this.userFormPreferences.preferences &&
         this.userFormPreferences.preferences.columnList
       ) {
-        return this.userFormPreferences.preferences.columnList;
+        // Compare saved user prefs against the current form versions component names and remove any discrepancies
+        return this.userFormPreferences.preferences.columnList.filter(x => this.formFields.indexOf(x) !== -1);
       } else {
         return [];
       }
@@ -182,6 +184,7 @@ export default {
   methods: {
     ...mapActions('form', [
       'fetchForm',
+      'fetchFormFields',
       'fetchSubmissions',
       'getFormPermissionsForUser',
       'getFormPreferencesForCurrentUser',
@@ -230,7 +233,14 @@ export default {
   },
 
   mounted() {
-    this.fetchForm(this.formId);
+    // Get the form and latest form fields
+    this.fetchForm(this.formId).then(() => {
+      this.fetchFormFields({
+        formId: this.formId,
+        formVersionId: this.form.versions[0].id,
+      });
+    });
+
     // Get the permissions for this form
     this.getFormPermissionsForUser(this.formId);
     this.populateSubmissionsTable();

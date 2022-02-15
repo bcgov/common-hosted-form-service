@@ -86,7 +86,7 @@ export default {
       });
       this.selectedFields =
         this.userFormPreferences && this.userFormPreferences.preferences
-          ? this.userFormPreferences.preferences.columnList
+          ? this.userFormPreferences.preferences.columnList.filter(x => this.formFields.indexOf(x) !== -1)
           : [];
       this.loading = false;
     },
