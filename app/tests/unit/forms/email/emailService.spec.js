@@ -113,6 +113,7 @@ describe('_sendEmailTemplate', () => {
 });
 
 describe('public methods', () => {
+  const confirmCompleted = true;
   const currentStatus = {
     submissionId: '456',
     formSubmissionId: '123',
@@ -167,6 +168,44 @@ describe('public methods', () => {
         messageLinkUrl: 'https://form/view?s=123',
         revisionNotificationEmailContent: undefined,
         title: '123 Submission Assignment'
+      },
+      to: ['x@y.com']
+    }];
+
+    expect(result).toEqual('ret');
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+  });
+
+  it('statusCompleted should send a status email', async () => {
+    formService.readForm = jest.fn().mockReturnValue(form);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+    const result = await emailService.statusCompleted(
+      '123',
+      currentStatus,
+      assignmentNotificationEmail,
+      confirmCompleted,
+      referer
+    );
+    const configData = {
+      bodyTemplate: 'submission-completed.html',
+      title: `${form.name} Has Been Completed`,
+      subject: 'Form Has Been Completed',
+      messageLinkText: `Your submission from ${form.name} has been Completed.`,
+      priority: 'normal',
+      form,
+    };
+
+    const contexts = [{
+      context: {
+        allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+        confirmationNumber: 'abc',
+        form: form,
+        messageLinkText: `Your submission from ${form.name} has been Completed.`,
+        messageLinkUrl: 'https://user/view?s=123',
+        revisionNotificationEmailContent: undefined,
+        title: `${form.name} Has Been Completed`
       },
       to: ['x@y.com']
     }];

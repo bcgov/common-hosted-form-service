@@ -28,7 +28,7 @@
             />
 
             <div v-show="statusFields" v-if="showRevising">
-              <v-text-field v-model="revisionEmail" label="Recipient Email" outlined dense />
+              <v-text-field v-model="submissionUserEmail" label="Recipient Email" outlined dense />
               <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
               <div v-if="addComment">
                 <label>Email Comment</label>
@@ -205,7 +205,7 @@ export default {
       loading: true,
       note: '',
       emailComment: '',
-      revisionEmail: '',
+      submissionUserEmail: '',
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
@@ -250,7 +250,7 @@ export default {
             const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
             return username === this.formSubmission.createdBy;
           });
-          this.revisionEmail = submitterData.user.email;
+          this.submissionUserEmail = submitterData.user.email;
         } catch (error) {
           this.addNotification({
             message: 'An error occured while trying to fetch recipient emails for this submission.',
@@ -330,7 +330,7 @@ export default {
       this.emailComment = '';
       this.statusFields = false;
       this.$refs.form.resetValidation();
-      this.revisionEmail = '';
+      this.submissionUserEmail = '';
       this.statusToSet = null;
       this.note = '';
     },
@@ -343,7 +343,7 @@ export default {
 
           const statusBody = {
             code: this.statusToSet,
-            revisionNotificationEmail: this.revisionEmail,
+            submissionUserEmail: this.submissionUserEmail,
             revisionNotificationEmailContent: this.emailComment,
             confirmCompleted: this.addConfirmCompleted
           };
