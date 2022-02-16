@@ -68,10 +68,10 @@ module.exports = {
       // send an email (async in the background)
       if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
         emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
-      } else if (req.body.code === Statuses.REVISING && req.body.revisionNotificationEmail) {
-        emailService.statusRevising(submission.form.id, response[0], req.body.revisionNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
-      } else if (req.body.code === Statuses.COMPLETED && req.body.confirmCompleted) {
-        emailService.statusCompleted(submission.form.id, response[0], req.body.revisionNotificationEmail, req.body.confirmCompleted, req.headers.referer).catch(() => { });
+      } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmail) {
+        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
+      } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmail && req.body.confirmCompleted) {
+        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.confirmCompleted, req.headers.referer).catch(() => { });
       }
       res.status(200).json(response);
     } catch (error) {

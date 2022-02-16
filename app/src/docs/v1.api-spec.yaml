@@ -3220,10 +3220,10 @@ components:
           description: |-
             Optional time this status comes into effect. Defaults to now if unspecified.
           example: '2020-06-04T18:49:20.672Z'
-        revisionNotificationEmail:
+        submissionUserEmail:
           type: string
           description: |-
-            Optional email for dispatching revision requests. If this property is falsy, no notification will be sent.
+            Optional email address for dispatching an email notification to the submitter. If this property is falsy, no notification will be sent.
           example: bsmith@gov.bc.ca
         revisionNotificationEmailContent:
           type: string
