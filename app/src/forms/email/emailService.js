@@ -25,6 +25,17 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       priority: 'normal',
       form,
     };
+  } else if (emailType === EmailTypes.STATUS_COMPLETED) {
+    contextToVal = [additionalProperties.revisionNotificationEmail];
+    userTypePath = 'user/view';
+    configData = {
+      bodyTemplate: 'submission-completed.html',
+      title: `${form.name} Has Been Completed`,
+      subject: 'Form Has Been Completed',
+      messageLinkText: `Your submission from ${form.name} has been Completed.`,
+      priority: 'normal',
+      form,
+    };
   } else if (emailType === EmailTypes.SUBMISSION_UNASSIGNED) {
     contextToVal = [additionalProperties.assignmentNotificationEmail];
     userTypePath = 'user/view';
@@ -243,6 +254,32 @@ const service = {
     } catch (e) {
       log.error(e.message, {
         function: EmailTypes.STATUS_ASSIGNED,
+        status: currentStatus,
+        referer: referer
+      });
+      throw e;
+    }
+  },
+
+  /**
+   * @function statusCompleted
+   * Setting Completed status to user on Submission
+   * @param {string} formId
+   * @param {string} currentStatus
+   * @param {string} revisionNotificationEmail The email address to send to
+   * @param {boolean} confirmCompleted
+   * @param {string} referer
+   * @returns The result of the email mergcd froe operation
+   */
+  statusCompleted: async (formId, currentStatus, revisionNotificationEmail, confirmCompleted, referer) => {
+    try {
+      if (confirmCompleted) {
+        const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, { revisionNotificationEmail });
+        return service._sendEmailTemplate(configData, contexts);
+      }
+    } catch (e) {
+      log.error(e.message, {
+        function: EmailTypes.STATUS_COMPLETED,
         status: currentStatus,
         referer: referer
       });

@@ -114,6 +114,7 @@
                   </v-btn>
                 </div>
               </div>
+              <v-checkbox v-if="showCompleted" v-model="addConfirmCompleted" label="Send Confirmation Email"></v-checkbox>
               <div v-if="!showRevising">
                 <label>Note (Optional)</label>
                 <v-textarea
@@ -196,6 +197,7 @@ export default {
       on: false,
       assignee: null,
       addComment: false,
+      addConfirmCompleted: false,
       currentStatus: {},
       formReviewers: [],
       historyDialog: false,
@@ -220,6 +222,9 @@ export default {
     showAsignee() {
       return ['ASSIGNED'].includes(this.statusToSet);
     },
+    showCompleted() {
+      return ['COMPLETED'].includes(this.statusToSet);
+    },
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
     },
@@ -238,7 +243,7 @@ export default {
     ...mapActions('form', ['fetchSubmissionUsers']),
     async onStatusChange(status) {
       this.statusFields = true;
-      if (status === 'REVISING') {
+      if (status === 'REVISING' || status === 'COMPLETED') {
         try {
           await this.fetchSubmissionUsers(this.submissionId);
           const submitterData = this.submissionUsers.data.find((data) => {
@@ -320,6 +325,7 @@ export default {
       }
     },
     resetForm() {
+      this.addConfirmCompleted = false;
       this.addComment = false;
       this.emailComment = '';
       this.statusFields = false;
@@ -339,6 +345,7 @@ export default {
             code: this.statusToSet,
             revisionNotificationEmail: this.revisionEmail,
             revisionNotificationEmailContent: this.emailComment,
+            confirmCompleted: this.addConfirmCompleted
           };
           if (this.showAsignee) {
             if (this.assignee) {
