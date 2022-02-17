@@ -29,10 +29,10 @@ describe('About.vue', () => {
     const wrapper = shallowMount(About, {
       localVue,
       store,
-      stubs: ['router-link', 'BaseImagePopout', 'FormDisclaimer'],
+      stubs: ['router-link', 'BaseImagePopout'],
       vuetify
     });
 
-    expect(wrapper.html()).toMatch('Create, publish forms, and receive submissions with the Common Hosted Forms Service');
+    expect(wrapper.html()).toMatch('Create, publish forms, and receive submissions');
   });
 });
