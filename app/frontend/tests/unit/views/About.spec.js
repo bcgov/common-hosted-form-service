@@ -33,6 +33,6 @@ describe('About.vue', () => {
       vuetify
     });
 
-    expect(wrapper.html()).toMatch('Create and publish forms');
+    expect(wrapper.html()).toMatch('Create, publish forms, and receive submissions with the Common Hosted Forms Service');
   });
 });

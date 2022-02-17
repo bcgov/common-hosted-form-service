@@ -79,7 +79,7 @@
                       <p class="mt-2 mb-0">
                         Please reference our
                         <a
-                          href="https://github.com/bcgov/common-hosted-form-service/wiki/Form-Access#please-notify-the-idim-team-if-you-are-using-bceid"
+                          href="https://github.com/bcgov/common-hosted-form-service/wiki/Accessing-forms#Notify-the-idim-team-if-you-are-using-bceid"
                         >user guide</a
                         >
                         for more details.

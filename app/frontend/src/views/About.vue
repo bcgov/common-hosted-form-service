@@ -3,60 +3,26 @@
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h1 class="my-5">
-            Create and publish forms, and receive submissions from your users
+          <h1 class="my-5 d-block">
+            Create, publish forms, and receive submissions with the Common Hosted Forms Service
           </h1>
           <p>
-            The Common Hosted Form Service is available to BC Government
-            employees and contractors.
-            <a :href="createLoginUrl()">Sign in</a> now to try it out
+            CHEFS is a drag and drop hosted web form service that allows teams to create and publish their forms. With CHEFS, you can make secure forms with complex layouts. You can also manage who can access your form and assign admin roles to your team. All B.C. Government employees or contractors with an IDIR account can use our hosted version of CHEFS to create forms.<br />
+            <a :href="createLoginUrl()">Log in to CHEFS to get started</a>.
           </p>
-          <video class="main-video" width="100%" controls>
-            <source
-              src="https://github.com/bcgov/common-hosted-form-service/wiki/videos/intro_720.mp4"
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
+          <h2 id="video" class="pt-5">Watch the CHEFS tour video to see it in action</h2>
+          <div class="video-wrapper">
+            <video class="main-video" width="100%" controls>
+              <source
+                src="https://github.com/bcgov/common-hosted-form-service/wiki/videos/intro_720.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
+          </div>
         </v-col>
       </v-row>
     </v-sheet>
-
-    <v-row justify="center" class="example-text">
-      <v-col cols="12" lg="4">
-        <h2>Drag and Drop form components onto your form</h2>
-        <p>
-          Easily create forms with an intuitive drag-and-drop interface. Add new
-          form components, re-arrange them, and drop them into formatting
-          objects like columns and panels. Creating a Web form has never been so
-          simple.
-        </p>
-      </v-col>
-      <v-col cols="12" lg="4">
-        <BaseImagePopout
-          alt="Drag and Drop demo"
-          src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/drag_drop.png"
-          width="600px"
-        />
-      </v-col>
-    </v-row>
-
-    <v-row justify="center" class="example-text">
-      <v-col cols="12" lg="4">
-        <h2>Export and import your form design templates</h2>
-        <p>
-          Export to save the design to your computer as a backup or template and
-          import to easily start from where you left off.
-        </p>
-      </v-col>
-      <v-col cols="12" lg="4">
-        <BaseImagePopout
-          alt="Export demo"
-          src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/export.png"
-          width="600px"
-        />
-      </v-col>
-    </v-row>
 
     <v-sheet class="help-highlight pa-5">
       <v-row justify="center">
@@ -92,7 +58,10 @@ export default {
     margin: 80px 0;
     padding: 0 5px;
   }
-
+  .video-wrapper {
+    max-width: 854px !important;
+    margin: 0 auto;
+  }
   .main-video {
     margin-top: 40px;
     margin-bottom: 20px;
