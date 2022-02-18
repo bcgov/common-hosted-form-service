@@ -287,8 +287,10 @@ const service = {
   submissionReceived: async (formId, submissionId, body, referer) => {
     try {
       const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_RECEIVED, referer, { body });
-      if (contexts[0].to.length > 0) {
+      if (contexts[0].to.length) {
         return service._sendEmailTemplate(configData, contexts);
+      } else {
+        return {};
       }
     } catch (e) {
       log.error(e.message, {
