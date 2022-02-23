@@ -62,18 +62,24 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
-      const response = await service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser);
-      const submission = await service.read(req.params.formSubmissionId);
+      const tasks = [
+        service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser),
+        service.read(req.params.formSubmissionId)
+      ];
 
-      // send an email (async in the background)
-      if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
-        emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
-      } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmail) {
-        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
-      } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmail && req.body.confirmCompleted) {
-        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.confirmCompleted, req.headers.referer).catch(() => { });
-      }
-      res.status(200).json(response);
+      Promise.all(tasks).then(results => {
+        const response = results[0];
+        const submission = results[1];
+        // send an email (async in the background)
+        if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
+          emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
+        } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmail) {
+          emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
+        } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmail && req.body.confirmCompleted) {
+          emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.headers.referer).catch(() => { });
+        }
+        res.status(200).json(response);
+      });
     } catch (error) {
       next(error);
     }

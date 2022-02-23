@@ -267,11 +267,10 @@ const service = {
    * @param {string} formId
    * @param {string} currentStatus
    * @param {string} submissionUserEmail The email address to send to
-   * @param {boolean} confirmCompleted
    * @param {string} referer
-   * @returns The result of the email mergcd froe operation
+   * @returns {object} The result of the email merged from operation
    */
-  statusCompleted: async (formId, currentStatus, submissionUserEmail, confirmCompleted, referer) => {
+  statusCompleted: async (formId, currentStatus, submissionUserEmail, referer) => {
     try {
       const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, { submissionUserEmail });
       return service._sendEmailTemplate(configData, contexts);
