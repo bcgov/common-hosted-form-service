@@ -33,6 +33,7 @@ Create, edit and publish forms.
     Jenkinsfile.cicd           - Pull-Request Pipeline
     LICENSE                    - License
     vetur.config.js            - Vetur configuration
+    SECURITY.md                - Security Policy and Reporting
 
 ## Documentation
 
@@ -42,6 +43,7 @@ Create, edit and publish forms.
 * [Cypress Test Readme](tests/functional/cypress/README.md)
 * [CHEFS Load Test Readme](tests/load/load-test/README.md)
 * [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
+* [Security Reporting](SECURITY.md)
 * [Product Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Product-Roadmap)
 
 ## Getting Help or Reporting an Issue
