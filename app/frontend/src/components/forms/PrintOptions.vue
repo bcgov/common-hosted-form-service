@@ -15,7 +15,7 @@
         <v-card-text>
           <hr />
           <p>
-            <strong>1.</strong> <a href="https://github.com/bcgov/common-hosted-form-service/wiki/Browser-Print" target="blank">Print</a> the page from your browser
+            <strong>1.</strong> <a href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser" target="blank">Print</a> the page from your browser
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
             <span>Browser Print</span>
