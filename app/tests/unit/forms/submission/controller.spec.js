@@ -50,6 +50,7 @@ describe('addStatus', () => {
 
   it('should call statusCompleted if email specified', async () => {
     req.body.submissionUserEmail = 'a@a.com';
+    req.body.confirmCompleted = true;
     req.body.code = Statuses.COMPLETED;
     service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
     service.changeStatusState = jest.fn().mockReturnValue([1, 2, 3]);
