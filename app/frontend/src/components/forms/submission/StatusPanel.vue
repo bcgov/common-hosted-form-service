@@ -114,7 +114,7 @@
                   </v-btn>
                 </div>
               </div>
-              <v-checkbox v-if="showCompleted" v-model="addConfirmCompleted" label="Send Confirmation Email"></v-checkbox>
+              <v-checkbox v-if="showCompleted && showSendConfirmEmail" v-model="addConfirmCompleted" label="Send Confirmation Email"></v-checkbox>
               <div v-if="!showRevising">
                 <label>Note (Optional)</label>
                 <v-textarea
@@ -210,6 +210,7 @@ export default {
       statusFields: false,
       statusToSet: '',
       valid: false,
+      showSendConfirmEmail: false,
     };
   },
   computed: {
@@ -246,11 +247,17 @@ export default {
       if (status === 'REVISING' || status === 'COMPLETED') {
         try {
           await this.fetchSubmissionUsers(this.submissionId);
-          const submitterData = this.submissionUsers.data.find((data) => {
-            const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
-            return username === this.formSubmission.createdBy;
-          });
-          this.submissionUserEmail = submitterData.user.email;
+
+          if (this.submissionUsers.data.length > 0) {
+            const submitterData = this.submissionUsers.data.find((data) => {
+              const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
+              return username === this.formSubmission.createdBy;
+            });
+            this.submissionUserEmail = submitterData.user.email;
+            if (status === 'COMPLETED') {
+              this.showSendConfirmEmail = true;
+            }
+          }
         } catch (error) {
           this.addNotification({
             message: 'An error occured while trying to fetch recipient emails for this submission.',
