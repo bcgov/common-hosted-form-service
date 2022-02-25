@@ -113,7 +113,6 @@ describe('_sendEmailTemplate', () => {
 });
 
 describe('public methods', () => {
-  const confirmCompleted = true;
   const currentStatus = {
     submissionId: '456',
     formSubmissionId: '123',
@@ -185,7 +184,6 @@ describe('public methods', () => {
       '123',
       currentStatus,
       assignmentNotificationEmail,
-      confirmCompleted,
       referer
     );
     const configData = {
@@ -203,7 +201,7 @@ describe('public methods', () => {
         confirmationNumber: 'abc',
         form: form,
         messageLinkText: `Your submission from ${form.name} has been Completed.`,
-        messageLinkUrl: 'https://user/view?s=123',
+        messageLinkUrl: `https://user/view?s=${form.name}`,
         revisionNotificationEmailContent: undefined,
         title: `${form.name} Has Been Completed`
       },
