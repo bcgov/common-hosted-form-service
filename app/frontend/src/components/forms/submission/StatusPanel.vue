@@ -248,15 +248,14 @@ export default {
         try {
           await this.fetchSubmissionUsers(this.submissionId);
 
-          if (this.submissionUsers.data.length > 0) {
-            const submitterData = this.submissionUsers.data.find((data) => {
-              const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
-              return username === this.formSubmission.createdBy;
-            });
-            this.submissionUserEmail = submitterData.user.email;
-            if (status === 'COMPLETED') {
-              this.showSendConfirmEmail = true;
-            }
+          const submitterData = this.submissionUsers.data.find((data) => {
+            const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
+            return username === this.formSubmission.createdBy;
+          });
+
+          if (submitterData) {
+            this.submissionUserEmail = submitterData.user ? submitterData.user.email : undefined;
+            this.showSendConfirmEmail = status === 'COMPLETED';
           }
         } catch (error) {
           this.addNotification({
