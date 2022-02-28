@@ -66,10 +66,7 @@ module.exports = {
         service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser),
         service.read(req.params.formSubmissionId)
       ];
-      const results = await Promise.all(tasks);
-      const response = results[0];
-      const submission = results[1];
-
+      const [response, submission] = await Promise.all(tasks);
       // send an email (async in the background)
       if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
         emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.headers.referer).catch(() => { });
