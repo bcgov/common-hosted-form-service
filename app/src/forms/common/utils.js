@@ -43,8 +43,8 @@ const queryUtils = {
 };
 
 module.exports = {
-  falsey: falsey,
-  setupMount: setupMount,
-  queryUtils: queryUtils,
-  typeUtils:  typeUtils,
+  falsey,
+  setupMount,
+  queryUtils,
+  typeUtils,
 };
