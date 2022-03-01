@@ -28,7 +28,7 @@
             />
 
             <div v-show="statusFields" v-if="showRevising">
-              <v-text-field v-model="revisionEmail" label="Recipient Email" outlined dense />
+              <v-text-field v-model="submissionUserEmail" label="Recipient Email" outlined dense />
               <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
               <div v-if="addComment">
                 <label>Email Comment</label>
@@ -114,6 +114,7 @@
                   </v-btn>
                 </div>
               </div>
+              <v-checkbox v-if="showCompleted && showSendConfirmEmail" v-model="addConfirmCompleted" label="Send Confirmation Email"></v-checkbox>
               <div v-if="!showRevising">
                 <label>Note (Optional)</label>
                 <v-textarea
@@ -196,6 +197,7 @@ export default {
       on: false,
       assignee: null,
       addComment: false,
+      addConfirmCompleted: false,
       currentStatus: {},
       formReviewers: [],
       historyDialog: false,
@@ -203,11 +205,12 @@ export default {
       loading: true,
       note: '',
       emailComment: '',
-      revisionEmail: '',
+      submissionUserEmail: '',
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
       valid: false,
+      showSendConfirmEmail: false,
     };
   },
   computed: {
@@ -219,6 +222,9 @@ export default {
     },
     showAsignee() {
       return ['ASSIGNED'].includes(this.statusToSet);
+    },
+    showCompleted() {
+      return ['COMPLETED'].includes(this.statusToSet);
     },
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
@@ -238,14 +244,19 @@ export default {
     ...mapActions('form', ['fetchSubmissionUsers']),
     async onStatusChange(status) {
       this.statusFields = true;
-      if (status === 'REVISING') {
+      if (status === 'REVISING' || status === 'COMPLETED') {
         try {
           await this.fetchSubmissionUsers(this.submissionId);
+
           const submitterData = this.submissionUsers.data.find((data) => {
             const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
             return username === this.formSubmission.createdBy;
           });
-          this.revisionEmail = submitterData.user.email;
+
+          if (submitterData) {
+            this.submissionUserEmail = submitterData.user ? submitterData.user.email : undefined;
+            this.showSendConfirmEmail = status === 'COMPLETED';
+          }
         } catch (error) {
           this.addNotification({
             message: 'An error occured while trying to fetch recipient emails for this submission.',
@@ -320,11 +331,12 @@ export default {
       }
     },
     resetForm() {
+      this.addConfirmCompleted = false;
       this.addComment = false;
       this.emailComment = '';
       this.statusFields = false;
       this.$refs.form.resetValidation();
-      this.revisionEmail = '';
+      this.submissionUserEmail = '';
       this.statusToSet = null;
       this.note = '';
     },
@@ -337,8 +349,9 @@ export default {
 
           const statusBody = {
             code: this.statusToSet,
-            revisionNotificationEmail: this.revisionEmail,
+            submissionUserEmail: this.submissionUserEmail,
             revisionNotificationEmailContent: this.emailComment,
+            confirmCompleted: this.addConfirmCompleted
           };
           if (this.showAsignee) {
             if (this.assignee) {
