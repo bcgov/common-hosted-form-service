@@ -164,9 +164,9 @@ const service = {
         id: uuidv4(),
         submissionId: submissionId,
         submissionStatusId: data.submissionStatusId,
-        note: data.note,
+        note: data.note ? data.note : data.emailComment,
         userId: data.userId,
-        createdBy: currentUser.usernameIdp,
+        createdBy: currentUser.usernameIdp
       });
       await trx.commit();
 

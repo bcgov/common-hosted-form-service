@@ -18,14 +18,8 @@ const tableNames = (models) => {
 };
 
 module.exports = {
-<<<<<<< HEAD
   toArray,
   inArrayClause,
   inArrayFilter,
-=======
-  toArray: toArray,
-  inArrayClause: inArrayClause,
-  inArrayFilter: inArrayFilter,
->>>>>>> c2a9ac0 (checkSchema change)
   tableNames
 };

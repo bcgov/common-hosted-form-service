@@ -134,6 +134,7 @@ describe('public methods', () => {
   };
   const assignmentNotificationEmail = 'x@y.com';
   const body = { to: 'a@b.com' };
+  const emailContent = 'Email Content';
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -147,6 +148,7 @@ describe('public methods', () => {
       '123',
       currentStatus,
       assignmentNotificationEmail,
+      emailContent,
       referer
     );
     const configData = {
@@ -165,8 +167,46 @@ describe('public methods', () => {
         form: form,
         messageLinkText: 'You have been assigned to a 123 submission. Please login to review it.',
         messageLinkUrl: 'https://form/view?s=123',
-        revisionNotificationEmailContent: undefined,
+        emailContent: 'Email Content',
         title: '123 Submission Assignment'
+      },
+      to: ['x@y.com']
+    }];
+
+    expect(result).toEqual('ret');
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+  });
+
+  it('statusRevising should send a status email', async () => {
+    formService.readForm = jest.fn().mockReturnValue(form);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+    const result = await emailService.statusRevising(
+      '123',
+      currentStatus,
+      assignmentNotificationEmail,
+      emailContent,
+      referer
+    );
+    const configData = {
+      bodyTemplate: 'send-status-revising-email-body.html',
+      title: `${form.name} Submission Revision Requested`,
+      subject: 'Form Submission Revision Request',
+      messageLinkText: `You have been asked to revise a ${form.name} submission. Please login to review it.`,
+      priority: 'normal',
+      form,
+    };
+
+    const contexts = [{
+      context: {
+        allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+        confirmationNumber: 'abc',
+        form: form,
+        messageLinkText: `You have been asked to revise a ${form.name} submission. Please login to review it.`,
+        messageLinkUrl: `https://user/view?s=${form.name}`,
+        emailContent: 'Email Content',
+        title: `${form.name} Submission Revision Requested`
       },
       to: ['x@y.com']
     }];
@@ -184,6 +224,7 @@ describe('public methods', () => {
       '123',
       currentStatus,
       assignmentNotificationEmail,
+      emailContent,
       referer
     );
     const configData = {
@@ -202,7 +243,7 @@ describe('public methods', () => {
         form: form,
         messageLinkText: `Your submission from ${form.name} has been Completed.`,
         messageLinkUrl: `https://user/view?s=${form.name}`,
-        revisionNotificationEmailContent: undefined,
+        emailContent: 'Email Content',
         title: `${form.name} Has Been Completed`
       },
       to: ['x@y.com']
