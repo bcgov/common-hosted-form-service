@@ -164,7 +164,7 @@ const service = {
         id: uuidv4(),
         submissionId: submissionId,
         submissionStatusId: data.submissionStatusId,
-        note: data.note ? data.note : data.emailComment,
+        note: data.note,
         userId: data.userId,
         createdBy: currentUser.usernameIdp
       });

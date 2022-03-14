@@ -375,7 +375,7 @@ export default {
             const noteBody = {
               submissionId: this.submissionId,
               submissionStatusId: submissionStatusId,
-              emailComment: formattedComment,
+              notes: formattedComment,
               userId: user.data.id,
             };
             const response = await formService.addNote(
