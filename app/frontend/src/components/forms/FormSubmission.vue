@@ -48,10 +48,8 @@
           :class="'d-print-none ' + NOTIFICATIONS_TYPES.INFO.class"
           :color="NOTIFICATIONS_TYPES.INFO.color"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
-          transition='scale-transition'
-        >
-          After editing, re-submit the form to save your changes.
-        </v-alert>
+          transition="scale-transition"
+        >After editing, re-submit the form to save your changes.</v-alert>
         <v-card outlined class="review-form">
           <v-row no-gutters>
             <v-col cols="12" sm="6">
@@ -110,10 +108,14 @@
       >
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Status</h2>
-          <StatusPanel :submissionId="submissionId" :formId="form.id" @note-updated="refreshNotes" @draft-enabled="setDraft" />
+          <StatusPanel
+            :submissionId="submissionId"
+            :formId="form.id"
+            @note-updated="refreshNotes"
+            @draft-enabled="setDraft"
+          />
         </v-card>
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
-          <h2 class="review-heading">Notes</h2>
           <NotesPanel :submissionId="submissionId" ref="notesPanel" />
         </v-card>
       </v-col>
@@ -173,7 +175,7 @@ export default {
       this.$refs.notesPanel.getNotes();
     },
     setDraft(status) {
-      this.isDraft = (status === 'REVISING');
+      this.isDraft = status === 'REVISING';
     },
     toggleSubmissionEdit(editing) {
       this.submissionReadOnly = !editing;

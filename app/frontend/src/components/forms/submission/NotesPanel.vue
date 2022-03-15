@@ -1,71 +1,71 @@
 <template>
-  <div>
-    <v-skeleton-loader :loading="loading" type="list-item-two-line">
-      <v-btn
-        v-if="!showNoteField"
-        text
-        small
-        color="primary"
-        class="pl-0"
-        @click="showNoteField = true"
-      >
-        <v-icon class="mr-1">add</v-icon>
-        <span>NEW NOTE</span>
-      </v-btn>
-
-      <div v-if="!notes.length" class="my-5">
-        There are no notes on this submission yet.
-      </div>
-
-      <v-form v-if="showNoteField">
-        <label>Note</label>
-        <v-textarea
-          v-model="newNote"
-          :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
-          counter
-          auto-grow
-          dense
-          flat
-          outlined
-          solid
-        />
-        <v-row>
-          <v-col cols="12" sm="6" xl="4">
+  <v-skeleton-loader :loading="loading" type="list-item-two-line">
+    <v-row no-gutters>
+      <v-col cols="12" sm="6">
+        <h2 class="note-heading">Notes</h2>
+      </v-col>
+      <v-col cols="12" sm="6" class="text-sm-right">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
             <v-btn
-              block
+              class="mx-1"
+              @click="showNoteField = true"
               color="primary"
-              @click="showNoteField = false"
-              outlined
+              icon
+              v-bind="attrs"
+              v-on="on"
             >
-              <span>Cancel</span>
+              <v-icon>add_circle</v-icon>
             </v-btn>
-          </v-col>
-          <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-            <v-btn
-              block
-              color="primary"
-              data-test="btn-add-note"
-              :disabled="!newNote"
-              @click="addNote"
-            >
-              <span>ADD NOTE</span>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
+          </template>
+          <span>Add New Note</span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
 
-      <ul class="mt-5">
-        <li class="mb-2" v-for="note in notes" :key="note.noteId">
-          <strong>
-            {{ note.createdAt | formatDateLong }} -
-            {{ note.createdBy }}
-          </strong>
-          <br />
-          {{ note.note }}
-        </li>
-      </ul>
-    </v-skeleton-loader>
-  </div>
+    <v-form v-if="showNoteField">
+      <label>Note</label>
+      <v-textarea
+        v-model="newNote"
+        :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+        counter
+        auto-grow
+        dense
+        flat
+        outlined
+        solid
+      />
+      <v-row>
+        <v-col cols="12" sm="6" xl="4">
+          <v-btn block color="primary" @click="showNoteField = false" outlined>
+            <span>Cancel</span>
+          </v-btn>
+        </v-col>
+        <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
+          <v-btn
+            block
+            color="primary"
+            data-test="btn-add-note"
+            :disabled="!newNote"
+            @click="addNote"
+          >
+            <span>ADD NOTE</span>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-form>
+
+    <ul class="mt-5">
+      <li class="mb-2" v-for="note in notes" :key="note.noteId">
+        <strong>
+          {{ note.createdAt | formatDateLong }} -
+          {{ note.createdBy }}
+        </strong>
+        <br />
+        {{ note.note }}
+      </li>
+    </ul>
+  </v-skeleton-loader>
 </template>
 
 <script>
@@ -138,3 +138,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.note-heading {
+    color: #003366;
+}
+</style>

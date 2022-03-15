@@ -166,7 +166,7 @@ const service = {
         submissionStatusId: data.submissionStatusId,
         note: data.note,
         userId: data.userId,
-        createdBy: currentUser.usernameIdp,
+        createdBy: currentUser.usernameIdp
       });
       await trx.commit();
 
