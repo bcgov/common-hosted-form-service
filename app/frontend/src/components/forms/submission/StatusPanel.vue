@@ -27,25 +27,6 @@
               @change="onStatusChange(statusToSet)"
             />
 
-            <div v-show="statusFields" v-if="showRevising">
-              <v-text-field v-model="submissionUserEmail" label="Recipient Email" outlined dense />
-              <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
-              <div v-if="addComment">
-                <label>Email Comment</label>
-                <v-textarea
-                  v-model="emailComment"
-                  :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
-                  rows="1"
-                  counter
-                  auto-grow
-                  dense
-                  flat
-                  outlined
-                  solid
-                />
-              </div>
-            </div>
-
             <div v-show="statusFields">
               <div v-if="showAsignee">
                 <label>
@@ -82,7 +63,8 @@
                       close
                       @click="data.select"
                       @click:close="remove(data.item)"
-                    >{{ data.item.fullName }}
+                    >
+                      {{ data.item.fullName }}
                     </span>
                   </template>
                   <!-- users found in dropdown -->
@@ -114,20 +96,26 @@
                   </v-btn>
                 </div>
               </div>
-              <v-checkbox v-if="showCompleted && showSendConfirmEmail" v-model="addConfirmCompleted" label="Send Confirmation Email"></v-checkbox>
-              <div v-if="!showRevising">
-                <label>Note (Optional)</label>
-                <v-textarea
-                  v-model="note"
-                  :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
-                  rows="1"
-                  counter
-                  auto-grow
-                  dense
-                  flat
-                  outlined
-                  solid
-                />
+              <div v-show="statusFields" v-if="showRevising">
+                <v-text-field v-model="submissionUserEmail" label="Recipient Email" outlined dense />
+              </div>
+
+              <div v-if="showRevising || showAsignee || showCompleted">
+                <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
+                <div v-if="addComment">
+                  <label>Email Comment</label>
+                  <v-textarea
+                    v-model="emailComment"
+                    :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+                    rows="1"
+                    counter
+                    auto-grow
+                    dense
+                    flat
+                    outlined
+                    solid
+                  />
+                </div>
               </div>
             </div>
           </v-col>
@@ -160,7 +148,13 @@
           </v-col>
 
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-            <v-btn block :disabled="!this.statusToSet" color="primary" v-on="on" @click="updateStatus">
+            <v-btn
+              block
+              :disabled="!this.statusToSet"
+              color="primary"
+              v-on="on"
+              @click="updateStatus"
+            >
               <span>{{ statusAction }}</span>
             </v-btn>
           </v-col>
@@ -197,7 +191,6 @@ export default {
       on: false,
       assignee: null,
       addComment: false,
-      addConfirmCompleted: false,
       currentStatus: {},
       formReviewers: [],
       historyDialog: false,
@@ -217,8 +210,8 @@ export default {
     ...mapGetters('auth', ['keycloakSubject']),
     ...mapGetters('form', ['form', 'formSubmission', 'submissionUsers']),
     // State Machine
-    showRevising() {
-      return ['REVISING'].includes(this.statusToSet);
+    showActionDate() {
+      return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
     },
     showAsignee() {
       return ['ASSIGNED'].includes(this.statusToSet);
@@ -226,15 +219,15 @@ export default {
     showCompleted() {
       return ['COMPLETED'].includes(this.statusToSet);
     },
-    showActionDate() {
-      return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
+    showRevising() {
+      return ['REVISING'].includes(this.statusToSet);
     },
     statusAction() {
       const obj = Object.freeze({
         ASSIGNED: 'ASSIGN',
         COMPLETED: 'COMPLETE',
         REVISING: 'REVISE',
-        DEFAULT: 'UPDATE'
+        DEFAULT: 'UPDATE',
       });
       return obj[this.statusToSet] ? obj[this.statusToSet] : obj['DEFAULT'];
     },
@@ -244,6 +237,7 @@ export default {
     ...mapActions('form', ['fetchSubmissionUsers']),
     async onStatusChange(status) {
       this.statusFields = true;
+      this.addComment = false;
       if (status === 'REVISING' || status === 'COMPLETED') {
         try {
           await this.fetchSubmissionUsers(this.submissionId);
@@ -331,7 +325,6 @@ export default {
       }
     },
     resetForm() {
-      this.addConfirmCompleted = false;
       this.addComment = false;
       this.emailComment = '';
       this.statusFields = false;
@@ -351,7 +344,6 @@ export default {
             code: this.statusToSet,
             submissionUserEmail: this.submissionUserEmail,
             revisionNotificationEmailContent: this.emailComment,
-            confirmCompleted: this.addConfirmCompleted
           };
           if (this.showAsignee) {
             if (this.assignee) {
@@ -369,14 +361,21 @@ export default {
             );
           }
 
-          if (this.note) {
+          if (this.emailComment) {
+            let formattedComment;
+            if (this.statusToSet === 'ASSIGNED') {
+              formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
+            } else if (this.statusToSet === 'REVISING' || this.statusToSet === 'COMPLETED') {
+              formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
+            }
+
             const submissionStatusId =
               statusResponse.data[0].submissionStatusId;
             const user = await rbacService.getCurrentUser();
             const noteBody = {
               submissionId: this.submissionId,
               submissionStatusId: submissionStatusId,
-              note: this.note,
+              note: formattedComment,
               userId: user.data.id,
             };
             const response = await formService.addNote(
