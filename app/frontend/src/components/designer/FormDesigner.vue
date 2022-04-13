@@ -11,21 +11,6 @@
           <template #activator="{ on, attrs }">
             <v-btn
               class="mx-md-1 mx-0"
-              @click="onRefresh"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>refresh</v-icon>
-            </v-btn>
-          </template>
-          <span>Refresh</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-md-1 mx-0"
               @click="submitFormSchema"
               color="primary"
               icon
@@ -611,9 +596,6 @@ export default {
     },
     async onRedoClick() {
       this.redoPatchFromHistory();
-    },
-    async onRefresh() {
-      this.reRenderFormIo += 1;
     },
     async schemaCreateNew() {
       const emailList =
