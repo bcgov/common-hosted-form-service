@@ -19,6 +19,7 @@ module.exports = {
     parser: 'babel-eslint'
   },
   rules: {
+    'no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
     'eol-last': ['error', 'always'],
     indent: ['error', 2, {
       SwitchCase: 1
