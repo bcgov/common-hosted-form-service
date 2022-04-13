@@ -11,6 +11,21 @@
           <template #activator="{ on, attrs }">
             <v-btn
               class="mx-md-1 mx-0"
+              @click="onRefresh"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>refresh</v-icon>
+            </v-btn>
+          </template>
+          <span>Refresh</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              class="mx-md-1 mx-0"
               @click="submitFormSchema"
               color="primary"
               icon
@@ -393,7 +408,15 @@ export default {
           this.formSchema = JSON.parse(fileReader.result);
           // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
           this.reRenderFormIo += 1;
-          this.originalSchema = JSON.parse(JSON.stringify(_.cloneDeep(this.formSchema)));
+          this.addPatchToHistory();
+          this.patchHistoryUndo = false;
+          this.patchHistoryRedo = false;
+          this.componentAdded = false;
+          this.componentRemoved = false;
+          this.componentUpdated = false;
+          this.componentMoved = false;
+          this.undoEnabled = this.canUndoPatch();
+          this.redoEnabled = this.canRedoPatch();
         });
         fileReader.readAsText(file);
       } catch (error) {
@@ -588,6 +611,9 @@ export default {
     },
     async onRedoClick() {
       this.redoPatchFromHistory();
+    },
+    async onRefresh() {
+      this.reRenderFormIo += 1;
     },
     async schemaCreateNew() {
       const emailList =
