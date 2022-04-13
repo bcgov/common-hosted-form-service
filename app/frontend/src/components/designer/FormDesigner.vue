@@ -25,6 +25,40 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
+              :disabled="!undoEnabled"
+              class="mx-1"
+              @click="onUndoClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>undo</v-icon>
+              {{ undoCount }}
+            </v-btn>
+          </template>
+          <span>Undo</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              :disabled="!redoEnabled"
+              class="mx-1"
+              @click="onRedoClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              {{ redoCount }}
+              <v-icon>redo</v-icon>
+            </v-btn>
+          </template>
+          <span>Redo</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
               class="mx-1"
               @click="onExportClick"
               color="primary"
@@ -147,6 +181,9 @@
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
+      @addComponent="onAddComponentMethod"
+      @removeComponent="onRemoveComponentMethod"
+      @updateComponent="onUpdateComponentMethod"
       class="form-designer"
     />
   </div>
@@ -161,6 +198,9 @@ import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
+
+var _ = require('lodash');
+var deepFreeze = require('deep-freeze');
 
 export default {
   name: 'FormDesigner',
@@ -191,6 +231,16 @@ export default {
       displayVersion: 1,
       reRenderFormIo: 0,
       saving: false,
+      patchHistory: [],
+      patchIndex: -1,
+      patchHistoryUndo: false,
+      patchHistoryRedo: false,
+      undoEnabled: false,
+      redoEnabled: false,
+      componentAdded: null,
+      componentRemoved: false,
+      componentUpdated: false,
+      componentMoved: false,
     };
   },
   computed: {
@@ -301,6 +351,12 @@ export default {
         },
       };
     },
+    undoCount() {
+      return (this.patchHistory.length > 0) ? (this.patchIndex + 1) : 0;
+    },
+    redoCount() {
+      return ((this.patchHistory.length > 0 ? this.patchHistory.length - this.patchIndex - 1 : 0));
+    },
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
@@ -317,6 +373,9 @@ export default {
           res = await formService.readDraft(this.formId, this.draftId);
         }
         this.formSchema = { ...this.formSchema, ...res.data.schema };
+        if (this.patchHistory.length === 0) {
+          this.originalSchema = JSON.parse(JSON.stringify(_.cloneDeep(this.formSchema)));
+        }
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while loading the form design.',
@@ -334,6 +393,7 @@ export default {
           this.formSchema = JSON.parse(fileReader.result);
           // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
           this.reRenderFormIo += 1;
+          this.originalSchema = JSON.parse(JSON.stringify(_.cloneDeep(this.formSchema)));
         });
         fileReader.readAsText(file);
       } catch (error) {
@@ -369,15 +429,125 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     init() {
       // Since change is triggered during loading
-      this.setDirtyFlag(false);
     },
-    onChangeMethod() {
+    onChangeMethod(_changed, _flags, _modified) {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
+
+      if (!this.patchHistoryUndo && !this.patchHistoryRedo) {
+        if (_flags !== undefined && _modified !== undefined) {
+          if (this.componentAdded !== null) {
+            this.addPatchToHistory();
+          } else {
+            this.componentAdded = false;
+            this.componentMoved = false;
+            this.componentUpdated = false;
+            this.componentRemoved = false;
+          }
+        } else {
+          if (this.componentRemoved) {
+            // Component was removed..
+            this.addPatchToHistory();
+          } else if (this.componentMoved) {
+            this.addPatchToHistory();
+          } else {
+            this.componentAdded = false;
+            this.componentMoved = false;
+            this.componentUpdated = false;
+            this.componentRemoved = false;
+          }
+        }
+      } else {
+        this.patchHistoryUndo = false;
+        this.patchHistoryRedo = false;
+        this.componentAdded = false;
+        this.componentRemoved = false;
+        this.componentUpdated = false;
+        this.componentMoved = false;
+      }
+
+      this.undoEnabled = this.canUndoPatch();
+      this.redoEnabled = this.canRedoPatch();
     },
     onRenderMethod() {
       const el = document.querySelector('input.builder-sidebar_search:focus');
       if (el && el.value === '') this.reRenderFormIo += 1;
+      this.setDirtyFlag(false);
+
+      this.undoEnabled = this.canUndoPatch();
+      this.redoEnabled = this.canRedoPatch();
+    },
+    onAddComponentMethod(_info, _parent, _path, _index, _isNew) {
+      if (_isNew) {
+        // Component Add Start, the user can still cancel/remove the add
+        this.componentAdded = true;
+      } else {
+        // The user has initiated a move
+        this.componentMoved = true;
+      }
+    },
+    onRemoveComponentMethod(_component, _schema, _path, _index) {
+      // Component remove start
+      this.componentRemoved = true;
+    },
+    onUpdateComponentMethod(_component) {
+      this.componentUpdated = true;
+    },
+    // ----------------------------------------------------------------------------------/ FormIO Handlers
+
+    // ---------------------------------------------------------------------------------------------------
+    // Patch History
+    // ---------------------------------------------------------------------------------------------------
+    addPatchToHistory() {
+      if (this.patchHistory.length > 0) {
+        this.patchHistory.length = this.patchIndex + 1;
+      }
+      this.patchIndex++;
+
+      // Add the patch to the history
+      this.patchHistory.push(deepFreeze(JSON.parse(JSON.stringify(_.cloneDeep(this.formSchema)))));
+
+      this.componentAdded = false;
+      this.componentMoved = false;
+      this.componentUpdated = false;
+      this.componentRemoved = false;
+    },
+    getPatch(idx) {
+      // Generate the form from the base patch
+      var form = JSON.parse(JSON.stringify(_.cloneDeep(this.originalSchema)));
+      if (this.patchIndex > -1 && this.patchHistory.length > 0) {
+        form = _.cloneDeep(this.patchHistory[idx]);
+      }
+      return form;
+    },
+    undoPatchFromHistory() {
+      // Only allow undo if there was an action made
+      if (this.canUndoPatch()) {
+        // Flag for formio to know we are setting the form
+        this.patchHistoryUndo = true;
+        this.patchIndex--;
+        this.formSchema = this.getPatch(this.patchIndex);
+      }
+    },
+    redoPatchFromHistory() {
+      // Only allow redo if there was an action made
+      if (this.canRedoPatch()) {
+        // Flag for formio to know we are setting the form
+        this.patchHistoryRedo = true;
+        this.patchIndex++;
+        this.formSchema = this.getPatch(this.patchIndex);
+      }
+    },
+    canUndoPatch() {
+      if (this.patchHistory.length == 0) return false;
+      if (this.patchIndex > this.patchHistory.length) return false;
+      if (this.patchIndex < 0) return false;
+      return true;
+    },
+    canRedoPatch() {
+      if (this.patchHistory.length == 0) return false;
+      if (this.patchIndex >= (this.patchHistory.length - 1)) return false;
+      return true;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -412,6 +582,12 @@ export default {
       } finally {
         this.saving = false;
       }
+    },
+    async onUndoClick() {
+      this.undoPatchFromHistory();
+    },
+    async onRedoClick() {
+      this.redoPatchFromHistory();
     },
     async schemaCreateNew() {
       const emailList =
@@ -476,6 +652,10 @@ export default {
       this.getFormSchema();
       this.fetchForm(this.formId);
     }
+  },
+  mounted() {
+    this.originalSchema = JSON.parse(JSON.stringify(_.cloneDeep(this.formSchema)));
+    deepFreeze(this.originalSchema);
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
