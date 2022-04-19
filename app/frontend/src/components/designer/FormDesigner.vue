@@ -199,8 +199,8 @@ import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
 
-var _ = require('lodash');
 var deepFreeze = require('deep-freeze');
+import { compare, applyPatch, deepClone } from 'fast-json-patch';
 
 export default {
   name: 'FormDesigner',
@@ -216,6 +216,7 @@ export default {
     },
     versionId: String,
   },
+  originalSchema: null,
   data() {
     return {
       advancedItems: [
@@ -232,9 +233,11 @@ export default {
       reRenderFormIo: 0,
       saving: false,
       patchHistory: [],
+      maxPatches: 10,
       patchIndex: -1,
       patchHistoryUndo: false,
       patchHistoryRedo: false,
+      patchObserver: null,
       undoEnabled: false,
       redoEnabled: false,
       componentAdded: null,
@@ -374,7 +377,10 @@ export default {
         }
         this.formSchema = { ...this.formSchema, ...res.data.schema };
         if (this.patchHistory.length === 0) {
-          this.originalSchema = JSON.parse(JSON.stringify(_.cloneDeep(this.formSchema)));
+          // We are fetching an existing form, so we get the original schema here because
+          // using the original schema in the mount will give you the default schema
+          this.$options.originalSchema = JSON.parse(JSON.stringify(deepFreeze(deepClone(this.formSchema))));
+          deepFreeze(this.$options.originalSchema);
         }
       } catch (error) {
         this.addNotification({
@@ -442,15 +448,15 @@ export default {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
 
+      // If the form changed but was not done so through the undo
+      // or redo button
       if (!this.patchHistoryUndo && !this.patchHistoryRedo) {
+        // flags and modified are defined when a component is added
         if (_flags !== undefined && _modified !== undefined) {
           if (this.componentAdded !== null) {
             this.addPatchToHistory();
           } else {
-            this.componentAdded = false;
-            this.componentMoved = false;
-            this.componentUpdated = false;
-            this.componentRemoved = false;
+            this.resetHistoryFlags();
           }
         } else {
           if (this.componentRemoved) {
@@ -459,19 +465,15 @@ export default {
           } else if (this.componentMoved) {
             this.addPatchToHistory();
           } else {
-            this.componentAdded = false;
-            this.componentMoved = false;
-            this.componentUpdated = false;
-            this.componentRemoved = false;
+            this.resetHistoryFlags();
           }
         }
       } else {
+        // We pressed undo or redo, so we just ignore
+        // adding the action to the history
         this.patchHistoryUndo = false;
         this.patchHistoryRedo = false;
-        this.componentAdded = false;
-        this.componentRemoved = false;
-        this.componentUpdated = false;
-        this.componentMoved = false;
+        this.resetHistoryFlags();
       }
 
       this.undoEnabled = this.canUndoPatch();
@@ -507,24 +509,32 @@ export default {
     // Patch History
     // ---------------------------------------------------------------------------------------------------
     addPatchToHistory() {
+      // Remove any actions past the action we were on
       if (this.patchHistory.length > 0) {
         this.patchHistory.length = this.patchIndex + 1;
       }
-      this.patchIndex++;
 
+      // Get the differences between the last patch 
+      // and the current form
+      var form = this.getPatch(++this.patchIndex);
+      var patch = compare(form, this.formSchema);
       // Add the patch to the history
-      this.patchHistory.push(deepFreeze(JSON.parse(JSON.stringify(_.cloneDeep(this.formSchema)))));
+      this.patchHistory.push(patch);
 
-      this.componentAdded = false;
-      this.componentMoved = false;
-      this.componentUpdated = false;
-      this.componentRemoved = false;
+      this.resetHistoryFlags();
     },
-    getPatch(idx) {
-      // Generate the form from the base patch
-      var form = JSON.parse(JSON.stringify(_.cloneDeep(this.originalSchema)));
+    getPatch(_idx) {
+      // Generate the form from the original schema
+      var form = JSON.parse(JSON.stringify(this.$options.originalSchema));
       if (this.patchIndex > -1 && this.patchHistory.length > 0) {
-        form = _.cloneDeep(this.patchHistory[idx]);
+        // Apply all patches until we reach the requested patch
+        for (var i = -1; i < _idx; i++) {
+          let patch = this.patchHistory[i + 1];
+          if (patch !== undefined) {
+            // remove reactivity from the form so we don't affect the original schema
+            form = JSON.parse(JSON.stringify(applyPatch(form, patch).newDocument));
+          }
+        }
       }
       return form;
     },
@@ -556,6 +566,12 @@ export default {
       if (this.patchHistory.length == 0) return false;
       if (this.patchIndex >= (this.patchHistory.length - 1)) return false;
       return true;
+    },
+    resetHistoryFlags(flag = false) {
+      this.componentAdded = flag;
+      this.componentMoved = flag;
+      this.componentUpdated = flag;
+      this.componentRemoved = flag;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -662,14 +678,17 @@ export default {
     }
   },
   mounted() {
-    this.originalSchema = JSON.parse(JSON.stringify(_.cloneDeep(this.formSchema)));
-    deepFreeze(this.originalSchema);
+    if (!this.formId) {
+      // We are creating a new form, so we obtain the original schema here.
+      this.$options.originalSchema = JSON.parse(JSON.stringify(deepFreeze(deepClone(this.formSchema))));
+      deepFreeze(this.$options.originalSchema);
+    }
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    },
+    }
   },
 };
 </script>
