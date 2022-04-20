@@ -1,0 +1,1342 @@
+[
+        {
+            "value": "AcadiaValley",
+            "label": "A"
+        },
+        {
+            "value": "Acme",
+            "label": "A"
+        },
+        {
+            "value": "Airdrie",
+            "label": "A"
+        },
+        {
+            "value": "Beach",
+            "label": "B"
+        },
+        {
+            "value": "AlderFlats",
+            "label": "A"
+        },
+        {
+            "value": "Alix",
+            "label": "A"
+        },
+        {
+            "value": "Alliance",
+            "label": "A"
+        },
+        {
+            "value": "Altario",
+            "label": "A"
+        },
+        {
+            "value": "Andrew",
+            "label": "A"
+        },
+        {
+            "value": "Anzac",
+            "label": "A"
+        },
+        {
+            "value": "Ardrossan",
+            "label": "A"
+        },
+        {
+            "value": "Arrowwood",
+            "label": "A"
+        },
+        {
+            "value": "Ashmont",
+            "label": "A"
+        },
+        {
+            "value": "Assumption",
+            "label": "A"
+        },
+        {
+            "value": "Athabasca",
+            "label": "A"
+        },
+        {
+            "value": "Banff",
+            "label": "B"
+        },
+        {
+            "value": "Barons",
+            "label": "B"
+        },
+        {
+            "value": "Barrhead",
+            "label": "B"
+        },
+        {
+            "value": "Bashaw",
+            "label": "B"
+        },
+        {
+            "value": "Bassano",
+            "label": "B"
+        },
+        {
+            "value": "Bawlf",
+            "label": "B"
+        },
+        {
+            "value": "BearCanyon",
+            "label": "B"
+        },
+        {
+            "value": "Beaumont",
+            "label": "B"
+        },
+        {
+            "value": "Beaverlodge",
+            "label": "B"
+        },
+        {
+            "value": "Beiseker",
+            "label": "B"
+        },
+        {
+            "value": "Bentley",
+            "label": "B"
+        },
+        {
+            "value": "Berwyn",
+            "label": "B"
+        },
+        {
+            "value": "BigValley",
+            "label": "B"
+        },
+        {
+            "value": "Bindloss",
+            "label": "B"
+        },
+        {
+            "value": "BlackDiamond",
+            "label": "B"
+        },
+        {
+            "value": "Blackfalds",
+            "label": "B"
+        },
+        {
+            "value": "Blackie",
+            "label": "B"
+        },
+        {
+            "value": "BlueRidge",
+            "label": "B"
+        },
+        {
+            "value": "BonAccord",
+            "label": "B"
+        },
+        {
+            "value": "Bonanza",
+            "label": "B"
+        },
+        {
+            "value": "Bonnyville",
+            "label": "B"
+        },
+        {
+            "value": "BowIsland",
+            "label": "B"
+        },
+        {
+            "value": "Bowden",
+            "label": "B"
+        },
+        {
+            "value": "Boyle",
+            "label": "B"
+        },
+        {
+            "value": "BraggCreek",
+            "label": "B"
+        },
+        {
+            "value": "Breton",
+            "label": "B"
+        },
+        {
+            "value": "Brocket",
+            "label": "B"
+        },
+        {
+            "value": "Brooks",
+            "label": "B"
+        },
+        {
+            "value": "Brownvale",
+            "label": "B"
+        },
+        {
+            "value": "Bruderheim",
+            "label": "B"
+        },
+        {
+            "value": "Burdett",
+            "label": "B"
+        },
+        {
+            "value": "Byemoor",
+            "label": "B"
+        },
+        {
+            "value": "Cadomin",
+            "label": "C"
+        },
+        {
+            "value": "Calgary",
+            "label": "C"
+        },
+        {
+            "value": "CallingLake",
+            "label": "C"
+        },
+        {
+            "value": "Calmar",
+            "label": "C"
+        },
+        {
+            "value": "Camrose",
+            "label": "C"
+        },
+        {
+            "value": "Canmore",
+            "label": "C"
+        },
+        {
+            "value": "Carbon",
+            "label": "C"
+        },
+        {
+            "value": "Cardston",
+            "label": "C"
+        },
+        {
+            "value": "Carmangay",
+            "label": "C"
+        },
+        {
+            "value": "Caroline",
+            "label": "C"
+        },
+        {
+            "value": "Carseland",
+            "label": "C"
+        },
+        {
+            "value": "Carstairs",
+            "label": "C"
+        },
+        {
+            "value": "Castor",
+            "label": "C"
+        },
+        {
+            "value": "Cayley",
+            "label": "C"
+        },
+        {
+            "value": "Cereal",
+            "label": "C"
+        },
+        {
+            "value": "Cessford",
+            "label": "C"
+        },
+        {
+            "value": "Champion",
+            "label": "C"
+        },
+        {
+            "value": "Chauvin",
+            "label": "C"
+        },
+        {
+            "value": "Chestermere",
+            "label": "C"
+        },
+        {
+            "value": "ChipewyanLake",
+            "label": "C"
+        },
+        {
+            "value": "Chipman",
+            "label": "C"
+        },
+        {
+            "value": "Clairmont",
+            "label": "C"
+        },
+        {
+            "value": "Claresholm",
+            "label": "C"
+        },
+        {
+            "value": "Clive",
+            "label": "C"
+        },
+        {
+            "value": "Clyde",
+            "label": "C"
+        },
+        {
+            "value": "Coaldale",
+            "label": "C"
+        },
+        {
+            "value": "Coalhurst",
+            "label": "C"
+        },
+        {
+            "value": "Cochrane",
+            "label": "C"
+        },
+        {
+            "value": "ColdLake",
+            "label": "C"
+        },
+        {
+            "value": "Conklin",
+            "label": "C"
+        },
+        {
+            "value": "Consort",
+            "label": "C"
+        },
+        {
+            "value": "Coronation",
+            "label": "C"
+        },
+        {
+            "value": "Coutts",
+            "label": "C"
+        },
+        {
+            "value": "Cowley",
+            "label": "C"
+        },
+        {
+            "value": "Craigmyle",
+            "label": "C"
+        },
+        {
+            "value": "Cremona",
+            "label": "C"
+        },
+        {
+            "value": "Crossfield",
+            "label": "C"
+        },
+        {
+            "value": "CrowsnestPass",
+            "label": "C"
+        },
+        {
+            "value": "Czar",
+            "label": "C"
+        },
+        {
+            "value": "Daysland",
+            "label": "D"
+        },
+        {
+            "value": "DeBolt",
+            "label": "D"
+        },
+        {
+            "value": "Delburne",
+            "label": "D"
+        },
+        {
+            "value": "Delia",
+            "label": "D"
+        },
+        {
+            "value": "Derwent",
+            "label": "D"
+        },
+        {
+            "value": "Devon",
+            "label": "D"
+        },
+        {
+            "value": "Dewberry",
+            "label": "D"
+        },
+        {
+            "value": "Didsbury",
+            "label": "D"
+        },
+        {
+            "value": "Dixonville",
+            "label": "D"
+        },
+        {
+            "value": "Donalda",
+            "label": "D"
+        },
+        {
+            "value": "Donnelly",
+            "label": "D"
+        },
+        {
+            "value": "DraytonValley",
+            "label": "D"
+        },
+        {
+            "value": "Drumheller",
+            "label": "D"
+        },
+        {
+            "value": "Duchess",
+            "label": "D"
+        },
+        {
+            "value": "Eaglesham",
+            "label": "E"
+        },
+        {
+            "value": "EastCoulee",
+            "label": "E"
+        },
+        {
+            "value": "Eckville",
+            "label": "E"
+        },
+        {
+            "value": "Edgerton",
+            "label": "E"
+        },
+        {
+            "value": "Edmonton",
+            "label": "E"
+        },
+        {
+            "value": "Edson",
+            "label": "E"
+        },
+        {
+            "value": "ElkPoint",
+            "label": "E"
+        },
+        {
+            "value": "Elkwater",
+            "label": "E"
+        },
+        {
+            "value": "Elnora",
+            "label": "E"
+        },
+        {
+            "value": "Empress",
+            "label": "E"
+        },
+        {
+            "value": "Enchant",
+            "label": "E"
+        },
+        {
+            "value": "Etzikom",
+            "label": "E"
+        },
+        {
+            "value": "Evansburg",
+            "label": "E"
+        },
+        {
+            "value": "Exshaw",
+            "label": "E"
+        },
+        {
+            "value": "Fairview",
+            "label": "F"
+        },
+        {
+            "value": "Falher",
+            "label": "F"
+        },
+        {
+            "value": "Faust",
+            "label": "F"
+        },
+        {
+            "value": "Ferintosh",
+            "label": "F"
+        },
+        {
+            "value": "Flatbush",
+            "label": "F"
+        },
+        {
+            "value": "Foremost",
+            "label": "F"
+        },
+        {
+            "value": "Forestburg",
+            "label": "F"
+        },
+        {
+            "value": "FortAssiniboine",
+            "label": "F"
+        },
+        {
+            "value": "FortChipewyan",
+            "label": "F"
+        },
+        {
+            "value": "FortMacKay",
+            "label": "F"
+        },
+        {
+            "value": "FortMacleod",
+            "label": "F"
+        },
+        {
+            "value": "FortMcMurray",
+            "label": "F"
+        },
+        {
+            "value": "FortSaskatchewan",
+            "label": "F"
+        },
+        {
+            "value": "FortVermilion",
+            "label": "F"
+        },
+        {
+            "value": "FoxCreek",
+            "label": "F"
+        },
+        {
+            "value": "FoxLake",
+            "label": "F"
+        },
+        {
+            "value": "Gadsby",
+            "label": "G"
+        },
+        {
+            "value": "Galahad",
+            "label": "G"
+        },
+        {
+            "value": "Gibbons",
+            "label": "G"
+        },
+        {
+            "value": "GiftLake",
+            "label": "G"
+        },
+        {
+            "value": "Girouxville",
+            "label": "G"
+        },
+        {
+            "value": "Gleichen",
+            "label": "G"
+        },
+        {
+            "value": "Glendon",
+            "label": "G"
+        },
+        {
+            "value": "Glenwood",
+            "label": "G"
+        },
+        {
+            "value": "GrandCentre",
+            "label": "G"
+        },
+        {
+            "value": "GrandeCache",
+            "label": "G"
+        },
+        {
+            "value": "GrandePrairie",
+            "label": "G"
+        },
+        {
+            "value": "Granum",
+            "label": "G"
+        },
+        {
+            "value": "Grassland",
+            "label": "G"
+        },
+        {
+            "value": "GrassyLake",
+            "label": "G"
+        },
+        {
+            "value": "Grimshaw",
+            "label": "G"
+        },
+        {
+            "value": "Grouard",
+            "label": "G"
+        },
+        {
+            "value": "HairyHill",
+            "label": "H"
+        },
+        {
+            "value": "Halkirk",
+            "label": "H"
+        },
+        {
+            "value": "Hanna",
+            "label": "H"
+        },
+        {
+            "value": "Hardisty",
+            "label": "H"
+        },
+        {
+            "value": "HayLakes",
+            "label": "H"
+        },
+        {
+            "value": "Hays",
+            "label": "H"
+        },
+        {
+            "value": "Heinsburg",
+            "label": "H"
+        },
+        {
+            "value": "Heisler",
+            "label": "H"
+        },
+        {
+            "value": "HighLevel",
+            "label": "H"
+        },
+        {
+            "value": "HighPrairie",
+            "label": "H"
+        },
+        {
+            "value": "HighRiver",
+            "label": "H"
+        },
+        {
+            "value": "Hilda",
+            "label": "H"
+        },
+        {
+            "value": "HinesCreek",
+            "label": "H"
+        },
+        {
+            "value": "Hinton",
+            "label": "H"
+        },
+        {
+            "value": "Hobbema",
+            "label": "H"
+        },
+        {
+            "value": "Holden",
+            "label": "H"
+        },
+        {
+            "value": "Hughenden",
+            "label": "H"
+        },
+        {
+            "value": "Hussar",
+            "label": "H"
+        },
+        {
+            "value": "Hythe",
+            "label": "H"
+        },
+        {
+            "value": "Innisfail",
+            "label": "I"
+        },
+        {
+            "value": "Innisfree",
+            "label": "I"
+        },
+        {
+            "value": "Irma",
+            "label": "I"
+        },
+        {
+            "value": "IronSprings",
+            "label": "I"
+        },
+        {
+            "value": "Irricana",
+            "label": "I"
+        },
+        {
+            "value": "Irvine",
+            "label": "I"
+        },
+        {
+            "value": "Islay",
+            "label": "I"
+        },
+        {
+            "value": "Jarvie",
+            "label": "J"
+        },
+        {
+            "value": "Jasper",
+            "label": "J"
+        },
+        {
+            "value": "Jenner",
+            "label": "J"
+        },
+        {
+            "value": "Joussard",
+            "label": "J"
+        },
+        {
+            "value": "Kananaskis",
+            "label": "K"
+        },
+        {
+            "value": "Keephills",
+            "label": "K"
+        },
+        {
+            "value": "KegRiver",
+            "label": "K"
+        },
+        {
+            "value": "Killam",
+            "label": "K"
+        },
+        {
+            "value": "Kinuso",
+            "label": "K"
+        },
+        {
+            "value": "Kitscoty",
+            "label": "K"
+        },
+        {
+            "value": "LaCrete",
+            "label": "L"
+        },
+        {
+            "value": "LacLaBiche",
+            "label": "L"
+        },
+        {
+            "value": "Lacombe",
+            "label": "L"
+        },
+        {
+            "value": "LakeLouise",
+            "label": "L"
+        },
+        {
+            "value": "Lamont",
+            "label": "L"
+        },
+        {
+            "value": "Langdon",
+            "label": "L"
+        },
+        {
+            "value": "Lavoy",
+            "label": "L"
+        },
+        {
+            "value": "Leduc",
+            "label": "L"
+        },
+        {
+            "value": "Legal",
+            "label": "L"
+        },
+        {
+            "value": "Leslieville",
+            "label": "L"
+        },
+        {
+            "value": "Lethbridge",
+            "label": "L"
+        },
+        {
+            "value": "Lloydminster",
+            "label": "L"
+        },
+        {
+            "value": "Lodgepole",
+            "label": "L"
+        },
+        {
+            "value": "Lomond",
+            "label": "L"
+        },
+        {
+            "value": "Longview",
+            "label": "L"
+        },
+        {
+            "value": "Lougheed",
+            "label": "L"
+        },
+        {
+            "value": "Magrath",
+            "label": "M"
+        },
+        {
+            "value": "Ma-Me-OBeach",
+            "label": "M"
+        },
+        {
+            "value": "Manning",
+            "label": "M"
+        },
+        {
+            "value": "Mannville",
+            "label": "M"
+        },
+        {
+            "value": "Manyberries",
+            "label": "M"
+        },
+        {
+            "value": "Marlboro",
+            "label": "M"
+        },
+        {
+            "value": "Marwayne",
+            "label": "M"
+        },
+        {
+            "value": "Mayerthorpe",
+            "label": "M"
+        },
+        {
+            "value": "McLennan",
+            "label": "M"
+        },
+        {
+            "value": "MeanderRiver",
+            "label": "M"
+        },
+        {
+            "value": "MedicineHat",
+            "label": "M"
+        },
+        {
+            "value": "MilkRiver",
+            "label": "M"
+        },
+        {
+            "value": "Millet",
+            "label": "M"
+        },
+        {
+            "value": "Milo",
+            "label": "M"
+        },
+        {
+            "value": "Minburn",
+            "label": "M"
+        },
+        {
+            "value": "Mirror",
+            "label": "M"
+        },
+        {
+            "value": "Morinville",
+            "label": "M"
+        },
+        {
+            "value": "Morley",
+            "label": "M"
+        },
+        {
+            "value": "Morrin",
+            "label": "M"
+        },
+        {
+            "value": "Mulhurst",
+            "label": "M"
+        },
+        {
+            "value": "Mundare",
+            "label": "M"
+        },
+        {
+            "value": "Myrnam",
+            "label": "M"
+        },
+        {
+            "value": "Namao",
+            "label": "N"
+        },
+        {
+            "value": "Nampa",
+            "label": "N"
+        },
+        {
+            "value": "Nanton",
+            "label": "N"
+        },
+        {
+            "value": "NewDayton",
+            "label": "N"
+        },
+        {
+            "value": "NewNorway",
+            "label": "N"
+        },
+        {
+            "value": "NewSarepta",
+            "label": "N"
+        },
+        {
+            "value": "Newbrook",
+            "label": "N"
+        },
+        {
+            "value": "Nisku",
+            "label": "N"
+        },
+        {
+            "value": "NitonJunction",
+            "label": "N"
+        },
+        {
+            "value": "Nobleford",
+            "label": "N"
+        },
+        {
+            "value": "Nordegg",
+            "label": "N"
+        },
+        {
+            "value": "Okotoks",
+            "label": "O"
+        },
+        {
+            "value": "Olds",
+            "label": "O"
+        },
+        {
+            "value": "Onoway",
+            "label": "O"
+        },
+        {
+            "value": "Oyen",
+            "label": "O"
+        },
+        {
+            "value": "ParadiseValley",
+            "label": "P"
+        },
+        {
+            "value": "PeaceRiver",
+            "label": "P"
+        },
+        {
+            "value": "PeerlessLake",
+            "label": "P"
+        },
+        {
+            "value": "Peers",
+            "label": "P"
+        },
+        {
+            "value": "Penhold",
+            "label": "P"
+        },
+        {
+            "value": "PictureButte",
+            "label": "P"
+        },
+        {
+            "value": "PincherCreek",
+            "label": "P"
+        },
+        {
+            "value": "Plamondon",
+            "label": "P"
+        },
+        {
+            "value": "Ponoka",
+            "label": "P"
+        },
+        {
+            "value": "Provost",
+            "label": "P"
+        },
+        {
+            "value": "Radway",
+            "label": "R"
+        },
+        {
+            "value": "RainbowLake",
+            "label": "R"
+        },
+        {
+            "value": "Ralston",
+            "label": "R"
+        },
+        {
+            "value": "Raymond",
+            "label": "R"
+        },
+        {
+            "value": "RedDeer",
+            "label": "R"
+        },
+        {
+            "value": "Redcliff",
+            "label": "R"
+        },
+        {
+            "value": "Redwater",
+            "label": "R"
+        },
+        {
+            "value": "Rimbey",
+            "label": "R"
+        },
+        {
+            "value": "Robb",
+            "label": "R"
+        },
+        {
+            "value": "Rochester",
+            "label": "R"
+        },
+        {
+            "value": "RockyMountainHouse",
+            "label": "R"
+        },
+        {
+            "value": "Rockyford",
+            "label": "R"
+        },
+        {
+            "value": "RollingHills",
+            "label": "R"
+        },
+        {
+            "value": "Rosalind",
+            "label": "R"
+        },
+        {
+            "value": "Rosebud",
+            "label": "R"
+        },
+        {
+            "value": "Rumsey",
+            "label": "R"
+        },
+        {
+            "value": "Rycroft",
+            "label": "R"
+        },
+        {
+            "value": "Ryley",
+            "label": "R"
+        },
+        {
+            "value": "Sangudo",
+            "label": "S"
+        },
+        {
+            "value": "SaskatchewanRiverCrossing",
+            "label": "S"
+        },
+        {
+            "value": "Schuler",
+            "label": "S"
+        },
+        {
+            "value": "SebaBeach",
+            "label": "S"
+        },
+        {
+            "value": "Sedgewick",
+            "label": "S"
+        },
+        {
+            "value": "SevenPersons",
+            "label": "S"
+        },
+        {
+            "value": "Sexsmith",
+            "label": "S"
+        },
+        {
+            "value": "SherwoodPark",
+            "label": "S"
+        },
+        {
+            "value": "Sibbald",
+            "label": "S"
+        },
+        {
+            "value": "SilverValley",
+            "label": "S"
+        },
+        {
+            "value": "SlaveLake",
+            "label": "S"
+        },
+        {
+            "value": "Smith",
+            "label": "S"
+        },
+        {
+            "value": "SmokyLake",
+            "label": "S"
+        },
+        {
+            "value": "SpiritRiver",
+            "label": "S"
+        },
+        {
+            "value": "SpruceGrove",
+            "label": "S"
+        },
+        {
+            "value": "SpruceView",
+            "label": "S"
+        },
+        {
+            "value": "St.Albert",
+            "label": "S"
+        },
+        {
+            "value": "St.Michael",
+            "label": "S"
+        },
+        {
+            "value": "St.Paul",
+            "label": "S"
+        },
+        {
+            "value": "StandOff",
+            "label": "S"
+        },
+        {
+            "value": "Standard",
+            "label": "S"
+        },
+        {
+            "value": "Stavely",
+            "label": "S"
+        },
+        {
+            "value": "Stettler",
+            "label": "S"
+        },
+        {
+            "value": "Stirling",
+            "label": "S"
+        },
+        {
+            "value": "StonyPlain",
+            "label": "S"
+        },
+        {
+            "value": "Strathmore",
+            "label": "S"
+        },
+        {
+            "value": "Strome",
+            "label": "S"
+        },
+        {
+            "value": "Sundre",
+            "label": "S"
+        },
+        {
+            "value": "SwanHills",
+            "label": "S"
+        },
+        {
+            "value": "SylvanLake",
+            "label": "S"
+        },
+        {
+            "value": "Taber",
+            "label": "T"
+        },
+        {
+            "value": "Thorhild",
+            "label": "T"
+        },
+        {
+            "value": "Thorsby",
+            "label": "T"
+        },
+        {
+            "value": "ThreeHills",
+            "label": "T"
+        },
+        {
+            "value": "Tilley",
+            "label": "T"
+        },
+        {
+            "value": "Tofield",
+            "label": "T"
+        },
+        {
+            "value": "Tomahawk",
+            "label": "T"
+        },
+        {
+            "value": "Torrington",
+            "label": "T"
+        },
+        {
+            "value": "Trochu",
+            "label": "T"
+        },
+        {
+            "value": "TroutLake",
+            "label": "T"
+        },
+        {
+            "value": "TurnerValley",
+            "label": "T"
+        },
+        {
+            "value": "TwoHills",
+            "label": "T"
+        },
+        {
+            "value": "Valleyview",
+            "label": "V"
+        },
+        {
+            "value": "Vauxhall",
+            "label": "V"
+        },
+        {
+            "value": "Vegreville",
+            "label": "V"
+        },
+        {
+            "value": "Vermilion",
+            "label": "V"
+        },
+        {
+            "value": "Veteran",
+            "label": "V"
+        },
+        {
+            "value": "Viking",
+            "label": "V"
+        },
+        {
+            "value": "Vilna",
+            "label": "V"
+        },
+        {
+            "value": "Vulcan",
+            "label": "V"
+        },
+        {
+            "value": "Wabamun",
+            "label": "W"
+        },
+        {
+            "value": "Wainwright",
+            "label": "W"
+        },
+        {
+            "value": "Walsh",
+            "label": "W"
+        },
+        {
+            "value": "WanderingRiver",
+            "label": "W"
+        },
+        {
+            "value": "Wanham",
+            "label": "W"
+        },
+        {
+            "value": "Warburg",
+            "label": "W"
+        },
+        {
+            "value": "Warner",
+            "label": "W"
+        },
+        {
+            "value": "Warspite",
+            "label": "W"
+        },
+        {
+            "value": "Waskatenau",
+            "label": "W"
+        },
+        {
+            "value": "Wembley",
+            "label": "W"
+        },
+        {
+            "value": "Westlock",
+            "label": "W"
+        },
+        {
+            "value": "Wetaskiwin",
+            "label": "W"
+        },
+        {
+            "value": "Whitecourt",
+            "label": "W"
+        },
+        {
+            "value": "Whitelaw",
+            "label": "W"
+        },
+        {
+            "value": "Widewater",
+            "label": "W"
+        },
+        {
+            "value": "Wildwood",
+            "label": "W"
+        },
+        {
+            "value": "Willingdon",
+            "label": "W"
+        },
+        {
+            "value": "Winfield",
+            "label": "W"
+        },
+        {
+            "value": "Woking",
+            "label": "W"
+        },
+        {
+            "value": "Worsley",
+            "label": "W"
+        },
+        {
+            "value": "Wrentham",
+            "label": "W"
+        },
+        {
+            "value": "Youngstown",
+            "label": "Y"
+        }
+    ]

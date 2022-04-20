@@ -1,0 +1,3413 @@
+﻿[
+        {
+            "value": "Abercorn",
+            "label": "A"
+        },
+        {
+            "value": "ActonVale",
+            "label": "A"
+        },
+        {
+            "value": "Adamsville",
+            "label": "A"
+        },
+        {
+            "value": "Aguanish",
+            "label": "A"
+        },
+        {
+            "value": "Albanel",
+            "label": "A"
+        },
+        {
+            "value": "Alma",
+            "label": "A"
+        },
+        {
+            "value": "Alouette",
+            "label": "A"
+        },
+        {
+            "value": "Amos",
+            "label": "A"
+        },
+        {
+            "value": "Amqui",
+            "label": "A"
+        },
+        {
+            "value": "Angliers",
+            "label": "A"
+        },
+        {
+            "value": "Anjou",
+            "label": "A"
+        },
+        {
+            "value": "Anse-Saint-Jean",
+            "label": "A"
+        },
+        {
+            "value": "Armagh",
+            "label": "A"
+        },
+        {
+            "value": "Arundel",
+            "label": "A"
+        },
+        {
+            "value": "Asbestos",
+            "label": "A"
+        },
+        {
+            "value": "Ascot",
+            "label": "A"
+        },
+        {
+            "value": "AscotCorner",
+            "label": "A"
+        },
+        {
+            "value": "Ashuapmushuan",
+            "label": "A"
+        },
+        {
+            "value": "Aston-Jonction",
+            "label": "A"
+        },
+        {
+            "value": "Ayer`sCliff",
+            "label": "A"
+        },
+        {
+            "value": "Aylmer",
+            "label": "A"
+        },
+        {
+            "value": "Bagotville",
+            "label": "B"
+        },
+        {
+            "value": "Baie-Comeau",
+            "label": "B"
+        },
+        {
+            "value": "Baie-d`Urfe",
+            "label": "B"
+        },
+        {
+            "value": "Baie-de-Shawinigan",
+            "label": "B"
+        },
+        {
+            "value": "Baie-des-Sables",
+            "label": "B"
+        },
+        {
+            "value": "Baie-du-Febvre",
+            "label": "B"
+        },
+        {
+            "value": "Baie-Johan-Beetz",
+            "label": "B"
+        },
+        {
+            "value": "Baie-Sainte-Catherine",
+            "label": "B"
+        },
+        {
+            "value": "Baie-St-Paul",
+            "label": "B"
+        },
+        {
+            "value": "Baie-Trinite",
+            "label": "B"
+        },
+        {
+            "value": "Barachois",
+            "label": "B"
+        },
+        {
+            "value": "Barkmere",
+            "label": "B"
+        },
+        {
+            "value": "Barraute",
+            "label": "B"
+        },
+        {
+            "value": "Batiscan",
+            "label": "B"
+        },
+        {
+            "value": "Beaconsfield",
+            "label": "B"
+        },
+        {
+            "value": "Beaucanton",
+            "label": "B"
+        },
+        {
+            "value": "Beauceville",
+            "label": "B"
+        },
+        {
+            "value": "Beauharnois",
+            "label": "B"
+        },
+        {
+            "value": "Beaulac-Garthby",
+            "label": "B"
+        },
+        {
+            "value": "Beaumont",
+            "label": "B"
+        },
+        {
+            "value": "Beauport",
+            "label": "B"
+        },
+        {
+            "value": "Beaupre",
+            "label": "B"
+        },
+        {
+            "value": "Becancour",
+            "label": "B"
+        },
+        {
+            "value": "Bedford",
+            "label": "B"
+        },
+        {
+            "value": "BelleNeige",
+            "label": "B"
+        },
+        {
+            "value": "Bellefeuille",
+            "label": "B"
+        },
+        {
+            "value": "Belleterre",
+            "label": "B"
+        },
+        {
+            "value": "Beloeil",
+            "label": "B"
+        },
+        {
+            "value": "Bergeronnes",
+            "label": "B"
+        },
+        {
+            "value": "Berthierville",
+            "label": "B"
+        },
+        {
+            "value": "Betsiamites",
+            "label": "B"
+        },
+        {
+            "value": "Biencourt",
+            "label": "B"
+        },
+        {
+            "value": "Bishopton",
+            "label": "B"
+        },
+        {
+            "value": "BlackLake",
+            "label": "B"
+        },
+        {
+            "value": "Blainville",
+            "label": "B"
+        },
+        {
+            "value": "Blanc-Sablon",
+            "label": "B"
+        },
+        {
+            "value": "Boisbriand",
+            "label": "B"
+        },
+        {
+            "value": "Boischatel",
+            "label": "B"
+        },
+        {
+            "value": "Bois-des-Filion",
+            "label": "B"
+        },
+        {
+            "value": "Bonaventure",
+            "label": "B"
+        },
+        {
+            "value": "Bonne-Esperance",
+            "label": "B"
+        },
+        {
+            "value": "Boucherville",
+            "label": "B"
+        },
+        {
+            "value": "Bouchette",
+            "label": "B"
+        },
+        {
+            "value": "Breakeyville",
+            "label": "B"
+        },
+        {
+            "value": "Brigham",
+            "label": "B"
+        },
+        {
+            "value": "Brome",
+            "label": "B"
+        },
+        {
+            "value": "Bromont",
+            "label": "B"
+        },
+        {
+            "value": "Bromptonville",
+            "label": "B"
+        },
+        {
+            "value": "Brossard",
+            "label": "B"
+        },
+        {
+            "value": "Brownsburg",
+            "label": "B"
+        },
+        {
+            "value": "Bryson",
+            "label": "B"
+        },
+        {
+            "value": "Buckingham",
+            "label": "B"
+        },
+        {
+            "value": "Bury",
+            "label": "B"
+        },
+        {
+            "value": "Cabano",
+            "label": "C"
+        },
+        {
+            "value": "Cacouna",
+            "label": "C"
+        },
+        {
+            "value": "Cadillac",
+            "label": "C"
+        },
+        {
+            "value": "Calumet",
+            "label": "C"
+        },
+        {
+            "value": "Campbell`sBay",
+            "label": "C"
+        },
+        {
+            "value": "Candiac",
+            "label": "C"
+        },
+        {
+            "value": "Cantley",
+            "label": "C"
+        },
+        {
+            "value": "Cap-a-l`Aigle",
+            "label": "C"
+        },
+        {
+            "value": "Cap-aux-Meules",
+            "label": "C"
+        },
+        {
+            "value": "Cap-Chat",
+            "label": "C"
+        },
+        {
+            "value": "Cap-de-la-Madeleine",
+            "label": "C"
+        },
+        {
+            "value": "Cap-des-Rosiers",
+            "label": "C"
+        },
+        {
+            "value": "Caplan",
+            "label": "C"
+        },
+        {
+            "value": "Cap-Rouge",
+            "label": "C"
+        },
+        {
+            "value": "Cap-Saint-Ignace",
+            "label": "C"
+        },
+        {
+            "value": "Carignan",
+            "label": "C"
+        },
+        {
+            "value": "Carillon",
+            "label": "C"
+        },
+        {
+            "value": "Carleton",
+            "label": "C"
+        },
+        {
+            "value": "Causapscal",
+            "label": "C"
+        },
+        {
+            "value": "Chambly",
+            "label": "C"
+        },
+        {
+            "value": "Chambord",
+            "label": "C"
+        },
+        {
+            "value": "Champlain",
+            "label": "C"
+        },
+        {
+            "value": "Chandler",
+            "label": "C"
+        },
+        {
+            "value": "Chapais",
+            "label": "C"
+        },
+        {
+            "value": "Chapeau",
+            "label": "C"
+        },
+        {
+            "value": "Charette",
+            "label": "C"
+        },
+        {
+            "value": "Charlemagne",
+            "label": "C"
+        },
+        {
+            "value": "Charlesbourg",
+            "label": "C"
+        },
+        {
+            "value": "Charlevoix",
+            "label": "C"
+        },
+        {
+            "value": "Charny",
+            "label": "C"
+        },
+        {
+            "value": "Chartierville",
+            "label": "C"
+        },
+        {
+            "value": "Chateauguay",
+            "label": "C"
+        },
+        {
+            "value": "Chateau-Richer",
+            "label": "C"
+        },
+        {
+            "value": "Chelsea",
+            "label": "C"
+        },
+        {
+            "value": "Cheneville",
+            "label": "C"
+        },
+        {
+            "value": "Chesterville",
+            "label": "C"
+        },
+        {
+            "value": "Chevery",
+            "label": "C"
+        },
+        {
+            "value": "Chibougamau",
+            "label": "C"
+        },
+        {
+            "value": "Chicoutimi",
+            "label": "C"
+        },
+        {
+            "value": "Chisasibi",
+            "label": "C"
+        },
+        {
+            "value": "Chomedey",
+            "label": "C"
+        },
+        {
+            "value": "Chute-aux-Outardes",
+            "label": "C"
+        },
+        {
+            "value": "Chute-des-Passes",
+            "label": "C"
+        },
+        {
+            "value": "Clericy",
+            "label": "C"
+        },
+        {
+            "value": "Clermont",
+            "label": "C"
+        },
+        {
+            "value": "Cloridorme",
+            "label": "C"
+        },
+        {
+            "value": "Clova",
+            "label": "C"
+        },
+        {
+            "value": "Coaticook",
+            "label": "C"
+        },
+        {
+            "value": "Colombier",
+            "label": "C"
+        },
+        {
+            "value": "Compton",
+            "label": "C"
+        },
+        {
+            "value": "Contrecoeur",
+            "label": "C"
+        },
+        {
+            "value": "Cookshire",
+            "label": "C"
+        },
+        {
+            "value": "Coteau-du-Lac",
+            "label": "C"
+        },
+        {
+            "value": "Cote-St-Luc",
+            "label": "C"
+        },
+        {
+            "value": "Courcelette",
+            "label": "C"
+        },
+        {
+            "value": "Courcelles",
+            "label": "C"
+        },
+        {
+            "value": "Cowansville",
+            "label": "C"
+        },
+        {
+            "value": "Crabtree",
+            "label": "C"
+        },
+        {
+            "value": "Danville",
+            "label": "D"
+        },
+        {
+            "value": "Daveluyville",
+            "label": "D"
+        },
+        {
+            "value": "Deauville",
+            "label": "D"
+        },
+        {
+            "value": "Degelis",
+            "label": "D"
+        },
+        {
+            "value": "Delisle",
+            "label": "D"
+        },
+        {
+            "value": "Delson",
+            "label": "D"
+        },
+        {
+            "value": "Desbiens",
+            "label": "D"
+        },
+        {
+            "value": "Deschaillons-sur-Saint-Laurent",
+            "label": "D"
+        },
+        {
+            "value": "Deux-Montagnes",
+            "label": "D"
+        },
+        {
+            "value": "Disraeli",
+            "label": "D"
+        },
+        {
+            "value": "Dolbeau-Mistassini",
+            "label": "D"
+        },
+        {
+            "value": "Dollard-des-Ormeaux",
+            "label": "D"
+        },
+        {
+            "value": "Donnacona",
+            "label": "D"
+        },
+        {
+            "value": "Dorval",
+            "label": "D"
+        },
+        {
+            "value": "Drummondville",
+            "label": "D"
+        },
+        {
+            "value": "Dubuisson",
+            "label": "D"
+        },
+        {
+            "value": "Dunham",
+            "label": "D"
+        },
+        {
+            "value": "Duparquet",
+            "label": "D"
+        },
+        {
+            "value": "Dupuy",
+            "label": "D"
+        },
+        {
+            "value": "Duvernay",
+            "label": "D"
+        },
+        {
+            "value": "EastAngus",
+            "label": "E"
+        },
+        {
+            "value": "EastBroughton",
+            "label": "E"
+        },
+        {
+            "value": "EastFarnham",
+            "label": "E"
+        },
+        {
+            "value": "EastHereford",
+            "label": "E"
+        },
+        {
+            "value": "Eastmain",
+            "label": "E"
+        },
+        {
+            "value": "Eastman",
+            "label": "E"
+        },
+        {
+            "value": "Entrelacs",
+            "label": "E"
+        },
+        {
+            "value": "Esterel",
+            "label": "E"
+        },
+        {
+            "value": "Evain",
+            "label": "E"
+        },
+        {
+            "value": "Fabre",
+            "label": "F"
+        },
+        {
+            "value": "Fabreville",
+            "label": "F"
+        },
+        {
+            "value": "Falardeau",
+            "label": "F"
+        },
+        {
+            "value": "Farnham",
+            "label": "F"
+        },
+        {
+            "value": "Fassett",
+            "label": "F"
+        },
+        {
+            "value": "Ferland",
+            "label": "F"
+        },
+        {
+            "value": "Ferme-Neuve",
+            "label": "F"
+        },
+        {
+            "value": "Fermont",
+            "label": "F"
+        },
+        {
+            "value": "Fleurimont",
+            "label": "F"
+        },
+        {
+            "value": "Forestville",
+            "label": "F"
+        },
+        {
+            "value": "Fort-Coulonge",
+            "label": "F"
+        },
+        {
+            "value": "Fortierville",
+            "label": "F"
+        },
+        {
+            "value": "Fossambault-sur-le-Lac",
+            "label": "F"
+        },
+        {
+            "value": "Frampton",
+            "label": "F"
+        },
+        {
+            "value": "FranklinCentre",
+            "label": "F"
+        },
+        {
+            "value": "Frelighsburg",
+            "label": "F"
+        },
+        {
+            "value": "Fugereville",
+            "label": "F"
+        },
+        {
+            "value": "Gaspe",
+            "label": "G"
+        },
+        {
+            "value": "Gatineau",
+            "label": "G"
+        },
+        {
+            "value": "Gentilly",
+            "label": "G"
+        },
+        {
+            "value": "Girardville",
+            "label": "G"
+        },
+        {
+            "value": "Godbout",
+            "label": "G"
+        },
+        {
+            "value": "Gracefield",
+            "label": "G"
+        },
+        {
+            "value": "Granby",
+            "label": "G"
+        },
+        {
+            "value": "Grande-Entree",
+            "label": "G"
+        },
+        {
+            "value": "Grande-Riviere",
+            "label": "G"
+        },
+        {
+            "value": "Grandes-Bergeronnes",
+            "label": "G"
+        },
+        {
+            "value": "Grandes-Piles",
+            "label": "G"
+        },
+        {
+            "value": "Grande-Vallee",
+            "label": "G"
+        },
+        {
+            "value": "Grand-Mere",
+            "label": "G"
+        },
+        {
+            "value": "Grand-Remous",
+            "label": "G"
+        },
+        {
+            "value": "GreenfieldPark",
+            "label": "G"
+        },
+        {
+            "value": "Grenville",
+            "label": "G"
+        },
+        {
+            "value": "Guigues",
+            "label": "G"
+        },
+        {
+            "value": "Hammond",
+            "label": "H"
+        },
+        {
+            "value": "Ham-Nord",
+            "label": "H"
+        },
+        {
+            "value": "Hampstead",
+            "label": "H"
+        },
+        {
+            "value": "HarringtonHarbour",
+            "label": "H"
+        },
+        {
+            "value": "Havre-Aubert",
+            "label": "H"
+        },
+        {
+            "value": "Havre-aux-Maisons",
+            "label": "H"
+        },
+        {
+            "value": "Havre-St-Pierre",
+            "label": "H"
+        },
+        {
+            "value": "Hebertville",
+            "label": "H"
+        },
+        {
+            "value": "Hebertville-Station",
+            "label": "H"
+        },
+        {
+            "value": "Hemmingford",
+            "label": "H"
+        },
+        {
+            "value": "Henryville",
+            "label": "H"
+        },
+        {
+            "value": "Howick",
+            "label": "H"
+        },
+        {
+            "value": "Hudson",
+            "label": "H"
+        },
+        {
+            "value": "Hull",
+            "label": "H"
+        },
+        {
+            "value": "Huntingdon",
+            "label": "H"
+        },
+        {
+            "value": "Iberville",
+            "label": "I"
+        },
+        {
+            "value": "Ile-aux-Coudres",
+            "label": "I"
+        },
+        {
+            "value": "Iles-de-la-Madeleine",
+            "label": "I"
+        },
+        {
+            "value": "Inukjuak",
+            "label": "I"
+        },
+        {
+            "value": "Inverness",
+            "label": "I"
+        },
+        {
+            "value": "Joliette",
+            "label": "J"
+        },
+        {
+            "value": "Jonquiere",
+            "label": "J"
+        },
+        {
+            "value": "Joutel",
+            "label": "J"
+        },
+        {
+            "value": "Kangiqsualujjuaq",
+            "label": "K"
+        },
+        {
+            "value": "Kangirsuk",
+            "label": "K"
+        },
+        {
+            "value": "Kateville",
+            "label": "K"
+        },
+        {
+            "value": "Kazabazua",
+            "label": "K"
+        },
+        {
+            "value": "Kingsbury",
+            "label": "K"
+        },
+        {
+            "value": "KingseyFalls",
+            "label": "K"
+        },
+        {
+            "value": "Kirkland",
+            "label": "K"
+        },
+        {
+            "value": "Knowlton",
+            "label": "K"
+        },
+        {
+            "value": "Kuujjuaq",
+            "label": "K"
+        },
+        {
+            "value": "L`Acadie",
+            "label": "L"
+        },
+        {
+            "value": "L`Ancienne-Lorette",
+            "label": "L"
+        },
+        {
+            "value": "L`Ange-Gardien",
+            "label": "L"
+        },
+        {
+            "value": "L`Annonciation",
+            "label": "L"
+        },
+        {
+            "value": "L`Assomption",
+            "label": "L"
+        },
+        {
+            "value": "L`Avenir",
+            "label": "L"
+        },
+        {
+            "value": "L`Epiphanie",
+            "label": "L"
+        },
+        {
+            "value": "L`Ile-Aux-Noix",
+            "label": "L"
+        },
+        {
+            "value": "L`Ile-Bizard",
+            "label": "L"
+        },
+        {
+            "value": "L`Ile-Cadieux",
+            "label": "L"
+        },
+        {
+            "value": "L`Ile-d`Entree",
+            "label": "L"
+        },
+        {
+            "value": "L`Ile-Dorval",
+            "label": "L"
+        },
+        {
+            "value": "L`Ile-Perrot",
+            "label": "L"
+        },
+        {
+            "value": "L`Île-Verte",
+            "label": "L"
+        },
+        {
+            "value": "L`Islet",
+            "label": "L"
+        },
+        {
+            "value": "LaBaie",
+            "label": "L"
+        },
+        {
+            "value": "LaCorne",
+            "label": "L"
+        },
+        {
+            "value": "LaDore",
+            "label": "L"
+        },
+        {
+            "value": "LaGrande",
+            "label": "L"
+        },
+        {
+            "value": "LaGuadeloupe",
+            "label": "L"
+        },
+        {
+            "value": "LaMalbaie",
+            "label": "L"
+        },
+        {
+            "value": "LaMartre",
+            "label": "L"
+        },
+        {
+            "value": "LaMinerve",
+            "label": "L"
+        },
+        {
+            "value": "LaPatrie",
+            "label": "L"
+        },
+        {
+            "value": "LaPlaine",
+            "label": "L"
+        },
+        {
+            "value": "LaPocatiere",
+            "label": "L"
+        },
+        {
+            "value": "LaPrairie",
+            "label": "L"
+        },
+        {
+            "value": "LaReine",
+            "label": "L"
+        },
+        {
+            "value": "LaRomaine",
+            "label": "L"
+        },
+        {
+            "value": "LaSarre",
+            "label": "L"
+        },
+        {
+            "value": "LaTuque",
+            "label": "L"
+        },
+        {
+            "value": "Labelle",
+            "label": "L"
+        },
+        {
+            "value": "LacKenogami",
+            "label": "L"
+        },
+        {
+            "value": "Lac-au-Saumon",
+            "label": "L"
+        },
+        {
+            "value": "Lac-aux-Sables",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Bouchette",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Brome",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Delage",
+            "label": "L"
+        },
+        {
+            "value": "Lac-des-Ecorces",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Drolet",
+            "label": "L"
+        },
+        {
+            "value": "Lac-du-Cerf",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Edouard",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Etchemin",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Frontiere",
+            "label": "L"
+        },
+        {
+            "value": "Lachenaie",
+            "label": "L"
+        },
+        {
+            "value": "Lachine",
+            "label": "L"
+        },
+        {
+            "value": "Lachute",
+            "label": "L"
+        },
+        {
+            "value": "Lacolle",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Poulin",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Saguay",
+            "label": "L"
+        },
+        {
+            "value": "Lac-Sergent",
+            "label": "L"
+        },
+        {
+            "value": "Lac-St-Joseph",
+            "label": "L"
+        },
+        {
+            "value": "Lafontaine",
+            "label": "L"
+        },
+        {
+            "value": "LakeMegantic",
+            "label": "L"
+        },
+        {
+            "value": "Lambton",
+            "label": "L"
+        },
+        {
+            "value": "Lanoraie",
+            "label": "L"
+        },
+        {
+            "value": "LaSalle",
+            "label": "L"
+        },
+        {
+            "value": "Laterriere",
+            "label": "L"
+        },
+        {
+            "value": "Latulipe",
+            "label": "L"
+        },
+        {
+            "value": "Laurentides",
+            "label": "L"
+        },
+        {
+            "value": "Laurier-Station",
+            "label": "L"
+        },
+        {
+            "value": "Laurierville",
+            "label": "L"
+        },
+        {
+            "value": "Laval",
+            "label": "L"
+        },
+        {
+            "value": "LavaldesRapides",
+            "label": "L"
+        },
+        {
+            "value": "LavalOuest",
+            "label": "L"
+        },
+        {
+            "value": "Lavaltrie",
+            "label": "L"
+        },
+        {
+            "value": "Laverlochere",
+            "label": "L"
+        },
+        {
+            "value": "Lawrenceville",
+            "label": "L"
+        },
+        {
+            "value": "LeBic",
+            "label": "L"
+        },
+        {
+            "value": "LeGardeur",
+            "label": "L"
+        },
+        {
+            "value": "Lebel-sur-Quevillon",
+            "label": "L"
+        },
+        {
+            "value": "Leclercville",
+            "label": "L"
+        },
+        {
+            "value": "LeMoyne",
+            "label": "L"
+        },
+        {
+            "value": "Lennoxville",
+            "label": "L"
+        },
+        {
+            "value": "Lery",
+            "label": "L"
+        },
+        {
+            "value": "LesBoules",
+            "label": "L"
+        },
+        {
+            "value": "LesCedres",
+            "label": "L"
+        },
+        {
+            "value": "LesCoteaux",
+            "label": "L"
+        },
+        {
+            "value": "LesEboulements",
+            "label": "L"
+        },
+        {
+            "value": "LesEscoumins",
+            "label": "L"
+        },
+        {
+            "value": "LesMechins",
+            "label": "L"
+        },
+        {
+            "value": "Levis",
+            "label": "L"
+        },
+        {
+            "value": "Longueuil",
+            "label": "L"
+        },
+        {
+            "value": "Loretteville",
+            "label": "L"
+        },
+        {
+            "value": "Lorraine",
+            "label": "L"
+        },
+        {
+            "value": "Lorrainville",
+            "label": "L"
+        },
+        {
+            "value": "Louiseville",
+            "label": "L"
+        },
+        {
+            "value": "LourdesdeBlancSablon",
+            "label": "L"
+        },
+        {
+            "value": "Louvicourt",
+            "label": "L"
+        },
+        {
+            "value": "Low",
+            "label": "L"
+        },
+        {
+            "value": "Luceville",
+            "label": "L"
+        },
+        {
+            "value": "Luskville",
+            "label": "L"
+        },
+        {
+            "value": "Lyster",
+            "label": "L"
+        },
+        {
+            "value": "Macamic",
+            "label": "M"
+        },
+        {
+            "value": "Magog",
+            "label": "M"
+        },
+        {
+            "value": "Malartic",
+            "label": "M"
+        },
+        {
+            "value": "Manic-Cinq",
+            "label": "M"
+        },
+        {
+            "value": "Maniwaki",
+            "label": "M"
+        },
+        {
+            "value": "Manouane",
+            "label": "M"
+        },
+        {
+            "value": "Manseau",
+            "label": "M"
+        },
+        {
+            "value": "Mansonville",
+            "label": "M"
+        },
+        {
+            "value": "MapleGrove",
+            "label": "M"
+        },
+        {
+            "value": "Maria",
+            "label": "M"
+        },
+        {
+            "value": "Marieville",
+            "label": "M"
+        },
+        {
+            "value": "Marsoui",
+            "label": "M"
+        },
+        {
+            "value": "Mascouche",
+            "label": "M"
+        },
+        {
+            "value": "Maskinonge",
+            "label": "M"
+        },
+        {
+            "value": "Masson-Angers",
+            "label": "M"
+        },
+        {
+            "value": "Massueville",
+            "label": "M"
+        },
+        {
+            "value": "Mastigouche",
+            "label": "M"
+        },
+        {
+            "value": "Matagami",
+            "label": "M"
+        },
+        {
+            "value": "Matane",
+            "label": "M"
+        },
+        {
+            "value": "Matapedia",
+            "label": "M"
+        },
+        {
+            "value": "Mcmasterville",
+            "label": "M"
+        },
+        {
+            "value": "Melbourne",
+            "label": "M"
+        },
+        {
+            "value": "Mellin",
+            "label": "M"
+        },
+        {
+            "value": "Melocheville",
+            "label": "M"
+        },
+        {
+            "value": "Mercier",
+            "label": "M"
+        },
+        {
+            "value": "Metabetchouan",
+            "label": "M"
+        },
+        {
+            "value": "Metis-sur-Mer",
+            "label": "M"
+        },
+        {
+            "value": "Mirabel",
+            "label": "M"
+        },
+        {
+            "value": "Mistassini",
+            "label": "M"
+        },
+        {
+            "value": "Moisie",
+            "label": "M"
+        },
+        {
+            "value": "MontBechervaise",
+            "label": "M"
+        },
+        {
+            "value": "MontStGrégoire",
+            "label": "M"
+        },
+        {
+            "value": "Montebello",
+            "label": "M"
+        },
+        {
+            "value": "Mont-Joli",
+            "label": "M"
+        },
+        {
+            "value": "Mont-Laurier",
+            "label": "M"
+        },
+        {
+            "value": "Mont-Louis",
+            "label": "M"
+        },
+        {
+            "value": "Montmagny",
+            "label": "M"
+        },
+        {
+            "value": "Montreal",
+            "label": "M"
+        },
+        {
+            "value": "Montreal-Est",
+            "label": "M"
+        },
+        {
+            "value": "Montréal-Nord",
+            "label": "M"
+        },
+        {
+            "value": "Montréal-Ouest",
+            "label": "M"
+        },
+        {
+            "value": "Mont-Rolland",
+            "label": "M"
+        },
+        {
+            "value": "Mont-Royal",
+            "label": "M"
+        },
+        {
+            "value": "Mont-St-Hilaire",
+            "label": "M"
+        },
+        {
+            "value": "Mont-St-Pierre",
+            "label": "M"
+        },
+        {
+            "value": "Mont-Tremblant",
+            "label": "M"
+        },
+        {
+            "value": "Morin-Heights",
+            "label": "M"
+        },
+        {
+            "value": "Murdochville",
+            "label": "M"
+        },
+        {
+            "value": "MuttonBay",
+            "label": "M"
+        },
+        {
+            "value": "Nantes",
+            "label": "N"
+        },
+        {
+            "value": "Napierville",
+            "label": "N"
+        },
+        {
+            "value": "Natashquan",
+            "label": "N"
+        },
+        {
+            "value": "Nedelec",
+            "label": "N"
+        },
+        {
+            "value": "Neuville",
+            "label": "N"
+        },
+        {
+            "value": "NewCarlisle",
+            "label": "N"
+        },
+        {
+            "value": "NewGlasgow",
+            "label": "N"
+        },
+        {
+            "value": "NewRichmond",
+            "label": "N"
+        },
+        {
+            "value": "Newport",
+            "label": "N"
+        },
+        {
+            "value": "Nicolet",
+            "label": "N"
+        },
+        {
+            "value": "Norbertville",
+            "label": "N"
+        },
+        {
+            "value": "Normandin",
+            "label": "N"
+        },
+        {
+            "value": "Normetal",
+            "label": "N"
+        },
+        {
+            "value": "NorthHatley",
+            "label": "N"
+        },
+        {
+            "value": "NotreDamedeBonsecours",
+            "label": "N"
+        },
+        {
+            "value": "NotreDameDeL`IlePerrot",
+            "label": "N"
+        },
+        {
+            "value": "NotreDamedeLourdes",
+            "label": "N"
+        },
+        {
+            "value": "NotreDamedesLaurentides",
+            "label": "N"
+        },
+        {
+            "value": "NotreDameDesPrairies",
+            "label": "N"
+        },
+        {
+            "value": "NotreDameDuPortage",
+            "label": "N"
+        },
+        {
+            "value": "Notre-Dame-de-la-Paix",
+            "label": "N"
+        },
+        {
+            "value": "Notre-Dame-de-la-Salette",
+            "label": "N"
+        },
+        {
+            "value": "Notre-Dame-de-Stanbridge",
+            "label": "N"
+        },
+        {
+            "value": "Notre-Dame-du-Bon-Conseil",
+            "label": "N"
+        },
+        {
+            "value": "Notre-Dame-du-Lac",
+            "label": "N"
+        },
+        {
+            "value": "Notre-Dame-du-Laus",
+            "label": "N"
+        },
+        {
+            "value": "Notre-Dame-du-Nord",
+            "label": "N"
+        },
+        {
+            "value": "Nouvelle",
+            "label": "N"
+        },
+        {
+            "value": "Oka",
+            "label": "O"
+        },
+        {
+            "value": "Omerville",
+            "label": "O"
+        },
+        {
+            "value": "Orford",
+            "label": "O"
+        },
+        {
+            "value": "Ormstown",
+            "label": "O"
+        },
+        {
+            "value": "OtterburnPark",
+            "label": "O"
+        },
+        {
+            "value": "Outremont",
+            "label": "O"
+        },
+        {
+            "value": "Palmarolle",
+            "label": "P"
+        },
+        {
+            "value": "Papineauville",
+            "label": "P"
+        },
+        {
+            "value": "Parent",
+            "label": "P"
+        },
+        {
+            "value": "Perce",
+            "label": "P"
+        },
+        {
+            "value": "Peribonka",
+            "label": "P"
+        },
+        {
+            "value": "Perkins",
+            "label": "P"
+        },
+        {
+            "value": "Petite-Riviere-St-Francois",
+            "label": "P"
+        },
+        {
+            "value": "Philipsburg",
+            "label": "P"
+        },
+        {
+            "value": "Pierrefonds",
+            "label": "P"
+        },
+        {
+            "value": "Pierreville",
+            "label": "P"
+        },
+        {
+            "value": "Pincourt",
+            "label": "P"
+        },
+        {
+            "value": "Pintendre",
+            "label": "P"
+        },
+        {
+            "value": "Plaisance",
+            "label": "P"
+        },
+        {
+            "value": "Plessisville",
+            "label": "P"
+        },
+        {
+            "value": "Pohenegamook",
+            "label": "P"
+        },
+        {
+            "value": "PointeAuxTrembles",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-a-la-Croix",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-au-Pere",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-aux-Outardes",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-Calumet",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-Claire",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-des-Cascades",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-des-Monts",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-Fortune",
+            "label": "P"
+        },
+        {
+            "value": "Pointe-Lebel",
+            "label": "P"
+        },
+        {
+            "value": "Pontiac",
+            "label": "P"
+        },
+        {
+            "value": "Pont-Rouge",
+            "label": "P"
+        },
+        {
+            "value": "Pont-Viau",
+            "label": "P"
+        },
+        {
+            "value": "Portage-du-Fort",
+            "label": "P"
+        },
+        {
+            "value": "Port-Cartier",
+            "label": "P"
+        },
+        {
+            "value": "Port-Daniel",
+            "label": "P"
+        },
+        {
+            "value": "Port-Menier",
+            "label": "P"
+        },
+        {
+            "value": "Portneuf",
+            "label": "P"
+        },
+        {
+            "value": "Poste-de-la-Baleine",
+            "label": "P"
+        },
+        {
+            "value": "Prevost",
+            "label": "P"
+        },
+        {
+            "value": "Price",
+            "label": "P"
+        },
+        {
+            "value": "Princeville",
+            "label": "P"
+        },
+        {
+            "value": "Puvirnituq",
+            "label": "P"
+        },
+        {
+            "label": ""
+        },
+        {
+            "value": "Quyon",
+            "label": "Q"
+        },
+        {
+            "value": "Radisson",
+            "label": "R"
+        },
+        {
+            "value": "Rawdon",
+            "label": "R"
+        },
+        {
+            "value": "Remigny",
+            "label": "R"
+        },
+        {
+            "value": "Repentigny",
+            "label": "R"
+        },
+        {
+            "value": "RéservefauniquedeRimouski",
+            "label": "R"
+        },
+        {
+            "value": "RéservefauniquelaVérendrye",
+            "label": "R"
+        },
+        {
+            "value": "RéservesfauniquesdeMatanee",
+            "label": "R"
+        },
+        {
+            "value": "Richelieu",
+            "label": "R"
+        },
+        {
+            "value": "Richmond",
+            "label": "R"
+        },
+        {
+            "value": "Rigaud",
+            "label": "R"
+        },
+        {
+            "value": "Rimouski",
+            "label": "R"
+        },
+        {
+            "value": "Rimouski-Est",
+            "label": "R"
+        },
+        {
+            "value": "Ripon",
+            "label": "R"
+        },
+        {
+            "value": "Riviere-a-Pierre",
+            "label": "R"
+        },
+        {
+            "value": "Riviere-au-Renard",
+            "label": "R"
+        },
+        {
+            "value": "Riviere-au-Tonnerre",
+            "label": "R"
+        },
+        {
+            "value": "Riviere-Beaudette",
+            "label": "R"
+        },
+        {
+            "value": "Riviere-Bleue",
+            "label": "R"
+        },
+        {
+            "value": "Riviere-du-Loup",
+            "label": "R"
+        },
+        {
+            "value": "Riviere-Heva",
+            "label": "R"
+        },
+        {
+            "value": "Riviere-St-Jean",
+            "label": "R"
+        },
+        {
+            "value": "Robertsonville",
+            "label": "R"
+        },
+        {
+            "value": "Roberval",
+            "label": "R"
+        },
+        {
+            "value": "Rochebaucourt",
+            "label": "R"
+        },
+        {
+            "value": "RockForest",
+            "label": "R"
+        },
+        {
+            "value": "Rollet",
+            "label": "R"
+        },
+        {
+            "value": "Rosemere",
+            "label": "R"
+        },
+        {
+            "value": "Rougemont",
+            "label": "R"
+        },
+        {
+            "value": "Rouyn-Noranda",
+            "label": "R"
+        },
+        {
+            "value": "Roxboro",
+            "label": "R"
+        },
+        {
+            "value": "RoxtonFalls",
+            "label": "R"
+        },
+        {
+            "value": "RoxtonPond",
+            "label": "R"
+        },
+        {
+            "value": "Sabrevois",
+            "label": "S"
+        },
+        {
+            "value": "SacreCoeur",
+            "label": "S"
+        },
+        {
+            "value": "SaintAlexandreD`Iberville",
+            "label": "S"
+        },
+        {
+            "value": "SaintAlphonsedeGranby",
+            "label": "S"
+        },
+        {
+            "value": "SaintAmable",
+            "label": "S"
+        },
+        {
+            "value": "SaintAntoineDesLaurentides",
+            "label": "S"
+        },
+        {
+            "value": "SaintAntoineSurRichelieu",
+            "label": "S"
+        },
+        {
+            "value": "SaintAntonin",
+            "label": "S"
+        },
+        {
+            "value": "SaintAthanase",
+            "label": "S"
+        },
+        {
+            "value": "SaintCalixte",
+            "label": "S"
+        },
+        {
+            "value": "SaintCharlesBorromee",
+            "label": "S"
+        },
+        {
+            "value": "SaintCharlesSurRichelieu",
+            "label": "S"
+        },
+        {
+            "value": "SaintChristopheD`Arthabaska",
+            "label": "S"
+        },
+        {
+            "value": "SaintColomban",
+            "label": "S"
+        },
+        {
+            "value": "SaintDenisDeBrompton",
+            "label": "S"
+        },
+        {
+            "value": "SaintDenisSurRichelieu",
+            "label": "S"
+        },
+        {
+            "value": "SaintEsprit",
+            "label": "S"
+        },
+        {
+            "value": "SaintEtiennedeBeauharnois",
+            "label": "S"
+        },
+        {
+            "value": "SaintEtiennedeLauzon",
+            "label": "S"
+        },
+        {
+            "value": "SaintGerardMajella",
+            "label": "S"
+        },
+        {
+            "value": "SaintIsidoredelaPrairie",
+            "label": "S"
+        },
+        {
+            "value": "SaintJeanBaptiste",
+            "label": "S"
+        },
+        {
+            "value": "SaintJeanD`Orleans",
+            "label": "S"
+        },
+        {
+            "value": "SaintJoachim",
+            "label": "S"
+        },
+        {
+            "value": "SaintJosephDeLaPointeDeL",
+            "label": "S"
+        },
+        {
+            "value": "SaintLaurentD`Orleans",
+            "label": "S"
+        },
+        {
+            "value": "SaintLazareDeVaudreuil",
+            "label": "S"
+        },
+        {
+            "value": "SaintLinLaurentides",
+            "label": "S"
+        },
+        {
+            "value": "SaintMarcSurRichelieu",
+            "label": "S"
+        },
+        {
+            "value": "SaintMathiasSurRichelieu",
+            "label": "S"
+        },
+        {
+            "value": "SaintMathieudeBeloeil",
+            "label": "S"
+        },
+        {
+            "value": "SaintMathieudelaPrairie",
+            "label": "S"
+        },
+        {
+            "value": "SaintMaurice",
+            "label": "S"
+        },
+        {
+            "value": "SaintNorbertD`Arthabaska",
+            "label": "S"
+        },
+        {
+            "value": "SaintPaulD`Industrie",
+            "label": "S"
+        },
+        {
+            "value": "SaintPhilippe",
+            "label": "S"
+        },
+        {
+            "value": "SaintPierreD`Orleans",
+            "label": "S"
+        },
+        {
+            "value": "SaintRobert",
+            "label": "S"
+        },
+        {
+            "value": "SaintRochDeL`Achigan",
+            "label": "S"
+        },
+        {
+            "value": "SaintRochDeRichelieu",
+            "label": "S"
+        },
+        {
+            "value": "SaintSulpice",
+            "label": "S"
+        },
+        {
+            "value": "SaintThomas",
+            "label": "S"
+        },
+        {
+            "value": "SaintUrbainPremier",
+            "label": "S"
+        },
+        {
+            "value": "SaintValere",
+            "label": "S"
+        },
+        {
+            "value": "SaintVictoiredeSorel",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Alexis-de-Montcalm",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Côme",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Donat",
+            "label": "S"
+        },
+        {
+            "value": "SainteAngeleDeMonnoir",
+            "label": "S"
+        },
+        {
+            "value": "SainteAnnDeSorel",
+            "label": "S"
+        },
+        {
+            "value": "SainteBrigideD`Iberville",
+            "label": "S"
+        },
+        {
+            "value": "SainteCecileDeMilton",
+            "label": "S"
+        },
+        {
+            "value": "SainteDorotheé",
+            "label": "S"
+        },
+        {
+            "value": "SainteFamille",
+            "label": "S"
+        },
+        {
+            "value": "SainteMarieSalome",
+            "label": "S"
+        },
+        {
+            "value": "SainteMartheDuCap",
+            "label": "S"
+        },
+        {
+            "value": "SainteSophie",
+            "label": "S"
+        },
+        {
+            "value": "SainteThereseDeBlainville",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Élie",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Élie-d`Orford",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Ferdinand",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Ferréol-les-neiges",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Hubert",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Hyacinthe",
+            "label": "S"
+        },
+        {
+            "value": "Saint-Michel-des-Saints",
+            "label": "S"
+        },
+        {
+            "value": "Salaberry-de-Valleyfield",
+            "label": "S"
+        },
+        {
+            "value": "Salluit",
+            "label": "S"
+        },
+        {
+            "value": "Sanmaur",
+            "label": "S"
+        },
+        {
+            "value": "Sault-au-Mouton",
+            "label": "S"
+        },
+        {
+            "value": "Sawyerville",
+            "label": "S"
+        },
+        {
+            "value": "Sayabec",
+            "label": "S"
+        },
+        {
+            "value": "Schefferville",
+            "label": "S"
+        },
+        {
+            "value": "Scotstown",
+            "label": "S"
+        },
+        {
+            "value": "Senneterre",
+            "label": "S"
+        },
+        {
+            "value": "Senneville",
+            "label": "S"
+        },
+        {
+            "value": "Sept-Iles",
+            "label": "S"
+        },
+        {
+            "value": "Shawbridge",
+            "label": "S"
+        },
+        {
+            "value": "Shawinigan",
+            "label": "S"
+        },
+        {
+            "value": "Shawinigan-Sud",
+            "label": "S"
+        },
+        {
+            "value": "Shawville",
+            "label": "S"
+        },
+        {
+            "value": "Shefford",
+            "label": "S"
+        },
+        {
+            "value": "Sherbrooke",
+            "label": "S"
+        },
+        {
+            "value": "Shigawake",
+            "label": "S"
+        },
+        {
+            "value": "Shipshaw",
+            "label": "S"
+        },
+        {
+            "value": "Sillery",
+            "label": "S"
+        },
+        {
+            "value": "Sorel-Tracy",
+            "label": "S"
+        },
+        {
+            "value": "Squatec",
+            "label": "S"
+        },
+        {
+            "value": "St.AmbroisedeChicoutimi",
+            "label": "S"
+        },
+        {
+            "value": "St.BasiledePortneuf",
+            "label": "S"
+        },
+        {
+            "value": "St.BernarddeDorchester",
+            "label": "S"
+        },
+        {
+            "value": "St.ComedeKennebec",
+            "label": "S"
+        },
+        {
+            "value": "St.EdouarddeFrampton",
+            "label": "S"
+        },
+        {
+            "value": "St.FabiendeRimouski",
+            "label": "S"
+        },
+        {
+            "value": "St.Ferdinandd`Halifax",
+            "label": "S"
+        },
+        {
+            "value": "St.Fidele",
+            "label": "S"
+        },
+        {
+            "value": "St.GabrieldeRimouski",
+            "label": "S"
+        },
+        {
+            "value": "St.GedeondeBeauce",
+            "label": "S"
+        },
+        {
+            "value": "St.GregoiredeNicolet",
+            "label": "S"
+        },
+        {
+            "value": "St.HenrideLevis",
+            "label": "S"
+        },
+        {
+            "value": "St.Honore",
+            "label": "S"
+        },
+        {
+            "value": "St.LeonDeChic.",
+            "label": "S"
+        },
+        {
+            "value": "St.MartindeBeauce",
+            "label": "S"
+        },
+        {
+            "value": "St.Moise",
+            "label": "S"
+        },
+        {
+            "value": "St.RaphaeldeBellechasse",
+            "label": "S"
+        },
+        {
+            "value": "St.Sebastien",
+            "label": "S"
+        },
+        {
+            "value": "St.StanislasdeChamplain",
+            "label": "S"
+        },
+        {
+            "value": "St.TheodoredeChertsey",
+            "label": "S"
+        },
+        {
+            "value": "St.VictordeBeauce",
+            "label": "S"
+        },
+        {
+            "value": "St.VincentdePaul",
+            "label": "S"
+        },
+        {
+            "value": "St-Adelphe",
+            "label": "S"
+        },
+        {
+            "value": "St-Adolphe-d`Howard",
+            "label": "S"
+        },
+        {
+            "value": "St-Adolphe-de-Dudswell",
+            "label": "S"
+        },
+        {
+            "value": "St-Agapit",
+            "label": "S"
+        },
+        {
+            "value": "St-Aime",
+            "label": "S"
+        },
+        {
+            "value": "St-Albert",
+            "label": "S"
+        },
+        {
+            "value": "St-Alexandre-de-Kamouraska",
+            "label": "S"
+        },
+        {
+            "value": "St-Alexis-de-Matapedia",
+            "label": "S"
+        },
+        {
+            "value": "St-Alexis-des-Monts",
+            "label": "S"
+        },
+        {
+            "value": "St-Alphonse-Rodriguez",
+            "label": "S"
+        },
+        {
+            "value": "St-Andre",
+            "label": "S"
+        },
+        {
+            "value": "St-Andre-Avellin",
+            "label": "S"
+        },
+        {
+            "value": "St-Andre-du-Lac-St-Jean",
+            "label": "S"
+        },
+        {
+            "value": "St-Andre-Est",
+            "label": "S"
+        },
+        {
+            "value": "St-Anselme",
+            "label": "S"
+        },
+        {
+            "value": "Stanstead",
+            "label": "S"
+        },
+        {
+            "value": "St-Antoine",
+            "label": "S"
+        },
+        {
+            "value": "St-Antoine-de-Tilly",
+            "label": "S"
+        },
+        {
+            "value": "St-Apollinaire",
+            "label": "S"
+        },
+        {
+            "value": "St-Augustin-de-Desmaures",
+            "label": "S"
+        },
+        {
+            "value": "St-Barnabe",
+            "label": "S"
+        },
+        {
+            "value": "St-Barthelemy",
+            "label": "S"
+        },
+        {
+            "value": "St-Basile-le-Grand",
+            "label": "S"
+        },
+        {
+            "value": "St-Basile-Sud",
+            "label": "S"
+        },
+        {
+            "value": "St-Blaise-sur-Richelieu",
+            "label": "S"
+        },
+        {
+            "value": "St-Boniface-de-Shawinigan",
+            "label": "S"
+        },
+        {
+            "value": "St-Bruno",
+            "label": "S"
+        },
+        {
+            "value": "St-Bruno-de-Montarville",
+            "label": "S"
+        },
+        {
+            "value": "St-Calixte-de-Kilkenny",
+            "label": "S"
+        },
+        {
+            "value": "St-Casimir",
+            "label": "S"
+        },
+        {
+            "value": "St-Celestin",
+            "label": "S"
+        },
+        {
+            "value": "St-Cesaire",
+            "label": "S"
+        },
+        {
+            "value": "St-Charles-de-Bellechasse",
+            "label": "S"
+        },
+        {
+            "value": "St-Chrysostome",
+            "label": "S"
+        },
+        {
+            "value": "St-Clet",
+            "label": "S"
+        },
+        {
+            "value": "St-Constant",
+            "label": "S"
+        },
+        {
+            "value": "St-Cyrille-de-Wendover",
+            "label": "S"
+        },
+        {
+            "value": "St-Damase",
+            "label": "S"
+        },
+        {
+            "value": "St-Damien-de-Buckland",
+            "label": "S"
+        },
+        {
+            "value": "St-Denis",
+            "label": "S"
+        },
+        {
+            "value": "Ste.AgathedeLotbiniere",
+            "label": "S"
+        },
+        {
+            "value": "Ste.AngeledeLaval",
+            "label": "S"
+        },
+        {
+            "value": "Ste.CecileMasham",
+            "label": "S"
+        },
+        {
+            "value": "Ste.ClairedeDorchester",
+            "label": "S"
+        },
+        {
+            "value": "Ste.CroixdeLotbiniere",
+            "label": "S"
+        },
+        {
+            "value": "Ste.Gertrude",
+            "label": "S"
+        },
+        {
+            "value": "Ste.JustinedeNewton",
+            "label": "S"
+        },
+        {
+            "value": "Ste.Martine",
+            "label": "S"
+        },
+        {
+            "value": "Ste.MethodedeFrontenac",
+            "label": "S"
+        },
+        {
+            "value": "Ste.MoniquedeNicolet",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Adele",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Agathe",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Agathe-des-Monts",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Agathe-Sud",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Anne-de-Beaupre",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Anne-de-Bellevue",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Anne-de-la-Perade",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Anne-de-Portneuf",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Anne-des-Monts",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Anne-des-Plaines",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Anne-du-Lac",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Blandine",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Brigitte-de-Laval",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Catherine",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Clotilde-de-Horton",
+            "label": "S"
+        },
+        {
+            "value": "St-Edouard-de-Lotbiniere",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Eulalie",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Felicite",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Foy",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Genevieve",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Helene-de-Bagot",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Henedine",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Jeanne-d`Arc",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Julie",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Julie-de-Vercheres",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Julienne",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Justine",
+            "label": "S"
+        },
+        {
+            "value": "St-Eleuthere",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Lucie-de-Beauregard",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Madeleine",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Marguerite",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Marie-de-Beauce",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Marie-de-Blandford",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Marthe",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Marthe-sur-le-Lac",
+            "label": "S"
+        },
+        {
+            "value": "St-Emile",
+            "label": "S"
+        },
+        {
+            "value": "St-Emile-de-Suffolk",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Perpetue",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Petronille",
+            "label": "S"
+        },
+        {
+            "value": "St-Ephrem-de-Beauce",
+            "label": "S"
+        },
+        {
+            "value": "St-Ephrem-de-Tring",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Rosalie",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Rose",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Rose-de-Watford",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Rose-du-Nord",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Sophie-de-Levrard",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Thecle",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Therese",
+            "label": "S"
+        },
+        {
+            "value": "St-Eugene-de-Guigues",
+            "label": "S"
+        },
+        {
+            "value": "St-Eustache",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Veronique",
+            "label": "S"
+        },
+        {
+            "value": "Ste-Victoire",
+            "label": "S"
+        },
+        {
+            "value": "St-Fabien-de-Panet",
+            "label": "S"
+        },
+        {
+            "value": "St-Felicien",
+            "label": "S"
+        },
+        {
+            "value": "St-Felix-de-Kingsey",
+            "label": "S"
+        },
+        {
+            "value": "St-Felix-de-Valois",
+            "label": "S"
+        },
+        {
+            "value": "St-Fidele-de-Mont-Murray",
+            "label": "S"
+        },
+        {
+            "value": "St-Flavien",
+            "label": "S"
+        },
+        {
+            "value": "St-Francois-du-Lac",
+            "label": "S"
+        },
+        {
+            "value": "St-Fulgence",
+            "label": "S"
+        },
+        {
+            "value": "St-Gabriel",
+            "label": "S"
+        },
+        {
+            "value": "St-Gabriel-de-Brandon",
+            "label": "S"
+        },
+        {
+            "value": "St-Gedeon",
+            "label": "S"
+        },
+        {
+            "value": "St-Georges",
+            "label": "S"
+        },
+        {
+            "value": "St-Georges-de-Beauce",
+            "label": "S"
+        },
+        {
+            "value": "St-Georges-de-Cacouna",
+            "label": "S"
+        },
+        {
+            "value": "St-Gerard",
+            "label": "S"
+        },
+        {
+            "value": "St-Germain-de-Grantham",
+            "label": "S"
+        },
+        {
+            "value": "St-Gregoire-de-Greenlay",
+            "label": "S"
+        },
+        {
+            "value": "St-Guillaume",
+            "label": "S"
+        },
+        {
+            "value": "St-Hilarion",
+            "label": "S"
+        },
+        {
+            "value": "St-Hippolyte",
+            "label": "S"
+        },
+        {
+            "value": "St-Honore-de-Beauce",
+            "label": "S"
+        },
+        {
+            "value": "St-Honore-de-Chicoutimi",
+            "label": "S"
+        },
+        {
+            "value": "St-Hugues",
+            "label": "S"
+        },
+        {
+            "value": "St-Irenee",
+            "label": "S"
+        },
+        {
+            "value": "St-Jacques",
+            "label": "S"
+        },
+        {
+            "value": "St-Jean-Chrysostome",
+            "label": "S"
+        },
+        {
+            "value": "St-Jean-de-Dieu",
+            "label": "S"
+        },
+        {
+            "value": "St-Jean-de-Matha",
+            "label": "S"
+        },
+        {
+            "value": "St-Jean-Port-Joli",
+            "label": "S"
+        },
+        {
+            "value": "St-Jean-sur-Richelieu",
+            "label": "S"
+        },
+        {
+            "value": "St-Jerome",
+            "label": "S"
+        },
+        {
+            "value": "St-Joseph-de-Beauce",
+            "label": "S"
+        },
+        {
+            "value": "St-Joseph-de-la-Rive",
+            "label": "S"
+        },
+        {
+            "value": "St-Joseph-de-Sorel",
+            "label": "S"
+        },
+        {
+            "value": "St-Jovite",
+            "label": "S"
+        },
+        {
+            "value": "St-Jude",
+            "label": "S"
+        },
+        {
+            "value": "St-Just-de-Bretenieres",
+            "label": "S"
+        },
+        {
+            "value": "St-Lambert",
+            "label": "S"
+        },
+        {
+            "value": "St-Lambert-de-Lauzon",
+            "label": "S"
+        },
+        {
+            "value": "St-Laurent",
+            "label": "S"
+        },
+        {
+            "value": "St-Leonard",
+            "label": "S"
+        },
+        {
+            "value": "St-Leonard-d`Aston",
+            "label": "S"
+        },
+        {
+            "value": "St-Leon-le-Grand",
+            "label": "S"
+        },
+        {
+            "value": "St-Liboire",
+            "label": "S"
+        },
+        {
+            "value": "St-Lin",
+            "label": "S"
+        },
+        {
+            "value": "St-Louis-de-France",
+            "label": "S"
+        },
+        {
+            "value": "St-Luc",
+            "label": "S"
+        },
+        {
+            "value": "St-Ludger",
+            "label": "S"
+        },
+        {
+            "value": "St-Magloire",
+            "label": "S"
+        },
+        {
+            "value": "St-Malachie",
+            "label": "S"
+        },
+        {
+            "value": "St-Malo",
+            "label": "S"
+        },
+        {
+            "value": "St-Marc-des-Carrieres",
+            "label": "S"
+        },
+        {
+            "value": "St-Methode-de-Frontenac",
+            "label": "S"
+        },
+        {
+            "value": "St-Michel-de-Bellechasse",
+            "label": "S"
+        },
+        {
+            "value": "St-Moose",
+            "label": "S"
+        },
+        {
+            "value": "St-Nazaire-d`Acton",
+            "label": "S"
+        },
+        {
+            "value": "St-Nicolas",
+            "label": "S"
+        },
+        {
+            "value": "St-Noel",
+            "label": "S"
+        },
+        {
+            "value": "St-Odilon-de-Cranbourne",
+            "label": "S"
+        },
+        {
+            "value": "Stoke",
+            "label": "S"
+        },
+        {
+            "value": "Stoneham",
+            "label": "S"
+        },
+        {
+            "value": "St-Ours",
+            "label": "S"
+        },
+        {
+            "value": "St-Pacome",
+            "label": "S"
+        },
+        {
+            "value": "St-Pamphile",
+            "label": "S"
+        },
+        {
+            "value": "St-Pascal",
+            "label": "S"
+        },
+        {
+            "value": "St-Patrice-de-Beaurivage",
+            "label": "S"
+        },
+        {
+            "value": "St-Paul-d`Abbotsford",
+            "label": "S"
+        },
+        {
+            "value": "St-Paul-de-Montminy",
+            "label": "S"
+        },
+        {
+            "value": "St-Paulin",
+            "label": "S"
+        },
+        {
+            "value": "St-Philippe-de-Neri",
+            "label": "S"
+        },
+        {
+            "value": "St-Pie",
+            "label": "S"
+        },
+        {
+            "value": "St-Pie-de-Guire",
+            "label": "S"
+        },
+        {
+            "value": "St-Pierre",
+            "label": "S"
+        },
+        {
+            "value": "St-Pierre-de-Wakefield",
+            "label": "S"
+        },
+        {
+            "value": "St-Pierre-les-Becquets",
+            "label": "S"
+        },
+        {
+            "value": "St-Polycarpe",
+            "label": "S"
+        },
+        {
+            "value": "St-Prime",
+            "label": "S"
+        },
+        {
+            "value": "St-Prosper-de-Dorchester",
+            "label": "S"
+        },
+        {
+            "value": "Stratford",
+            "label": "S"
+        },
+        {
+            "value": "St-Raymond",
+            "label": "S"
+        },
+        {
+            "value": "St-Redempteur",
+            "label": "S"
+        },
+        {
+            "value": "St-Remi",
+            "label": "S"
+        },
+        {
+            "value": "St-Rene-de-Matane",
+            "label": "S"
+        },
+        {
+            "value": "St-Roch-de-Mekinac",
+            "label": "S"
+        },
+        {
+            "value": "St-Roch-des-Aulnaies",
+            "label": "S"
+        },
+        {
+            "value": "St-Romuald",
+            "label": "S"
+        },
+        {
+            "value": "St-Sauveur",
+            "label": "S"
+        },
+        {
+            "value": "St-Sauveur-des-Monts",
+            "label": "S"
+        },
+        {
+            "value": "St-Simeon",
+            "label": "S"
+        },
+        {
+            "value": "St-Simon-de-Bagot",
+            "label": "S"
+        },
+        {
+            "value": "St-Simon-de-Rimouski",
+            "label": "S"
+        },
+        {
+            "value": "St-Sylvere",
+            "label": "S"
+        },
+        {
+            "value": "St-Sylvestre",
+            "label": "S"
+        },
+        {
+            "value": "St-Theophile",
+            "label": "S"
+        },
+        {
+            "value": "St-Thomas-d`Aquin",
+            "label": "S"
+        },
+        {
+            "value": "St-Timothee",
+            "label": "S"
+        },
+        {
+            "value": "St-Tite",
+            "label": "S"
+        },
+        {
+            "value": "St-Tite-des-Caps",
+            "label": "S"
+        },
+        {
+            "value": "St-Ubalde",
+            "label": "S"
+        },
+        {
+            "value": "Stukely-Sud",
+            "label": "S"
+        },
+        {
+            "value": "St-Ulric",
+            "label": "S"
+        },
+        {
+            "value": "St-Urbain",
+            "label": "S"
+        },
+        {
+            "value": "St-Victor",
+            "label": "S"
+        },
+        {
+            "value": "St-Wenceslas",
+            "label": "S"
+        },
+        {
+            "value": "St-Zacharie",
+            "label": "S"
+        },
+        {
+            "value": "St-Zenon",
+            "label": "S"
+        },
+        {
+            "value": "St-Zephirin",
+            "label": "S"
+        },
+        {
+            "value": "St-Zotique",
+            "label": "S"
+        },
+        {
+            "value": "Sutton",
+            "label": "S"
+        },
+        {
+            "value": "Tadoussac",
+            "label": "T"
+        },
+        {
+            "value": "Taschereau",
+            "label": "T"
+        },
+        {
+            "value": "Tasiujaq",
+            "label": "T"
+        },
+        {
+            "value": "Temiscaming",
+            "label": "T"
+        },
+        {
+            "value": "TerrasseVaudreuil",
+            "label": "T"
+        },
+        {
+            "value": "Terrebonne",
+            "label": "T"
+        },
+        {
+            "value": "Tete-a-la-Baleine",
+            "label": "T"
+        },
+        {
+            "value": "ThetfordMines",
+            "label": "T"
+        },
+        {
+            "value": "Thurso",
+            "label": "T"
+        },
+        {
+            "value": "Tingwick",
+            "label": "T"
+        },
+        {
+            "value": "Tremblay",
+            "label": "T"
+        },
+        {
+            "value": "Tring-Jonction",
+            "label": "T"
+        },
+        {
+            "value": "Trois-Pistoles",
+            "label": "T"
+        },
+        {
+            "value": "Trois-Rivieres",
+            "label": "T"
+        },
+        {
+            "value": "Umiujaq",
+            "label": "U"
+        },
+        {
+            "value": "Upton",
+            "label": "U"
+        },
+        {
+            "value": "Val-Alain",
+            "label": "V"
+        },
+        {
+            "value": "Val-Barrette",
+            "label": "V"
+        },
+        {
+            "value": "Val-Belair",
+            "label": "V"
+        },
+        {
+            "value": "Val-Brillant",
+            "label": "V"
+        },
+        {
+            "value": "Valcartier",
+            "label": "V"
+        },
+        {
+            "value": "Valcourt",
+            "label": "V"
+        },
+        {
+            "value": "Val-d`Or",
+            "label": "V"
+        },
+        {
+            "value": "Val-David",
+            "label": "V"
+        },
+        {
+            "value": "Val-des-Bois",
+            "label": "V"
+        },
+        {
+            "value": "Vallee-Jonction",
+            "label": "V"
+        },
+        {
+            "value": "Vanier",
+            "label": "V"
+        },
+        {
+            "value": "Varennes",
+            "label": "V"
+        },
+        {
+            "value": "Vaudreuil",
+            "label": "V"
+        },
+        {
+            "value": "VaudreuilDorion",
+            "label": "V"
+        },
+        {
+            "value": "Vaudreuil-sur-le-Lac",
+            "label": "V"
+        },
+        {
+            "value": "Venise-en-Quebec",
+            "label": "V"
+        },
+        {
+            "value": "Vercheres",
+            "label": "V"
+        },
+        {
+            "value": "Verdun",
+            "label": "V"
+        },
+        {
+            "value": "Victoriaville",
+            "label": "V"
+        },
+        {
+            "value": "Ville-Marie",
+            "label": "V"
+        },
+        {
+            "value": "Vimont",
+            "label": "V"
+        },
+        {
+            "value": "Wakefield",
+            "label": "W"
+        },
+        {
+            "value": "Warden",
+            "label": "W"
+        },
+        {
+            "value": "Warwick",
+            "label": "W"
+        },
+        {
+            "value": "Waskaganish",
+            "label": "W"
+        },
+        {
+            "value": "Waswanipi",
+            "label": "W"
+        },
+        {
+            "value": "Waterloo",
+            "label": "W"
+        },
+        {
+            "value": "Waterville",
+            "label": "W"
+        },
+        {
+            "value": "Weedon",
+            "label": "W"
+        },
+        {
+            "value": "WeedonCentre",
+            "label": "W"
+        },
+        {
+            "value": "Wemindji",
+            "label": "W"
+        },
+        {
+            "value": "Wendover",
+            "label": "W"
+        },
+        {
+            "value": "WestBrome",
+            "label": "W"
+        },
+        {
+            "value": "Westbury",
+            "label": "W"
+        },
+        {
+            "value": "Westmount",
+            "label": "W"
+        },
+        {
+            "value": "Wickham",
+            "label": "W"
+        },
+        {
+            "value": "Windsor",
+            "label": "W"
+        },
+        {
+            "value": "Woburn",
+            "label": "W"
+        },
+        {
+            "value": "Wotton",
+            "label": "W"
+        },
+        {
+            "value": "Yamachiche",
+            "label": "Y"
+        },
+        {
+            "value": "Yamaska",
+            "label": "Y"
+        },
+        {
+            "value": "Yamaska-Est",
+            "label": "Y"
+        }
+    ]

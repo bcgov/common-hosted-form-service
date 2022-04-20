@@ -1,5 +1,6 @@
 <template>
   <div>
+    
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
@@ -147,10 +148,13 @@
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
+      :id="10"
+      noDefaultSubmitButton="false"
       class="form-designer"
     />
   </div>
 </template>
+
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
@@ -237,11 +241,11 @@ export default {
               simplefieldset: false,
               simpleheading: false,
               simplepanel: true,
-              simpleparagraph: false,
+              simpleparagraph: true,
               simpletabs: true,
             },
           },
-          entryControls: {
+          entryControlsgggg: {
             title: 'Basic Fields',
             weight: 20,
             components: {
@@ -257,6 +261,7 @@ export default {
               simpletextarea: true,
               simpletextfield: true,
               simpletime: false,
+              
             },
           },
           layout: {
@@ -285,11 +290,17 @@ export default {
             title: 'Advanced Data',
             weight: 50,
           },
-          customControls: {
+          customssssss: {
             title: 'BC Government',
             weight: 60,
             components: {
+              header:true,
               orgbook: true,
+              fieldsAddress:true,
+              country:true,
+              city:true,
+              province:true,
+              postalcode:true,
               simplefile: this.userType !== this.ID_MODE.PUBLIC,
             },
           },
@@ -303,6 +314,7 @@ export default {
     },
   },
   methods: {
+    
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
@@ -400,6 +412,7 @@ export default {
           }
         } else {
           // If creating a new form, add the form and a draft
+         
           await this.schemaCreateNew();
         }
       } catch (error) {
@@ -473,6 +486,7 @@ export default {
   },
   created() {
     if (this.formId) {
+      console.log('I am just created in ');
       this.getFormSchema();
       this.fetchForm(this.formId);
     }

@@ -1,0 +1,90 @@
+﻿[
+        {
+            "value": "Edzo",
+            "label": "E"
+        },
+        {
+            "value": "Enterprise",
+            "label": "E"
+        },
+        {
+            "value": "FortGoodHope",
+            "label": "F"
+        },
+        {
+            "value": "FortLiard",
+            "label": "F"
+        },
+        {
+            "value": "FortMcPherson",
+            "label": "F"
+        },
+        {
+            "value": "FortProvidence",
+            "label": "F"
+        },
+        {
+            "value": "FortSimpson",
+            "label": "F"
+        },
+        {
+            "value": "FortSmith",
+            "label": "F"
+        },
+        {
+            "value": "HayRiver",
+            "label": "H"
+        },
+        {
+            "value": "Inuvik",
+            "label": "I"
+        },
+        {
+            "value": "JeanMarieRiver",
+            "label": "J"
+        },
+        {
+            "value": "Kakisa",
+            "label": "K"
+        },
+        {
+            "value": "Kugluktuk",
+            "label": "K"
+        },
+        {
+            "value": "NahanniButte",
+            "label": "N"
+        },
+        {
+            "value": "NormanWells",
+            "label": "N"
+        },
+        {
+            "value": "Rae",
+            "label": "R"
+        },
+        {
+            "value": "RaeLakes",
+            "label": "R"
+        },
+        {
+            "value": "TroutLake",
+            "label": "T"
+        },
+        {
+            "value": "Tsiigehtchic",
+            "label": "T"
+        },
+        {
+            "value": "Tuktoyaktuk",
+            "label": "T"
+        },
+        {
+            "value": "Wrigley",
+            "label": "W"
+        },
+        {
+            "value": "Yellowknife",
+            "label": "Y"
+        }
+    ]

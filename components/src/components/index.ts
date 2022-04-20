@@ -24,6 +24,11 @@ import simpletabs from './SimpleTabs/Component';
 import simpletextarea from './SimpleTextArea/Component';
 import simpletextfield from './SimpleTextField/Component';
 import simpletime from './SimpleTime/Component';
+import fieldsAddress from './SimpleAddressSelect/Component';
+import city from './SimpleCity/Component';
+import province from './SimpleProvince/Component';
+import country from './SimpleCountry/Component';
+import postalcode from './SimplePostalCode/Component';
 
 export default {
   orgbook,
@@ -50,5 +55,10 @@ export default {
   simpletabs,
   simpletextarea,
   simpletextfield,
-  simpletime
+  simpletime,
+  fieldsAddress,
+  city,
+  province,
+  country,
+  postalcode
 };

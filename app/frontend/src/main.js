@@ -23,6 +23,23 @@ Formio.use(BcGovFormioComponents);
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
 Vue.config.productionTip = false;
+Vue.config.errorHandler = (err) => {
+  console.log('---I am in error---- ',err);
+  // err: error trace
+  // vm: component in which error occured
+  // info: Vue specific error information such as lifecycle hooks, events etc.
+  
+  // TODO: Perform any custom logic or log to server
+
+};
+window.onerror = function(message, source, lineno, colno, error) {
+  console.log(message);
+  console.log(source);
+  console.log(lineno);
+  console.log(colno);
+  console.log(error);
+  // TODO: write any custom logic or logs the error
+};
 
 NProgress.configure({ showSpinner: false });
 NProgress.start();
@@ -105,11 +122,12 @@ async function loadConfig() {
  */
 function loadKeycloak(config) {
   Vue.use(VueKeycloakJs, {
-    init: { onLoad: 'check-sso' },
+    init: { onLoad: 'check-sso', checkLoginIframe: false,pkceMethod: 'S256'},
     config: {
       clientId: config.keycloak.clientId,
       realm: config.keycloak.realm,
       url: config.keycloak.serverUrl
+
     },
     onReady: () => {
       initializeApp(true, config.basePath);

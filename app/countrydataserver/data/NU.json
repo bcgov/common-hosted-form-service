@@ -1,0 +1,46 @@
+﻿[
+        {
+            "value": "Arviat",
+            "label": "A"
+        },
+        {
+            "value": "BakerLake",
+            "label": "B"
+        },
+        {
+            "value": "CambridgeBay",
+            "label": "C"
+        },
+        {
+            "value": "CapeDorset",
+            "label": "C"
+        },
+        {
+            "value": "ChesterfieldInlet",
+            "label": "C"
+        },
+        {
+            "value": "CoralHarbour",
+            "label": "C"
+        },
+        {
+            "value": "GjoaHaven",
+            "label": "G"
+        },
+        {
+            "value": "Iqaluit",
+            "label": "I"
+        },
+        {
+            "value": "RankinInlet",
+            "label": "R"
+        },
+        {
+            "value": "Resolute",
+            "label": "R"
+        },
+        {
+            "value": "WhaleCove",
+            "label": "W"
+        }
+    ]
