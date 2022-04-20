@@ -234,7 +234,6 @@ export default {
         componentMovedStart: false,
         history: [],
         index: -1,
-        MAX_COUNT: 10,
         redoClicked: false,
         undoClicked: false,
         originalSchema: null,
@@ -502,7 +501,7 @@ export default {
 
       // Get the differences between the last patch 
       // and the current form
-      const form = this.getPatch(++this.patch.index);
+      const form = this.getPatch(this.patch.index);
       const patch = compare(form, this.formSchema);
       // Add the patch to the history
       this.patch.history.push(patch);
