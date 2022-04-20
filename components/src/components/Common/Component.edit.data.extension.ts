@@ -24,4 +24,3 @@
     ignore: true
   },
 ]
-  

@@ -43,8 +43,7 @@
           }, ...extend)
         
       }
-
-  
+      
       public static editForm = editForm;
       static get builderInfo() {
           return {
