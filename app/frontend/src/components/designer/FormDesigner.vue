@@ -181,15 +181,15 @@
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
-      @addComponent="onAddComponentMethod"
-      @removeComponent="onRemoveComponentMethod"
-      @updateComponent="onUpdateComponentMethod"
+      @addComponent="onAddSchemaComponent"
+      @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
     />
   </div>
 </template>
 
 <script>
+import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
@@ -198,9 +198,6 @@ import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
-
-var deepFreeze = require('deep-freeze');
-import { compare, applyPatch, deepClone } from 'fast-json-patch';
 
 export default {
   name: 'FormDesigner',
@@ -216,7 +213,6 @@ export default {
     },
     versionId: String,
   },
-  originalSchema: null,
   data() {
     return {
       advancedItems: [
@@ -232,18 +228,17 @@ export default {
       displayVersion: 1,
       reRenderFormIo: 0,
       saving: false,
-      patchHistory: [],
-      maxPatches: 10,
-      patchIndex: -1,
-      patchHistoryUndo: false,
-      patchHistoryRedo: false,
-      patchObserver: null,
-      undoEnabled: false,
-      redoEnabled: false,
-      componentAdded: null,
-      componentRemoved: false,
-      componentUpdated: false,
-      componentMoved: false,
+      patch: {
+        componentAddedStart: false,
+        componentRemovedStart: false,
+        componentMovedStart: false,
+        history: [],
+        index: -1,
+        MAX_COUNT: 10,
+        redoClicked: false,
+        undoClicked: false,
+        originalSchema: null,
+      },
     };
   },
   computed: {
@@ -355,10 +350,16 @@ export default {
       };
     },
     undoCount() {
-      return (this.patchHistory.length > 0) ? (this.patchIndex + 1) : 0;
+      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
     },
     redoCount() {
-      return ((this.patchHistory.length > 0 ? this.patchHistory.length - this.patchIndex - 1 : 0));
+      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
+    },
+    undoEnabled() {
+      return this.canUndoPatch();
+    },
+    redoEnabled() {
+      return this.canRedoPatch();
     },
   },
   methods: {
@@ -376,11 +377,10 @@ export default {
           res = await formService.readDraft(this.formId, this.draftId);
         }
         this.formSchema = { ...this.formSchema, ...res.data.schema };
-        if (this.patchHistory.length === 0) {
+        if (this.patch.history.length === 0) {
           // We are fetching an existing form, so we get the original schema here because
           // using the original schema in the mount will give you the default schema
-          this.$options.originalSchema = JSON.parse(JSON.stringify(deepFreeze(deepClone(this.formSchema))));
-          deepFreeze(this.$options.originalSchema);
+          this.patch.originalSchema = deepClone(this.formSchema);
         }
       } catch (error) {
         this.addNotification({
@@ -397,17 +397,12 @@ export default {
         const fileReader = new FileReader();
         fileReader.addEventListener('load', () => {
           this.formSchema = JSON.parse(fileReader.result);
+          this.addPatchToHistory();
+          this.patch.undoClicked = false;
+          this.patch.redoClicked = false;
+          this.resetHistoryFlags();
           // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
           this.reRenderFormIo += 1;
-          this.addPatchToHistory();
-          this.patchHistoryUndo = false;
-          this.patchHistoryRedo = false;
-          this.componentAdded = false;
-          this.componentRemoved = false;
-          this.componentUpdated = false;
-          this.componentMoved = false;
-          this.undoEnabled = this.canUndoPatch();
-          this.redoEnabled = this.canRedoPatch();
         });
         fileReader.readAsText(file);
       } catch (error) {
@@ -444,95 +439,86 @@ export default {
     init() {
       // Since change is triggered during loading
     },
-    onChangeMethod(_changed, _flags, _modified) {
+    onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
 
-      // If the form changed but was not done so through the undo
-      // or redo button
-      if (!this.patchHistoryUndo && !this.patchHistoryRedo) {
-        // flags and modified are defined when a component is added
-        if (_flags !== undefined && _modified !== undefined) {
-          if (this.componentAdded !== null) {
-            this.addPatchToHistory();
-          } else {
-            this.resetHistoryFlags();
-          }
-        } else {
-          if (this.componentRemoved) {
-            // Component was removed..
-            this.addPatchToHistory();
-          } else if (this.componentMoved) {
-            this.addPatchToHistory();
-          } else {
-            this.resetHistoryFlags();
-          }
-        }
-      } else {
-        // We pressed undo or redo, so we just ignore
-        // adding the action to the history
-        this.patchHistoryUndo = false;
-        this.patchHistoryRedo = false;
-        this.resetHistoryFlags();
-      }
-
-      this.undoEnabled = this.canUndoPatch();
-      this.redoEnabled = this.canRedoPatch();
+      this.onSchemaChange(changed, flags, modified);
     },
     onRenderMethod() {
       const el = document.querySelector('input.builder-sidebar_search:focus');
       if (el && el.value === '') this.reRenderFormIo += 1;
       this.setDirtyFlag(false);
-
-      this.undoEnabled = this.canUndoPatch();
-      this.redoEnabled = this.canRedoPatch();
     },
-    onAddComponentMethod(_info, _parent, _path, _index, _isNew) {
-      if (_isNew) {
+    onAddSchemaComponent(_info, _parent, _path, _index, isNew) {
+      if (isNew) {
         // Component Add Start, the user can still cancel/remove the add
-        this.componentAdded = true;
+        this.patch.componentAddedStart = true;
       } else {
         // The user has initiated a move
-        this.componentMoved = true;
+        this.patch.componentMovedStart = true;
       }
     },
-    onRemoveComponentMethod(_component, _schema, _path, _index) {
+    onRemoveSchemaComponent() {
       // Component remove start
-      this.componentRemoved = true;
-    },
-    onUpdateComponentMethod(_component) {
-      this.componentUpdated = true;
+      this.patch.componentRemovedStart = true;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
     // Patch History
     // ---------------------------------------------------------------------------------------------------
+    onSchemaChange(_changed, flags, modified) {
+      // If the form changed but was not done so through the undo
+      // or redo button
+      if (!this.patch.undoClicked && !this.patch.redoClicked) {
+        // flags and modified are defined when a component is added
+        if (flags !== undefined && modified !== undefined) {
+          if (this.patch.componentAddedStart !== null) {
+            this.addPatchToHistory();
+          } else {
+            this.resetHistoryFlags();
+          }
+        } else {
+          // If we removed a component but not during an add action
+          if ((!this.patch.componentAddedStart && this.patch.componentRemovedStart) || this.patch.componentMovedStart) {
+            // Component was removed or moved
+            this.addPatchToHistory();
+          }
+        }
+      } else {
+        // We pressed undo or redo, so we just ignore
+        // adding the action to the history
+        this.patch.undoClicked = false;
+        this.patch.redoClicked = false;
+        this.resetHistoryFlags();
+      }
+    },
     addPatchToHistory() {
       // Remove any actions past the action we were on
-      if (this.patchHistory.length > 0) {
-        this.patchHistory.length = this.patchIndex + 1;
+      if (this.patch.history.length > 0) {
+        this.patch.history.length = this.patch.index + 1;
       }
 
       // Get the differences between the last patch 
       // and the current form
-      var form = this.getPatch(++this.patchIndex);
-      var patch = compare(form, this.formSchema);
+      const form = this.getPatch(++this.patch.index);
+      const patch = compare(form, this.formSchema);
       // Add the patch to the history
-      this.patchHistory.push(patch);
+      this.patch.history.push(patch);
 
       this.resetHistoryFlags();
     },
-    getPatch(_idx) {
+    getPatch(idx) {
       // Generate the form from the original schema
-      var form = JSON.parse(JSON.stringify(this.$options.originalSchema));
-      if (this.patchIndex > -1 && this.patchHistory.length > 0) {
+      let form = deepClone(this.patch.originalSchema);
+      if (this.patch.index > -1 && this.patch.history.length > 0) {
         // Apply all patches until we reach the requested patch
-        for (var i = -1; i < _idx; i++) {
-          let patch = this.patchHistory[i + 1];
+        for (let i = -1; i < idx; i++) {
+          let patch = this.patch.history[i + 1];
           if (patch !== undefined) {
             // remove reactivity from the form so we don't affect the original schema
-            form = JSON.parse(JSON.stringify(applyPatch(form, patch).newDocument));
+            form = deepClone(applyPatch(form, patch).newDocument);
           }
         }
       }
@@ -542,36 +528,30 @@ export default {
       // Only allow undo if there was an action made
       if (this.canUndoPatch()) {
         // Flag for formio to know we are setting the form
-        this.patchHistoryUndo = true;
-        this.patchIndex--;
-        this.formSchema = this.getPatch(this.patchIndex);
+        this.patch.undoClicked = true;
+        this.patch.index--;
+        this.formSchema = this.getPatch(this.patch.index);
       }
     },
     redoPatchFromHistory() {
       // Only allow redo if there was an action made
       if (this.canRedoPatch()) {
         // Flag for formio to know we are setting the form
-        this.patchHistoryRedo = true;
-        this.patchIndex++;
-        this.formSchema = this.getPatch(this.patchIndex);
+        this.patch.redoClicked = true;
+        this.patch.index++;
+        this.formSchema = this.getPatch(this.patch.index);
       }
     },
+    resetHistoryFlags(flag = false) {
+      this.patch.componentAddedStart = flag;
+      this.patch.componentMovedStart = flag;
+      this.patch.componentRemovedStart = flag;
+    },
     canUndoPatch() {
-      if (this.patchHistory.length == 0) return false;
-      if (this.patchIndex > this.patchHistory.length) return false;
-      if (this.patchIndex < 0) return false;
-      return true;
+      return this.patch.history.length && this.patch.index >= 0 && this.patch.index < this.patch.history.length;
     },
     canRedoPatch() {
-      if (this.patchHistory.length == 0) return false;
-      if (this.patchIndex >= (this.patchHistory.length - 1)) return false;
-      return true;
-    },
-    resetHistoryFlags(flag = false) {
-      this.componentAdded = flag;
-      this.componentMoved = flag;
-      this.componentUpdated = flag;
-      this.componentRemoved = flag;
+      return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -607,10 +587,10 @@ export default {
         this.saving = false;
       }
     },
-    async onUndoClick() {
+    onUndoClick() {
       this.undoPatchFromHistory();
     },
-    async onRedoClick() {
+    onRedoClick() {
       this.redoPatchFromHistory();
     },
     async schemaCreateNew() {
@@ -680,8 +660,7 @@ export default {
   mounted() {
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
-      this.$options.originalSchema = JSON.parse(JSON.stringify(deepFreeze(deepClone(this.formSchema))));
-      deepFreeze(this.$options.originalSchema);
+      this.patch.originalSchema = deepClone(this.formSchema);
     }
   },
   watch: {
