@@ -1,6 +1,7 @@
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
 import EditDisplay from './editForm/Component.edit.display';
 import EditData from './editForm/Component.edit.data';
+import DisplayExtension from './editForm/Component.edit.data.extension';
 
 export default function(...extend) {
     return baseEditForm([
@@ -20,7 +21,6 @@ export default function(...extend) {
           {
             key: 'logic',
             ignore: true,
-        
           },
           {
             label: 'Data',
@@ -28,32 +28,7 @@ export default function(...extend) {
             weight: 10,
             components: EditData
         },
-          {
-            key: 'addons',
-            ignore: true
-          },
-          {
-            label: 'Data',
-            ignore: true
-        },
-        
-        
-        {
-          key: 'layout',
-          ignore: true
-      },
-      {
-        key: 'conditional',
-        ignore: true
-    },
-    {
-      label: 'API',
-      ignore: true
-  },
-  {
-    label: 'Conditional',
-    ignore: true
-},
+        ...DisplayExtension,
     ], ...extend);
 }
 

@@ -21,18 +21,6 @@ export default
         ignore: true
       },
       {
-        key: 'prefix',
-        ignore: true
-      },
-      {
-        key: 'suffix',
-        ignore: true
-      },
-      {
-        key: 'inputMask',
-        ignore: false
-      },
-      {
         weight: 410,
         type: 'textfield',
         input: true,
