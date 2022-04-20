@@ -54,7 +54,6 @@ export default class Component extends (ParentCompoenent as any){
       
     }
 
- 
     public static editForm = editForm;
     static get builderInfo() {
         return {

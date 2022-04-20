@@ -1,5 +1,6 @@
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
 import EditDisplay from './editForm/Component.edit.display';
+import FormExtension from './editForm/Component.edit.form.extension';
 
 export default function(...extend) {
     return baseEditForm([
@@ -34,26 +35,6 @@ export default function(...extend) {
           key: 'layout',
           ignore: true
       },
-      {
-          key: 'conditional',
-          ignore: true
-      },
-      {
-          key: 'validation',
-          ignore: true
-      },
-   
-      {
-          label: 'API',
-          ignore: true
-      },
-      {
-          label: 'Conditional',
-          ignore: true
-      },
-      {
-        label: 'Validation',
-        ignore: true
-    },
+    ...FormExtension,
     ], ...extend);
 }
