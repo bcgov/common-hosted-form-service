@@ -20,7 +20,6 @@ export default function(...extend) {
           {
             key: 'logic',
             ignore: true,
-        
           },
           {
             label: 'Data',
@@ -36,20 +35,10 @@ export default function(...extend) {
             label: 'Data',
             ignore: true
         },
-        
-        
         {
           key: 'layout',
           ignore: true
       },
-      {
-        key: 'conditional',
-        ignore: true
-    },
-    {
-      label: 'API',
-      ignore: true
-  },
   {
     label: 'Conditional',
     ignore: true
