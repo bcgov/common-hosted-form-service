@@ -1,7 +1,7 @@
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
 import EditDisplay from './editForm/Component.edit.display';
 import EditData from '../Common/simple.edit.select.data';
-import DisplayExtension from './editForm/Component.edit.data.extension';
+import FormExtension from '../Common/Component.edit.data.extension';
 
 export default function(...extend) {
     return baseEditForm([
@@ -28,7 +28,7 @@ export default function(...extend) {
             weight: 10,
             components: EditData
         },
-        ...DisplayExtension,
+        ...FormExtension,
     ], ...extend);
 }
 

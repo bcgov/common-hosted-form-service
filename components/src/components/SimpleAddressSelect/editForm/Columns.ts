@@ -22,7 +22,7 @@ validate: {
 },
 template: '<span>{{ item.value }}</span>',
 data: {
-  url:`http://localhost:3000/provinces`
+  url:`https://timisenco2015.github.io/common-hosted-form-service_data/data/provinces.json`
 }
     }], width: 4, offset: 0, push: 0, pull: 0, size: 'md' },
     { components: [ {
@@ -40,7 +40,7 @@ validate: {
 },
 template: '<span>{{ item.value }}</span>',
 data: {
-  url:'http://localhost:3000/{{row.province.label}}'
+  url:'https://timisenco2015.github.io/common-hosted-form-service_data/data/{{row.province.label}}.json'
 }
     }], width: 4, offset: 0, push: 0, pull: 0, size: 'md' },
     { components: [ {

@@ -32,7 +32,7 @@ export default class Component extends (ParentCompoenent as any){
           
         template: '<span>{{ item.value }}</span>',
         data: {
-          url:'http://localhost:3000/provinces'
+          url:'https://timisenco2015.github.io/common-hosted-form-service_data/data/provinces.json'
         },
           clearOnRefresh: false,
           limit: 100,

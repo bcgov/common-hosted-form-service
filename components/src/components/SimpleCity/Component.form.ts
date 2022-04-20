@@ -1,6 +1,6 @@
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
 import EditDisplay from './editForm/Component.edit.display';
-import FormExtension from './editForm/Component.edit.form.extension';
+import FormExtension from '../Common/Component.edit.data.extension';
 import EditData from '../Common/simple.edit.select.data';
 
 export default function(...extend) {

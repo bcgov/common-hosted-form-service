@@ -1,28 +1,6 @@
 import common from '../../Common/Simple.edit.display';
+import commonv2 from '../../Common/Simple.edit.display.v2'
 export default [
     ...common,
-    {
-        key: 'refreshOnChange',
-        ignore: true
-    },
-    {
-        key: 'className',
-        ignore: true,
-    },
-    {
-        key: 'prefix',
-        ignore: true
-    },
-    {
-        key: 'suffix',
-        ignore: true
-    },
-    {
-        key: 'labelPosition',
-        ignore: true,
-    },
-    {
-        key: 'placeholder',
-        ignore: true,
-    },
+    ...commonv2
 ];

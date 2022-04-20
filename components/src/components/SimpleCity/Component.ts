@@ -40,7 +40,7 @@ export default class Component extends (ParentCompoenent as any){
           
         template: '<span>{{ item.value }}</span>',
         data: {
-          url:'http://localhost:3000/citiesandtowns'
+          url:'https://timisenco2015.github.io/common-hosted-form-service_data/data/citiesandtowns.json'
         },
           clearOnRefresh: false,
           limit: 100,
