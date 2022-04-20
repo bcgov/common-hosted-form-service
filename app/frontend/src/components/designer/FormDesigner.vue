@@ -486,7 +486,6 @@ export default {
   },
   created() {
     if (this.formId) {
-      console.log('I am just created in ');
       this.getFormSchema();
       this.fetchForm(this.formId);
     }

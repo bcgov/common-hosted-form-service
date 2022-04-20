@@ -19,4 +19,8 @@ export default [
     label: 'Validation',
     ignore: true
   },
+  {
+    key: 'layout',
+    ignore: true
+},
 ]
