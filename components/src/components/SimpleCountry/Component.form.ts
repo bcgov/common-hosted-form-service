@@ -31,5 +31,3 @@ export default function(...extend) {
         ...FormExtension,
     ], ...extend);
 }
-
-
