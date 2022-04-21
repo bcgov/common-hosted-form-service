@@ -149,6 +149,19 @@
       @initialized="init"
       class="form-designer"
     />
+    <v-fab-transition>
+      <v-btn
+        v-show="!hidden"
+        color="pink"
+        dark
+        absolute
+        top
+        right
+        fab
+      >
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
+    </v-fab-transition>
   </div>
 </template>
 
