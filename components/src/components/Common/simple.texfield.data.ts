@@ -9,4 +9,3 @@ export default  {
       return !context.data.allowMultipleMasks;
     }
   }
-  
