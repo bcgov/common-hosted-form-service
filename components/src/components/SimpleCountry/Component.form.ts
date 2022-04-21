@@ -3,6 +3,7 @@ import EditDisplay from './editForm/Component.edit.display';
 import EditData from '../Common/simple.edit.select.data';
 import FormExtension from '../Common/Component.edit.data.extension';
 
+
 export default function(...extend) {
     return baseEditForm([
         EditDisplay,

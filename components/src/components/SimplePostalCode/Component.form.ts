@@ -11,6 +11,14 @@ export default function(...extend) {
             components: EditDisplay,
           },
           {
+            label: 'Data',
+           ignore:true
+        },
+          {
+            key: 'logic',
+            ignore: true,
+          },
+          {
             key: 'data',
             ignore: true,
           },
@@ -18,14 +26,6 @@ export default function(...extend) {
             key: 'validation',
             ignore: true,
           },
-          {
-            key: 'logic',
-            ignore: true,
-          },
-          {
-            label: 'Data',
-           ignore:true
-        },
       {
         label: 'Validation',
         key: 'customValidation',
