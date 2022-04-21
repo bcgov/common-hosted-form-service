@@ -1,5 +1,5 @@
-import common from '../../Common/Simple.edit.display';
-import textfieldData from '../../Common/simple.texfield.data';
+import common from '../../../Common/Simple.edit.display';
+import textfieldData from '../../../Common/simple.texfield.data';
 
 export default
   {

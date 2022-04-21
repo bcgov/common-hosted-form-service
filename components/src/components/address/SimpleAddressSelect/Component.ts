@@ -1,6 +1,6 @@
     import {Components} from 'formiojs';
     const ParentCompoenent = (Components as any).components.columns
-    import { Constants } from '../Common/Constants';
+    import { Constants } from '../../Common/Constants';
     import editForm from './Component.form';
     import columns from './editForm/Columns';
 

@@ -24,10 +24,10 @@ import simpletabs from './SimpleTabs/Component';
 import simpletextarea from './SimpleTextArea/Component';
 import simpletextfield from './SimpleTextField/Component';
 import simpletime from './SimpleTime/Component';
-import fieldsAddress from './SimpleAddressSelect/Component';
-import multiuseaddrselect from './SimpleMultiUseAddressSelect/Component';
-import postalcode from './SimplePostalCode/Component';
-import country from './SimpleCountry/Component';
+import fieldsAddress from './address/SimpleAddressSelect/Component';
+import multiuseaddrselect from './address/SimpleMultiUseAddressSelect/Component';
+import postalcode from './address/SimplePostalCode/Component';
+import country from './address/SimpleCountry/Component';
 
 export default {
   orgbook,

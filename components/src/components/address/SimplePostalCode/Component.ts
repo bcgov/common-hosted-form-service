@@ -3,7 +3,7 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.textfield;
 import editForm from './Component.form';
 
-import { Constants } from '../Common/Constants';
+import { Constants } from '../../Common/Constants';
 
 const ID = 'postalcode';
 const DISPLAY = 'Postal Code';
