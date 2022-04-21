@@ -1,9 +1,27 @@
 import common from '../../Common/Simple.edit.display';
-import commonv2 from '../../Common/Simple.edit.display.v2'
 export default {
   key: 'display',
   components: [
     ...common,
-   ...commonv2
+    {
+      key: 'refreshOnChange',
+      ignore: true
+    },
+    {
+      key: 'className',
+      ignore: true,
+    },
+    {
+      key: 'attrs',
+      ignore: true
+    },
+    {
+      key: 'widget',
+      ignore: true
+    },
+    {
+      key: 'uniqueOptions',
+      ignore: true
+    },
   ]
 }

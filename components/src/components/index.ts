@@ -25,10 +25,9 @@ import simpletextarea from './SimpleTextArea/Component';
 import simpletextfield from './SimpleTextField/Component';
 import simpletime from './SimpleTime/Component';
 import fieldsAddress from './SimpleAddressSelect/Component';
-import city from './SimpleCity/Component';
-import province from './SimpleProvince/Component';
-import country from './SimpleCountry/Component';
+import multiuseaddrselect from './SimpleMultiUseAddressSelect/Component';
 import postalcode from './SimplePostalCode/Component';
+import country from './SimpleCountry/Component';
 
 export default {
   orgbook,
@@ -57,8 +56,7 @@ export default {
   simpletextfield,
   simpletime,
   fieldsAddress,
-  city,
-  province,
-  country,
-  postalcode
+  multiuseaddrselect,
+  postalcode,
+  country
 };
