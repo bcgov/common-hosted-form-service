@@ -1,31 +1,14 @@
-/**
-  * To load data
-    *  A. open command prompt, then cd to this folder countrydataserver
-    *  B. then enter node server.js
-  * To add more data to cities or make any changes
-    *  A. go to countrydataserver folder
-    *  B. go to data folder
-*/ 
-  
-  import {Components} from 'formiojs';
+ import {Components} from 'formiojs';
   const ParentCompoenent = (Components as any).components.select
   import { Constants } from '../Common/Constants';
   import editForm from './Component.form';
-  import Utils from 'formiojs/utils';
-
+ 
   const ID = 'country';
   const DISPLAY = 'Country';
 
-
   export default class Component extends (ParentCompoenent as any){
 
-      addResource = [];
-
-      setThisValue(component,value){ 
-        
-        const thisComponent = Utils.getComponent(component); thisComponent.setValue(value); thisComponent.redraw(); }
-
-      static schema (...extend){
+    static schema (...extend){
           return ParentCompoenent.schema({
             label: DISPLAY,
             type: ID,
