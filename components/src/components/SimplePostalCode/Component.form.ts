@@ -9,23 +9,7 @@ export default function(...extend) {
          {
             key: 'display',
             components: EditDisplay,
-          },
-          {
-            label: 'Data',
-           ignore:true
-        },
-          {
-            key: 'logic',
-            ignore: true,
-          },
-          {
-            key: 'data',
-            ignore: true,
-          },
-          {
-            key: 'validation',
-            ignore: true,
-          },
+          }, 
       {
         label: 'Validation',
         key: 'customValidation',

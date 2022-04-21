@@ -11,18 +11,6 @@ export default function(...extend) {
             components: EditDisplay,
           },
           {
-            key: 'data',
-            ignore: true,
-          },
-          {
-            key: 'validation',
-            ignore: true,
-          },
-          {
-            key: 'logic',
-            ignore: true,
-          },
-          {
             label: 'Data',
             key: 'customData',
             weight: 10,

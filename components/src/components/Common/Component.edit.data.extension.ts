@@ -23,4 +23,16 @@
     label: 'layout',
     ignore: true
   },
+  {
+    key: 'data',
+    ignore: true,
+  },
+  {
+    key: 'validation',
+    ignore: true,
+  },
+  {
+    key: 'logic',
+    ignore: true,
+  },
 ]
