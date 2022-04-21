@@ -275,9 +275,9 @@ export default {
     versionList() {
       if (this.hasDraft) {
         // reformat draft object and then join with versions array
-        const reDraft = this.drafts.map((obj) => {
+        const reDraft = this.drafts.map((obj, idx) => {
           obj.published = false;
-          obj.version = this.form.versions.length + 1;
+          obj.version = this.form.versions.length + this.drafts.length - idx;
           obj.isDraft = true;
           delete obj.formVersionId;
           delete obj.schema;
