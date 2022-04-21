@@ -1,7 +1,7 @@
 import {Components} from 'formiojs';
 const ParentCompoenent = (Components as any).components.select
-import { Constants } from '../../Common/Constants';
 import editForm from './Component.form';
+import builder from '../common/common.function';
 
 const ID = 'country';
 const DISPLAY = 'Country';
@@ -22,13 +22,6 @@ export default class Component extends (ParentCompoenent as any){
 
     public static editForm = editForm;
     static get builderInfo() {
-        return {
-          title: DISPLAY,
-          icon: 'flag',
-          group: 'simple',
-          documentation: Constants.DEFAULT_HELP_LINK,
-          weight: 30,
-          schema: Component.schema()
-        };
-    }
+      return builder('flag',Component,30,DISPLAY);
+    };  
 }

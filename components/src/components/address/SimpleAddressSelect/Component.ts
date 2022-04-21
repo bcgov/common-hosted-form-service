@@ -1,6 +1,6 @@
     import {Components} from 'formiojs';
     const ParentCompoenent = (Components as any).components.columns
-    import { Constants } from '../../Common/Constants';
+    import builder from '../common/common.function';
     import editForm from './Component.form';
     import columns from './editForm/Columns';
 
@@ -28,13 +28,6 @@
           
         public static editForm = editForm;
         static get builderInfo() {
-            return {
-              title: DISPLAY,
-              icon: 'globe',
-              group: 'simple',
-              documentation: Constants.DEFAULT_HELP_LINK,
-              weight: 60,
-              schema: Component.schema()
-            };
-        }
+          return builder('globe',Component,60,DISPLAY);  
+        };
     }
