@@ -13,7 +13,7 @@ export default function(...extend) {
       {
         label: 'Validation',
         key: 'customValidation',
-        weight: 10,
+        weight: 30,
         components: EditValidation
     },
     ...FormExtension,

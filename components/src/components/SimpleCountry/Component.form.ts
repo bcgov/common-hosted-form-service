@@ -14,7 +14,7 @@ export default function(...extend) {
           {
             label: 'Data',
             key: 'customData',
-            weight: 10,
+            weight: 20,
             components: EditData
         },
         ...FormExtension,

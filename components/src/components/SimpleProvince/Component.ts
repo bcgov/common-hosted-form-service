@@ -17,8 +17,6 @@ const DISPLAY = 'Province';
 
 export default class Component extends (ParentCompoenent as any){
 
-    addResource = [];
-
     static schema (...extend){
         return ParentCompoenent.schema({
           label: DISPLAY,
@@ -28,8 +26,7 @@ export default class Component extends (ParentCompoenent as any){
           tableView: true,
           persistent: false,
           autoAdjust: true,
-          hideLabel: true,
-          
+          hideLabel: true, 
         template: '<span>{{ item.value }}</span>',
         data: {
           url:'https://timisenco2015.github.io/common-hosted-form-service_data/data/provinces.json'
@@ -41,11 +38,9 @@ export default class Component extends (ParentCompoenent as any){
           required: true
         },
         dataSrc: 'url',
-       
         }, ...extend)
-      
     }
- 
+
     public static editForm = editForm;
     static get builderInfo() {
         return {
