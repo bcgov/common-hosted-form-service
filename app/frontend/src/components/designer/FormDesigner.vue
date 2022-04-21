@@ -149,19 +149,12 @@
       @initialized="init"
       class="form-designer"
     />
-    <v-fab-transition>
-      <v-btn
-        v-show="!hidden"
-        color="pink"
-        dark
-        absolute
-        top
-        right
-        fab
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-    </v-fab-transition>
+    <FormActionButtons 
+      @form-schema-submit="submitFormSchema"
+      @form-schema-export="onExportClick"
+      @load-form-schema="loadFile"
+
+    />
   </div>
 </template>
 
@@ -174,11 +167,13 @@ import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
+import FormActionButtons from '@/components/designer/FormActionButtons';
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
+    FormActionButtons
   },
   props: {
     draftId: String,
