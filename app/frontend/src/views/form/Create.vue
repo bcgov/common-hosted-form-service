@@ -40,10 +40,7 @@
         </v-stepper-content>
 
         <v-stepper-content step="2" class="pa-1">
-          <FormDesigner />
-          <v-btn class="my-4" outlined @click="creatorStep = 1">
-            <span>Back</span>
-          </v-btn>
+          <FormDesigner @create-stepper="creatorStep = 1"/>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
