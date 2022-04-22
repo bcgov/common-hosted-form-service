@@ -1,7 +1,41 @@
 <template>
   <v-row>
     <v-col>
-      <v-container fluid>
+      <v-alert
+        :value="saved || saving"
+        :class="
+          saving
+            ? NOTIFICATIONS_TYPES.INFO.class
+            : NOTIFICATIONS_TYPES.SUCCESS.class"
+        :color="
+          saving
+            ? NOTIFICATIONS_TYPES.INFO.color
+            : NOTIFICATIONS_TYPES.SUCCESS.color"
+        :icon="
+          saving
+            ? NOTIFICATIONS_TYPES.INFO.icon
+            : NOTIFICATIONS_TYPES.SUCCESS.icon"
+        transition="scale-transition"
+      >
+        <div v-if="saving">
+          <v-progress-linear indeterminate />
+          Saving
+        </div>
+        <div v-else>
+          Your form has been successfully saved
+          <router-link
+            :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
+            target="_blank"
+            class="mx-5"
+          >
+            Preview
+          </router-link>
+          <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+            Go to Manage Form to Publish
+          </router-link>
+        </div>
+      </v-alert>
+      <div>
         <v-row class="mt-6 fixed" no-gutters>
           <v-col>
             <v-row>
@@ -19,111 +53,66 @@
             </v-row>
           </v-col>
           <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  class="formSubmit"
-                  @click="submitFormSchema"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                  fixed
-                  right
-                >
-                  <v-icon>save</v-icon>
-                </v-btn>
-              </template>
-              <span>Save Design</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  class="formExport"
-                  @click="onExportClick"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                  fixed
-                  right
-                >
-                  <v-icon>get_app</v-icon>
-                </v-btn>
-              </template>
-              <span>Export Design</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  class="formImport"
-                  @click="$refs.uploader.click()"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                  fixed
-                  right
-                >
-                  <v-icon>publish</v-icon>
-                  <input
-                    class="d-none"
-                    @change="loadFile"
-                    ref="uploader"
-                    type="file"
-                    accept=".json"
-                  />
-                </v-btn>
-              </template>
-              <span>Import Design</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <router-link
-                  :to="{ name: 'FormManage', query: { f: formId } }"
-                  :class="{ 'disabled-router': !formId }"
-                >
-                  <v-btn
-                    class="formSetting"
-                    color="primary"
-                    :disabled="!formId"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                    fixed
-                    right
-                  >
-                    <v-icon>settings</v-icon>
-                  </v-btn>
-                </router-link>
-              </template>
-              <span>Manage Form</span>
-            </v-tooltip>
+            <FormDesignActionButton
+              @form-schema-submit="submitFormSchema"
+              @form-schema-export="onExportClick"
+              @load-form-schema="loadFile"
+              @on-redo-schema="onRedoClick"
+              @on-undo-schema="onUndoClick"
+              :formId="formId"
+              :undoCount="undoCount"
+              :undoEnabled="undoEnabled"
+              :redoEnabled="redoEnabled"
+              :redoCount="redoCount"
+            />
           </v-col>    
         </v-row>
-      </v-container>
-      <BaseInfoCard class="my-6">
-        <h4 class="primary--text">
-          <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
-        </h4>
-        <p class="my-0">
-          Use the <strong>SAVE DESIGN</strong> button when you are done building
-          this form.
-        </p>
-        <p class="my-0">
-          The <strong>SUBMIT</strong> button is provided for your user to submit
-          this form and will be activated after it is saved.
-        </p>
-      </BaseInfoCard>
-      <FormBuilder
-        :form="formSchema"
-        :key="reRenderFormIo"
-        :options="designerOptions"
-        @change="onChangeMethod"
-        @render="onRenderMethod"
-        @initialized="init"
-        class="form-designer"
-      /> 
+        <BaseInfoCard class="my-6">
+          <h4 class="primary--text">
+            <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+          </h4>
+          <p class="my-0">
+            Use the <strong>SAVE DESIGN</strong> button when you are done building
+            this form.
+          </p>
+          <p class="my-0">
+            The <strong>SUBMIT</strong> button is provided for your user to submit
+            this form and will be activated after it is saved.
+          </p>
+        </BaseInfoCard>
+        <FormBuilder
+          :form="formSchema"
+          :key="reRenderFormIo"
+          :options="designerOptions"
+          @change="onChangeMethod"
+          @render="onRenderMethod"
+          @initialized="init"
+          @addComponent="onAddSchemaComponent"
+          @removeComponent="onRemoveSchemaComponent"
+          class="form-designer"
+        /> 
+      </div>
+      <v-row>
+        <v-col cols="12" sm="6" order="2" order-sm="1">
+          <v-btn class="my-4" outlined @click="createStepper">
+            <span>Back</span>
+          </v-btn>
+        </v-col>   
+        <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+          <FormDesignActionButton
+            @form-schema-submit="submitFormSchema"
+            @form-schema-export="onExportClick"
+            @load-form-schema="loadFile"
+            @on-redo-schema="onRedoClick"
+            @on-undo-schema="onUndoClick"
+            :formId="formId"
+            :undoCount="undoCount"
+            :undoEnabled="undoEnabled"
+            :redoEnabled="redoEnabled"
+            :redoCount="redoCount"
+          />
+        </v-col>
+      </v-row>
     </v-col>
   </v-row>
 </template>
@@ -132,16 +121,18 @@
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
-
+import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
+import FormDesignActionButton from '@/components/designer/FormDesignActionButton';
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
+    FormDesignActionButton
   },
   props: {
     draftId: String,
@@ -167,6 +158,16 @@ export default {
       displayVersion: 1,
       reRenderFormIo: 0,
       saving: false,
+      patch: {
+        componentAddedStart: false,
+        componentRemovedStart: false,
+        componentMovedStart: false,
+        history: [],
+        index: -1,
+        redoClicked: false,
+        undoClicked: false,
+        originalSchema: null,
+      },
     };
   },
   computed: {
@@ -277,6 +278,18 @@ export default {
         },
       };
     },
+    undoCount() {
+      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
+    },
+    redoCount() {
+      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
+    },
+    undoEnabled() {
+      return this.canUndoPatch();
+    },
+    redoEnabled() {
+      return this.canRedoPatch();
+    },
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
@@ -293,6 +306,11 @@ export default {
           res = await formService.readDraft(this.formId, this.draftId);
         }
         this.formSchema = { ...this.formSchema, ...res.data.schema };
+        if (this.patch.history.length === 0) {
+          // We are fetching an existing form, so we get the original schema here because
+          // using the original schema in the mount will give you the default schema
+          this.patch.originalSchema = deepClone(this.formSchema);
+        }
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while loading the form design.',
@@ -308,6 +326,10 @@ export default {
         const fileReader = new FileReader();
         fileReader.addEventListener('load', () => {
           this.formSchema = JSON.parse(fileReader.result);
+          this.addPatchToHistory();
+          this.patch.undoClicked = false;
+          this.patch.redoClicked = false;
+          this.resetHistoryFlags();
           // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
           this.reRenderFormIo += 1;
         });
@@ -345,15 +367,123 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     init() {
       // Since change is triggered during loading
-      this.setDirtyFlag(false);
     },
-    onChangeMethod() {
+    onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
+
+      this.onSchemaChange(changed, flags, modified);
     },
     onRenderMethod() {
       const el = document.querySelector('input.builder-sidebar_search:focus');
       if (el && el.value === '') this.reRenderFormIo += 1;
+      this.setDirtyFlag(false);
+    },
+    onAddSchemaComponent(_info, _parent, _path, _index, isNew) {
+      if (isNew) {
+        // Component Add Start, the user can still cancel/remove the add
+        this.patch.componentAddedStart = true;
+      } else {
+        // The user has initiated a move
+        this.patch.componentMovedStart = true;
+      }
+    },
+    onRemoveSchemaComponent() {
+      // Component remove start
+      this.patch.componentRemovedStart = true;
+    },
+    createStepper(){
+      this.$emit('create-stepper');
+    },
+    // ----------------------------------------------------------------------------------/ FormIO Handlers
+
+    // ---------------------------------------------------------------------------------------------------
+    // Patch History
+    // ---------------------------------------------------------------------------------------------------
+    onSchemaChange(_changed, flags, modified) {
+      // If the form changed but was not done so through the undo
+      // or redo button
+      if (!this.patch.undoClicked && !this.patch.redoClicked) {
+        // flags and modified are defined when a component is added
+        if (flags !== undefined && modified !== undefined) {
+          if (this.patch.componentAddedStart !== null) {
+            this.addPatchToHistory();
+          } else {
+            this.resetHistoryFlags();
+          }
+        } else {
+          // If we removed a component but not during an add action
+          if ((!this.patch.componentAddedStart && this.patch.componentRemovedStart) || this.patch.componentMovedStart) {
+            // Component was removed or moved
+            this.addPatchToHistory();
+          }
+        }
+      } else {
+        // We pressed undo or redo, so we just ignore
+        // adding the action to the history
+        this.patch.undoClicked = false;
+        this.patch.redoClicked = false;
+        this.resetHistoryFlags();
+      }
+    },
+    addPatchToHistory() {
+      // Remove any actions past the action we were on
+      if (this.patch.history.length > 0) {
+        this.patch.history.length = this.patch.index + 1;
+      }
+
+      // Get the differences between the last patch 
+      // and the current form
+      const form = this.getPatch(++this.patch.index);
+      const patch = compare(form, this.formSchema);
+      // Add the patch to the history
+      this.patch.history.push(patch);
+
+      this.resetHistoryFlags();
+    },
+    getPatch(idx) {
+      // Generate the form from the original schema
+      let form = deepClone(this.patch.originalSchema);
+      if (this.patch.index > -1 && this.patch.history.length > 0) {
+        // Apply all patches until we reach the requested patch
+        for (let i = -1; i < idx; i++) {
+          let patch = this.patch.history[i + 1];
+          if (patch !== undefined) {
+            // remove reactivity from the form so we don't affect the original schema
+            form = deepClone(applyPatch(form, patch).newDocument);
+          }
+        }
+      }
+      return form;
+    },
+    undoPatchFromHistory() {
+      // Only allow undo if there was an action made
+      if (this.canUndoPatch()) {
+        // Flag for formio to know we are setting the form
+        this.patch.undoClicked = true;
+        this.patch.index--;
+        this.formSchema = this.getPatch(this.patch.index);
+      }
+    },
+    redoPatchFromHistory() {
+      // Only allow redo if there was an action made
+      if (this.canRedoPatch()) {
+        // Flag for formio to know we are setting the form
+        this.patch.redoClicked = true;
+        this.patch.index++;
+        this.formSchema = this.getPatch(this.patch.index);
+      }
+    },
+    resetHistoryFlags(flag = false) {
+      this.patch.componentAddedStart = flag;
+      this.patch.componentMovedStart = flag;
+      this.patch.componentRemovedStart = flag;
+    },
+    canUndoPatch() {
+      return this.patch.history.length && this.patch.index >= 0 && this.patch.index < this.patch.history.length;
+    },
+    canRedoPatch() {
+      return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -389,6 +519,12 @@ export default {
         this.saving = false;
       }
     },
+    onUndoClick() {
+      this.undoPatchFromHistory();
+    },
+    onRedoClick() {
+      this.redoPatchFromHistory();
+    },
     async schemaCreateNew() {
       const emailList =
         this.sendSubRecieviedEmail &&
@@ -418,7 +554,7 @@ export default {
           d: response.data.draft.id,
           sv: true,
         },
-      });
+      }).catch(()=>{});
     },
     async schemaCreateDraftFromVersion() {
       const { data } = await formService.createDraft(this.formId, {
@@ -433,7 +569,7 @@ export default {
           d: data.id,
           sv: true,
         },
-      });
+      }).catch(()=>{});
     },
     async schemaUpdateExistingDraft() {
       await formService.updateDraft(this.formId, this.draftId, {
@@ -443,7 +579,7 @@ export default {
       this.$router.replace({
         name: 'FormDesigner',
         query: { ...this.$route.query, sv: true },
-      });
+      }).catch(()=>{});
     },
     // ----------------------------------------------------------------------------------/ Saving Schema
   },
@@ -453,11 +589,17 @@ export default {
       this.fetchForm(this.formId);
     }
   },
+  mounted() {
+    if (!this.formId) {
+      // We are creating a new form, so we obtain the original schema here.
+      this.patch.originalSchema = deepClone(this.formSchema);
+    }
+  },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    },
+    }
   },
 };
 </script>
@@ -473,28 +615,31 @@ export default {
 
 
 .formSubmit{
-
-  margin-top: 0px;
-  margin-right:230px;
-  z-index:1000;
+  background-color:red;
 }
 
 .formExport{
-  margin-top:0px;
-  margin-right:190px;
-  z-index:1000;
+ position: sticky;
+ top:0;
+  right:0;
+
+ position: -webkit-sticky;
 }
 
 .formImport{
-  margin-top:0px;
-  margin-right:150px;
-  z-index:1000;
+  position: sticky;
+  top:0;
+  right:0;
+
+ position: -webkit-sticky;
 }
 
 .formSetting{
-  margin-top:0px;
-  margin-right:110px;
-  z-index:1000;
+ position: sticky;
+ top:0;
+  right:0;
+ 
+ position: -webkit-sticky;
 }
 
 </style>
