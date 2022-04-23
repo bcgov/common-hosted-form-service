@@ -113,21 +113,30 @@
           />
         </v-col>
       </v-row>
-      <v-btn
-        class="mx-2"
-        fab
-        dark
-        fixed
-        @click="scrollTop"
-        right
-        style="bottom:45px;"
-        small
+      <v-tooltip 
         color="primary"
-      >
-        <v-icon color="white">
-          keyboard_arrow_up
-        </v-icon>
-      </v-btn>
+        bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            class="mx-2"
+            fab
+            dark
+            fixed
+            @click="scrollTop"
+            right
+            style="bottom:45px;"
+            small
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon color="white">
+              keyboard_arrow_up
+            </v-icon>
+          </v-btn>
+        </template>
+        <span>Scroll to top</span>
+      </v-tooltip>
     </v-col>
   </v-row>
 </template>
