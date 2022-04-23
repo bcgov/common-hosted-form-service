@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col>
-      <v-alert
+      <v-alert 
         :value="saved || saving"
         :class="
           saving
@@ -113,6 +113,21 @@
           />
         </v-col>
       </v-row>
+      <v-btn
+        class="mx-2"
+        fab
+        dark
+        fixed
+        @click="scrollTop"
+        right
+        style="bottom:45px;"
+        small
+        color="primary"
+      >
+        <v-icon color="white">
+          keyboard_arrow_up
+        </v-icon>
+      </v-btn>
     </v-col>
   </v-row>
 </template>
@@ -294,6 +309,9 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
+    scrollTop(){
+      window.scrollTo(0,0);
+    },
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
