@@ -61,7 +61,7 @@
                   <!-- Mandatory BCeID process notification -->
                   <v-expand-transition>
                     <BaseInfoCard
-                      v-if="idps[0] && (idps[0] === ID_PROVIDERS.BCEIDBASIC || idps[0] === ID_PROVIDERS.BCEIDBUSINESS)"
+                      v-if="idps[0] && [ID_PROVIDERS.BCEIDBASIC, ID_PROVIDERS.BCEIDBUSINESS].includes(idps[0])"
                       class="mr-4"
                     >
                       <h4 class="primary--text">
