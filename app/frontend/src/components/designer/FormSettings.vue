@@ -53,17 +53,15 @@
                     label="Basic BCeID"
                     :value="ID_PROVIDERS.BCEIDBASIC"
                   />
-                  <!-- Commented out as per IDIM request -->
-                  <!-- <v-radio
+                  <v-radio
                     class="mx-2"
-                    disabled
                     label="Business BCeID"
                     :value="ID_PROVIDERS.BCEIDBUSINESS"
-                  /> -->
+                  />
                   <!-- Mandatory BCeID process notification -->
                   <v-expand-transition>
                     <BaseInfoCard
-                      v-if="idps[0] && idps[0] === ID_PROVIDERS.BCEIDBASIC"
+                      v-if="idps[0] && [ID_PROVIDERS.BCEIDBASIC, ID_PROVIDERS.BCEIDBUSINESS].includes(idps[0])"
                       class="mr-4"
                     >
                       <h4 class="primary--text">
