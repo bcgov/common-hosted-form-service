@@ -35,10 +35,10 @@
           </router-link>
         </div>
       </v-alert>
-      <div>
-        <v-row class="mt-6 fixed" no-gutters>
+      <div class="scroll-to-me" style="back">
+        <v-row class="mt-6 fixed" no-gutters >
           <v-col>
-            <v-row>
+            <v-row >
               <v-col cols="12" sm="6" order="2" order-sm="1">
                 <div>
                   <h1>Form Design</h1>
@@ -52,19 +52,104 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-            <FormDesignActionButton
-              @form-schema-submit="submitFormSchema"
-              @form-schema-export="onExportClick"
-              @load-form-schema="loadFile"
-              @on-redo-schema="onRedoClick"
-              @on-undo-schema="onUndoClick"
-              :formId="formId"
-              :undoCount="undoCount"
-              :undoEnabled="undoEnabled"
-              :redoEnabled="redoEnabled"
-              :redoCount="redoCount"
-            />
+          <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2" >
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  @click="submitFormSchema"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on" >
+                  <v-icon>save</v-icon>
+                </v-btn>
+              </template>
+              <span>Save Design</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  :disabled="!undoEnabled"
+                  class="mx-1"
+                  @click="onUndoClick"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>undo</v-icon>
+                  {{ undoCount }}
+                </v-btn>
+              </template>
+              <span>Undo</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  :disabled="!redoEnabled"
+                  class="mx-1"
+                  @click="onRedoClick"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{ redoCount }}
+                  <v-icon>redo</v-icon>
+                </v-btn>
+              </template>
+              <span>Redo</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  @click="onExportClick"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on">
+                  <v-icon>get_app</v-icon>
+                </v-btn>
+              </template>
+              <span>Export Design</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  @click="$refs.uploader.click()"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on">
+                  <v-icon>publish</v-icon>
+                  <input
+                    class="d-none"
+                    @change="loadFile"
+                    ref="uploader"
+                    type="file"
+                    accept=".json"/>
+                </v-btn>
+              </template>
+              <span>Import Design</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <router-link
+                  :to="{ name: 'FormManage', query: { f: formId } }"
+                  :class="{ 'disabled-router': !formId }">
+                  <v-btn
+                    class="formSetting"
+                    color="primary"
+                    :disabled="!formId"
+                    icon
+                    v-bind="attrs"
+                    v-on="on">
+                    <v-icon>settings</v-icon>
+                  </v-btn>
+                </router-link>
+              </template>
+              <span>Manage Form</span>
+            </v-tooltip>
           </v-col>    
         </v-row>
         <BaseInfoCard class="my-6">
@@ -81,6 +166,7 @@
           </p>
         </BaseInfoCard>
         <FormBuilder
+          
           :form="formSchema"
           :key="reRenderFormIo"
           :options="designerOptions"
@@ -89,7 +175,6 @@
           @initialized="init"
           @addComponent="onAddSchemaComponent"
           @removeComponent="onRemoveSchemaComponent"
-          class="form-designer"
         /> 
       </div>
       <v-row>
@@ -99,18 +184,7 @@
           </v-btn>
         </v-col>   
         <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-          <FormDesignActionButton
-            @form-schema-submit="submitFormSchema"
-            @form-schema-export="onExportClick"
-            @load-form-schema="loadFile"
-            @on-redo-schema="onRedoClick"
-            @on-undo-schema="onUndoClick"
-            :formId="formId"
-            :undoCount="undoCount"
-            :undoEnabled="undoEnabled"
-            :redoEnabled="redoEnabled"
-            :redoCount="redoCount"
-          />
+         
         </v-col>
       </v-row>
       <v-tooltip 
@@ -122,7 +196,7 @@
             fab
             dark
             fixed
-            @click="scrollTop"
+            @click="scrollView"
             right
             style="bottom:45px;"
             small
@@ -131,7 +205,7 @@
             v-on="on"
           >
             <v-icon color="white">
-              keyboard_arrow_up
+              {{scrollButtonIcon}}
             </v-icon>
           </v-btn>
         </template>
@@ -150,13 +224,11 @@ import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
-import FormDesignActionButton from '@/components/designer/FormDesignActionButton';
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
-    FormDesignActionButton
   },
   props: {
     draftId: String,
@@ -169,6 +241,8 @@ export default {
   },
   data() {
     return {
+      scrollButtonIcon:'keyboard_arrow_up',
+      isScreenTopView:false,
       advancedItems: [
         { text: 'Simple Mode', value: false },
         { text: 'Advanced Mode', value: true },
@@ -194,6 +268,7 @@ export default {
       },
     };
   },
+  
   computed: {
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapFields('form', [
@@ -315,12 +390,35 @@ export default {
       return this.canRedoPatch();
     },
   },
+ 
+  destroyed () {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
-    scrollTop(){
-      window.scrollTo(0,0);
+    scrollView(){
+      //check if scroll is at the bottom of the screen
+      if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
+        window.scrollTo(0,0);
+        this.scrollButtonIcon='keyboard_arrow_down';
+      }
+      else{
+        if(this.isScreenTopView){
+          this.scrollButtonIcon='keyboard_arrow_up';
+          const el = this.$el.getElementsByClassName('scroll-to-me')[0];
+          if (el) {
+            // Use el.scrollIntoView() to instantly scroll to the element
+            el.scrollIntoView({behavior: 'smooth', block: 'end',inline: 'end'});
+          }
+        }
+        else{
+          window.scrollTo(0,0);
+          this.scrollButtonIcon='keyboard_arrow_down';
+        }
+      }  
     },
+
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -615,6 +713,14 @@ export default {
       this.getFormSchema();
       this.fetchForm(this.formId);
     }
+    window.addEventListener('scroll', ()=>{
+      this.isScreenTopView=false;
+      this.scrollButtonIcon='keyboard_arrow_up';
+      if(window.scrollY==0){
+        this.isScreenTopView=true;
+        this.scrollButtonIcon='keyboard_arrow_down';
+      }
+    });
   },
   mounted() {
     if (!this.formId) {
@@ -626,8 +732,9 @@ export default {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    }
+    },
   },
+  
 };
 </script>
 
