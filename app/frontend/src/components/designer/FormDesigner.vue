@@ -25,6 +25,40 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
+              :disabled="!undoEnabled"
+              class="mx-1"
+              @click="onUndoClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>undo</v-icon>
+              {{ undoCount }}
+            </v-btn>
+          </template>
+          <span>Undo</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              :disabled="!redoEnabled"
+              class="mx-1"
+              @click="onRedoClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              {{ redoCount }}
+              <v-icon>redo</v-icon>
+            </v-btn>
+          </template>
+          <span>Redo</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
               class="mx-1"
               @click="onExportClick"
               color="primary"
@@ -147,12 +181,15 @@
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
+      @addComponent="onAddSchemaComponent"
+      @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
     />
   </div>
 </template>
 
 <script>
+import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
@@ -191,6 +228,16 @@ export default {
       displayVersion: 1,
       reRenderFormIo: 0,
       saving: false,
+      patch: {
+        componentAddedStart: false,
+        componentRemovedStart: false,
+        componentMovedStart: false,
+        history: [],
+        index: -1,
+        redoClicked: false,
+        undoClicked: false,
+        originalSchema: null,
+      },
     };
   },
   computed: {
@@ -301,6 +348,18 @@ export default {
         },
       };
     },
+    undoCount() {
+      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
+    },
+    redoCount() {
+      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
+    },
+    undoEnabled() {
+      return this.canUndoPatch();
+    },
+    redoEnabled() {
+      return this.canRedoPatch();
+    },
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
@@ -317,6 +376,11 @@ export default {
           res = await formService.readDraft(this.formId, this.draftId);
         }
         this.formSchema = { ...this.formSchema, ...res.data.schema };
+        if (this.patch.history.length === 0) {
+          // We are fetching an existing form, so we get the original schema here because
+          // using the original schema in the mount will give you the default schema
+          this.patch.originalSchema = deepClone(this.formSchema);
+        }
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while loading the form design.',
@@ -332,6 +396,10 @@ export default {
         const fileReader = new FileReader();
         fileReader.addEventListener('load', () => {
           this.formSchema = JSON.parse(fileReader.result);
+          this.addPatchToHistory();
+          this.patch.undoClicked = false;
+          this.patch.redoClicked = false;
+          this.resetHistoryFlags();
           // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
           this.reRenderFormIo += 1;
         });
@@ -369,15 +437,120 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     init() {
       // Since change is triggered during loading
-      this.setDirtyFlag(false);
     },
-    onChangeMethod() {
+    onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
+
+      this.onSchemaChange(changed, flags, modified);
     },
     onRenderMethod() {
       const el = document.querySelector('input.builder-sidebar_search:focus');
       if (el && el.value === '') this.reRenderFormIo += 1;
+      this.setDirtyFlag(false);
+    },
+    onAddSchemaComponent(_info, _parent, _path, _index, isNew) {
+      if (isNew) {
+        // Component Add Start, the user can still cancel/remove the add
+        this.patch.componentAddedStart = true;
+      } else {
+        // The user has initiated a move
+        this.patch.componentMovedStart = true;
+      }
+    },
+    onRemoveSchemaComponent() {
+      // Component remove start
+      this.patch.componentRemovedStart = true;
+    },
+    // ----------------------------------------------------------------------------------/ FormIO Handlers
+
+    // ---------------------------------------------------------------------------------------------------
+    // Patch History
+    // ---------------------------------------------------------------------------------------------------
+    onSchemaChange(_changed, flags, modified) {
+      // If the form changed but was not done so through the undo
+      // or redo button
+      if (!this.patch.undoClicked && !this.patch.redoClicked) {
+        // flags and modified are defined when a component is added
+        if (flags !== undefined && modified !== undefined) {
+          if (this.patch.componentAddedStart !== null) {
+            this.addPatchToHistory();
+          } else {
+            this.resetHistoryFlags();
+          }
+        } else {
+          // If we removed a component but not during an add action
+          if ((!this.patch.componentAddedStart && this.patch.componentRemovedStart) || this.patch.componentMovedStart) {
+            // Component was removed or moved
+            this.addPatchToHistory();
+          }
+        }
+      } else {
+        // We pressed undo or redo, so we just ignore
+        // adding the action to the history
+        this.patch.undoClicked = false;
+        this.patch.redoClicked = false;
+        this.resetHistoryFlags();
+      }
+    },
+    addPatchToHistory() {
+      // Remove any actions past the action we were on
+      if (this.patch.history.length > 0) {
+        this.patch.history.length = this.patch.index + 1;
+      }
+
+      // Get the differences between the last patch 
+      // and the current form
+      const form = this.getPatch(++this.patch.index);
+      const patch = compare(form, this.formSchema);
+      // Add the patch to the history
+      this.patch.history.push(patch);
+
+      this.resetHistoryFlags();
+    },
+    getPatch(idx) {
+      // Generate the form from the original schema
+      let form = deepClone(this.patch.originalSchema);
+      if (this.patch.index > -1 && this.patch.history.length > 0) {
+        // Apply all patches until we reach the requested patch
+        for (let i = -1; i < idx; i++) {
+          let patch = this.patch.history[i + 1];
+          if (patch !== undefined) {
+            // remove reactivity from the form so we don't affect the original schema
+            form = deepClone(applyPatch(form, patch).newDocument);
+          }
+        }
+      }
+      return form;
+    },
+    undoPatchFromHistory() {
+      // Only allow undo if there was an action made
+      if (this.canUndoPatch()) {
+        // Flag for formio to know we are setting the form
+        this.patch.undoClicked = true;
+        this.patch.index--;
+        this.formSchema = this.getPatch(this.patch.index);
+      }
+    },
+    redoPatchFromHistory() {
+      // Only allow redo if there was an action made
+      if (this.canRedoPatch()) {
+        // Flag for formio to know we are setting the form
+        this.patch.redoClicked = true;
+        this.patch.index++;
+        this.formSchema = this.getPatch(this.patch.index);
+      }
+    },
+    resetHistoryFlags(flag = false) {
+      this.patch.componentAddedStart = flag;
+      this.patch.componentMovedStart = flag;
+      this.patch.componentRemovedStart = flag;
+    },
+    canUndoPatch() {
+      return this.patch.history.length && this.patch.index >= 0 && this.patch.index < this.patch.history.length;
+    },
+    canRedoPatch() {
+      return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -412,6 +585,12 @@ export default {
       } finally {
         this.saving = false;
       }
+    },
+    onUndoClick() {
+      this.undoPatchFromHistory();
+    },
+    onRedoClick() {
+      this.redoPatchFromHistory();
     },
     async schemaCreateNew() {
       const emailList =
@@ -477,11 +656,17 @@ export default {
       this.fetchForm(this.formId);
     }
   },
+  mounted() {
+    if (!this.formId) {
+      // We are creating a new form, so we obtain the original schema here.
+      this.patch.originalSchema = deepClone(this.formSchema);
+    }
+  },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    },
+    }
   },
 };
 </script>

@@ -58,12 +58,11 @@ export default {
         label: 'Basic BCeID',
         type: IdentityProviders.BCEIDBASIC,
       },
-      // Commented out as per IDIM request
-      // {
-      //   disabled: true,
-      //   label: 'Business BCeID',
-      //   type: IdentityProviders.BCEIDBUSINESS,
-      // },
+      {
+        disabled: false,
+        label: 'Business BCeID',
+        type: IdentityProviders.BCEIDBUSINESS,
+      },
     ]),
   },
   methods: {
