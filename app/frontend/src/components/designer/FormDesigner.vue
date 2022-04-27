@@ -1,192 +1,197 @@
 <template>
-  <v-row>
-    <v-col>
-      <v-alert 
-        :value="saved || saving"
-        :class="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.class
-            : NOTIFICATIONS_TYPES.SUCCESS.class"
-        :color="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.color
-            : NOTIFICATIONS_TYPES.SUCCESS.color"
-        :icon="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.icon
-            : NOTIFICATIONS_TYPES.SUCCESS.icon"
-        transition="scale-transition"
-      >
-        <div v-if="saving">
-          <v-progress-linear indeterminate />
-          Saving
-        </div>
-        <div v-else>
-          Your form has been successfully saved
-          <router-link
-            :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
-            target="_blank"
-            class="mx-5"
-          >
-            Preview
-          </router-link>
-          <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-            Go to Manage Form to Publish
-          </router-link>
-        </div>
-      </v-alert>
-      <div class="scroll-to-me" style="back">
-        <v-row class="mt-6 fixed" no-gutters >
-          <v-col>
-            <v-row >
-              <v-col cols="12" sm="6" order="2" order-sm="1">
-                <div>
-                  <h1>Form Design</h1>
-                </div>
-                <div>
-                  <h3 v-if="name">{{ name }}</h3>
-                </div>
-                <div>
-                  <em>Version: {{ this.displayVersion }}</em>
-                </div>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2" >
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  @click="submitFormSchema"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on" >
-                  <v-icon>save</v-icon>
-                </v-btn>
-              </template>
-              <span>Save Design</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  :disabled="!undoEnabled"
-                  class="mx-1"
-                  @click="onUndoClick"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon>undo</v-icon>
-                  {{ undoCount }}
-                </v-btn>
-              </template>
-              <span>Undo</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  :disabled="!redoEnabled"
-                  class="mx-1"
-                  @click="onRedoClick"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  {{ redoCount }}
-                  <v-icon>redo</v-icon>
-                </v-btn>
-              </template>
-              <span>Redo</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  @click="onExportClick"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on">
-                  <v-icon>get_app</v-icon>
-                </v-btn>
-              </template>
-              <span>Export Design</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  @click="$refs.uploader.click()"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on">
-                  <v-icon>publish</v-icon>
-                  <input
-                    class="d-none"
-                    @change="loadFile"
-                    ref="uploader"
-                    type="file"
-                    accept=".json"/>
-                </v-btn>
-              </template>
-              <span>Import Design</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <router-link
-                  :to="{ name: 'FormManage', query: { f: formId } }"
-                  :class="{ 'disabled-router': !formId }">
-                  <v-btn
-                    class="formSetting"
-                    color="primary"
-                    :disabled="!formId"
-                    icon
-                    v-bind="attrs"
-                    v-on="on">
-                    <v-icon>settings</v-icon>
-                  </v-btn>
-                </router-link>
-              </template>
-              <span>Manage Form</span>
-            </v-tooltip>
-          </v-col>    
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-switch
-              v-model="autoSaveSwitch"
-              :label="`Auto Save: ${this.autoSaveSwitch?'On':'Off'}`"
-            ></v-switch>
-          </v-col>
-        </v-row>
-        <BaseInfoCard class="my-6">
-          <h4 class="primary--text">
-            <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
-          </h4>
-          <p class="my-0">
-            Use the <strong>SAVE DESIGN</strong> button when you are done building
-            this form.
-          </p>
-          <p class="my-0">
-            The <strong>SUBMIT</strong> button is provided for your user to submit
-            this form and will be activated after it is saved.
-          </p>
-        </BaseInfoCard>
-        <FormBuilder
-          
-          :form="formSchema"
-          :key="reRenderFormIo"
-          :options="designerOptions"
-          @change="onChangeMethod"
-          @render="onRenderMethod"
-          @initialized="init"
-          @addComponent="onAddSchemaComponent"
-          @removeComponent="onRemoveSchemaComponent"
-        /> 
+  <div>
+    <v-row class="mt-6" no-gutters>
+      <!-- page title -->
+      <v-col cols="12" sm="6" order="2" order-sm="1">
+        <h1>Form Design</h1>
+      </v-col>
+      <!-- buttons -->
+      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              class="mx-md-1 mx-0"
+              @click="submitFormSchema"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>save</v-icon>
+            </v-btn>
+          </template>
+          <span>Save Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              :disabled="!undoEnabled"
+              class="mx-1"
+              @click="onUndoClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>undo</v-icon>
+              {{ undoCount }}
+            </v-btn>
+          </template>
+          <span>Undo</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              :disabled="!redoEnabled"
+              class="mx-1"
+              @click="onRedoClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              {{ redoCount }}
+              <v-icon>redo</v-icon>
+            </v-btn>
+          </template>
+          <span>Redo</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              class="mx-1"
+              @click="onExportClick"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>get_app</v-icon>
+            </v-btn>
+          </template>
+          <span>Export Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              class="mx-1"
+              @click="$refs.uploader.click()"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>publish</v-icon>
+              <input
+                class="d-none"
+                @change="loadFile"
+                ref="uploader"
+                type="file"
+                accept=".json"
+              />
+            </v-btn>
+          </template>
+          <span>Import Design</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <router-link
+              :to="{ name: 'FormManage', query: { f: formId } }"
+              :class="{ 'disabled-router': !formId }"
+            >
+              <v-btn
+                class="mx-1"
+                color="primary"
+                :disabled="!formId"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>settings</v-icon>
+              </v-btn>
+            </router-link>
+          </template>
+          <span>Manage Form</span>
+        </v-tooltip>
+      </v-col>
+      <!-- form name -->
+      <v-col cols="12" order="3">
+        <h3 v-if="name">{{ name }}</h3>
+      </v-col>
+      <!-- version number-->
+      <v-col class="mb-3" cols="12" order="4">
+        <em>Version: {{ this.displayVersion }}</em>
+      </v-col>
+      <v-col class="mb-3" cols="12" order="4">
+        <v-switch
+          v-model="autoSaveSwitch"
+          :label="`Autosave: ${autoSaveSwitch?'On':'Off'}`"
+        ></v-switch>
+      </v-col>
+    </v-row>
+    <v-alert
+      :value="saved || saving"
+      :class="
+        saving
+          ? NOTIFICATIONS_TYPES.INFO.class
+          : NOTIFICATIONS_TYPES.SUCCESS.class
+      "
+      :color="
+        saving
+          ? NOTIFICATIONS_TYPES.INFO.color
+          : NOTIFICATIONS_TYPES.SUCCESS.color
+      "
+      :icon="
+        saving
+          ? NOTIFICATIONS_TYPES.INFO.icon
+          : NOTIFICATIONS_TYPES.SUCCESS.icon
+      "
+      transition="scale-transition"
+    >
+      <div v-if="saving">
+        <v-progress-linear indeterminate />
+        Saving
       </div>
-    </v-col>
-  </v-row>
+      <div v-else>
+        Your form has been successfully saved
+        <router-link
+          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
+          target="_blank"
+          class="mx-5"
+        >
+          Preview
+        </router-link>
+        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+          Go to Manage Form to Publish
+        </router-link>
+      </div>
+    </v-alert>
+
+    <BaseInfoCard class="my-6">
+      <h4 class="primary--text">
+        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+      </h4>
+      <p class="my-0">
+        Use the <strong>SAVE DESIGN</strong> button when you are done building
+        this form.
+      </p>
+      <p class="my-0">
+        The <strong>SUBMIT</strong> button is provided for your user to submit
+        this form and will be activated after it is saved.
+      </p>
+    </BaseInfoCard>
+    <FormBuilder
+      :form="formSchema"
+      :key="reRenderFormIo"
+      :options="designerOptions"
+      @change="onChangeMethod"
+      @render="onRenderMethod"
+      @initialized="init"
+      @addComponent="onAddSchemaComponent"
+      @removeComponent="onRemoveSchemaComponent"
+      class="form-designer"
+    />
+  </div>
 </template>
 
 <script>
@@ -451,6 +456,7 @@ export default {
     onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
+
       if(flags && this.autoSaveSwitch){
         this.$setItem('autosave', this.formSchema, _);
       }
@@ -474,10 +480,6 @@ export default {
       // Component remove start
       this.patch.componentRemovedStart = true;
     },
-    createStepper(){
-      this.$emit('create-stepper');
-    },
-
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -577,11 +579,11 @@ export default {
     async submitFormSchema() {
       try {
         this.saving = true;
+        
+
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
-        if(this.autoSaveSwitch){
-          this.formSchema = await this.$getItem('autosave',_);
-        }
+        
       
         if (this.formId) {
           if (this.versionId) {
@@ -620,6 +622,9 @@ export default {
         Array.isArray(this.submissionReceivedEmails)
           ? this.submissionReceivedEmails
           : [];
+      if(this.autoSaveSwitch){
+        this.formSchema = await this.$getItem('autosave',_);
+      }
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -678,18 +683,16 @@ export default {
   },
   created() {
     if (this.formId) {
-      
       this.getFormSchema();
       this.fetchForm(this.formId);
-      
     }
-    
   },
   mounted() {
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
+    this.$setItem('autosave', this.formSchema, _);
   },
   beforeDestroy(){
     this.$clearStorage;
