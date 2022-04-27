@@ -122,11 +122,49 @@
       <v-col class="mb-3" cols="12" order="4">
         <em>Version: {{ this.displayVersion }}</em>
       </v-col>
-      <v-col class="mb-3" cols="12" order="4">
-        <v-switch
-          v-model="autoSaveSwitch"
-          :label="`Autosave: ${autoSaveSwitch?'On':'Off'}`"
-        ></v-switch>
+      <v-col class="mb-3 mt-5" cols="6" order="4">
+        <div style="display:flex; flex-direction:row;">
+          <v-switch
+            v-model="autoSaveSwitch"
+            :label="`Autosave: ${autoSaveSwitch?'On':'Off'}`"
+          ></v-switch>
+          <v-menu
+            top
+            :offset-x="offset"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                dark
+                v-bind="attrs"
+                v-on="on"
+                icon
+                size="small"
+              >
+                <v-icon size="small">
+                  info
+                </v-icon>
+              </v-btn>
+            </template>
+            <div>
+              dsfdsf
+            </div>
+          </v-menu>
+        </div>
+        
+      </v-col>
+      <v-col class="text-right mt-5" cols="6" sm="6" order="4" order-sm="4">
+        <router-link
+          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
+          target="_blank"
+          class="mx-5"
+        >
+          Preview
+        </router-link>
+        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+          Go to Manage Form to Publish
+        </router-link>
+      
       </v-col>
     </v-row>
     <v-alert
@@ -154,16 +192,7 @@
       </div>
       <div v-else>
         Your form has been successfully saved
-        <router-link
-          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
-          target="_blank"
-          class="mx-5"
-        >
-          Preview
-        </router-link>
-        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-          Go to Manage Form to Publish
-        </router-link>
+       
       </div>
     </v-alert>
 
@@ -223,6 +252,13 @@ export default {
   },
   data() {
     return {
+      items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ],
+      offset: true,
       autoSaveSwitch: true,
       savedButtonClicked:false,
       isFirstTimeSchemaSaved:true,
