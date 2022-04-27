@@ -152,6 +152,14 @@
             </v-tooltip>
           </v-col>    
         </v-row>
+        <v-row>
+          <v-col>
+            <v-switch
+              v-model="autoSaveSwitch"
+              :label="`Auto Save: ${this.autoSaveSwitch?'On':'Off'}`"
+            ></v-switch>
+          </v-col>
+        </v-row>
         <BaseInfoCard class="my-6">
           <h4 class="primary--text">
             <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
@@ -177,45 +185,12 @@
           @removeComponent="onRemoveSchemaComponent"
         /> 
       </div>
-      <v-row>
-        <v-col cols="12" sm="6" order="2" order-sm="1">
-          <v-btn class="my-4" outlined @click="createStepper">
-            <span>Back</span>
-          </v-btn>
-        </v-col>   
-        <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-         
-        </v-col>
-      </v-row>
-      <v-tooltip 
-        color="primary"
-        bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            class="mx-2"
-            fab
-            dark
-            fixed
-            @click="scrollView"
-            right
-            style="bottom:45px;"
-            small
-            color="primary"
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon color="white">
-              {{scrollButtonIcon}}
-            </v-icon>
-          </v-btn>
-        </template>
-        <span>Scroll to top</span>
-      </v-tooltip>
     </v-col>
   </v-row>
 </template>
 
 <script>
+import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
@@ -224,6 +199,8 @@ import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
+import VueLocalForage from '@/plugins/vue-localforage';
+Vue.use(VueLocalForage);
 
 export default {
   name: 'FormDesigner',
@@ -241,8 +218,9 @@ export default {
   },
   data() {
     return {
-      scrollButtonIcon:'keyboard_arrow_up',
-      isScreenTopView:false,
+      autoSaveSwitch: true,
+      savedButtonClicked:false,
+      isFirstTimeSchemaSaved:true,
       advancedItems: [
         { text: 'Simple Mode', value: false },
         { text: 'Advanced Mode', value: true },
@@ -288,6 +266,8 @@ export default {
     ID_MODE() {
       return IdentityMode;
     },
+    
+    
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -390,35 +370,10 @@ export default {
       return this.canRedoPatch();
     },
   },
- 
-  destroyed () {
-    window.removeEventListener('scroll', this.handleScroll);
-  },
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
-    scrollView(){
-      //check if scroll is at the bottom of the screen
-      if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
-        window.scrollTo(0,0);
-        this.scrollButtonIcon='keyboard_arrow_down';
-      }
-      else{
-        if(this.isScreenTopView){
-          this.scrollButtonIcon='keyboard_arrow_up';
-          const el = this.$el.getElementsByClassName('scroll-to-me')[0];
-          if (el) {
-            // Use el.scrollIntoView() to instantly scroll to the element
-            el.scrollIntoView({behavior: 'smooth', block: 'end',inline: 'end'});
-          }
-        }
-        else{
-          window.scrollTo(0,0);
-          this.scrollButtonIcon='keyboard_arrow_down';
-        }
-      }  
-    },
-
+  
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -496,7 +451,9 @@ export default {
     onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
-
+      if(flags && this.autoSaveSwitch){
+        this.$setItem('autosave', this.formSchema, _);
+      }
       this.onSchemaChange(changed, flags, modified);
     },
     onRenderMethod() {
@@ -520,6 +477,8 @@ export default {
     createStepper(){
       this.$emit('create-stepper');
     },
+
+
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -620,7 +579,10 @@ export default {
         this.saving = true;
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
-
+        if(this.autoSaveSwitch){
+          this.formSchema = await this.$getItem('autosave',_);
+        }
+      
         if (this.formId) {
           if (this.versionId) {
             // If creating a new draft from an existing version
@@ -650,6 +612,7 @@ export default {
     onRedoClick() {
       this.redoPatchFromHistory();
     },
+    
     async schemaCreateNew() {
       const emailList =
         this.sendSubRecieviedEmail &&
@@ -670,8 +633,8 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
-
       // Navigate back to this page with ID updated
+      
       this.$router.push({
         name: 'FormDesigner',
         query: {
@@ -680,6 +643,7 @@ export default {
           sv: true,
         },
       }).catch(()=>{});
+      
     },
     async schemaCreateDraftFromVersion() {
       const { data } = await formService.createDraft(this.formId, {
@@ -687,46 +651,48 @@ export default {
         formVersionId: this.versionId,
       });
       // Navigate back to this page with ID updated
-      this.$router.push({
-        name: 'FormDesigner',
-        query: {
-          f: this.formId,
-          d: data.id,
-          sv: true,
-        },
-      }).catch(()=>{});
+      if(this.savedButtonClicked){
+        this.$router.push({
+          name: 'FormDesigner',
+          query: {
+            f: this.formId,
+            d: data.id,
+            sv: true,
+          },
+        }).catch(()=>{});
+      }
     },
     async schemaUpdateExistingDraft() {
       await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
       });
       // Update this route with saved flag
-      this.$router.replace({
-        name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true },
-      }).catch(()=>{});
+      if(this.savedButtonClicked){
+        this.$router.replace({
+          name: 'FormDesigner',
+          query: { ...this.$route.query, sv: true },
+        }).catch(()=>{});
+      }
     },
     // ----------------------------------------------------------------------------------/ Saving Schema
   },
   created() {
     if (this.formId) {
+      
       this.getFormSchema();
       this.fetchForm(this.formId);
+      
     }
-    window.addEventListener('scroll', ()=>{
-      this.isScreenTopView=false;
-      this.scrollButtonIcon='keyboard_arrow_up';
-      if(window.scrollY==0){
-        this.isScreenTopView=true;
-        this.scrollButtonIcon='keyboard_arrow_down';
-      }
-    });
+    
   },
   mounted() {
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
+  },
+  beforeDestroy(){
+    this.$clearStorage;
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
