@@ -48,6 +48,11 @@
       <AdminVersions />
     </div>
 
+    <div v-if="form.active" class="mt-12">
+      <h4>Assign A New Owner</h4>
+      <AddOwner :formId="form.id"/>
+    </div>
+
     <BaseDialog
       v-model="showRestoreDialog"
       type="CONTINUE"
@@ -89,6 +94,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import AddOwner from './AddOwner.vue';
 import AdminVersions from './AdminVersions.vue';
 
 import VueJsonPretty from 'vue-json-pretty';
@@ -96,6 +102,7 @@ import VueJsonPretty from 'vue-json-pretty';
 export default {
   name: 'AdministerForm',
   components: {
+    AddOwner,
     AdminVersions,
     VueJsonPretty,
   },
