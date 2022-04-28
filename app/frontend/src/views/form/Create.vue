@@ -78,7 +78,9 @@ export default {
       ],
     };
   },
-  methods: mapActions('form', ['resetForm']),
+  methods: {
+    ...mapActions('form', ['resetForm']),
+  },
   created() {
     this.resetForm();
   },

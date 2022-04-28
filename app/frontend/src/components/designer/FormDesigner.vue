@@ -95,6 +95,21 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
+            <v-btn
+              class="mx-1"
+              @click="onClearFormSchema"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>cleaning_services</v-icon>
+            </v-btn>
+          </template>
+          <span>Clean Autosave Schema</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
             <router-link
               :to="{ name: 'FormManage', query: { f: formId } }"
               :class="{ 'disabled-router': !formId }"
@@ -153,19 +168,6 @@
         </div>
         
       </v-col>
-      <v-col class="text-right mt-5" cols="6" sm="6" order="4" order-sm="4">
-        <router-link
-          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
-          target="_blank"
-          class="mx-5"
-        >
-          Preview
-        </router-link>
-        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-          Go to Manage Form to Publish
-        </router-link>
-      
-      </v-col>
     </v-row>
     <v-alert
       :value="saved || saving"
@@ -192,7 +194,16 @@
       </div>
       <div v-else>
         Your form has been successfully saved
-       
+        <router-link
+          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
+          target="_blank"
+          class="mx-5"
+        >
+          Preview
+        </router-link>
+        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+          Go to Manage Form to Publish
+        </router-link>
       </div>
     </v-alert>
 
@@ -233,7 +244,7 @@ import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
-import VueLocalForage from '@/plugins/vue-localforage';
+import VueLocalForage from 'vue-localforage';
 Vue.use(VueLocalForage);
 
 export default {
@@ -493,8 +504,8 @@ export default {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
 
-      if(flags && this.autoSaveSwitch){
-        this.$setItem('autosave', this.formSchema, _);
+      if(!this.saved && flags && this.autoSaveSwitch){
+        this.$setItem('autosave', this.formSchema, ()=>{});
       }
       this.onSchemaChange(changed, flags, modified);
     },
@@ -515,6 +526,7 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
+      this.$setItem('autosave', this.formSchema, ()=>{});
     },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
@@ -615,7 +627,6 @@ export default {
     async submitFormSchema() {
       try {
         this.saving = true;
-        
 
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
@@ -633,6 +644,7 @@ export default {
           // If creating a new form, add the form and a draft
           await this.schemaCreateNew();
         }
+
       } catch (error) {
         await this.setDirtyFlag(true);
         this.addNotification({
@@ -658,9 +670,7 @@ export default {
         Array.isArray(this.submissionReceivedEmails)
           ? this.submissionReceivedEmails
           : [];
-      if(this.autoSaveSwitch){
-        this.formSchema = await this.$getItem('autosave',_);
-      }
+     
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -674,8 +684,11 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
+
+      // after the form schema have been saved to the database, it will clear the window storage
+      await this.onClearFormSchema();
+
       // Navigate back to this page with ID updated
-      
       this.$router.push({
         name: 'FormDesigner',
         query: {
@@ -691,31 +704,47 @@ export default {
         schema: this.formSchema,
         formVersionId: this.versionId,
       });
+
+      // after the form schema have been saved to the database, it will clear the window storage
+      await this.onClearFormSchema();
+
       // Navigate back to this page with ID updated
-      if(this.savedButtonClicked){
-        this.$router.push({
-          name: 'FormDesigner',
-          query: {
-            f: this.formId,
-            d: data.id,
-            sv: true,
-          },
-        }).catch(()=>{});
-      }
+      this.$router.push({
+        name: 'FormDesigner',
+        query: {
+          f: this.formId,
+          d: data.id,
+          sv: true,
+        },
+      });
     },
     async schemaUpdateExistingDraft() {
       await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
       });
+
+      // after the form schema have been saved to the database, it will clear the window storage
+      await this.onClearFormSchema();
+
       // Update this route with saved flag
-      if(this.savedButtonClicked){
-        this.$router.replace({
-          name: 'FormDesigner',
-          query: { ...this.$route.query, sv: true },
-        }).catch(()=>{});
+      this.$router.replace({
+        name: 'FormDesigner',
+        query: { ...this.$route.query, sv: true },
+      });
+    },
+    async getAutosavedFormSchema(){
+      let indexes = await this.$keysInStorage('autosave',()=>{});
+      if(indexes.includes('autosave')){
+        this.formSchema = await this.$getItem('autosave', ()=>{});
+        this.addPatchToHistory();
+        this.patch.undoClicked = false;
+        this.patch.redoClicked = false;
+        this.resetHistoryFlags();
       }
     },
-    // ----------------------------------------------------------------------------------/ Saving Schema
+    async onClearFormSchema(){
+      await this.$removeItem('autosave', ()=>{});
+    }
   },
   created() {
     if (this.formId) {
@@ -728,11 +757,9 @@ export default {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
-    this.$setItem('autosave', this.formSchema, _);
+    this.getAutosavedFormSchema();
   },
-  beforeDestroy(){
-    this.$clearStorage;
-  },
+ 
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
