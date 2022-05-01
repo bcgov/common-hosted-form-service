@@ -6,56 +6,7 @@
         <h1>Form Design</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-md-1 mx-0"
-              @click="submitFormSchema"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>save</v-icon>
-            </v-btn>
-          </template>
-          <span>Save Design</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              :disabled="!undoEnabled"
-              class="mx-1"
-              @click="onUndoClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>undo</v-icon>
-              {{ undoCount }}
-            </v-btn>
-          </template>
-          <span>Undo</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              :disabled="!redoEnabled"
-              class="mx-1"
-              @click="onRedoClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              {{ redoCount }}
-              <v-icon>redo</v-icon>
-            </v-btn>
-          </template>
-          <span>Redo</span>
-        </v-tooltip>
+      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">    
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -93,41 +44,6 @@
           </template>
           <span>Import Design</span>
         </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-1"
-              @click="onClearFormSchemaBeforeSave"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>cleaning_services</v-icon>
-            </v-btn>
-          </template>
-          <span>Clean Autosave Schema</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <router-link
-              :to="{ name: 'FormManage', query: { f: formId } }"
-              :class="{ 'disabled-router': !formId }"
-            >
-              <v-btn
-                class="mx-1"
-                color="primary"
-                :disabled="!formId"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>settings</v-icon>
-              </v-btn>
-            </router-link>
-          </template>
-          <span>Manage Form</span>
-        </v-tooltip>
       </v-col>
       <!-- form name -->
       <v-col cols="12" order="3">
@@ -137,55 +53,7 @@
       <v-col class="mb-3" cols="12" order="4">
         <em>Version: {{ this.displayVersion }}</em>
       </v-col>
-      <v-col class="mb-3 mt-5" cols="6" order="4">
-        <div style="display:flex; flex-direction:row;">
-          <v-switch
-            v-model="autoSaveSwitch"
-            :label="`Autosave: ${autoSaveSwitch?'On':'Off'}`"
-          ></v-switch>
-          
-        </div>
-        
-      </v-col>
     </v-row>
-    <v-alert
-      :value="saved || saving"
-      :class="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.class
-          : NOTIFICATIONS_TYPES.SUCCESS.class
-      "
-      :color="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.color
-          : NOTIFICATIONS_TYPES.SUCCESS.color
-      "
-      :icon="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.icon
-          : NOTIFICATIONS_TYPES.SUCCESS.icon
-      "
-      transition="scale-transition"
-    >
-      <div v-if="saving">
-        <v-progress-linear indeterminate />
-        Saving
-      </div>
-      <div v-else>
-        Your form has been successfully saved
-        <router-link
-          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
-          target="_blank"
-          class="mx-5"
-        >
-          Preview
-        </router-link>
-        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-          Go to Manage Form to Publish
-        </router-link>
-      </div>
-    </v-alert>
-
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
@@ -216,15 +84,16 @@
       :baseIconColor="'#1976D2'"
       :baseFBBorderColor="'#C0C0C0'"
       :fbZIndex=1000
-      :size="'medium'"
+      :size="'small'"
       :direction="'left'"
-      fbActionGap="15px"
-      :fbActionItems="[{id: 1, IconName:'save',IconColor:'#1976D2',color:'primary',name:'saved',borderColor:'#C0C0C0' },
-                       {id:2,IconName:'north',IconColor:'#1976D2',color:'primary',name:'top',borderColor:'#C0C0C0'},
-                       {id:3,IconName:'remove_red_eye',IconColor:'#1976D2',color:'primary',name:'Preview',borderColor:'#C0C0C0'},
-                       {id:4,IconName:'undo',IconColor:'#1976D2',color:'primary',name:'undo',borderColor:'#C0C0C0'},
-                       {id:5,IconName:'redo',IconColor:'#1976D2',color:'primary',name:'redo',borderColor:'#C0C0C0'},
-                       {id:6,IconName:'settings',IconColor:'#1976D2',color:'primary',name:'Manage',borderColor:'#C0C0C0'}]"
+      fbActionGap="10px"
+      @undo="onUndoClick"
+      @redo="onRedoClick"
+      @save="submitFormSchema"
+      :saving="saving"
+      :savedStatus="savedStatus"
+      :formId="formId"
+      :draftId="draftId"
     />
   </div>
 </template>
@@ -267,9 +136,8 @@ export default {
         { title: 'Click Me 2' },
       ],
       offset: true,
-      autoSaveSwitch: true,
-      savedButtonClicked:false,
-      isFirstTimeSchemaSaved:true,
+      savedStatus: 'Not Saved',
+      scrollTop:true,
       advancedItems: [
         { text: 'Simple Mode', value: false },
         { text: 'Advanced Mode', value: true },
@@ -422,10 +290,7 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
-    // This is a domant callback method
-    doNothing(){
 
-    },
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -503,11 +368,7 @@ export default {
     onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
-
-      if(!this.saved && flags && this.autoSaveSwitch){
-        //this.$setItem('autosave', this.formSchema,this.doNothing);
-        localStorage.setItem('autosave', JSON.stringify(this.formSchema));
-      }
+      
       this.onSchemaChange(changed, flags, modified);
     },
     onRenderMethod() {
@@ -620,6 +481,7 @@ export default {
     canRedoPatch() {
       return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
     },
+    
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -627,8 +489,10 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
       try {
+       
         this.saving = true;
-
+        this.savedStatus='Saving';
+        /* 
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
         
@@ -645,7 +509,8 @@ export default {
           // If creating a new form, add the form and a draft
           await this.schemaCreateNew();
         }
-
+      */
+        
       } catch (error) {
         await this.setDirtyFlag(true);
         this.addNotification({
@@ -655,6 +520,7 @@ export default {
         });
       } finally {
         this.saving = false;
+        this.savedStatus='Not Saved';
       }
     },
     onUndoClick() {
@@ -686,8 +552,7 @@ export default {
         submissionReceivedEmails: emailList,
       });
 
-      // after the form schema have been saved to the database, it will clear the window storage
-      await this.onClearFormSchema();
+     
 
       // Navigate back to this page with ID updated
       this.$router.push({
@@ -706,9 +571,6 @@ export default {
         formVersionId: this.versionId,
       });
 
-      // after the form schema have been saved to the database, it will clear the window storage
-      await this.onClearFormSchema();
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -724,47 +586,12 @@ export default {
         schema: this.formSchema,
       });
 
-      // after the form schema have been saved to the database, it will clear the window storage
-      await this.onClearFormSchema();
-
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
         query: { ...this.$route.query, sv: true },
       });
-    },
-    async getAutosavedFormSchema(){
-      //let indexes = await this.$keysInStorage('autosave',this.doNothing);
-      //if(indexes.includes('autosave')){
-      // this.formSchema = await this.$getItem('autosave', this.doNothing);
-      //this.addPatchToHistory();
-      //this.patch.undoClicked = false;
-      //this.patch.redoClicked = false;
-      //this.resetHistoryFlags();
-      //}
-      this.formSchema =JSON.parse(localStorage.getItem('autosave'));
-      if(this.formSchema && this.formSchema.components.length>1){
-        this.addPatchToHistory();
-      }
-      this.patch.undoClicked = false;
-      this.patch.redoClicked = false;
-      this.resetHistoryFlags();
-
-    },
-    async onClearFormSchema(){
-      //await this.$removeItem('autosave', ()=>{});
-      localStorage.removeItem('autosave');
-    },
-    async onClearFormSchemaBeforeSave(){
-      localStorage.removeItem('autosave');
-      this.formSchema= {
-        display: 'form',
-        type: 'form',
-        components: [],
-      };
-      this.undoPatchFromHistory();
-    }
-    
+    }, 
   },
   created() {
     if (this.formId) {
@@ -777,9 +604,7 @@ export default {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
-    this.getAutosavedFormSchema();
   },
- 
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
