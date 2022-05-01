@@ -109,8 +109,7 @@ import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
-//import VueLocalForage from 'vue-localforage';
-//Vue.use(VueLocalForage);
+
 
 export default {
   name: 'FormDesigner',
@@ -136,7 +135,7 @@ export default {
         { title: 'Click Me 2' },
       ],
       offset: true,
-      savedStatus: 'Not Saved',
+      savedStatus: 'Save',
       scrollTop:true,
       advancedItems: [
         { text: 'Simple Mode', value: false },
@@ -366,9 +365,15 @@ export default {
       // Since change is triggered during loading
     },
     onChangeMethod(changed, flags, modified) {
+     
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
+
+      if(flags && this.saved){
+        this.submitFormSchema();
+      }
       
+
       this.onSchemaChange(changed, flags, modified);
     },
     onRenderMethod() {
@@ -388,7 +393,6 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
-      this.$setItem('autosave', this.formSchema, this.doNothing);
     },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
@@ -492,10 +496,10 @@ export default {
        
         this.saving = true;
         this.savedStatus='Saving';
-        /* 
+
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
-        
+
       
         if (this.formId) {
           if (this.versionId) {
@@ -509,7 +513,6 @@ export default {
           // If creating a new form, add the form and a draft
           await this.schemaCreateNew();
         }
-      */
         
       } catch (error) {
         await this.setDirtyFlag(true);
@@ -551,9 +554,7 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
-
-     
-
+      
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -571,6 +572,8 @@ export default {
         formVersionId: this.versionId,
       });
 
+      this.savedStatus='Saved';
+       
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -585,6 +588,8 @@ export default {
       await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
       });
+
+      this.savedStatus='Saved';
 
       // Update this route with saved flag
       this.$router.replace({
