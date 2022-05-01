@@ -97,7 +97,7 @@
           <template #activator="{ on, attrs }">
             <v-btn
               class="mx-1"
-              @click="onClearFormSchema"
+              @click="onClearFormSchemaBeforeSave"
               color="primary"
               icon
               v-bind="attrs"
@@ -143,28 +143,7 @@
             v-model="autoSaveSwitch"
             :label="`Autosave: ${autoSaveSwitch?'On':'Off'}`"
           ></v-switch>
-          <v-menu
-            top
-            :offset-x="offset"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                dark
-                v-bind="attrs"
-                v-on="on"
-                icon
-                size="small"
-              >
-                <v-icon size="small">
-                  info
-                </v-icon>
-              </v-btn>
-            </template>
-            <div>
-              dsfdsf
-            </div>
-          </v-menu>
+          
         </div>
         
       </v-col>
@@ -231,11 +210,27 @@
       @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
     />
+    <FloatButton
+      position="bottom-right"
+      :baseBGColor="'#ffffff'"
+      :baseIconColor="'#1976D2'"
+      :baseFBBorderColor="'#C0C0C0'"
+      :fbZIndex=1000
+      :size="'medium'"
+      :direction="'left'"
+      fbActionGap="15px"
+      :fbActionItems="[{id: 1, IconName:'save',IconColor:'#1976D2',color:'primary',name:'saved',borderColor:'#C0C0C0' },
+                       {id:2,IconName:'north',IconColor:'#1976D2',color:'primary',name:'top',borderColor:'#C0C0C0'},
+                       {id:3,IconName:'remove_red_eye',IconColor:'#1976D2',color:'primary',name:'Preview',borderColor:'#C0C0C0'},
+                       {id:4,IconName:'undo',IconColor:'#1976D2',color:'primary',name:'undo',borderColor:'#C0C0C0'},
+                       {id:5,IconName:'redo',IconColor:'#1976D2',color:'primary',name:'redo',borderColor:'#C0C0C0'},
+                       {id:6,IconName:'settings',IconColor:'#1976D2',color:'primary',name:'Manage',borderColor:'#C0C0C0'}]"
+    />
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
+//import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
@@ -244,13 +239,15 @@ import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
-import VueLocalForage from 'vue-localforage';
-Vue.use(VueLocalForage);
+import FloatButton from '@/components/designer/FloatButton.vue';
+//import VueLocalForage from 'vue-localforage';
+//Vue.use(VueLocalForage);
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
+    FloatButton
   },
   props: {
     draftId: String,
@@ -425,7 +422,10 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
-  
+    // This is a domant callback method
+    doNothing(){
+
+    },
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -505,7 +505,8 @@ export default {
       if (!this.isDirty) this.setDirtyFlag(true);
 
       if(!this.saved && flags && this.autoSaveSwitch){
-        this.$setItem('autosave', this.formSchema, ()=>{});
+        //this.$setItem('autosave', this.formSchema,this.doNothing);
+        localStorage.setItem('autosave', JSON.stringify(this.formSchema));
       }
       this.onSchemaChange(changed, flags, modified);
     },
@@ -526,7 +527,7 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
-      this.$setItem('autosave', this.formSchema, ()=>{});
+      this.$setItem('autosave', this.formSchema, this.doNothing);
     },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
@@ -733,18 +734,37 @@ export default {
       });
     },
     async getAutosavedFormSchema(){
-      let indexes = await this.$keysInStorage('autosave',()=>{});
-      if(indexes.includes('autosave')){
-        this.formSchema = await this.$getItem('autosave', ()=>{});
+      //let indexes = await this.$keysInStorage('autosave',this.doNothing);
+      //if(indexes.includes('autosave')){
+      // this.formSchema = await this.$getItem('autosave', this.doNothing);
+      //this.addPatchToHistory();
+      //this.patch.undoClicked = false;
+      //this.patch.redoClicked = false;
+      //this.resetHistoryFlags();
+      //}
+      this.formSchema =JSON.parse(localStorage.getItem('autosave'));
+      if(this.formSchema && this.formSchema.components.length>1){
         this.addPatchToHistory();
-        this.patch.undoClicked = false;
-        this.patch.redoClicked = false;
-        this.resetHistoryFlags();
       }
+      this.patch.undoClicked = false;
+      this.patch.redoClicked = false;
+      this.resetHistoryFlags();
+
     },
     async onClearFormSchema(){
-      await this.$removeItem('autosave', ()=>{});
+      //await this.$removeItem('autosave', ()=>{});
+      localStorage.removeItem('autosave');
+    },
+    async onClearFormSchemaBeforeSave(){
+      localStorage.removeItem('autosave');
+      this.formSchema= {
+        display: 'form',
+        type: 'form',
+        components: [],
+      };
+      this.undoPatchFromHistory();
     }
+    
   },
   created() {
     if (this.formId) {
