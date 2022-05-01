@@ -17,12 +17,11 @@
       </v-avatar>
     </div>
     <div :style="[{display:'flex', flexDirection:fbActionDirection, gap:fbActionGap}]" v-if="isfbActionsOpen" >
-      <router-link
+      <div
         class="fbAction"
-        tag="div"
-        :to="{ name: 'FormManage', query: { f: formId } }"
-        target="_blank"
         :class="{ 'disabled-router': !formId }"
+        @click="goToManage"
+        
       >
         <label :style={fontSize:labelTextSize}>
           Manage  
@@ -41,7 +40,7 @@
           </v-icon>
         </v-avatar>
         
-      </router-link>
+      </div>
       <div class="fbAction" >
         <label :style={fontSize:labelTextSize}>
           Redo  
@@ -84,10 +83,9 @@
         </v-avatar>
         
       </div>
-      <router-link
+      <div
         class="fbAction"
-        tag="div"
-        :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
+        @click="gotoPreview"
         :class="{ 'disabled-router': !formId || !draftId}"
       >
         <label :style={fontSize:labelTextSize}>
@@ -107,17 +105,18 @@
           </v-icon>
         </v-avatar>
         
-      </router-link>
+      </div>
       <div class="fbAction" >
         <label :style={fontSize:labelTextSize}>
           {{this.savedStatus}} 
-          <v-progress-circular
-            v-if='this.saving'
-            indeterminate
-            color="primary"
-            size=25
-          ></v-progress-circular>
+          
         </label>
+        <v-progress-circular
+          v-if='this.saving'
+          indeterminate
+          color="primary"
+          size=25
+        ></v-progress-circular>
         <v-avatar
           :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
           :size=fbSize
@@ -169,7 +168,7 @@ export default {
   data(){
     return {
       fbActionDirection:'column-reverse',
-      isfbActionsOpen:false,
+      isfbActionsOpen:true,
       fbPosition:{},
       fbSize:36,
       baseName:'Open',
@@ -239,6 +238,14 @@ export default {
         this.isfbActionsOpen=true;
         this.baseName='Close';
       }
+    },
+    goToManage(){
+      let route = this.$router.resolve({ name: 'FormManage', query: { f: this.formId } });
+      window.open(route.href);
+    },
+    gotoPreview() {
+      let route = this.$router.resolve({name: 'FormPreview', query: { f: this.formId, d: this.draftId }});
+      window.open(route.href);
     },
     setSizes(){
       this.floatButtonSize={};
