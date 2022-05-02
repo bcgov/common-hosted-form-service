@@ -17,11 +17,11 @@
       </v-avatar>
     </div>
     <div :style="[{display:'flex', flexDirection:fbActionDirection, gap:fbActionGap}]" v-if="isfbActionsOpen" >
-      <div
+      <router-link
         class="fbAction"
+        :to="{ name: 'FormManage', query: { f: formId } }"
         :class="{ 'disabled-router': !formId }"
-        @click="goToManage"
-        
+        tag="div"
       >
         <label :style={fontSize:labelTextSize}>
           Manage  
@@ -40,48 +40,61 @@
           </v-icon>
         </v-avatar>
         
-      </div>
+      </router-link>
       <div class="fbAction" >
         <label :style={fontSize:labelTextSize}>
           Redo  
         </label>
-        <v-avatar
-          :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
-          :size=fbSize
-          :elevation="24"
-          @click="toParent('redo')"
+        <v-badge
+          left
+          overlap
+          color="pink"
+          :content="redocount"
         >
-          <v-icon 
-            color="primary"
-            :small="smallIcon"
-            :large="largeIcon"
-            :x-small="xSmallIcon"
+          <v-avatar
+            :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
+            :size=fbSize
+            :elevation="24"
+            @click="toParent('redo')"
           >
-            redo
-          </v-icon>
-        </v-avatar>
+            <v-icon 
+              color="primary"
+              :small="smallIcon"
+              :large="largeIcon"
+              :x-small="xSmallIcon"
+            >
+              redo
+            </v-icon>
+          </v-avatar>
+        </v-badge>
         
       </div>
       <div class="fbAction">
         <label :style={fontSize:labelTextSize}>
           Undo  
         </label>
-        <v-avatar
-          :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
-          :size=fbSize
-          :elevation="24"
-          @click="toParent('undo')"
+        <v-badge
+          left
+          overlap
+          color="pink"
+          :content="undocount"
         >
-          <v-icon 
-            color="primary"
-            :small="smallIcon"
-            :large="largeIcon"
-            :x-small="xSmallIcon"
+          <v-avatar
+            :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
+            :size=fbSize
+            :elevation="24"
+            @click="toParent('undo')"
           >
-            undo
-          </v-icon>
-        </v-avatar>
-        
+            <v-icon 
+              color="primary"
+              :small="smallIcon"
+              :large="largeIcon"
+              :x-small="xSmallIcon"
+            >
+              undo
+            </v-icon>
+          </v-avatar>
+        </v-badge>
       </div>
       <div
         class="fbAction"
@@ -195,7 +208,14 @@ export default {
     position: {
       default:'bottom-right' 
     },
-    
+    redocount:{
+      type:Number,
+      default:0
+    },
+    undocount:{
+      type:Number,
+      default:0
+    },
     fbActionGap:{
       default:'15px'
     },
@@ -238,10 +258,6 @@ export default {
         this.isfbActionsOpen=true;
         this.baseName='Close';
       }
-    },
-    goToManage(){
-      let route = this.$router.resolve({ name: 'FormManage', query: { f: this.formId } });
-      window.open(route.href);
     },
     gotoPreview() {
       let route = this.$router.resolve({name: 'FormPreview', query: { f: this.formId, d: this.draftId }});

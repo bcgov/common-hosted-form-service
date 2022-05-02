@@ -94,6 +94,8 @@
       :savedStatus="savedStatus"
       :formId="formId"
       :draftId="draftId"
+      :undocount="undoCount()"
+      :redocount="redoCount()"
     />
   </div>
 </template>
@@ -134,6 +136,8 @@ export default {
         { title: 'Click Me' },
         { title: 'Click Me 2' },
       ],
+      redoCounts:0,
+      undoCounts:0,
       offset: true,
       savedStatus: 'Save',
       scrollTop:true,
@@ -273,12 +277,6 @@ export default {
         },
       };
     },
-    undoCount() {
-      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
-    },
-    redoCount() {
-      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
-    },
     undoEnabled() {
       return this.canUndoPatch();
     },
@@ -289,6 +287,12 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
+    undoCount() {
+      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
+    },
+    redoCount() {
+      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
+    },
 
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -369,6 +373,8 @@ export default {
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
 
+      // check if a component has been dropped into form builder before calling the 
+      // method to save recent schema into the database
       if(flags && this.saved){
         this.submitFormSchema();
       }
@@ -393,6 +399,14 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
+
+      // saves schema when component is remove
+      if(this.saved)
+      {
+        this.submitFormSchema();
+      }
+      
+  
     },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
@@ -523,7 +537,7 @@ export default {
         });
       } finally {
         this.saving = false;
-        this.savedStatus='Not Saved';
+        this.savedStatus='save';
       }
     },
     onUndoClick() {
@@ -572,7 +586,7 @@ export default {
         formVersionId: this.versionId,
       });
 
-      this.savedStatus='Saved';
+      this.savedStatus='save';
        
       // Navigate back to this page with ID updated
       this.$router.push({
@@ -589,7 +603,7 @@ export default {
         schema: this.formSchema,
       });
 
-      this.savedStatus='Saved';
+      this.savedStatus='save';
 
       // Update this route with saved flag
       this.$router.replace({
@@ -614,7 +628,7 @@ export default {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    },
+    }
   },
   
 };
