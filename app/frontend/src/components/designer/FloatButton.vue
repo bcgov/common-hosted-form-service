@@ -1,5 +1,5 @@
 <template>
-  <div :style="[{display:'flex',width:'92px', flexDirection:fabActionDirection, gap:fbActionGap},fbPosition,{position:'fixed'},{zIndex:fabZIndex}]">
+  <div :style="[{display:'flex',width:'92px', flexDirection:fabActionDirection, gap:fabItemsGap},fbPosition,{position:'fixed'},{zIndex:fabZIndex}]">
     <div class="fabAction" @click="onOpenFABActionItems">
       <label :style={fontSize:labelTextSize}>{{baseName}}</label>
       <v-avatar
