@@ -79,14 +79,13 @@
       class="form-designer"
     />
     <FloatButton
-      position="bottom-right"
-      :baseBGColor="'#ffffff'"
-      :baseIconColor="'#1976D2'"
-      :baseFBBorderColor="'#C0C0C0'"
-      :fbZIndex=1000
+      placement="bottom-right"
+      :baseFABItemsBGColor="'#ffffff'"
+      :baseFABIconColor="'#1976D2'"
+      :baseFABBorderColor="'#C0C0C0'"
+      :fabZIndex=1000
       :size="'small'"
-      :direction="'left'"
-      fbActionGap="10px"
+      fabItemsGap="10px"
       @undo="onUndoClick"
       @redo="onRedoClick"
       @save="submitFormSchema"
