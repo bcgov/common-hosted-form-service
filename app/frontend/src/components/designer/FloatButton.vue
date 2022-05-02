@@ -1,13 +1,13 @@
 <template>
-  <div :style="[{display:'flex',width:'92px', flexDirection:fbActionDirection, gap:fbActionGap},fbPosition,{position:'fixed'},{zIndex:fbZIndex}]">
-    <div class="fbAction" @click="onOpenFBActionItems">
+  <div :style="[{display:'flex',width:'92px', flexDirection:fabActionDirection, gap:fbActionGap},fbPosition,{position:'fixed'},{zIndex:fabZIndex}]">
+    <div class="fabAction" @click="onOpenFABActionItems">
       <label :style={fontSize:labelTextSize}>{{baseName}}</label>
       <v-avatar
-        :style="{backgroundColor:baseBGColor,border: '1px solid '+baseFBBorderColor}"
-        :size=fbSize
+        :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid '+baseFABBorderColor}"
+        :size=fabItemsSize
       >
         <v-icon 
-          :color="baseIconColor" 
+          :color="baseFABIconColor" 
           :small="smallIcon"
           :large="largeIcon"
           :x-small="xSmallIcon"
@@ -16,9 +16,9 @@
         </v-icon>
       </v-avatar>
     </div>
-    <div :style="[{display:'flex', flexDirection:fbActionDirection, gap:fbActionGap}]" v-if="isfbActionsOpen" >
+    <div :style="[{display:'flex', flexDirection:fabActionDirection, gap:fabItemsGap}]" v-if="isFABActionsOpen" >
       <router-link
-        class="fbAction"
+        class="fabAction"
         :to="{ name: 'FormManage', query: { f: formId } }"
         :class="{ 'disabled-router': !formId }"
         tag="div"
@@ -27,8 +27,8 @@
           Manage  
         </label>
         <v-avatar
-          :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
-          :size=fbSize
+          :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+          :size=fabItemsSize
         >
           <v-icon 
             color="primary"
@@ -41,7 +41,7 @@
         </v-avatar>
         
       </router-link>
-      <div class="fbAction" >
+      <div class="fabAction" >
         <label :style={fontSize:labelTextSize}>
           Redo  
         </label>
@@ -52,9 +52,8 @@
           :content="redocount"
         >
           <v-avatar
-            :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
-            :size=fbSize
-            :elevation="24"
+            :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+            :size=fabItemsSize
             @click="toParent('redo')"
           >
             <v-icon 
@@ -69,7 +68,7 @@
         </v-badge>
         
       </div>
-      <div class="fbAction">
+      <div class="fabAction">
         <label :style={fontSize:labelTextSize}>
           Undo  
         </label>
@@ -80,8 +79,8 @@
           :content="undocount"
         >
           <v-avatar
-            :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
-            :size=fbSize
+            :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+            :size=fabItemsSize
             :elevation="24"
             @click="toParent('undo')"
           >
@@ -97,7 +96,7 @@
         </v-badge>
       </div>
       <div
-        class="fbAction"
+        class="fabAction"
         @click="gotoPreview"
         :class="{ 'disabled-router': !formId || !draftId}"
       >
@@ -105,8 +104,8 @@
           Preview  
         </label>
         <v-avatar
-          :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
-          :size=fbSize
+          :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+          :size=fabItemsSize
         >
           <v-icon 
             color="primary"
@@ -119,7 +118,7 @@
         </v-avatar>
         
       </div>
-      <div class="fbAction" >
+      <div class="fabAction" >
         <label :style={fontSize:labelTextSize}>
           {{this.savedStatus}} 
           
@@ -131,8 +130,8 @@
           size=25
         ></v-progress-circular>
         <v-avatar
-          :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
-          :size=fbSize
+          :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+          :size=fabItemsSize
           :elevation="24"
           @click="toParent('save')"
         >
@@ -148,13 +147,13 @@
         </v-avatar>
         
       </div>
-      <div class="fbAction">
+      <div class="fabAction">
         <label :style={fontSize:labelTextSize}>
           {{scrollName}} 
         </label>
         <v-avatar
-          :style="{backgroundColor:baseBGColor,border: '1px solid #C0C0C0'}"
-          :size=fbSize
+          :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+          :size=fabItemsSize
           :elevation="24"
           @click="onHandleScroll"
         >
@@ -180,10 +179,10 @@ export default {
   name: 'FloatButton',
   data(){
     return {
-      fbActionDirection:'column-reverse',
-      isfbActionsOpen:true,
+      fabActionDirection:'column-reverse',
+      isFABActionsOpen:true,
       fbPosition:{},
-      fbSize:36,
+      fabItemsSize:36,
       baseName:'Open',
       baseIconName:'add',
       smallIcon:false,
@@ -193,19 +192,19 @@ export default {
       labelTextSize:'15px',
       scrollIconName:'north',
       scrollName:'Top',
-      isScrollTop:true,
+      isScrollToTop:true,
     };
   },
   props: {
     formId:String,
     draftId:String,
     saving:{
+      type:Boolean,
       default:false
     },
-    savedStatus:{
-      type:String
-    },
-    position: {
+    savedStatus:String,
+    placement: {
+      type:String,
       default:'bottom-right' 
     },
     redocount:{
@@ -216,26 +215,31 @@ export default {
       type:Number,
       default:0
     },
-    fbActionGap:{
+    fabItemsGap:{
+      type:String,
       default:'15px'
     },
     size:{
+      type:String,
       default:'medium'
     },
-    baseIconColor:{
+    baseFABIconColor:{
+      type:String,
       default:'#1976D2'
     },
-    direction:{
-      type:String
-    },
-    baseFBBorderColor:{
+    baseFABBorderColor:{
+      type:String,
       default:'#C0C0C0'
     },
-    baseBGColor:{
+    baseFABItemsBGColor:{
+      type:String,
       default:'#ffffff'
     },
-    fbZIndex:{default:1000},
-    screenPosition:{
+    fabZIndex:{
+      type:Number,
+      default:1000
+    },
+    positionOffset:{
       type:Object,
       validator: function(value) {
         // The value must match one of these strings
@@ -247,15 +251,15 @@ export default {
     toParent(name) {
       this.$emit(name);
     },
-    onOpenFBActionItems(){
-      if(this.isfbActionsOpen){
+    onOpenFABActionItems(){
+      if(this.isFABActionsOpen){
         this.baseIconName='add';
-        this.isfbActionsOpen=false;
+        this.isFABActionsOpen=false;
         this.baseName='Open';
       }
       else{
         this.baseIconName='close';
-        this.isfbActionsOpen=true;
+        this.isFABActionsOpen=true;
         this.baseName='Close';
       }
     },
@@ -298,29 +302,34 @@ export default {
           this.fbSize=36;
       }
     },
+
+    //checks if FAB is placed at the top right or top left of the screen
     topLeftRight(){
-      if (this.position==='top-right'|| this.position==='top-left' ){
-        this.fbActionDirection='column';
+      if (this.placement==='top-right'|| this.placement==='top-left' ){
+        this.fabActionDirection='column';
       }
     },
    
+    //checks if FAB is placed at the bottom right or bottom left of the screen
     bottomLeftRight(){
-      if(this.position==='bottom-right' || this.position==='bottom-left'){
-        this.fbActionDirection='column-reverse';
+      if(this.placement==='bottom-right' || this.placement==='bottom-left'){
+        this.fabActionDirection='column-reverse';
       }
     },
+
+    // set where on the screen FAB will be displayed
     setPosition(){
       this.fbPosition={};
 
       this.bottomLeftRight();
       this.topLeftRight();
 
-      if(this.screenPosition && Object.keys(this.screenPosition).length > 0)
+      if(this.positionOffset && Object.keys(this.positionOffset).length > 0)
       {
-        Object.assign(this.fbPosition, this.screenPosition);
+        Object.assign(this.fbPosition, this.positionOffset);
         return;
       }
-      switch (this.position) {
+      switch (this.placement) {
         case 'bottom-right':
           this.fbPosition.right = '2vw';
           this.fbPosition.bottom = '7vh';
@@ -342,31 +351,34 @@ export default {
           this.fbPosition.bottom = '4vh';
       }
     },
+
+    // callback function for window scroll event
     handleScroll () {
       if(window.scrollY==0){
         this.scrollIconName='south';
         this.scrollName='Bottom';
-        this.isScrollTop=false;
+        this.isScrollToTop=false;
       }
       else if((window.innerHeight + window.scrollY) >= document.body.offsetHeight){
         this.scrollIconName='north';
         this.scrollName='Top';
-        this.isScrollTop=true;
+        this.isScrollToTop=true;
       }
-      // Any code to be executed when the window is scrolled
     },
+
+    // function for click scroll event
     onHandleScroll(){
-      if(this.isScrollTop){
+      if(this.isScrollToTop){
         window.scrollTo(0,0);
         this.scrollIconName='north';
         this.scrollName='Top';
-        this.isScrollTop=false;
+        this.isScrollToTop=false;
         return;
       }
       window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
       this.scrollIconName='south';
       this.scrollName='Bottom';
-      this.isScrollTop=true;
+      this.isScrollToTop=true;
     },
   },
   watch: {
@@ -395,7 +407,7 @@ export default {
   pointer-events: none;
 }
  
- .fbAction{
+ .fabAction{
    display:flex; 
    flex-direction:column;
    align-items:center;
