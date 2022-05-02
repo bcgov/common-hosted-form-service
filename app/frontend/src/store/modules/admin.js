@@ -128,6 +128,16 @@ export default {
     //
     // Users
     //
+    async addUserRoles({ dispatch }, userRole) {
+      try {
+        await adminService.addUserRoles(userRole.userId, userRole.formId, userRole.roles);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while adding the role.',
+          consoleError: `Error adding roles for user ${userRole.userId}: ${error}`,
+        }, { root: true });
+      }
+    },
     async getUsers({ commit, dispatch }) {
       try {
         // Get all users

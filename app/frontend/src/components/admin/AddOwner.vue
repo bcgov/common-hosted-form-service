@@ -3,7 +3,6 @@
     This should only be done in the event that the current form owner is no
     longer active or is out of contact in a priority event. Otherwise have the
     current Owner or a Team Administrator for the form do this themselves.
-    {{ formId }} {{ userGuid }}
 
     <v-form ref="addUserForm" v-model="valid">
       <v-row class="mt-4">
@@ -29,7 +28,7 @@
 <script>
 import { mapActions } from 'vuex';
 
-import { Regex } from '@/utils/constants';
+import { FormRoleCodes, Regex } from '@/utils/constants';
 
 export default {
   name: 'AddOwner',
@@ -45,16 +44,21 @@ export default {
       valid: false,
 
       userGuidRules: [
-        v => !!v || 'User ID required',
-        v => new RegExp(Regex.GUID).test(v) || 'Enter a valid User ID GUID',
+        (v) => !!v || 'User ID required',
+        (v) => new RegExp(Regex.GUID).test(v) || 'Enter a valid User ID GUID',
       ],
     };
   },
   methods: {
-    ...mapActions('admin', ['addOwner']),
+    ...mapActions('admin', ['addUserRoles', 'readRoles']),
     async addOwner() {
       if (this.$refs.addUserForm.validate()) {
-        alert('pass');
+        await this.addUserRoles({
+          userId: this.userGuid,
+          formId: this.formId,
+          roles: [FormRoleCodes.OWNER],
+        });
+        this.readRoles(this.formId);
       }
     },
   },

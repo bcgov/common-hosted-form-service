@@ -82,6 +82,17 @@ export default {
   //
 
   /**
+   * @function addUserRoles
+   * Add form user roles (specific administrative task, for real form/user/role management see rbac service)
+   * @param {userId} userId The request body for the relationships
+   * @param {formId} formId The request body for the relationships
+   * @param {Object} [roles] The list of roles too add for this user
+   * @returns {Promise} An axios response
+   */
+  addUserRoles(userId, formId, roles ) {
+    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}/addUserRoles`, { formId: formId, roles: roles });
+  },
+  /**
    * @function listUsers
    * Read all the users in the DB
    * @returns {Promise} An axios response
