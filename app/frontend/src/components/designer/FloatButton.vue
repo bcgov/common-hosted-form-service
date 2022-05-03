@@ -1,5 +1,12 @@
 <template>
-  <div :style="[{display:'flex',width:'92px', flexDirection:fabItemsDirection, gap:fabItemsGap},fabItemsPosition,{position:'fixed'},{zIndex:fabZIndex}]">
+  <div :style="[{display:'flex',
+                 width:'92px', 
+                 flexDirection:fabItemsDirection, 
+                 gap:fabItemsGap,
+                 zIndex:fabZIndex,
+                 position:'fixed'},
+                fabItemsPosition,]"
+  >
     <div class="fabAction" @click="onOpenFABActionItems">
       {{baseFABItemName}}
       <v-avatar
@@ -36,7 +43,10 @@
         </v-avatar>
         
       </router-link>
-      <div class="fabAction" >
+      <div 
+        class="fabAction"
+        :class="{ 'disabled-router': !formId || !draftId}" 
+      >
         Redo  
         <v-avatar
           class="fabItems"
@@ -51,12 +61,14 @@
           </v-icon>
         </v-avatar>
       </div>
-      <div class="fabAction">
+      <div 
+        class="fabAction"
+        :class="{ 'disabled-router': !formId || !draftId}"
+      >
         Undo  
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
-          :elevation="24"
           @click="toParent('undo')"
         >
           <v-icon
@@ -403,6 +415,7 @@ export default {
   font-style:normal;
   font-weight:normal;
   font-family: Open Sans !important;
+  cursor: pointer;
  }
 
  .fabItems{
