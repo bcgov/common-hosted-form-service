@@ -1,13 +1,14 @@
 <template>
-  <div :style="[{display:'flex',width:'92px', flexDirection:fabActionDirection, gap:fabItemsGap},fbPosition,{position:'fixed'},{zIndex:fabZIndex}]">
+  <div :style="[{display:'flex',width:'92px', flexDirection:fabActionDirection, gap:fabItemsGap},fabItemsPosition,{position:'fixed'},{zIndex:fabZIndex}]">
     <div class="fabAction" @click="onOpenFABActionItems">
-      <label :style={fontSize:labelTextSize}>{{baseName}}</label>
+     {{baseFABItemName}}
       <v-avatar
-        :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid '+baseFABBorderColor}"
+        class="fabItems"
+        :style="[{backgroundColor:baseFABItemBGColor}]"
         :size=fabItemsSize
       >
         <v-icon 
-          :color="baseFABIconColor" 
+          :color="baseIconColor" 
           :small="smallIcon"
           :large="largeIcon"
           :x-small="xSmallIcon"
@@ -23,15 +24,13 @@
         :class="{ 'disabled-router': !formId }"
         tag="div"
       >
-        <label :style={fontSize:labelTextSize}>
-          Manage  
-        </label>
+        Manage  
         <v-avatar
-          :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+          class="fabItems"
           :size=fabItemsSize
         >
           <v-icon 
-            color="primary"
+            :color="fabItemsColor"
             :small="smallIcon"
             :large="largeIcon"
             :x-small="xSmallIcon"
@@ -42,73 +41,53 @@
         
       </router-link>
       <div class="fabAction" >
-        <label :style={fontSize:labelTextSize}>
-          Redo  
-        </label>
-        <v-badge
-          left
-          overlap
-          color="pink"
-          :content="redocount"
+        Redo  
+        <v-avatar
+          class="fabItems"
+          :size=fabItemsSize
+          @click="toParent('redo')"
         >
-          <v-avatar
-            :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
-            :size=fabItemsSize
-            @click="toParent('redo')"
+          <v-icon 
+            :color="fabItemsColor"
+            :small="smallIcon"
+            :large="largeIcon"
+            :x-small="xSmallIcon"
           >
-            <v-icon 
-              color="primary"
-              :small="smallIcon"
-              :large="largeIcon"
-              :x-small="xSmallIcon"
-            >
-              redo
-            </v-icon>
-          </v-avatar>
-        </v-badge>
-        
+            redo
+          </v-icon>
+        </v-avatar>
       </div>
       <div class="fabAction">
-        <label :style={fontSize:labelTextSize}>
-          Undo  
-        </label>
-        <v-badge
-          left
-          overlap
-          color="pink"
-          :content="undocount"
+        Undo  
+        <v-avatar
+          class="fabItems"
+          :size=fabItemsSize
+          :elevation="24"
+          @click="toParent('undo')"
         >
-          <v-avatar
-            :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
-            :size=fabItemsSize
-            :elevation="24"
-            @click="toParent('undo')"
+          <v-icon 
+            :color="fabItemsColor"
+            :small="smallIcon"
+            :large="largeIcon"
+            :x-small="xSmallIcon"
           >
-            <v-icon 
-              color="primary"
-              :small="smallIcon"
-              :large="largeIcon"
-              :x-small="xSmallIcon"
-            >
-              undo
-            </v-icon>
-          </v-avatar>
-        </v-badge>
+            undo
+          </v-icon>
+        </v-avatar>
       </div>
       <div
         class="fabAction"
         @click="gotoPreview"
         :class="{ 'disabled-router': !formId || !draftId}"
       >
-        <label :style={fontSize:labelTextSize}>
-          Preview  
-        </label>
+        
+        Preview  
         <v-avatar
-          :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+          class="fabItems"
           :size=fabItemsSize
         >
           <v-icon 
-            color="primary"
+            :color="fabItemsColor"
             :small="smallIcon"
             :large="largeIcon"
             :x-small="xSmallIcon"
@@ -119,27 +98,27 @@
         
       </div>
       <div class="fabAction" >
-        <label :style={fontSize:labelTextSize}>
-          {{this.savedStatus}} 
-          
-        </label>
+     
+        {{this.savedStatus}} 
+       
         <v-progress-circular
           v-if='this.saving'
           indeterminate
-          color="primary"
+          color="#1A5A96"
           size=25
         ></v-progress-circular>
         <v-avatar
-          :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+          class="fabItems"
           :size=fabItemsSize
           :elevation="24"
           @click="toParent('save')"
         >
-          <v-icon 
-            color="primary"
+          <v-icon
+            :color="fabItemsColor"
             :small="smallIcon"
             :large="largeIcon"
             :x-small="xSmallIcon"
+            dark
           >
             save  
           </v-icon>
@@ -148,17 +127,15 @@
         
       </div>
       <div class="fabAction">
-        <label :style={fontSize:labelTextSize}>
-          {{scrollName}} 
-        </label>
+        {{scrollName}} 
         <v-avatar
-          :style="{backgroundColor:baseFABItemsBGColor,border: '1px solid #C0C0C0'}"
+          class="fabItems"
           :size=fabItemsSize
           :elevation="24"
           @click="onHandleScroll"
         >
           <v-icon 
-            color="primary"
+            :color="fabItemsColor"
             :small="smallIcon"
             :large="largeIcon"
             :x-small="xSmallIcon"
@@ -179,20 +156,34 @@ export default {
   name: 'FloatButton',
   data(){
     return {
+
       fabActionDirection:'column-reverse',
-      isFABActionsOpen:true,
-      fbPosition:{},
+      isFABActionsOpen:false,
+      fabItemsPosition:{},
       fabItemsSize:36,
-      baseName:'Open',
-      baseIconName:'add',
+
+
+      //base fab item variable start
+      baseFABItemBGColor:'#004B8D',
+      baseFABItemName:'Actions',
+      baseIconName:'menu',
+      baseIconColor:'#ffffff', //end
+      
+      // fab items icons variables start
       smallIcon:false,
       largeIcon:false,
       xLargeIcon:false,
       xSmallIcon:false,
+      fabItemsColor:'#1A5A96',// end
+      
+    
       labelTextSize:'15px',
+
       scrollIconName:'north',
       scrollName:'Top',
       isScrollToTop:true,
+      
+      
     };
   },
   props: {
@@ -207,14 +198,6 @@ export default {
       type:String,
       default:'bottom-right' 
     },
-    redocount:{
-      type:Number,
-      default:0
-    },
-    undocount:{
-      type:Number,
-      default:0
-    },
     fabItemsGap:{
       type:String,
       default:'15px'
@@ -222,18 +205,6 @@ export default {
     size:{
       type:String,
       default:'medium'
-    },
-    baseFABIconColor:{
-      type:String,
-      default:'#1976D2'
-    },
-    baseFABBorderColor:{
-      type:String,
-      default:'#C0C0C0'
-    },
-    baseFABItemsBGColor:{
-      type:String,
-      default:'#ffffff'
     },
     fabZIndex:{
       type:Number,
@@ -253,14 +224,19 @@ export default {
     },
     onOpenFABActionItems(){
       if(this.isFABActionsOpen){
-        this.baseIconName='add';
+        this.baseIconName='menu';
         this.isFABActionsOpen=false;
-        this.baseName='Open';
+        this.baseFABItemName='Actions';
+        this.baseIconColor='#ffffff';
+        this.baseFABItemBGColor='#004B8D';
       }
       else{
         this.baseIconName='close';
         this.isFABActionsOpen=true;
-        this.baseName='Close';
+        this.baseFABItemName='Collapse';
+        this.baseIconColor='#E55673';
+        this.baseFABItemBGColor='#ffffff';
+        
       }
     },
     gotoPreview() {
@@ -271,35 +247,31 @@ export default {
       this.floatButtonSize={};
       switch(this.size){
         case 'x-large':
-          this.fbSize=52;
+          this.fabItemsSize=52;
           this.smallIcon=false;
           this.largeIcon=true;
           this.xSmallIcon=false;
-          this.labelTextSize='19px';
           break;
         case 'large':
-          this.fbSize=44;
+          this.fabItemsSize=44;
           this.smallIcon=false;
           this.largeIcon=false;
           this.xSmallIcon=false;
-          this.labelTextSize='17px';
           break;
         case 'medium':
-          this.fbSize=36;
-          this.smallIcon=true;
-          this.largeIcon=false;
-          this.xSmallIcon=false;
-          this.labelTextSize='15px';
-          break;
-        case 'small':
-          this.fbSize=28;
+          this.fabItemsSize=36;
           this.smallIcon=false;
           this.largeIcon=false;
-          this.xSmallIcon=true;
-          this.labelTextSize='13px';
+          this.xSmallIcon=false;
+          break;
+        case 'small':
+          this.fabItemsSize=28;
+          this.smallIcon=false;
+          this.largeIcon=false;
+          this.xSmallIcon=false;
           break;
         default:
-          this.fbSize=36;
+          this.fabItemsSize=36;
       }
     },
 
@@ -319,36 +291,36 @@ export default {
 
     // set where on the screen FAB will be displayed
     setPosition(){
-      this.fbPosition={};
+      this.fabItemsPosition={};
 
       this.bottomLeftRight();
       this.topLeftRight();
 
       if(this.positionOffset && Object.keys(this.positionOffset).length > 0)
       {
-        Object.assign(this.fbPosition, this.positionOffset);
+        Object.assign(this.fabItemsPosition, this.positionOffset);
         return;
       }
       switch (this.placement) {
         case 'bottom-right':
-          this.fbPosition.right = '2vw';
-          this.fbPosition.bottom = '7vh';
+          this.fabItemsPosition.right = '-.5vw';
+          this.fabItemsPosition.bottom = '7vh';
           break;
         case 'bottom-left':
-          this.fbPosition.left = '5vw';
-          this.fbPosition.bottom = '4vh';
+          this.fabItemsPosition.left = '5vw';
+          this.fabItemsPosition.bottom = '4vh';
           break;
         case 'top-left':
-          this.fbPosition.left = '5vw';
-          this.fbPosition.top = '4vh';
+          this.fabItemsPosition.left = '5vw';
+          this.fabItemsPosition.top = '4vh';
           break;
         case 'top-right':
-          this.fbPosition.right = '1vw';
-          this.fbPosition.top = '8vh';
+          this.fabItemsPosition.right = '1vw';
+          this.fabItemsPosition.top = '8vh';
           break;
         default:
-          this.fbPosition.right = '5vw';
-          this.fbPosition.bottom = '4vh';
+          this.fabItemsPosition.right = '5vw';
+          this.fabItemsPosition.bottom = '4vh';
       }
     },
 
@@ -406,15 +378,32 @@ export default {
 .disabled-router {
   pointer-events: none;
 }
+
+ .fabItemlabels{
+   font: normal normal normal 12px/26px Open Sans;
+ }
  
  .fabAction{
-   display:flex; 
-   flex-direction:column;
-   align-items:center;
-   text-align: center;
-   overflow: hidden;
+
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: center;
+  flex-direction:column;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  align-items: center;
+  overflow: hidden;
    width:auto;
    height:auto;
+   column-gap:0px;
+ }
+
+ .fabItems{
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029; 
+  border: 1px solid #70707063
  }
 
 </style>
