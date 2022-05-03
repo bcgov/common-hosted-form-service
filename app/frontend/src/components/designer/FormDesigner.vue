@@ -85,7 +85,7 @@
       :baseFABIconColor="'#1976D2'"
       :baseFABBorderColor="'#C0C0C0'"
       :fabZIndex=1000
-      :size="'small'"
+      :size="'medium'"
       fabItemsGap="10px"
       @undo="onUndoClick"
       @redo="onRedoClick"
@@ -94,8 +94,6 @@
       :savedStatus="savedStatus"
       :formId="formId"
       :draftId="draftId"
-      :undocount="undoCount()"
-      :redocount="redoCount()"
     />
   </div>
 </template>
