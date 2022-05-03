@@ -1,7 +1,7 @@
 <template>
-  <div :style="[{display:'flex',width:'92px', flexDirection:fabActionDirection, gap:fabItemsGap},fabItemsPosition,{position:'fixed'},{zIndex:fabZIndex}]">
+  <div :style="[{display:'flex',width:'92px', flexDirection:fabItemsDirection, gap:fabItemsGap},fabItemsPosition,{position:'fixed'},{zIndex:fabZIndex}]">
     <div class="fabAction" @click="onOpenFABActionItems">
-     {{baseFABItemName}}
+      {{baseFABItemName}}
       <v-avatar
         class="fabItems"
         :style="[{backgroundColor:baseFABItemBGColor}]"
@@ -9,15 +9,13 @@
       >
         <v-icon 
           :color="baseIconColor" 
-          :small="smallIcon"
-          :large="largeIcon"
-          :x-small="xSmallIcon"
+          :size="fabItemsIconsSize"
         >
           {{baseIconName}}
         </v-icon>
       </v-avatar>
     </div>
-    <div :style="[{display:'flex', flexDirection:fabActionDirection, gap:fabItemsGap}]" v-if="isFABActionsOpen" >
+    <div :style="[{display:'flex', flexDirection:fabItemsDirection, gap:fabItemsGap}]" v-if="isFABActionsOpen">
       <router-link
         class="fabAction"
         :to="{ name: 'FormManage', query: { f: formId } }"
@@ -31,9 +29,7 @@
         >
           <v-icon 
             :color="fabItemsColor"
-            :small="smallIcon"
-            :large="largeIcon"
-            :x-small="xSmallIcon"
+            :size="fabItemsIconsSize"
           >
             settings
           </v-icon>
@@ -48,10 +44,8 @@
           @click="toParent('redo')"
         >
           <v-icon 
-            :color="fabItemsColor"
-            :small="smallIcon"
-            :large="largeIcon"
-            :x-small="xSmallIcon"
+            :color="saved?fabItemsColor:disabledFabItemsColor"
+            :size="fabItemsIconsSize"
           >
             redo
           </v-icon>
@@ -65,11 +59,9 @@
           :elevation="24"
           @click="toParent('undo')"
         >
-          <v-icon 
-            :color="fabItemsColor"
-            :small="smallIcon"
-            :large="largeIcon"
-            :x-small="xSmallIcon"
+          <v-icon
+            :color="saved?fabItemsColor:disabledFabItemsColor"
+            :size="fabItemsIconsSize"
           >
             undo
           </v-icon>
@@ -87,10 +79,8 @@
           :size=fabItemsSize
         >
           <v-icon 
-            :color="fabItemsColor"
-            :small="smallIcon"
-            :large="largeIcon"
-            :x-small="xSmallIcon"
+            :color="saved?fabItemsColor:disabledFabItemsColor"
+            :size="fabItemsIconsSize"
           >
             remove_red_eye
           </v-icon>
@@ -101,12 +91,7 @@
      
         {{this.savedStatus}} 
        
-        <v-progress-circular
-          v-if='this.saving'
-          indeterminate
-          color="#1A5A96"
-          size=25
-        ></v-progress-circular>
+        
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
@@ -114,14 +99,21 @@
           @click="toParent('save')"
         >
           <v-icon
+            v-if='!this.saving'
             :color="fabItemsColor"
-            :small="smallIcon"
-            :large="largeIcon"
-            :x-small="xSmallIcon"
+            :size="fabItemsIconsSize"
             dark
           >
+
             save  
           </v-icon>
+
+          <v-progress-circular
+            v-if='this.saving'
+            indeterminate
+            color="#1A5A96"
+            size=25
+          ></v-progress-circular>
          
         </v-avatar>
         
@@ -136,9 +128,7 @@
         >
           <v-icon 
             :color="fabItemsColor"
-            :small="smallIcon"
-            :large="largeIcon"
-            :x-small="xSmallIcon"
+            :size="fabItemsIconsSize"
           >
             {{scrollIconName}}
           </v-icon>
@@ -146,6 +136,23 @@
         
       </div>
       
+    </div>
+    <div class="fabAction" v-if="!isFABActionsOpen">
+      {{scrollName}} 
+      <v-avatar
+        class="fabItems"
+        :size=fabItemsSize
+        :elevation="24"
+        @click="onHandleScroll"
+      >
+        <v-icon 
+          :color="fabItemsColor"
+          :size="fabItemsIconsSize"
+        >
+          {{scrollIconName}}
+        </v-icon>
+      </v-avatar>
+        
     </div>
   </div>
 </template>
@@ -157,10 +164,11 @@ export default {
   data(){
     return {
 
-      fabActionDirection:'column-reverse',
+      fabItemsDirection:'column-reverse',
       isFABActionsOpen:false,
       fabItemsPosition:{},
       fabItemsSize:36,
+      fabItemsIconsSize:31,
 
 
       //base fab item variable start
@@ -170,20 +178,12 @@ export default {
       baseIconColor:'#ffffff', //end
       
       // fab items icons variables start
-      smallIcon:false,
-      largeIcon:false,
-      xLargeIcon:false,
-      xSmallIcon:false,
-      fabItemsColor:'#1A5A96',// end
-      
-    
-      labelTextSize:'15px',
-
+      fabItemsColor:'#1A5A96',
+      disabledFabItemsColor:'#707070C1',// end
+   
       scrollIconName:'north',
       scrollName:'Top',
-      isScrollToTop:true,
-      
-      
+      isScrollToTop:true,   
     };
   },
   props: {
@@ -192,6 +192,10 @@ export default {
     saving:{
       type:Boolean,
       default:false
+    },
+    saved: {
+      type: Boolean,
+      default: false,
     },
     savedStatus:String,
     placement: {
@@ -245,47 +249,51 @@ export default {
     },
     setSizes(){
       this.floatButtonSize={};
+
       switch(this.size){
+        
         case 'x-large':
           this.fabItemsSize=52;
+          this.fabItemsIconsSize=47;
           this.smallIcon=false;
           this.largeIcon=true;
           this.xSmallIcon=false;
           break;
         case 'large':
           this.fabItemsSize=44;
+          this.fabItemsIconsSize=39;
           this.smallIcon=false;
           this.largeIcon=false;
           this.xSmallIcon=false;
           break;
         case 'medium':
           this.fabItemsSize=36;
+          this.fabItemsIconsSize=31;
           this.smallIcon=false;
           this.largeIcon=false;
           this.xSmallIcon=false;
           break;
         case 'small':
           this.fabItemsSize=28;
-          this.smallIcon=false;
-          this.largeIcon=false;
-          this.xSmallIcon=false;
+          this.fabItemsIconsSize=18;
           break;
         default:
           this.fabItemsSize=36;
+          this.fabItemsIconsSize=31;
       }
     },
 
     //checks if FAB is placed at the top right or top left of the screen
     topLeftRight(){
       if (this.placement==='top-right'|| this.placement==='top-left' ){
-        this.fabActionDirection='column';
+        this.fabItemsDirection='column';
       }
     },
    
     //checks if FAB is placed at the bottom right or bottom left of the screen
     bottomLeftRight(){
       if(this.placement==='bottom-right' || this.placement==='bottom-left'){
-        this.fabActionDirection='column-reverse';
+        this.fabItemsDirection='column-reverse';
       }
     },
 
@@ -379,25 +387,22 @@ export default {
   pointer-events: none;
 }
 
- .fabItemlabels{
-   font: normal normal normal 12px/26px Open Sans;
- }
  
  .fabAction{
 
-  display: -ms-flexbox;
-  display: -webkit-flex;
   display: flex;
   justify-content: center;
   flex-direction:column;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
   align-items: center;
   overflow: hidden;
-   width:auto;
-   height:auto;
-   column-gap:0px;
+  width:auto;
+  height:auto;
+  pointer-events: cursor;
+  color:#313132;
+  font-size:12px;
+  font-style:normal;
+  font-weight:normal;
+  font-family: Open Sans !important;
  }
 
  .fabItems{

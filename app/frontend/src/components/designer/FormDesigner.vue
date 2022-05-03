@@ -85,13 +85,14 @@
       :baseFABIconColor="'#1976D2'"
       :baseFABBorderColor="'#C0C0C0'"
       :fabZIndex=1000
-      :size="'medium'"
+      :size="'small'"
       fabItemsGap="10px"
       @undo="onUndoClick"
       @redo="onRedoClick"
       @save="submitFormSchema"
       :saving="saving"
       :savedStatus="savedStatus"
+      :saved="saved"
       :formId="formId"
       :draftId="draftId"
     />
@@ -525,9 +526,11 @@ export default {
           // If creating a new form, add the form and a draft
           await this.schemaCreateNew();
         }
+        this.savedStatus='Saved';
         
       } catch (error) {
         await this.setDirtyFlag(true);
+        this.savedStatus='Not Saved';
         this.addNotification({
           message:
             'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
@@ -535,7 +538,7 @@ export default {
         });
       } finally {
         this.saving = false;
-        this.savedStatus='save';
+        
       }
     },
     onUndoClick() {
