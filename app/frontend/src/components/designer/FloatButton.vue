@@ -35,7 +35,7 @@
           :size=fabItemsSize
         >
           <v-icon 
-            :color="fabItemsColor"
+            :color="saved?fabItemsColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
           >
             settings
@@ -107,7 +107,6 @@
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
-          :elevation="24"
           @click="toParent('save')"
         >
           <v-icon
@@ -135,7 +134,6 @@
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
-          :elevation="24"
           @click="onHandleScroll"
         >
           <v-icon 
@@ -154,7 +152,6 @@
       <v-avatar
         class="fabItems"
         :size=fabItemsSize
-        :elevation="24"
         @click="onHandleScroll"
       >
         <v-icon 
@@ -414,7 +411,7 @@ export default {
   font-size:12px;
   font-style:normal;
   font-weight:normal;
-  font-family: Open Sans !important;
+  font-family: BCSans !important;
   cursor: pointer;
  }
 
