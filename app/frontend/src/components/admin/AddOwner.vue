@@ -50,13 +50,13 @@ export default {
     };
   },
   methods: {
-    ...mapActions('admin', ['addUserRoles', 'readRoles']),
+    ...mapActions('admin', ['addFormUser', 'readRoles']),
     async addOwner() {
       if (this.$refs.addUserForm.validate()) {
-        await this.addUserRoles({
+        await this.addFormUser({
           userId: this.userGuid,
           formId: this.formId,
-          roles: [FormRoleCodes.OWNER],
+          role: FormRoleCodes.OWNER,
         });
         this.readRoles(this.formId);
       }
