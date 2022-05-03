@@ -46,6 +46,21 @@ export default {
     //
     // Forms
     //
+    async addFormUser({ dispatch }, formUser) {
+      try {
+        const response = await adminService.addFormUser(formUser.userId, formUser.formId, formUser.role);
+        dispatch('notifications/addNotification', {
+          message:
+            `Added the Owner role for this form to ${response.data[0].fullName}`,
+          ...NotificationTypes.SUCCESS
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while adding the role.',
+          consoleError: `Error adding user ${formUser.userId} to form ${formUser.formId}: ${error}`,
+        }, { root: true });
+      }
+    },
     async deleteApiKey({ commit, dispatch }, formId) {
       try {
         await adminService.deleteApiKey(formId);
@@ -128,16 +143,6 @@ export default {
     //
     // Users
     //
-    async addUserRoles({ dispatch }, userRole) {
-      try {
-        await adminService.addUserRoles(userRole.userId, userRole.formId, userRole.roles);
-      } catch (error) {
-        dispatch('notifications/addNotification', {
-          message: 'An error occurred while adding the role.',
-          consoleError: `Error adding roles for user ${userRole.userId}: ${error}`,
-        }, { root: true });
-      }
-    },
     async getUsers({ commit, dispatch }) {
       try {
         // Get all users

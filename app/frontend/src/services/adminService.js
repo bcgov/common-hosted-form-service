@@ -7,6 +7,18 @@ export default {
   //
 
   /**
+   * @function addFormUser
+   * Add a form user role (specific administrative task, for real form/user/role management see rbac service)
+   * @param {formId} formId The request body for the relationships
+   * @param {userId} userId The request body for the relationships
+   * @param {Object} [roles] The list of roles too add for this user
+   * @returns {Promise} An axios response
+   */
+  addFormUser(userId, formId, role) {
+    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`, { userId: userId, formId: formId, role: role });
+  },
+
+  /**
    * @function deleteApiKey
    * Hard delete an API Key
    * @param {string} formId The form uuid
@@ -80,18 +92,6 @@ export default {
   //
   // User calls
   //
-
-  /**
-   * @function addUserRoles
-   * Add form user roles (specific administrative task, for real form/user/role management see rbac service)
-   * @param {userId} userId The request body for the relationships
-   * @param {formId} formId The request body for the relationships
-   * @param {Object} [roles] The list of roles too add for this user
-   * @returns {Promise} An axios response
-   */
-  addUserRoles(userId, formId, roles ) {
-    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}/addUserRoles`, { formId: formId, roles: roles });
-  },
   /**
    * @function listUsers
    * Read all the users in the DB
