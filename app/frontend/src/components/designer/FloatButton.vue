@@ -10,8 +10,7 @@
     <div class="fabAction" @click="onOpenFABActionItems">
       {{baseFABItemName}}
       <v-avatar
-        class="fabItems"
-        :style="[{backgroundColor:baseFABItemBGColor}]"
+        class="fabItemsInverColor"
         :size=fabItemsSize
       >
         <v-icon 
@@ -25,17 +24,36 @@
     <div :style="[{display:'flex', flexDirection:fabItemsDirection, gap:fabItemsGap}]" v-if="isFABActionsOpen">
       <router-link
         class="fabAction"
+        :to="{ name: 'FormManage', query: {f: formId, fd:'formDesigner',d: draftId } }"
+        :class="{ 'disabled-router': !formId }"
+        tag="div"
+      >
+        Publish  
+        <v-avatar
+          class="fabItemsInverColor"
+          :size=fabItemsSize
+        >
+          <v-icon 
+            :color="saved?fabItemsInvertedColor:disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+          >
+            upload_file
+          </v-icon>
+        </v-avatar>
+      </router-link>
+      <router-link
+        class="fabAction"
         :to="{ name: 'FormManage', query: { f: formId } }"
         :class="{ 'disabled-router': !formId }"
         tag="div"
       >
         Manage  
         <v-avatar
-          class="fabItems"
+          class="fabItemsInverColor"
           :size=fabItemsSize
         >
           <v-icon 
-            :color="saved?fabItemsColor:disabledFabItemsColor"
+            :color="saved?fabItemsInvertedColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
           >
             settings
@@ -43,25 +61,7 @@
         </v-avatar>
         
       </router-link>
-      <router-link
-        class="fabAction"
-        :to="{ name: 'FormManage', query: {f: formId, fd:'formDesigner',d: draftId } }"
-        :class="{ 'disabled-router': !formId }"
-        tag="div"
-      >
-        Publish  
-        <v-avatar
-          class="fabItems"
-          :size=fabItemsSize
-        >
-          <v-icon 
-            :color="saved?fabItemsColor:disabledFabItemsColor"
-            :size="fabItemsIconsSize"
-          >
-            published_with_changes
-          </v-icon>
-        </v-avatar>
-      </router-link>
+     
       <div 
         class="fabAction"
         :class="{ 'disabled-router': !formId || !draftId}" 
@@ -200,13 +200,13 @@ export default {
 
 
       //base fab item variable start
-      baseFABItemBGColor:'#004B8D',
       baseFABItemName:'Actions',
       baseIconName:'menu',
       baseIconColor:'#ffffff', //end
       
       // fab items icons variables start
       fabItemsColor:'#1A5A96',
+      fabItemsInvertedColor:'#ffffff',
       disabledFabItemsColor:'#707070C1',// end
    
       scrollIconName:'north',
@@ -259,16 +259,11 @@ export default {
         this.baseIconName='menu';
         this.isFABActionsOpen=false;
         this.baseFABItemName='Actions';
-        this.baseIconColor='#ffffff';
-        this.baseFABItemBGColor='#004B8D';
       }
       else{
         this.baseIconName='close';
         this.isFABActionsOpen=true;
         this.baseFABItemName='Collapse';
-        this.baseIconColor='#E55673';
-        this.baseFABItemBGColor='#ffffff';
-        
       }
     },
     gotoPreview() {
@@ -433,11 +428,25 @@ export default {
   font-family: BCSans !important;
   cursor: pointer;
  }
+ 
+ .fabItemsInverColor{
+  background: #1A5A96 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029; 
+ }
+
+ .fabItemsInverColor:hover{
+   background: #072A6C 0% 0% no-repeat padding-box;
+   border: 1px solid #072A6C;
+ }
 
  .fabItems{
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029; 
-  border: 1px solid #70707063
+  border: 1px solid #70707063;
+ }
+
+ .fabItems:hover{
+   border: 1px solid #072A6C;
  }
 
 </style>
