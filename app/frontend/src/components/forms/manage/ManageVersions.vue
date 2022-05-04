@@ -61,7 +61,6 @@
         <v-switch
           color="success"
           value
-          true-value:true
           :input-value="item.published"
           :label="item.published ? 'Published' : 'Unpublished'"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
