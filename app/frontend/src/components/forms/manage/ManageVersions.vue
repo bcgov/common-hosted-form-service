@@ -229,7 +229,7 @@ import { FormPermissions } from '@/utils/constants';
 
 export default {
   name: 'ManageVersions',
-  inject:['fd','draftId'],
+  inject:['fd','draftId','formId'],
   data() {
     return {
       headers: [
@@ -317,8 +317,20 @@ export default {
     // -----------------------------------------------------------------------------------------------------
     cancelPublish() {
       this.showPublishDialog = false;
+
+      if(this.draftId){
+        this.$router.replace({
+          name: 'FormDesigner',
+          query: {
+            f: this.formId,
+            d: this.draftId,
+            saved: true,
+          },
+        }).catch(()=>{});
+        return;
+      }
       // To get the toggle back to original state
-      this.rerenderTable += 1;
+      this.rerenderTable += 1; 
     },
     togglePublish(value, id, version, isDraft) {
       this.publishOpts = {
@@ -331,7 +343,7 @@ export default {
     },
     turnOnPublish(){
       if(this.versionList){
-        for (const [index, item] of this.versionList.entries()) {
+        for (const item  of this.versionList) {
           if(item.id===this.draftId){
             this.publishOpts = {
               publishing: true,
@@ -367,6 +379,7 @@ export default {
       this.fetchForm(this.form.id);
     },
     // ----------------------------------------------------------------------/ Publish/unpublish actions
+
 
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;

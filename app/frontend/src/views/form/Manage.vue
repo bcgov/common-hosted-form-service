@@ -26,7 +26,8 @@ export default {
   provide() {
     return {
       fd: this.fd,
-      draftId:this.d
+      draftId:this.d,
+      formId:this.f
     };
   },
   computed: {
