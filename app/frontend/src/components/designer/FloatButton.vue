@@ -43,6 +43,25 @@
         </v-avatar>
         
       </router-link>
+      <router-link
+        class="fabAction"
+        :to="{ name: 'FormManage', query: {f: formId, fd:'formDesigner',d: draftId } }"
+        :class="{ 'disabled-router': !formId }"
+        tag="div"
+      >
+        Publish  
+        <v-avatar
+          class="fabItems"
+          :size=fabItemsSize
+        >
+          <v-icon 
+            :color="saved?fabItemsColor:disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+          >
+            published_with_changes
+          </v-icon>
+        </v-avatar>
+      </router-link>
       <div 
         class="fabAction"
         :class="{ 'disabled-router': !formId || !draftId}" 

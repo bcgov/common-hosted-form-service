@@ -61,6 +61,7 @@
         <v-switch
           color="success"
           value
+          true-value:true
           :input-value="item.published"
           :label="item.published ? 'Published' : 'Unpublished'"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
@@ -229,6 +230,7 @@ import { FormPermissions } from '@/utils/constants';
 
 export default {
   name: 'ManageVersions',
+  inject:['fd','draftId'],
   data() {
     return {
       headers: [
@@ -328,6 +330,21 @@ export default {
       };
       this.showPublishDialog = true;
     },
+    turnOnPublish(){
+      if(this.versionList){
+        for (const [index, item] of this.versionList.entries()) {
+          if(item.id===this.draftId){
+            this.publishOpts = {
+              publishing: true,
+              version: item.version,
+              id: item.id,
+              isDraft: item.isDraft,
+            };
+            this.showPublishDialog = true;
+          }
+        }
+      }
+    },
     async updatePublish() {
       this.showPublishDialog = false;
       // if publishing a draft version
@@ -396,6 +413,14 @@ export default {
         });
       }
     },
+  },
+  created(){
+    //check if the navigation to this page is from FormDesigner
+    if(this.fd)
+    {
+      this.turnOnPublish();
+    }
+    
   },
 };
 </script>
