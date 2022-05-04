@@ -432,21 +432,23 @@ export default {
  .fabItemsInverColor{
   background: #1A5A96 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029; 
+  transition: background 1s;
  }
 
  .fabItemsInverColor:hover{
-   background: #072A6C 0% 0% no-repeat padding-box;
-   border: 1px solid #072A6C;
+   background: #003366 0% 0% no-repeat padding-box;
+   border: none;
  }
 
  .fabItems{
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029; 
   border: 1px solid #70707063;
+  transition: border 1s;
  }
 
  .fabItems:hover{
-   border: 1px solid #072A6C;
+   border: 1px solid #003366;
  }
 
 </style>
