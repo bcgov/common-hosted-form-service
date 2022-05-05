@@ -40,7 +40,6 @@ describe('AddOwner.vue', () => {
           }
         }
       },
-      propsData: { userId: 'me' }
     });
     await localVue.nextTick();
 
