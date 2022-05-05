@@ -66,7 +66,7 @@
      
       <div 
         class="fabAction"
-        :class="{ 'disabled-router': !saved}" 
+        :class="{ 'disabled-router': !isUndo && !isRedo}" 
       >
         
         <div>Redo</div>  
@@ -76,7 +76,7 @@
           @click="toParent('redo')"
         >
           <v-icon 
-            :color="saved?fabItemsColor:disabledFabItemsColor"
+            :color="isUndo||isRedo?fabItemsColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
           >
             redo
@@ -85,7 +85,7 @@
       </div>
       <div 
         class="fabAction"
-        :class="{ 'disabled-router': !saved}"
+        :class="{ 'disabled-router': !isUndo && !isRedo}"
       >
         
         <div>Undo</div>  
@@ -95,7 +95,7 @@
           @click="toParent('undo')"
         >
           <v-icon
-            :color="saved?fabItemsColor:disabledFabItemsColor"
+            :color="isUndo||isRedo?fabItemsColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
           >
             undo
@@ -201,8 +201,8 @@ export default {
       fabItemsPosition:{},
       fabItemsSize:36,
       fabItemsIconsSize:31,
-      
-
+      isUndo:false,
+      isRedo:false,
 
       //base fab item variable start
       baseFABItemName:'Actions',
@@ -226,6 +226,14 @@ export default {
     saving:{
       type:Boolean,
       default:false
+    },
+    redoCount:{
+      type:Number,
+      default:0
+    },
+    undoCount:{
+      type:Number,
+      default:0
     },
     saved: {
       type: Boolean,
@@ -394,6 +402,18 @@ export default {
     size(){
       this.setSizes();
     },
+    undoCount(value){
+      this.isUndo=false;
+      if(value>0){
+        this.isUndo=true;
+      }
+    },
+    redoCount(value){
+      this.isRedo=false;
+      if(value>0){
+        this.isRedo=true;
+      }
+    }
   },
   mounted(){
     this.setPosition();

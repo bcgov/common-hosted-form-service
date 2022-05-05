@@ -95,6 +95,8 @@
       :saved="saved"
       :formId="formId"
       :draftId="draftId"
+      :undoCount="undoCount()"
+      :redoCount="redoCount()"
     />
   </div>
 </template>
@@ -402,8 +404,6 @@ export default {
       {
         this.submitFormSchema();
       }
-      
-  
     },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
