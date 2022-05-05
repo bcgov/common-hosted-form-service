@@ -2451,6 +2451,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /admin/forms/{formId}/addUser:
+    put:
+      summary: Add user permissions to a form
+      operationId: adminAddUser
+      tags:
+        - Admin
+      security:
+        - OpenID:
+            - admin
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormRoleUser'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccess'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /admin/users:
     get:
       summary: Get the list of users
