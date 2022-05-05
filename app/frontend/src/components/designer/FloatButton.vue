@@ -25,16 +25,17 @@
       <router-link
         class="fabAction"
         :to="{ name: 'FormManage', query: {f: formId, fd:'formDesigner',d: draftId } }"
-        :class="{ 'disabled-router': !formId }"
+        :class="{ 'disabled-router': !formId}"
         tag="div"
       >
-        Publish  
+        <div>Publish</div> 
         <v-avatar
           class="fabItemsInverColor"
           :size=fabItemsSize
         >
-          <v-icon 
-            :color="saved?fabItemsInvertedColor:disabledFabItemsColor"
+          <v-icon
+             
+            :color="saved?fabItemsInvertedColor:disabledInvertedFabItemsColor"
             :size="fabItemsIconsSize"
           >
             upload_file
@@ -47,15 +48,16 @@
         :class="{ 'disabled-router': !formId }"
         tag="div"
       >
-        Manage  
+        <div>Manage</div>  
         <v-avatar
           class="fabItemsInverColor"
           :size=fabItemsSize
         >
           <v-icon 
-            :color="saved?fabItemsInvertedColor:disabledFabItemsColor"
+            :color="saved?fabItemsInvertedColor:disabledInvertedFabItemsColor"
             :size="fabItemsIconsSize"
           >
+            
             settings
           </v-icon>
         </v-avatar>
@@ -64,9 +66,10 @@
      
       <div 
         class="fabAction"
-        :class="{ 'disabled-router': !formId || !draftId}" 
+        :class="{ 'disabled-router': !saved}" 
       >
-        Redo  
+        
+        <div>Redo</div>  
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
@@ -82,9 +85,10 @@
       </div>
       <div 
         class="fabAction"
-        :class="{ 'disabled-router': !formId || !draftId}"
+        :class="{ 'disabled-router': !saved}"
       >
-        Undo  
+        
+        <div>Undo</div>  
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
@@ -103,14 +107,13 @@
         @click="gotoPreview"
         :class="{ 'disabled-router': !formId || !draftId}"
       >
-        
-        Preview  
+        <div>Preview</div>  
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
         >
           <v-icon 
-            :color="saved?fabItemsColor:disabledFabItemsColor"
+            :color="formId?fabItemsColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
           >
             remove_red_eye
@@ -120,9 +123,9 @@
       </div>
       <div class="fabAction" >
      
-        {{this.savedStatus}} 
+         
        
-        
+        <div>{{this.savedStatus}}</div>
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
@@ -149,7 +152,8 @@
         
       </div>
       <div class="fabAction">
-        {{scrollName}} 
+        <div>{{scrollName}}</div>
+         
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
@@ -167,7 +171,7 @@
       
     </div>
     <div class="fabAction" v-if="!isFABActionsOpen">
-      {{scrollName}} 
+      <div>{{scrollName}}</div> 
       <v-avatar
         class="fabItems"
         :size=fabItemsSize
@@ -193,10 +197,11 @@ export default {
     return {
 
       fabItemsDirection:'column-reverse',
-      isFABActionsOpen:false,
+      isFABActionsOpen:true,
       fabItemsPosition:{},
       fabItemsSize:36,
       fabItemsIconsSize:31,
+      
 
 
       //base fab item variable start
@@ -207,6 +212,7 @@ export default {
       // fab items icons variables start
       fabItemsColor:'#1A5A96',
       fabItemsInvertedColor:'#ffffff',
+      disabledInvertedFabItemsColor:'#ffffff',
       disabledFabItemsColor:'#707070C1',// end
    
       scrollIconName:'north',
@@ -417,6 +423,7 @@ export default {
   justify-content: center;
   flex-direction:column;
   align-items: center;
+  align-content: center;
   overflow: hidden;
   width:auto;
   height:auto;
