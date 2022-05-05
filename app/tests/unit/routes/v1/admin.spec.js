@@ -299,5 +299,4 @@ describe(`PUT ${basePath}/forms/formId/addUser`, () => {
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
