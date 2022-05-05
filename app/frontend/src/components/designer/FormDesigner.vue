@@ -135,8 +135,6 @@ export default {
         { title: 'Click Me' },
         { title: 'Click Me 2' },
       ],
-      redoCounts:0,
-      undoCounts:0,
       offset: true,
       savedStatus: 'Save',
       scrollTop:true,
