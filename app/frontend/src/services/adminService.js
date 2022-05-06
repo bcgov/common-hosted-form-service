@@ -11,11 +11,15 @@ export default {
    * Add a form user role (specific administrative task, for real form/user/role management see rbac service)
    * @param {formId} formId The request body for the relationships
    * @param {userId} userId The request body for the relationships
-   * @param {Object} [roles] The list of roles too add for this user
+   * @param {String[]} [roles] The list of roles to add
    * @returns {Promise} An axios response
    */
-  addFormUser(userId, formId, role) {
-    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`, { userId: userId, formId: formId, role: role });
+  addFormUser(userId, formId, roles) {
+    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`, roles.map(role => ({
+      userId: userId,
+      formId: formId,
+      role: role
+    })), { params: { userId: userId } });
   },
 
   /**

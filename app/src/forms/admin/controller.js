@@ -90,12 +90,12 @@ module.exports = {
   setFormUserRoles: async (req, res, next) => {
     try {
       // Safety guard that this admin call isn't ever used without a form or user id
-      if (!req.params.formId || !req.body.userId) {
+      if (!req.params.formId || !req.query.userId) {
         return next(new Problem(422, {
           detail: 'Must supply userId and formId'
         }));
       }
-      const response = await rbacService.setFormUsers(req.params.formId, req.body.userId, req.body, req.currentUser);
+      const response = await rbacService.setFormUsers(req.params.formId, req.query.userId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);

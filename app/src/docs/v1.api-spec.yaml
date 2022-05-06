@@ -2462,6 +2462,12 @@ paths:
             - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
+        - in: query
+          name: userId
+          schema:
+            type: string
+          description: The user to add permissions to
+          required: true
       requestBody:
         required: true
         content:
