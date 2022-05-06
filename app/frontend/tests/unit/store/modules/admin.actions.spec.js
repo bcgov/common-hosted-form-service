@@ -35,9 +35,9 @@ describe('admin actions', () => {
 
     it('adminFormUser should dispatch a success notification when the service call resolves', async () => {
       adminService.addFormUser.mockResolvedValue({ data: { form: {} } });
-      await store.actions.addFormUser(mockStore, { formId: 'fId', userId: 'usrId', role: 'OWNER' });
+      await store.actions.addFormUser(mockStore, { formId: 'fId', userId: 'usrId', roles: ['OWNER'] });
 
-      expect(adminService.addFormUser).toHaveBeenCalledWith('usrId', 'fId', 'OWNER');
+      expect(adminService.addFormUser).toHaveBeenCalledWith('usrId', 'fId', ['OWNER']);
       expect(adminService.addFormUser).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));

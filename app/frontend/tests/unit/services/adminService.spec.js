@@ -29,7 +29,7 @@ describe('Admin Service', () => {
     it('calls update on endpoint', async () => {
       mockAxios.onPut(endpoint).reply(200);
 
-      const result = await adminService.addFormUser('usrid', zeroUuid, 'OWNER');
+      const result = await adminService.addFormUser('usrid', zeroUuid, ['OWNER']);
       expect(result).toBeTruthy();
       expect(mockAxios.history.put).toHaveLength(1);
     });
