@@ -1801,6 +1801,14 @@ paths:
             example: c6455376-382c-439d-a811-0381a012d696
           description: form id
           required: true
+        - in: query
+          name: userId
+          schema:
+            type: string
+            format: uuid
+            example: d7455376-382c-439d-a811-0381a012d696
+          description: user id
+          required: true
       requestBody:
         required: true
         content:
