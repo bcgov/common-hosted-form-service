@@ -252,20 +252,10 @@ describe(`PUT ${basePath}/forms/formId/addUser`, () => {
     // mock a success return value...
     rbacService.setFormUsers = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).put(`${basePath}/forms/formId/addUser`).send({ userId: '123' });
+    const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ userId: '123' }).send({ userId: '123' });
 
     expect(rbacService.setFormUsers).toHaveBeenCalledWith('formId', '123', { userId: '123' }, undefined);
     expect(response.statusCode).toBe(200);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should 422 if no body is supplied', async () => {
-    // mock an authentication/permission issue...
-    rbacService.setFormUsers = jest.fn().mockReturnValue([]);
-
-    const response = await request(app).put(`${basePath}/forms/formId/addUser`);
-
-    expect(response.statusCode).toBe(422);
     expect(response.body).toBeTruthy();
   });
 
@@ -274,7 +264,7 @@ describe(`PUT ${basePath}/forms/formId/addUser`, () => {
     // mock an authentication/permission issue...
     rbacService.setFormUsers = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).put(`${basePath}/forms/formId/addUser`).send({ otherBody: '123' });
+    const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ val: 'Test1' }).send({ otherBody: '123' });
 
     expect(response.statusCode).toBe(422);
     expect(response.body).toBeTruthy();
@@ -284,7 +274,7 @@ describe(`PUT ${basePath}/forms/formId/addUser`, () => {
     // mock an authentication/permission issue...
     rbacService.setFormUsers = jest.fn(() => { throw new Problem(401); });
 
-    const response = await request(app).put(`${basePath}/forms/formId/addUser`).send({ userId: '123' });
+    const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ userId: '123' }).send({ userId: '123' });
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -294,7 +284,7 @@ describe(`PUT ${basePath}/forms/formId/addUser`, () => {
     // mock an unexpected error...
     rbacService.setFormUsers = jest.fn(() => { throw new Error(); });
 
-    const response = await request(app).put(`${basePath}/forms/formId/addUser`).send({ userId: '123' });
+    const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ userId: '123' }).send({ userId: '123' });
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
