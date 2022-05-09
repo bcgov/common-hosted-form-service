@@ -317,7 +317,7 @@ export default {
     // -----------------------------------------------------------------------------------------------------
     cancelPublish() {
       this.showPublishDialog = false;
-
+      document.documentElement.style.overflow = 'auto';
       if(this.draftId){
         this.$router.replace({
           name: 'FormDesigner',
@@ -351,6 +351,7 @@ export default {
               id: item.id,
               isDraft: item.isDraft,
             };
+            document.documentElement.style.overflow = 'hidden';
             this.showPublishDialog = true;
           }
         }
