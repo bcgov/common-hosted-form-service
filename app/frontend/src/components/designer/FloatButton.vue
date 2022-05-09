@@ -28,7 +28,7 @@
         :class="{ 'disabled-router': !formId}"
         tag="div"
       >
-        <div>Publish</div> 
+        <div v-text="'Publish'"/>
         <v-avatar
           class="fabItemsInverColor"
           :size=fabItemsSize
@@ -48,7 +48,7 @@
         :class="{ 'disabled-router': !formId }"
         tag="div"
       >
-        <div>Manage</div>  
+        <div v-text="'Manage'"/>
         <v-avatar
           class="fabItemsInverColor"
           :size=fabItemsSize
@@ -68,8 +68,7 @@
         class="fabAction"
         :class="{ 'disabled-router': !isUndo && !isRedo}" 
       >
-        
-        <div>Redo</div>  
+        <div v-text="'Redo'"/> 
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
@@ -88,7 +87,7 @@
         :class="{ 'disabled-router': !isUndo && !isRedo}"
       >
         
-        <div>Undo</div>  
+        <div v-text="'Undo'"/> 
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
@@ -107,7 +106,7 @@
         @click="gotoPreview"
         :class="{ 'disabled-router': !formId || !draftId}"
       >
-        <div>Preview</div>  
+        <div v-text="'Preview'"/> 
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
