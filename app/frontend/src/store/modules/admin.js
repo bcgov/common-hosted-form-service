@@ -46,6 +46,23 @@ export default {
     //
     // Forms
     //
+    async addFormUser({ dispatch }, formUser) {
+      try {
+        const response = await adminService.addFormUser(formUser.userId, formUser.formId, formUser.roles);
+        dispatch('notifications/addNotification', {
+          message:
+            `Added the Owner role for this form to ${response.data[0].fullName}`,
+          ...NotificationTypes.SUCCESS
+        }, { root: true });
+        // Re-get the form users
+        dispatch('readRoles', formUser.formId);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while adding the role.',
+          consoleError: `Error adding user ${formUser.userId} to form ${formUser.formId}: ${error}`,
+        }, { root: true });
+      }
+    },
     async deleteApiKey({ commit, dispatch }, formId) {
       try {
         await adminService.deleteApiKey(formId);
