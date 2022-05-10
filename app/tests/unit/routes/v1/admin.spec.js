@@ -26,6 +26,7 @@ userAccess.currentUser = jest.fn((req, res, next) => {
 //
 const service = require('../../../../src/forms/admin/service');
 const userService = require('../../../../src/forms/user/service');
+const rbacService = require('../../../../src/forms/rbac/service');
 
 //
 // mocks are in place, create the router
@@ -243,4 +244,49 @@ describe(`GET ${basePath}/forms/formId/formUsers`, () => {
     expect(response.body).toBeTruthy();
   });
 
+});
+
+describe(`PUT ${basePath}/forms/formId/addUser`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    rbacService.setFormUsers = jest.fn().mockReturnValue([]);
+
+    const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ userId: '123' }).send({ userId: '123' });
+
+    expect(rbacService.setFormUsers).toHaveBeenCalledWith('formId', '123', { userId: '123' }, undefined);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+
+  it('should 422 if no userId is supplied', async () => {
+    // mock an authentication/permission issue...
+    rbacService.setFormUsers = jest.fn().mockReturnValue([]);
+
+    const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ val: 'Test1' }).send({ otherBody: '123' });
+
+    expect(response.statusCode).toBe(422);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    rbacService.setFormUsers = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ userId: '123' }).send({ userId: '123' });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    rbacService.setFormUsers = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ userId: '123' }).send({ userId: '123' });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
 });

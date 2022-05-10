@@ -46,6 +46,10 @@ routes.get('/forms/:formId/formUsers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
 });
 
+routes.put('/forms/:formId/addUser', async (req, res, next) => {
+  await controller.setFormUserRoles(req, res, next);
+});
+
 //
 // Users
 //
