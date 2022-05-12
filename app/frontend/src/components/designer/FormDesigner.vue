@@ -178,6 +178,7 @@
       :form="formSchema"
       :key="reRenderFormIo"
       :options="designerOptions"
+      ref="formioForm"
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
@@ -238,10 +239,15 @@ export default {
         undoClicked: false,
         originalSchema: null,
       },
+      settingsOverlay: {
+        selectedComponent: null,
+        selectedSettings: null,
+      }
     };
   },
   computed: {
     ...mapGetters('auth', ['tokenParsed', 'user']),
+    ...mapGetters('form', ['builder']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
@@ -269,83 +275,8 @@ export default {
           ALLOWED_TAGS: ['iframe'],
         },
         noDefaultSubmitButton: false,
-        builder: {
-          basic: false,
-          premium: false,
-          layoutControls: {
-            title: 'Basic Layout',
-            default: true,
-            weight: 10,
-            components: {
-              simplecols2: true,
-              simplecols3: true,
-              simplecols4: true,
-              simplecontent: true,
-              simplefieldset: false,
-              simpleheading: false,
-              simplepanel: true,
-              simpleparagraph: false,
-              simpletabs: true,
-            },
-          },
-          entryControls: {
-            title: 'Basic Fields',
-            weight: 20,
-            components: {
-              simplecheckbox: true,
-              simplecheckboxes: true,
-              simpledatetime: true,
-              simpleday: true,
-              simpleemail: true,
-              simplenumber: true,
-              simplephonenumber: true,
-              simpleradios: true,
-              simpleselect: true,
-              simpletextarea: true,
-              simpletextfield: true,
-              simpletime: false,
-            },
-          },
-          layout: {
-            title: 'Advanced Layout',
-            weight: 30,
-          },
-          advanced: {
-            title: 'Advanced Fields',
-            weight: 40,
-            components: {
-              // Need to re-define Formio basic fields here
-              textfield: true,
-              textarea: true,
-              number: true,
-              password: true,
-              checkbox: true,
-              selectboxes: true,
-              select: true,
-              radio: true,
-              button: true,
-              // Prevent duplicate appearance of orgbook component
-              orgbook: false,
-            },
-          },
-          data: {
-            title: 'Advanced Data',
-            weight: 50,
-          },
-          customControls: {
-            title: 'BC Government',
-            weight: 60,
-            components: {
-              orgbook: true,
-              simplefile: this.userType !== this.ID_MODE.PUBLIC,
-            },
-          },
-        },
+        builder: this.builder,
         templates: templateExtensions,
-        evalContext: {
-          token: this.tokenParsed,
-          user: this.user,
-        },
       };
     },
     undoCount() {
@@ -362,6 +293,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions('form', ['registerComponent']),
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
@@ -430,6 +362,28 @@ export default {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+    },
+    importExternalFile(link, onload = null) {
+      let extension = link.split('.').pop();
+      let file = null;
+      switch (extension) {
+        case 'js':
+          file = document.createElement('script');
+          file.async = false;
+          file.onload = onload;
+          file.setAttribute('src', link);
+          break;
+        case 'css':
+          file = document.createElement('link');
+          file.async = false;
+          file.onload = onload;
+          file.setAttribute('rel', 'stylesheet');
+          file.setAttribute('href', link);
+          break;
+      }
+
+      if (file !== null)
+        document.body.appendChild(file);
     },
 
     // ---------------------------------------------------------------------------------------------------
@@ -651,6 +605,14 @@ export default {
     // ----------------------------------------------------------------------------------/ Saving Schema
   },
   created() {
+    this.registerComponent({ group: 'customControls', component: 'simplefile', data: this.userType !== this.ID_MODE.PUBLIC });
+    
+    this.importExternalFile('https://unpkg.com/@formio/contrib@latest/dist/formio-contrib.css');
+    this.importExternalFile('https://unpkg.com/@formio/contrib@latest/dist/formio-contrib.use.min.js', () => {
+      this.registerComponent({ group: 'entryControls', component: 'checkmatrix', data: true });
+      this.reRenderFormIo += 1;
+    });
+    
     if (this.formId) {
       this.getFormSchema();
       this.fetchForm(this.formId);
