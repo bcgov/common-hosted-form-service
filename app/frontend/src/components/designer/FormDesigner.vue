@@ -234,9 +234,10 @@ export default {
         componentMovedStart: false,
         history: [],
         index: -1,
+        MAX_PATCHES: 30,
+        originalSchema: null,
         redoClicked: false,
         undoClicked: false,
-        originalSchema: null,
       },
     };
   },
@@ -473,7 +474,7 @@ export default {
       if (!this.patch.undoClicked && !this.patch.redoClicked) {
         // flags and modified are defined when a component is added
         if (flags !== undefined && modified !== undefined) {
-          if (this.patch.componentAddedStart !== null) {
+          if (this.patch.componentAddedStart) {
             this.addPatchToHistory();
           } else {
             this.resetHistoryFlags();
@@ -505,6 +506,15 @@ export default {
       const patch = compare(form, this.formSchema);
       // Add the patch to the history
       this.patch.history.push(patch);
+
+      // If we've exceeded the limit on actions
+      if (this.patch.history.length > this.patch.MAX_PATCHES) {
+        // We need to set the original schema to the first patch
+        const newHead = this.getPatch(0);
+        this.patch.originalSchema = newHead;
+        this.patch.history.shift();
+        --this.patch.index;
+      }
 
       this.resetHistoryFlags();
     },
