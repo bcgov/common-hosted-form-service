@@ -474,10 +474,18 @@ export default {
       if (!this.patch.undoClicked && !this.patch.redoClicked) {
         // flags and modified are defined when a component is added
         if (flags !== undefined && modified !== undefined) {
+          // Component was pasted here or edited and saved
           if (this.patch.componentAddedStart) {
             this.addPatchToHistory();
           } else {
-            this.resetHistoryFlags();
+            // Tab changed, Edit saved, paste occurred
+            if (typeof modified == 'boolean') {
+              // Tab changed
+              this.resetHistoryFlags();
+            } else {
+              // Edit saved or paste occurred
+              this.addPatchToHistory();
+            }
           }
         } else {
           // If we removed a component but not during an add action
