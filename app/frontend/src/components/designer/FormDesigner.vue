@@ -468,11 +468,33 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     // Patch History
     // ---------------------------------------------------------------------------------------------------
-    onSchemaChange() {
+    onSchemaChange(_changed, flags, modified) {
       // If the form changed but was not done so through the undo
       // or redo button
       if (!this.patch.undoClicked && !this.patch.redoClicked) {
         this.addPatchToHistory();
+        // flags and modified are defined when a component is added
+        if (flags !== undefined && modified !== undefined) {
+          // Component was pasted here or edited and saved
+          if (this.patch.componentAddedStart) {
+            this.addPatchToHistory();
+          } else {
+            // Tab changed, Edit saved, paste occurred
+            if (typeof modified == 'boolean') {
+              // Tab changed
+              this.resetHistoryFlags();
+            } else {
+              // Edit saved or paste occurred
+              this.addPatchToHistory();
+            }
+          }
+        } else {
+          // If we removed a component but not during an add action
+          if ((!this.patch.componentAddedStart && this.patch.componentRemovedStart) || this.patch.componentMovedStart) {
+            // Component was removed or moved
+            this.addPatchToHistory();
+          }
+        }
       } else {
         // We pressed undo or redo, so we just ignore
         // adding the action to the history
