@@ -47,7 +47,7 @@
     "components"
   ],
   "dependencies": {
-    "formiojs": "^4.13.10",
+    "formiojs": "^4.14.6",
     "lodash": "^4.17.21",
     "native-promise-only": "^0.8.1"
   },
