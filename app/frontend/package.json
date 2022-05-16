@@ -31,7 +31,7 @@
     "deep-freeze": "^0.0.1",
     "fast-json-patch": "^3.1.1",
     "font-awesome": "^4.7.0",
-    "formiojs": "^4.13.10",
+    "formiojs": "^4.14.6",
     "keycloak-js": "^15.0.2",
     "material-design-icons-iconfont": "^6.1.1",
     "moment": "^2.29.1",
