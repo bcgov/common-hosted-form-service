@@ -26,7 +26,7 @@
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" text small>
+            <v-btn color="primary" text small @click="onShowPreveiwDialog(item)">
               <font-awesome-icon icon="fa-solid fa-eye" />
               <span class="d-none d-sm-flex">Preview</span>
             </v-btn>
@@ -39,10 +39,13 @@
           </div>
         </div>
       </template>
-    </v-data-table>"
+    </v-data-table>
     <InformationLinkDialog :showDialog="showDialog" 
                            @close-dialog="onShowDialog" 
                            :item="item"/>
+    <InformationLinkPreviewDialog :showDialog="showPreviewDialog" 
+                                  @close-dialog="onShowPreveiwDialog" 
+                                  :item="item"/>
   </div>
 </template>
 
@@ -51,16 +54,18 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPenToSquare,faEye } from '@fortawesome/free-solid-svg-icons';
 import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
+import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
 
 library.add(faPenToSquare,faEye);
 
 export default{
   name: 'BasicLayout',
-  components:{InformationLinkDialog},
+  components:{InformationLinkDialog,InformationLinkPreviewDialog},
   data(){
     return{
       loading:false,
       showDialog:false,
+      showPreviewDialog:false,
       publish:'',
       item:{},
       headers: [
@@ -85,7 +90,10 @@ export default{
     onShowDialog(item){
       if(item) this.item=item;
       this.showDialog= !this.showDialog;
-      
+    },
+    onShowPreveiwDialog(item){
+      if(item) this.item=item;
+      this.showPreviewDialog=!this.showPreviewDialog;
     }
   }
 };
