@@ -99,4 +99,13 @@ export default {
   readUser(userId) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`);
   },
+
+  /**
+   * @function readCommonCompsHelpInfo
+   * Read a user in the DB
+   * @returns {Promise} An axios response
+   */
+  readCommonCompsHelpInfo() {
+    return appAxios().get(`${ApiRoutes.ADMIN}/commonCompsHelpInfo`);
+  },
 };

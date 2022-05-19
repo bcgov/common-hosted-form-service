@@ -116,6 +116,16 @@ const service = {
         email: fa.email,
         roles: fa.roles
       }));
+  },
+
+  /**
+   * @function getCommonComponentsHelpInfo
+   * Search for all Common Compo
+   * @param {String} formId The form ID
+   * @returns {Promise} An objection query promise
+   */
+   getCommonComponentsHelpInfo: async (formId) => {
+    return await CommonComponentsHelpInfo.query();
   }
 };
 
