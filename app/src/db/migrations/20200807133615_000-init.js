@@ -1,3 +1,4 @@
+const { Knex } = require('knex');
 const stamps = require('../stamps');
 
 exports.up = function(knex) {
@@ -76,11 +77,22 @@ exports.up = function(knex) {
       table.boolean('deleted').notNullable().defaultTo(false);
       table.jsonb('submission');
       stamps(knex, table);
+    }))
+    .then(() => knex.schema.createTable('custom_components_help_info',table=>{
+      table.uuid('id').primary();
+      table.string('tagName').notNullable();
+      table.string('imageLink').notNullable();
+      table.integer('version').notNullable();
+      table.string('groupName').notNullable();
+      table.string('description').notNullable();
+      stamps(knex, table);
     }));
+
 };
 
 exports.down = function(knex) {
   return Promise.resolve()
+    .then(() => knex.schema.dropTableIfExists('custom_components_help_info'))
     .then(() => knex.schema.dropTableIfExists('form_identity_provider'))
     .then(() => knex.schema.dropTableIfExists('identity_provider'))
     .then(() => knex.schema.dropTableIfExists('form_submission'))
