@@ -99,9 +99,7 @@
                   <div color="grey--text">
                     <span class="grey--text">Version: 17</span> 
                     <span class="blue--text text--darken-4"> - </span>
-                    <span class="blue--text text--darken-4 font-weight-medium" @mouseover="hover = true"
-                          @mouseleave="hover = false"
-                          :class="{ active: hover }">Restore
+                    <span class="blue--text text--darken-4 font-weight-medium active">Restore
                     </span>
                   </div>
                 </div>
@@ -149,7 +147,7 @@ export default {
 };
 </script>
 <style>
-  .active {
+  .active:hover {
     text-decoration: underline;
     cursor:pointer;
   }
