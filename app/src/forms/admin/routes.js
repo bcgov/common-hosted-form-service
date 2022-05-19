@@ -57,4 +57,11 @@ routes.get('/users/:userId', async (req, res, next) => {
   await userController.read(req, res, next);
 });
 
+//
+//common componets help info
+//
+routes.get('/commonCompsHelpInfo', async(req,res,next) =>{
+  await controller.readCommonComponentsHelpInfo(req, res, next);
+});
+
 module.exports = routes;

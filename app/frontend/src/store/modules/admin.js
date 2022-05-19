@@ -12,7 +12,8 @@ export default {
     formList: [],
     roles: [],
     user: {},
-    userList: []
+    userList: [],
+    ccHelpInfoList:[]
   },
   getters: {
     apiKey: state => state.apiKey,
@@ -20,7 +21,8 @@ export default {
     formList: state => state.formList,
     roles: state => state.roles,
     user: state => state.user,
-    userList: state => state.userList
+    userList: state => state.userList,
+    ccHelpInfoList: state => state.ccHelpInfoList
   },
   mutations: {
     SET_API_KEY(state, apiKey) {
@@ -40,6 +42,9 @@ export default {
     },
     SET_USERLIST(state, users) {
       state.userList = users;
+    },
+    SET_CCHELPINFOLIST(state,ccHelpInfoList){
+      state.ccHelpInfoList = ccHelpInfoList;
     }
   },
   actions: {
@@ -155,4 +160,22 @@ export default {
       }
     },
   },
+  //
+  // Common Components Help Information
+  //
+  async readCommonCompsHelpInfo({ commit, dispatch }) {
+    try {
+      // Get Common Components Help Information
+      commit('SET_CCHELPINFOLIST',{});
+      console.log('---------------->>>');
+      const response = await adminService.readCommonCompsHelpInfo();
+      commit('SET_CCHELPINFOLIST',response.data);
+    } catch(error) {
+      dispatch('notifications/addNotification', {
+        message: 'An error occurred while fetching this user.',
+        consoleError: 'Error getting admin user  data',
+      }, { root: true });
+    }
+  }
+
 };

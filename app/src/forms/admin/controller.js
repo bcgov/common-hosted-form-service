@@ -83,6 +83,18 @@ module.exports = {
     } catch (error) {
       next(error);
     }
+  },
+
+  //
+  // Common Components Help Information
+  //
+  readCommonComponentsHelpInfo:async(req,res,next)=>{
+    try{
+      const response = await service.getCommonComponentsHelpInfo();
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
   }
 
 };
