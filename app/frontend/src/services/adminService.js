@@ -101,11 +101,21 @@ export default {
   },
 
   /**
-   * @function readCommonCompsHelpInfo
+   * @function listCommonCompsHelpLinkInfo
    * Read a user in the DB
    * @returns {Promise} An axios response
    */
-  readCommonCompsHelpInfo() {
-    return appAxios().get(`${ApiRoutes.ADMIN}/commonCompsHelpInfo`);
+  listCommonCompsHelpLinkInfo() {
+    return appAxios().get(`${ApiRoutes.ADMIN}/commonCompsHelpInfo/list`);
+  },
+
+  /**
+   * @function addCommonCompsHelpInfo
+   * Create a new Form
+   * @param {Object} data An Object containing each common component help link information
+   * @returns {Promise} An axios response
+   */
+  addCommonCompsHelpInfo(data){
+    return appAxios().post(`${ApiRoutes.ADMIN}/commonCompsHelpInfo`, data);
   },
 };

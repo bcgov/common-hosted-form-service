@@ -11,7 +11,7 @@
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <BasicLayout :layoutList="basicLayoutList"/>
+          <BasicLayout :layoutList="basicLayoutList" :itemsList="ccHelpInfoList.basicLayout?ccHelpInfoList.basicLayout:[]"/>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -20,7 +20,7 @@
 
 <script>
 import BasicLayout from '@/components/infolinks/BasicLayout.vue';
-
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'CommonComponentInfoLinks',
@@ -37,7 +37,20 @@ export default {
         {name:'Panel'}
       ]
     };
+  },
+  methods:{
+    ...mapActions('admin',['listCommonCompsHelpInfo'])
+  },
+  computed:{
+    ...mapGetters('admin',['ccHelpInfo','ccHelpInfoList']),
+  },
+  watch:{
+    ccHelpInfo(){
+      this.listCommonCompsHelpInfo();
+    },
+  },
+  mounted(){
+    this.listCommonCompsHelpInfo();
   }
-  
 };
 </script>

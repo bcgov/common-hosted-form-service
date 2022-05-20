@@ -13,7 +13,8 @@ export default {
     roles: [],
     user: {},
     userList: [],
-    ccHelpInfoList:[]
+    ccHelpInfoList:[],
+    ccHelpInfo:{}
   },
   getters: {
     apiKey: state => state.apiKey,
@@ -22,7 +23,8 @@ export default {
     roles: state => state.roles,
     user: state => state.user,
     userList: state => state.userList,
-    ccHelpInfoList: state => state.ccHelpInfoList
+    ccHelpInfoList: state => state.ccHelpInfoList,
+    ccHelpInfo: state => state.ccHelpInfo
   },
   mutations: {
     SET_API_KEY(state, apiKey) {
@@ -45,6 +47,9 @@ export default {
     },
     SET_CCHELPINFOLIST(state,ccHelpInfoList){
       state.ccHelpInfoList = ccHelpInfoList;
+    },
+    SET_CCHELPINFO(state,ccHelpInfo){
+      state.ccHelpInfo = ccHelpInfo;
     }
   },
   actions: {
@@ -159,23 +164,37 @@ export default {
         }, { root: true });
       }
     },
-  },
-  //
-  // Common Components Help Information
-  //
-  async readCommonCompsHelpInfo({ commit, dispatch }) {
-    try {
-      // Get Common Components Help Information
-      commit('SET_CCHELPINFOLIST',{});
-      console.log('---------------->>>');
-      const response = await adminService.readCommonCompsHelpInfo();
-      commit('SET_CCHELPINFOLIST',response.data);
-    } catch(error) {
-      dispatch('notifications/addNotification', {
-        message: 'An error occurred while fetching this user.',
-        consoleError: 'Error getting admin user  data',
-      }, { root: true });
+
+   
+
+    async listCommonCompsHelpInfo({ commit, dispatch }) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_CCHELPINFOLIST',{});
+        const response = await adminService.listCommonCompsHelpLinkInfo();
+        commit('SET_CCHELPINFOLIST',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching this user.',
+          consoleError: 'Error getting admin user  data',
+        }, { root: true });
+      }
+    },
+
+    async addCommonCompsHelpInfo({ commit, dispatch },data) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_CCHELPINFO',{});
+        const response = await adminService.addCommonCompsHelpInfo(data);
+        commit('SET_CCHELPINFO',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching this user.',
+          consoleError: 'Error getting admin user  data',
+        }, { root: true });
+      }
     }
-  }
+  },
+ 
 
 };
