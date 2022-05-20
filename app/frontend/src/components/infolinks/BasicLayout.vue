@@ -20,13 +20,13 @@
         <div class="d-flex flex-row justify-end align-center">
           <div
           >
-            <v-btn color="primary" text small @click="onShowDialog(item)">
+            <v-btn color="primary" text small @click="onShowDialog(item.name)" >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
               <span class="d-none d-sm-flex">Edit</span>
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" text small @click="onShowPreveiwDialog(item)">
+            <v-btn color="primary" text small @click="onShowPreveiwDialog(item.name)" :disabled="canDisabled(item.name)">
               <font-awesome-icon icon="fa-solid fa-eye" />
               <span class="d-none d-sm-flex">Preview</span>
             </v-btn>
@@ -40,7 +40,9 @@
         </div>
       </template>
     </v-data-table>
-    <InformationLinkDialog :showDialog="showDialog" 
+    <InformationLinkDialog :showDialog="showDialog"
+                           :groupName="'basicLayout'" 
+                           :itemName="itemName"
                            @close-dialog="onShowDialog" 
                            :item="item"/>
     <InformationLinkPreviewDialog :showDialog="showPreviewDialog" 
@@ -50,7 +52,6 @@
 </template>
 
 <script>
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPenToSquare,faEye } from '@fortawesome/free-solid-svg-icons';
 import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
@@ -67,7 +68,9 @@ export default{
       showDialog:false,
       showPreviewDialog:false,
       publish:'',
+      itemName:'',
       item:{},
+      listLength:this.itemsList.length,
       headers: [
         { text: 'Form Title', align: 'start', value: 'name', width: '1%', },
         {
@@ -84,17 +87,36 @@ export default{
   props:{
     layoutList:{
       type:Array,
+      required: true
+    },
+    itemsList:{
+      type:Array,
+      defualt:[]
     }
   },
+  watch:{
+    itemName(){
+      if(this.itemName){
+        this.item =this.itemsList.find(obj => {
+          return obj.name === this.itemName;
+        });
+      }
+    }
+  },
+ 
   methods:{
-    onShowDialog(item){
-      if(item) this.item=item;
+    onShowDialog(itemName){
+     
+      if(itemName) this.itemName=itemName;
       this.showDialog= !this.showDialog;
     },
-    onShowPreveiwDialog(item){
-      if(item) this.item=item;
+    onShowPreveiwDialog(itemName){
+      if(itemName) this.itemName=itemName;
       this.showPreviewDialog=!this.showPreviewDialog;
-    }
-  }
+    },
+    canDisabled(itemName){
+      return this.itemsList.filter(item => item.name === itemName ).length == 0; 
+    }, 
+  },
 };
 </script>

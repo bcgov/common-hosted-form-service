@@ -1,5 +1,6 @@
-const { Form, FormVersion, User, UserFormAccess } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess,CommonComponentsHelpInfo } = require('../common/models');
 const { queryUtils } = require('../common/utils');
+const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
@@ -117,16 +118,73 @@ const service = {
         roles: fa.roles
       }));
   },
+  /**
 
   /**
-   * @function getCommonComponentsHelpInfo
+   * @function listCommonComponentsHelpInfo
    * Search for all Common Compo
-   * @param {String} formId The form ID
    * @returns {Promise} An objection query promise
    */
-   getCommonComponentsHelpInfo: async (formId) => {
-    return await CommonComponentsHelpInfo.query();
-  }
+   listCommonComponentsHelpInfo: async () => {
+    let result = await CommonComponentsHelpInfo.query();
+
+    let filterResult= result.map(item=>({id:item.id,name:item.tagName,link:item.tagLink,imageLink:item.imageLink,
+      version:item.version,groupName:item.groupName,description:item.description }));
+     
+    return filterResult.reduce(function (r, a) {
+      r[a.groupName] = r[a.groupName] || [];
+      r[a.groupName].push(a);
+      return r;
+    }, Object.create(null));
+  },
+
+  /**
+   * @function createCommonComponentsHelpInfo
+   * Search for all Common Compo
+   * @returns {Promise} An objection query promise
+   */
+   createCommonComponentsHelpInfo: async(data)=>{
+    let trx;
+    try{
+      const obj = {};
+      obj.id = uuidv4();
+      obj.tagName = data.name;
+      obj.tagLink = data.link;
+      obj.imageLink = data.imageLink;
+      obj.version = data.version;
+      obj.groupName = data.groupName;
+      obj.description = data.description;
+      obj.createdBy = "aidowu.idir";
+      
+      trx = await CommonComponentsHelpInfo.startTransaction();
+      
+      let t = await CommonComponentsHelpInfo.query(trx).insert(obj);
+  
+      await trx.commit()
+      
+      return service.readCommonComponentsHelpInfo(obj.id);
+      
+    } catch(err){
+     
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  /**
+   * @function createCommonComponentsHelpInfo
+   * fetch Common Component Help Link Info by ccHelpLinkInfo
+   * @param {String} ccHelpLinkInfo Common Component Help Link Info
+   * @returns {Promise} An objection query promise
+   */
+
+readCommonComponentsHelpInfo: async(ccHelpLinkInfo)=>{
+  return await CommonComponentsHelpInfo.query()
+  .where('id', ccHelpLinkInfo);
+}
+
 };
+
+
 
 module.exports = service;

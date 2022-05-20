@@ -88,13 +88,22 @@ module.exports = {
   //
   // Common Components Help Information
   //
-  readCommonComponentsHelpInfo:async(req,res,next)=>{
+  listCommonComponentsHelpInfo:async(req,res,next)=>{
     try{
-      const response = await service.getCommonComponentsHelpInfo();
+      const response = await service.listCommonComponentsHelpInfo();
       res.status(200).json(response);
     } catch(error){
       next(error);
     }
-  }
+  },
+
+  createCommonComponentsHelpInfo:async(req,res,next)=>{
+    try{
+      const response = await service.createCommonComponentsHelpInfo(req.body);
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
+  },
 
 };

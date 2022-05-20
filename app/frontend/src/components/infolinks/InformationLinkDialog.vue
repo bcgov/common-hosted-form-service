@@ -17,7 +17,7 @@
               Component Name:
             </span>
             <span class="blue--text text--darken-4">
-              {{ item.name}}
+              {{name}}
             </span>
           </v-row>
           <v-row class="mt-5" no-gutters>
@@ -80,10 +80,7 @@
                   <v-btn
                     class="mr-4"
                     color="primary"
-                    @click="()=>{
-                      //createSET_CCHelpLinksInfos({'tagName':item.name,imageLinks:this.link,version:this.description});
-                      this.$emit('close-dialog');
-                    }"
+                    @click="submit"   
                   >
                     Save
                   </v-btn>
@@ -113,7 +110,7 @@
 </template>
 
 <script>
-//import { mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 library.add(faCloudArrowUp);
@@ -122,26 +119,45 @@ export default {
   name:'InformationLinkDialog',
   data(){
     return{
-      hover: false,
+      name:this.itemName,
       description:'',
       link:'',
-      dialog: this.showDialog
+      dialog: this.showDialog,
     };
   },
   props:{
     showDialog:{ type: Boolean, required: true },
-    item:{ type: Object, required: true }
+    item:{ type: Object },
+    itemName:{type:String,require:true},
+    groupName:{type:String,require:true}
   },
   methods:{
-    //...mapActions('admin', ['createSET_CCHelpLinksInfos']),
+    ...mapActions('admin', ['addCommonCompsHelpInfo']),
     onCloseDialog(){
       this.$emit('close-dialog');
+    },
+    submit(){
+      this.addCommonCompsHelpInfo({name:this.name,imageLink:'',link:this.link,version:1,
+        groupName:this.groupName,description:this.description});
+      this.onCloseDialog();              
+    },
+    resetDialog(){
+      this.name=this.itemName;
+      this.description='';
+      this.link='';
     }
   },
   watch: {
-    // `visible(value) => this.isVisible = value` could work too
     showDialog() {
       this.dialog = this.showDialog;
+    },
+    item(){
+      this.resetDialog();
+      if(this.item){
+        this.name=this.item.name;
+        this.description=this.item.description;
+        this.link=this.item.link;
+      }
     }
   }
 };
