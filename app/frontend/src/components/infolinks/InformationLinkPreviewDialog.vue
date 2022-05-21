@@ -2,23 +2,23 @@
   <v-row justify="center" class="mb-5">
     <v-dialog
       v-model="dialog"
-      width="800"
+      width="70%"
       persistent
     >
       <v-card class="pb-16">
         <v-container class="overflow-auto">
           <v-row >
-            <v-col class="d-flex justify-space-between indigo darken-1" style="height:40px;" >
-              <div class="align-self-center text-subtitle-1 white--text">{{item&&item.name}}</div>
-              <div class="align-self-center cursor"><font-awesome-icon icon="fa-solid fa-xmark" size="lg" inverse @click="()=>{
+            <v-col class="d-flex justify-space-between headerWrapper pa-4">
+              <div class="align-self-center">{{item&&item.name}}</div>
+              <div class="align-self-center cursor"><font-awesome-icon icon="fa-solid fa-xmark" :size="'1x'" inverse @click="()=>{
                 //createSET_CCHelpLinksInfos({'tagName':item.name,imageLinks:this.link,version:this.description});
                 this.$emit('close-dialog');
               }"/></div>
             </v-col>
           </v-row>
-          <v-row class="mt-6">
+          <v-row class="mt-6" v-if="item&&item.imageLink">
             <v-col md="6" >
-              <div>
+              <div class="text">
                 {{item&&item.description}}
               </div>
             </v-col>
@@ -29,8 +29,15 @@
               ></v-img>
             </v-col>
           </v-row>
+          <v-row class="mt-6" v-else>
+            <v-col md="12" >
+              <div class="text">
+                {{item&&item.description}}
+              </div>
+            </v-col>
+          </v-row>
           <v-row>
-            <v-col class="d-flex flex-row align-center text-decoration-underline blue--text text--darken-4">
+            <v-col class="d-flex flex-row align-center text-decoration-underline linkWrapper">
               <a :href="'https://www.google.com/'" :target="'_blank'"> <div class="mr-1 cursor" >Learn more 
                 <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /> </div></a>
             </v-col>
@@ -74,5 +81,26 @@ export default {
 <style>
   .cursor{
     cursor:pointer;
+  }
+  .text{
+    font: normal normal normal 16px Open Sans;
+    letter-spacing: 0px;
+    color: #000000;
+    opacity: 1;
+  }
+  .linkWrapper{
+    text-align: left;
+    text-decoration: underline;
+    font: normal normal normal 18px Open Sans;
+    letter-spacing: 0px;
+    color: #1A5A96;
+  }
+  .headerWrapper{
+    height:34px;
+    background: #1A5A96 0% 0% no-repeat padding-box;
+    text-align: left;
+    font: normal normal normal 25px Open Sans;
+    letter-spacing: 0px;
+    color: #F2F2F2;
   }
 </style>
