@@ -11,14 +11,14 @@ class CommonComponentsHelpInfo extends Timestamps(Model) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['id','tagName','tagLink','version','groupName','description'],
+      required: ['id','tagname','taglink','versions','groupname','description'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
-        tagName: { type: 'string', minLength: 1, maxLength: 255 },
-        tagLink: { type: 'string' },
-        imageLink: { type: 'string' },
-        version: { type: 'integer'},
-        groupName: { type: 'string', minLength: 1, maxLength: 255 },
+        tagname: { type: 'string', minLength: 1, maxLength: 255 },
+        taglink: { type: 'string' },
+        imagelink: { type: 'string' },
+        versions: { type: 'integer'},
+        groupname: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: 'string'},
         ...stamps
       },

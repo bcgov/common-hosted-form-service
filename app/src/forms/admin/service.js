@@ -128,8 +128,9 @@ const service = {
    listCommonComponentsHelpInfo: async () => {
     let result = await CommonComponentsHelpInfo.query();
 
-    let filterResult= result.map(item=>({id:item.id,name:item.tagName,link:item.tagLink,imageLink:item.imageLink,
-      version:item.version,groupName:item.groupName,description:item.description }));
+    let filterResult= result.map(item=>({id:item.id,name:item.tagname,link:item.taglink,imageLink:item.imagelink,
+      version:item.versions,groupName:item.groupname,description:item.description }));
+
      
     return filterResult.reduce(function (r, a) {
       r[a.groupName] = r[a.groupName] || [];
@@ -148,11 +149,11 @@ const service = {
     try{
       const obj = {};
       obj.id = uuidv4();
-      obj.tagName = data.name;
-      obj.tagLink = data.link;
-      obj.imageLink = data.imageLink;
-      obj.version = data.version;
-      obj.groupName = data.groupName;
+      obj.tagname = data.name;
+      obj.taglink = data.link;
+      obj.imagelink = data.imageLink;
+      obj.versions = data.version;
+      obj.groupname = data.groupName;
       obj.description = data.description;
       obj.createdBy = "aidowu.idir";
       

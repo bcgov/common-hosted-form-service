@@ -80,12 +80,13 @@ exports.up = function(knex) {
     }))
     .then(() => knex.schema.createTable('common_components_help_info',table=>{
       table.uuid('id').primary();
-      table.string('tagName').notNullable();
-      table.string('tagLink',500).notNullable;
-      table.string('imageLink',500);
-      table.integer('version').notNullable();
-      table.string('groupName').notNullable();
+      table.string('tagname').notNullable();
+      table.string('taglink',500).notNullable;
+      table.string('imagelink',500);
+      table.integer('versions').notNullable();
+      table.string('groupname').notNullable();
       table.text('description').notNullable();
+      table.unique(['tagname', 'versions']);
       stamps(knex, table);
     }));
 
