@@ -126,11 +126,13 @@ const service = {
    * @returns {Promise} An objection query promise
    */
    listCommonComponentsHelpInfo: async () => {
-    let result = await CommonComponentsHelpInfo.query();
+   
+    let result = await CommonComponentsHelpInfo.query()
+    .modify('distinctOnTagName')
+    .modify('orderTagNameVersionsDescending');
 
     let filterResult= result.map(item=>({id:item.id,name:item.tagname,link:item.taglink,imageLink:item.imagelink,
       version:item.versions,groupName:item.groupname,description:item.description }));
-
      
     return filterResult.reduce(function (r, a) {
       r[a.groupName] = r[a.groupName] || [];
