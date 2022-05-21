@@ -3,7 +3,7 @@
     <v-dialog
       v-model="dialog"
       persistent
-      width="60%"
+      width="70%"
     >
       <v-card>
         <v-container>
@@ -31,7 +31,8 @@
                 style="width:80%;"
                 v-model="link"
                 value="link"
-                class="blueColorWrapper"
+                class="text-style"
+                color="#1A5A96"
               >
                 {{link}}
               </v-text-field>
@@ -43,7 +44,7 @@
               cols="12"
               sm="12"
               md="12"
-              class="blackColorWrapper mb-2"
+              class="mb-2 blackColorWrapper"
             >
               Description
             </v-col>
@@ -53,13 +54,12 @@
               md="12"
             >
               <v-textarea
-                
                 clear-icon="mdi-close-circle"
                 v-model="description"
                 solo
                 clearable
                 value="description"
-                class="blueColorWrapper"
+                class="text-style"
               ></v-textarea>
             </v-col>
           </v-row>
@@ -68,7 +68,7 @@
               Image Upload:
             </span>
             <span class="blue--text text--darken-4">
-              <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" size="2x" color='#1A5A96' />
+              <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" size="xl" color='#1A5A96' />
             </span>
           </v-row>
           <v-row class="mt-10" >
@@ -76,21 +76,20 @@
               <div class="d-flex flex-row justify-space-between">
                 <div>
                   <v-btn
-                    class="mr-4 saveButtonWrapper"
-                    color="primary"
-                    @click="submit"   
+                    class="mr-4"
+                    @click="submit"
+                    :style="saveButtonWrapper"  
                   >
                     Save
                   </v-btn>
                   <v-btn
-                    color="white"
                     @click="onCloseDialog"
-                    class="cancelButtonWrapper"
+                    :style="cancelButtonWrapper"
                   >
                     Close
                   </v-btn>
                 </div>
-                <div class="d-flex flex-row versionLabel">
+                <div class="d-flex flex-row align-center versionLabel">
                   <div class="mr-3"><span style="color: #939393;">Current:</span> <span class="font-weight-bold" style="color: #313132;">Version {{version+1}}</span></div>
                   <div>
                     <span style="color: #707070C1;">Version: {{version}}</span> 
@@ -123,9 +122,28 @@ export default {
       link:'',
       dialog: this.showDialog,
       color1:'#1A5A96',
-      styleObject:{
-        
-      }
+      saveButtonWrapper:{
+        background: '#003366 0% 0% no-repeat padding-box',
+        border: '1px solid #707070',
+        borderRadius: '3px',
+        font: 'normal normal bold 18px Open Sans',
+        letterSpacing: '0px',
+        color: '#F2F2F2',
+        width: '117px',
+        height: '36px',
+        textTransform: 'capitalize'
+      },
+      cancelButtonWrapper:{
+        border: '1px solid #003366',
+        background: '#FFFFFF 0% 0% no-repeat padding-box',
+        borderRadius: '3px',
+        font: 'normal normal bold 18px Open Sans',
+        letterSpacing: '0px',
+        color: '#38598A',
+        width: '117px',
+        height: '36px',
+        textTransform: 'capitalize'
+      },
     };
   },
   props:{
@@ -183,7 +201,7 @@ export default {
   .disabled{
     pointer-events: none;
   }
-  .blueColorWrapper{
+  .blueColorWrapper {
     text-align: left;
     font: normal normal normal 20px Open Sans;
     letter-spacing: 0px;
@@ -196,32 +214,32 @@ export default {
     letter-spacing: 0px;
     color: #313132;
   }
-  .saveButtonWrapper{
-    background: #003366 0% 0% no-repeat padding-box;
-    border: 1px solid #707070;
-    background: #003366 0% 0% no-repeat padding-box;
-    border: 1px solid #707070;
-    border-radius: 3px;
-    font: normal normal bold 18px Open Sans;
-    letter-spacing: 0px;
-    color: #F2F2F2;
-    text-transform: capitalize;
-  }
-  .cancelButtonWrapper{
-    border: 1px solid var(--primary-button-navigation-bar);
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 1px solid #003366;
-    border-radius: 3px;
-    font: normal normal bold 18px/24px Open Sans;
-    letter-spacing: 0px;
-    color: #38598A;
-    text-transform: capitalize;
-    opacity:1;
-  }
+  
   .versionLabel{
     font: normal normal normal 16px Open Sans;
     letter-spacing: 0px;
     opacity: 1;
+  }
+
+  
+  .text-style input {
+    text-align: left;
+    font: normal normal normal 20px Open Sans;
+    letter-spacing: 0px;
+    caret-color: #1A5A96 !important;
+    color: #1A5A96 !important;
+    border-bottom:1px solid #1A5A96;
+  }
+
+
+
+  .text-style textarea {
+    text-align: left;
+    font: normal normal normal 20px Open Sans;
+    letter-spacing: 0px;
+    caret-color: #1A5A96 !important;
+    color: #1A5A96 !important;
+    
   }
 </style>
 
