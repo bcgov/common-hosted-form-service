@@ -13,15 +13,13 @@
             </v-col>
           </v-row>
           <v-row class="mt-7" no-gutters>
-            <span class="text-decoration-underline mr-2">
+            <span class="text-decoration-underline mr-2 blackColorWrapper">
               Component Name:
             </span>
-            <span class="blue--text text--darken-4">
-              {{name}}
-            </span>
+            <span v-text="name" class="blueColorWrapper"/>
           </v-row>
           <v-row class="mt-5" no-gutters>
-            <p class="mr-2 d-flex align-end text-decoration-underline blue--text text--darken-4">
+            <p class="mr-2 d-flex align-end text-decoration-underline blueColorWrapper">
               Learn More Links:
             </p>
             <v-col
@@ -33,7 +31,7 @@
                 style="width:80%;"
                 v-model="link"
                 value="link"
-                class="light-blue--text"
+                class="blueColorWrapper"
               >
                 {{link}}
               </v-text-field>
@@ -45,6 +43,7 @@
               cols="12"
               sm="12"
               md="12"
+              class="blackColorWrapper mb-2"
             >
               Description
             </v-col>
@@ -58,19 +57,18 @@
                 clear-icon="mdi-close-circle"
                 v-model="description"
                 solo
-                label="Solo"
                 clearable
                 value="description"
-                class="light-blue--text"
+                class="blueColorWrapper"
               ></v-textarea>
             </v-col>
           </v-row>
           <v-row class="mt-5 " no-gutters>
-            <span class="text-decoration-underline mr-2">
+            <span class="text-decoration-underline mr-2 blackColorWrapper">
               Image Upload:
             </span>
             <span class="blue--text text--darken-4">
-              <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" size="2x" />
+              <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" size="2x" color='#1A5A96' />
             </span>
           </v-row>
           <v-row class="mt-10" >
@@ -78,7 +76,7 @@
               <div class="d-flex flex-row justify-space-between">
                 <div>
                   <v-btn
-                    class="mr-4"
+                    class="mr-4 saveButtonWrapper"
                     color="primary"
                     @click="submit"   
                   >
@@ -87,16 +85,17 @@
                   <v-btn
                     color="white"
                     @click="onCloseDialog"
+                    class="cancelButtonWrapper"
                   >
                     Close
                   </v-btn>
                 </div>
-                <div class="d-flex flex-row">
-                  <div class="mr-3"><span class="grey--text">Current:</span> <span class="font-weight-bold">Version 18</span></div>
-                  <div color="grey--text">
-                    <span class="grey--text">Version: 17</span> 
-                    <span class="blue--text text--darken-4"> - </span>
-                    <span class="blue--text text--darken-4 font-weight-medium active">Restore
+                <div class="d-flex flex-row versionLabel">
+                  <div class="mr-3"><span style="color: #939393;">Current:</span> <span class="font-weight-bold" style="color: #313132;">Version {{version+1}}</span></div>
+                  <div>
+                    <span style="color: #707070C1;">Version: {{version}}</span> 
+                    <span style="color: #1A5A96;"> - </span>
+                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(version)===0?'disabled':''" @click="setPreviousVersion">Restore
                     </span>
                   </div>
                 </div>
@@ -119,53 +118,110 @@ export default {
   name:'InformationLinkDialog',
   data(){
     return{
-      name:this.itemName,
+      name:'',
       description:'',
       link:'',
       dialog: this.showDialog,
+      color1:'#1A5A96',
+      styleObject:{
+        
+      }
     };
   },
   props:{
     showDialog:{ type: Boolean, required: true },
     item:{ type: Object },
-    itemName:{type:String,require:true},
+    itemName:{type:String,require:true,default:''},
     groupName:{type:String,require:true}
   },
   methods:{
     ...mapActions('admin', ['addCommonCompsHelpInfo']),
     onCloseDialog(){
+      this.resetDialog();
       this.$emit('close-dialog');
     },
     submit(){
-      this.addCommonCompsHelpInfo({name:this.name,imageLink:'',link:this.link,version:1,
+      this.addCommonCompsHelpInfo({name:this.name,imageLink:'',link:this.link,version:this.version+1,
         groupName:this.groupName,description:this.description});
       this.onCloseDialog();              
     },
     resetDialog(){
-      this.name=this.itemName;
       this.description='';
       this.link='';
-    }
-  },
-  watch: {
-    showDialog() {
-      this.dialog = this.showDialog;
+      
     },
-    item(){
-      this.resetDialog();
+    setPreviousVersion(){
       if(this.item){
         this.name=this.item.name;
         this.description=this.item.description;
         this.link=this.item.link;
       }
     }
+  },
+  watch: {
+    showDialog() {
+      this.dialog = this.showDialog;
+    },
+    itemName(){
+      this.name=this.itemName;
+    }
+  },
+  computed: {
+    version(){
+      if(this.item) return this.item.version;
+      return 0;
+    }
   }
+
 };
 </script>
 <style>
   .active:hover {
     text-decoration: underline;
     cursor:pointer;
+  }
+  .disabled{
+    pointer-events: none;
+  }
+  .blueColorWrapper{
+    text-align: left;
+    font: normal normal normal 20px Open Sans;
+    letter-spacing: 0px;
+    color: #1A5A96;
+  }
+  .blackColorWrapper{
+    text-align: left;
+    text-decoration: underline;
+    font: normal normal normal 20px Open Sans;
+    letter-spacing: 0px;
+    color: #313132;
+  }
+  .saveButtonWrapper{
+    background: #003366 0% 0% no-repeat padding-box;
+    border: 1px solid #707070;
+    background: #003366 0% 0% no-repeat padding-box;
+    border: 1px solid #707070;
+    border-radius: 3px;
+    font: normal normal bold 18px Open Sans;
+    letter-spacing: 0px;
+    color: #F2F2F2;
+    text-transform: capitalize;
+  }
+  .cancelButtonWrapper{
+    border: 1px solid var(--primary-button-navigation-bar);
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #003366;
+    border-radius: 3px;
+    font: normal normal bold 18px/24px Open Sans;
+    letter-spacing: 0px;
+    color: #38598A;
+    text-transform: capitalize;
+    opacity:1;
+  }
+  .versionLabel{
+    font: normal normal normal 16px Open Sans;
+    letter-spacing: 0px;
+    opacity: 1;
   }
 </style>
 

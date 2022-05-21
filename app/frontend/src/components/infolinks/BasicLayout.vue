@@ -20,13 +20,13 @@
         <div class="d-flex flex-row justify-end align-center">
           <div
           >
-            <v-btn color="primary" text small @click="onShowDialog(item.name)" >
+            <v-btn color="primary" text small @click="onOpenDialog(item.name)" >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
               <span class="d-none d-sm-flex">Edit</span>
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" text small @click="onShowPreveiwDialog(item.name)" :disabled="canDisabled(item.name)">
+            <v-btn color="primary" text small @click="onOpenPreviewDialog(item.name)" :disabled="canDisabled(item.name)">
               <font-awesome-icon icon="fa-solid fa-eye" />
               <span class="d-none d-sm-flex">Preview</span>
             </v-btn>
@@ -43,10 +43,10 @@
     <InformationLinkDialog :showDialog="showDialog"
                            :groupName="'basicLayout'" 
                            :itemName="itemName"
-                           @close-dialog="onShowDialog" 
+                           @close-dialog="onShowCloseDialog" 
                            :item="item"/>
     <InformationLinkPreviewDialog :showDialog="showPreviewDialog" 
-                                  @close-dialog="onShowPreveiwDialog" 
+                                  @close-dialog="onShowClosePreveiwDialog" 
                                   :item="item"/>
   </div>
 </template>
@@ -94,29 +94,32 @@ export default{
       defualt:[]
     }
   },
-  watch:{
-    itemName(){
-      if(this.itemName){
-        this.item =this.itemsList.find(obj => {
-          return obj.name === this.itemName;
-        });
-      }
-    }
-  },
- 
   methods:{
-    onShowDialog(itemName){
-     
-      if(itemName) this.itemName=itemName;
+    onShowCloseDialog(){
       this.showDialog= !this.showDialog;
     },
-    onShowPreveiwDialog(itemName){
-      if(itemName) this.itemName=itemName;
+    onShowClosePreveiwDialog(){
       this.showPreviewDialog=!this.showPreviewDialog;
     },
     canDisabled(itemName){
       return this.itemsList.filter(item => item.name === itemName ).length == 0; 
     }, 
+    onOpenDialog(itemName){
+      this.getItem(itemName);
+      this.onShowCloseDialog();
+    },
+    onOpenPreviewDialog(itemName){
+      this.getItem(itemName);
+      this.onShowClosePreveiwDialog();
+    },
+    getItem(itemName){
+      if(itemName){
+        this.itemName=itemName;
+        this.item =this.itemsList.find(obj => {
+          return obj.name === this.itemName;
+        });
+      }
+    }
   },
 };
 </script>

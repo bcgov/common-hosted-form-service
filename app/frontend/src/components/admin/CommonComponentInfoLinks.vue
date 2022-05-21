@@ -28,13 +28,13 @@ export default {
   data(){
     return{
       basicLayoutList:[
-        {name:'Basic Layout'},
-        {name:'Text/Images'},
-        {name:'Columns-2'},
-        {name:'Columns-3'},
-        {name:'Columns-4'},
-        {name:'Tabs'},
-        {name:'Panel'}
+        {name:'Basic Layout',id:1},
+        {name:'Text/Images',id:2},
+        {name:'Columns-2',id:3},
+        {name:'Columns-3',id:4},
+        {name:'Columns-4',id:5},
+        {name:'Tabs',id:6},
+        {name:'Panel',id:7}
       ]
     };
   },
