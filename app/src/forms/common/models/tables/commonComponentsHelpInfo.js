@@ -8,6 +8,19 @@ class CommonComponentsHelpInfo extends Timestamps(Model) {
     return 'common_components_help_info';
   }
 
+  static get modifiers() {
+    return {
+      distinctOnTagName(builder) {
+        builder.distinctOn('tagname'); 
+      },
+      orderTagNameVersionsDescending(builder) {
+        
+        builder.orderBy(['tagname',{column:'versions', order:'desc'}]);
+        
+      },
+    };
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',
