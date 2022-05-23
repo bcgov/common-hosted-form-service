@@ -20,6 +20,78 @@ const genInitialForm = () => ({
   versions: []
 });
 
+const genInitialBuilder = () => ({
+  basic: false,
+  premium: false,
+  layoutControls: {
+    title: 'Basic Layout',
+    default: true,
+    weight: 10,
+    components: {
+      simplecols2: true,
+      simplecols3: true,
+      simplecols4: true,
+      simplecontent: true,
+      simplefieldset: false,
+      simpleheading: false,
+      simplepanel: true,
+      simpleparagraph: false,
+      simpletabs: true,
+    },
+  },
+  entryControls: {
+    title: 'Basic Fields',
+    weight: 20,
+    components: {
+      simplecheckbox: true,
+      simplecheckboxes: true,
+      simpledatetime: true,
+      simpleday: true,
+      simpleemail: true,
+      simplenumber: true,
+      simplephonenumber: true,
+      simpleradios: true,
+      simpleselect: true,
+      simpletextarea: true,
+      simpletextfield: true,
+      simpletime: false,
+    },
+  },
+  layout: {
+    title: 'Advanced Layout',
+    weight: 30,
+  },
+  advanced: {
+    title: 'Advanced Fields',
+    weight: 40,
+    components: {
+      // Need to re-define Formio basic fields here
+      textfield: true,
+      textarea: true,
+      number: true,
+      password: true,
+      checkbox: true,
+      selectboxes: true,
+      select: true,
+      radio: true,
+      button: true,
+      // Prevent duplicate appearance of orgbook component
+      orgbook: false,
+    },
+  },
+  data: {
+    title: 'Advanced Data',
+    weight: 50,
+  },
+  customControls: {
+    title: 'BC Government',
+    weight: 60,
+    components: {
+      orgbook: true,
+    },
+  }
+});
+
 /**
  * Form Module
  */
@@ -41,7 +113,8 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    version: {}
+    version: {},
+    builder: genInitialBuilder(),
   },
   getters: {
     getField, // vuex-map-fields
@@ -55,7 +128,8 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
-    version: state => state.version
+    version: state => state.version,
+    builder: state => state.builder,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -100,6 +174,9 @@ export default {
     },
     SET_VERSION(state, version) {
       state.version = version;
+    },
+    SET_BUILDER(state, builder) {
+      state.builder = builder;
     },
   },
   actions: {
