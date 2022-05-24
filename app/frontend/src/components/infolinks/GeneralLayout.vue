@@ -34,7 +34,7 @@
           <div>
             <v-btn color="primary" text small>
               <v-switch v-model="publish"></v-switch>
-              <span class="d-none d-sm-flex">UnUBLISHED</span>
+              <span class="d-none d-sm-flex">UNPUBLISHED</span>
             </v-btn>
           </div>
         </div>
