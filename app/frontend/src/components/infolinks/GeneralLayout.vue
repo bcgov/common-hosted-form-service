@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mb-5 ">
     <v-data-table
       class="submissions-table"
       :headers="headers"
@@ -22,19 +22,19 @@
           >
             <v-btn color="primary" text small @click="onOpenDialog(item.name)" >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-              <span class="d-none d-sm-flex">Edit</span>
+              <span class="d-none d-sm-flex">EDIT</span>
             </v-btn>
           </div>
           <div>
             <v-btn color="primary" text small @click="onOpenPreviewDialog(item.name)" :disabled="canDisabled(item.name)">
               <font-awesome-icon icon="fa-solid fa-eye" />
-              <span class="d-none d-sm-flex">Preview</span>
+              <span class="d-none d-sm-flex">PREVIEW</span>
             </v-btn>
           </div>
           <div>
             <v-btn color="primary" text small>
               <v-switch v-model="publish"></v-switch>
-              <span class="d-none d-sm-flex">Published</span>
+              <span class="d-none d-sm-flex">UnUBLISHED</span>
             </v-btn>
           </div>
         </div>
@@ -60,7 +60,7 @@ import InformationLinkPreviewDialog from '@/components/infolinks/InformationLink
 library.add(faPenToSquare,faEye);
 
 export default{
-  name: 'BasicLayout',
+  name: 'GeneralLayout',
   components:{InformationLinkDialog,InformationLinkPreviewDialog},
   data(){
     return{
@@ -119,7 +119,8 @@ export default{
           return obj.name === this.itemName;
         });
       }
-    }
-  },
+    },
+   
+  }
 };
 </script>
