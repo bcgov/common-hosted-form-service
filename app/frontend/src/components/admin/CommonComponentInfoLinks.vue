@@ -2,17 +2,16 @@
   <div class="mt-5">
     <v-expansion-panels flat class="nrmc-expand-collapse">
       <v-expansion-panel
-        class="mb-1"
         flat
         v-for="(group, index) in groupList" :key="index"
         @click="onExpansionPanelClick(group)"
       >
         <v-expansion-panel-header class="panel" :style="panelHeadStyle.get(group)">
-          <div class="header">
+          <div class="header panel">
             <strong>{{group}}</strong>
           </div>
         </v-expansion-panel-header>
-        <v-expansion-panel-content >
+        <v-expansion-panel-content>
           <GeneralLayout :layoutList="groupComponentsList" :itemsList="ccHelpInfoList.basicLayout?ccHelpInfoList.basicLayout:[]"/>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -33,9 +32,9 @@ export default {
       groupComponentsList:[],
       panelHeadStyle:new Map(),
       notActivePanelHead:{background: '#BFBDBD14 0% 0% no-repeat padding-box',
-        border: '1px solid #7070703F'},
+        border: '1px solid #7070703F', height:'40px',borderRadius:'0px'},
       activePanelHead:{background: '#F1F8FF 0% 0% no-repeat padding-box',
-        border: '1px solid #7070703F'}
+        border: '1px solid #7070703F',height:'40px',}
     };
   },
   methods:{
@@ -111,17 +110,23 @@ export default {
   }
 };
 </script>
-<style>
-  
+<style lang="scss" scoped>
 
 .panel {
   font-weight: 600;
-  font-family:Open Sans;
   font-style: normal;
-  font-size: 16px;
-  letter-spacing: 0px;
+  font-size: 18px;
   color: #313132;
   text-transform: uppercase;
+}
+
+.v-expansion-panel:not(.v-expansion-panel--active) {
+  margin-bottom: 5px;
+}
+
+.v-expansion-panel-content::v-deep .v-expansion-panel-content__wrap {
+  padding-bottom: 0px !important;
+  line-height: 0px;
 }
 
 

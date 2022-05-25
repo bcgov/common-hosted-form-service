@@ -3,7 +3,7 @@
     <v-tab>Forms</v-tab>
     <v-tab>Users</v-tab>
     <v-tab>Developer</v-tab>
-    <v-tab>Information Links</v-tab>
+    <v-tab>Info Links</v-tab>
 
     <v-tab-item> <AdminFormsTable /> </v-tab-item>
     <v-tab-item> <AdminUsersTable /> </v-tab-item>

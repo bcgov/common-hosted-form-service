@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-5 ">
+  <div>
     <v-data-table
       class="submissions-table"
       :headers="headers"
@@ -9,32 +9,32 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template #[`item.name`]="{ item }">
+      <template #[`item.name`]="{ item}">
         <div>
           <template>
-            <span>{{ item.name }}</span>
+            <div style="text-transform: capitalize" class="labelStyling">{{ item.name }}</div>
           </template>
         </div>
       </template>
-      <template #[`item.actions`]="{ item }">
-        <div class="d-flex flex-row justify-end align-center">
+      <template #[`item.actions`]="{ item,index }">
+        <div class="d-flex flex-row justify-end align-center actionsLabel">
           <div
           >
-            <v-btn color="primary" text small @click="onOpenDialog(item.name)" >
+            <v-btn color="primary" class="labelStyling" text small @click="onOpenDialog(item.name)" >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
               <span class="d-none d-sm-flex">EDIT</span>
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" text small @click="onOpenPreviewDialog(item.name)" :disabled="canDisabled(item.name)">
+            <v-btn color="primary" class="labelStyling" text small @click="onOpenPreviewDialog(item.name)" :disabled="canDisabled(item.name)">
               <font-awesome-icon icon="fa-solid fa-eye" />
               <span class="d-none d-sm-flex">PREVIEW</span>
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" text small>
-              <v-switch v-model="publish"></v-switch>
-              <span class="d-none d-sm-flex">UNPUBLISHED</span>
+            <v-btn color="primary" class="labelStyling" text small>
+              <v-switch color="success" v-model="publish[index]" @change="onSwitchChange(index)"></v-switch>
+              <span class="d-none d-sm-flex">{{ publish[index]?'PUBLISHED':'UNPUBLISHED'}}</span>
             </v-btn>
           </div>
         </div>
@@ -67,7 +67,8 @@ export default{
       loading:false,
       showDialog:false,
       showPreviewDialog:false,
-      publish:'',
+      publish:[],
+      publishStatus:'UNPUBLISHED',
       itemName:'',
       item:{},
       listLength:this.itemsList.length,
@@ -84,6 +85,7 @@ export default{
       ],
     };
   },
+  
   props:{
     layoutList:{
       type:Array,
@@ -120,7 +122,34 @@ export default{
         });
       }
     },
+
+    onSwitchChange(){
+      
+    }
    
   }
 };
 </script>
+<style lang="scss">
+  .labelStyling{
+    text-align: left;
+    font: normal normal normal 18px;
+    letter-spacing: 0px;
+    color: #003366;
+  }
+  .actionsLabel > div{
+    border-left: 1px solid #7070703F;
+    width: 130px;
+    display:flex;
+    justify-content: center;
+  }
+
+  .actionsLabel> div:last-child{
+    border-left: 1px solid #7070703F;
+    width: 190px;
+    display:flex;
+    justify-content: center;
+  }
+
+  
+</style>
