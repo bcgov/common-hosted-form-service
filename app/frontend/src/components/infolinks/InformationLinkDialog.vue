@@ -19,24 +19,24 @@
             <span v-text="name" class="blueColorWrapper"/>
           </v-row>
           <v-row class="mt-5" no-gutters>
-            <p class="mr-2 d-flex align-end text-decoration-underline blueColorWrapper">
-              Learn More Links:
-            </p>
-            <v-col
-              cols="6"
-              sm="6"
-            >
+            <div class="mt-2">
+              <p class="mr-2 text-decoration-underline blueColorWrapper">
+                Learn More Links:
+              </p>
+            </div>
+            <div class="mt-1">
               <v-text-field
                 dense
                 style="width:80%;"
                 v-model="link"
+                flat
                 value="link"
-                class="text-style"
+                class="text-style align-end"
                 color="#1A5A96"
               >
                 {{link}}
               </v-text-field>
-            </v-col>
+            </div>
           </v-row>
           
           <v-row class="mt-5" no-gutters>
@@ -56,7 +56,8 @@
               <v-textarea
                 clear-icon="mdi-close-circle"
                 v-model="description"
-                solo
+                outlined
+                hide-details
                 clearable
                 value="description"
                 class="text-style"
@@ -67,7 +68,7 @@
             <span class="text-decoration-underline mr-2 blackColorWrapper">
               Image Upload:
             </span>
-            <span class="blue--text text--darken-4">
+            <span class="blue--text text--darken-4  d-flex align-end">
               <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" size="xl" color='#1A5A96' />
             </span>
           </v-row>
@@ -89,7 +90,7 @@
                     Cancel
                   </v-btn>
                 </div>
-                <div class="d-flex flex-row align-center versionLabel">
+                <div class="d-flex flex-row align-end versionLabel">
                   <div class="mr-3"><span style="color: #939393;">Current:</span> <span class="font-weight-bold" style="color: #313132;">Version {{version+1}}</span></div>
                   <div>
                     <span style="color: #707070C1;">Version: {{version}}</span> 
@@ -208,12 +209,13 @@ export default {
     font-size: 18px;
     letter-spacing: 0px;
     color: #1A5A96;
+    text-transform: capitalize;
   }
   .blackColorWrapper{
     text-align: left;
     text-decoration: underline;
     font-style: normal;
-    font-weight: normal;
+    font-weight: bold;
     font-size: 18px;
     color: #313132;
   }
@@ -224,7 +226,7 @@ export default {
     font-size: 16px;
   }
 
-  .text-style >>> input {
+  .v-text-field input {
     font-style: normal;
     font-weight: normal;
     font-size: 18px;
@@ -236,7 +238,7 @@ export default {
 
 
 
-  .text-style >>> textarea {
+  .text-style textarea {
     text-align: left;
     font-style: normal;
     font-weight: normal;
