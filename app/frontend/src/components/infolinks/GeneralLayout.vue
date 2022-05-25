@@ -9,32 +9,35 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
+      
       <template #[`item.name`]="{ item}">
         <div>
           <template>
-            <div style="text-transform: capitalize" class="labelStyling">{{ item.name }}</div>
+            <div style="text-transform: capitalize" :style="label">{{ item.name }}</div>
           </template>
         </div>
       </template>
       <template #[`item.actions`]="{ item,index }">
-        <div class="d-flex flex-row justify-end align-center actionsLabel">
-          <div
-          >
-            <v-btn color="primary" class="labelStyling" text small @click="onOpenDialog(item.name)" >
+        <div class="d-flex flex-row justify-end align-center actions">
+          <div>
+            <v-btn color="primary" small text @click="onOpenDialog(item.name)">
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-              <span class="d-none d-sm-flex">EDIT</span>
+              <span class="d-none d-sm-flex" style="font-size:16px;">EDIT</span>
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" class="labelStyling" text small @click="onOpenPreviewDialog(item.name)" :disabled="canDisabled(item.name)">
+            <v-btn color="primary" text small
+                   @click="onOpenPreviewDialog(item.name)" 
+                   :disabled="canDisabled(item.name)" >
+    
               <font-awesome-icon icon="fa-solid fa-eye" />
-              <span class="d-none d-sm-flex">PREVIEW</span>
+              <span class="d-none d-sm-flex" style="font-size:16px;">PREVIEW</span>
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" class="labelStyling" text small>
-              <v-switch color="success" v-model="publish[index]" @change="onSwitchChange(index)"></v-switch>
-              <span class="d-none d-sm-flex">{{ publish[index]?'PUBLISHED':'UNPUBLISHED'}}</span>
+            <v-btn color="primary" text small>
+              <v-switch small color="success" v-model="publish[index]" @change="onSwitchChange(index)"></v-switch>
+              <span class="d-none d-sm-flex" style="font-size:16px;">{{ publish[index]?'PUBLISHED':'UNPUBLISHED'}}</span>
             </v-btn>
           </div>
         </div>
@@ -83,6 +86,13 @@ export default{
           width: '1%',
         },
       ],
+      label:{
+        textAlign: 'left',
+        fontWeight: 'normal', 
+        fontStyle:'normal',
+        fontSize:'18px',
+        color: '#003366'
+      }
     };
   },
   
@@ -130,26 +140,28 @@ export default{
   }
 };
 </script>
-<style lang="scss">
-  .labelStyling{
-    text-align: left;
-    font: normal normal normal 18px;
-    letter-spacing: 0px;
-    color: #003366;
+<style lang="css" scoped>
+  .submissions-table >>> tbody tr {
+    background: #BFBDBD14;
+    border: 1px solid #7070703F;
+    margin-bottom: 35px;
+    border-spacing: 15px 50px;
   }
-  .actionsLabel > div{
+  
+  .actions > div{
     border-left: 1px solid #7070703F;
-    width: 130px;
+    padding-left:10px;
+    padding-right:10px;
     display:flex;
     justify-content: center;
   }
+  
 
-  .actionsLabel> div:last-child{
+  .actions > div:last-child{
     border-left: 1px solid #7070703F;
-    width: 190px;
+    width: 240px;
     display:flex;
     justify-content: center;
-  }
-
+  } 
   
 </style>

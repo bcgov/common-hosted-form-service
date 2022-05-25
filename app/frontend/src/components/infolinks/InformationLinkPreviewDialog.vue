@@ -78,7 +78,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="css">
   .cursor{
     cursor:pointer;
   }
@@ -93,15 +93,19 @@ export default {
   .linkWrapper{
     text-align: left;
     text-decoration: underline;
-    font: normal normal normal 18px;
+    font-weight: normal;
+    font-style: normal;
+    font-size:18px;
     letter-spacing: 0px;
     color: #1A5A96;
   }
   .headerWrapper{
-    height:34px;
+    height:40px;
     background: #1A5A96 0% 0% no-repeat padding-box;
     text-align: left;
-    font: normal normal normal 25px;
+    font-weight: normal;
+    font-style: normal;
+    font-size:25px;
     letter-spacing: 0px;
     color: #F2F2F2;
     text-transform: capitalize;
