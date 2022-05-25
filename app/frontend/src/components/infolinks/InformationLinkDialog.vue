@@ -86,7 +86,7 @@
                     @click="onCloseDialog"
                     :style="cancelButtonWrapper"
                   >
-                    Close
+                    Cancel
                   </v-btn>
                 </div>
                 <div class="d-flex flex-row align-center versionLabel">
@@ -193,7 +193,7 @@ export default {
 
 };
 </script>
-<style>
+<style lang="scss">
   .active:hover {
     text-decoration: underline;
     cursor:pointer;
@@ -203,39 +203,44 @@ export default {
   }
   .blueColorWrapper {
     text-align: left;
-    font: normal normal normal 20px Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
     letter-spacing: 0px;
     color: #1A5A96;
   }
   .blackColorWrapper{
     text-align: left;
     text-decoration: underline;
-    font: normal normal normal 20px Open Sans;
-    letter-spacing: 0px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
     color: #313132;
   }
   
   .versionLabel{
-    font: normal normal normal 16px Open Sans;
-    letter-spacing: 0px;
-    opacity: 1;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
   }
 
-  
-  .text-style input {
-    text-align: left;
-    font: normal normal normal 20px Open Sans;
+  .text-style >>> input {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    caret-color: #1A5A96;
     letter-spacing: 0px;
-    caret-color: #1A5A96 !important;
     color: #1A5A96 !important;
     border-bottom:1px solid #1A5A96;
   }
 
 
 
-  .text-style textarea {
+  .text-style >>> textarea {
     text-align: left;
-    font: normal normal normal 20px Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
     letter-spacing: 0px;
     caret-color: #1A5A96 !important;
     color: #1A5A96 !important;

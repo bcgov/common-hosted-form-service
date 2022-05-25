@@ -78,12 +78,14 @@ export default {
   },
 };
 </script>
-<style>
+<style lang="scss">
   .cursor{
     cursor:pointer;
   }
   .text{
-    font: normal normal normal 16px Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
     letter-spacing: 0px;
     color: #000000;
     opacity: 1;
@@ -91,7 +93,7 @@ export default {
   .linkWrapper{
     text-align: left;
     text-decoration: underline;
-    font: normal normal normal 18px Open Sans;
+    font: normal normal normal 18px;
     letter-spacing: 0px;
     color: #1A5A96;
   }
@@ -99,8 +101,9 @@ export default {
     height:34px;
     background: #1A5A96 0% 0% no-repeat padding-box;
     text-align: left;
-    font: normal normal normal 25px Open Sans;
+    font: normal normal normal 25px;
     letter-spacing: 0px;
     color: #F2F2F2;
+    text-transform: capitalize;
   }
 </style>
