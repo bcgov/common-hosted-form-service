@@ -215,7 +215,7 @@ export default {
     text-align: left;
     text-decoration: underline;
     font-style: normal;
-    font-weight: bold;
+    font-weight: normal;
     font-size: 18px;
     color: #313132;
   }
