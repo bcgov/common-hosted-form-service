@@ -118,4 +118,16 @@ export default {
   addCommonCompsHelpInfo(data){
     return appAxios().post(`${ApiRoutes.ADMIN}/commonCompsHelpInfo`, data);
   },
+
+
+  /**
+   * @function updateCommonCompsHelpInfoStatus
+   * Update publish status of Common Components Help Link Information
+   * @param {boolean} publishStatus This is used to determine if the help link information is published or not
+   * @param {string} componentId component id
+   * @returns {Promise} An axios response
+   */
+  updateCommonCompsHelpInfoStatus(componentId, publishStatus){
+    return appAxios().put(`${ApiRoutes.ADMIN}/commonCompsHelpInfo/${publishStatus}/${componentId}`);
+  },
 };

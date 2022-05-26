@@ -38,7 +38,7 @@
           </v-row>
           <v-row>
             <v-col class="d-flex flex-row align-center text-decoration-underline linkWrapper">
-              <a :href="item.link" :target="'_blank'"> <div class="mr-1 cursor" >Learn more 
+              <a :href="item&&item.link" :target="'_blank'"> <div class="mr-1 cursor" >Learn more 
                 <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /> </div></a>
             </v-col>
           </v-row>

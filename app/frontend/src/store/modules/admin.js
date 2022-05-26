@@ -193,8 +193,21 @@ export default {
           consoleError: 'Error getting admin user  data',
         }, { root: true });
       }
+    },
+
+    async updateCommonCompsHelpInfoStatus({ commit, dispatch },{componentId, publishStatus}) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_CCHELPINFO',{});
+        const response = await adminService.updateCommonCompsHelpInfoStatus(componentId, publishStatus);
+        commit('SET_CCHELPINFO',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching this user.',
+          consoleError: 'Error getting admin user  data',
+        }, { root: true });
+      }
     }
   },
  
-
 };
