@@ -81,11 +81,12 @@ exports.up = function(knex) {
     .then(() => knex.schema.createTable('common_components_help_info',table=>{
       table.uuid('id').primary();
       table.string('tagname').notNullable();
-      table.string('taglink',500).notNullable;
+      table.string('taglink',500);
       table.string('imagelink',500);
       table.integer('versions').notNullable();
       table.string('groupname').notNullable();
       table.text('description').notNullable();
+      table.boolean('publishstatus').defaultTo(false);
       table.unique(['tagname', 'versions']);
       stamps(knex, table);
     }));

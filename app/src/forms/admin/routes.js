@@ -70,4 +70,8 @@ routes.post('/commonCompsHelpInfo', async(req,res,next) =>{
   await controller.createCommonComponentsHelpInfo(req, res, next);
 });
 
+routes.put('/commonCompsHelpInfo/:publishStatus/:componentId/', async (req, res, next) => {
+  await controller.updatCommonCompsHelpInfo(req, res, next);
+});
+
 module.exports = routes;

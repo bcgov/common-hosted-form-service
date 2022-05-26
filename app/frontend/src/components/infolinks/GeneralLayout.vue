@@ -35,8 +35,8 @@
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" text small>
-              <v-switch small color="success" v-model="publish[index]" @change="onSwitchChange(index)"></v-switch>
+            <v-btn color="primary" text small :disabled="canDisabled(item.name)">
+              <v-switch small color="success" v-model="publish[index]" @change="onSwitchChange(item.name,index)"></v-switch>
               <span class="d-none d-sm-flex" style="font-size:16px;">{{ publish[index]?'PUBLISHED':'UNPUBLISHED'}}</span>
             </v-btn>
           </div>
@@ -56,11 +56,13 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { mapActions } from 'vuex';
 import { faPenToSquare,faEye } from '@fortawesome/free-solid-svg-icons';
 import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
 import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
 
 library.add(faPenToSquare,faEye);
+
 
 export default{
   name: 'GeneralLayout',
@@ -107,6 +109,7 @@ export default{
     }
   },
   methods:{
+    ...mapActions('admin', ['updateCommonCompsHelpInfoStatus']),
     onShowCloseDialog(){
       this.showDialog= !this.showDialog;
     },
@@ -133,8 +136,15 @@ export default{
       }
     },
 
-    onSwitchChange(){
-      
+    onSwitchChange(componentName, index){
+      for (const component of this.itemsList) {
+        if(component.name===componentName){
+          this.updateCommonCompsHelpInfoStatus({
+            componentId:component.id, 
+            publishStatus:this.publish[index]
+          });
+        } 
+      }
     }
    
   }

@@ -131,7 +131,7 @@ const service = {
     .modify('distinctOnTagName')
     .modify('orderTagNameVersionsDescending');
 
-    let filterResult= result.map(item=>({id:item.id,name:item.tagname,link:item.taglink,imageLink:item.imagelink,
+    let filterResult= result.map(item=>({id:item.id,status:item.publishstatus,name:item.tagname,link:item.taglink,imageLink:item.imagelink,
       version:item.versions,groupName:item.groupname,description:item.description }));
      
     return filterResult.reduce(function (r, a) {
@@ -177,13 +177,35 @@ const service = {
   /**
    * @function createCommonComponentsHelpInfo
    * fetch Common Component Help Link Info by ccHelpLinkInfo
-   * @param {String} ccHelpLinkInfo Common Component Help Link Info
+   * @param {String} ccHelpLinkInfoId Common Component Help Link Info
    * @returns {Promise} An objection query promise
    */
 
-readCommonComponentsHelpInfo: async(ccHelpLinkInfo)=>{
+readCommonComponentsHelpInfo: async(ccHelpLinkInfoId)=>{
   return await CommonComponentsHelpInfo.query()
-  .where('id', ccHelpLinkInfo);
+  .where('id', ccHelpLinkInfoId);
+},
+
+/**
+   * @function createCommonComponentsHelpInfo
+   * update the publish status of common components information help links
+   * @param {Object} param consist of publishStatus and componentId.
+   * @returns {Promise} An objection query promise
+   */
+updatCommonCompsHelpInfo: async(param)=>{
+  let trx;
+  try {
+    trx = await CommonComponentsHelpInfo.startTransaction();
+    await CommonComponentsHelpInfo.query(trx).patchAndFetchById(param.componentId, {
+      publishstatus: JSON.parse(param.publishStatus),
+      updatedBy: 'aidowu.idir'
+    });
+    await trx.commit();
+    return await service.readCommonComponentsHelpInfo(param.componentId);
+  } catch (err) {
+    if (trx) await trx.rollback();
+    throw err;
+  }
 }
 
 };
