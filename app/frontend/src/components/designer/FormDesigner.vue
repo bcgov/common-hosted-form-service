@@ -160,7 +160,16 @@
         </router-link>
       </div>
     </v-alert>
-
+    <BaseDialog
+      v-model="helperDialog.show"
+      showCloseButton
+      @close-dialog="helperDialog.show = false"
+    >
+      <template #title>{{helperDialog.title}}</template>
+      <template #text>
+        {{helperDialog.text}}
+      </template>
+    </BaseDialog>
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
@@ -178,12 +187,14 @@
       :form="formSchema"
       :key="reRenderFormIo"
       :options="designerOptions"
+      ref="formioForm"
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
+      @formLoad="onFormLoad"
     />
   </div>
 </template>
@@ -237,6 +248,11 @@ export default {
         redoClicked: false,
         undoClicked: false,
         originalSchema: null,
+      },
+      helperDialog: {
+        title: 'Default Title',
+        text: 'Default Text',
+        show: false,
       },
     };
   },
@@ -387,6 +403,33 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
+    },
+    onFormLoad() {
+      // Contains the names of every category of components
+      let builder = this.$refs.formioForm.builder.instance.builder;
+      for (const key of Object.entries(builder)) {
+        // Build up the helpers
+        let containerId = `group-container-${key[0]}`;
+        let containerEl = document.getElementById(containerId);
+        if (containerEl) {
+          // Iterate the children of the container
+          for (var i = 0; i < containerEl.children.length; i++) {
+            // Append the info el
+            let child = document.createElement('i');
+            child.className = 'fa fa-info info-helper';
+            child.addEventListener('click', this.showHelperClicked);
+            containerEl.children[i].appendChild(child);
+          }
+        }
+      }
+    },
+    showHelperClicked(evt) {
+      let target = evt.target;
+      let parent = target.parentNode;
+      let type = parent.getAttribute('data-type');
+      this.helperDialog.title = type;
+      this.helperDialog.text = type;
+      this.helperDialog.show = true;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 

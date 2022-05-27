@@ -33,14 +33,14 @@
             class="py-4"
             color="primary"
             :disabled="!settingsFormValid"
-            @click="creatorStep = 2"
+            @click="reRenderFormDesigner"
           >
             <span>Continue</span>
           </v-btn>
         </v-stepper-content>
 
         <v-stepper-content step="2" class="pa-1">
-          <FormDesigner />
+          <FormDesigner ref="formDesigner"/>
           <v-btn class="my-4" outlined @click="creatorStep = 1">
             <span>Back</span>
           </v-btn>
@@ -79,9 +79,20 @@ export default {
       ],
     };
   },
-  methods: mapActions('form', ['resetForm']),
+  methods: {
+    ...mapActions('form', ['resetForm']),
+    reRenderFormDesigner() {
+      this.creatorStep = 2;
+      this.$refs.formDesigner.onFormLoad();
+    }
+  },
   created() {
     this.resetForm();
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
   },
   watch: {
     idps() {
