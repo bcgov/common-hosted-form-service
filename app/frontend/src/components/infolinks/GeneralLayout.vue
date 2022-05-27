@@ -44,7 +44,7 @@
       </template>
     </v-data-table>
     <InformationLinkDialog :showDialog="showDialog"
-                           :groupName="'basicLayout'" 
+                           :groupName="groupName" 
                            :itemName="itemName"
                            @close-dialog="onShowCloseDialog" 
                            :item="item"/>
@@ -106,7 +106,8 @@ export default{
     itemsList:{
       type:Array,
       defualt:[]
-    }
+    },
+    groupName:String
   },
   methods:{
     ...mapActions('admin', ['updateCommonCompsHelpInfoStatus']),

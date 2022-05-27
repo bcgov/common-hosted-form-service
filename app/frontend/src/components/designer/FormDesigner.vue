@@ -160,16 +160,6 @@
         </router-link>
       </div>
     </v-alert>
-    <BaseDialog
-      v-model="helperDialog.show"
-      showCloseButton
-      @close-dialog="helperDialog.show = false"
-    >
-      <template #title>{{helperDialog.title}}</template>
-      <template #text>
-        {{helperDialog.text}}
-      </template>
-    </BaseDialog>
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
@@ -196,6 +186,9 @@
       class="form-designer"
       @formLoad="onFormLoad"
     />
+    <InformationLinkPreviewDialog :showDialog="showHelpLinkDialog" 
+                                  @close-dialog="onShowClosePreveiwDialog" 
+                                  :item="item"/>
   </div>
 </template>
 
@@ -204,16 +197,18 @@ import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
-
+import admin from '@/store/modules/admin.js';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
+import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
+    InformationLinkPreviewDialog
   },
   props: {
     draftId: String,
@@ -249,14 +244,13 @@ export default {
         undoClicked: false,
         originalSchema: null,
       },
-      helperDialog: {
-        title: 'Default Title',
-        text: 'Default Text',
-        show: false,
-      },
+      showHelpLinkDialog:false,
+      item:{},
     };
+    
   },
   computed: {
+    ...mapGetters('admin', ['ccHelpInfoList']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapGetters('form', ['builder']),
     ...mapFields('form', [
@@ -306,6 +300,7 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('admin', ['listCommonCompsHelpInfo']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -407,29 +402,54 @@ export default {
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
-      for (const key of Object.entries(builder)) {
-        // Build up the helpers
-        let containerId = `group-container-${key[0]}`;
-        let containerEl = document.getElementById(containerId);
-        if (containerEl) {
-          // Iterate the children of the container
-          for (var i = 0; i < containerEl.children.length; i++) {
-            // Append the info el
-            let child = document.createElement('i');
-            child.className = 'fa fa-info info-helper';
-            child.addEventListener('click', this.showHelperClicked);
-            containerEl.children[i].appendChild(child);
+      for (const  [title,elements] of Object.entries(this.ccHelpInfoList)) {
+        let extractedElementsNames = this.extractPublishedElement(elements);
+        for (const [key,builderElements] of Object.entries(builder)) {
+          if(title===builderElements.title){
+            let containerId = `group-container-${key}`;
+            let containerEl = document.getElementById(containerId);
+            for(var i=0; i<containerEl.children.length; i++){
+              if(extractedElementsNames.includes(containerEl.children[i].getAttribute('data-key')))
+              {
+                // Append the info el
+                let child = document.createElement('i');
+                child.className = 'fa fa-info-circle';
+                child.style.float='right';
+                child.addEventListener('click', this.showHelperClicked);
+                containerEl.children[i].appendChild(child);
+              }
+            }
           }
         }
       }
+    },
+    extractPublishedElement(elements){
+      let publishedComponentsNames=[];
+      for(let element of elements) {
+        if(element.status)
+        {
+          publishedComponentsNames.push(element.name);
+        }
+      }
+      return  publishedComponentsNames;
     },
     showHelperClicked(evt) {
       let target = evt.target;
       let parent = target.parentNode;
       let type = parent.getAttribute('data-type');
-      this.helperDialog.title = type;
-      this.helperDialog.text = type;
-      this.helperDialog.show = true;
+      for (const [, elements] of Object.entries(this.ccHelpInfoList))
+      {
+        for(let element of elements ){
+          if(type===element.name)
+          {
+            this.item=element;
+          }
+        }
+      }
+      this.onShowClosePreveiwDialog();
+    },
+    onShowClosePreveiwDialog(){
+      this.showHelpLinkDialog=!this.showHelpLinkDialog;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -625,11 +645,23 @@ export default {
       this.fetchForm(this.formId);
     }
   },
+  beforeMount(){
+    if(!this.$store.hasModule('admin')) {
+      this.$store.registerModule('admin', admin);
+    }
+  },
+  beforeUnmount(){
+    if (this.$store.hasModule('admin')) {
+      this.$store.unregisterModule('admin');
+    }
+
+  },
   mounted() {
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
+    this.listCommonCompsHelpInfo();
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder

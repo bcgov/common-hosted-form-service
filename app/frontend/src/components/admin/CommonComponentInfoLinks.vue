@@ -11,7 +11,9 @@
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <GeneralLayout :layoutList="groupComponentsList" :itemsList="ccHelpInfoList.basicLayout?ccHelpInfoList.basicLayout:[]"/>
+          <GeneralLayout :groupName="group" 
+                         :layoutList="groupComponentsList" 
+                         :itemsList="ccHelpInfoList[group]?ccHelpInfoList[group]:[]"/>
         </v-expansion-panel-content>
       </v-expansion-panel> 
     </v-expansion-panels>
@@ -59,26 +61,20 @@ export default {
     },
     extractGroups(){
       let allgroups=[];
-      for (const key in this.builder) {
-        if(this.isObject(this.builder[key])){
-          if(this.builder[key].title){
-            allgroups.push(this.builder[key].title);
-            this.panelHeadStyle.set(this.builder[key].title,this.notActivePanelHead);
-          } 
-          
-        }
+      for (let  [, {title}] of Object.entries(this.builder)) {
+        if(title){
+          allgroups.push(title);
+          this.panelHeadStyle.set(title,this.notActivePanelHead);
+        } 
       }
       return allgroups;
     },
     extractGroupComponents(group){
       let groupComponents = [];
-      for (const key in this.builder) {
-        if(this.isObject(this.builder[key])){
-          if(this.builder[key].title===group && this.builder[key].components) 
-          {
-            for(let componentName of Object.keys(this.builder[key].components)){
-              groupComponents.push({'name':componentName});
-            }
+      for (let  [, {title,components}] of Object.entries(this.builder)) {
+        if((title && title===group) && components){
+          for(let componentName of Object.keys(components)){
+            groupComponents.push({'name':componentName});
           }
         }
       }
