@@ -566,3 +566,20 @@ a,
   color: white;
   background: $bcgov-blue;
 }
+
+.info-helper {
+  padding-top: 2px;
+  float: right;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  border: 1px solid #003366;
+  font-size: 0.8rem;
+  line-height: 0.8rem;
+}
+
+.info-helper:hover {
+  background-color: #003366;
+  color: #bce8ff;
+}
