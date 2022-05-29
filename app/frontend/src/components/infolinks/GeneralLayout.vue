@@ -36,7 +36,7 @@
           </div>
           <div>
             <v-btn color="primary" text small :disabled="canDisabled(item.name)">
-              <v-switch small color="success" v-model="publish[index]" @change="onSwitchChange(item.name,index)"></v-switch>
+              <v-switch small color="success" :input-value="isComponentPublish(item.name,index)" v-model="publish[index]" @change="onSwitchChange(item.name,index)"></v-switch>
               <span class="d-none d-sm-flex" style="font-size:16px;">{{ publish[index]?'PUBLISHED':'UNPUBLISHED'}}</span>
             </v-btn>
           </div>
@@ -120,6 +120,13 @@ export default{
     canDisabled(itemName){
       return this.itemsList.filter(item => item.name === itemName ).length == 0; 
     }, 
+    isComponentPublish(componentName,index){
+      for(let component of this.itemsList){
+        if(component.name===componentName){
+          this.publish[index]=component.status;
+        }
+      }
+    },
     onOpenDialog(itemName){
       this.getItem(itemName);
       this.onShowCloseDialog();
