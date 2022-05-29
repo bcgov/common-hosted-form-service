@@ -194,7 +194,7 @@ export default {
 
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
   .active:hover {
     text-decoration: underline;
     cursor:pointer;
