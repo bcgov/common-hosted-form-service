@@ -27,9 +27,11 @@
             <div class="mt-1">
               <v-text-field
                 dense
+                enable
                 style="width:80%;"
                 v-model="link"
                 flat
+                :disabled="isLinkEnabled"
                 value="link"
                 class="text-style align-end"
                 color="#1A5A96"
@@ -37,6 +39,11 @@
                 {{link}}
               </v-text-field>
             </div>
+            <v-checkbox
+              input-value="true"
+              value
+              @click="isLinkEnabled=!isLinkEnabled"
+            ></v-checkbox>
           </v-row>
           
           <v-row class="mt-5" no-gutters>
@@ -121,6 +128,7 @@ export default {
       name:'',
       description:'',
       link:'',
+      isLinkEnabled:true,
       dialog: this.showDialog,
       color1:'#1A5A96',
       saveButtonWrapper:{
