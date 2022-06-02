@@ -74,4 +74,8 @@ routes.put('/commonCompsHelpInfo/:publishStatus/:componentId/', async (req, res,
   await controller.updatCommonCompsHelpInfo(req, res, next);
 });
 
+routes.post('/commonCompsHelpInfo/upload/:imageName', async (req, res, next) => {
+  await controller.uploadImageUrl(req, res, next);
+});
+
 module.exports = routes;

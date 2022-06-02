@@ -1,5 +1,6 @@
 import { appAxios } from '@/services/interceptors';
 import { ApiRoutes } from '@/utils/constants';
+import axios from 'axios';
 
 export default {
   //
@@ -129,5 +130,27 @@ export default {
    */
   updateCommonCompsHelpInfoStatus(componentId, publishStatus){
     return appAxios().put(`${ApiRoutes.ADMIN}/commonCompsHelpInfo/${publishStatus}/${componentId}`);
+  },
+
+  /**
+   * @function uploadImageUrl
+   * Create a new Form
+   * @param {String} imageName An Object containing each common component help link information
+   * @returns {Promise} An axios response
+   */
+  async uploadImageUrl(imageName){
+
+    return await appAxios().post(`${ApiRoutes.ADMIN}/commonCompsHelpInfo/upload/${imageName}`);
+  },
+
+  /**
+   * @function uploadCommonCompsHelpInfoImage
+   * Create a new Form
+   * @param {Object} file An Object containing each common component help link information
+   * @returns {Promise} An axios response
+   */
+  async uploadCommonCompsHelpInfoImage(url,file){
+    
+    return await axios().put(url,file,{headers: {'Content-Type': 'multipart/form-data' }});
   },
 };

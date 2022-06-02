@@ -56,7 +56,11 @@ const service = {
 
   upload: async (fileStorage) => {
     return service._uploadFile(fileStorage);
+  },
+  uploadUrl: async(imageName)=>{
+    return objectStorageService.uploadUrl(imageName);
   }
+
 };
 
 module.exports = service;

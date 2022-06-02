@@ -33,7 +33,7 @@ class CommonComponentsHelpInfo extends Timestamps(Model) {
         versions: { type: 'integer'},
         groupname: { type: 'string', minLength: 1, maxLength: 255 },
         publishstatus:{type:'boolean'},
-        description: { type: 'string'},
+        description: { type: 'string',minLength: 1,},
         ...stamps
       },
       additionalProperties: false

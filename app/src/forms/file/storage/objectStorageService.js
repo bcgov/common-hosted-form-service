@@ -14,21 +14,24 @@ const TEMP_DIR = 'uploads';
 const Delimiter = '/';
 
 class ObjectStorageService {
-  constructor({endpoint, bucket, key, accessKeyId, secretAccessKey}) {
+  constructor({endpoint, bucket, key, accessKeyId, secretAccessKey,region}) {
     log.debug(`Constructed with ${endpoint}, ${bucket}, ${key}, ${accessKeyId}, secretAccessKey`, { function: 'constructor' });
-    if (!endpoint || !bucket || !key || !accessKeyId || !secretAccessKey) {
+    if (!endpoint || !bucket || !key || !accessKeyId || !secretAccessKey || !region) {
       log.error('Invalid configuration.', { function: 'constructor' });
       throw new Error('ObjectStorageService is not configured. Check configuration.');
     }
-    this._endpoint = endpoint;
+    //this._endpoint = endpoint;
     this._bucket = bucket;
     this._key = this._delimit(key);
     this._accessKeyId = accessKeyId;
     this._secretAccessKey = secretAccessKey;
+    this._region = region;
     this._s3 = new S3({
       endpoint: this._endpoint,
+      region:this._region,
       accessKeyId: this._accessKeyId,
       secretAccessKey: this._secretAccessKey,
+      signatureVersion:"v4",
       s3ForcePathStyle: true,
       params: {
         Bucket: this._bucket
@@ -175,6 +178,19 @@ class ObjectStorageService {
     }
   }
 
+  async uploadUrl(imageName){
+    try {
+      const params = ({
+        Key:imageName,
+        Expires:6000
+      })
+
+      return await this._s3.getSignedUrlPromise('putObject',params)
+    } catch (e) {
+      errorToProblem(SERVICE, e);
+    }
+  }
+
   async copyFile(fileStorage, ...subdirs) {
     try {
       const destPath = this._join(...subdirs);
@@ -207,6 +223,7 @@ const bucket = config.get('files.objectStorage.bucket');
 const key = config.get('files.objectStorage.key');
 const accessKeyId = config.get('files.objectStorage.accessKeyId');
 const secretAccessKey = config.get('files.objectStorage.secretAccessKey');
+const region = config.get('files.objectStorage.region');
 
-let objectStorageService = new ObjectStorageService({accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, endpoint: endpoint, bucket: bucket, key: key});
+let objectStorageService = new ObjectStorageService({accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, endpoint: endpoint,region:region, bucket: bucket, key: key});
 module.exports = objectStorageService;
