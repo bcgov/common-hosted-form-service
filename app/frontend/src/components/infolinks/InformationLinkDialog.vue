@@ -9,44 +9,50 @@
         <v-container>
           <v-row>
             <v-col>
-              <span class="text-h5">Common Component Information Link</span>
+              <span class="text-h5" style="font-weight:bold;">Component Information Link</span>
             </v-col>
           </v-row>
-          <v-row class="mt-7" no-gutters>
+          <v-row class="mt-8" no-gutters>
             <span class="text-decoration-underline mr-2 blackColorWrapper">
               Component Name:
             </span>
-            <span v-text="name" class="blueColorWrapper"/>
+            <span v-text="name" class="blueColorWrapper mt-1"/>
           </v-row>
-          <v-row class="mt-5" no-gutters>
+          <v-row class="mt-2" no-gutters>
             <div class="mt-2">
               <p class="mr-2 text-decoration-underline blueColorWrapper">
-                Learn More Links:
+                Learn More Link:
               </p>
             </div>
-            <div class="mt-1">
-              <v-text-field
-                dense
-                enable
-                style="width:80%;"
-                v-model="link"
-                flat
-                :disabled="isLinkEnabled"
-                value="link"
-                class="text-style align-end"
-                color="#1A5A96"
-              >
-                {{link}}
-              </v-text-field>
-            </div>
+            <v-col cols="4">
+              <div>
+
+                <v-text-field
+                  dense
+                  enable
+                  style="width:95%;"
+                  v-model="link"
+                  flat
+                  :disabled="isLinkEnabled"
+                  :value="link"
+                  class="text-style"
+                  color="#1A5A96"
+                >
+                  {{link}}
+                </v-text-field>
+
+              </div>
+            </v-col>
+
+
             <v-checkbox
-              input-value="true"
-              value
+              label="Enable/Disable"
+              class="align-center"
               @click="isLinkEnabled=!isLinkEnabled"
             ></v-checkbox>
           </v-row>
-          
-          <v-row class="mt-5" no-gutters>
+
+          <v-row no-gutters>
             <v-col
               cols="12"
               sm="12"
@@ -71,17 +77,26 @@
               ></v-textarea>
             </v-col>
           </v-row>
-          <v-row class="mt-5 " no-gutters>
-            <span class="text-decoration-underline mr-2 blackColorWrapper">
-              Image Upload:
-            </span>
-            <span class="blue--text text--darken-4  d-flex align-end">
-              <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" size="xl" color='#1A5A96' />
-            </span>
+          <v-row class="mt-2 " no-gutters>
+            <v-col>
+              <div class="d-flex align-center">
+                <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" size="xl" color='#1A5A96' class="mr-1 mt-2"/>
+                <v-col>
+                  <v-file-input
+                    style="width:50%;"
+                    :prepend-icon="null"
+                    show-size
+                    counter
+                    label="Image Upload:"
+                    @change="selectFile"
+                  ></v-file-input>
+                </v-col>
+              </div>
+            </v-col>
           </v-row>
           <v-row class="mt-10" >
             <v-col>
-              <div class="d-flex flex-row justify-space-between">
+              <div class="d-flex flex-row justify-space-between align-end">
                 <div>
                   <v-btn
                     class="mr-4"
@@ -116,11 +131,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions,mapGetters } from 'vuex';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 library.add(faCloudArrowUp);
-
 export default {
   name:'InformationLinkDialog',
   data(){
@@ -128,6 +142,7 @@ export default {
       name:'',
       description:'',
       link:'',
+      files:[],
       isLinkEnabled:true,
       dialog: this.showDialog,
       color1:'#1A5A96',
@@ -162,14 +177,19 @@ export default {
     groupName:{type:String,require:true}
   },
   methods:{
-    ...mapActions('admin', ['addCommonCompsHelpInfo']),
+    ...mapActions('admin', ['addCommonCompsHelpInfo','uploadCommonCompsHelpInfoImage']),
     onCloseDialog(){
       this.resetDialog();
       this.$emit('close-dialog');
     },
+    async selectFile(file) {
+      const formData = new FormData();
+      formData.append(this.name,file);
+      await this.uploadCommonCompsHelpInfoImage({name:this.name,file:file});
+    },
     submit(){
-      this.addCommonCompsHelpInfo({name:this.name,imageLink:'',link:this.link,version:this.version+1,
-        groupName:this.groupName,description:this.description});
+      this.addCommonCompsHelpInfo({name:this.name,imageLink:this.ccHelpInfoImageUpload,link:this.link,version:this.version+1,
+        groupName:this.groupName,description:this.description,status:this.item&&this.item.status?this.item.status:false});
       this.onCloseDialog();              
     },
     resetDialog(){
@@ -194,12 +214,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('admin',['ccHelpInfoImageUpload']),
     version(){
       if(this.item) return this.item.version;
       return 0;
     }
   }
-
 };
 </script>
 <style lang="scss" scoped>
@@ -233,7 +253,6 @@ export default {
     font-weight: normal;
     font-size: 16px;
   }
-
   .v-text-field input {
     font-style: normal;
     font-weight: normal;
@@ -243,9 +262,6 @@ export default {
     color: #1A5A96 !important;
     border-bottom:1px solid #1A5A96;
   }
-
-
-
   .text-style textarea {
     text-align: left;
     font-style: normal;
@@ -257,4 +273,3 @@ export default {
     
   }
 </style>
-

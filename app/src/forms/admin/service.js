@@ -157,6 +157,7 @@ const service = {
       obj.versions = data.version;
       obj.groupname = data.groupName;
       obj.description = data.description;
+      obj.publishstatus=data.status;
       obj.createdBy = "aidowu.idir";
       
       trx = await CommonComponentsHelpInfo.startTransaction();

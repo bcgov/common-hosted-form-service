@@ -1,5 +1,6 @@
 import { NotificationTypes } from '@/utils/constants';
 import { adminService } from '@/services';
+import axios from 'axios';
 
 /**
  * Admin Module
@@ -13,8 +14,9 @@ export default {
     roles: [],
     user: {},
     userList: [],
-    ccHelpInfoList:[],
-    ccHelpInfo:{}
+    ccHelpInfoList:[], // Common Component Help Information List
+    ccHelpInfo:{}, // Common Component Help Information
+    ccHelpInfoImageUpload:''
   },
   getters: {
     apiKey: state => state.apiKey,
@@ -24,7 +26,8 @@ export default {
     user: state => state.user,
     userList: state => state.userList,
     ccHelpInfoList: state => state.ccHelpInfoList,
-    ccHelpInfo: state => state.ccHelpInfo
+    ccHelpInfo: state => state.ccHelpInfo,
+    ccHelpInfoImageUpload: state=> state.ccHelpInfoImageUpload
   },
   mutations: {
     SET_API_KEY(state, apiKey) {
@@ -48,8 +51,13 @@ export default {
     SET_CCHELPINFOLIST(state,ccHelpInfoList){
       state.ccHelpInfoList = ccHelpInfoList;
     },
-    SET_CCHELPINFO(state,ccHelpInfo){
+    SET_CCHELPINFO(state,ccHelpInfo) //Common Component Help Information
+    {
       state.ccHelpInfo = ccHelpInfo;
+    },
+    SET_CCHELPINFOIMAGEUPLOAD(state,ccHelpInfoImageUpload)
+    {
+      state.ccHelpInfoImageUpload = ccHelpInfoImageUpload;
     }
   },
   actions: {
@@ -201,6 +209,28 @@ export default {
         commit('SET_CCHELPINFO',{});
         const response = await adminService.updateCommonCompsHelpInfoStatus(componentId, publishStatus);
         commit('SET_CCHELPINFO',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching this user.',
+          consoleError: 'Error getting admin user  data',
+        }, { root: true });
+      }
+    },
+    async uploadCommonCompsHelpInfoImage({ commit,dispatch },fileData) {
+      try {
+        commit('SET_CCHELPINFOIMAGEUPLOAD','');
+        let response = await adminService.uploadImageUrl(fileData.name);
+        if(response && response.data){
+          let config = {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            }
+          };
+          const res = await axios.put(response.data,fileData.file,config);
+          if(res){
+            commit('SET_CCHELPINFOIMAGEUPLOAD',response.data.split('?')[0]);
+          }
+        }
       } catch(error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching this user.',

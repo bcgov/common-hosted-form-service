@@ -1,5 +1,6 @@
 const service = require('./service');
 const formService = require('../form/service');
+const fileService = require('./fileService');
 
 module.exports = {
   //
@@ -114,5 +115,14 @@ module.exports = {
       next(error);
     }
   },
+
+  uploadImageUrl: async(req,res,next)=>{
+    try{
+      const response = await fileService.create(req.params.imageName);
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
+  }
 
 };
