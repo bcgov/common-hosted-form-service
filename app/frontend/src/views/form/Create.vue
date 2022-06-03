@@ -80,7 +80,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('admin', ['listCommonCompsHelpInfo']),
+    ...mapActions('admin', ['listFormComponentsHelpInfo']),
     ...mapActions('form', ['resetForm']),
     reRenderFormDesigner() {
       this.creatorStep = 2;
@@ -91,7 +91,7 @@ export default {
     this.resetForm();
   },
   mounted() {
-    this.listCommonCompsHelpInfo();
+    this.listFormComponentsHelpInfo();
     this.$nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
@@ -115,7 +115,6 @@ export default {
     if(!this.$store.hasModule('admin')) {
       this.$store.registerModule('admin', admin);
     }
-    this.listCommonCompsHelpInfo();
   },
   beforeUnmount(){
     if (this.$store.hasModule('admin')) {

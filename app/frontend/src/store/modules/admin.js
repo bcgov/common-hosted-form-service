@@ -14,9 +14,9 @@ export default {
     roles: [],
     user: {},
     userList: [],
-    ccHelpInfoList:{}, // Common Component Help Information Object
-    ccHelpInfo:{}, // Common Component Help Information
-    ccHelpInfoImageUpload:''
+    fcHelpInfoGroupObject:{}, // Form Components Help Information Object
+    fcHelpInfo:{}, // Form Component Help Information
+    fcHelpInfoImageUpload:'' // Form Component Help Information image upload url
   },
   getters: {
     apiKey: state => state.apiKey,
@@ -25,9 +25,9 @@ export default {
     roles: state => state.roles,
     user: state => state.user,
     userList: state => state.userList,
-    ccHelpInfoList: state => state.ccHelpInfoList,
-    ccHelpInfo: state => state.ccHelpInfo,
-    ccHelpInfoImageUpload: state=> state.ccHelpInfoImageUpload
+    fcHelpInfoGroupObject: state => state.fcHelpInfoGroupObject,
+    fcHelpInfo: state => state.fcHelpInfo,
+    fcHelpInfoImageUpload: state=> state.fcHelpInfoImageUpload
   },
   mutations: {
     SET_API_KEY(state, apiKey) {
@@ -48,16 +48,16 @@ export default {
     SET_USERLIST(state, users) {
       state.userList = users;
     },
-    SET_CCHELPINFOLIST(state,ccHelpInfoList){
-      state.ccHelpInfoList = ccHelpInfoList;
+    SET_FCHELPINFOGroupObject(state,fcHelpInfoGroupObject){
+      state.fcHelpInfoGroupObject = fcHelpInfoGroupObject;
     },
-    SET_CCHELPINFO(state,ccHelpInfo) //Common Component Help Information
+    SET_FCHELPINFO(state,fcHelpInfo) //Common Component Help Information
     {
-      state.ccHelpInfo = ccHelpInfo;
+      state.fcHelpInfo = fcHelpInfo;
     },
-    SET_CCHELPINFOIMAGEUPLOAD(state,ccHelpInfoImageUpload)
+    SET_FCHELPINFOIMAGEUPLOAD(state,fcHelpInfoImageUpload)
     {
-      state.ccHelpInfoImageUpload = ccHelpInfoImageUpload;
+      state.fcHelpInfoImageUpload = fcHelpInfoImageUpload;
     }
   },
   actions: {
@@ -175,12 +175,27 @@ export default {
 
    
 
-    async listCommonCompsHelpInfo({ commit, dispatch }) {
+    async listFormComponentsHelpInfo({ commit, dispatch }) {
       try {
         // Get Common Components Help Information
-        commit('SET_CCHELPINFOLIST',{});
-        const response = await adminService.listCommonCompsHelpLinkInfo();
-        commit('SET_CCHELPINFOLIST',response.data);
+        commit('SET_FCHELPINFOGroupObject',{});
+        const response = await adminService.listFormComponentsHelpInfo();
+        commit('SET_FCHELPINFOGroupObject',response.data);
+      } catch(error) {
+        
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
+        }, { root: true });
+      }
+    },
+
+    async addFormComponentHelpInfo({ commit, dispatch },data) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCHELPINFO',{});
+        const response = await adminService.addFormComponentHelpInfo(data);
+        commit('SET_FCHELPINFO',response.data);
       } catch(error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching this user.',
@@ -189,12 +204,12 @@ export default {
       }
     },
 
-    async addCommonCompsHelpInfo({ commit, dispatch },data) {
+    async updateFormComponentsHelpInfoStatus({ commit, dispatch },{componentId, publishStatus}) {
       try {
         // Get Common Components Help Information
-        commit('SET_CCHELPINFO',{});
-        const response = await adminService.addCommonCompsHelpInfo(data);
-        commit('SET_CCHELPINFO',response.data);
+        commit('SET_FCHELPINFO',{});
+        const response = await adminService.updateFormComponentsHelpInfoStatus(componentId, publishStatus);
+        commit('SET_FCHELPINFO',response.data);
       } catch(error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching this user.',
@@ -202,33 +217,20 @@ export default {
         }, { root: true });
       }
     },
-
-    async updateCommonCompsHelpInfoStatus({ commit, dispatch },{componentId, publishStatus}) {
+    async uploadFormComponentsHelpInfoImage({ commit,dispatch },imageData) {
       try {
-        // Get Common Components Help Information
-        commit('SET_CCHELPINFO',{});
-        const response = await adminService.updateCommonCompsHelpInfoStatus(componentId, publishStatus);
-        commit('SET_CCHELPINFO',response.data);
-      } catch(error) {
-        dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching this user.',
-          consoleError: 'Error getting admin user  data',
-        }, { root: true });
-      }
-    },
-    async uploadCommonCompsHelpInfoImage({ commit,dispatch },fileData) {
-      try {
-        commit('SET_CCHELPINFOIMAGEUPLOAD','');
-        let response = await adminService.uploadImageUrl(fileData.name);
+        commit('SET_FCHELPINFOIMAGEUPLOAD','');
+        let response = await adminService.uploadImageUrl(imageData.componentName);
+        
         if(response && response.data){
           let config = {
             headers: {
               'Content-Type': 'multipart/form-data',
             }
           };
-          const res = await axios.put(response.data,fileData.file,config);
+          const res = await axios.put(response.data,imageData.image,config);
           if(res){
-            commit('SET_CCHELPINFOIMAGEUPLOAD',response.data.split('?')[0]);
+            commit('SET_FCHELPINFOIMAGEUPLOAD',response.data.split('?')[0]);
           }
         }
       } catch(error) {

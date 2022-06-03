@@ -102,54 +102,53 @@ export default {
   },
 
   /**
-   * @function listCommonCompsHelpLinkInfo
-   * Read a user in the DB
+   * @function listFormComponentsHelpInfo
+   * Reads all form components help information
    * @returns {Promise} An axios response
    */
-  listCommonCompsHelpLinkInfo() {
-    return appAxios().get(`${ApiRoutes.ADMIN}/commonCompsHelpInfo/list`);
+  listFormComponentsHelpInfo() {
+    return appAxios().get(`${ApiRoutes.ADMIN}/formComponents/helpInfo/list`);
   },
 
   /**
-   * @function addCommonCompsHelpInfo
+   * @function addFormComponentHelpInfo
    * Create a new Form
-   * @param {Object} data An Object containing each common component help link information
+   * @param {Object} data An Object containing each form component help information
    * @returns {Promise} An axios response
    */
-  addCommonCompsHelpInfo(data){
-    return appAxios().post(`${ApiRoutes.ADMIN}/commonCompsHelpInfo`, data);
+  addFormComponentHelpInfo(data){
+    return appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/object`, data);
   },
 
 
   /**
-   * @function updateCommonCompsHelpInfoStatus
-   * Update publish status of Common Components Help Link Information
+   * @function updateFormComponentsHelpInfoStatus
+   * Update publish status of each Form Components Help Link Information
    * @param {boolean} publishStatus This is used to determine if the help link information is published or not
    * @param {string} componentId component id
    * @returns {Promise} An axios response
    */
-  updateCommonCompsHelpInfoStatus(componentId, publishStatus){
-    return appAxios().put(`${ApiRoutes.ADMIN}/commonCompsHelpInfo/${publishStatus}/${componentId}`);
+  updateFormComponentsHelpInfoStatus(componentId, publishStatus){
+    return appAxios().put(`${ApiRoutes.ADMIN}/formComponents/helpInfo/${publishStatus}/${componentId}`);
   },
 
   /**
    * @function uploadImageUrl
-   * Create a new Form
-   * @param {String} imageName An Object containing each common component help link information
+   * get signed image upload url
+   * @param {String} imageName component name to be used for image upload
    * @returns {Promise} An axios response
    */
   async uploadImageUrl(imageName){
-
-    return await appAxios().post(`${ApiRoutes.ADMIN}/commonCompsHelpInfo/upload/${imageName}`);
+    return await appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/upload/${imageName}`);
   },
 
   /**
-   * @function uploadCommonCompsHelpInfoImage
+   * @function uploadFormComponentsHelpInfoImage
    * Create a new Form
-   * @param {Object} file An Object containing each common component help link information
+   * @param {Object} file A raw image object to be uploaded to s3 bucket
    * @returns {Promise} An axios response
    */
-  async uploadCommonCompsHelpInfoImage(url,file){
+  async uploadFormComponentsHelpInfoImage(url,file){
     
     return await axios().put(url,file,{headers: {'Content-Type': 'multipart/form-data' }});
   },

@@ -249,7 +249,7 @@ export default {
     
   },
   computed: {
-    ...mapGetters('admin', ['ccHelpInfoList']),
+    ...mapGetters('admin', ['fcHelpInfoGroupObject']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapGetters('form', ['builder']),
     ...mapFields('form', [
@@ -401,7 +401,7 @@ export default {
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
-      for (const  [title,elements] of Object.entries(this.ccHelpInfoList)) {
+      for (const  [title,elements] of Object.entries(this.fcHelpInfoGroupObject)) {
         let extractedElementsNames = this.extractPublishedElement(elements);
         for (const [key,builderElements] of Object.entries(builder)) {
           if(title===builderElements.title){
@@ -428,7 +428,7 @@ export default {
       for(let element of elements) {
         if(element.status)
         {
-          publishedComponentsNames.push(element.name);
+          publishedComponentsNames.push(element.componentName);
         }
       }
       return  publishedComponentsNames;
@@ -437,7 +437,7 @@ export default {
       let target = evt.target;
       let parent = target.parentNode;
       let type = parent.getAttribute('data-type');
-      for (const [, elements] of Object.entries(this.ccHelpInfoList))
+      for (const [, elements] of Object.entries(this.fcHelpInfoGroupObject))
       {
         for(let element of elements ){
           if(type===element.name)

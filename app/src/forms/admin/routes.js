@@ -58,23 +58,23 @@ routes.get('/users/:userId', async (req, res, next) => {
 });
 
 //
-//common componets help info
+//Form componets help info
 //
 
-routes.get('/commonCompsHelpInfo/list', async(req,res,next) =>{
-  await controller.listCommonComponentsHelpInfo(req, res, next);
+routes.get('/formComponents/helpInfo/list', async(req,res,next) =>{
+  await controller.listFormComponentsHelpInfo(req, res, next);
 });
 
 
-routes.post('/commonCompsHelpInfo', async(req,res,next) =>{
-  await controller.createCommonComponentsHelpInfo(req, res, next);
+routes.post('/formComponents/helpInfo/object', async(req,res,next) =>{
+  await controller.createFormComponentsHelpInfo(req, res, next);
 });
 
-routes.put('/commonCompsHelpInfo/:publishStatus/:componentId/', async (req, res, next) => {
-  await controller.updatCommonCompsHelpInfo(req, res, next);
+routes.put('/formComponents/helpInfo/:publishStatus/:componentId', async (req, res, next) => {
+  await controller.updateFormComponentsHelpInfo(req, res, next);
 });
 
-routes.post('/commonCompsHelpInfo/upload/:imageName', async (req, res, next) => {
+routes.post('/formComponents/helpInfo/upload/:imageName', async (req, res, next) => {
   await controller.uploadImageUrl(req, res, next);
 });
 

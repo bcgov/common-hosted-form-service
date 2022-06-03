@@ -1,4 +1,4 @@
-const { Form, FormVersion, User, UserFormAccess,CommonComponentsHelpInfo } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess,FormComponentsHelpInfo } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
 
@@ -121,17 +121,17 @@ const service = {
   /**
 
   /**
-   * @function listCommonComponentsHelpInfo
-   * Search for all Common Compo
+   * @function listFormComponentsHelpInfo
+   * Search for all form components help information
    * @returns {Promise} An objection query promise
    */
-   listCommonComponentsHelpInfo: async () => {
+   listFormComponentsHelpInfo: async () => {
    
-    let result = await CommonComponentsHelpInfo.query()
-    .modify('distinctOnTagName')
-    .modify('orderTagNameVersionsDescending');
-
-    let filterResult= result.map(item=>({id:item.id,status:item.publishstatus,name:item.tagname,link:item.taglink,imageLink:item.imagelink,
+    let result = await FormComponentsHelpInfo.query()
+    .modify('distinctOnComponentName')
+    .modify('orderComponentNameVersionsDescending');
+  
+    let filterResult= result.map(item=>({id:item.id,status:item.publishstatus,componentName:item.componentname,moreHelpInfoLink:item.morehelpinfolink,imageUrl:item.imageurl,
       version:item.versions,groupName:item.groupname,description:item.description }));
      
     return filterResult.reduce(function (r, a) {
@@ -142,31 +142,32 @@ const service = {
   },
 
   /**
-   * @function createCommonComponentsHelpInfo
-   * Search for all Common Compo
+   * @function createFormComponentsHelpInfo
+   * insert each Form Component Help Info
+   * @param {Object} data Form Component Help Info object
    * @returns {Promise} An objection query promise
    */
-   createCommonComponentsHelpInfo: async(data)=>{
+   createFormComponentsHelpInfo: async(data)=>{
     let trx;
     try{
       const obj = {};
       obj.id = uuidv4();
-      obj.tagname = data.name;
-      obj.taglink = data.link;
-      obj.imagelink = data.imageLink;
+      obj.componentname = data.componentName;
+      obj.morehelpinfolink = data.moreHelpInfoLink;
+      obj.imageurl = data.imageUrl;
       obj.versions = data.version;
       obj.groupname = data.groupName;
       obj.description = data.description;
       obj.publishstatus=data.status;
       obj.createdBy = "aidowu.idir";
       
-      trx = await CommonComponentsHelpInfo.startTransaction();
+      trx = await FormComponentsHelpInfo.startTransaction();
       
-      let t = await CommonComponentsHelpInfo.query(trx).insert(obj);
+      let t = await FormComponentsHelpInfo.query(trx).insert(obj);
   
       await trx.commit()
       
-      return service.readCommonComponentsHelpInfo(obj.id);
+      return service.readFormComponentsHelpInfo(obj.id);
       
     } catch(err){
      
@@ -176,33 +177,33 @@ const service = {
   },
 
   /**
-   * @function createCommonComponentsHelpInfo
-   * fetch Common Component Help Link Info by ccHelpLinkInfo
-   * @param {String} ccHelpLinkInfoId Common Component Help Link Info
+   * @function readFormComponentsHelpInfo
+   * fetch Form Component Help Info by formComponentHelpInfoId
+   * @param {String} formComponentHelpInfoId Form Component Help Info Id
    * @returns {Promise} An objection query promise
    */
 
-readCommonComponentsHelpInfo: async(ccHelpLinkInfoId)=>{
-  return await CommonComponentsHelpInfo.query()
-  .where('id', ccHelpLinkInfoId);
+readFormComponentsHelpInfo: async(formComponentHelpInfoId)=>{
+  return await FormComponentsHelpInfo.query()
+  .where('id', formComponentHelpInfoId);
 },
 
 /**
-   * @function createCommonComponentsHelpInfo
-   * update the publish status of common components information help links
+   * @function updateFormComponentsHelpInfo
+   * update the publish status of each form component information help information
    * @param {Object} param consist of publishStatus and componentId.
    * @returns {Promise} An objection query promise
    */
-updatCommonCompsHelpInfo: async(param)=>{
+updateFormComponentsHelpInfo: async(param)=>{
   let trx;
   try {
-    trx = await CommonComponentsHelpInfo.startTransaction();
-    await CommonComponentsHelpInfo.query(trx).patchAndFetchById(param.componentId, {
+    trx = await FormComponentsHelpInfo.startTransaction();
+    await FormComponentsHelpInfo.query(trx).patchAndFetchById(param.componentId, {
       publishstatus: JSON.parse(param.publishStatus),
       updatedBy: 'aidowu.idir'
     });
     await trx.commit();
-    return await service.readCommonComponentsHelpInfo(param.componentId);
+    return await service.readFormComponentsHelpInfo(param.componentId);
   } catch (err) {
     if (trx) await trx.rollback();
     throw err;

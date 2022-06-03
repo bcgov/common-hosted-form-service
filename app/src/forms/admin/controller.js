@@ -87,29 +87,29 @@ module.exports = {
   },
 
   //
-  // Common Components Help Information
+  // Form Components Help Information
   //
-  listCommonComponentsHelpInfo:async(req,res,next)=>{
+  listFormComponentsHelpInfo:async(req,res,next)=>{
     try{
-      const response = await service.listCommonComponentsHelpInfo();
+      const response = await service.listFormComponentsHelpInfo();
       res.status(200).json(response);
     } catch(error){
       next(error);
     }
   },
 
-  createCommonComponentsHelpInfo:async(req,res,next)=>{
+  createFormComponentsHelpInfo:async(req,res,next)=>{
     try{
-      const response = await service.createCommonComponentsHelpInfo(req.body);
+      const response = await service.createFormComponentsHelpInfo(req.body);
       res.status(200).json(response);
     } catch(error){
       next(error);
     }
   },
 
-  updatCommonCompsHelpInfo:async(req,res,next)=>{
+  updateFormComponentsHelpInfo:async(req,res,next)=>{
     try{
-      const response = await service.updatCommonCompsHelpInfo(req.params);
+      const response = await service.updateFormComponentsHelpInfo(req.params);
       res.status(200).json(response);
     } catch(error){
       next(error);

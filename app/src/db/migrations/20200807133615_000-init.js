@@ -78,16 +78,16 @@ exports.up = function(knex) {
       table.jsonb('submission');
       stamps(knex, table);
     }))
-    .then(() => knex.schema.createTable('common_components_help_info',table=>{
+    .then(() => knex.schema.createTable('form_components_help_info',table=>{
       table.uuid('id').primary();
-      table.string('tagname').notNullable();
-      table.string('taglink',500);
-      table.string('imagelink',500);
+      table.string('componentname').notNullable();
+      table.string('morehelpinfolink',500);
+      table.string('imageurl',500);
       table.integer('versions').notNullable();
       table.string('groupname').notNullable();
       table.text('description').notNullable();
       table.boolean('publishstatus').defaultTo(false);
-      table.unique(['tagname', 'versions']);
+      table.unique(['componentname', 'versions']);
       stamps(knex, table);
     }));
 
@@ -95,7 +95,7 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   return Promise.resolve()
-    .then(() => knex.schema.dropTableIfExists('common_components_help_info'))
+    .then(() => knex.schema.dropTableIfExists('form_components_help_info'))
     .then(() => knex.schema.dropTableIfExists('form_identity_provider'))
     .then(() => knex.schema.dropTableIfExists('identity_provider'))
     .then(() => knex.schema.dropTableIfExists('form_submission'))
