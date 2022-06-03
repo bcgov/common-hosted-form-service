@@ -120,6 +120,7 @@ export default{
     canDisabled(componentName){
       return this.itemsList.filter(item =>item.componentName === componentName).length == 0; 
     }, 
+
     isComponentPublish(componentName,index){
       for(let component of this.itemsList){
         if(component.name===componentName){
@@ -128,14 +129,14 @@ export default{
       }
     },
     onOpenDialog(componentName){
-      this.getItem(componentName);
+      this.getComponent(componentName);
       this.onShowCloseDialog();
     },
     onOpenPreviewDialog(componentName){
-      this.getItem(componentName);
+      this.getComponent(componentName);
       this.onShowClosePreveiwDialog();
     },
-    getItem(componentName){
+    getComponent(componentName){
       if(componentName){
         this.componentName=componentName;
         this.item =this.itemsList.find(obj => {
@@ -143,7 +144,6 @@ export default{
         });
       }
     },
-
     onSwitchChange(componentName, index){
       for (const component of this.itemsList) {
         if(component.componentName===componentName){
