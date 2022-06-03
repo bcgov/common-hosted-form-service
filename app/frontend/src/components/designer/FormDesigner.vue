@@ -197,7 +197,6 @@ import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
-import admin from '@/store/modules/admin.js';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
@@ -300,7 +299,6 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('admin', ['listCommonCompsHelpInfo']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -374,6 +372,7 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     init() {
       // Since change is triggered during loading
+      this.onFormLoad();
     },
     onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
@@ -413,7 +412,7 @@ export default {
               {
                 // Append the info el
                 let child = document.createElement('i');
-                child.className = 'fa fa-info-circle';
+                child.className = 'fa fa-info info-helper';
                 child.style.float='right';
                 child.addEventListener('click', this.showHelperClicked);
                 containerEl.children[i].appendChild(child);
@@ -422,6 +421,7 @@ export default {
           }
         }
       }
+
     },
     extractPublishedElement(elements){
       let publishedComponentsNames=[];
@@ -644,30 +644,21 @@ export default {
       this.getFormSchema();
       this.fetchForm(this.formId);
     }
+    
   },
-  beforeMount(){
-    if(!this.$store.hasModule('admin')) {
-      this.$store.registerModule('admin', admin);
-    }
-  },
-  beforeUnmount(){
-    if (this.$store.hasModule('admin')) {
-      this.$store.unregisterModule('admin');
-    }
-
-  },
+ 
   mounted() {
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
-    this.listCommonCompsHelpInfo();
+    
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    }
+    },
   },
 };
 </script>

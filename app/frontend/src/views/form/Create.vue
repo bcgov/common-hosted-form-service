@@ -58,7 +58,7 @@ import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
 import { IdentityMode, IdentityProviders } from '@/utils/constants';
-
+import admin from '@/store/modules/admin.js';
 export default {
   name: 'FormCreate',
   components: {
@@ -80,6 +80,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions('admin', ['listCommonCompsHelpInfo']),
     ...mapActions('form', ['resetForm']),
     reRenderFormDesigner() {
       this.creatorStep = 2;
@@ -90,6 +91,7 @@ export default {
     this.resetForm();
   },
   mounted() {
+    this.listCommonCompsHelpInfo();
     this.$nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
@@ -108,6 +110,18 @@ export default {
         )
       )
       : next();
+  },
+  beforeMount(){
+    if(!this.$store.hasModule('admin')) {
+      this.$store.registerModule('admin', admin);
+    }
+    this.listCommonCompsHelpInfo();
+  },
+  beforeUnmount(){
+    if (this.$store.hasModule('admin')) {
+      this.$store.unregisterModule('admin');
+    }
+
   },
 };
 </script>

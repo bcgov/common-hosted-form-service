@@ -6,16 +6,17 @@
       :formId="f"
       :saved="sv"
       :versionId="v"
+      ref="formDesigner"
     />
   </BaseSecure>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters,mapActions } from 'vuex';
 
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import { IdentityProviders } from '@/utils/constants';
-
+import admin from '@/store/modules/admin.js';
 export default {
   name: 'FormDesign',
   components: {
@@ -26,6 +27,15 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
+  },
+  mounted() {
+    this.listCommonCompsHelpInfo();
+    this.$nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
+  },
+  methods:{
+    ...mapActions('admin', ['listCommonCompsHelpInfo']),
   },
   computed: {
     ...mapGetters('form', ['form']),
@@ -39,6 +49,18 @@ export default {
         )
       )
       : next();
+  },
+  beforeMount(){
+    if(!this.$store.hasModule('admin')) {
+      this.$store.registerModule('admin', admin);
+    }
+    this.listCommonCompsHelpInfo();
+  },
+  beforeUnmount(){
+    if (this.$store.hasModule('admin')) {
+      this.$store.unregisterModule('admin');
+    }
+
   },
 };
 </script>
