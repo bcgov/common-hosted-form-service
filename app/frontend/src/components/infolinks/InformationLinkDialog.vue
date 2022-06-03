@@ -16,40 +16,38 @@
             <span class="text-decoration-underline mr-2 blackColorWrapper">
               Component Name:
             </span>
-            <span v-text="name" class="blueColorWrapper mt-1"/>
+            <span v-text="name" class="blueColorWrapper"/>
           </v-row>
-          <v-row class="mt-2" no-gutters>
-            <div class="mt-2">
-              <p class="mr-2 text-decoration-underline blueColorWrapper">
-                Learn More Link:
-              </p>
-            </div>
-            <v-col cols="4">
-              <div>
-
-                <v-text-field
-                  dense
-                  enable
-                  style="width:95%;"
-                  v-model="link"
-                  flat
-                  :disabled="isLinkEnabled"
-                  :value="link"
-                  class="text-style"
-                  color="#1A5A96"
+          <v-row class="mt-1" no-gutters>
+            <v-col>
+              <div class="d-flex flex-row align-center">
+                <p class="mr-2 mt-2 text-decoration-underline blueColorWrapper">
+                  Learn More Link:
+                </p>
+                <v-col cols="5">
+                  <v-text-field
+                    dense
+                    enable
+                    style="width:100%;"
+                    v-model="link"
+                    flat
+                    :disabled="isLinkEnabled"
+                    :value="link"
+                    class="text-style"
+                    color="#1A5A96"
+                  >
+                    {{link}}
+                  </v-text-field>
+                </v-col>
+                <v-checkbox
+                  @click="isLinkEnabled=!isLinkEnabled"
                 >
-                  {{link}}
-                </v-text-field>
-
+                  <template v-slot:label>
+                    <span class="v-label">{{isLinkEnabled?'Click to enable link':'Click to disable link'}}</span>
+                  </template>
+                </v-checkbox>
               </div>
             </v-col>
-
-
-            <v-checkbox
-              label="Enable/Disable"
-              class="align-center"
-              @click="isLinkEnabled=!isLinkEnabled"
-            ></v-checkbox>
           </v-row>
 
           <v-row no-gutters>
@@ -239,6 +237,24 @@ export default {
     color: #1A5A96;
     text-transform: capitalize;
   }
+  .blackColorWrapper{
+    text-align: left;
+    text-decoration: underline;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    color: #313132;
+  }
+
+  .v-label{
+    text-align: left;
+    text-decoration: none;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    color: #313132;
+  }
+
   .blackColorWrapper{
     text-align: left;
     text-decoration: underline;
