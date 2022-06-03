@@ -29,13 +29,13 @@ export default {
     v: String,
   },
   mounted() {
-    this.listCommonCompsHelpInfo();
+    this.listFormComponentsHelpInfo();
     this.$nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
   },
   methods:{
-    ...mapActions('admin', ['listCommonCompsHelpInfo']),
+    ...mapActions('admin', ['listFormComponentsHelpInfo']),
   },
   computed: {
     ...mapGetters('form', ['form']),
@@ -54,7 +54,6 @@ export default {
     if(!this.$store.hasModule('admin')) {
       this.$store.registerModule('admin', admin);
     }
-    this.listCommonCompsHelpInfo();
   },
   beforeUnmount(){
     if (this.$store.hasModule('admin')) {

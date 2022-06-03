@@ -3,17 +3,17 @@
     <v-expansion-panels class="nrmc-expand-collapse" flat>
       <v-expansion-panel
         flat
-        v-for="(group, index) in groupList" :key="index" 
-        @click="onExpansionPanelClick(group)">
+        v-for="(groupName, index) in groupList" :key="index" 
+        @click="onExpansionPanelClick(groupName)">
         <v-expansion-panel-header>
           <div class="header">
-            <strong>{{group}}</strong>
+            <strong>{{groupName}}</strong>
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <GeneralLayout :groupName="group" 
+          <GeneralLayout :groupName="groupName" 
                          :layoutList="groupComponentsList" 
-                         :itemsList="ccHelpInfoList[group]?ccHelpInfoList[group]:[]"/>
+                         :itemsList="fcHelpInfoGroupObject[groupName]?fcHelpInfoGroupObject[groupName]:[]"/>
         </v-expansion-panel-content>
       </v-expansion-panel> 
     </v-expansion-panels>
@@ -25,7 +25,7 @@ import GeneralLayout from '@/components/infolinks/GeneralLayout.vue';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: 'CommonComponentInfoLinks',
+  name: 'FormComponentsHelpInfo',
   components:{GeneralLayout},
   data(){
     return{
@@ -35,30 +35,32 @@ export default {
     };
   },
   methods:{
-    ...mapActions('admin',['listCommonCompsHelpInfo']),
+    ...mapActions('admin',['listFormComponentsHelpInfo']),
     isObject(obj) {
       var type = typeof obj;
       return type === 'function' || (type === 'object' && !!obj);
     },
 
 
-    onExpansionPanelClick(group) 
+    onExpansionPanelClick(groupName) 
     {
-      if(this.isPanelOpened.get(group)===undefined || !this.isPanelOpened.get(group))
+      if(this.isPanelOpened.get(groupName)===undefined || !this.isPanelOpened.get(groupName))
       {
-        this.isPanelOpened.set(group,true);
-        this.groupComponentsList=this.extractGroupComponents(group);
+        this.isPanelOpened.set(groupName,true);
+        this.groupComponentsList=this.extractGroupComponents(groupName);
       }
       else{
-        this.isPanelOpened.set(group,false);
+        this.isPanelOpened.set(groupName,false);
       }
 
       for(let key of this.isPanelOpened.keys()){
-        if(key!==group) {
+        if(key!==groupName) {
           this.isPanelOpened.set(key,false);
         }
       }
     },
+
+    //extract form builder layout groups.
     extractGroups(){
       let allgroups=[];
       for (let  [, {title}] of Object.entries(this.builder)) {
@@ -69,12 +71,14 @@ export default {
       }
       return allgroups;
     },
-    extractGroupComponents(group){
+
+    //extract all components in the select group in form builder
+    extractGroupComponents(groupName){
       let groupComponents = [];
       for (let  [, {title,components}] of Object.entries(this.builder)) {
-        if((title && title===group) && components){
+        if((title && title===groupName) && components){
           for(let componentName of Object.keys(components)){
-            groupComponents.push({'name':componentName});
+            groupComponents.push({'componentName':componentName});
           }
         }
       }
@@ -82,7 +86,7 @@ export default {
     }
   },
   computed:{
-    ...mapGetters('admin',['ccHelpInfo','ccHelpInfoList']),
+    ...mapGetters('admin',['fcHelpInfo','fcHelpInfoGroupObject']),
     ...mapGetters('form', ['builder']),
     groupList(){
       return this.extractGroups();
@@ -90,12 +94,12 @@ export default {
 
   },
   watch:{
-    ccHelpInfo(){
-      this.listCommonCompsHelpInfo();
+    fcHelpInfo(){
+      this.listFormComponentsHelpInfo();
     },
   },
   mounted(){
-    this.listCommonCompsHelpInfo();
+    this.listFormComponentsHelpInfo();
   }
 };
 </script>

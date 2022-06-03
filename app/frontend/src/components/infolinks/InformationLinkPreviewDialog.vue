@@ -9,13 +9,13 @@
         <v-container class="overflow-auto">
           <v-row >
             <v-col class="d-flex justify-space-between headerWrapper pa-4">
-              <div class="align-self-center">{{item&&item.name}}</div>
+              <div class="align-self-center">{{item&&item.componentName}}</div>
               <div class="align-self-center cursor"><font-awesome-icon icon="fa-solid fa-xmark" :size="'1x'" inverse @click="()=>{
                 this.$emit('close-dialog');
               }"/></div>
             </v-col>
           </v-row>
-          <v-row class="mt-6" v-if="item&&item.imageLink">
+          <v-row class="mt-6" v-if="item&&item.imageUrl">
             <v-col md="6" >
               <div class="text">
                 {{item&&item.description}}
@@ -23,8 +23,8 @@
             </v-col>
             <v-col md="6" >
               <v-img
-                :lazy-src="item&&item.imageLink"
-                :src="item&&item.imageLink"
+                :lazy-src="item&&item.imageUrl"
+                :src="item&&item.imageUrl"
               ></v-img>
             </v-col>
           </v-row>
@@ -37,7 +37,7 @@
           </v-row>
           <v-row>
             <v-col class="d-flex flex-row align-center text-decoration-underline linkWrapper">
-              <a :href="item&&item.link" :target="'_blank'" :class="{disabledLink:item&&item.link===''}"> <div class="mr-1 cursor" >Learn more 
+              <a :href="item&&item.moreHelpInfoLink" :target="'_blank'" :class="{disabledLink:item&&item.moreHelpInfoLink===''}"> <div class="mr-1 cursor" >Learn more 
                 <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /> </div></a>
             </v-col>
           </v-row>

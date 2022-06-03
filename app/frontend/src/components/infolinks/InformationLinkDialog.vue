@@ -16,7 +16,7 @@
             <span class="text-decoration-underline mr-2 blackColorWrapper">
               Component Name:
             </span>
-            <span v-text="name" class="blueColorWrapper"/>
+            <span v-text="componentName_" class="blueColorWrapper"/>
           </v-row>
           <v-row class="mt-1" no-gutters>
             <v-col>
@@ -29,14 +29,14 @@
                     dense
                     enable
                     style="width:100%;"
-                    v-model="link"
+                    v-model="moreHelpInfoLink"
                     flat
                     :disabled="isLinkEnabled"
-                    :value="link"
+                    :value="moreHelpInfoLink"
                     class="text-style"
                     color="#1A5A96"
                   >
-                    {{link}}
+                    {{moreHelpInfoLink}}
                   </v-text-field>
                 </v-col>
                 <v-checkbox
@@ -86,7 +86,7 @@
                     show-size
                     counter
                     label="Image Upload:"
-                    @change="selectFile"
+                    @change="selectImage"
                   ></v-file-input>
                 </v-col>
               </div>
@@ -137,10 +137,9 @@ export default {
   name:'InformationLinkDialog',
   data(){
     return{
-      name:'',
+      componentName_:'',
       description:'',
-      link:'',
-      files:[],
+      moreHelpInfoLink:'',
       isLinkEnabled:true,
       dialog: this.showDialog,
       color1:'#1A5A96',
@@ -171,22 +170,22 @@ export default {
   props:{
     showDialog:{ type: Boolean, required: true },
     item:{ type: Object },
-    itemName:{type:String,require:true,default:''},
+    componentName:{type:String,require:true,default:''},
     groupName:{type:String,require:true}
   },
   methods:{
-    ...mapActions('admin', ['addCommonCompsHelpInfo','uploadCommonCompsHelpInfoImage']),
+    ...mapActions('admin', ['addFormComponentHelpInfo','uploadFormComponentsHelpInfoImage']),
     onCloseDialog(){
       this.resetDialog();
       this.$emit('close-dialog');
     },
-    async selectFile(file) {
+    async selectImage(image) {
       const formData = new FormData();
-      formData.append(this.name,file);
-      await this.uploadCommonCompsHelpInfoImage({name:this.name,file:file});
+      formData.append(this.componentName_,image);
+      await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:image});
     },
     submit(){
-      this.addCommonCompsHelpInfo({name:this.name,imageLink:this.ccHelpInfoImageUpload,link:this.link,version:this.version+1,
+      this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
         groupName:this.groupName,description:this.description,status:this.item&&this.item.status?this.item.status:false});
       this.onCloseDialog();              
     },
@@ -197,9 +196,9 @@ export default {
     },
     setPreviousVersion(){
       if(this.item){
-        this.name=this.item.name;
+        this.componentName_=this.item.componentName;
         this.description=this.item.description;
-        this.link=this.item.link;
+        this.moreHelpInfoLink=this.item.moreHelpInfoLink;
       }
     }
   },
@@ -207,12 +206,12 @@ export default {
     showDialog() {
       this.dialog = this.showDialog;
     },
-    itemName(){
-      this.name=this.itemName;
+    componentName(){
+      this.componentName_=this.componentName;
     }
   },
   computed: {
-    ...mapGetters('admin',['ccHelpInfoImageUpload']),
+    ...mapGetters('admin',['fcHelpInfoImageUpload']),
     version(){
       if(this.item) return this.item.version;
       return 0;

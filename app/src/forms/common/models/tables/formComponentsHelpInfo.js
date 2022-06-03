@@ -3,33 +3,33 @@ const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-class CommonComponentsHelpInfo extends Timestamps(Model) {
+class FormComponentsHelpInfo extends Timestamps(Model) {
   static get tableName() {
-    return 'common_components_help_info';
+    return 'form_components_help_info';
   }
 
   static get modifiers() {
     return {
-      distinctOnTagName(builder) {
-        builder.distinctOn('tagname'); 
+      distinctOnComponentName(builder) {
+        builder.distinctOn('componentname'); 
       },
-      orderTagNameVersionsDescending(builder) {
+      orderComponentNameVersionsDescending(builder) {
         
-        builder.orderBy(['tagname',{column:'versions', order:'desc'}]);
+        builder.orderBy(['componentname',{column:'versions', order:'desc'}]);
         
       },
     };
   }
-
+  
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['id','tagname','taglink','versions','groupname','description'],
+      required: ['id','componentname','versions','groupname','description'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
-        tagname: { type: 'string', minLength: 1, maxLength: 255 },
-        taglink: { type: 'string' },
-        imagelink: { type: 'string' },
+        componentname: { type: 'string', minLength: 1, maxLength: 255 },
+        morehelpinfolink: { type: 'string' },
+        imageurl: { type: 'string' },
         versions: { type: 'integer'},
         groupname: { type: 'string', minLength: 1, maxLength: 255 },
         publishstatus:{type:'boolean'},
@@ -42,4 +42,4 @@ class CommonComponentsHelpInfo extends Timestamps(Model) {
 
 }
 
-module.exports = CommonComponentsHelpInfo;
+module.exports = FormComponentsHelpInfo;
