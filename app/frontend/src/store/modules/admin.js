@@ -14,7 +14,7 @@ export default {
     roles: [],
     user: {},
     userList: [],
-    ccHelpInfoList:[], // Common Component Help Information List
+    ccHelpInfoList:{}, // Common Component Help Information Object
     ccHelpInfo:{}, // Common Component Help Information
     ccHelpInfoImageUpload:''
   },
