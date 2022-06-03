@@ -47,10 +47,10 @@
                            :groupName="groupName" 
                            :componentName="componentName"
                            @close-dialog="onShowCloseDialog" 
-                           :item="item"/>
+                           :component="component"/>
     <InformationLinkPreviewDialog :showDialog="showPreviewDialog" 
                                   @close-dialog="onShowClosePreveiwDialog" 
-                                  :item="item"/>
+                                  :component="component"/>
   </div>
 </template>
 
@@ -75,8 +75,8 @@ export default{
       publish:[],
       publishStatus:'UNPUBLISHED',
       componentName:'',
-      item:{},
-      listLength:this.itemsList.length,
+      component:{},
+      listLength:this.componentsList.length,
       headers: [
         { text: 'Form Title', align: 'start', value: 'componentName', width: '1%', },
         {
@@ -103,7 +103,7 @@ export default{
       type:Array,
       required: true
     },
-    itemsList:{
+    componentsList:{
       type:Array,
       defualt:[]
     },
@@ -118,12 +118,12 @@ export default{
       this.showPreviewDialog=!this.showPreviewDialog;
     },
     canDisabled(componentName){
-      return this.itemsList.filter(item =>item.componentName === componentName).length == 0; 
+      return this.componentsList.filter(component =>component.componentName === componentName).length == 0; 
     }, 
 
     isComponentPublish(componentName,index){
-      for(let component of this.itemsList){
-        if(component.name===componentName){
+      for(let component of this.componentsList){
+        if(component.componentName===componentName){
           this.publish[index]=component.status;
         }
       }
@@ -139,13 +139,13 @@ export default{
     getComponent(componentName){
       if(componentName){
         this.componentName=componentName;
-        this.item =this.itemsList.find(obj => {
+        this.component =this.componentsList.find(obj => {
           return obj.componentName === this.componentName;
         });
       }
     },
     onSwitchChange(componentName, index){
-      for (const component of this.itemsList) {
+      for (const component of this.componentsList) {
         if(component.componentName===componentName){
           this.updateFormComponentsHelpInfoStatus({
             componentId:component.id, 

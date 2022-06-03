@@ -169,7 +169,7 @@ export default {
   },
   props:{
     showDialog:{ type: Boolean, required: true },
-    item:{ type: Object },
+    component:{ type: Object },
     componentName:{type:String,require:true,default:''},
     groupName:{type:String,require:true}
   },
@@ -186,7 +186,7 @@ export default {
     },
     submit(){
       this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
-        groupName:this.groupName,description:this.description,status:this.item&&this.item.status?this.item.status:false});
+        groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false});
       this.onCloseDialog();              
     },
     resetDialog(){
@@ -195,10 +195,10 @@ export default {
       
     },
     setPreviousVersion(){
-      if(this.item){
-        this.componentName_=this.item.componentName;
-        this.description=this.item.description;
-        this.moreHelpInfoLink=this.item.moreHelpInfoLink;
+      if(this.component){
+        this.componentName_=this.component.componentName;
+        this.description=this.component.description;
+        this.moreHelpInfoLink=this.component.moreHelpInfoLink;
       }
     }
   },
@@ -213,7 +213,7 @@ export default {
   computed: {
     ...mapGetters('admin',['fcHelpInfoImageUpload']),
     version(){
-      if(this.item) return this.item.version;
+      if(this.component) return this.component.version;
       return 0;
     }
   }

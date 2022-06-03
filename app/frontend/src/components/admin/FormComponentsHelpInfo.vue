@@ -13,7 +13,7 @@
         <v-expansion-panel-content>
           <GeneralLayout :groupName="groupName" 
                          :layoutList="groupComponentsList" 
-                         :itemsList="fcHelpInfoGroupObject[groupName]?fcHelpInfoGroupObject[groupName]:[]"/>
+                         :componentsList="fcHelpInfoGroupObject[groupName]?fcHelpInfoGroupObject[groupName]:[]"/>
         </v-expansion-panel-content>
       </v-expansion-panel> 
     </v-expansion-panels>
