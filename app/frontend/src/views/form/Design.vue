@@ -29,7 +29,7 @@ export default {
     v: String,
   },
   mounted() {
-    this.listFormComponentsHelpInfo();
+    
     this.$nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
@@ -54,6 +54,7 @@ export default {
     if(!this.$store.hasModule('admin')) {
       this.$store.registerModule('admin', admin);
     }
+    this.listFormComponentsHelpInfo();
   },
   beforeUnmount(){
     if (this.$store.hasModule('admin')) {
