@@ -188,7 +188,7 @@
     />
     <InformationLinkPreviewDialog :showDialog="showHelpLinkDialog" 
                                   @close-dialog="onShowClosePreveiwDialog" 
-                                  :item="item"/>
+                                  :component="component"/>
   </div>
 </template>
 
@@ -244,7 +244,7 @@ export default {
         originalSchema: null,
       },
       showHelpLinkDialog:false,
-      item:{},
+      component:{},
     };
     
   },
@@ -440,9 +440,9 @@ export default {
       for (const [, elements] of Object.entries(this.fcHelpInfoGroupObject))
       {
         for(let element of elements ){
-          if(type===element.name)
+          if(type===element.componentName)
           {
-            this.item=element;
+            this.component=element;
           }
         }
       }
