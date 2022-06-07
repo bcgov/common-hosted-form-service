@@ -48,29 +48,28 @@
 </template>
 <script>
 
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark,faSquareArrowUpRight);
 
 export default {
   name:'InformationLinkPreviewDialog',
-  data () {
+  data() {
     return {
       dialog: this.showDialog
     };
   },
-  props:{
+  props: {
     showDialog:{ type: Boolean, required: true },
     component:{ type: Object }
   },
   methods:{
-    onCloseDialog(){
+    onCloseDialog() {
       this.$emit('close-dialog');
     }
   },
   
   watch: {
-    // `visible(value) => this.isVisible = value` could work too
     showDialog() {
       this.dialog = this.showDialog;
     },

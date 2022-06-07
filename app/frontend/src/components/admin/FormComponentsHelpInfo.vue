@@ -36,24 +36,17 @@ export default {
   },
   methods:{
     ...mapActions('form',['listFormComponentsHelpInfo']),
-    isObject(obj) {
-      var type = typeof obj;
-      return type === 'function' || (type === 'object' && !!obj);
-    },
-
-
-    onExpansionPanelClick(groupName) 
-    {
-      if(this.isPanelOpened.get(groupName)===undefined || !this.isPanelOpened.get(groupName))
-      {
+    
+    onExpansionPanelClick(groupName) {
+      if(this.isPanelOpened.get(groupName)===undefined || !this.isPanelOpened.get(groupName)) {
         this.isPanelOpened.set(groupName,true);
         this.groupComponentsList=this.extractGroupComponents(groupName);
       }
-      else{
+      else {
         this.isPanelOpened.set(groupName,false);
       }
 
-      for(let key of this.isPanelOpened.keys()){
+      for(let key of this.isPanelOpened.keys()) {
         if(key!==groupName) {
           this.isPanelOpened.set(key,false);
         }
@@ -61,10 +54,10 @@ export default {
     },
 
     //extract form builder layout groups.
-    extractGroups(){
+    extractGroups() {
       let allgroups=[];
       for (let  [, {title}] of Object.entries(this.builder)) {
-        if(title){
+        if(title) {
           allgroups.push(title);
           this.panelHeadStyle.set(title,this.notActivePanelHead);
         } 
@@ -73,11 +66,11 @@ export default {
     },
 
     //extract all components in the select group in form builder
-    extractGroupComponents(groupName){
+    extractGroupComponents(groupName) {
       let groupComponents = [];
       for (let  [, {title,components}] of Object.entries(this.builder)) {
-        if((title && title===groupName) && components){
-          for(let componentName of Object.keys(components)){
+        if((title && title===groupName) && components) {
+          for(let componentName of Object.keys(components)) {
             groupComponents.push({'componentName':componentName});
           }
         }
@@ -88,17 +81,17 @@ export default {
   computed:{
     ...mapGetters('form', ['fcHelpInfoGroupObject','builder']),
     ...mapGetters('admin',['fcHelpInfo']),
-    groupList(){
+    groupList() {
       return this.extractGroups();
     },
 
   },
   watch:{
-    fcHelpInfo(){
+    fcHelpInfo() {
       this.listFormComponentsHelpInfo();
     }
   },
-  mounted(){
+  mounted() {
     this.listFormComponentsHelpInfo();
   },
 };

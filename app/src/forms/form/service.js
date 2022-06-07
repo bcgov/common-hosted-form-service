@@ -573,11 +573,11 @@ const service = {
    * Search for all form components help information
    * @returns {Promise} An objection query promise
    */
-   listFormComponentsHelpInfo: async () => {
+  listFormComponentsHelpInfo: async () => {
    
     let result = await FormComponentsHelpInfo.query()
-    .modify('distinctOnComponentName')
-    .modify('orderComponentNameVersionsDescending');
+      .modify('distinctOnComponentName')
+      .modify('orderComponentNameVersionsDescending');
   
     let filterResult= result.map(item=>({id:item.id,status:item.publishstatus,componentName:item.componentname,moreHelpInfoLink:item.morehelpinfolink,imageUrl:item.imageurl,
       version:item.versions,groupName:item.groupname,description:item.description }));
