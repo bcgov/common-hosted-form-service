@@ -13,7 +13,7 @@
         <v-expansion-panel-content>
           <GeneralLayout :groupName="groupName" 
                          :layoutList="groupComponentsList" 
-                         :componentsList="fcHelpInfoGroupObject[groupName]?fcHelpInfoGroupObject[groupName]:[]"/>
+                         :componentsList="fcHelpInfoGroupObject&&fcHelpInfoGroupObject[groupName]?fcHelpInfoGroupObject[groupName]:[]"/>
         </v-expansion-panel-content>
       </v-expansion-panel> 
     </v-expansion-panels>
@@ -35,7 +35,7 @@ export default {
     };
   },
   methods:{
-    ...mapActions('admin',['listFormComponentsHelpInfo']),
+    ...mapActions('form',['listFormComponentsHelpInfo']),
     isObject(obj) {
       var type = typeof obj;
       return type === 'function' || (type === 'object' && !!obj);
@@ -86,8 +86,8 @@ export default {
     }
   },
   computed:{
-    ...mapGetters('admin',['fcHelpInfo','fcHelpInfoGroupObject']),
-    ...mapGetters('form', ['builder']),
+    ...mapGetters('form', ['fcHelpInfoGroupObject','builder']),
+    ...mapGetters('admin',['fcHelpInfo']),
     groupList(){
       return this.extractGroups();
     },
@@ -96,11 +96,11 @@ export default {
   watch:{
     fcHelpInfo(){
       this.listFormComponentsHelpInfo();
-    },
+    }
   },
   mounted(){
     this.listFormComponentsHelpInfo();
-  }
+  },
 };
 </script>
 

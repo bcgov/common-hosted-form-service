@@ -121,27 +121,6 @@ const service = {
   /**
 
   /**
-   * @function listFormComponentsHelpInfo
-   * Search for all form components help information
-   * @returns {Promise} An objection query promise
-   */
-   listFormComponentsHelpInfo: async () => {
-   
-    let result = await FormComponentsHelpInfo.query()
-    .modify('distinctOnComponentName')
-    .modify('orderComponentNameVersionsDescending');
-  
-    let filterResult= result.map(item=>({id:item.id,status:item.publishstatus,componentName:item.componentname,moreHelpInfoLink:item.morehelpinfolink,imageUrl:item.imageurl,
-      version:item.versions,groupName:item.groupname,description:item.description }));
-     
-    return filterResult.reduce(function (r, a) {
-      r[a.groupName] = r[a.groupName] || [];
-      r[a.groupName].push(a);
-      return r;
-    }, Object.create(null));
-  },
-
-  /**
    * @function createFormComponentsHelpInfo
    * insert each Form Component Help Info
    * @param {Object} data Form Component Help Info object

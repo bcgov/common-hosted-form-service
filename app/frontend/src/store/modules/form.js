@@ -17,7 +17,7 @@ const genInitialForm = () => ({
   snake: '',
   submissionReceivedEmails: [],
   userType: IdentityMode.TEAM,
-  versions: []
+  versions: [],
 });
 
 const genInitialBuilder = () => ({
@@ -113,6 +113,7 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
+    fcHelpInfoGroupObject:{}, // Form Components Help Information Object
     version: {},
     builder: genInitialBuilder(),
   },
@@ -128,6 +129,7 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
+    fcHelpInfoGroupObject: state => state.fcHelpInfoGroupObject,
     version: state => state.version,
     builder: state => state.builder,
   },
@@ -177,6 +179,9 @@ export default {
     },
     SET_BUILDER(state, builder) {
       state.builder = builder;
+    },
+    SET_FCHELPINFOGroupObject(state,fcHelpInfoGroupObject){
+      state.fcHelpInfoGroupObject = fcHelpInfoGroupObject;
     },
   },
   actions: {
@@ -500,6 +505,20 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while trying to fetch the API Key.',
           consoleError: `Error getting API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async listFormComponentsHelpInfo({ commit, dispatch }) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCHELPINFOGroupObject',{});
+        const response = await formService.listFormComponentsHelpInfo();
+        commit('SET_FCHELPINFOGroupObject',response.data);
+      } catch(error) {
+        
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
         }, { root: true });
       }
     },

@@ -234,5 +234,13 @@ module.exports = {
       next(error);
     }
   },
+  listFormComponentsHelpInfo:async(req,res,next)=>{
+    try{
+      const response = await service.listFormComponentsHelpInfo();
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
+  },
 
 };

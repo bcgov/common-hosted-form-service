@@ -249,7 +249,7 @@ export default {
     
   },
   computed: {
-    ...mapGetters('admin', ['fcHelpInfoGroupObject']),
+    ...mapGetters('form', ['fcHelpInfoGroupObject']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapGetters('form', ['builder']),
     ...mapFields('form', [
@@ -401,21 +401,25 @@ export default {
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
-      for (const  [title,elements] of Object.entries(this.fcHelpInfoGroupObject)) {
-        let extractedElementsNames = this.extractPublishedElement(elements);
-        for (const [key,builderElements] of Object.entries(builder)) {
-          if(title===builderElements.title){
-            let containerId = `group-container-${key}`;
-            let containerEl = document.getElementById(containerId);
-            for(var i=0; i<containerEl.children.length; i++){
-              if(extractedElementsNames.includes(containerEl.children[i].getAttribute('data-key')))
-              {
-                // Append the info el
-                let child = document.createElement('i');
-                child.className = 'fa fa-info info-helper';
-                child.style.float='right';
-                child.addEventListener('click', this.showHelperClicked);
-                containerEl.children[i].appendChild(child);
+      if(this.fcHelpInfoGroupObject){
+        for (const  [title,elements] of Object.entries(this.fcHelpInfoGroupObject)) {
+          let extractedElementsNames = this.extractPublishedElement(elements);
+          for (const [key,builderElements] of Object.entries(builder)) {
+            if(title===builderElements.title){
+              let containerId = `group-container-${key}`;
+              let containerEl = document.getElementById(containerId);
+              if(containerEl){
+                for(var i=0; i<containerEl.children.length; i++){
+                  if(extractedElementsNames.includes(containerEl.children[i].getAttribute('data-key')))
+                  {
+                    // Append the info el
+                    let child = document.createElement('i');
+                    child.className = 'fa fa-info info-helper';
+                    child.style.float='right';
+                    child.addEventListener('click', this.showHelperClicked);
+                    containerEl.children[i].appendChild(child);
+                  }
+                }
               }
             }
           }

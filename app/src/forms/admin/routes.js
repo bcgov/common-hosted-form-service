@@ -1,15 +1,15 @@
 const config = require('config');
 const routes = require('express').Router();
 
-//const currentUser = require('../auth/middleware/userAccess').currentUser;
+const currentUser = require('../auth/middleware/userAccess').currentUser;
 
 const controller = require('./controller');
 const userController = require('../user/controller');
 const keycloak = require('../../components/keycloak');
 
 // Always have this applied to all routes here
-//routes.use(keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`));
-//routes.use(currentUser);
+routes.use(keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`));
+routes.use(currentUser);
 
 // Routes under the /admin pathing will fetch data without doing Form permission checks in the database
 // As such, this should ALWAYS remain under the :admin role check and that KC role should not be given out
@@ -60,11 +60,6 @@ routes.get('/users/:userId', async (req, res, next) => {
 //
 //Form componets help info
 //
-
-routes.get('/formComponents/helpInfo/list', async(req,res,next) =>{
-  await controller.listFormComponentsHelpInfo(req, res, next);
-});
-
 
 routes.post('/formComponents/helpInfo/object', async(req,res,next) =>{
   await controller.createFormComponentsHelpInfo(req, res, next);

@@ -16,7 +16,7 @@ import { mapGetters,mapActions } from 'vuex';
 
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import { IdentityProviders } from '@/utils/constants';
-import admin from '@/store/modules/admin.js';
+
 export default {
   name: 'FormDesign',
   components: {
@@ -29,13 +29,13 @@ export default {
     v: String,
   },
   mounted() {
-    
+    this.listFormComponentsHelpInfo();
     this.$nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
   },
   methods:{
-    ...mapActions('admin', ['listFormComponentsHelpInfo']),
+    ...mapActions('form', ['listFormComponentsHelpInfo']),
   },
   computed: {
     ...mapGetters('form', ['form']),
@@ -50,17 +50,6 @@ export default {
       )
       : next();
   },
-  beforeMount(){
-    if(!this.$store.hasModule('admin')) {
-      this.$store.registerModule('admin', admin);
-    }
-    this.listFormComponentsHelpInfo();
-  },
-  beforeUnmount(){
-    if (this.$store.hasModule('admin')) {
-      this.$store.unregisterModule('admin');
-    }
 
-  },
 };
 </script>
