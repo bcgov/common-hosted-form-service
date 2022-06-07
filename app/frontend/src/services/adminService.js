@@ -1,6 +1,5 @@
 import { appAxios } from '@/services/interceptors';
 import { ApiRoutes } from '@/utils/constants';
-import axios from 'axios';
 
 export default {
   //
@@ -133,23 +132,12 @@ export default {
   },
 
   /**
-   * @function uploadImageUrl
+   * @function uploadImage
    * get signed image upload url
-   * @param {String} imageName component name to be used for image upload
+   * @param {Object} imageData component name and component image encoded into base64
    * @returns {Promise} An axios response
    */
-  async uploadImageUrl(imageName){
-    return await appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/upload/${imageName}`);
-  },
-
-  /**
-   * @function uploadFormComponentsHelpInfoImage
-   * Create a new Form
-   * @param {Object} file A raw image object to be uploaded to s3 bucket
-   * @returns {Promise} An axios response
-   */
-  async uploadFormComponentsHelpInfoImage(url,file){
-    
-    return await axios().put(url,file,{headers: {'Content-Type': 'multipart/form-data' }});
-  },
+  async uploadImage(imageData){
+    return await appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/upload`,imageData);
+  }
 };

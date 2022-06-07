@@ -178,14 +178,25 @@ class ObjectStorageService {
     }
   }
 
-  async uploadUrl(imageName){
+  async uploadImage(imageData){
     try {
+      const image = Buffer.from(imageData.image.replace(/^data:image\/\w+;base64,/, ""), 'base64');
       const params = ({
-        Key:imageName,
-        Expires:6000
+        Key:imageData.componentName+'.jpeg',
+        Body:image,
+        ContentEncoding:'base64',
+        ContentType:'image/jpeg',
       })
 
-      return await this._s3.getSignedUrlPromise('putObject',params)
+      return new Promise((resolve, reject) => {
+        this._s3.upload(params, async(err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+        });
+      });
     } catch (e) {
       errorToProblem(SERVICE, e);
     }

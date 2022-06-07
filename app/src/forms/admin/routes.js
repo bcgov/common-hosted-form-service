@@ -74,8 +74,8 @@ routes.put('/formComponents/helpInfo/:publishStatus/:componentId', async (req, r
   await controller.updateFormComponentsHelpInfo(req, res, next);
 });
 
-routes.post('/formComponents/helpInfo/upload/:imageName', async (req, res, next) => {
-  await controller.uploadImageUrl(req, res, next);
+routes.post('/formComponents/helpInfo/upload', async (req, res, next) => {
+  await controller.uploadImage(req, res, next);
 });
 
 module.exports = routes;
