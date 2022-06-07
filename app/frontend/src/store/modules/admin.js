@@ -1,6 +1,5 @@
 import { NotificationTypes } from '@/utils/constants';
 import { adminService } from '@/services';
-import axios from 'axios';
 
 /**
  * Admin Module
@@ -198,8 +197,8 @@ export default {
         commit('SET_FCHELPINFO',response.data);
       } catch(error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching this user.',
-          consoleError: 'Error getting admin user  data',
+          message: 'An error occurred while storing form component help information.',
+          consoleError: 'Error getting storing form component help information',
         }, { root: true });
       }
     },
@@ -212,31 +211,22 @@ export default {
         commit('SET_FCHELPINFO',response.data);
       } catch(error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching this user.',
-          consoleError: 'Error getting admin user  data',
+          message: 'An error occurred while updating publish status',
+          consoleError: 'Error updating publish status',
         }, { root: true });
       }
     },
     async uploadFormComponentsHelpInfoImage({ commit,dispatch },imageData) {
       try {
         commit('SET_FCHELPINFOIMAGEUPLOAD','');
-        let response = await adminService.uploadImageUrl(imageData.componentName);
-        
-        if(response && response.data){
-          let config = {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            }
-          };
-          const res = await axios.put(response.data,imageData.image,config);
-          if(res){
-            commit('SET_FCHELPINFOIMAGEUPLOAD',response.data.split('?')[0]);
-          }
+        const res = await adminService.uploadImage(imageData);
+        if(res){
+          commit('SET_FCHELPINFOIMAGEUPLOAD',res.data.Location);
         }
       } catch(error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching this user.',
-          consoleError: 'Error getting admin user  data',
+          message: 'An error occurred while uploading image.',
+          consoleError: 'Error getting uploading image',
         }, { root: true });
       }
     }

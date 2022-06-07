@@ -85,6 +85,7 @@
                     :prepend-icon="null"
                     show-size
                     counter
+                    accept="image/*"
                     label="Image Upload:"
                     @change="selectImage"
                   ></v-file-input>
@@ -143,6 +144,7 @@ export default {
       isLinkEnabled:true,
       dialog: this.showDialog,
       color1:'#1A5A96',
+      image:'',
       saveButtonWrapper:{
         background: '#003366 0% 0% no-repeat padding-box',
         border: '1px solid #707070',
@@ -180,9 +182,15 @@ export default {
       this.$emit('close-dialog');
     },
     async selectImage(image) {
-      const formData = new FormData();
-      formData.append(this.componentName_,image);
-      await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:image});
+      const reader = new FileReader();
+      reader.onload=async(e)=>{
+        this.image=e.target.result;
+        await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:this.image});
+      };
+      if(image){
+        await reader.readAsDataURL(image);
+      }
+      
     },
     submit(){
       this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
