@@ -89,15 +89,6 @@ module.exports = {
   //
   // Form Components Help Information
   //
-  listFormComponentsHelpInfo:async(req,res,next)=>{
-    try{
-      const response = await service.listFormComponentsHelpInfo();
-      res.status(200).json(response);
-    } catch(error){
-      next(error);
-    }
-  },
-
   createFormComponentsHelpInfo:async(req,res,next)=>{
     try{
       const response = await service.createFormComponentsHelpInfo(req.body);

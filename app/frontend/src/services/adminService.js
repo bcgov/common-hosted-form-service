@@ -101,15 +101,6 @@ export default {
   },
 
   /**
-   * @function listFormComponentsHelpInfo
-   * Reads all form components help information
-   * @returns {Promise} An axios response
-   */
-  listFormComponentsHelpInfo() {
-    return appAxios().get(`${ApiRoutes.ADMIN}/formComponents/helpInfo/list`);
-  },
-
-  /**
    * @function addFormComponentHelpInfo
    * Create a new Form
    * @param {Object} data An Object containing each form component help information

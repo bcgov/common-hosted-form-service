@@ -13,7 +13,6 @@ export default {
     roles: [],
     user: {},
     userList: [],
-    fcHelpInfoGroupObject:{}, // Form Components Help Information Object
     fcHelpInfo:{}, // Form Component Help Information
     fcHelpInfoImageUpload:'' // Form Component Help Information image upload url
   },
@@ -24,7 +23,6 @@ export default {
     roles: state => state.roles,
     user: state => state.user,
     userList: state => state.userList,
-    fcHelpInfoGroupObject: state => state.fcHelpInfoGroupObject,
     fcHelpInfo: state => state.fcHelpInfo,
     fcHelpInfoImageUpload: state=> state.fcHelpInfoImageUpload
   },
@@ -46,9 +44,6 @@ export default {
     },
     SET_USERLIST(state, users) {
       state.userList = users;
-    },
-    SET_FCHELPINFOGroupObject(state,fcHelpInfoGroupObject){
-      state.fcHelpInfoGroupObject = fcHelpInfoGroupObject;
     },
     SET_FCHELPINFO(state,fcHelpInfo) //Common Component Help Information
     {
@@ -173,22 +168,6 @@ export default {
     },
 
    
-
-    async listFormComponentsHelpInfo({ commit, dispatch }) {
-      try {
-        // Get Common Components Help Information
-        commit('SET_FCHELPINFOGroupObject',{});
-        const response = await adminService.listFormComponentsHelpInfo();
-        commit('SET_FCHELPINFOGroupObject',response.data);
-      } catch(error) {
-        
-        dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching form builder components',
-          consoleError: 'Error getting form builder components',
-        }, { root: true });
-      }
-    },
-
     async addFormComponentHelpInfo({ commit, dispatch },data) {
       try {
         // Get Common Components Help Information

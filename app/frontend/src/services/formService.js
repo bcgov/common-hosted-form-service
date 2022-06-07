@@ -385,4 +385,14 @@ export default {
   requestReceiptEmail(submissionId, requestBody) {
     return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/email`, requestBody);
   },
+
+
+  /**
+   * @function listFormComponentsHelpInfo
+   * Reads all form components help information
+   * @returns {Promise} An axios response
+   */
+  async listFormComponentsHelpInfo() {
+    return await appAxios().get(`${ApiRoutes.FORMS}/formComponents/helpInfo/list`);
+  },
 };

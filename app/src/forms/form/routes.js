@@ -130,4 +130,12 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
   await controller.deleteApiKey(req, res, next);
 });
 
+//
+//Form componets help info
+//
+
+routes.get('/formComponents/helpInfo/list', async(req,res,next) =>{
+  await controller.listFormComponentsHelpInfo(req, res, next);
+});
+
 module.exports = routes;
