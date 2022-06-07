@@ -31,7 +31,7 @@ class ObjectStorageService {
       region:this._region,
       accessKeyId: this._accessKeyId,
       secretAccessKey: this._secretAccessKey,
-      signatureVersion:"v4",
+      signatureVersion:'v4',
       s3ForcePathStyle: true,
       params: {
         Bucket: this._bucket
@@ -178,15 +178,15 @@ class ObjectStorageService {
     }
   }
 
-  async uploadImage(imageData){
+  async uploadImage(imageData) {
     try {
-      const image = Buffer.from(imageData.image.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+      const image = Buffer.from(imageData.image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
       const params = ({
         Key:imageData.componentName+'.jpeg',
         Body:image,
         ContentEncoding:'base64',
         ContentType:'image/jpeg',
-      })
+      });
 
       return new Promise((resolve, reject) => {
         this._s3.upload(params, async(err, data) => {

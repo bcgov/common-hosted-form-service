@@ -1,4 +1,3 @@
-const { Knex } = require('knex');
 const stamps = require('../stamps');
 
 exports.up = function(knex) {
@@ -77,12 +76,11 @@ exports.up = function(knex) {
       table.boolean('deleted').notNullable().defaultTo(false);
       table.jsonb('submission');
       stamps(knex, table);
-    }))
+    }));
 };
 
 exports.down = function(knex) {
   return Promise.resolve()
-    .then(() => knex.schema.dropTableIfExists('form_components_help_info'))
     .then(() => knex.schema.dropTableIfExists('form_identity_provider'))
     .then(() => knex.schema.dropTableIfExists('identity_provider'))
     .then(() => knex.schema.dropTableIfExists('form_submission'))

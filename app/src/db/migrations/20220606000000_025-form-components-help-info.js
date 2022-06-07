@@ -1,4 +1,3 @@
-const { Knex } = require('knex');
 const stamps = require('../stamps');
 
 exports.up = function(knex) {
@@ -17,7 +16,7 @@ exports.up = function(knex) {
     }));
 };
 
-exports.down = function(knex) {
+exports.down = function(knex){
   return Promise.resolve()
-    .then(() => knex.schema.dropTableIfExists('form_components_help_info'))
+    .then(() => knex.schema.dropTableIfExists('form_components_help_info'));
 };

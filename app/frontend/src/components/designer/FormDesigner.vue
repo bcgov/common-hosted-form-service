@@ -200,8 +200,9 @@ import { mapFields } from 'vuex-map-fields';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { generateIdps } from '@/utils/transformUtils';
 import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
+import { generateIdps } from '@/utils/transformUtils';
+
 
 export default {
   name: 'FormDesigner',

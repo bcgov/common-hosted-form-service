@@ -126,7 +126,7 @@ const service = {
    * @param {Object} data Form Component Help Info object
    * @returns {Promise} An objection query promise
    */
-   createFormComponentsHelpInfo: async(data)=>{
+  createFormComponentsHelpInfo: async(data)=> {
     let trx;
     try{
       const obj = {};
@@ -138,13 +138,13 @@ const service = {
       obj.groupname = data.groupName;
       obj.description = data.description;
       obj.publishstatus=data.status;
-      obj.createdBy = "aidowu.idir";
+      obj.createdBy = 'ADMIN';
       
       trx = await FormComponentsHelpInfo.startTransaction();
       
-      let t = await FormComponentsHelpInfo.query(trx).insert(obj);
+      await FormComponentsHelpInfo.query(trx).insert(obj);
   
-      await trx.commit()
+      await trx.commit();
       
       return service.readFormComponentsHelpInfo(obj.id);
       
@@ -162,35 +162,33 @@ const service = {
    * @returns {Promise} An objection query promise
    */
 
-readFormComponentsHelpInfo: async(formComponentHelpInfoId)=>{
-  return await FormComponentsHelpInfo.query()
-  .where('id', formComponentHelpInfoId);
-},
+  readFormComponentsHelpInfo: async(formComponentHelpInfoId)=> {
+    return await FormComponentsHelpInfo.query()
+      .where('id', formComponentHelpInfoId);
+  },
 
-/**
+  /**
    * @function updateFormComponentsHelpInfo
    * update the publish status of each form component information help information
    * @param {Object} param consist of publishStatus and componentId.
    * @returns {Promise} An objection query promise
    */
-updateFormComponentsHelpInfo: async(param)=>{
-  let trx;
-  try {
-    trx = await FormComponentsHelpInfo.startTransaction();
-    await FormComponentsHelpInfo.query(trx).patchAndFetchById(param.componentId, {
-      publishstatus: JSON.parse(param.publishStatus),
-      updatedBy: 'aidowu.idir'
-    });
-    await trx.commit();
-    return await service.readFormComponentsHelpInfo(param.componentId);
-  } catch (err) {
-    if (trx) await trx.rollback();
-    throw err;
+  updateFormComponentsHelpInfo: async(param)=> {
+    let trx;
+    try {
+      trx = await FormComponentsHelpInfo.startTransaction();
+      await FormComponentsHelpInfo.query(trx).patchAndFetchById(param.componentId, {
+        publishstatus: JSON.parse(param.publishStatus),
+        updatedBy: 'ADMIN'
+      });
+      await trx.commit();
+      return await service.readFormComponentsHelpInfo(param.componentId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   }
-}
 
 };
-
-
 
 module.exports = service;

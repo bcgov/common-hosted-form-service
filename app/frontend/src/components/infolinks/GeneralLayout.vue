@@ -28,7 +28,7 @@
           <div>
             <v-btn color="primary" text small
                    @click="onOpenPreviewDialog(item.componentName)" 
-                   :disabled="canDisabled(item.componentName)" >
+                   :disabled="canDisabled(item.componentName)">
     
               <font-awesome-icon icon="fa-solid fa-eye" />
               <span class="d-none d-sm-flex" style="font-size:16px;">PREVIEW</span>
@@ -46,10 +46,10 @@
     <InformationLinkDialog :showDialog="showDialog"
                            :groupName="groupName" 
                            :componentName="componentName"
-                           @close-dialog="onShowCloseDialog" 
+                           @close-dialog="onDialog" 
                            :component="component"/>
     <InformationLinkPreviewDialog :showDialog="showPreviewDialog" 
-                                  @close-dialog="onShowClosePreveiwDialog" 
+                                  @close-dialog="onPreviewDialog" 
                                   :component="component"/>
   </div>
 </template>
@@ -111,42 +111,45 @@ export default{
   },
   methods:{
     ...mapActions('admin', ['updateFormComponentsHelpInfoStatus']),
-    onShowCloseDialog(){
+
+    //used to open form component help information dialog
+    onDialog() {
       this.showDialog= !this.showDialog;
     },
-    onShowClosePreveiwDialog(){
+    //used to open form component help information preview dialog
+    onPreviewDialog() {
       this.showPreviewDialog=!this.showPreviewDialog;
     },
-    canDisabled(componentName){
+    canDisabled(componentName) {
       return this.componentsList.filter(component =>component.componentName === componentName).length == 0; 
     }, 
 
-    isComponentPublish(componentName,index){
-      for(let component of this.componentsList){
-        if(component.componentName===componentName){
+    isComponentPublish(componentName,index) {
+      for(let component of this.componentsList) {
+        if(component.componentName===componentName) {
           this.publish[index]=component.status;
         }
       }
     },
-    onOpenDialog(componentName){
+    onOpenDialog(componentName) {
       this.getComponent(componentName);
-      this.onShowCloseDialog();
+      this.onDialog();
     },
-    onOpenPreviewDialog(componentName){
+    onOpenPreviewDialog(componentName) {
       this.getComponent(componentName);
-      this.onShowClosePreveiwDialog();
+      this.onPreviewDialog();
     },
-    getComponent(componentName){
-      if(componentName){
+    getComponent(componentName) {
+      if(componentName) {
         this.componentName=componentName;
         this.component =this.componentsList.find(obj => {
           return obj.componentName === this.componentName;
         });
       }
     },
-    onSwitchChange(componentName, index){
+    onSwitchChange(componentName, index) {
       for (const component of this.componentsList) {
-        if(component.componentName===componentName){
+        if(component.componentName===componentName) {
           this.updateFormComponentsHelpInfoStatus({
             componentId:component.id, 
             publishStatus:this.publish[index]

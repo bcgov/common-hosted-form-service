@@ -130,10 +130,14 @@
 </template>
 
 <script>
-import { mapActions,mapGetters } from 'vuex';
-import { library } from '@fortawesome/fontawesome-svg-core';
+
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faCloudArrowUp);
+
+import { mapActions,mapGetters } from 'vuex';
+
+
 export default {
   name:'InformationLinkDialog',
   data(){
@@ -177,32 +181,30 @@ export default {
   },
   methods:{
     ...mapActions('admin', ['addFormComponentHelpInfo','uploadFormComponentsHelpInfoImage']),
-    onCloseDialog(){
+    onCloseDialog() {
       this.resetDialog();
       this.$emit('close-dialog');
     },
     async selectImage(image) {
       const reader = new FileReader();
-      reader.onload=async(e)=>{
+      reader.onload=async(e)=> {
         this.image=e.target.result;
         await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:this.image});
       };
-      if(image){
+      if(image) {
         await reader.readAsDataURL(image);
       }
-      
     },
-    submit(){
+    submit() {
       this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
         groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false});
       this.onCloseDialog();              
     },
-    resetDialog(){
+    resetDialog() {
       this.description='';
       this.link='';
-      
     },
-    setPreviousVersion(){
+    setPreviousVersion() {
       if(this.component){
         this.componentName_=this.component.componentName;
         this.description=this.component.description;
@@ -214,13 +216,13 @@ export default {
     showDialog() {
       this.dialog = this.showDialog;
     },
-    componentName(){
+    componentName() {
       this.componentName_=this.componentName;
     }
   },
   computed: {
     ...mapGetters('admin',['fcHelpInfoImageUpload']),
-    version(){
+    version() {
       if(this.component) return this.component.version;
       return 0;
     }

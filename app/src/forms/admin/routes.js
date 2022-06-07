@@ -61,7 +61,7 @@ routes.get('/users/:userId', async (req, res, next) => {
 //Form componets help info
 //
 
-routes.post('/formComponents/helpInfo/object', async(req,res,next) =>{
+routes.post('/formComponents/helpInfo/object', async(req,res,next) => {
   await controller.createFormComponentsHelpInfo(req, res, next);
 });
 

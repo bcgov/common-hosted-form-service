@@ -29,7 +29,6 @@ export default {
     v: String,
   },
   mounted() {
-    this.listFormComponentsHelpInfo();
     this.$nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
@@ -50,6 +49,8 @@ export default {
       )
       : next();
   },
-
+  beforeMount() {
+    this.listFormComponentsHelpInfo();
+  },
 };
 </script>
