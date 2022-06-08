@@ -20,29 +20,49 @@
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0">Select Columns</v-card-title>
+        <v-card-title class="text-h5 pb-0" :style="titleWrapper">Search and select fields to show under your dashboard</v-card-title>
+        <v-card-subtitle class="mt-1 d-flex align-center" :style="subTitleWrapper"><font-awesome-icon icon="fa-solid fa-circle-info" color="#003366A1" />Now you can also export selected data (check export)</v-card-subtitle>
         <v-card-text>
-          <hr />
-          <v-skeleton-loader :loading="loading" type="list-item-three-line">
-            <div>
-              <v-checkbox
-                v-for="field in formFields"
-                v-model="selectedFields"
-                dense
-                hide-details
-                :key="field"
-                :label="field"
-                :value="field"
-              />
-            </div>
-          </v-skeleton-loader>
+          <div class="d-flex flex-row align-center" style="gap:30px;">
+            <div class="d-flex flex-row align-center searchField">
+              <font-awesome-icon icon="fa-magnifying-glass" style="font-size:16px; color:#000000;"/>
+              <input type="text" placeholder="Search form fields" v-model="onSearchInputChange">
+            </div>    
+            <v-checkbox class="checkbox" v-model="selectedAll" :style="{pointerEvents:selectAllPointerEvent}" @change="onSelectAllCheckboxChange">
+              <template v-slot:label>
+                <span class="checkboxLabel">Select All</span>
+              </template>
+            </v-checkbox>
+            <v-checkbox v-model="noneSelected" @change="clear" :style="{pointerEvents:noneCheckBoxPointerEvent}">
+              <template v-slot:label>
+                <span class="checkboxLabel">None</span>
+              </template>
+            </v-checkbox>
+          </div>
+          <v-divider
+            horizontal
+            style="border: 1px solid #7070703F; background-color:#7070703F;"
+          ></v-divider>
+          <div class="fieldCheckBoxeswrapper">
+            <v-checkbox 
+              v-for="(field, index) in filteredFormFields" 
+              v-model="selectedFields[index]"
+              :key="field"
+              :label="field"
+              @change="onColumnsCheckBox($event,index,field)"
+              style="padding:0px; margin:0px;">
+              <template v-slot:label>
+                <span class="checkboxLabel">{{field}}</span>
+              </template>
+            </v-checkbox>
+          </div>
         </v-card-text>
 
         <v-card-actions class="justify-center">
-          <v-btn class="mb-5 mr-5" color="primary" @click="saveColumns">
+          <v-btn class="mb-5 mr-5 saveButtonWrapper" color="primary" @click="saveColumns">
             <span>Save</span>
           </v-btn>
-          <v-btn class="mb-5" outlined @click="dialog = false">
+          <v-btn class="mb-5 cancelButtonWrapper" outlined @click="dialog = false">
             <span>Cancel</span>
           </v-btn>
         </v-card-actions>
@@ -53,13 +73,41 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core';
+
+/* import specific icons */
+import { faCircleInfo,faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
+
+
+/* add icons to the library */
+library.add(faCircleInfo,faMagnifyingGlass);
 
 export default {
   data() {
     return {
       dialog: false,
       loading: true,
+      onSearchInputChange:'',
       selectedFields: [],
+      userSelectedColumns:new Set(),
+      noneSelected:true,
+      selectedAll:false,
+      filteredFormFields:[],
+      noneCheckBoxPointerEvent:'none',
+      selectAllPointerEvent:'auto',
+      titleWrapper:{
+        textAlign: 'left',
+        font: 'normal normal bold 20px/27px Open Sans',
+        color: '#000000'
+      },
+      subTitleWrapper:{
+        textAlign: 'left',
+        font: 'normal normal normal 18px/24px Open Sans',
+        letterSpacing: '0px',
+        color: '#707070C1',
+        gap:'10px'
+      }
     };
   },
   computed: {
@@ -77,6 +125,41 @@ export default {
       'fetchFormFields',
       'updateFormPreferencesForCurrentUser',
     ]),
+    onSelectAllCheckboxChange(val){
+      this.noneSelected=false;
+      this.selectAllPointerEvent='none';
+      this.noneCheckBoxPointerEvent='auto';
+      if (val) {
+        this.selectedFields = [];
+        this.userSelectedColumns.clear();
+        this.selectedFields=Array(this.filteredFormFields.length).fill(true);
+        this.userSelectedColumns=new Set([...this.filteredFormFields]);
+      }
+    },
+    clear() {
+      this.selectAllPointerEvent='auto';
+      this.noneCheckBoxPointerEvent='none';
+      this.selectedAll=false;
+      this.selectedFields = [];
+      this.userSelectedColumns.clear();
+    },
+    onColumnsCheckBox(value,index,column) {
+      this.selectedFields[index]=value;
+
+      //add or remove column if checkbox is checked or unchecked
+      value?this.userSelectedColumns.add(column):this.userSelectedColumns.delete(column);
+
+      this.noneSelected=false;
+      let checker = this.selectedFields.every(v => v === true);
+      if(checker && this.selectedFields.length===this.filteredFormFields.length) {
+        this.selectedAll=true;
+        this.selectAllPointerEvent='none';
+        return;
+      }
+      this.selectedAll=false;
+      this.selectAllPointerEvent='auto';
+      this.noneCheckBoxPointerEvent='auto'; 
+    },
     async openPrefs() {
       this.loading = true;
       this.dialog = true;
@@ -84,15 +167,12 @@ export default {
         formId: this.form.id,
         formVersionId: this.form.versions[0].id,
       });
-      this.selectedFields =
-        this.userFormPreferences && this.userFormPreferences.preferences
-          ? this.userFormPreferences.preferences.columnList.filter(x => this.formFields.indexOf(x) !== -1)
-          : [];
       this.loading = false;
     },
     async saveColumns() {
+      
       const userPrefs = {
-        columnList: this.selectedFields,
+        columnList:Array.from(this.userSelectedColumns),
       };
       this.loading = true;
       await this.updateFormPreferencesForCurrentUser({
@@ -104,5 +184,88 @@ export default {
       this.dialog = false;
     },
   },
+  watch: {
+    onSearchInputChange(value) {
+      this.filteredFormFields=[...this.formFields];
+      if(value) {
+        this.filteredFormFields=[];
+        this.filteredFormFields = this.formFields.filter(column=>column.startsWith(value));
+      }
+    },
+    formFields(fields) {
+      this.filteredFormFields=[...fields];
+    }
+  }
+  
 };
 </script>
+<style lang="scss" scoped>
+  .v-input input{
+    border: 2px solid red;
+  }
+  .checkboxLabel{
+    text-align: left;
+    font: normal normal normal 16px/22px Open Sans;
+    text-transform: capitalize;
+    letter-spacing: 0px;
+    color: #313132;
+  }
+
+  .searchField{
+    background: #60606014 0% 0% no-repeat padding-box; 
+    border-radius: 4px; 
+    width:40%;
+    height:33px;
+    gap:10px;
+    padding:3px;
+    padding-left:15px;
+    text-align: left;
+    font: normal normal 300 18px/24px Open Sans;
+    letter-spacing: 0px;
+    color: #606060;
+  }
+  .searchField input:focus{
+    outline: none;
+   
+  }
+  .searchField input::placeholder {
+    text-align: left;
+    font-size: 18px;
+    font-weight: normal;
+    font-style:normal;
+    letter-spacing: 0px;
+    color: #606060;
+    opacity: 1;
+  }
+  .fieldCheckBoxeswrapper{
+    background: #60606005 0% 0% no-repeat padding-box;
+    border: 1px solid #7070703F;
+    border-radius: 4px;
+    opacity: 1;
+    max-height: 315px;
+    padding:20px;
+    overflow-y:auto;
+  }
+
+  .saveButtonWrapper{
+    border: 1px solid var(--unnamed-color-707070);
+    background: #003366 0% 0% no-repeat padding-box;
+    border: 1px solid #707070;
+    border-radius: 3px;
+    text-align: left;
+    font: normal normal bold 18px/24px Open Sans;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+  }
+
+  .cancelButtonWrapper{
+    border: 1px solid var(--primary-button-navigation-bar);
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #003366;
+    border-radius: 3px;
+    text-align: left;
+    font: normal normal bold 18px/24px Open Sans;
+    letter-spacing: 0px;
+    color: #38598A;
+  }
+</style>

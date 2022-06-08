@@ -10,6 +10,9 @@ dist
 **/cypress/**/screenshots
 **/cypress/**/videos
 node_modules
+docker/imports/keycloak/realm-export.json
+docker-compose.yml
+
 # Ignore only top-level package-lock.json
 /package-lock.json
 
