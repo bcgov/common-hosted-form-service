@@ -23,6 +23,17 @@ describe('Admin Service', () => {
   //
   // Forms
   //
+  describe('admin/forms/{formId}/addUser', () => {
+    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}/addUser`;
+
+    it('calls update on endpoint', async () => {
+      mockAxios.onPut(endpoint).reply(200);
+
+      const result = await adminService.addFormUser('usrid', zeroUuid, ['OWNER']);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.put).toHaveLength(1);
+    });
+  });
 
   describe('admin/forms/{formId}/apiKey', () => {
     const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}${ApiRoutes.APIKEY}`;
@@ -68,7 +79,7 @@ describe('Admin Service', () => {
     });
   });
 
-  describe('admin/forms/{formId}', () => {
+  describe('admin/forms/{formId}/restore', () => {
     const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}/restore`;
 
     it('calls update on endpoint', async () => {

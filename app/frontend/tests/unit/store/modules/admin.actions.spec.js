@@ -25,6 +25,24 @@ describe('admin actions', () => {
   });
 
   describe('admin forms actions', () => {
+    it('adminFormUser should dispatch to notifications/addNotification on an error', async () => {
+      adminService.addFormUser.mockRejectedValue('');
+      await store.actions.addFormUser(mockStore, { formId: 'fId', userId: 'usrId', role: 'OWNER' });
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('adminFormUser should dispatch a success notification when the service call resolves', async () => {
+      adminService.addFormUser.mockResolvedValue({ data: { form: {} } });
+      await store.actions.addFormUser(mockStore, { formId: 'fId', userId: 'usrId', roles: ['OWNER'] });
+
+      expect(adminService.addFormUser).toHaveBeenCalledWith('usrId', 'fId', ['OWNER']);
+      expect(adminService.addFormUser).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
     it('deleteApiKey should commit to SET_API_KEY', async () => {
       adminService.deleteApiKey.mockResolvedValue({ data: { form: {} } });
       await store.actions.deleteApiKey(mockStore, 'fId');
@@ -52,6 +70,22 @@ describe('admin actions', () => {
     it('readForm should dispatch to notifications/addNotification', async () => {
       adminService.readForm.mockRejectedValue('');
       await store.actions.readForm(mockStore, 'fId');
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+    
+    it('readRoles should commit to SET_ROLES', async () => {
+      adminService.readRoles.mockResolvedValue({ data: { form: {} } });
+      await store.actions.readRoles(mockStore, 'fId');
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_ROLES', expect.any(Object));
+    });
+
+    it('readRoles should dispatch to notifications/addNotification', async () => {
+      adminService.readRoles.mockRejectedValue('');
+      await store.actions.readRoles(mockStore, 'fId');
 
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
@@ -100,6 +134,38 @@ describe('admin actions', () => {
     it('restoreForm should dispatch to notifications/addNotification', async () => {
       adminService.restoreForm.mockRejectedValue('');
       await store.actions.restoreForm(mockStore, 'fId');
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('getUsers should commit to SET_USERLIST', async () => {
+      adminService.listUsers.mockResolvedValue([]);
+      await store.actions.getUsers(mockStore);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_USERLIST', expect.any(Object));
+    });
+
+    it('getUsers should dispatch to notifications/addNotification', async () => {
+      adminService.listUsers.mockRejectedValue('');
+      await store.actions.getUsers(mockStore,);
+
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('readUser should commit to SET_USER', async () => {
+      adminService.readUser.mockResolvedValue({});
+      await store.actions.readUser(mockStore);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_USER', expect.any(Object));
+    });
+
+    it('readUser should dispatch to notifications/addNotification', async () => {
+      adminService.readUser.mockRejectedValue('');
+      await store.actions.readUser(mockStore,);
 
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
