@@ -18,15 +18,24 @@
       <span v-else>No published form version</span>
     </v-tooltip>
 
-    <v-dialog v-model="dialog" width="900">
+    <v-dialog v-model="dialog" width="700">
       <v-card>
         <v-card-title class="text-h5 pb-0" :style="titleWrapper">Search and select fields to show under your dashboard</v-card-title>
-        <v-card-subtitle class="mt-1 d-flex align-center" :style="subTitleWrapper"><font-awesome-icon icon="fa-solid fa-circle-info" color="#003366A1" />Now you can also export selected data (check export)</v-card-subtitle>
-        <v-card-text>
+        <v-card-subtitle class="mt-1 d-flex" :style="subTitleWrapper">
+          <font-awesome-icon icon="fa-solid fa-circle-info" class="mt-1" color="#003366A1" />
+          <span>Now you can also export selected data (check export<v-icon>get_app</v-icon>)</span>
+          
+        </v-card-subtitle>
+        <v-card-text style="padding-top:0px;margin-top:0px;">
+          <hr style="height: 1px; border: none;background-color:#707070C1;margin-bottom:0px">
+          
           <div class="d-flex flex-row align-center" style="gap:30px;">
             <div class="d-flex flex-row align-center searchField">
               <font-awesome-icon icon="fa-magnifying-glass" style="font-size:16px; color:#000000;"/>
-              <input type="text" placeholder="Search form fields" v-model="onSearchInputChange">
+              <div class="d-flex flex-row align-center justify-space-between" style="width:100%;">
+                <input type="search" placeholder="Search form fields" v-model="onSearchInputChange">
+                <font-awesome-icon icon="fa-solid fa-circle-xmark" color="#003366A1" class="fa-sm clearButton" :style="{display:isClearButtonDisplay}" @click="onInputSearchClear"/>
+              </div>
             </div>    
             <v-checkbox class="checkbox" v-model="selectedAll" :style="{pointerEvents:selectAllPointerEvent}" @change="onSelectAllCheckboxChange">
               <template v-slot:label>
@@ -39,14 +48,10 @@
               </template>
             </v-checkbox>
           </div>
-          <v-divider
-            horizontal
-            style="border: 1px solid #7070703F; background-color:#7070703F;"
-          ></v-divider>
           <div class="fieldCheckBoxeswrapper">
             <v-checkbox 
-              v-for="(field, index) in filteredFormFields" 
-              v-model="selectedFields[index]"
+              v-for="(field, index) in filteredFormFields"
+              :input-value="selectedFields.get(field)"
               :key="field"
               :label="field"
               @change="onColumnsCheckBox($event,index,field)"
@@ -57,12 +62,11 @@
             </v-checkbox>
           </div>
         </v-card-text>
-
         <v-card-actions class="justify-center">
-          <v-btn class="mb-5 mr-5 saveButtonWrapper" color="primary" @click="saveColumns">
+          <v-btn class="mb-5 mr-5" :style="saveButtonWrapper" color="primary" @click="saveColumns">
             <span>Save</span>
           </v-btn>
-          <v-btn class="mb-5 cancelButtonWrapper" outlined @click="dialog = false">
+          <v-btn class="mb-5" :style="cancelButtonWrapper" outlined @click="dialog = false">
             <span>Cancel</span>
           </v-btn>
         </v-card-actions>
@@ -77,11 +81,11 @@ import { mapActions, mapGetters } from 'vuex';
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 /* import specific icons */
-import { faCircleInfo,faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo,faMagnifyingGlass, faCircleXmark} from '@fortawesome/free-solid-svg-icons';
 
 
 /* add icons to the library */
-library.add(faCircleInfo,faMagnifyingGlass);
+library.add(faCircleInfo,faMagnifyingGlass,faCircleXmark);
 
 export default {
   data() {
@@ -89,24 +93,43 @@ export default {
       dialog: false,
       loading: true,
       onSearchInputChange:'',
-      selectedFields: [],
-      userSelectedColumns:new Set(),
+      selectedFields: new Map(),
+      userSelectedColumns:[],
       noneSelected:true,
       selectedAll:false,
       filteredFormFields:[],
       noneCheckBoxPointerEvent:'none',
       selectAllPointerEvent:'auto',
+      isClearButtonDisplay:'none',
       titleWrapper:{
         textAlign: 'left',
         font: 'normal normal bold 20px/27px Open Sans',
-        color: '#000000'
+        color: '#000000',
       },
       subTitleWrapper:{
-        textAlign: 'left',
         font: 'normal normal normal 18px/24px Open Sans',
-        letterSpacing: '0px',
         color: '#707070C1',
-        gap:'10px'
+        gap:'10px',
+        paddingBottom:'0px',
+        marginBottom:'0px',
+      },
+      cancelButtonWrapper:{
+        background: '#FFFFFF 0% 0% no-repeat padding-box',
+        border: '1px solid #003366',
+        borderRadius: '3px',
+        textAlign: 'left',
+        font: 'normal normal bold 18px/24px Open Sans',
+        letterSpacing: '0px',
+        color: '#38598A',
+      },
+      saveButtonWrapper:{
+        border: '1px solid #707070',
+        background: '#003366 0% 0% no-repeat padding-box',
+        borderRadius: '3px',
+        textAlign: 'left',
+        font: 'normal normal bold 18px/24px Open Sans',
+        letterSpacing: '0px',
+        color: '#FFFFFF'
       }
     };
   },
@@ -125,40 +148,58 @@ export default {
       'fetchFormFields',
       'updateFormPreferencesForCurrentUser',
     ]),
-    onSelectAllCheckboxChange(val){
+    onSelectAllCheckboxChange(val) {
       this.noneSelected=false;
       this.selectAllPointerEvent='none';
       this.noneCheckBoxPointerEvent='auto';
       if (val) {
-        this.selectedFields = [];
-        this.userSelectedColumns.clear();
-        this.selectedFields=Array(this.filteredFormFields.length).fill(true);
-        this.userSelectedColumns=new Set([...this.filteredFormFields]);
+        this.setSelectALLCheckboxVModel(this.filteredFormFields,true);
       }
+    },
+    setSelectALLCheckboxVModel(fields,value) {
+      if(this.userFormPreferences&&this.userFormPreferences.preferences
+        &&this.userFormPreferences.preferences.columnList && this.userFormPreferences.preferences.columnList.length>0) {
+        for(const field of fields){
+          this.userFormPreferences.preferences.columnList.includes(field)
+            ?this.selectedFields.set(field,true)
+            :this.selectedFields.set(field,value);
+        }
+        this.checkAllCheckboxesChecked();
+        this.noneSelected=false;
+        this.noneCheckBoxPointerEvent='auto';  
+      }
+      else {
+        for(const field of fields){
+          this.selectedFields.set(field,value);
+        } 
+      }
+    },
+    checkAllCheckboxesChecked() {
+      let checker = Array.from(this.selectedFields.values()).every(v => v === true);
+      if(checker) {
+        this.selectedAll=true;
+        this.selectAllPointerEvent='none';
+      }
+      return checker;
     },
     clear() {
       this.selectAllPointerEvent='auto';
       this.noneCheckBoxPointerEvent='none';
       this.selectedAll=false;
-      this.selectedFields = [];
-      this.userSelectedColumns.clear();
+      this.selectedFields.clear();
     },
     onColumnsCheckBox(value,index,column) {
-      this.selectedFields[index]=value;
-
-      //add or remove column if checkbox is checked or unchecked
-      value?this.userSelectedColumns.add(column):this.userSelectedColumns.delete(column);
-
+      this.selectedFields.set(column,value);
       this.noneSelected=false;
-      let checker = this.selectedFields.every(v => v === true);
-      if(checker && this.selectedFields.length===this.filteredFormFields.length) {
-        this.selectedAll=true;
-        this.selectAllPointerEvent='none';
+      if(this.checkAllCheckboxesChecked()){
         return;
       }
       this.selectedAll=false;
       this.selectAllPointerEvent='auto';
       this.noneCheckBoxPointerEvent='auto'; 
+    },
+    onInputSearchClear(){
+      this.onSearchInputChange='';
     },
     async openPrefs() {
       this.loading = true;
@@ -170,7 +211,12 @@ export default {
       this.loading = false;
     },
     async saveColumns() {
-      
+      this.userSelectedColumns=[];
+      this.selectedFields.forEach((value,key)=>{
+        if(value){
+          this.userSelectedColumns.push(key);
+        }
+      });
       const userPrefs = {
         columnList:Array.from(this.userSelectedColumns),
       };
@@ -187,22 +233,27 @@ export default {
   watch: {
     onSearchInputChange(value) {
       this.filteredFormFields=[...this.formFields];
+      this.isClearButtonDisplay='none';
+      this.selectedAll=false;
+      this.selectAllPointerEvent='auto';
       if(value) {
+        this.isClearButtonDisplay='block';
         this.filteredFormFields=[];
-        this.filteredFormFields = this.formFields.filter(column=>column.startsWith(value));
+        this.filteredFormFields = this.formFields.filter(column=>column.toLowerCase()
+          .startsWith(value.toLowerCase()));
       }
+      this.checkAllCheckboxesChecked();
     },
     formFields(fields) {
       this.filteredFormFields=[...fields];
+      this.setSelectALLCheckboxVModel(fields,false);
     }
   }
   
 };
 </script>
 <style lang="scss" scoped>
-  .v-input input{
-    border: 2px solid red;
-  }
+
   .checkboxLabel{
     text-align: left;
     font: normal normal normal 16px/22px Open Sans;
@@ -214,8 +265,8 @@ export default {
   .searchField{
     background: #60606014 0% 0% no-repeat padding-box; 
     border-radius: 4px; 
-    width:40%;
-    height:33px;
+    width:50%;
+    height:35px;
     gap:10px;
     padding:3px;
     padding-left:15px;
@@ -228,6 +279,7 @@ export default {
     outline: none;
    
   }
+
   .searchField input::placeholder {
     text-align: left;
     font-size: 18px;
@@ -242,30 +294,13 @@ export default {
     border: 1px solid #7070703F;
     border-radius: 4px;
     opacity: 1;
-    max-height: 315px;
+    height:300px;
+    max-height: 300px;
     padding:20px;
-    overflow-y:auto;
-  }
-
-  .saveButtonWrapper{
-    border: 1px solid var(--unnamed-color-707070);
-    background: #003366 0% 0% no-repeat padding-box;
-    border: 1px solid #707070;
-    border-radius: 3px;
-    text-align: left;
-    font: normal normal bold 18px/24px Open Sans;
-    letter-spacing: 0px;
-    color: #FFFFFF;
-  }
-
-  .cancelButtonWrapper{
-    border: 1px solid var(--primary-button-navigation-bar);
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 1px solid #003366;
-    border-radius: 3px;
-    text-align: left;
-    font: normal normal bold 18px/24px Open Sans;
-    letter-spacing: 0px;
-    color: #38598A;
-  }
+    overflow-y:scroll;
+  } 
+.clearButton:hover{
+  cursor: pointer;
+  color:orange;
+} 
 </style>

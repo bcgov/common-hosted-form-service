@@ -13,7 +13,7 @@
           <v-icon>get_app</v-icon>
         </v-btn>
       </template>
-      <p class="subTitleObjectStyle">Export Submissions to File</p>
+      <p>Export Submissions to File</p>
     </v-tooltip>
 
     <v-dialog
@@ -22,9 +22,9 @@
       content-class="export-submissions-dlg"
     >
       <v-card>
-        <v-card-title class="text-h5 pb-0" :style="[titleObjectStyle]">Export Submissions to File</v-card-title>
+        <v-card-title class="text-h5 pb-0" :style="titleObjectStyle">Export Submissions to File</v-card-title>
         <v-card-text>
-          <hr />
+          <hr style="height: 2px; border: none;background-color:#707070C1;margin-top:5px;"/>
           <v-row>
             <v-col>
               <p class="subTitleObjectStyle">Select the submission date</p>
@@ -259,7 +259,7 @@ export default {
     text-decoration: underline;
     font: normal normal normal 18px/24px Open Sans;
     letter-spacing: 0px;
-    color: #000000;
+    color: #000000;;
   };
   .radioboxLabelStyle {
     text-align: left;
