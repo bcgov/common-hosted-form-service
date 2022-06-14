@@ -56,11 +56,13 @@ export default {
     //extract form builder layout groups.
     extractGroups() {
       let allgroups=[];
-      for (let  [, {title}] of Object.entries(this.builder)) {
-        if(title) {
-          allgroups.push(title);
-          this.panelHeadStyle.set(title,this.notActivePanelHead);
-        } 
+      if(this.builder){
+        for (let  [, {title}] of Object.entries(this.builder)) {
+          if(title) {
+            allgroups.push(title);
+            this.panelHeadStyle.set(title,this.notActivePanelHead);
+          } 
+        }
       }
       return allgroups;
     },
