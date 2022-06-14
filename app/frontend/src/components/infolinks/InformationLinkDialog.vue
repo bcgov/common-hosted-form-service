@@ -195,8 +195,9 @@ export default {
         await reader.readAsDataURL(image);
       }
     },
+
     submit() {
-      this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
+      this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload?this.fcHelpInfoImageUpload:this.component.imageUrl,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
         groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false});
       this.onCloseDialog();              
     },
