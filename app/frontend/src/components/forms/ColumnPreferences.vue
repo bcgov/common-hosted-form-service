@@ -186,7 +186,7 @@ export default {
       this.selectAllPointerEvent='auto';
       this.noneCheckBoxPointerEvent='none';
       this.selectedAll=false;
-      this.selectedFields.clear();
+      this.setSelectALLCheckboxVModel(this.formFields,false);
     },
     onColumnsCheckBox(value,index,column) {
       this.selectedFields.set(column,value);
