@@ -23,7 +23,7 @@
         <v-card-title class="text-h5 pb-0" :style="titleWrapper">Search and select fields to show under your dashboard</v-card-title>
         <v-card-subtitle class="mt-1 d-flex" :style="subTitleWrapper">
           <font-awesome-icon icon="fa-solid fa-circle-info" class="mt-1" color="#003366A1" />
-          <span>Now you can also export selected data (check export<v-icon>get_app</v-icon>)</span>
+          <span>To export selected data go to: <v-icon>get_app</v-icon>export submissions</span>
           
         </v-card-subtitle>
         <v-card-text style="padding-top:0px;margin-top:0px;">
@@ -118,18 +118,20 @@ export default {
         border: '1px solid #003366',
         borderRadius: '3px',
         textAlign: 'left',
-        font: 'normal normal bold 18px/24px Open Sans',
+        font: 'normal normal bold 18px Open Sans',
         letterSpacing: '0px',
         color: '#38598A',
+        textTransform: 'capitalize'
       },
       saveButtonWrapper:{
         border: '1px solid #707070',
         background: '#003366 0% 0% no-repeat padding-box',
         borderRadius: '3px',
         textAlign: 'left',
-        font: 'normal normal bold 18px/24px Open Sans',
+        font: 'normal normal bold 18px Open Sans',
         letterSpacing: '0px',
-        color: '#FFFFFF'
+        color: '#FFFFFF',
+        textTransform: 'capitalize'
       }
     };
   },
@@ -169,7 +171,7 @@ export default {
         this.noneCheckBoxPointerEvent='auto';  
       }
       else {
-        this.resetFormFieldtoFalseValue(fields,value);
+        this.resetFormFieldValue(fields,value);
       }
     },
     resetFormFieldValue(fields,value){
