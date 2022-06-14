@@ -169,10 +169,13 @@ export default {
         this.noneCheckBoxPointerEvent='auto';  
       }
       else {
-        for(const field of fields){
-          this.selectedFields.set(field,value);
-        } 
+        this.resetFormFieldtoFalseValue(fields,value);
       }
+    },
+    resetFormFieldValue(fields,value){
+      for(const field of fields){
+        this.selectedFields.set(field,value);
+      } 
     },
     checkAllCheckboxesChecked() {
       let checker = Array.from(this.selectedFields.values()).every(v => v === true);
@@ -186,7 +189,7 @@ export default {
       this.selectAllPointerEvent='auto';
       this.noneCheckBoxPointerEvent='none';
       this.selectedAll=false;
-      this.setSelectALLCheckboxVModel(this.formFields,false);
+      this.resetFormFieldValue(this.formFields,false);
     },
     onColumnsCheckBox(value,index,column) {
       this.selectedFields.set(column,value);
