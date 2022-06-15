@@ -174,7 +174,7 @@ export default {
         this.resetFormFieldValue(fields,value);
       }
     },
-    resetFormFieldValue(fields,value){
+    resetFormFieldValue(fields,value) {
       for(const field of fields){
         this.selectedFields.set(field,value);
       } 
