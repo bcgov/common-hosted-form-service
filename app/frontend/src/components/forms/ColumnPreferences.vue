@@ -150,6 +150,8 @@ export default {
       'fetchFormFields',
       'updateFormPreferencesForCurrentUser',
     ]),
+
+    //select all form fields checkboxes
     onSelectAllCheckboxChange(val) {
       this.noneSelected=false;
       this.selectAllPointerEvent='none';
@@ -158,7 +160,9 @@ export default {
         this.setSelectALLCheckboxVModel(this.filteredFormFields,true);
       }
     },
-    setSelectALLCheckboxVModel(fields,value) {
+
+    //used to set foem fields to either true or false
+    setSelectALLCheckboxVModel(fields, value) {
       if(this.userFormPreferences&&this.userFormPreferences.preferences
         &&this.userFormPreferences.preferences.columnList && this.userFormPreferences.preferences.columnList.length>0) {
         for(const field of fields){
@@ -174,11 +178,16 @@ export default {
         this.resetFormFieldValue(fields,value);
       }
     },
-    resetFormFieldValue(fields,value) {
+
+    //this method is called by both clear method and setSelectALLCheckboxVModel method
+    // to uncheck all form fields checkboxes
+    resetFormFieldValue(fields, value) {
       for(const field of fields){
         this.selectedFields.set(field,value);
       } 
     },
+
+    //check if all checkboxes are checked
     checkAllCheckboxesChecked() {
       let checker = Array.from(this.selectedFields.values()).every(v => v === true);
       if(checker) {
@@ -187,13 +196,17 @@ export default {
       }
       return checker;
     },
+
+    //called by none checkbox to uncheck all form fileds checkboxes
     clear() {
       this.selectAllPointerEvent='auto';
       this.noneCheckBoxPointerEvent='none';
       this.selectedAll=false;
       this.resetFormFieldValue(this.formFields,false);
     },
-    onColumnsCheckBox(value,index,column) {
+
+    // listen to each form fields checkbox checked/unchecked
+    onColumnsCheckBox(value, index, column) {
       this.selectedFields.set(column,value);
       this.noneSelected=false;
       if(this.checkAllCheckboxesChecked()){
@@ -203,6 +216,8 @@ export default {
       this.selectAllPointerEvent='auto';
       this.noneCheckBoxPointerEvent='auto'; 
     },
+
+    //clear search input
     onInputSearchClear(){
       this.onSearchInputChange='';
     },

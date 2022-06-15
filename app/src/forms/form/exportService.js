@@ -127,7 +127,7 @@ const service = {
     return findFields(schema);
   },
 
-  _buildCsvHeaders: async (form,columnsPreferences, data) => {
+  _buildCsvHeaders: async (form, columnsPreferences, data) => {
     /**
      * get column order to match field order in form design
      * object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
@@ -158,7 +158,7 @@ const service = {
     return result ? result : EXPORT_FORMATS.default;
   },
 
-  _extractColumnsPeference:(submissions,columnsPreferences)=> { 
+  _extractColumnsPeference:(submissions, columnsPreferences)=> { 
     return submissions.map((formSubmission)=>{
       let obj = {};
       for(const preference of columnsPreferences){
@@ -199,18 +199,18 @@ const service = {
     return Form.query().findById(formId).throwIfNotFound();
   },
 
-  _getData: async(exportType, form,columnsPreferences, params = {}) => {
+  _getData: async(exportType, form, columnsPreferences, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
       if(columnsPreferences) {
         const submissions = await service._getSubmissions(form, params);
-        return service._extractColumnsPeference(submissions,columnsPreferences);
+        return service._extractColumnsPeference(submissions, columnsPreferences);
       }
       return service._getSubmissions(form, params);
     }
     return {};
   },
 
-  _formatData: async (exportFormat, exportType, form, columnsPreferences,data = {}) => {
+  _formatData: async (exportFormat, exportType, form, columnsPreferences, data = {}) => {
     // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map(obj => {
       const { submission, ...form } = obj;
@@ -219,7 +219,7 @@ const service = {
 
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
-        return await service._formatSubmissionsCsv(form,columnsPreferences, formatted);
+        return await service._formatSubmissionsCsv(form, columnsPreferences, formatted);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
         return await service._formatSubmissionsJson(form, formatted);
@@ -249,7 +249,7 @@ const service = {
     };
   },
 
-  _formatSubmissionsCsv: async (form, columnsPreferences,data) => {
+  _formatSubmissionsCsv: async (form, columnsPreferences, data) => {
     try {
       const options = {
         fillGaps: true,
@@ -270,7 +270,7 @@ const service = {
         // }
 
         // re-organize our headers to change column ordering or header labels, etc
-        headers: await service._buildCsvHeaders(form,columnsPreferences, data)
+        headers: await service._buildCsvHeaders(form, columnsPreferences, data)
       };
 
       const csv = await jsonexport(data, options);
@@ -303,8 +303,8 @@ const service = {
     const exportFormat = service._exportFormat(params);
     const columnsPreferences = params.columnList?params.columnList:undefined;
     const form = await service._getForm(formId);
-    const data = await service._getData(exportType, form,columnsPreferences, params);
-    const result = await service._formatData(exportFormat, exportType, form,columnsPreferences, data);
+    const data = await service._getData(exportType, form, columnsPreferences, params);
+    const result = await service._formatData(exportFormat, exportType, form, columnsPreferences, data);
 
     return { data: result.data, headers: result.headers };
   }
