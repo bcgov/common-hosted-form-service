@@ -158,12 +158,12 @@ const service = {
     return result ? result : EXPORT_FORMATS.default;
   },
 
-  _extractColumnsPeference:(submissions,columnsPreferences)=>{ 
+  _extractColumnsPeference:(submissions,columnsPreferences)=> { 
     return submissions.map((formSubmission)=>{
       let obj = {};
-      for(preference of columnsPreferences){
+      for(const preference of columnsPreferences){
         obj[preference]= formSubmission.submission[preference];
-      };
+      }
       formSubmission.submission = obj;
       return formSubmission;
     });
@@ -205,7 +205,7 @@ const service = {
         const submissions = await service._getSubmissions(form, params);
         return service._extractColumnsPeference(submissions,columnsPreferences);
       }
-      return service._getSubmissions(form, params)
+      return service._getSubmissions(form, params);
     }
     return {};
   },
