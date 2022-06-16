@@ -6,56 +6,8 @@
         <h1>Form Design</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-md-1 mx-0"
-              @click="submitFormSchema"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>save</v-icon>
-            </v-btn>
-          </template>
-          <span>Save Design</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              :disabled="!undoEnabled"
-              class="mx-1"
-              @click="onUndoClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>undo</v-icon>
-              {{ undoCount }}
-            </v-btn>
-          </template>
-          <span>Undo</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              :disabled="!redoEnabled"
-              class="mx-1"
-              @click="onRedoClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              {{ redoCount }}
-              <v-icon>redo</v-icon>
-            </v-btn>
-          </template>
-          <span>Redo</span>
-        </v-tooltip>
+      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">    
+       
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -93,26 +45,6 @@
           </template>
           <span>Import Design</span>
         </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <router-link
-              :to="{ name: 'FormManage', query: { f: formId } }"
-              :class="{ 'disabled-router': !formId }"
-            >
-              <v-btn
-                class="mx-1"
-                color="primary"
-                :disabled="!formId"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>settings</v-icon>
-              </v-btn>
-            </router-link>
-          </template>
-          <span>Manage Form</span>
-        </v-tooltip>
       </v-col>
       <!-- form name -->
       <v-col cols="12" order="3">
@@ -123,44 +55,6 @@
         <em>Version: {{ this.displayVersion }}</em>
       </v-col>
     </v-row>
-    <v-alert
-      :value="saved || saving"
-      :class="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.class
-          : NOTIFICATIONS_TYPES.SUCCESS.class
-      "
-      :color="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.color
-          : NOTIFICATIONS_TYPES.SUCCESS.color
-      "
-      :icon="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.icon
-          : NOTIFICATIONS_TYPES.SUCCESS.icon
-      "
-      transition="scale-transition"
-    >
-      <div v-if="saving">
-        <v-progress-linear indeterminate />
-        Saving
-      </div>
-      <div v-else>
-        Your form has been successfully saved
-        <router-link
-          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
-          target="_blank"
-          class="mx-5"
-        >
-          Preview
-        </router-link>
-        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-          Go to Manage Form to Publish
-        </router-link>
-      </div>
-    </v-alert>
-
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
@@ -185,24 +79,46 @@
       @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
     />
+    <FloatButton
+      placement="bottom-right"
+      :baseFABItemsBGColor="'#ffffff'"
+      :baseFABIconColor="'#1976D2'"
+      :baseFABBorderColor="'#C0C0C0'"
+      :fabZIndex=1000
+      :size="'small'"
+      fabItemsGap="10px"
+      @undo="onUndoClick"
+      @redo="onRedoClick"
+      @save="submitFormSchema"
+      :saving="saving"
+      :savedStatus="savedStatus"
+      :saved="saved"
+      :formId="formId"
+      :draftId="draftId"
+      :undoCount="undoCount()"
+      :redoCount="redoCount()"
+    />
   </div>
 </template>
 
 <script>
-import { compare, applyPatch, deepClone } from 'fast-json-patch';
+//import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
-
+import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
+import FloatButton from '@/components/designer/FloatButton.vue';
+
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
+    FloatButton
   },
   props: {
     draftId: String,
@@ -215,6 +131,15 @@ export default {
   },
   data() {
     return {
+      items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ],
+      offset: true,
+      savedStatus: 'Save',
+      scrollTop:true,
       advancedItems: [
         { text: 'Simple Mode', value: false },
         { text: 'Advanced Mode', value: true },
@@ -240,6 +165,7 @@ export default {
       },
     };
   },
+  
   computed: {
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapFields('form', [
@@ -259,6 +185,8 @@ export default {
     ID_MODE() {
       return IdentityMode;
     },
+    
+    
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -348,12 +276,6 @@ export default {
         },
       };
     },
-    undoCount() {
-      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
-    },
-    redoCount() {
-      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
-    },
     undoEnabled() {
       return this.canUndoPatch();
     },
@@ -364,6 +286,13 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
+    undoCount() {
+      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
+    },
+    redoCount() {
+      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
+    },
+
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -439,8 +368,16 @@ export default {
       // Since change is triggered during loading
     },
     onChangeMethod(changed, flags, modified) {
+     
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
+
+      // check if a component has been dropped into form builder before calling the 
+      // method to save recent schema into the database
+      if(flags && this.saved){
+        this.submitFormSchema();
+      }
+      
 
       this.onSchemaChange(changed, flags, modified);
     },
@@ -461,7 +398,14 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
+
+      // saves schema when component is remove
+      if(this.saved)
+      {
+        this.submitFormSchema();
+      }
     },
+
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -552,6 +496,7 @@ export default {
     canRedoPatch() {
       return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
     },
+    
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -559,10 +504,14 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
       try {
+       
         this.saving = true;
+        this.savedStatus='Saving';
+
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
 
+      
         if (this.formId) {
           if (this.versionId) {
             // If creating a new draft from an existing version
@@ -575,8 +524,11 @@ export default {
           // If creating a new form, add the form and a draft
           await this.schemaCreateNew();
         }
+        this.savedStatus='Saved';
+        
       } catch (error) {
         await this.setDirtyFlag(true);
+        this.savedStatus='Not Saved';
         this.addNotification({
           message:
             'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
@@ -584,6 +536,7 @@ export default {
         });
       } finally {
         this.saving = false;
+        
       }
     },
     onUndoClick() {
@@ -592,6 +545,7 @@ export default {
     onRedoClick() {
       this.redoPatchFromHistory();
     },
+    
     async schemaCreateNew() {
       const emailList =
         this.sendSubRecieviedEmail &&
@@ -599,6 +553,7 @@ export default {
         Array.isArray(this.submissionReceivedEmails)
           ? this.submissionReceivedEmails
           : [];
+     
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -612,7 +567,7 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
-
+      
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -621,13 +576,17 @@ export default {
           d: response.data.draft.id,
           sv: true,
         },
-      });
+      }).catch(()=>{});
+      
     },
     async schemaCreateDraftFromVersion() {
       const { data } = await formService.createDraft(this.formId, {
         schema: this.formSchema,
         formVersionId: this.versionId,
       });
+
+      this.savedStatus='save';
+       
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -642,13 +601,15 @@ export default {
       await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
       });
+
+      this.savedStatus='save';
+
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
         query: { ...this.$route.query, sv: true },
       });
-    },
-    // ----------------------------------------------------------------------------------/ Saving Schema
+    }, 
   },
   created() {
     if (this.formId) {
@@ -668,6 +629,7 @@ export default {
       this.reRenderFormIo += 1;
     }
   },
+  
 };
 </script>
 
@@ -679,4 +641,34 @@ export default {
 .disabled-router {
   pointer-events: none;
 }
+
+
+.formSubmit{
+  background-color:red;
+}
+
+.formExport{
+ position: sticky;
+ top:0;
+  right:0;
+
+ position: -webkit-sticky;
+}
+
+.formImport{
+  position: sticky;
+  top:0;
+  right:0;
+
+ position: -webkit-sticky;
+}
+
+.formSetting{
+ position: sticky;
+ top:0;
+  right:0;
+ 
+ position: -webkit-sticky;
+}
+
 </style>
