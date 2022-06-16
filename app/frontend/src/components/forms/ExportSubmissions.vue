@@ -13,7 +13,7 @@
           <v-icon>get_app</v-icon>
         </v-btn>
       </template>
-      <p>Export Submissions to File</p>
+      <span>Export Submissions to File</span>
     </v-tooltip>
 
     <v-dialog
@@ -172,7 +172,6 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
-
 export default {
   data() {
     return {
@@ -193,7 +192,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form','userFormPreferences']),
+    ...mapGetters('form', ['form', 'userFormPreferences']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
