@@ -1,12 +1,31 @@
 <template>
   <BaseSecure :idp="IDP.IDIR">
-    <FormDesigner
-      class="mt-6"
-      :draftId="d"
-      :formId="f"
-      :saved="sv"
-      :versionId="v"
-    />
+    <v-stepper v-model="creatorStep" class="elevation-0 d-flex flex-column" alt-labels>
+      <v-stepper-header style="width:40%;" class="elevation-0 px-0 align-self-center" >
+        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
+          Design Form
+        </v-stepper-step>
+        <v-divider />
+        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
+          Publish Form
+        </v-stepper-step>
+      </v-stepper-header>
+      <v-stepper-items>
+        <v-stepper-content step="1" class="pa-1">
+          <FormDesigner
+            class="mt-6"
+            :draftId="d"
+            :formId="f"
+            :saved="sv"
+            :versionId="v"
+            @create-stepper="creatorStep = 1"
+          />
+          <v-btn class="my-4" outlined @click="creatorStep = 1">
+            <span>Back</span>
+          </v-btn>
+        </v-stepper-content>
+      </v-stepper-items>
+    </v-stepper>
   </BaseSecure>
 </template>
 
@@ -20,6 +39,11 @@ export default {
   name: 'FormDesign',
   components: {
     FormDesigner,
+  },
+  data() {
+    return {
+      creatorStep: 1
+    };
   },
   props: {
     d: String,

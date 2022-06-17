@@ -6,7 +6,7 @@
           Set up Form
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
+        <v-stepper-step :complete="creatorStep > 2" :editable=true step="2" class="pr-1">
           Design Form
         </v-stepper-step>
         <v-divider />
@@ -63,10 +63,13 @@ import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormCreate',
+  props:{
+    isDesignView:Boolean
+  },
   components: {
     FormDesigner,
     FormSettings,
-    FormDisclaimer,
+    FormDisclaimer
   },
   computed: {
     ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),

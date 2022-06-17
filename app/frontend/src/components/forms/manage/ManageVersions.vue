@@ -358,6 +358,7 @@ export default {
       }
     },
     async updatePublish() {
+      document.documentElement.style.overflow = 'auto';
       this.showPublishDialog = false;
       // if publishing a draft version
       if (this.publishOpts.isDraft) {
