@@ -3,15 +3,19 @@
     <v-stepper v-model="creatorStep" class="elevation-0 d-flex flex-column" alt-labels>
       <v-stepper-header style="width:40%;" class="elevation-0 px-0 align-self-center" >
         <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
+          Set up Form
+        </v-stepper-step>
+        <v-divider />
+        <v-stepper-step :complete="creatorStep > 2" step="2" class="pl-1">
           Design Form
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
+        <v-stepper-step :complete="creatorStep > 3" step="3" class="pr-1">
           Publish Form
         </v-stepper-step>
       </v-stepper-header>
       <v-stepper-items>
-        <v-stepper-content step="1" class="pa-1">
+        <v-stepper-content step="2" class="pa-1">
           <FormDesigner
             class="mt-6"
             :draftId="d"
@@ -20,9 +24,6 @@
             :versionId="v"
             @create-stepper="creatorStep = 1"
           />
-          <v-btn class="my-4" outlined @click="creatorStep = 1">
-            <span>Back</span>
-          </v-btn>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
@@ -42,7 +43,7 @@ export default {
   },
   data() {
     return {
-      creatorStep: 1
+      creatorStep: 2
     };
   },
   props: {
