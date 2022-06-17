@@ -44,7 +44,7 @@ export let options = {
 const formData = new SharedArray('form data file', function () {
   let formDataJson = undefined;
   if (formType === 'small' || formType === 'medium' || formType === 'large') {
-    formDataJson = JSON.parse(open(`./${formType}_form_data.json`));
+    formDataJson = JSON.parse(open(`./fixtures/${formType}_form_data.json`));
   } else {
     fail('No valid environment supplied. Supply "small", "medium", or "large".');
   }
@@ -61,7 +61,7 @@ export function setup() {
   console.log(`Form Type: ${formType}`);
 
   // Check a formId guid was supplied or nothing will work
-  var pattern = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', 'i');
+  const pattern = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', 'i');
   if (!formId.match(pattern)) {
     fail('No valid Form ID supplied. Specify a "FORM_ID" environment variable with the ID of the Form to POST to.');
   }

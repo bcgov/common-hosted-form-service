@@ -4,7 +4,7 @@ The K6 scripts contained here are for load testing purposes in CHEFS.
 
 If you are not familiar with K6, please start with the documentation on [their site](https://k6.io/docs/#what-is-k6).
 
-It is important not to run load test scripts against production (or other imporant environments) unless controlled. As well, if load tests are ever being run against an OpenShift hosted CHEFS instance using a very high volume (in the thousands of requests or higher) you should check with platform services as high network incoming traffic should be monitored and done outside peak times.
+It is important not to run load test scripts against production (or other important environments) unless controlled. As well, if load tests are ever being run against an OpenShift hosted CHEFS instance using a very high volume (in the thousands of requests or higher) you should check with platform services as high network incoming traffic should be monitored and done outside peak times.
 
 ## Running Scripts
 
