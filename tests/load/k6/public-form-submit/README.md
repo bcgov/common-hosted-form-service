@@ -6,18 +6,18 @@ See parent directory README for general K6 details.
 
 ## Prerequesites
 
-This script will require you to add the form to the CHEFS instance that you want to test. This folder includes schema definitions that correspond to the test data.
+This script will require you to add the form to the CHEFS instance that you want to test. This folder includes a `fixtures` folder with schema definitions that correspond to the test data.
 
 To add the form, just 
 
 - Create A New Form in CHEFS, (name it whatever wanted)
 - Set Form Access to **Public**
 - Leave all other settings default (do **not** set a confirmation email)
-- In the form designer use the Import Design button to pick one of the schemas in this folder
+- In the form designer use the Import Design button to pick one of the schemas in the `fixtures` folder
 - Save the form and then publish it from the Manage page
 - Copy the form ID for the form you just published (can be found in the Share form link from the Manage page). You will need this form ID as a parameter.
 
-This folder includes 3 form example schemas, *<small,medium,large>_form_schema.json*.
+The `fixtures` folder includes 3 form example schemas, *<small,medium,large>_form_schema.json*.
 When running the form there are corresponding test data files that will be loaded to match these form designs (see Parameters).
 
 ## Parameters
