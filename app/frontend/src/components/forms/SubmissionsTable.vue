@@ -175,7 +175,7 @@ export default {
         this.userFormPreferences.preferences.columnList
       ) {
         // Compare saved user prefs against the current form versions component names and remove any discrepancies
-        return this.userFormPreferences.preferences.columnList.filter((x) => this.formFields.indexOf(x) !== -1);
+        return this.userFormPreferences.preferences.columnList.filter(x => this.formFields.indexOf(x) !== -1);
       } else {
         return [];
       }
