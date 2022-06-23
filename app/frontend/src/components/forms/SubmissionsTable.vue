@@ -232,18 +232,18 @@ export default {
     },
   },
 
-  async mounted() {
-    // Get the form, latest version form fields
-    // These calls have to be waited on until the table can populate below
-    await this.fetchForm(this.formId);
-    await this.fetchFormFields({
-      formId: this.formId,
-      formVersionId: this.form.versions[0].id,
+  mounted() {
+    Promise.all([
+      this.getFormPermissionsForUser(this.formId),
+      this.fetchForm(this.formId).then(() => {
+        this.fetchFormFields({
+          formId: this.formId,
+          formVersionId: this.form.versions[0].id,
+        });
+      }),
+    ]).then(() => {
+      this.populateSubmissionsTable();
     });
-
-    // Get the permissions for this form
-    this.getFormPermissionsForUser(this.formId);
-    this.populateSubmissionsTable();
   },
 };
 </script>
