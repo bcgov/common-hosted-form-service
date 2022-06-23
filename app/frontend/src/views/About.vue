@@ -22,17 +22,34 @@
             Take a tour of CHEFS to see it in action.
           </h2>
           <div class="video-wrapper">
-            <video class="main-video" width="100%" controls>
-              <source
-                src="https://github.com/bcgov/common-hosted-form-service/wiki/videos/intro_720.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
+            <iframe width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/YweTJMEpzO8"
+                    title="Introduction to the Common Hosted Forms Service (CHEFS)"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
           </div>
         </v-col>
       </v-row>
     </v-sheet>
+
+    <v-row justify="center" class="example-text">
+      <v-col cols="12" lg="4">
+        <h2>CHEFS How-to Videos</h2>
+        <p>
+          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a href="https://trainingmodules.nrs.gov.bc.ca/Provincial/IIT/CHEFSquickstart">Get started!</a>
+        </p>
+      </v-col>
+      <v-col cols="12" lg="4">
+        <BaseImagePopout
+          alt="Drag and Drop demo"
+          src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/quickstart.png"
+          width="600px"
+        />
+      </v-col>
+    </v-row>
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
@@ -113,6 +130,8 @@ export default {
   }
   .video-wrapper {
     max-width: 854px !important;
+    max-height: 422px !important;
+    height: 422px;
     margin: 0 auto;
   }
   .main-video {
