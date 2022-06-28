@@ -57,6 +57,7 @@ MockModel.then = jest.fn((done) => { done(returnValue); });
 MockModel.throwIfNotFound = jest.fn().mockReturnThis();
 MockModel.where = jest.fn().mockReturnThis();
 MockModel.withGraphFetched = jest.fn().mockReturnThis();
+MockModel.allowGraph = jest.fn().mockReturnThis();
 
 // Utility Functions
 MockModel.mockClear = () => {

@@ -10,6 +10,7 @@ const {
   FormRoleUser,
   FormVersion,
   FormVersionDraft,
+  FormVersionFormModuleVersion,
   FormStatusCode,
   FormSubmission,
   FormSubmissionStatus,
@@ -17,6 +18,7 @@ const {
   IdentityProvider,
   SubmissionMetadata
 } = require('../common/models');
+const formModuleService = require('../formModule/service');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 
@@ -475,6 +477,7 @@ const service = {
     try {
       const form = await service.readForm(formId);
       const draft = await service.readDraft(formVersionDraftId);
+      const formModules = await formModuleService.listFormModules();
       trx = await FormVersionDraft.startTransaction();
 
       const version = {
@@ -497,6 +500,20 @@ const service = {
 
       // delete the draft...
       await FormVersionDraft.query().deleteById(formVersionDraftId);
+
+      for (let i = 0; i < formModules.length; i++) {
+        for (let j = 0; j < formModules[i].formModuleVersions.length; j++) {
+          let formVersionFormModuleVersion = {
+            id: uuidv4(),
+            formVersionId: version.id,
+            formModuleVersionId: formModules[i].formModuleVersions[j].id,
+            createdBy: currentUser.usernameIdp,
+          };
+
+          await FormVersionFormModuleVersion.query(trx).insert(formVersionFormModuleVersion);
+        }
+      }
+
       await trx.commit();
 
       // return the published version...
@@ -566,6 +583,13 @@ const service = {
       .throwIfNotFound();
   },
   // ----------------------------------------------------------------------Api Key
+  
+  listFormVersionFormModuleVersions: (formId, formVersionId) => {
+    return FormVersionFormModuleVersion.query()
+      .modify('filterFormVersionId', formVersionId)
+      .allowGraph('[formModuleVersion]')
+      .withGraphFetched('formModuleVersion');
+  },
 };
 
 module.exports = service;

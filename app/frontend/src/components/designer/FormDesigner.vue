@@ -1,5 +1,12 @@
 <template>
-  <div>
+  <FormModuleLoader
+    v-if="loadingFormModules"
+    @update:parent="loadingFormModules = $event"
+    :formId="formId"
+    :formVersionId="versionId"
+    :formDraftId="draftId"
+  />
+  <div v-else>
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
@@ -195,15 +202,18 @@ import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
 
+import FormModuleLoader from '@/components/designer/FormModuleLoader.vue';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
+// import { importExternalFile } from '@/utils/formModuleUtils';
 import { generateIdps } from '@/utils/transformUtils';
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
+    FormModuleLoader,
   },
   props: {
     draftId: String,
@@ -221,14 +231,13 @@ export default {
         { text: 'Advanced Mode', value: true },
       ],
       designerStep: 1,
+      displayVersion: 1,
       formSchema: {
         display: 'form',
         type: 'form',
         components: [],
       },
-      displayVersion: 1,
-      reRenderFormIo: 0,
-      saving: false,
+      loadingFormModules: true,
       patch: {
         componentAddedStart: false,
         componentRemovedStart: false,
@@ -239,6 +248,8 @@ export default {
         undoClicked: false,
         originalSchema: null,
       },
+      reRenderFormIo: 0,
+      saving: false,
       settingsOverlay: {
         selectedComponent: null,
         selectedSettings: null,
@@ -247,7 +258,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['tokenParsed', 'user']),
-    ...mapGetters('form', ['builder']),
+    ...mapGetters('formModule', ['builder']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
@@ -291,11 +302,15 @@ export default {
     redoEnabled() {
       return this.canRedoPatch();
     },
+    objectsToLoad() {
+      return Object.values(this.loading.objects).flat().length;
+    },
   },
   methods: {
-    ...mapActions('form', ['registerComponent']),
     ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
+    // ----------------------------------------------------------------------------------/ FormIO Modules
+
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -362,28 +377,6 @@ export default {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    },
-    importExternalFile(link, onload = null) {
-      let extension = link.split('.').pop();
-      let file = null;
-      switch (extension) {
-        case 'js':
-          file = document.createElement('script');
-          file.async = false;
-          file.onload = onload;
-          file.setAttribute('src', link);
-          break;
-        case 'css':
-          file = document.createElement('link');
-          file.async = false;
-          file.onload = onload;
-          file.setAttribute('rel', 'stylesheet');
-          file.setAttribute('href', link);
-          break;
-      }
-
-      if (file !== null)
-        document.body.appendChild(file);
     },
 
     // ---------------------------------------------------------------------------------------------------
@@ -605,14 +598,6 @@ export default {
     // ----------------------------------------------------------------------------------/ Saving Schema
   },
   created() {
-    this.registerComponent({ group: 'customControls', component: 'simplefile', data: this.userType !== this.ID_MODE.PUBLIC });
-    
-    this.importExternalFile('https://unpkg.com/@formio/contrib@latest/dist/formio-contrib.css');
-    this.importExternalFile('https://unpkg.com/@formio/contrib@latest/dist/formio-contrib.use.min.js', () => {
-      this.registerComponent({ group: 'entryControls', component: 'checkmatrix', data: true });
-      this.reRenderFormIo += 1;
-    });
-    
     if (this.formId) {
       this.getFormSchema();
       this.fetchForm(this.formId);
@@ -628,7 +613,10 @@ export default {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    }
+    },
+    loadingFormModules(newValue) {
+      if (!newValue) this.reRenderFormIo += 1;
+    },
   },
 };
 </script>

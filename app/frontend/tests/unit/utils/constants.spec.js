@@ -9,7 +9,8 @@ describe('Constants', () => {
       RBAC: '/rbac',
       ROLES: '/roles',
       SUBMISSION: '/submissions',
-      USERS: '/users'
+      USERS: '/users',
+      FORMMODULES: '/form_modules'
     });
   });
 

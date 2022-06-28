@@ -16,9 +16,9 @@ import store from '@/store';
 // importing the main formio dependency (whether through vue-formio or directly)
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
-import BcGovFormioComponents from '@/formio/lib';
-import { Formio } from 'vue-formio';
-Formio.use(BcGovFormioComponents);
+// import BcGovFormioComponents from '@/formio/lib';
+// import { Formio } from 'vue-formio';
+// Formio.use(BcGovFormioComponents);
 
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
@@ -105,7 +105,7 @@ async function loadConfig() {
  */
 function loadKeycloak(config) {
   Vue.use(VueKeycloakJs, {
-    init: { onLoad: 'check-sso' },
+    init: { onLoad: 'check-sso', checkLoginIframe: false },
     config: {
       clientId: config.keycloak.clientId,
       realm: config.keycloak.realm,

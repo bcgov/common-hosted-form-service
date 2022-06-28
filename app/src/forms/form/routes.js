@@ -90,6 +90,10 @@ routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, h
 //   next(new Problem(410, { detail: 'This method is deprecated, use /submissions to modify a submission.' }));
 // });
 
+routes.get('/:formId/versions/:formVersionId/formModuleVersions', async (req, res, next) => {
+  await controller.listFormVersionFormModuleVersions(req, res, next);
+});
+
 routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
   await controller.listDrafts(req, res, next);
 });

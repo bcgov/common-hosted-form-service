@@ -1,5 +1,12 @@
 <template>
-  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+  <FormModuleLoader
+    v-if="loadingFormModules"
+    @update:parent="loadingFormModules = $event"
+    :formId="formId"
+    :formVersionId="versionId"
+    :formDraftId="draftId"
+  />
+  <v-skeleton-loader v-else :loading="loadingSubmission" type="article, actions">
     <div v-if="displayTitle">
       <div v-if="!isFormPublic(form)">
         <FormViewerActions
@@ -79,6 +86,7 @@ import { Form } from 'vue-formio';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
+import FormModuleLoader from '@/components/designer/FormModuleLoader.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
@@ -88,6 +96,7 @@ export default {
   components: {
     Form,
     FormViewerActions,
+    FormModuleLoader
   },
   props: {
     displayTitle: {
@@ -119,6 +128,7 @@ export default {
       forceNewTabLinks: true,
       form: {},
       formSchema: {},
+      loadingFormModules: true,
       loadingSubmission: false,
       permissions: [],
       reRenderFormIo: 0,
@@ -450,6 +460,11 @@ export default {
       attachAttributesToLinks(this.formSchema.components);
     }
   },
+  watch: {
+    loadingFormModules(newValue) {
+      if (!newValue) this.reRenderFormIo += 1;
+    },
+  }
 };
 </script>
 

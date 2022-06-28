@@ -5,7 +5,9 @@ const CREATED_BY = '999-dev-seed-data';
 const ID = {
   users: [],
   forms: [],
-  versions: []
+  versions: [],
+  formModules: [],
+  formModuleVersions: [],
 };
 
 exports.seed = function(knex) {
@@ -291,5 +293,36 @@ exports.seed = function(knex) {
         };
       });
       return knex('form_submission').insert(items);
+    })
+    .then(() => {
+      return knex('form_module').where('createdBy', CREATED_BY).del();
+    })
+    .then(() => {
+      const items = [
+        {
+          id: uuidv4(),
+          pluginName: 'Default Components',
+          active: true,
+          createdBy: CREATED_BY,
+        }
+      ];
+      return knex('form_module').insert(items).returning('id');
+    })
+    .then(ids => {
+      ID.formModules = ids;
+
+      const items = ID.formModules.map((f) => {
+        return {
+          id: uuidv4(),
+          createdBy: CREATED_BY,
+          formModuleId: f,
+          externalUris: [
+            'https://jasonchung1871.github.io/chefs_modules/bcgov-formio-components.css',
+            'https://jasonchung1871.github.io/chefs_modules/bcgov-formio-components.use.min.js',
+          ],
+          importData: '{"components":{"builderCategories":{"layoutControls":{"title":"Basic Layout","default":true,"weight":10},"entryControls":{"title":"Basic Fields","weight":20},"layout":{"title":"Advanced Layout","weight":30},"advanced":{"title":"Advanced Fields","weight":40},"data":{"title":"Advanced Data","weight":50},"customControls":{"title":"BC Government","weight":60}},"builder":{"layoutControls":{"simplecols2":true,"simplecols3":true,"simplecols4":true,"simplecontent":true,"simplefieldset":false,"simpleheading":false,"simplepanel":true,"simpleparagraph":false,"simpletabs":true},"entryControls":{"simplecheckbox":true,"simplecheckboxes":true,"simpledatetime":true,"simpleday":true,"simpleemail":true,"simplenumber":true,"simplephonenumber":true,"simpleradios":true,"simpleselect":true,"simpletextarea":true,"simpletextfield":true,"simpletime":false},"advanced":{"textfield":true,"textarea":true,"number":true,"password":true,"checkbox":true,"selectboxes":true,"select":true,"radio":true,"button":true,"orgbook":false},"customControls":{"orgbook":true,"simplefile":{"userType":{"blacklist":["public"]}}}}}}',
+        }
+      });
+      return knex('form_module_version').insert(items).returning('id');
     });
 };

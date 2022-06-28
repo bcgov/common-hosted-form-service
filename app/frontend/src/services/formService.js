@@ -385,4 +385,13 @@ export default {
   requestReceiptEmail(submissionId, requestBody) {
     return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/email`, requestBody);
   },
+
+  /**
+   * @function listFormVersionFormModuleVersions
+   * Read all the form version's form module versions in the DB
+   * @returns {Promise} An axios response
+   */
+  listFormVersionFormModuleVersions(formId, formVersionId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/formModuleVersions`);
+  },
 };

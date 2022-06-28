@@ -19,7 +19,7 @@ class FormVersion extends Timestamps(Model) {
           from: 'form_version.id',
           to: 'form_submission.formVersionId'
         }
-      }
+      },
     };
   }
 
