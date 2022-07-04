@@ -5,6 +5,7 @@
     :formId="formId"
     :formVersionId="versionId"
     :formDraftId="draftId"
+    :submissionId="submissionId"
   />
   <v-skeleton-loader v-else :loading="loadingSubmission" type="article, actions">
     <div v-if="displayTitle">

@@ -29,6 +29,7 @@ export default {
     formId: String,
     formVersionId: String,
     formDraftId: String,
+    submissionId: String,
   },
   data() {
     return {
@@ -39,7 +40,12 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['user']),
-    ...mapGetters('formModule', ['builder', 'formModuleList', 'formModuleVersion', 'formModuleVersionList']),
+    ...mapGetters('formModule', [
+      'builder',
+      'formModuleList',
+      'formModuleVersion',
+      'formModuleVersionList'
+    ]),
     ...mapFields('form', [
       'form.userType',
     ]),
@@ -102,6 +108,17 @@ export default {
             versionId = response.data.versions[0].id;
             await this.loadModulesWithFormVersion(versionId);
           }
+        } else if (this.submissionId) {
+          const response = await formService.getSubmission(this.submissionId);
+          console.log(response);
+          if (
+            !response.data && !response.data.version
+          ) {
+            throw new Error(
+              `No published version found in response. FormID: ${this.formId}`
+            );
+          }
+          await this.loadModulesWithFormVersion(response.data.version.id);
         } else {
           await this.loadDefaultModules();
         }
