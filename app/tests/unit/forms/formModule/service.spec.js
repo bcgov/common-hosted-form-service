@@ -32,7 +32,7 @@ describe('list', () => {
     expect(MockModel.allowGraph).toHaveBeenCalledTimes(1);
     expect(MockModel.allowGraph).toHaveBeenCalledWith('[formModuleVersions,identityProviders]');
     expect(MockModel.withGraphFetched).toHaveBeenCalledTimes(2);
-    expect(MockModel.withGraphFetched).toHaveBeenCalledWith('formModuleVersion(orderCreatedAtDescending)');
+    expect(MockModel.withGraphFetched).toHaveBeenCalledWith('formModuleVersions(orderCreatedAtDescending)');
     expect(MockModel.withGraphFetched).toHaveBeenCalledWith('identityProviders(orderDefault)');
   });
 });
@@ -46,7 +46,7 @@ describe('list', () => {
     expect(MockModel.allowGraph).toHaveBeenCalledTimes(1);
     expect(MockModel.allowGraph).toHaveBeenCalledWith('[formModuleVersions,identityProviders]');
     expect(MockModel.withGraphFetched).toHaveBeenCalledTimes(2);
-    expect(MockModel.withGraphFetched).toHaveBeenCalledWith('formModuleVersion(orderCreatedAtDescending)');
+    expect(MockModel.withGraphFetched).toHaveBeenCalledWith('formModuleVersions(orderCreatedAtDescending)');
     expect(MockModel.withGraphFetched).toHaveBeenCalledWith('identityProviders(orderDefault)');
   });
 });
@@ -62,7 +62,7 @@ describe('read', () => {
     expect(MockModel.allowGraph).toHaveBeenCalledTimes(1);
     expect(MockModel.allowGraph).toHaveBeenCalledWith('[formModuleVersions,identityProviders]');
     expect(MockModel.withGraphFetched).toHaveBeenCalledTimes(2);
-    expect(MockModel.withGraphFetched).toHaveBeenCalledWith('formModuleVersion(orderCreatedAtDescending)');
+    expect(MockModel.withGraphFetched).toHaveBeenCalledWith('formModuleVersions(selectWithoutUrisAndData,orderCreatedAtDescending)');
     expect(MockModel.withGraphFetched).toHaveBeenCalledWith('identityProviders(orderDefault)');
   });
 });
@@ -83,6 +83,9 @@ describe('form module CRUD', () => {
       code: 'idir',
       display: 'IDIR',
     }],
+  };
+  const formModuleToggle = {
+    active: false,
   };
 
   const readFormModuleSpy = jest.spyOn(service, 'readFormModule');
@@ -124,6 +127,23 @@ describe('form module CRUD', () => {
     expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
     expect(MockModel.patchAndFetchById).toHaveBeenCalledWith(formModuleId, {
       pluginName: 'pluginName2',
+      active: false,
+      updatedBy: currentUser.usernameIdp
+    });
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+  });
+
+  it('should update toggle form module', async () => {
+    MockModel.mockResolvedValue({});
+    readFormModuleSpy.mockResolvedValue({});
+  
+    await service.toggleFormModule(formModuleId, formModuleToggle, currentUser);
+  
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
+    expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
+    expect(MockModel.patchAndFetchById).toHaveBeenCalledWith(formModuleId, {
       active: false,
       updatedBy: currentUser.usernameIdp
     });

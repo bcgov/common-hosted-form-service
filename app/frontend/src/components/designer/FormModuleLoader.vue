@@ -110,7 +110,6 @@ export default {
           }
         } else if (this.submissionId) {
           const response = await formService.getSubmission(this.submissionId);
-          console.log(response);
           if (
             !response.data && !response.data.version
           ) {

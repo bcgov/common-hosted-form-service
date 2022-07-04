@@ -206,7 +206,6 @@ import FormModuleLoader from '@/components/designer/FormModuleLoader.vue';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-// import { importExternalFile } from '@/utils/formModuleUtils';
 import { generateIdps } from '@/utils/transformUtils';
 
 export default {

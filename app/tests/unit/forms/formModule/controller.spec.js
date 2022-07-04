@@ -72,6 +72,9 @@ describe('form module CRUD', () => {
       display: 'IDIR',
     }],
   };
+  const formModuleToggle = {
+    active: false,
+  };
 
   it('should throw when invalid options are provided', async () => {
     const req = {
@@ -141,6 +144,25 @@ describe('form module CRUD', () => {
     await controller.updateFormModule(req, {}, next);
 
     expect(controller.updateFormModule).toHaveBeenCalledTimes(1);
+  });
+
+  it('should toggle form module', async () => {
+    const req = {
+      params: {
+        formModuleId: formModuleId
+      },
+      body: formModuleToggle,
+      currentUser: currentUser,
+    };
+    
+    jest.spyOn(controller, 'toggleFormModule');
+    service.toggleFormModule = jest.fn().mockReturnValue({ id: formModuleId, active: false });
+
+    let next = jest.fn();
+
+    await controller.toggleFormModule(req, {}, next);
+
+    expect(controller.toggleFormModule).toHaveBeenCalledTimes(1);
   });
 
   describe('form module version CRUD', () => {

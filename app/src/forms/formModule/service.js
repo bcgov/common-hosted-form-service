@@ -88,7 +88,7 @@ const service = {
   toggleFormModule: async (formModuleId, params = {}, currentUser) => {
     let trx;
     try {
-      const active = params.active ? !falsey(params.active) : true;
+      const active = params.active ? !falsey(params.active) : false;
       const obj = await service.readFormModule(formModuleId);
       trx = await FormModule.startTransaction();
 
@@ -170,18 +170,6 @@ const service = {
     return FormModuleVersion.query()
       .findById(formModuleVersionId)
       .throwIfNotFound();
-  },
-  readFormModuleVersionOptions: (formModuleVersionId, params = {}) => {
-    return FormModuleVersion.query()
-      .findById(formModuleVersionId)
-      .select(['id',])
-      .allowGraph('[formVersionHints]')
-      .withGraphFetched('formVersionHints')
-      .throwIfNotFound()
-      .then(formModuleVersion => {
-        formModuleVersion.formVersionHints = form.formVersionHints.map(formVersion => formVersion.id);
-        return formModuleVersion;
-      });
   },
   listFormModuleIdentityProviders: (formModuleId) => {
     return FormModuleIdentityProvider.query()

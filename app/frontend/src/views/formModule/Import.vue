@@ -43,7 +43,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('formModule', ['resetFormModule', 'setDirtyFlag']),
+    ...mapActions('formModule', ['resetFormModule', 'resetFormModuleVersion', 'setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
     async submitFormModule() {
       try {
@@ -90,6 +90,7 @@ export default {
   },
   created() {
     this.resetFormModule();
+    this.resetFormModuleVersion();
   },
   watch: {
     idps() {

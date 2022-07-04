@@ -65,14 +65,6 @@ module.exports = {
       next(error);
     }
   },
-  readFormModuleVersionOptions: async (req, res, next) => {
-    try {
-      const response = await service.readFormModuleVersionOptions(req.params.formModuleVersionId, req.query);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
   updateFormModuleVersion: async (req, res, next) => {
     try {
       const response = await service.updateFormModuleVersion(req.params.formModuleVersionId, req.body, req.currentUser);

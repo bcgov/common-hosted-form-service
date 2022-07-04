@@ -1,7 +1,6 @@
 const config = require('config');
 const routes = require('express').Router();
 
-const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser } = require('../auth/middleware/userAccess');
 
 const keycloak = require('../../components/keycloak');
@@ -39,10 +38,6 @@ routes.post('/:formModuleId/version', keycloak.protect(`${config.get('server.key
 
 routes.get('/:formModuleId/version/:formModuleVersionId', async (req, res, next) => {
   await controller.readFormModuleVersion(req, res, next);
-});
-
-routes.get('/:formModuleId/version/:formModuleVersionId/options', async (req, res, next) => {
-  await controller.readFormModuleVersionOptions(req, res, next);
 });
 
 routes.put('/:formModuleId/version/:formModuleVersionId', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
