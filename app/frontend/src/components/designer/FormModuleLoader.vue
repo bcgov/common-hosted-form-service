@@ -21,6 +21,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { formService } from '@/services';
 import { importExternalFile } from '@/utils/formModuleUtils';
+import { mapFields } from 'vuex-map-fields';
 
 export default {
   name: 'FormModuleLoader',
@@ -37,7 +38,11 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('auth', ['user']),
     ...mapGetters('formModule', ['builder', 'formModuleList', 'formModuleVersion', 'formModuleVersionList']),
+    ...mapFields('form', [
+      'form.userType',
+    ]),
     totalObjects() {
       return this.formModuleUris.length;
     },
@@ -100,8 +105,6 @@ export default {
         } else {
           await this.loadDefaultModules();
         }
-
-        let builder = this.builder;
         
         for (const uri of this.formModuleUris) {
           this.log.push(`Importing ${uri}`);
@@ -111,46 +114,7 @@ export default {
               this.objectsLoaded++;
               return;
             }
-            this.formModuleList.forEach((formModule) => {
-              formModule.formModuleVersions.forEach((formModuleVersion) => {
-                let importData = JSON.parse(JSON.stringify(formModuleVersion.importData));
-                if ('builderCategories' in importData.components) {
-                  // Prep any builder categories, if the module creates a category, give it a components object
-                  for (let [key, value] of Object.entries(importData.components['builderCategories'])) {
-                    // If the builder category exists and hasn't been initialized yet
-                    if (key in builder && typeof builder[key] === 'object') {
-                      // Map the modules builder category to update it
-                      Object.keys(value).map((entryKey) => {
-                        builder[key][entryKey] = value[entryKey];
-                      });
-                    } else {
-                      // This is a new builder category
-                      builder[key] = value;
-                    }
-                    if (typeof builder[key] === 'object' && !('components' in builder[key])) {
-                      builder[key]['components'] = {};
-                    }
-                  }
-                }
-                
-                if (formModuleVersion.externalUris.includes(uri)) {
-                  for (const [categoryKey, categoryValue] of Object.entries(importData.components.builder)) {
-                    for (const [componentKey, componentValue] of Object.entries(categoryValue)) {
-                      if (typeof componentValue === 'boolean') {
-                        this.builder[categoryKey.toString()]['components'][componentKey.toString()] = componentValue;
-                      } else {
-                        if ('userType' in importData.components.builder[categoryKey][componentKey]) {
-                          if ('blacklist' in importData.components.builder[categoryKey][componentKey]['userType']) {
-                            this.builder[categoryKey]['components'][componentKey] = importData.components.builder[categoryKey][componentKey]['userType']['blacklist'].includes(this.userType);
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              });
-            });
-            this.setBuilder(builder);
+            this.updateBuilder();
             this.objectsLoaded++;
           });
         }
@@ -161,6 +125,55 @@ export default {
         });
       }
     },
+    updateBuilder() {
+      this.resetBuilder();
+      this.formModuleList.forEach((formModule) => {
+        if (this.formDraftId || (!this.formId && !this.formDraftId && !this.formVersionId)) {
+          let idps = formModule.identityProviders.map((fm) => fm.idp);
+          if (!idps.includes(this.user.idp)) return;
+        }
+
+        formModule.formModuleVersions.forEach((formModuleVersion) => {
+          let importData = JSON.parse(JSON.stringify(formModuleVersion.importData));
+          if ('builderCategories' in importData.components) {
+            // Prep any builder categories, if the module creates a category, give it a components object
+            for (let [key, value] of Object.entries(importData.components['builderCategories'])) {
+              // If the builder category exists and hasn't been initialized yet
+              if (key in this.builder && typeof this.builder[key] === 'object') {
+                // Map the modules builder category to update it
+                Object.keys(value).map((entryKey) => {
+                  this.builder[key][entryKey] = value[entryKey];
+                });
+              } else {
+                // This is a new builder category
+                this.builder[key] = value;
+              }
+              if (typeof this.builder[key] === 'object' && !('components' in this.builder[key])) {
+                this.builder[key]['components'] = {};
+              }
+            }
+          }
+          
+          for (const [categoryKey, categoryValue] of Object.entries(importData.components.builder)) {
+            for (const [componentKey, componentValue] of Object.entries(categoryValue)) {
+              if (typeof componentValue === 'boolean') {
+                this.registerComponent(categoryKey.toString(), componentKey.toString(), componentValue);
+              } else {
+                if ('userType' in importData.components.builder[categoryKey][componentKey]) {
+                  if ('blacklist' in importData.components.builder[categoryKey][componentKey]['userType']) {
+                    this.registerComponent(categoryKey.toString(), componentKey.toString(), !importData.components.builder[categoryKey][componentKey]['userType']['blacklist'].includes(this.userType)); 
+                  }
+                }
+              }
+            }
+          }
+        });
+      });
+      this.setBuilder(this.builder);
+    },
+    registerComponent(category, component, value) {
+      return this.builder[category]['components'][component] = value;
+    },
   },
   created() {
     this.loadModules();
@@ -170,7 +183,7 @@ export default {
       if (newValue === 0) {
         this.$emit('update:parent', false);
       }
-    }
+    },
   }
 };
 </script>

@@ -19,34 +19,21 @@
                   formModule.createdBy
                 }})
               </small>
-              <v-btn
-                v-if="canEditFormModule"
-                small
-                icon
-                color="primary"
-                @click.native.stop="enableSettingsEdit"
-              >
-                <v-icon>edit</v-icon>
-              </v-btn>
             </span>
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-form
             ref="settingsFormModule"
-            :disabled="formModuleSettingsDisabled"
             v-model="settingsFormModuleValid"
             lazy-validation
           >
-            <FormModuleSettings :disabled="formModuleSettingsDisabled" />
+            <FormModuleSettings />
           </v-form>
 
-          <div v-if="canEditFormModule && !formModuleSettingsDisabled" class="mb-5">
+          <div class="mb-5">
             <v-btn class="mr-5" color="primary" @click="updateSettings">
               <span>Update</span>
-            </v-btn>
-            <v-btn outlined @click="cancelSettingsEdit">
-              <span>Cancel</span>
             </v-btn>
           </div>
         </v-expansion-panel-content>
@@ -97,7 +84,7 @@ export default {
     return {
       formModuleSettingsDisabled: true,
       settingsFormModuleValid: false,
-      settingsPanel: 1,
+      settingsPanel: 0,
       versionsPanel: 0,
     };
   },
@@ -108,9 +95,6 @@ export default {
       'formModule.idpTypes',
     ]),
     ...mapGetters('formModule', ['formModule']),
-    canEditFormModule() {
-      return true;
-    },
     versionCount() {
       return (this.formModule && this.formModule.formModuleVersions) ? this.formModule.formModuleVersions.length : 0;
     },
@@ -122,19 +106,9 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('formModule', ['updateFormModule', 'fetchFormModule']),
-    cancelSettingsEdit() {
-      this.formModuleSettingsDisabled = true;
-    },
-    enableSettingsEdit() {
-      // open 'Form Settings' accordion
-      this.settingsPanel = 0;
-      // enable 'Form Setings' form
-      this.formModuleSettingsDisabled = false;
-    },
     async updateSettings() {
       try {
         if (this.$refs.settingsFormModule.validate()) {
-          this.formModuleSettingsDisabled = true;
           await this.updateFormModule();
           this.addNotification({
             message: 'Your form module settings have been updated successfully.',

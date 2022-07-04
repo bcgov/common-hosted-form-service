@@ -14,7 +14,7 @@
         </v-tooltip>
       </template>
     </span>
-    <span v-if="canDisableFormModule">
+    <span>
       <template>
         <v-switch
           color="success"
@@ -34,7 +34,7 @@
         <template #title>Confirm Disable</template>
         <template #text>
           Are you sure you wish to disable
-          <strong>Placeholder form module name goes here</strong
+          <strong>{{ pluginName }}</strong
           >? This form module will be disabled for all form designers.
           It will still be available for reviewers and submitters.
         </template>
@@ -48,6 +48,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { mapFields } from 'vuex-map-fields';
 
 export default {
   name: 'ManageFormModuleActions',
@@ -58,9 +59,9 @@ export default {
   },
   computed: {
     ...mapGetters('formModule', ['formModule']),
-    canDisableFormModule() {
-      return true;
-    },
+    ...mapFields('formModule', [
+      'formModule.pluginName',
+    ]),
   },
   methods: {
     ...mapActions('formModule', ['fetchFormModule', 'toggleFormModule']),
