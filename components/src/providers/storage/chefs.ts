@@ -3,11 +3,19 @@ import NativePromise from 'native-promise-only';
 
 const chefs = (formio) => {
   const addHeaders = (xhr, options) => {
-    if (options && options.headers) {
-      Object.keys(options.headers).forEach(k => {
-        const v = options.headers[k];
-        xhr.setRequestHeader(k, v);
-      });
+    if (options) {
+      if (options.headers) {
+        Object.keys(options.headers).forEach(k => {
+          const v = options.headers[k];
+          xhr.setRequestHeader(k, v);
+        });
+      }
+
+      // Allow manual setting of any supplied headers above, but need to get the latest
+      // token from the containing app to deal with expiries and override auth
+      if (options.tokenFromChefs) {
+        xhr.setRequestHeader('Authorization', options.tokenFromChefs())
+      }
     }
   };
 
@@ -74,12 +82,15 @@ const chefs = (formio) => {
         xhr.setRequestHeader('x-jwt-token', token);
       }
 
-      const headers = {
-        Authorization: options.tokenFromChefs()
-      };
-      options.headers = headers;
       addHeaders(xhr, options);
 
+      //Overrides previous request props
+      if (options) {
+        const parsedOptions = typeof options === 'string' ? JSON.parse(options) : options;
+        for (const prop in parsedOptions) {
+          xhr[prop] = parsedOptions[prop];
+        }
+      }
       xhr.send(json ? data : fd);
     });
   };
