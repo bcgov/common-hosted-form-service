@@ -13,8 +13,8 @@ const chefs = (formio) => {
 
       // Allow manual setting of any supplied headers above, but need to get the latest
       // token from the containing app to deal with expiries and override auth
-      if (options.tokenFromChefs) {
-        xhr.setRequestHeader('Authorization', options.tokenFromChefs())
+      if (options.chefsToken) {
+        xhr.setRequestHeader('Authorization', options.chefsToken())
       }
     }
   };
