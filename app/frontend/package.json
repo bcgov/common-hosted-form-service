@@ -43,7 +43,6 @@
     "vue-formio": "^4.0.7",
     "vue-json-pretty": "^1.8.3",
     "vue-router": "^3.5.3",
-    "vue-template-compiler": "^2.7.2",
     "vuetify": "^2.6.7",
     "vuex": "^3.6.0",
     "vuex-map-fields": "^1.4.1"
@@ -67,6 +66,7 @@
     "sass": ">= 1.32.13 < 1.33.0",
     "sass-loader": ">= 10.2.0 < 11.0.0",
     "vue-cli-plugin-vuetify": "^2.5.1",
+    "vue-template-compiler": "^2.7.2",
     "vuetify-loader": "^1.7.3"
   }
 }
