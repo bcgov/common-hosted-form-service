@@ -152,7 +152,7 @@ export default {
         componentOptions: {
           simplefile: {
             config: Vue.prototype.$config,
-            tokenFromChefs: this.getCurrentAuthHeader
+            chefsToken: this.getCurrentAuthHeader
           },
         },
         evalContext: {
