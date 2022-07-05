@@ -74,15 +74,12 @@ const chefs = (formio) => {
         xhr.setRequestHeader('x-jwt-token', token);
       }
 
+      const headers = {
+        Authorization: options.tokenFromChefs()
+      };
+      options.headers = headers;
       addHeaders(xhr, options);
 
-      //Overrides previous request props
-      if (options) {
-        const parsedOptions = typeof options === 'string' ? JSON.parse(options) : options;
-        for (const prop in parsedOptions) {
-          xhr[prop] = parsedOptions[prop];
-        }
-      }
       xhr.send(json ? data : fd);
     });
   };
@@ -91,9 +88,9 @@ const chefs = (formio) => {
     title: 'CHEFS',
     name: 'chefs',
     uploadFile(file, name, dir, progressCallback, url, options, fileKey) {
-      const uploadRequest = function(form) {
+      const uploadRequest = function (form) {
         return xhrRequest(url, name, {}, {
-          [fileKey]:file,
+          [fileKey]: file,
           name,
           dir
         }, options, progressCallback).then(response => {
@@ -104,7 +101,7 @@ const chefs = (formio) => {
             url: `${url}/${response.data.id}`,
             size: response.data.size,
             type: response.data.mimetype,
-            data: {id: response.data.id}
+            data: { id: response.data.id }
           };
         });
       };
@@ -146,9 +143,9 @@ const chefs = (formio) => {
           // IE/EDGE doesn't send all response headers
           if (xhr.getResponseHeader('content-disposition')) {
             const contentDisposition = xhr.getResponseHeader('content-disposition');
-            fileName = contentDisposition.substring(contentDisposition.indexOf('=')+1);
+            fileName = contentDisposition.substring(contentDisposition.indexOf('=') + 1);
           } else {
-            fileName = 'unnamed.' + contentType.substring(contentType.indexOf('/')+1);
+            fileName = 'unnamed.' + contentType.substring(contentType.indexOf('/') + 1);
           }
 
           const url = window.URL.createObjectURL(blob);
