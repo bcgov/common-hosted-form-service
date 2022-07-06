@@ -1,5 +1,6 @@
 import { appAxios } from '@/services/interceptors';
 import { ApiRoutes } from '@/utils/constants';
+import axios from 'axios';
 
 export default {
   //
@@ -128,7 +129,8 @@ export default {
    * @param {Object} imageData component name and component image encoded into base64
    * @returns {Promise} An axios response
    */
-  async uploadImage(imageData){
-    return await appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/upload`,imageData);
+  async uploadImage(imageData) {
+    //return appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/upload`,imageData);
+    await axios.post('http://localhost:3000/api/v1/object/upload/singlepart',imageData);
   }
 };
