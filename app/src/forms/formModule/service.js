@@ -88,7 +88,7 @@ const service = {
   toggleFormModule: async (formModuleId, params = {}, currentUser) => {
     let trx;
     try {
-      const active = params.active ? !falsey(params.active) : false;
+      const active = !falsey(params.active);
       const obj = await service.readFormModule(formModuleId);
       trx = await FormModule.startTransaction();
 

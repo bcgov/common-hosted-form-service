@@ -126,11 +126,9 @@ export default {
           this.log.push(`Importing ${uri}`);
           importExternalFile(document, uri, () => {
             this.log.push(`Imported ${uri}`);
-            if (uri.split('.').pop().toLowerCase() !== 'js') {
-              this.objectsLoaded++;
-              return;
+            if (uri.split('.').pop().toLowerCase() === 'js') {
+              this.updateBuilder();
             }
-            this.updateBuilder();
             this.objectsLoaded++;
           });
         }
@@ -143,49 +141,59 @@ export default {
     },
     updateBuilder() {
       this.resetBuilder();
-      this.formModuleList.forEach((formModule) => {
-        if (this.formDraftId || (!this.formId && !this.formDraftId && !this.formVersionId)) {
-          let idps = formModule.identityProviders.map((fm) => fm.idp);
-          if (!idps.includes(this.user.idp)) return;
-        }
-
-        formModule.formModuleVersions.forEach((formModuleVersion) => {
-          let importData = JSON.parse(JSON.stringify(formModuleVersion.importData));
-          if ('builderCategories' in importData.components) {
-            // Prep any builder categories, if the module creates a category, give it a components object
-            for (let [key, value] of Object.entries(importData.components['builderCategories'])) {
-              // If the builder category exists and hasn't been initialized yet
-              if (key in this.builder && typeof this.builder[key] === 'object') {
-                // Map the modules builder category to update it
-                Object.keys(value).map((entryKey) => {
-                  this.builder[key][entryKey] = value[entryKey];
-                });
-              } else {
-                // This is a new builder category
-                this.builder[key] = value;
-              }
-              if (typeof this.builder[key] === 'object' && !('components' in this.builder[key])) {
-                this.builder[key]['components'] = {};
-              }
+      if (this.formModuleList.length > 0) {
+        this.formModuleList.forEach((formModule) => {
+          if (this.formDraftId || (!this.formId && !this.formDraftId && !this.formVersionId)) {
+            let idps = formModule.identityProviders.map((fm) => fm.idp);
+            if (!idps.includes(this.user.idp)) return;
+          }
+          formModule.formModuleVersions.forEach((formModuleVersion) => {
+            this.parseFormModuleVersion(formModuleVersion);
+          });
+        });
+      } else if (this.formModuleVersionList.length > 0) {
+        this.formModuleVersionList.forEach((formModuleVersion) => {
+          this.parseFormModuleVersion(formModuleVersion.formModuleVersion);
+        });
+      }
+      this.setBuilder(this.builder);
+    },
+    parseFormModuleVersion(fmv) {
+      let importData = JSON.parse(JSON.stringify(fmv.importData));
+      if ('components' in importData) {
+        if ('builderCategories' in importData.components) {
+          // Prep any builder categories, if the module creates a category, give it a components object
+          for (let [key, value] of Object.entries(importData.components['builderCategories'])) {
+            // If the builder category exists and hasn't been initialized yet
+            if (key in this.builder && typeof this.builder[key] === 'object') {
+              // Map the modules builder category to update it
+              Object.keys(value).map((entryKey) => {
+                this.builder[key][entryKey] = value[entryKey];
+              });
+            } else {
+              // This is a new builder category
+              this.builder[key] = value;
+            }
+            if (typeof this.builder[key] === 'object' && !('components' in this.builder[key])) {
+              this.builder[key]['components'] = {};
             }
           }
-          
-          for (const [categoryKey, categoryValue] of Object.entries(importData.components.builder)) {
-            for (const [componentKey, componentValue] of Object.entries(categoryValue)) {
-              if (typeof componentValue === 'boolean') {
-                this.registerComponent(categoryKey.toString(), componentKey.toString(), componentValue);
-              } else {
-                if ('userType' in importData.components.builder[categoryKey][componentKey]) {
-                  if ('blacklist' in importData.components.builder[categoryKey][componentKey]['userType']) {
-                    this.registerComponent(categoryKey.toString(), componentKey.toString(), !importData.components.builder[categoryKey][componentKey]['userType']['blacklist'].includes(this.userType)); 
-                  }
+        }
+        
+        for (const [categoryKey, categoryValue] of Object.entries(importData.components.builder)) {
+          for (const [componentKey, componentValue] of Object.entries(categoryValue)) {
+            if (typeof componentValue === 'boolean') {
+              this.registerComponent(categoryKey.toString(), componentKey.toString(), componentValue);
+            } else {
+              if ('userType' in importData.components.builder[categoryKey][componentKey]) {
+                if ('blacklist' in importData.components.builder[categoryKey][componentKey]['userType']) {
+                  this.registerComponent(categoryKey.toString(), componentKey.toString(), !importData.components.builder[categoryKey][componentKey]['userType']['blacklist'].includes(this.userType)); 
                 }
               }
             }
           }
-        });
-      });
-      this.setBuilder(this.builder);
+        }
+      }
     },
     registerComponent(category, component, value) {
       return this.builder[category]['components'][component] = value;

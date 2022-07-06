@@ -73,7 +73,7 @@ describe('form module CRUD', () => {
     }],
   };
   const formModuleToggle = {
-    active: false,
+    active: true,
   };
 
   it('should throw when invalid options are provided', async () => {
