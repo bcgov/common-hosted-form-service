@@ -70,16 +70,20 @@ export default {
         }
       }
     },
-    async loadModulesWithFormVersion(formVersionId) {
-      await this.getFormVersionFormModuleVersions({ formId: this.formId, formVersionId: formVersionId });
-      for (const fmv of this.formModuleVersionList) {
-        await this.fetchFormModuleVersion({ formModuleId: fmv.formModuleVersion.formModuleId, formModuleVersionId: fmv.formModuleVersionId });
-        for (const uri of this.formModuleVersion.externalUris) {
-          if (typeof uri !== 'string')
-            this.formModuleUris.push(uri.uri);
-          else
-            this.formModuleUris.push(uri);
+    async loadModulesWithFormVersion(formId, formVersionId) {
+      await this.getFormVersionFormModuleVersions({ formId: formId, formVersionId: formVersionId });
+      if (this.formModuleVersionList && Array.isArray(this.formModuleVersionList) && this.formModuleVersionList.length > 0) {
+        for (const fmv of this.formModuleVersionList) {
+          await this.fetchFormModuleVersion({ formModuleId: fmv.formModuleVersion.formModuleId, formModuleVersionId: fmv.formModuleVersionId });
+          for (const uri of this.formModuleVersion.externalUris) {
+            if (typeof uri !== 'string')
+              this.formModuleUris.push(uri.uri);
+            else
+              this.formModuleUris.push(uri);
+          }
         }
+      } else {
+        await this.loadDefaultModules();
       }
     },
     async loadModules() {
@@ -90,7 +94,7 @@ export default {
           let versionId = '';
           if (this.formVersionId) {
             versionId = this.formVersionId;
-            await this.loadModulesWithFormVersion(versionId);
+            await this.loadModulesWithFormVersion(this.formId, versionId);
           } else if (this.formDraftId) {
             await this.loadDefaultModules();
           } else {
@@ -106,7 +110,7 @@ export default {
               );
             }
             versionId = response.data.versions[0].id;
-            await this.loadModulesWithFormVersion(versionId);
+            await this.loadModulesWithFormVersion(this.formId, versionId);
           }
         } else if (this.submissionId) {
           const response = await formService.getSubmission(this.submissionId);
@@ -117,12 +121,13 @@ export default {
               `No published version found in response. FormID: ${this.formId}`
             );
           }
-          await this.loadModulesWithFormVersion(response.data.version.id);
+          await this.loadModulesWithFormVersion(response.data.form.id, response.data.version.id);
         } else {
           await this.loadDefaultModules();
         }
         
-        for (const uri of this.formModuleUris) {
+        var uris = JSON.parse(JSON.stringify(this.formModuleUris));
+        for (const uri of uris) {
           this.log.push(`Importing ${uri}`);
           importExternalFile(document, uri, () => {
             this.log.push(`Imported ${uri}`);

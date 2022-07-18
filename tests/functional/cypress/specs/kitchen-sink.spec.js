@@ -6,6 +6,9 @@ const formId = '897e2ca1-d81c-4079-a135-63b930f98590';
 const submissionId = '3d2d6833-6e78-43e3-b332-6e66b6b8879c';
 const versionId = 'e7b20c83-416b-479d-9ff8-65fcd72a2bff';
 
+const formModuleId = 'bbaf9835-87ea-4a0e-9681-1d4355ad70b7';
+const formModuleVersionId = '44826149-17e4-403e-8b95-8017b7d14de0';
+
 const data = {
   textFieldNested1: "textFieldNested1",
   textFieldNested2: "textFieldNested2",
@@ -130,7 +133,8 @@ function helperFormFields() {
   // dateTime1
   cy.get('#eb683f').contains('label', 'Date / Time 1');
   cy.get('#eb683f .form-control.input').click();
-  cy.get('.flatpickr-day.today').click();
+  cy.wait(200);
+  cy.get('span.flatpickr-day.today').click();
 
   // day1
   cy.get('#e619db6').contains('label', 'Day 1');
@@ -155,6 +159,14 @@ describe('Kitchen Sink Example Form', () => {
       fixture: 'kitchensink/formVersion.json'
     }).as('formVersion');
 
+    // Form Modules
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/${formId}/versions/${versionId}/formModuleVersions`, {
+      fixture: 'kitchensink/formModuleVersions.json'
+    }).as('formModuleVersions');
+    cy.intercept('GET', `/${depEnv}/api/v1/form_modules/${formModuleId}/version/${formModuleVersionId}`, {
+      fixture: 'kitchensink/formModuleVersion.json'
+    }).as('formModuleVersion');
+
     // Form Submit and Success
     cy.intercept('POST', `/${depEnv}/api/v1/forms/${formId}/versions/${versionId}/submissions`, {
       statusCode: 200,
@@ -176,7 +188,9 @@ describe('Kitchen Sink Example Form', () => {
 
     // Visit Page
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
-    cy.wait(['@formOptions', '@formVersion']);
+    cy.wait(['@formOptions', '@formVersion', '@formModuleVersions', '@formModuleVersion']);
+    // Not sure how to wait for the vue emitted events yet
+    cy.wait(1000);
     cy.location('pathname').should('eq', `/${depEnv}/form/submit`);
     cy.location('search').should('eq', `?f=${formId}`);
   });
@@ -212,7 +226,8 @@ describe('Kitchen Sink Example Form', () => {
     });
 
     // Success
-    cy.wait('@submission');
+    cy.wait(['@formModuleVersions', '@formModuleVersion', '@submission']);
+    cy.wait(1000);
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.location('search').should('eq', `?s=${submissionId}`);
     cy.contains('h1', 'Your form has been submitted successfully');
