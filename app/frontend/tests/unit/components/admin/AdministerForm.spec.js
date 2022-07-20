@@ -7,11 +7,13 @@ localVue.use(Vuex);
 
 describe('AdministerForm.vue', () => {
   const mockAdminGetter = jest.fn();
+  const mockRolesGetter = jest.fn();
   const mockApiKey = jest.fn();
   let store;
   const actions = {
     readForm: jest.fn(),
     restoreForm: jest.fn(),
+    readRoles: jest.fn(),
     readApiDetails: jest.fn(),
   };
 
@@ -22,7 +24,8 @@ describe('AdministerForm.vue', () => {
           namespaced: true,
           getters: {
             apiKey: mockApiKey,
-            form: mockAdminGetter
+            form: mockAdminGetter,
+            roles: mockRolesGetter,
           },
           actions: actions
         }
@@ -32,12 +35,15 @@ describe('AdministerForm.vue', () => {
 
   afterEach(() => {
     mockAdminGetter.mockReset();
+    mockRolesGetter.mockReset();
     actions.readForm.mockReset();
+    actions.readRoles.mockReset();
     actions.restoreForm.mockReset();
   });
 
   it('renders ', async () => {
     mockAdminGetter.mockReturnValue({ name: 'tehForm' });
+    mockRolesGetter.mockReturnValue(['admin']);
     const wrapper = shallowMount(AdministerForm, {
       localVue,
       store,

@@ -66,7 +66,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 
 export default {
-  name: 'FormModulesTable',
+  name: 'AdminFormModulesTable',
   data() {
     return {
       activeOnly: false,

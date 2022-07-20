@@ -9,6 +9,10 @@ describe('vuex store', () => {
     expect(store.hasModule('form')).toBeTruthy();
   });
 
+  it('loads form module immediately', () => {
+    expect(store.hasModule('formModule')).toBeTruthy();
+  });
+
   it('loads notifications module immediately', () => {
     expect(store.hasModule('notifications')).toBeTruthy();
   });

@@ -10,7 +10,7 @@
             solid
             outlined
             label="Plugin Name"
-            data-test="text-name"
+            name="pluginName"
             v-model="pluginName"
             :rules="pluginNameRules"
           />

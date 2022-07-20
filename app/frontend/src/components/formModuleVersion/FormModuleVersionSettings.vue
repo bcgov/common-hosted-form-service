@@ -5,6 +5,7 @@
         <BasePanel class="fill-height">
           <template #title>Import Data (JSON)</template>
           <v-textarea
+            name="importData"
             v-model="importData"
             no-resize
           >
