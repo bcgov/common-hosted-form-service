@@ -92,12 +92,12 @@ export default {
   computed: {
     ...mapGetters('formModule', ['formModule', 'formModuleVersionList']),
     versionList() {
-      if (!this.formModule || (this.formModule && !this.formModule.formModuleVersions)) return [];
-      this.formModule.formModuleVersions.map((fmv, index) => {
-        fmv.version = this.formModule.formModuleVersions.length - index; 
+      if (!this.formModuleVersionList) return [];
+      this.formModuleVersionList.map((fmv, index) => {
+        fmv.version = this.formModuleVersionList.length - index; 
         return fmv;
       });
-      return this.formModule.formModuleVersions;
+      return this.formModuleVersionList;
     }
   },
   methods: {
