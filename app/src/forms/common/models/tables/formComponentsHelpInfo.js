@@ -10,6 +10,11 @@ class FormComponentsHelpInfo extends Timestamps(Model) {
 
   static get modifiers() {
     return {
+      findByComponentName(query, value) {
+        if (value !== undefined) {
+          query.where('componentname', value);
+        }
+      },
       distinctOnComponentName(builder) {
         builder.distinctOn('componentname'); 
       },

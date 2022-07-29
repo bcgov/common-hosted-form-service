@@ -1,9 +1,9 @@
 <template>
   <v-tabs>
-    <v-tab>Forms</v-tab>
+    <v-tab >Formss</v-tab>
     <v-tab>Users</v-tab>
     <v-tab>Developer</v-tab>
-    <v-tab>Info Links</v-tab>
+    <v-tab data-cy="infoLinks">Info Links</v-tab>
 
     <v-tab-item> <AdminFormsTable /> </v-tab-item>
     <v-tab-item> <AdminUsersTable /> </v-tab-item>

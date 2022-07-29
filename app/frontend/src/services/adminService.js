@@ -1,6 +1,6 @@
 import { appAxios } from '@/services/interceptors';
 import { ApiRoutes } from '@/utils/constants';
-import axios from 'axios';
+//import axios from 'axios';
 
 export default {
   //
@@ -17,6 +17,7 @@ export default {
     return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
 
+  
   /**
    * @function listForms
    * Read all the forms in the DB
@@ -125,12 +126,28 @@ export default {
 
   /**
    * @function uploadImage
-   * get signed image upload url
+   * upload image to storage facility (e.g. s3)
    * @param {Object} imageData component name and component image encoded into base64
    * @returns {Promise} An axios response
    */
   async uploadImage(imageData) {
-    //return appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/upload`,imageData);
-    await axios.post('http://localhost:3000/api/v1/object/upload/singlepart',imageData);
+    return appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/upload`,imageData);
+    
+    //return await axios.post('http://localhost:3000/api/v1/object/singleUpload/1d295570-2ad7-491e-a23b-c7eac158fe72',
+    //  {'folder':'commoncomponenthelplink',imageData:{...imageData}});
+  },
+
+  /**
+   * @function getPresignedUrl
+   * get signed image upload url
+   * @param {Object} imageName component name and component image encoded into base64
+   * @returns {Promise} An axios response
+  */
+  async getPresignedUrl(imageName) {
+    return appAxios().get(`${ApiRoutes.ADMIN}/formComponents/helpInfo/signedUrl/${imageName}`);
+
+    //return await axios.get('http://localhost:3000/api/v1/object/signedUrl/1d295570-2ad7-491e-a23b-c7eac158fe72',
+    //  { params: { imageName: imageName,folder:'commoncomponenthelplink'  } });
   }
 };
+

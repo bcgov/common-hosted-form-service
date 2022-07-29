@@ -20,13 +20,13 @@
       <template #[`item.actions`]="{ item,index }">
         <div class="d-flex flex-row justify-end align-center actions">
           <div>
-            <v-btn color="primary" small text @click="onOpenDialog(item.componentName)">
+            <v-btn data-cy="edit_button" color="primary" small text @click="onOpenDialog(item.componentName)" >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
               <span class="d-none d-sm-flex" style="font-size:16px;">EDIT</span>
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" text small
+            <v-btn data-cy="preview_button" color="primary" text small
                    @click="onOpenPreviewDialog(item.componentName)" 
                    :disabled="canDisabled(item.componentName)">
     
@@ -35,7 +35,7 @@
             </v-btn>
           </div>
           <div>
-            <v-btn color="primary" text small :disabled="canDisabled(item.componentName)">
+            <v-btn data-cy="status_button" color="primary" text small :disabled="canDisabled(item.componentName)">
               <v-switch small color="success" :input-value="isComponentPublish(item.componentName,index)" v-model="publish[index]" @change="onSwitchChange(item.componentName,index)"></v-switch>
               <span class="d-none d-sm-flex" style="font-size:16px;">{{ publish[index]?'PUBLISHED':'UNPUBLISHED'}}</span>
             </v-btn>

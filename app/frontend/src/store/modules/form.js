@@ -188,6 +188,7 @@ export default {
     //
     // Current User
     //
+    //
     async getFormsForCurrentUser({ commit, dispatch }) {
       try {
         // Get the forms based on the user's permissions

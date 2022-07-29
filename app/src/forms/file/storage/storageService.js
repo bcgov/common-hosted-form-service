@@ -59,6 +59,10 @@ const service = {
   },
   uploadImage: async(imageData)=> {
     return objectStorageService.uploadImage(imageData);
+  },
+
+  readSignedUrl:async(imageName)=>{
+    return objectStorageService.getSignedImageUrl(imageName);
   }
 
 };

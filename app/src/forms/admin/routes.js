@@ -73,4 +73,11 @@ routes.post('/formComponents/helpInfo/upload', async (req, res, next) => {
   await controller.uploadImage(req, res, next);
 });
 
+routes.get('/formComponents/helpInfo/signedUrl/:imageName', async (req, res, next) => {
+  await controller.getSignedImageUrl(req, res, next);
+});
+
+
+
+
 module.exports = routes;

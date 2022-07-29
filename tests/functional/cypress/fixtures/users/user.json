@@ -1,0 +1,8 @@
+{
+  "username": "test",
+  "password": "test",
+  "onLoad": "login-required",
+  "checkLoginIframe": false,
+  "pkceMethod": "S256"
+  
+}

@@ -1,6 +1,6 @@
 <template>
   <div class="mt-5">
-    <v-expansion-panels class="nrmc-expand-collapse" flat>
+    <v-expansion-panels class="nrmc-expand-collapse" flat data-cy="info_link_expansion_panels">
       <v-expansion-panel
         flat
         v-for="(groupName, index) in groupList" :key="index" 
