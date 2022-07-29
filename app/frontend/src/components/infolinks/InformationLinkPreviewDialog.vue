@@ -17,27 +17,27 @@
           </v-row>
           <v-row class="mt-6" v-if="component&&component.imageUrl">
             <v-col md="6" >
-              <div class="text">
+              <div class="text" data-cy="preview_text_field">
                 {{component&&component.description}}
               </div>
             </v-col>
             <v-col md="6" >
               <v-img
-                :lazy-src="component&&component.imageUrl"
-                :src="component&&component.imageUrl"
+                data-cy="preview_image_field"
+                :src="fcPresignedUrl"
               ></v-img>
             </v-col>
           </v-row>
           <v-row class="mt-6" v-else>
             <v-col md="12" >
-              <div class="text">
+              <div class="text" data-cy="preview_text_field">
                 {{component&&component.description}}
               </div>
             </v-col>
           </v-row>
           <v-row>
             <v-col class="d-flex flex-row align-center text-decoration-underline linkWrapper">
-              <a :href="component&&component.moreHelpInfoLink" :target="'_blank'" :class="{disabledLink:component&&component.moreHelpInfoLink===''}"> <div class="mr-1 cursor" >Learn more 
+              <a :href="component&&component.moreHelpInfoLink" class="preview_info_link_field" :target="'_blank'" :class="{disabledLink:component&&component.moreHelpInfoLink===''}"> <div class="mr-1 cursor" >Learn more 
                 <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /> </div></a>
             </v-col>
           </v-row>
@@ -52,8 +52,11 @@ import { faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark,faSquareArrowUpRight);
 
+import { mapActions,mapGetters } from 'vuex';
+
 export default {
   name:'InformationLinkPreviewDialog',
+
   data() {
     return {
       dialog: this.showDialog
@@ -64,14 +67,20 @@ export default {
     component:{ type: Object }
   },
   methods:{
+    ...mapActions('admin', ['getPresignedUrl']),
     onCloseDialog() {
       this.$emit('close-dialog');
     }
   },
-  
+  computed: {
+    ...mapGetters('admin',['fcPresignedUrl'])
+  },
   watch: {
     showDialog() {
       this.dialog = this.showDialog;
+      if(this.dialog){
+        this.getPresignedUrl(this.component.imageUrl);
+      }
     },
   },
 };

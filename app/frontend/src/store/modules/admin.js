@@ -14,7 +14,8 @@ export default {
     user: {},
     userList: [],
     fcHelpInfo:{}, // Form Component Help Information
-    fcHelpInfoImageUpload:'' // Form Component Help Information image upload url
+    fcHelpInfoImageUpload:'', // Form Component Help Information image upload url
+    fcPresignedUrl:''
   },
   getters: {
     apiKey: state => state.apiKey,
@@ -24,7 +25,8 @@ export default {
     user: state => state.user,
     userList: state => state.userList,
     fcHelpInfo: state => state.fcHelpInfo,
-    fcHelpInfoImageUpload: state=> state.fcHelpInfoImageUpload
+    fcHelpInfoImageUpload: state=> state.fcHelpInfoImageUpload,
+    fcPresignedUrl: state=> state.fcPresignedUrl
   },
   mutations: {
     SET_API_KEY(state, apiKey) {
@@ -52,7 +54,11 @@ export default {
     SET_FCHELPINFOIMAGEUPLOAD(state,fcHelpInfoImageUpload)
     {
       state.fcHelpInfoImageUpload = fcHelpInfoImageUpload;
-    }
+    },
+    SET_FCPRESIGNEDURL(state,fcPresignedUrl)
+    {
+      state.fcPresignedUrl = fcPresignedUrl;
+    },
   },
   actions: {
     //
@@ -182,6 +188,20 @@ export default {
       }
     },
 
+    async getPresignedUrl({ commit, dispatch },imageName){
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCPRESIGNEDURL',{});
+        const response = await adminService.getPresignedUrl(imageName);
+        commit('SET_FCPRESIGNEDURL',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while getting presigned url',
+          consoleError: 'Error getting presigned url',
+        }, { root: true });
+      }
+    },
+
     async updateFormComponentsHelpInfoStatus({ commit, dispatch },{componentId, publishStatus}) {
       try {
         // Get Common Components Help Information
@@ -197,10 +217,11 @@ export default {
     },
     async uploadFormComponentsHelpInfoImage({ commit,dispatch },imageData) {
       try {
+        
         commit('SET_FCHELPINFOIMAGEUPLOAD','');
         const res = await adminService.uploadImage(imageData);
         if(res){
-          commit('SET_FCHELPINFOIMAGEUPLOAD',res.data.Location);
+          commit('SET_FCHELPINFOIMAGEUPLOAD',res.data.key);
         }
       } catch(error) {
         dispatch('notifications/addNotification', {

@@ -130,23 +130,42 @@ const service = {
     let trx;
     try{
       const obj = {};
-      obj.id = uuidv4();
-      obj.componentname = data.componentName;
-      obj.morehelpinfolink = data.moreHelpInfoLink;
-      obj.imageurl = data.imageUrl;
-      obj.versions = data.version;
-      obj.groupname = data.groupName;
-      obj.description = data.description;
-      obj.publishstatus=data.status;
-      obj.createdBy = 'ADMIN';
       
       trx = await FormComponentsHelpInfo.startTransaction();
-      
-      await FormComponentsHelpInfo.query(trx).insert(obj);
-  
+
+      let result = await FormComponentsHelpInfo.query(trx).modify('findByComponentName');
+
+      let id  = result.length? result[0].id : uuidv4();
+
+      if(result.length) {
+        await FormComponentsHelpInfo.query(trx).patchAndFetchById(id, {
+          componentname:data.componentName,
+          morehelpinfolink: data.moreHelpInfoLink,
+          imageurl:data.imageUrl,
+          versions:data.version,
+          groupname:data.groupName,
+          description:data.description,
+          publishstatus:data.status,
+          createdBy:'ADMIN'
+        });
+       
+      }
+     
+      else { 
+        obj.id = id;
+        obj.componentname = data.componentName;
+        obj.morehelpinfolink = data.moreHelpInfoLink;
+        obj.imageurl = data.imageUrl;
+        obj.versions = data.version;
+        obj.groupname = data.groupName;
+        obj.description = data.description;
+        obj.publishstatus=data.status;
+        obj.createdBy = 'ADMIN';
+        await FormComponentsHelpInfo.query(trx).insert(obj);
+      }
       await trx.commit();
       
-      return service.readFormComponentsHelpInfo(obj.id);
+      return service.readFormComponentsHelpInfo(id);
       
     } catch(err){
      

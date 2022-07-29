@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" class="mb-5">
+  <v-row justify="center" class="mb-5" >
     <v-dialog
       v-model="dialog"
       persistent
@@ -33,6 +33,7 @@
                     flat
                     :disabled="isLinkEnabled"
                     :value="moreHelpInfoLink"
+                    data-cy="more_help_info_link_text_field"
                     class="text-style"
                     color="#1A5A96"
                   >
@@ -40,6 +41,7 @@
                   </v-text-field>
                 </v-col>
                 <v-checkbox
+                  class="checkbox_data_cy"
                   @click="isLinkEnabled=!isLinkEnabled"
                 >
                   <template v-slot:label>
@@ -70,6 +72,7 @@
                 outlined
                 hide-details
                 clearable
+                data-cy="more_help_info_link_text_area"
                 value="description"
                 class="text-style"
               ></v-textarea>
@@ -87,6 +90,7 @@
                     counter
                     accept="image/*"
                     label="Image Upload:"
+                    class="file_upload_data-cy"
                     @change="selectImage"
                   ></v-file-input>
                 </v-col>
@@ -100,13 +104,15 @@
                   <v-btn
                     class="mr-4"
                     @click="submit"
-                    :style="saveButtonWrapper"  
+                    :style="saveButtonWrapper" 
+                    data-cy="more_help_info_link_save_button"
                   >
                     Save
                   </v-btn>
                   <v-btn
                     @click="onCloseDialog"
                     :style="cancelButtonWrapper"
+                    data-cy="more_help_info_link_cancel_button"
                   >
                     Cancel
                   </v-btn>
@@ -197,7 +203,7 @@ export default {
     },
 
     submit() {
-      this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload?this.fcHelpInfoImageUpload:this.component.imageUrl,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
+      this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload?this.fcHelpInfoImageUpload:this.component&&this.component.imageUrl,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
         groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false});
       this.onCloseDialog();              
     },

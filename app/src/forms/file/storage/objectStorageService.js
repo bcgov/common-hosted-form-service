@@ -227,6 +227,21 @@ class ObjectStorageService {
     }
   }
 
+  async getSignedImageUrl(imageName) {
+    try {
+      const params = {
+        Bucket: this._bucket,
+        Key: this._key+''+imageName,
+        Expires: 3600
+      };
+
+      return await this._s3.getSignedUrl('getObject', params);
+
+    } catch (e) {
+      errorToProblem(SERVICE, e);
+    }  
+  }
+
 }
 
 const endpoint = config.get('files.objectStorage.endpoint');
