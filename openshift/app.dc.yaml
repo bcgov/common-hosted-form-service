@@ -109,7 +109,7 @@ objects:
         spec:
           containers:
             - name: app
-              image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}"
+              image: "${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${REPO_NAME}:${IMAGE_TAG}"
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:
@@ -266,15 +266,15 @@ objects:
       test: false
       triggers:
         - type: ConfigChange
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - app
-            from:
-              kind: ImageStreamTag
-              name: "${REPO_NAME}-app:${JOB_NAME}"
-              namespace: "${NAMESPACE}"
-          type: ImageChange
+        # - imageChangeParams:
+        #     automatic: true
+        #     containerNames:
+        #       - app
+        #     from:
+        #       kind: ImageStreamTag
+        #       name: "${REPO_NAME}-app:${JOB_NAME}"
+        #       namespace: "${NAMESPACE}"
+        #   type: ImageChange
   #- apiVersion: v1
   #  kind: PersistentVolumeClaim
   #  metadata:
@@ -336,10 +336,20 @@ parameters:
     displayName: Job Branch Name
     required: true
   - name: IMAGE_REGISTRY
-    description: The base OpenShift docker registry
+    description: The container registry
     displayName: Docker Image Registry
     required: true
-    value: image-registry.openshift-image-registry.svc:5000
+    value: ghcr.io
+  - name: IMAGE_NAMESPACE
+    description: The image namespace
+    displayName: Docker Image Namespace
+    required: true
+    value: bcgov
+  - name: IMAGE_TAG
+    description: The specific image tag to deploy
+    displayName: Docker Image Tag
+    required: true
+    value: latest
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace
