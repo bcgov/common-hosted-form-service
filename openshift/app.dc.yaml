@@ -71,7 +71,7 @@ objects:
         rollingParams:
           timeoutSeconds: 600
           pre:
-            failurePolicy: Abort
+            failurePolicy: Retry
             execNewPod:
               command:
                 - npm
