@@ -1,14 +1,19 @@
 ---
 name: Tests
+
 on:
   - push
   - pull_request
+
 jobs:
   test-app:
+    name: Unit Tests (App)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: app
+    outputs:
+      HAS_CC_SECRETS: ${{ steps.check-secrets.outputs.HAS_CC_SECRETS }}
     timeout-minutes: 10
     strategy:
       fail-fast: true
@@ -19,9 +24,11 @@ jobs:
           - '16.x'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
+      - name: Check CodeClimate Secrets
+        id: check-secrets
+        run: |
+          echo "::set-output name=HAS_CC_SECRETS::${{ secrets.CC_TEST_REPORTER_ID != '' }}"
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -46,17 +53,31 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.node-version == '14.x'
+        if: matrix.node-version == '16.x'
         uses: actions/upload-artifact@v2
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
           retention-days: 1
+      - name: Monitor Coverage
+        if: "matrix.node-version == '16.x' && ! github.event.pull_request.head.repo.fork"
+        uses: slavcodev/coverage-monitor-action@v1
+        with:
+          comment_mode: update
+          comment_footer: false
+          comment_context: Coverage Report (Application)
+          coverage_path: app/coverage/clover.xml
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          threshold_alert: 50
+          threshold_warning: 80
   test-frontend:
+    name: Unit Tests (Frontend)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: app/frontend
+    outputs:
+      HAS_CC_SECRETS: ${{ steps.check-secrets.outputs.HAS_CC_SECRETS }}
     timeout-minutes: 10
     strategy:
       fail-fast: true
@@ -67,9 +88,7 @@ jobs:
           - '16.x'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -94,37 +113,37 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.node-version == '14.x'
+        if: matrix.node-version == '16.x'
         uses: actions/upload-artifact@v2
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
           retention-days: 1
+      - name: Monitor Coverage
+        if: "matrix.node-version == '16.x' && ! github.event.pull_request.head.repo.fork"
+        uses: slavcodev/coverage-monitor-action@v1
+        with:
+          comment_mode: update
+          comment_footer: false
+          comment_context: Coverage Report (Frontend)
+          coverage_path: app/frontend/coverage/clover.xml
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          threshold_alert: 50
+          threshold_warning: 80
   test-coverage:
+    name: Publish to Code Climate
     needs:
       - test-app
       - test-frontend
+    if: needs.test-app.outputs.HAS_CC_SECRETS == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check Workflow Secrets
-        id: check-secrets
-        run: |
-          unset HAS_SECRETS
-          if [ -n "$CC_TEST_REPORTER_ID" ]; then HAS_SECRETS='true'; fi
-          echo ::set-output name=HAS_SECRETS::${HAS_SECRETS}
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       - name: Checkout Repository
-        if: steps.check-secrets.outputs.HAS_SECRETS
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
       - name: Restore Coverage Results
-        if: steps.check-secrets.outputs.HAS_SECRETS
         uses: actions/download-artifact@v2
       - name: Publish code coverage
-        if: steps.check-secrets.outputs.HAS_SECRETS
         uses: paambaati/codeclimate-action@v2.7.5
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
