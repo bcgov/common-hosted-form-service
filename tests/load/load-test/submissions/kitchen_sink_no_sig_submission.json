@@ -1,0 +1,154 @@
+{
+  "draft": false,
+  "submission": {
+    "data": {
+      "textField": "one",
+      "textArea": "two",
+      "password": "four",
+      "checkbox": true,
+      "selectBoxes": {
+        "1": true,
+        "2": false
+      },
+      "select": 2,
+      "radio": 1,
+      "submit1": false,
+      "email": "em@il.com",
+      "url": "https://url.com",
+      "phoneNumber": "(250) 666-7890",
+      "tags": "A,B,C",
+      "address": {
+        "place_id": 272596089,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 15744045,
+        "boundingbox": [
+          "44.344276060855",
+          "44.344376060855",
+          "-106.72233700275",
+          "-106.72223700275"
+        ],
+        "lat": "44.344326060854634",
+        "lon": "-106.72228700275434",
+        "display_name": "1225, Fort Street, Buffalo, Johnson County, Wyoming, 82834, United States of America",
+        "class": "place",
+        "type": "house",
+        "importance": 0.31100000000000005,
+        "address": {
+          "house_number": "1225",
+          "road": "Fort Street",
+          "town": "Buffalo",
+          "county": "Johnson County",
+          "state": "Wyoming",
+          "postcode": "82834",
+          "country": "United States of America",
+          "country_code": "us"
+        }
+      },
+      "dateTime": "2020-10-21T13:01:00-07:00",
+      "day": "01/01/2010",
+      "time": "12:22:00",
+      "registeredBusinessName": "SG LOTTERY",
+      "survey": {
+        "1": "4",
+        "2": "5",
+        "3": "6"
+      },
+      "hidden": "",
+      "container": {},
+      "dataMap": {},
+      "dataGrid": [
+        {}
+      ],
+      "editGrid": [],
+      "tree": {},
+      "submit": true,
+      "number": 3,
+      "currency": 1000000000
+    },
+    "metadata": {
+      "timezone": "America/Vancouver",
+      "offset": -420,
+      "origin": "https://chefs-dev.apps.silver.devops.gov.bc.ca",
+      "referrer": "",
+      "browserName": "Netscape",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
+      "pathName": "/app/form/submit",
+      "onLine": true
+    },
+    "state": "submitted",
+    "component": {
+      "id": "ejrfg6f",
+      "key": "submit",
+      "size": "md",
+      "type": "button",
+      "block": false,
+      "input": true,
+      "label": "Submit",
+      "theme": "primary",
+      "action": "submit",
+      "hidden": false,
+      "prefix": "",
+      "suffix": "",
+      "unique": false,
+      "widget": {
+        "type": "input"
+      },
+      "dbIndex": false,
+      "overlay": {
+        "top": "",
+        "left": "",
+        "style": "",
+        "width": "",
+        "height": ""
+      },
+      "tooltip": "",
+      "disabled": false,
+      "leftIcon": "",
+      "multiple": false,
+      "redrawOn": "",
+      "tabindex": "",
+      "validate": {
+        "custom": "",
+        "unique": false,
+        "multiple": false,
+        "required": false,
+        "customPrivate": false,
+        "strictDateValidation": false
+      },
+      "autofocus": false,
+      "encrypted": false,
+      "hideLabel": false,
+      "modalEdit": false,
+      "protected": false,
+      "refreshOn": "",
+      "rightIcon": "",
+      "tableView": false,
+      "attributes": {},
+      "errorLabel": "",
+      "persistent": false,
+      "properties": {},
+      "validateOn": "change",
+      "clearOnHide": true,
+      "conditional": {
+        "eq": "",
+        "show": null,
+        "when": null
+      },
+      "customClass": "",
+      "description": "",
+      "placeholder": "",
+      "defaultValue": null,
+      "dataGridLabel": true,
+      "labelPosition": "top",
+      "showCharCount": false,
+      "showWordCount": false,
+      "calculateValue": "",
+      "calculateServer": false,
+      "disableOnInvalid": true,
+      "allowMultipleMasks": false,
+      "customDefaultValue": "",
+      "allowCalculateOverride": false
+    }
+  }
+}

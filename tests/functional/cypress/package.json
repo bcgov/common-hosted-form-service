@@ -1,0 +1,28 @@
+{
+  "name": "chefs-cypress",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cypress functional test suite for CHEFS",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf **/screenshots **/videos",
+    "purge": "rm -rf node_modules",
+    "test": "cypress run --headless",
+    "test:allbrowsers": "npm run test:chrome && npm run test:edge && npm run test:firefox",
+    "test:chrome": "npm run test -- --browser chrome",
+    "test:dev": "cypress open",
+    "test:edge": "npm run test -- --browser edge",
+    "test:firefox": "npm run test -- --browser firefox"
+  },
+  "keywords": [
+    "chefs",
+    "cypress"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cypress": "^9.1.0",
+    "date-fns": "^2.26.0",
+    "har-validator": "^5.1.5"
+  }
+}

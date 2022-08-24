@@ -1,0 +1,56 @@
+# Editor directories and files
+.DS_Store
+.gradle
+.nyc_output
+.scannerwork
+build
+coverage
+dist
+**/src/formio
+**/cypress/**/screenshots
+**/cypress/**/videos
+node_modules
+# Ignore only top-level package-lock.json
+/package-lock.json
+
+# local env files
+local.*
+local-*.*
+.env.local
+.env.*.local
+cypress.env.json
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.mp4
+
+# temp office files
+~$*
+*.*.bak
+
+# bddstack files
+build
+.settings
+*.log
+.DS_Store
+*.ipr
+*.iml
+*.iws
+.env
+.idea
+.project
+
+!app/frontend/.env
+!local-infrastructure/.env

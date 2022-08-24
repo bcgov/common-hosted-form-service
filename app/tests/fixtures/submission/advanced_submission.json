@@ -1,0 +1,105 @@
+{
+  "data": {
+    "day": "01/27/1981",
+    "tags": "tag1,tag2",
+    "tree": {
+      "data": {
+        "textFieldInTree1": "level1a",
+        "textFieldInTree2": "level1b"
+      },
+      "children": [
+        {
+          "data": {
+            "textFieldInTree1": "level2a",
+            "textFieldInTree2": "level2b"
+          },
+          "children": []
+        }
+      ]
+    },
+    "submit": true,
+    "address": "my address",
+    "dataMap": {
+      "key1": "my val1",
+      "key2": "my val2"
+    },
+    "hidden1": "this should be hidden",
+    "orgbook": "ABC PAINTING",
+    "select1": "select2",
+    "survey1": {
+      "question1": "yes",
+      "question2": "no",
+      "question3": "yes"
+    },
+    "currency": 500,
+    "dataGrid": [
+      {
+        "textFieldInDataGrid1": "dgtext1",
+        "textFieldInDataGrid2": "dgtext11"
+      },
+      {
+        "textFieldInDataGrid1": "dgtext2",
+        "textFieldInDataGrid2": "dgtext22"
+      }
+    ],
+    "editGrid": [
+      {
+        "textFieldInEditGrid1": "xyz1",
+        "textFieldInEditGrid2": "abc1"
+      },
+      {
+        "textFieldInEditGrid1": "xyz2",
+        "textFieldInEditGrid2": "abc2"
+      }
+    ],
+    "password": "b2qrqpQebWhmKM7",
+    "signature": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABrcAAAAyCAYAAAD2poC3AAADcUlEQVR4nO3dL2xTURTA4WfmttRDYHNAttSSbKkhmUDMk7BkcqIJhmSITk7VIBZCahBTlZN1k3VIVPUz1VcfBBl/0g4GDF7O6yc+997NOfqXm1uVMg8AAAAAAADIoGp6AAAAAAAAALgtcQsAAAAAAIA0xC0AAAAAAADSELcAAAAAAABIQ9wCAAAAAAAgDXELAAAAAACANMQtAAAAAAAA0hC3AAAAAAAASEPcAgAAAAAAIA1xCwAAAAAAgDRaFbem06uYTq8anwMAAAAAAIB/ozVx6+DgeVRVFVVVRa+31/g8AAAAAAAA3L1WxK3J5PJr2LrW7e7cydl1PYvJ5DIGg5MYjc4b3xUAAAAAAGCVtSJujccXC3GrqqrY3Hzwx2fW9SwGg5PY3Hzww5n9/nHj+wIAAAAAAKyqVsStUubR7e4sDVzD4dlvnVPXs3j9+lU8fvzozoMZAAAAAAAAf6c1cauUeRwevliIUWtrazGZXN7q/8nkMra3nyyNWtcGg5PG9wQAAAAAAFhVrYpbpcyj19tbCFL379/7ZeAajc6j0+ncGLV6vb0YDs+irmeN7wgAAAAAALCqWhe3SplHv3+8NFCNxxcL39b17Mbvq6qK3d2nMZ1eNb4TAAAAAAAALY1bpczj3bu3sb6+vhCrtrYeRr9/HKPR+dJbXtc2Njbi9PRN43sAAAAAAADwTWvjVilf3tD62ftZN+l0Ord+pwsAAAAAAID/p9Vxq5TfD1zd7k58+vSx8bkBAAAAAABY1Pq4Vco8ptOr2N9/9svbWsPhWdT1rPF5AQAAAAAAWG4l4tb3xuOLODx8Ed3uThwcPI+jo5fx4cN7UQsAAAAAACCBlYtbAAAAAAAA5CVuAQAAAAAAkIa4BQAAAAAAQBriFgAAAAAAAGmIWwAAAAAAAKQhbgEAAAAAAJCGuAUAAAAAAEAa4hYAAAAAAABpiFsAAAAAAACkIW4BAAAAAACQhrgFAAAAAABAGuIWAAAAAAAAaYhbAAAAAAAApCFuAQAAAAAAkIa4BQAAAAAAQBriFgAAAAAAAGmIWwAAAAAAAKQhbgEAAAAAAJCGuAUAAAAAAEAa4hYAAAAAAABpiFsAAAAAAACkIW4BAAAAAACQhrgFAAAAAABAGuIWAAAAAAAAaYhbAAAAAAAApCFuAQAAAAAAkMZnyjsZBuGEkCEAAAAASUVORK5CYII=",
+    "container1": {
+      "containedTextField1": "contained1",
+      "containedTextField2": "contained2"
+    },
+    "simplefile": [
+      {
+        "url": "/app/api/v1/files/b8b3b5ff-a8ca-43b0-b49d-373dba8eb39a",
+        "data": {
+          "id": "b8b3b5ff-a8ca-43b0-b49d-373dba8eb39a"
+        },
+        "size": 44,
+        "storage": "chefs",
+        "originalName": "test-file-upload.txt"
+      }
+    ],
+    "selectBoxes1": {
+      "box1": true,
+      "box2": false,
+      "box3": true
+    },
+    "textincolumn1": "a1",
+    "numberintable1": 1,
+    "numberintable2": 2,
+    "numberintable3": 3,
+    "numberintable4": 4,
+    "textinfieldset": "a2",
+    "dataGridInPanel": [
+      {
+        "textInDatagridInPanel1": "dgpanel1",
+        "textInDatagridInPanel2": "dgpanel11"
+      },
+      {
+        "textInDatagridInPanel1": "dgpanel2",
+        "textInDatagridInPanel2": "dgpanel22"
+      }
+    ]
+  },
+  "state": "submitted",
+  "metadata": {
+    "offset": -420,
+    "onLine": true,
+    "origin": "http://localhost:8081",
+    "pathName": "/app/form/submit",
+    "referrer": "",
+    "timezone": "America/Vancouver",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0",
+    "browserName": "Netscape"
+  }
+}

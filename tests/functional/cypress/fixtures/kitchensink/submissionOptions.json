@@ -1,0 +1,19 @@
+{
+  "submission": {
+    "id": "3d2d6833-6e78-43e3-b332-6e66b6b8879c",
+    "formVersionId": "897e2ca1-d81c-4079-a135-63b930f98590"
+  },
+  "version": {
+    "id": "897e2ca1-d81c-4079-a135-63b930f98590",
+    "formId": "897e2ca1-d81c-4079-a135-63b930f98590"
+  },
+  "form": {
+    "id": "897e2ca1-d81c-4079-a135-63b930f98590",
+    "name": "Kitchen Sink Simple",
+    "description": "Test complicated form with the simple design interface",
+    "idpHints": [
+      "public"
+    ],
+    "snake": "kitchen_sink_simple"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "draft": false,
+  "submission": {
+    "data": {
+      "textField": "one",
+      "textArea": "two",
+      "password": "four",
+      "checkbox": true,
+      "selectBoxes": {
+        "1": true,
+        "2": false
+      },
+      "select": 2,
+      "radio": 1,
+      "submit1": false,
+      "email": "em@il.com",
+      "url": "https://url.com",
+      "phoneNumber": "(250) 666-7890",
+      "tags": "A,B,C",
+      "address": {
+        "place_id": 272596089,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 15744045,
+        "boundingbox": [
+          "44.344276060855",
+          "44.344376060855",
+          "-106.72233700275",
+          "-106.72223700275"
+        ],
+        "lat": "44.344326060854634",
+        "lon": "-106.72228700275434",
+        "display_name": "1225, Fort Street, Buffalo, Johnson County, Wyoming, 82834, United States of America",
+        "class": "place",
+        "type": "house",
+        "importance": 0.31100000000000005,
+        "address": {
+          "house_number": "1225",
+          "road": "Fort Street",
+          "town": "Buffalo",
+          "county": "Johnson County",
+          "state": "Wyoming",
+          "postcode": "82834",
+          "country": "United States of America",
+          "country_code": "us"
+        }
+      },
+      "dateTime": "2020-10-21T13:01:00-07:00",
+      "day": "01/01/2010",
+      "time": "12:22:00",
+      "registeredBusinessName": "SG LOTTERY",
+      "survey": {
+        "1": "4",
+        "2": "5",
+        "3": "6"
+      },
+      "signature": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABIkAAACWCAYAAABafdgFAAAAAXNSR0IArs4c6QAAE99JREFUeAHt3V+IXNUZAPAzi9kUdzeailKDf6JNjJVSkyotSkEQfBBNiL6EWqmCmAeTEltaiiJYH/TBp0Za2+JD/NNYBRFRa7SBQlqhD76Z2OImKEk2bjRJRXSJG5KdzqQk2XM2fza7c+7sufsbWHa++e5859zfOSzk496bxsjIvmbwIkCAAAECBAgQIECAAAECBAgQmNUCPbP67J08AQIECBAgQIAAAQIECBAgQIDAUQFNIhuBAAECBAgQIECAAAECBAgQIEAgaBLZBAQIECBAgAABAgQIECBAgAABAppE9gABAgQIECBAgAABAgQIECBAgEDQJLIJCBAgQIAAAQIECBAgQIAAAQIENInsAQIECBAgQIAAAQIECBAgQIAAgZaAZxLZBgQIECBAgAABAgQIECBAgAABAppE9gABAgQIECBAgAABAgQIECBAgIAriewBAgQIECBAgAABAgQIECBAgACBloDbzWwDAgQIECBAgAABAgQIECBAgAABTSJ7gAABAgQIECBAgAABAgQIECBAwJVE9gABAgQIECBAgAABAgQIECBAgEBLwO1mtgEBAgQIECBAgAABAgQIECBAgIAmkT1AgAABAgQIECBAgAABAgQIECDgSiJ7gAABAgQIECBAgAABAgQIECBAoCXgdjPbgAABAgQIECBAgAABAgQIECBAQJPIHiBAgAABAgQIECBAgAABAgQIEHAlkT1AgAABAgQIECBAgAABAgQIECDQEnC7mW1AgAABAgQIECBAgAABAgQIECCgSWQPECBAgAABAgQIECBAgAABAgQIuJLIHiBAgAABAgQIECBAgAABAgQIEGgJuN3MNiBAgAABAgQIECBAgAABAgQIENAksgcIECBAgAABAgQIECBAgAABAgRcSWQPECBAgAABAgQIECBAgAABAgQItATcbmYbECBAgAABAgQIECBAgAABAgQIaBLZAwQIECBAgAABAgQIECBAgAABAq4ksgcIECBAgAABAgQIECBAgAABAgRaAm43sw0IECBAgAABAgQIECBAgAABAgQ0iewBAgQIECBAgAABAgQIECBAgAABVxLZAwQIECBAgAABAgQIECBAgAABAi0Bt5vZBgQIECBAgAABAgQIECBAgAABAppE9gABAgQIECBAgAABAgQIECBAgIAriewBAgQIECBAgAABAgQIECBAgACBloDbzWwDAgQIECBAgAABAgQIECBAgAABTSJ7gAABAgQIECBAgAABAgQIECBAwJVE9gABAgQIECBAgAABAgQIECBAgEBLwO1mtgEBAgQIECBAgAABAgQIECBAgIAmkT1AgAABAgQIECBAgAABAgQIECDgSiJ7gAABAgQIECBAgAABAgQIECBAoCXgdjPbgAABAgQIECBAgAABAgQIECBAQJPIHiBAgAABAgQIECBAgAABAgQIEHAlkT1AgAABAgQIECBAgAABAgQIECDQEnC7mW1AgAABAgQIECBAgAABAgQIECCgSWQPECBAgAABAgQIECBAgAABAgQIuJLIHiBAgAABAgQIECBAgAABAgQIEGgJuN3MNiBAgAABAgQIECBAgAABAgQIENAksgcIECBAgAABAgQIECBAgAABAgRcSWQPECBAYEYIbN++I7z44suh/duLAAECBAgQIECAAAEC3RBwu1k31I1JgACBcQIvvPCXsHTpDeH++9ce/d2OvQgQIECAAAECBAgQIFC1QGNkZF+z6kGNR4AAAQInBPr7LwrN5ok/xY1GI3z11WcnDvCOAAECBAgQIECAAAECFQi4kqgCZEMQIEDgdALjG0Tt49L4dN+VI0CAAAECBAgQIECAQKcENIk6JakOAQIEaiTQfjbSxo0vhcHB7TU6K6dCgAABAgQIECBAgMDpBDSJTqcjR4AAgVko8PzzLx59NtLq1T8Ly5bdGNpxFa/2FVTt5lT7Z2xsrIohjUGAAAECBAgQIECAwDgBzyQah+EtAQIEuiHQ13fhhGFbz4ub8FlVH3RjPocPHw6rVv00vP325pOe5muvvRxuueXmk+Z8SIAAAQIECBAgQIBAZwRcSdQZR1UIECBAYBoCmzb97ZQNonbZlStXhbVrfzGNEXyVAAECBAgQIECAAIEzCWgSnUlIngABAgSyCwwP7z3jGBs2vHDGYxxAgAABAgQIECBAgMDUBTSJpm7nmwQIECDQIYGVK5eH888/v0PVlCFAgAABAgQIECBAYCoCmkRTUfMdAgQIdFDgscceiaqlcZSsaXDRRReG9977R1izZvUpz/Cuu1adMidBgAABAgQIECBAgMD0BTSJpm+oAgECBKYlcNlll0TfT+MoWeNgwYKLw5NPPh7aD+1u/2zZ8k648cYfhoGBgfDKKxvDM8/8rsZn79QIECBAgAABAgQIdF/gnO5PwQwIECAwuwWGhvZEAGkcJWdRcP313w+bN785i87YqRIgQIAAAQIECBDoroAribrrb3QCBAiETz4ZjhTSOEpWECxe/O1olDSOkgICBAgQIECAAAECBGojoElUm6V0IgQIlCowZ05vNPU0jpIVBDt2fBSNksZRUkCAAAECBAgQIECAQG0ENIlqs5ROhACBUgWuvHJhNPU0jpIVBM1mMxoljaOkgAABAgQIECBAgACB2ghoEtVmKZ0IAQKlClxzzXeiqadxlBQQIECAAAECBAgQIEAgk4AmUSZYZQkQIDBZgZ6e+E9xGk+2juMIECBAgAABAgQIECAwHYH4XybTqeS7BAgQIDAlgeHhvdH30jhKCggQIECAAAECBAgQIJBJQJMoE6yyBAgQmKzAl19+GR2axlFSQIAAAQIECBAgQIAAgUwCmkSZYJUlQIDAZAUOHjwYHZrGUbKC4I47lkejpHGUFBAgQIAAAQIECBAgUBsBTaLaLKUTIUCgVIHe3t5o6mkcJSsI9uwZjkZJ4ygpIECAAAECBAgQIECgNgKaRLVZSidCgECpAvPnz4+mnsZRsoJg167d0ShpHCUFBAgQIECAAAECBAjURkCTqDZL6UQIEChVYP7886Kpp3GUrCDYu/fTaJQ0jpICAgQIECBAgAABAgRqI3BObc7EiRAgQKBQgSuuWBjNPI2PJT/8cDC89dY7YceOj8KuXUPhyJEj4dprvxtuvvmmsHDh5WHu3LlhdPRQOHToUGg0Qujr6w/nnTcQenvnhjlzzgnNZjMcPnwktB+M/fnnn7e+P9bKzwvz5g20fuYdG8ZvAgQIECBAgAABAgRmqYAm0SxdeKdNgMDMEWi0OzrjXmncTj377J/DmjU/H3fU/99u2fLP8NRTf5jw+dl+sG7dmvDEE7852685ngABAgQIECBAgACBGgm43axGi+lUCBAoU+DTTz+LJp7G7eT69U9Hx3Q6WL/+92HnzvhZRJ0eQz0CBAgQIECAAAECBGa2gCbRzF4fsyNAYBYIfP31aHSWaRwlMwb9/X1Hq6f/u1oaZ5yC0gQIECBAgAABAgQIdFFAk6iL+IYmQIBAW2B0NG4SpXH7mHXrHmj/yvbasOGP4YILvnm0/k03/SgaJ42jZIeCwcHtYePGl0L7txcBAgQIECBAgAABAt0R8Eyi7rgblQABAscFDh48ePx9+00atz+79967ww03/GBaD67u6ekJ7Z+TPfOoPcax13XXLQubN//9WBjacc7Xc89tDA888ODxIZ5++rfhnnt+cjz2hgABAgQIECBAgACBagQ0iapxNgoBAgROKZDeXpbGx764ZMlVof2T+/XFF19EQ6RxlOxAML5B1C7XjjWJOgCrBAECBAgQIECAAIGzFHC72VmCOZwAAQKdFjhy5HBUMo2jZAXBnj3D0ShpHCUFBAgQIECAAAECBAjURkCTqDZL6UQIEChVoNGI/xSncdXntXXrtmjINI6SAgIECBAgQIAAAQIEaiMQ/8ukNqflRAgQIFCOwMBAfzTZNI6SFQQff7wzGiWNo6SAAAECBAgQIECAAIHaCGgS1WYpnQgBAqUKHDjw32jqaRwlBQQIECBAgAABAgQIEMgkoEmUCVZZAgQITFbggw/+HR2axlGyguDii78VjZLGUbIDwaJFV0ZV0jhKCggQIECAAAECBAgQyCagSZSNVmECBAhMTmDbtv9EB6ZxlKwgWLr0e9EoaRwlOxAsXrwoqpLGUVJAgAABAgQIECBAgEA2AU2ibLQKEyBAYHIC5577jejANI6SFQRXX70kGiWNo2QHgv37D0RV0jhKCggQIECAAAECBAgQyCagSZSNVmECBAhMTmDBggXRgWkcJSsIhoaGolHSOEp2IHj//a1RlTSOkgICBAgQIECAAAECBLIJaBJlo1WYAAECkxN4991/RQemcZSsIBgc3BGNksZRsgPB6OihqEoaR0kBAQIECBAgQIAAAQLZBBojI/ua2aorTIAAAQJnFOjru3DCMa2/zRM+q+qDqudT9XhVORqHAAECBAgQIECAQGkCriQqbcXMlwABAgQIECBAgAABAgQIECCQQUCTKAOqkgQIECBAgAABAgQIECBAgACB0gQ0iUpbMfMlQKB2Apdffll0TpdeekkUVx0sW3ZtNGQaR8kOBEuWXBVVSeMoKSBAgAABAgQIECBAIJuAJlE2WoUJECAwOYGdO3dFB+7eHf/vYlGyguCRR34djZLGUbIDwcMP/yqqksZRUkCAAAECBAgQIECAQDYBD67ORqswAQIEJicwEx/c/Prrfw1vvLEpLF9+a1ix4rbJncgUj2o2m+HVV18Pb765Kdx++63hzjtXhEajMcVqvkaAAAECBAgQIECAwFQFNImmKud7BAgQ6JDATGwSdejUlCFAgAABAgQIECBAoCABt5sVtFimSoAAAQIECBAgQIAAAQIECBDIJaBJlEtWXQIECBAgQIAAAQIECBAgQIBAQQKaRAUtlqkSIDA7BHp6/GmeHSvtLAkQIECAAAECBAjMLAH/EplZ62E2BAgQCGNjYxQIECBAgAABAgQIECBQuYAmUeXkBiRAgMAJgaGhPScC7wgQIECAAAECBAgQINBFAU2iLuIbmgABAo8++jgEAgQIECBAgAABAgQIzAgBTaIZsQwmQYDAbBXYunXbhFN/6KFfTvjMBwQIECBAgAABAgQIEMgtoEmUW1h9AgQInEbg7rt/PCH74INrJ3zmAwIECBAgQIAAAQIECOQW0CTKLaw+AQIETiNw3333hBUrbjt+xIYNfwr9/X3HY28IECBAgAABAgQIECBQlUBjZGRfs6rBjEOAAAECJxfYv/9AmDdvIPT29p78AJ8SIECAAAECBAgQIEAgs4AmUWZg5QkQIECAAAECBAgQIECAAAECJQi43ayEVTJHAgQIECBAgAABAgQIECBAgEBmAU2izMDKEyBAgAABAgQIECBAgAABAgRKENAkKmGVzJEAAQIECBAgQIAAAQIECBAgkFlAkygzsPIECBAgQIAAAQIECBAgQIAAgRIENIlKWCVzJECAAAECBAgQIECAAAECBAhkFtAkygysPAECBAgQIECAAAECBAgQIECgBAFNohJWyRwJECBAgAABAgQIECBAgAABApkFNIkyAytPgAABAgQIECBAgAABAgQIEChBQJOohFUyRwIECBAgQIAAAQIECBAgQIBAZgFNoszAyhMgQIAAAQIECBAgQIAAAQIEShDQJCphlcyRAAECBAgQIECAAAECBAgQIJBZQJMoM7DyBAgQIECAAAECBAgQIECAAIESBDSJSlglcyRAgAABAgQIECBAgAABAgQIZBbQJMoMrDwBAgQIECBAgAABAgQIECBAoAQBTaISVskcCRAgQIAAAQIECBAgQIAAAQKZBTSJMgMrT4AAAQIECBAgQIAAAQIECBAoQUCTqIRVMkcCBAgQIECAAAECBAgQIECAQGYBTaLMwMoTIECAAAECBAgQIECAAAECBEoQ0CQqYZXMkQABAgQIECBAgAABAgQIECCQWUCTKDOw8gQIECBAgAABAgQIECBAgACBEgQ0iUpYJXMkQIAAAQIECBAgQIAAAQIECGQW0CTKDKw8AQIECBAgQIAAAQIECBAgQKAEAU2iElbJHAkQIECAAAECBAgQIECAAAECmQU0iTIDK0+AAAECBAgQIECAAAECBAgQKEFAk6iEVTJHAgQIECBAgAABAgQIECBAgEBmAU2izMDKEyBAgAABAgQIECBAgAABAgRKENAkKmGVzJEAAQIECBAgQIAAAQIECBAgkFlAkygzsPIECBAgQIAAAQIECBAgQIAAgRIENIlKWCVzJECAAAECBAgQIECAAAECBAhkFtAkygysPAECBAgQIECAAAECBAgQIECgBAFNohJWyRwJECBAgAABAgQIECBAgAABApkFNIkyAytPgAABAgQIECBAgAABAgQIEChBQJOohFUyRwIECBAgQIAAAQIECBAgQIBAZgFNoszAyhMgQIAAAQIECBAgQIAAAQIEShDQJCphlcyRAAECBAgQIECAAAECBAgQIJBZQJMoM7DyBAgQIECAAAECBAgQIECAAIESBDSJSlglcyRAgAABAgQIECBAgAABAgQIZBbQJMoMrDwBAgQIECBAgAABAgQIECBAoAQBTaISVskcCRAgQIAAAQIECBAgQIAAAQKZBTSJMgMrT4AAAQIECBAgQIAAAQIECBAoQUCTqIRVMkcCBAgQIECAAAECBAgQIECAQGYBTaLMwMoTIECAAAECBAgQIECAAAECBEoQ0CQqYZXMkQABAgQIECBAgAABAgQIECCQWUCTKDOw8gQIECBAgAABAgQIECBAgACBEgT+Bw6U0rwzpc7qAAAAAElFTkSuQmCC",
+      "hidden": "",
+      "container": {},
+      "dataMap": {},
+      "dataGrid": [
+        {}
+      ],
+      "editGrid": [],
+      "tree": {},
+      "submit": true,
+      "number": 3,
+      "currency": 1000000000
+    },
+    "metadata": {
+      "timezone": "America/Vancouver",
+      "offset": -420,
+      "origin": "https://chefs-dev.apps.silver.devops.gov.bc.ca",
+      "referrer": "",
+      "browserName": "Netscape",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
+      "pathName": "/app/form/submit",
+      "onLine": true
+    },
+    "state": "submitted",
+    "component": {
+      "id": "ejrfg6f",
+      "key": "submit",
+      "size": "md",
+      "type": "button",
+      "block": false,
+      "input": true,
+      "label": "Submit",
+      "theme": "primary",
+      "action": "submit",
+      "hidden": false,
+      "prefix": "",
+      "suffix": "",
+      "unique": false,
+      "widget": {
+        "type": "input"
+      },
+      "dbIndex": false,
+      "overlay": {
+        "top": "",
+        "left": "",
+        "style": "",
+        "width": "",
+        "height": ""
+      },
+      "tooltip": "",
+      "disabled": false,
+      "leftIcon": "",
+      "multiple": false,
+      "redrawOn": "",
+      "tabindex": "",
+      "validate": {
+        "custom": "",
+        "unique": false,
+        "multiple": false,
+        "required": false,
+        "customPrivate": false,
+        "strictDateValidation": false
+      },
+      "autofocus": false,
+      "encrypted": false,
+      "hideLabel": false,
+      "modalEdit": false,
+      "protected": false,
+      "refreshOn": "",
+      "rightIcon": "",
+      "tableView": false,
+      "attributes": {},
+      "errorLabel": "",
+      "persistent": false,
+      "properties": {},
+      "validateOn": "change",
+      "clearOnHide": true,
+      "conditional": {
+        "eq": "",
+        "show": null,
+        "when": null
+      },
+      "customClass": "",
+      "description": "",
+      "placeholder": "",
+      "defaultValue": null,
+      "dataGridLabel": true,
+      "labelPosition": "top",
+      "showCharCount": false,
+      "showWordCount": false,
+      "calculateValue": "",
+      "calculateServer": false,
+      "disableOnInvalid": true,
+      "allowMultipleMasks": false,
+      "customDefaultValue": "",
+      "allowCalculateOverride": false
+    }
+  }
+}

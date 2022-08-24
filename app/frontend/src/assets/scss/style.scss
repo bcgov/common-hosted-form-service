@@ -1,0 +1,568 @@
+/*
+ * BCGov Style
+ * This globally extends the base Vuetify style
+ */
+@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900");
+@import url("https://fonts.googleapis.com/css?family=Material+Icons");
+@import "~material-design-icons-iconfont/dist/material-design-icons.css";
+@import "~bootstrap-scss/bootstrap.scss"; // TODO: import this only for form designer/renderer formio components
+@import "~vuetify/src/styles/styles.sass";
+@import "~vue-json-pretty/lib/styles.css";
+
+// Variables
+$bcgov-blue: #003366;
+$bcgov-blue-secondary: #38598a;
+$bcgov-orange: #fcba19;
+$bcgov-grey: #efefef;
+$bcgov-font: #313132;
+$bcgov-error: #d8292f;
+$bcgov-link: #1a5a96;
+$bcgov-link-hover: #3b99fc;
+$bcgov-input-placeholder: #606060;
+$bcgov-font-error: #a12622;
+$bcgov-font-warning: #6c4a00;
+$bcgov-font-success: #2d4821;
+$bcgov-alert-error: #f2dede;
+$bcgov-alert-warning: #f9f1c6;
+$bcgov-alert-info: #d9eaf7;
+$bcgov-alert-success: #dff0d8;
+
+// Sticky Footer
+body {
+  display: flex;
+  flex-direction: column;
+  & > .v-content {
+    flex: 1 0 auto;
+  }
+}
+
+// Typography
+.v-application {
+  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial, sans-serif !important;
+  line-height: 1.4;
+  font-size: 0.875rem;
+}
+
+h1 {
+  font-size: 1.9em;
+}
+h2 {
+  font-size: 1.7em;
+}
+h3 {
+  font-size: 1.3em;
+}
+h4 {
+  font-size: 1.05em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: $bcgov-font;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+p {
+  color: $bcgov-font;
+  line-height: 1.7;
+}
+
+// links
+a {
+  color: $bcgov-link;
+  &:hover {
+    color: $bcgov-link-hover;
+  }
+}
+
+// Horizontal Rule
+hr {
+  border-top: 1px solid lightgrey;
+  margin-bottom: 1em;
+  .orange {
+    border-top: 2px solid $bcgov-orange;
+  }
+}
+
+// General Transition Animation Behavior
+.component-fade-enter-active,
+.component-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.component-fade-enter,
+.component-fade-leave-to {
+  opacity: 0;
+}
+
+// Anchor and Tab Behavior
+a,
+.v-tab {
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+    button,
+    .v-icon {
+      display: inline-block;
+      text-decoration: none;
+    }
+  }
+}
+
+// General Button Style Extensions
+.v-btn {
+  span > span {
+    font-weight: bold;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    span > span {
+      text-decoration: underline;
+    }
+  }
+
+  &.v-btn--disabled {
+    color: #777;
+  }
+
+  &.v-btn--outlined {
+    &.theme--light {
+      border: 2px solid #003366;
+    }
+
+    &.theme--dark {
+      border: 2px solid #fff;
+    }
+    &.v-btn--disabled {
+      border-color: rgba(0, 0, 0, 0.26);
+    }
+  }
+  // align links with icons (shown in My Forms in table)
+  // causes underline issues in firefox
+  // a > i ~ span {
+  //   vertical-align: middle;
+  // }
+}
+
+// buttons in v-card
+.v-card__actions > .v-btn {
+  padding: 0 16px !important;
+}
+
+// vuetify radio button and checkbox labels need alignment help
+.v-input--selection-controls__input {
+  ~ .v-label {
+    margin-bottom: 0 !important;
+  }
+}
+
+// Stepper
+.nrmc-stepper {
+  .header-row {
+    background-color: $bcgov-grey !important;
+  }
+  &.v-stepper--alt-labels {
+    .v-stepper__step {
+      padding-left: 0;
+      padding-right: 0;
+      .v-stepper__label {
+        color: $bcgov-font;
+        font-size: 0.75em;
+      }
+      &.v-stepper__step--active {
+        .v-stepper__label {
+          color: $bcgov-font;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+// Customized expand/collapse section
+.nrmc-expand-collapse {
+  min-height: 50px;
+  .v-expansion-panel--active > .v-expansion-panel-header {
+    min-height: 50px;
+  }
+
+  .v-expansion-panel-header {
+    padding: 10px;
+    background-color: $bcgov-grey;
+    .icon {
+      order: 0;
+    }
+
+    .header {
+      order: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .v-expansion-panel-content__wrap {
+    padding-top: 8px;
+  }
+}
+
+/////////////////////////////////////////
+// Override Vuetify v-alert Components
+/////////////////////////////////////////
+
+// BCGov Styled Error Notification Override
+.v-alert.v-sheet.theme--light.v-alert.alert-error {
+  background-color: $bcgov-alert-error;
+  .v-alert__wrapper {
+    i,
+    div {
+      color: $bcgov-font-error;
+    }
+  }
+}
+
+// BCGov Styled Warning Alerts Override
+.v-alert.v-sheet.theme--light.v-alert.alert-warning {
+  background-color: $bcgov-alert-warning;
+  .v-alert__wrapper {
+    i,
+    div {
+      color: $bcgov-font-warning;
+    }
+  }
+}
+
+// BCGov Styled Info Notification Override
+.v-alert.v-sheet.theme--light.v-alert.alert-info {
+  background-color: $bcgov-alert-info;
+  .v-alert__wrapper {
+    i,
+    div {
+      color: $bcgov-font;
+    }
+  }
+}
+
+// BCGov Styled Success Notification Override
+.v-alert.v-sheet.theme--light.v-alert.alert-success {
+  background-color: $bcgov-alert-success;
+  .v-alert__wrapper {
+    i,
+    div {
+      color: $bcgov-font-success;
+    }
+  }
+}
+
+// BCGov Alert Style Override
+.v-alert {
+  font-family: "BC Sans", "Noto Sans", Arial, "sans serif";
+  line-height: 1.5em;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding: 15px;
+  div {
+    font-size: 18px;
+  }
+}
+
+/////////////////////////////////
+///  override formio styles:
+/////////////////////////////////
+
+// override formio form designer
+.form-designer,
+// override form viewer
+.form-wrapper,
+// override preview panel in form builder component editor modal
+.component-preview {
+  // layout
+  div[class^="col-"]:nth-child(n + 1) {
+    padding-top: 0; // make nested columns line up vertically alongside components in non-nested adjacent columns
+  }
+
+  // tabs, cards, headings etc..
+  .card-header {
+    font-weight: bold;
+    color: $bcgov-font;
+    opacity: 1;
+    .fa-minus-square-o::before,
+    .fa-plus-square-o::before {
+      font-size: 130%;
+      color: black;
+    }
+    .fa-minus-square-o::before {
+      content: "\f106";
+    }
+    .fa-plus-square-o::before {
+      content: "\f107";
+    }
+  }
+
+  // tabs component
+  .formio-component-simpletabs {
+    & > .card {
+      border: 0;
+
+      & > .card-body {
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.125);
+        border-width: 0 1px 1px 1px;
+        border-radius: 0;
+      }
+    }
+    & > .card > .card-header {
+      background: none;
+
+      .nav-item {
+        background-color: $bcgov-grey;
+        margin-right: 3px;
+
+        .nav-link {
+          @extend a;
+          font-weight: normal;
+
+          &.active {
+            color: $bcgov-font;
+            background: white;
+
+            &:hover {
+              color: $bcgov-font;
+              cursor: default;
+              text-decoration: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // form inputs
+  .form-control {
+    // placeholder text to match bcgov
+    &::placeholder,
+    .choices__placeholder {
+      color: $bcgov-input-placeholder;
+      opacity: inherit;
+    }
+
+    &:not(.is-invalid) {
+      // input borders to match bcgov (exclude invalid fields that should be red)
+      border: 1px solid $bcgov-input-placeholder;
+    }
+  }
+
+  // remove alert icons from invalid fields
+  .form-control.is-invalid,
+  .was-validated .form-control:invalid {
+    background-image: none;
+  }
+
+  // add rounded corners to Date / Time Component input groups and red border if invalid
+  .input-group > .flatpickr-input.form-control {
+    & + .form-control.input {
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
+    }
+    // if validation error make borders red;
+    &.is-invalid + .form-control.input {
+      border: 1px solid #dc3545;
+
+      &:focus {
+        border-color: #dc3545;
+        -webkit-box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
+    }
+  }
+
+  // buttons
+  .btn {
+    @extend .v-btn;
+  }
+
+  .btn.btn-primary {
+    background-color: $bcgov-blue;
+    border: none;
+    color: white;
+
+    &:hover {
+      background-color: $bcgov-blue;
+      text-decoration: underline;
+    }
+
+    &:disabled,
+    &[disabled="disabled"],
+    &[disabled="disabled"] &:hover {
+      @extend .v-btn--disabled;
+      cursor: default;
+      text-decoration: none;
+      background-color: rgba(0, 0, 0, 0.12);
+      opacity: 1;
+      color: rgba(0, 0, 0, 0.26) !important;
+    }
+  }
+
+  // formio submit buttons
+  .formio-component-button .btn {
+    text-transform: uppercase;
+    padding: 8px 16px;
+    line-height: 21px;
+    font-weight: 700;
+    letter-spacing: 0.0892857143em;
+    font-size: 0.875rem;
+  }
+
+  // tooltips
+  .tooltip-inner {
+    background-color: #606060;
+    border-radius: 3px;
+    box-shadow: 0 2px 8px 0 rgba(175, 175, 175, 0.5);
+    font-size: 0.85em;
+  }
+
+  // validation messages and help text
+  .form-text {
+    font-size: 0.85em;
+  }
+  .invalid-feedback {
+    font-size: 100%; // reset this wrapper
+  }
+  .form-text.error {
+    background: none !important;
+    color: $bcgov-error;
+  }
+
+  // hide asterisks after input in Data Grid when labels appear as table headers
+  .formio-component-datagrid {
+    label.field-required.control-label--hidden::after {
+      content: "";
+    }
+  }
+
+  // dropdowns
+  .choices__list--dropdown {
+    .choices__item {
+      &:not(.is-selected) {
+        color: $bcgov-font;
+      }
+      &:hover {
+        background-color: $bcgov-link-hover;
+        color: white;
+      }
+    }
+  }
+
+  .choices__list--multiple {
+    .choices__item {
+      margin-bottom: 0;
+      font-size: 90%;
+    }
+    .choices__item,
+    .choices__button {
+      background-color: white;
+      color: $bcgov-link;
+      border-color: $bcgov-link;
+      &:hover {
+        background-color: $bcgov-link-hover;
+        border-color: $bcgov-link-hover;
+        color: white;
+      }
+    }
+  }
+
+  // hide 'X' (button that removes selected option) on dropdown, when placeholder exists and no selectiuon has been made
+  .choices__placeholder button {
+    display: none;
+  }
+
+  // radio buttons and checkboxes
+  .form-radio {
+    .form-check {
+      margin-bottom: 5px;
+      .form-check-label {
+        font-size: 1em;
+
+        .form-check-input {
+          transform: scale(1.3);
+        }
+        span {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+
+  // form builder misc.
+  .drag-and-drop-alert.alert-info {
+    border: 2px dashed grey;
+    background-color: transparent;
+    color: grey;
+    padding: 30px;
+  }
+}
+
+/////////////////////////////////
+// override Formio form designer
+/////////////////////////////////
+
+.form-designer {
+  .formio-component-submit .btn.btn-primary,
+  .formio-component-submit .btn.btn-primary:hover {
+    @extend :disabled;
+    background-color: rgba(0, 0, 0, 0.12);
+  }
+  // the drag/drop area needs to line up with vuetify v-application ul styles...
+  .formio-component-file .fileSelector {
+    margin-left: 24px;
+  }
+}
+
+.form-wrapper {
+  // the drag/drop area needs to line up with vuetify v-application ul styles...
+  .formio-component-file {
+    .fileSelector {
+      margin-left: 24px;
+    }
+    .file {
+      .row {
+        margin-left: 24px;
+      }
+    }
+  }
+}
+
+// allow dropdowns to continue expanding downwards within a modal
+.formio-dialog-content {
+  .component-edit-container {
+    overflow: visible;
+
+    .choices__list.choices__list--dropdown {
+      overflow: auto;
+
+      div.choices__list {
+        max-height: 175px;
+      }
+    }
+  }
+}
+
+// formio component buttons
+.btn-primary.formcomponent.drag-copy,
+.btn-primary.formcomponent.drag-copy:hover,
+.formcomponent.drag-copy:active {
+  background-color: #e4f2ff;
+  color: #003366;
+  font-size: 0.8rem;
+  border: none;
+}
+.drag-container .btn-primary.formcomponent.drag-copy {
+  opacity: 0.3;
+  color: white;
+  background: $bcgov-blue;
+}
