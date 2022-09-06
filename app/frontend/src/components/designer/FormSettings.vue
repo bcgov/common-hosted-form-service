@@ -126,8 +126,8 @@
           <v-checkbox class="my-0" v-model="allowSubmitterToUploadFile">
             <template #label>
               <span>
-                Submitters can
-                <strong>upload file</strong>
+              Allow <strong> bulk submission </strong> for this form
+              
               </span>
             </template>
           </v-checkbox>
