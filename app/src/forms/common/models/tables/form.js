@@ -4,6 +4,7 @@ const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
 class Form extends Timestamps(Model) {
+
   static get tableName() {
     return 'form';
   }
@@ -107,7 +108,7 @@ class Form extends Timestamps(Model) {
   // exclude labels and submissionReceivedEmails arrays from explicit JSON conversion
   // encounter malformed array literal
   static get jsonAttributes() {
-    return ['id', 'name', 'description', 'active', 'showSubmissionConfirmation', 'enableStatusUpdates', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
+    return ['id', 'name', 'description', 'active','allowSubmitterToUploadFile', 'showSubmissionConfirmation', 'enableStatusUpdates', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
   }
 
   static get jsonSchema() {
@@ -119,6 +120,7 @@ class Form extends Timestamps(Model) {
         name: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: ['string', 'null'], maxLength: 255 },
         active: { type: 'boolean' },
+        allowSubmitterToUploadFile: { type: 'boolean' },
         labels: { type: ['array', 'null'], items: { type: 'string' } },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },

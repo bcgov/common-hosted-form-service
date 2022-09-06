@@ -2,6 +2,7 @@ const config = require('config');
 const routes = require('express').Router();
 
 const apiAccess = require('../auth/middleware/apiAccess');
+
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 
@@ -11,6 +12,7 @@ const controller = require('./controller');
 routes.use(currentUser);
 
 routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
+  // console.log("IN GET");
   await controller.listForms(req, res, next);
 });
 

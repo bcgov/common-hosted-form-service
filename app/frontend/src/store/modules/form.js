@@ -8,6 +8,7 @@ const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
+  allowSubmitterToUploadFile: false,
   id: '',
   idps: [],
   isDirty: false,

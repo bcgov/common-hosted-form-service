@@ -23,6 +23,7 @@ export default {
    * @returns {Promise} An axios response
    */
   createForm(formData) {
+    //console.log(formData);
     return appAxios().post(`${ApiRoutes.FORMS}`, formData);
   },
 

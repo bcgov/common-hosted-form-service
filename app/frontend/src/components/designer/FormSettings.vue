@@ -111,6 +111,7 @@
                 <strong>Save and Edit Drafts</strong>
               </span>
             </template>
+
           </v-checkbox>
 
           <v-checkbox class="my-0" v-model="enableStatusUpdates">
@@ -118,6 +119,15 @@
               <span>
                 Reviewers can <strong>Update the Status</strong> of this form
                 (i.e. Submitted, Assigned, Completed)
+              </span>
+            </template>
+          </v-checkbox>
+
+          <v-checkbox class="my-0" v-model="allowSubmitterToUploadFile">
+            <template #label>
+              <span>
+                Submitters can
+                <strong>upload file</strong>
               </span>
             </template>
           </v-checkbox>
@@ -252,6 +262,7 @@ export default {
       'form.description',
       'form.enableSubmitterDraft',
       'form.enableStatusUpdates',
+      'form.allowSubmitterToUploadFile',
       'form.id',
       'form.idps',
       'form.name',

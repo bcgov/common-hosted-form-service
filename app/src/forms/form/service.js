@@ -48,6 +48,7 @@ const service = {
 
   createForm: async (data, currentUser) => {
     let trx;
+    // console.log(data);
     try {
       trx = await Form.startTransaction();
       const obj = {};
@@ -61,6 +62,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser.usernameIdp;
+      obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -104,6 +106,7 @@ const service = {
       result.draft = draft;
       return result;
     } catch (err) {
+      console.log(err);
       if (trx) await trx.rollback();
       throw err;
     }

@@ -8,12 +8,15 @@ const querystring = require('querystring');
 const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
+
+// this is the application router
 const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
 
 const apiRouter = express.Router();
+
 const state = {
   connections: {
     data: false
@@ -21,8 +24,10 @@ const state = {
   ready: false,
   shutdown: false
 };
+
 let probeId;
 
+// initiate express
 const app = express();
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
@@ -55,12 +60,15 @@ apiRouter.use('/config', (_req, res, next) => {
     const frontend = config.get('frontend');
     // we will need to pass
     const uploads = config.get('files.uploads');
+
     const feConfig = { ...frontend, uploads: uploads };
     res.status(200).json(feConfig);
   } catch (err) {
     next(err);
   }
 });
+
+
 
 // Base API Directory
 apiRouter.get('/api', (_req, res) => {
@@ -73,6 +81,7 @@ apiRouter.get('/api', (_req, res) => {
 
 // Host API endpoints
 apiRouter.use(config.get('server.apiPath'), v1Router);
+
 app.use(config.get('server.basePath'), apiRouter);
 
 // Host the static frontend assets

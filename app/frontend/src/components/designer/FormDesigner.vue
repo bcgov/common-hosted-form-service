@@ -249,6 +249,7 @@ export default {
       'form.idps',
       'form.isDirty',
       'form.name',
+      'form.allowSubmitterToUploadFile',
       'form.sendSubRecieviedEmail',
       'form.showSubmissionConfirmation',
       'form.snake',
@@ -499,7 +500,7 @@ export default {
         this.patch.history.length = this.patch.index + 1;
       }
 
-      // Get the differences between the last patch 
+      // Get the differences between the last patch
       // and the current form
       const form = this.getPatch(++this.patch.index);
       const patch = compare(form, this.formSchema);
@@ -610,6 +611,7 @@ export default {
         enableSubmitterDraft: this.enableSubmitterDraft,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
+        allowSubmitterToUploadFile: this.allowSubmitterToUploadFile,
         submissionReceivedEmails: emailList,
       });
 

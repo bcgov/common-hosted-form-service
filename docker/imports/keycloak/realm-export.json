@@ -743,7 +743,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "XXXXXXXXXXXX",
+      "secret": "cgi",
       "redirectUris": [
         "http://localhost:8081/*",
         "http://localhost:8080/*",
@@ -1447,7 +1447,7 @@
       "firstBrokerLoginFlowAlias": "first broker login",
       "config": {
         "userInfoUrl": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/userinfo",
-        "clientId": "YYYYYYYYYYYY",
+        "clientId": "chefs-data-ingestion-ministry-of-health-3802",
         "tokenUrl": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
         "backchannelSupported": "true",
         "issuer": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
@@ -1459,7 +1459,7 @@
         "clientAuthMethod": "client_secret_post",
         "logoutUrl": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout",
         "syncMode": "IMPORT",
-        "clientSecret": "ZZZZZZZZZZZZ"
+        "clientSecret": "dd679a87-9d1d-4a26-a481-8ba5d1f3445e"
       }
     }
   ],
