@@ -127,7 +127,6 @@
             <template #label>
               <span>
               Allow <strong> bulk submission </strong> for this form
-              
               </span>
             </template>
           </v-checkbox>
