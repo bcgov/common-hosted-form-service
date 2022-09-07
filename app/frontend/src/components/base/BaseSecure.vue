@@ -16,7 +16,7 @@
       <h1 class="my-8">401: Unauthorized. :(</h1>
       <p>
         Your account is not set up correctly.<br />Please contact
-        <a :href="mailToLink">NR.CommonServiceShowcase@gov.bc.ca</a>
+        <a :href="mailToLink">submit.digital@gov.bc.ca</a>
       </p>
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" large>
@@ -64,7 +64,7 @@ export default {
       'keycloakReady',
     ]),
     mailToLink() {
-      return `mailto:NR.CommonServiceShowcase@gov.bc.ca?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
+      return `mailto:submit.digital@gov.bc.ca?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
         location
       )}.`;
     },

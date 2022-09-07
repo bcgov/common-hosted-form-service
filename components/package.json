@@ -6,7 +6,7 @@
     "type": "git",
     "url": "git+https://github.com/bcgov/common-hosted-form-service.git"
   },
-  "author": "NR Common Service Showcase <NR.CommonServiceShowcase@gov.bc.ca>",
+  "author": "Forminators <submit.digital@gov.bc.ca>",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/bcgov/common-hosted-form-service/issues"
