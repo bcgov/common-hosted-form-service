@@ -12,7 +12,12 @@
           @save-draft="saveDraft"
         />
       </div>
-      <h1 class="my-6 text-center">{{ form.name }}</h1>
+      <h1 class="my-6 text-center">{{ form.name }} </h1>
+      <div v-if="allowSubmitterToUploadFile" >
+        <p>This form allow bulk  submission</p>
+        <FormViewerDownloadButton :form="form" :formSchema="formSchema" :json_csv="json_csv" />
+        <hr/>
+      </div>
     </div>
     <div class="form-wrapper">
       <v-alert
@@ -79,6 +84,7 @@ import { Form } from 'vue-formio';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
+import FormViewerDownloadButton from '@/components/designer/FormViewerDownloadButton.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
@@ -88,6 +94,7 @@ export default {
   components: {
     Form,
     FormViewerActions,
+    FormViewerDownloadButton
   },
   props: {
     displayTitle: {
@@ -130,6 +137,12 @@ export default {
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      allowSubmitterToUploadFile: false,
+      formFields : [],
+      json_csv : {
+        data: String,
+        file_name: String
+      }
     };
   },
   computed: {
@@ -229,10 +242,22 @@ export default {
               `No published version found in response. FormID: ${this.formId}`
             );
           }
+          console.log(response.data);
+          if (response.data.allowSubmitterToUploadFile)
+            this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
           this.form = response.data;
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
+          const { data } = await formService.readVersionFields(this.form.id, this.versionIdToSubmitTo);
+
+          this.formFields = data;
+          this.json_csv.file_name= 'template_'+this.form.name+'_'+Date.now();
+          var csv = {};
+          for (let i=0; i<this.formFields.length;i++) {
+            csv[this.formFields[i]] = '';
+          }
+          this.json_csv.data = [csv];
         }
       } catch (error) {
         if (this.authenticated) {
@@ -435,6 +460,7 @@ export default {
     },
   },
   created() {
+
     if (this.submissionId) {
       this.getFormData();
     } else {
@@ -444,6 +470,10 @@ export default {
     if (!this.preview && !this.readOnly) {
       window.onbeforeunload = () => true;
     }
+    // this.addNotification({
+    //   message:'Test',
+    //   consoleError: 'Error updating',
+    // });
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change

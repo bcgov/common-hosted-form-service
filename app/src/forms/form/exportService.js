@@ -175,7 +175,8 @@ const service = {
       'createdAt',
       'fullName',
       'username',
-      'email'
+      'email',
+      'idBulkFile'
     ];
     // if form has 'status updates' enabled in the form settings include these in export
     if (form.enableStatusUpdates) {

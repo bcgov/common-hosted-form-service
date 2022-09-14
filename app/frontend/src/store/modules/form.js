@@ -34,6 +34,7 @@ export default {
     formList: [],
     formSubmission: {
       confirmationId: '',
+      originalName:'',
       submission: {
         data: {}
       }
@@ -287,7 +288,8 @@ export default {
             userType: state.form.userType,
           }),
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
-          submissionReceivedEmails: emailList
+          submissionReceivedEmails: emailList,
+          allowSubmitterToUploadFile: state.form.allowSubmitterToUploadFile
         });
       } catch (error) {
         dispatch('notifications/addNotification', {

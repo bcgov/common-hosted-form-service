@@ -126,7 +126,8 @@ const service = {
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
+        allowSubmitterToUploadFile : data.allowSubmitterToUploadFile
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
@@ -219,6 +220,7 @@ const service = {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
+      .modify('filterIdBulkFile', params.idBulkFile)
       .modify('filterConfirmationId', params.confirmationId)
       .modify('filterDraft', params.draft)
       .modify('filterDeleted', params.deleted)
@@ -227,7 +229,7 @@ const service = {
       .modify('filterVersion', params.version)
       .modify('orderDefault');
 
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId'];
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId', 'idBulkFile', 'originalName' ];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {

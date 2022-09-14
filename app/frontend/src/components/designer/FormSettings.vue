@@ -126,7 +126,26 @@
           <v-checkbox class="my-0" v-model="allowSubmitterToUploadFile">
             <template #label>
               <span>
-                Allow <strong> bulk submission </strong> for this form
+                Allow <strong> bulk submission </strong> upload
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                      help_outline
+                    </v-icon>
+                  </template>
+                  <span>
+                    Selecting this option controls what the submitting user of
+                    this form will see on successful submission. <br />
+                    If checked, it will display
+                    <ul>
+                      <li>the Confirmation ID</li>
+                      <li>
+                        the option for the user to email themselves a submission
+                        confirmation
+                      </li>
+                    </ul>
+                  </span>
+                </v-tooltip>
               </span>
             </template>
           </v-checkbox>

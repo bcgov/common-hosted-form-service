@@ -9,6 +9,7 @@ exports.up = function(knex) {
       table.string('idp');
       stamps(knex, table);
     }))
+
     .then(() => knex.schema.createTable('user', table => {
       table.uuid('id').primary();
       table.string('keycloakId').unique().notNullable().index();

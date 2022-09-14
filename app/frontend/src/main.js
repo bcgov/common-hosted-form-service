@@ -5,7 +5,8 @@ import '@/assets/scss/style.scss';
 import axios from 'axios';
 import NProgress from 'nprogress';
 import Vue from 'vue';
-
+// import JsonCSV from 'vue-json-csv';
+// Vue.component('downloadCsv', JsonCSV);
 import App from '@/App.vue';
 import '@/filters';
 import auth from '@/store/modules/auth.js';
