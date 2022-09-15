@@ -9,15 +9,13 @@
           :permissions="permissions"
           :readOnly="readOnly"
           :submissionId="submissionId"
+          :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+          :bulkFile="bulkFile"
           @save-draft="saveDraft"
+          @switchView="bulkFile=!bulkFile"
         />
       </div>
-      <h1 class="my-6 text-center">{{ form.name }} </h1>
-      <div v-if="allowSubmitterToUploadFile" >
-        <p>This form allow bulk  submission</p>
-        <FormViewerDownloadButton :form="form" :formSchema="formSchema" :json_csv="json_csv" />
-        <hr/>
-      </div>
+      <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }} </h1>
     </div>
     <div class="form-wrapper">
       <v-alert
@@ -60,8 +58,11 @@
           <span>Submit</span>
         </template>
       </BaseDialog>
-
+      <div v-if="allowSubmitterToUploadFile && bulkFile" >
+        <FormViewerDownloadButton :form="form" :formSchema="formSchema" :json_csv="json_csv" />
+      </div>
       <Form
+        v-if="!bulkFile"
         :form="formSchema"
         :key="reRenderFormIo"
         :submission="submission"
@@ -142,7 +143,8 @@ export default {
       json_csv : {
         data: String,
         file_name: String
-      }
+      },
+      bulkFile: true
     };
   },
   computed: {
@@ -470,10 +472,7 @@ export default {
     if (!this.preview && !this.readOnly) {
       window.onbeforeunload = () => true;
     }
-    // this.addNotification({
-    //   message:'Test',
-    //   consoleError: 'Error updating',
-    // });
+
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change

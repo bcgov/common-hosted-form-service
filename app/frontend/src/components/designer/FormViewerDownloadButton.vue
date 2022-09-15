@@ -1,10 +1,20 @@
 <template>
   <div class="file-upload">
     <div v-if="json_csv.data" class="download-box" >
-      Please download the last template <p @click="downloadCsvFile()" class="link">  {{ json_csv.file_name+'.csv'}}</p>
+      <p class="head-title">
+        <v-icon color="primary" >information_outline</v-icon>
+        <span>IMPORTANT!</span>
+      </p>
+      <div class="alert-text">
+        In order to successfully complete bulk submissions, please download the instructions and the template.
+        <span @click="downloadCsvFile()" class="link">Download <v-icon class="mr-1 " color="#003366">download</v-icon></span>
+      </div>
     </div>
+    <h3>{{form.name}}</h3>
     <div class="drop-zone" v-cloak @drop.prevent="addFile" @dragover.prevent>
-      <p>Please drag your csv file here</p>
+      <v-icon class="mr-1 " color="#003366">upload</v-icon>
+      <h1>Select CSV file to upload </h1>
+      <p>or drag and drop it here</p>
       <input class="drop-zone__input" type="file" name="files" id="file"/>
     </div>
   </div>
@@ -70,33 +80,97 @@ export default {
 .file-upload {
   position: relative;
   width: 100%;
-  display: inline-block;
+  display: block;
+  margin-top: 5%;
   // border: #003366 1px solid;
   .download-box{
     position: relative;
-    width: 50%;
-    display: inline-block;
-    margin-bottom: 1%;
-    float: left;
+    width: 70%;
+    min-height:80px;
+    display: block;
+    margin-bottom: 3%;
+    border: 0.01px ridge #38598a;
+    border-left: 30px solid #38598a;
+    padding-left:0.5%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
     .link{
       color: #003366;
     }
+    .head-title {
+      width:100%;
+      height: 30px;
+      display: inline-block;
+      padding:0%;
+      margin: 0%;
+      span {
+        position:absolute;
+        left:3.5%;
+        text-align: left;
+        font-size:15px;
+        font-weight: 100;
+        color:#003366;
+      }
+      i {
+        position:absolute;
+        text-align: left;
+        margin:none;
+        padding:none;
+      }
+    }
+    .alert-text{
+      width:100%;
+      height: 30px;
+      display: inline-block;
+      padding:0%;
+      margin: 0%;
+      font-weight: 300;
+      span{
+        font-size:14px;
+        font-weight:bold;
+      }
+    }
+
+  }
+  h3{
+    color:#38598a;
   }
   .drop-zone {
-    max-width: 50%;
-    height: 120px;
+    position: relative;
+    max-width: 40%;
+    height: 200px;
     padding: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    // display: flex;
+   // align-items: center;
+   // justify-content: center; -->
     text-align: center;
     font-family: "Quicksand", sans-serif;
-    font-weight: 500;
-    font-size: 20px;
+    font-size: 17px;
     cursor: pointer;
     color: #cccccc;
-    border: 4px dashed #003366;
-    border-radius: 10px;
+    border: 2px dashed #003366;
+    border-radius:15px;
+    background-color : #EEF1FF;
+    i{
+      font-size:50px;
+    }
+    h1 {
+      position: relative;
+      width: 100%;
+      text-align: center;
+      font-size: 25px;
+      font-weight: small;
+      color: #003366;
+      display: block;
+    }
+    p{
+      position: relative;
+      width: 100%;
+      text-align: center;
+      font-size: 15px;
+      display: block;
+      font-weight: bold;
+    }
   }
   .drop-zone--over {
     border-style: solid;

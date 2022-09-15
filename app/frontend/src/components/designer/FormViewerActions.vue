@@ -7,6 +7,11 @@
         </v-btn>
       </router-link>
     </v-col>
+    <v-col v-if="allowSubmitterToUploadFile" class="text-right">
+      <v-btn color="primary" @click="switchView">
+        <span>{{ (!bulkFile) ? 'Switch to bulk submission' : 'Switch to sigle submission' }}</span>
+      </v-btn>
+    </v-col>
     <v-col v-if="draftEnabled" class="text-right">
       <!-- Save a draft -->
       <span v-if="canSaveDraft" class="ml-2">
@@ -65,6 +70,14 @@ export default {
     ManageSubmissionUsers,
   },
   props: {
+    bulkFile:{
+      type: Boolean,
+      default: false,
+    },
+    allowSubmitterToUploadFile:{
+      type: Boolean,
+      default: false,
+    },
     draftEnabled: {
       type: Boolean,
       default: false,
@@ -98,7 +111,12 @@ export default {
         this.readOnly &&
         this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
       );
-    },
+    }
   },
+  methods:{
+    switchView(){
+      this.$emit('switchView');
+    }
+  }
 };
 </script>
