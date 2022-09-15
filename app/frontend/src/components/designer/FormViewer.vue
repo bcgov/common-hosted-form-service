@@ -179,9 +179,7 @@ export default {
         componentOptions: {
           simplefile: {
             config: Vue.prototype.$config,
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
+            chefsToken: this.getCurrentAuthHeader
           },
         },
         evalContext: {
@@ -195,6 +193,9 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     isFormPublic: isFormPublic,
     // Get the data for a form submission
+    getCurrentAuthHeader() {
+      return `Bearer ${this.token}`;
+    },
     async getFormData() {
       try {
         this.loadingSubmission = true;

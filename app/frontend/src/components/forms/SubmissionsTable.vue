@@ -129,6 +129,11 @@ export default {
       'submissionList',
       'userFormPreferences',
     ]),
+
+    checkFormManage() {
+      return this.permissions.some((p) => FormManagePermissions.includes(p));
+    },
+
     headers() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
@@ -183,7 +188,9 @@ export default {
         this.userFormPreferences.preferences.columnList
       ) {
         // Compare saved user prefs against the current form versions component names and remove any discrepancies
-        return this.userFormPreferences.preferences.columnList.filter(x => this.formFields.indexOf(x) !== -1);
+        return this.userFormPreferences.preferences.columnList.filter(
+          (x) => this.formFields.indexOf(x) !== -1
+        );
       } else {
         return [];
       }
@@ -210,10 +217,6 @@ export default {
       'getFormPermissionsForUser',
       'getFormPreferencesForCurrentUser',
     ]),
-
-    checkFormManage() {
-      return this.permissions.some((p) => FormManagePermissions.includes(p));
-    },
 
     async populateSubmissionsTable() {
       try {
@@ -264,17 +267,17 @@ export default {
   },
 
   mounted() {
-    // Get the form and latest form fields
-    this.fetchForm(this.formId).then(() => {
-      this.fetchFormFields({
-        formId: this.formId,
-        formVersionId: this.form.versions[0].id,
-      });
+    Promise.all([
+      this.getFormPermissionsForUser(this.formId),
+      this.fetchForm(this.formId).then(() => {
+        this.fetchFormFields({
+          formId: this.formId,
+          formVersionId: this.form.versions[0].id,
+        });
+      }),
+    ]).then(() => {
+      this.populateSubmissionsTable();
     });
-
-    // Get the permissions for this form
-    this.getFormPermissionsForUser(this.formId);
-    this.populateSubmissionsTable();
   },
 };
 </script>
