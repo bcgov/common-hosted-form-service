@@ -67,6 +67,9 @@
       <template #[`item.status`]="{ item }">
         {{ item.status }}
       </template>
+      <template #[`item.lateEntry`]="{ item }">
+        {{ item.lateEntry === true ? 'Yes' : 'No' }}
+      </template>
       <template #[`item.actions`]="{ item }">
         <span>
           <v-tooltip bottom>
@@ -95,7 +98,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
-
+import moment from 'moment';
 import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
@@ -132,7 +135,12 @@ export default {
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
       ];
-
+     
+      if(this.form && this.form.schedule && this.form.schedule.enabled){ 
+        //push new header for late submission if Form is setup for scheduling
+        headers = [...headers,{ text: 'Late Submission', align: 'start', value: 'lateEntry' }];
+      }
+      // console.log('headers=',headers);
       // If status flow enabled add that column
       if (this.showStatus) {
         headers.splice(3, 0, {
@@ -180,6 +188,19 @@ export default {
         return [];
       }
     },
+    userFilter() {
+      if (
+        this.userFormPreferences &&
+        this.userFormPreferences.preferences &&
+        this.userFormPreferences.preferences.filter &&
+        this.userFormPreferences.preferences.filter.length
+      ) {
+        // Compare saved user prefs against the current form versions component names and remove any discrepancies
+        return this.userFormPreferences.preferences.filter;
+      } else {
+        return [];
+      }
+    },
   },
   methods: {
     ...mapActions('form', [
@@ -199,8 +220,17 @@ export default {
         this.loading = true;
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
-        // Get the submissions for this form
-        await this.fetchSubmissions({ formId: this.formId });
+
+        var criteria = { 
+          formId: this.formId,
+          createdAt: Object.values({
+            minDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ? moment(this.userFormPreferences.preferences.filter[0], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().subtract(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+            maxDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ?moment(this.userFormPreferences.preferences.filter[1], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
+          })
+        };
+
+        // Get the submissions for this form  
+        await this.fetchSubmissions(criteria);
         // Build up the list of forms for the table
         if (this.submissionList) {
           const tableRows = this.submissionList
@@ -215,6 +245,7 @@ export default {
                 submissionId: s.submissionId,
                 submitter: s.createdBy,
                 versionId: s.formVersionId,
+                lateEntry: s.lateEntry
               };
               // Add any custom columns
               this.userColumnList.forEach((col) => {

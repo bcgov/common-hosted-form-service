@@ -1,72 +1,95 @@
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-    <div v-if="displayTitle">
-      <div v-if="!isFormPublic(form)">
-        <FormViewerActions
-          :draftEnabled="form.enableSubmitterDraft"
-          :formId="form.id"
-          :isDraft="submissionRecord.draft"
-          :permissions="permissions"
-          :readOnly="readOnly"
-          :submissionId="submissionId"
-          @save-draft="saveDraft"
-        />
-      </div>
-      <h1 class="my-6 text-center">{{ form.name }}</h1>
-    </div>
-    <div class="form-wrapper">
-      <v-alert
-        :value="saved || saving"
-        :class="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.class
-            : NOTIFICATIONS_TYPES.SUCCESS.class
-        "
-        :color="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.color
-            : NOTIFICATIONS_TYPES.SUCCESS.color
-        "
-        :icon="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.icon
-            : NOTIFICATIONS_TYPES.SUCCESS.icon
-        "
-        transition="scale-transition"
-      >
-        <div v-if="saving">
-          <v-progress-linear indeterminate />
-          Saving
+  
+    <div v-if="isformScheduleExpire">
+      <template>
+        <v-alert 
+          text
+          prominent
+          type="error"
+        >
+          {{formScheduleExpireMessage}}
+        </v-alert>
+
+        <div v-if="isLateSubmissionAllowed">
+          <v-col cols="3" md="2">
+            <v-btn color="primary" @click="isformScheduleExpire = false">
+              <span>Create late submission</span>
+            </v-btn>
+          </v-col>
         </div>
-        <div v-else>Draft Saved</div>
-      </v-alert>
+      </template>
+    </div>
 
-      <slot name="alert" v-bind:form="form" />
+    <div v-else>
+      <div v-if="displayTitle">
+        <div v-if="!isFormPublic(form)">
+          <FormViewerActions
+            :draftEnabled="form.enableSubmitterDraft"
+            :formId="form.id"
+            :isDraft="submissionRecord.draft"
+            :permissions="permissions"
+            :readOnly="readOnly"
+            :submissionId="submissionId"
+            @save-draft="saveDraft"
+          />
+        </div>
+        <h1 class="my-6 text-center">{{ form.name }}</h1>
+      </div>
+      <div class="form-wrapper">
+        <v-alert
+          :value="saved || saving"
+          :class="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.class
+              : NOTIFICATIONS_TYPES.SUCCESS.class
+          "
+          :color="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.color
+              : NOTIFICATIONS_TYPES.SUCCESS.color
+          "
+          :icon="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.icon
+              : NOTIFICATIONS_TYPES.SUCCESS.icon
+          "
+          transition="scale-transition"
+        >
+          <div v-if="saving">
+            <v-progress-linear indeterminate />
+            Saving
+          </div>
+          <div v-else>Draft Saved</div>
+        </v-alert>
 
-      <BaseDialog
-        v-model="showSubmitConfirmDialog"
-        type="CONTINUE"
-        @close-dialog="showSubmitConfirmDialog = false"
-        @continue-dialog="continueSubmit"
-      >
-        <template #title>Please Confirm</template>
-        <template #text>Are you sure you wish to submit your form?</template>
-        <template #button-text-continue>
-          <span>Submit</span>
-        </template>
-      </BaseDialog>
+        <slot name="alert" v-bind:form="form" />
 
-      <Form
-        :form="formSchema"
-        :key="reRenderFormIo"
-        :submission="submission"
-        @submit="onSubmit"
-        @submitDone="onSubmitDone"
-        @submitButton="onSubmitButton"
-        @customEvent="onCustomEvent"
-        :options="viewerOptions"
-      />
-      <p v-if="version" class="text-right">Version: {{ version }}</p>
+        <BaseDialog
+          v-model="showSubmitConfirmDialog"
+          type="CONTINUE"
+          @close-dialog="showSubmitConfirmDialog = false"
+          @continue-dialog="continueSubmit"
+        >
+          <template #title>Please Confirm</template>
+          <template #text>Are you sure you wish to submit your form?</template>
+          <template #button-text-continue>
+            <span>Submit</span>
+          </template>
+        </BaseDialog>
+
+        <Form
+          :form="formSchema"
+          :key="reRenderFormIo"
+          :submission="submission"
+          @submit="onSubmit"
+          @submitDone="onSubmitDone"
+          @submitButton="onSubmitButton"
+          @customEvent="onCustomEvent"
+          :options="viewerOptions"
+        />
+        <p v-if="version" class="text-right">Version: {{ version }}</p>
+      </div>
     </div>
   </v-skeleton-loader>
 </template>
@@ -79,7 +102,7 @@ import { Form } from 'vue-formio';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
-import { isFormPublic } from '@/utils/permissionUtils';
+import { isFormPublic, isFormExpired } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
 
@@ -125,11 +148,15 @@ export default {
       saving: false,
       showSubmitConfirmDialog: false,
       submission: {
-        data: {},
+        data: {lateEntry:false},
       },
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      isformScheduleExpire: false,
+      attemptLateSubmission: false,
+      formScheduleExpireMessage: 'Quarterly Form Submission period has expired.',
+      isLateSubmissionAllowed: false
     };
   },
   computed: {
@@ -232,6 +259,14 @@ export default {
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
+          
+          if(response.data.schedule && response.data.schedule.enabled){
+            var formScheduleStatus = isFormExpired(response.data.schedule);
+            this.isformScheduleExpire = formScheduleStatus.expire;
+            this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
+            this.formScheduleExpireMessage = formScheduleStatus.message;
+          }
+          
         }
       } catch (error) {
         if (this.authenticated) {
@@ -275,9 +310,12 @@ export default {
       }
     },
     async sendSubmission(isDraft, submission) {
+      const formScheduleStatus = isFormExpired(this.form.schedule);
+      submission.data.lateEntry = formScheduleStatus.expire === true ? formScheduleStatus.allowLateSubmissions : false;
       const body = {
         draft: isDraft,
         submission: submission,
+
       };
 
       let response;
