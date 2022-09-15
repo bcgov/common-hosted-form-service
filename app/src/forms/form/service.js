@@ -1,6 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
+const moment = require('moment');
 
 const {
   FileStorage,
@@ -61,6 +62,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser.usernameIdp;
+      obj.schedule = data.schedule;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -123,7 +125,8 @@ const service = {
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
+        schedule: data.schedule
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
@@ -213,6 +216,7 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params) => {
+    
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -222,9 +226,9 @@ const service = {
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
+      .modify('filterCreatedAt', params.createdAt[0], params.createdAt[1])
       .modify('orderDefault');
-
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId'];
+      const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId'];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
@@ -232,12 +236,11 @@ const service = {
       } else {
         fields = params.fields.split(',').map(s => s.trim());
       }
-
+      fields.push('lateEntry');
       query.select(selection, fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))));
     } else {
-      query.select(selection);
+      query.select(selection, ['lateEntry'].map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))));
     }
-
     return query;
   },
 
