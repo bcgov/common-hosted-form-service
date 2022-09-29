@@ -1,20 +1,31 @@
 <template>
   <v-row class="d-print-none">
     <v-col v-if="formId">
-      <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
-        <v-btn color="primary" outlined>
-          <span>View All Submissions</span>
+      <ul id="menu">
+        <li class="active">
+          <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
+            <span>Bulk Submissions</span>
+          </router-link>
+        </li>
+        <li>
+          <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
+            <span> View all submissions/drafts</span>
+          </router-link>
+        </li>
+
+      </ul>
+    </v-col>
+    <v-col class="text-right">
+
+      <span v-if="allowSubmitterToUploadFile" class="ml-2">
+        <v-btn @click="switchView" color="primary">
+          <span v-if="!bulkFile" >Switch to bulk submission</span>
+          <span v-else>Switch to single submission</span>
         </v-btn>
-      </router-link>
-    </v-col>
-    <v-col v-if="allowSubmitterToUploadFile" class="text-right">
-      <v-btn color="primary" @click="switchView">
-        <span>{{ (!bulkFile) ? 'Switch to bulk submission' : 'Switch to sigle submission' }}</span>
-      </v-btn>
-    </v-col>
-    <v-col v-if="draftEnabled" class="text-right">
+      </span>
+
       <!-- Save a draft -->
-      <span v-if="canSaveDraft" class="ml-2">
+      <span v-if="canSaveDraft && draftEnabled" class="ml-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -32,7 +43,7 @@
       </span>
 
       <!-- Go to draft edit -->
-      <span v-if="showEditToggle && isDraft" class="ml-2">
+      <span v-if="showEditToggle && isDraft && draftEnabled" class="ml-2">
         <router-link
           :to="{
             name: 'UserFormDraftEdit',
@@ -51,11 +62,11 @@
           </v-tooltip>
         </router-link>
       </span>
-
       <!-- Go to draft edit -->
-      <span v-if="submissionId" class="ml-2">
+      <span v-if="submissionId && draftEnabled" class="ml-2">
         <ManageSubmissionUsers :isDraft="isDraft" :submissionId="submissionId" />
       </span>
+
     </v-col>
   </v-row>
 </template>
@@ -120,3 +131,19 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+   ul#menu li {
+    display:inline;
+    margin:1% ;
+    font-size:17px;
+   }
+   ul#menu li.active {
+    font-weight: bold;
+    border-bottom:3px solid #fcba19;
+   }
+   .element-right {
+    button {
+       float:right;
+    }
+   }
+</style>

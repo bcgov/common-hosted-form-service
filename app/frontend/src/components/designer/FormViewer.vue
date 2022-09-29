@@ -59,7 +59,11 @@
         </template>
       </BaseDialog>
       <div v-if="allowSubmitterToUploadFile && bulkFile" >
-        <FormViewerDownloadButton :form="form" :formSchema="formSchema" :json_csv="json_csv" />
+        <FormViewerDownloadButton
+          :form="form"
+          :formSchema="formSchema"
+          :json_csv="json_csv"
+          :formFields="formFields" />
       </div>
       <Form
         v-if="!bulkFile"
@@ -144,7 +148,7 @@ export default {
         data: String,
         file_name: String
       },
-      bulkFile: true
+      bulkFile: false
     };
   },
   computed: {
@@ -244,20 +248,21 @@ export default {
               `No published version found in response. FormID: ${this.formId}`
             );
           }
-          console.log(response.data);
+
           if (response.data.allowSubmitterToUploadFile)
             this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
           this.form = response.data;
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
-          const { data } = await formService.readVersionFields(this.form.id, this.versionIdToSubmitTo);
+          const { data } = await formService.readVersionFieldsObject(this.form.id, this.versionIdToSubmitTo);
 
           this.formFields = data;
+          console.log(data);
           this.json_csv.file_name= 'template_'+this.form.name+'_'+Date.now();
           var csv = {};
           for (let i=0; i<this.formFields.length;i++) {
-            csv[this.formFields[i]] = '';
+            csv[this.formFields[i].key] = '';
           }
           this.json_csv.data = [csv];
         }

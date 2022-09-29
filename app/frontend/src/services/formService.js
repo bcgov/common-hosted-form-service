@@ -175,6 +175,17 @@ export default {
   },
 
   /**
+   * @function readVersionFieldsObject
+   * Get a list of valid form fields in this form version
+   * @param {string} formId The form uuid
+   * @param {string} formVersionId The form version uuid
+   * @returns {Promise} An axios response
+   */
+  readVersionFieldsObject(formId, formVersionId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/fieldsObject`);
+  },
+
+  /**
    * @function listVersions
    * Get the versions for a form
    * @param {string} formId The form uuid

@@ -123,7 +123,7 @@
             </template>
           </v-checkbox>
 
-          <v-checkbox class="my-0" v-model="allowSubmitterToUploadFile">
+          <v-checkbox :disabled="userType === ID_MODE.PUBLIC" class="my-0" v-model="allowSubmitterToUploadFile">
             <template #label>
               <span>
                 Allow <strong> bulk submission </strong> upload
@@ -141,7 +141,7 @@
                       <li>the Confirmation ID</li>
                       <li>
                         the option for the user to email themselves a submission
-                        confirmation
+                        confirmation.
                       </li>
                     </ul>
                   </span>
@@ -302,6 +302,7 @@ export default {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
+        this.allowSubmitterToUploadFile = false;
       }
     },
   },

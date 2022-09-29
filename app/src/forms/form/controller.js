@@ -103,6 +103,14 @@ module.exports = {
       next(error);
     }
   },
+  readVersionFieldsObject: async (req, res, next) => {
+    try {
+      const response = await service.readVersionFieldsObject(req.params.formVersionId);
+      res.status(200).json(response.filter(f => f !== 'submit'));
+    } catch (error) {
+      next(error);
+    }
+  },
   publishVersion: async (req, res, next) => {
     try {
       const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.query, req.currentUser);

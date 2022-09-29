@@ -25,7 +25,7 @@ module.exports = {
       SwitchCase: 1
     }],
     'linebreak-style': ['error', 'unix'],
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    'no-console':  process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     quotes: ['error', 'single'],
     semi: ['error', 'always'],

@@ -141,7 +141,6 @@ export default {
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'File Name', align: 'start', value: 'originalName' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
-
       ];
 
       // If status flow enabled add that column
