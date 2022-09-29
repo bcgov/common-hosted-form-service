@@ -134,6 +134,10 @@ export default {
     },
     submissionId: String,
     versionId: String,
+    isDuplicate: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -203,8 +207,11 @@ export default {
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
         this.form = response.data.form;
-        this.formSchema = response.data.version.schema;
-        this.version = response.data.version.version;
+        if(!this.isDuplicate){ 
+          //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
+          this.formSchema = response.data.version.schema;
+          this.version = response.data.version.version;
+        }
         // Get permissions
         if (!this.staffEditMode && !isFormPublic(this.form)) {
           const permRes = await rbacService.getUserSubmissions({
@@ -320,7 +327,8 @@ export default {
       };
 
       let response;
-      if (this.submissionId) {
+      //let's check if this is a submission from existing one, If isDuplicate then create new submission if now isDuplicate then update the submission
+      if (this.submissionId && !this.isDuplicate) {
         // Updating an existing submission
         response = await formService.updateSubmission(this.submissionId, body);
       } else {
@@ -433,7 +441,11 @@ export default {
           // store our submission result...
           this.submissionRecord = Object.assign(
             {},
-            this.submissionId ? response.data.submission : response.data
+            this.submissionId && this.isDuplicate  //Check if this submission is creating with the existing one
+              ? response.data 
+              : this.submissionId && !this.isDuplicate 
+                ? response.data.submission 
+                : response.data
           );
           // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
@@ -473,7 +485,10 @@ export default {
     },
   },
   created() {
-    if (this.submissionId) {
+    if (this.submissionId && this.isDuplicate) { //Run when make new submission from existing one called.
+      this.getFormData();
+      this.getFormSchema(); //We need this to be called as well, because we need latest version of form
+    } else if(this.submissionId && !this.isDuplicate) {
       this.getFormData();
     } else {
       this.getFormSchema();
