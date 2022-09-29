@@ -258,7 +258,6 @@ export default {
           const { data } = await formService.readVersionFieldsObject(this.form.id, this.versionIdToSubmitTo);
 
           this.formFields = data;
-          console.log(data);
           this.json_csv.file_name= 'template_'+this.form.name+'_'+Date.now();
           var csv = {};
           for (let i=0; i<this.formFields.length;i++) {
