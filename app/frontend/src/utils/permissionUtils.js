@@ -272,7 +272,7 @@ export function getAvailableDates(keepAliveFor=0,keepAliveForInterval='days',sub
       substartDate.add(term,interval);
     } 
   }
-  console.log('availableDates-',availableDates);
+  // console.log('availableDates-',availableDates);
   return availableDates;
 }
 
