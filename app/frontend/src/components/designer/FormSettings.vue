@@ -121,14 +121,14 @@
               </span>
             </template>
           </v-checkbox>
-          
+
           <v-checkbox v-if="!isFormPublished" disabled class="my-0">
             <template #label>
-              Schedule form submission will be available in the Form settings after the 
+              Schedule form submission will be available in the Form settings after the
               form published.
             </template>
           </v-checkbox>
-          
+
           <v-checkbox v-if="isFormPublished" class="my-0" v-model="schedule.enabled">
             <template #label>
               Enable this form for schedule settings.
@@ -234,7 +234,7 @@
         <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished">
           <BasePanel class="fill-height">
             <template #title>Form Schedule Settings</template>
-            
+
             <v-row class="m-0">
               <v-col cols="4" md="4" class="pl-0 pr-0 pb-0">
                 <v-menu
@@ -303,10 +303,10 @@
                 Allow late submissions
               </template>
             </v-checkbox>
-          
+
             <v-expand-transition v-if="schedule.allowLateSubmissions.enabled" class="pl-3 ">
               <v-row class="m-0">
-              
+
                 <v-col cols="6" class="m-0 p-0">
                   <v-text-field
                     label="After close date for"
@@ -345,7 +345,7 @@
 
             <v-expand-transition v-if="schedule.repeatSubmission.enabled">
               <v-row class="m-0">
-              
+
                 <v-col cols="4" class="m-0 p-0">
                   <v-text-field
                     label="Every"
@@ -384,7 +384,7 @@
                     transition="scale-transition"
                     offset-y
                     min-width="290px"
-                    
+
                   >
                     <template v-slot:activator="{ on }">
                       <v-text-field
@@ -406,9 +406,9 @@
                       @input="repeatUntil = false"
                     ></v-date-picker>
                   </v-menu>
-                  
+
                 </v-col>
-                
+
               </v-row>
             </v-expand-transition>
 
@@ -427,28 +427,28 @@
                   :rules="closeMessage"
                 />
               </v-col>
-            </v-row> 
+            </v-row>
 
-            
 
-                
-            
-          
+
+
+
+
             <v-row class="p-0 m-0" v-if="schedule.enabled && schedule.openSubmissionDateTime && schedule.openSubmissionDateTime.length">
               <v-col class="p-0 m-0" cols="12" md="12">Summary of schedule setup:</v-col>
-              
-              <v-col class="p-0 m-0" cols="12" md="12" v-if="schedule.openSubmissionDateTime && schedule.openSubmissionDateTime.length">Form submission will be be open on 
+
+              <v-col class="p-0 m-0" cols="12" md="12" v-if="schedule.openSubmissionDateTime && schedule.openSubmissionDateTime.length">Form submission will be be open on
                 <b>{{schedule.openSubmissionDateTime}}</b>
               </v-col>
 
-              <v-col class="p-0 m-0" cols="12" md="12" v-if="schedule.enabled && schedule.allowLateSubmissions.enabled && schedule.allowLateSubmissions.forNext.term && schedule.allowLateSubmissions.forNext.intervalType">Form submission will be allowed for late submission after the close date for 
+              <v-col class="p-0 m-0" cols="12" md="12" v-if="schedule.enabled && schedule.allowLateSubmissions.enabled && schedule.allowLateSubmissions.forNext.term && schedule.allowLateSubmissions.forNext.intervalType">Form submission will be allowed for late submission after the close date for
                 <b>{{schedule.allowLateSubmissions.forNext.term}} {{schedule.allowLateSubmissions.forNext.intervalType}} </b>
               </v-col><br />
 
-              <v-col class="p-0 m-0" cols="12" md="12" v-if="schedule.repeatSubmission.enabled && schedule.repeatSubmission.everyTerm && schedule.repeatSubmission.repeatUntil && schedule.repeatSubmission.everyIntervalType">Form submission will be repeated 
+              <v-col class="p-0 m-0" cols="12" md="12" v-if="schedule.repeatSubmission.enabled && schedule.repeatSubmission.everyTerm && schedule.repeatSubmission.repeatUntil && schedule.repeatSubmission.everyIntervalType">Form submission will be repeated
                 <b>every {{schedule.repeatSubmission.everyTerm}} {{schedule.repeatSubmission.everyIntervalType}}</b> and wil be repeat until
                 <b>{{schedule.repeatSubmission.repeatUntil}}</b>
-                
+
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
@@ -464,7 +464,100 @@
                 </v-tooltip>
               </v-col>
             </v-row>
-            
+
+          </BasePanel>
+        </v-col>
+      </v-expand-transition>
+
+      <v-expand-transition>
+        <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished">
+          <BasePanel class="fill-height">
+            <template #title>Automated Notifications</template>
+
+
+
+            <v-checkbox class="my-0 m-0 p-0" v-model="schedule.allowLateSubmissions.enabled">
+              <template #label>
+                Enable automatic reminder notification setting
+              </template>
+            </v-checkbox>
+
+
+            <v-checkbox class="my-0 pt-0" v-model="schedule.repeatSubmission.enabled">
+              <template #label>
+                Additional notifications
+              </template>
+            </v-checkbox>
+
+            <v-expand-transition v-if="schedule.repeatSubmission.enabled">
+              <v-row class="m-0">
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-text-field
+                    label="Every"
+                    value="0"
+                    type="number"
+                    dense
+                    flat
+                    solid
+                    outlined
+                    v-model="schedule.repeatSubmission.everyTerm"
+                    class="m-0 p-0"
+                    :rules="repeatTerm"
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-select
+                    :items="AVAILABLE_PERIOD_OPTIONS"
+                    label="Period"
+                    dense
+                    flat
+                    solid
+                    outlined
+                    class="mr-2 pl-2"
+                    v-model="schedule.repeatSubmission.everyIntervalType"
+                    :rules="repeatIntervalType"
+                  ></v-select>
+                </v-col>
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-menu
+                    v-model="repeatUntil"
+                    data-test="menu-form-repeatUntil"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-model="schedule.repeatSubmission.repeatUntil"
+                        placeholder="yyyy-mm-dd"
+                        append-icon="event"
+                        v-on:click:append="repeatUntil = true"
+                        readonly
+                        label="Repeat until"
+                        v-on="on"
+                        dense
+                        outlined
+                        :rules="repeatUntilDate"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="schedule.repeatSubmission.repeatUntil"
+                      data-test="picker-form-repeatUntil"
+                      @input="repeatUntil = false"
+                    ></v-date-picker>
+                  </v-menu>
+
+                </v-col>
+
+              </v-row>
+            </v-expand-transition>
+
           </BasePanel>
         </v-col>
       </v-expand-transition>
@@ -523,11 +616,11 @@ export default {
       ],
       roundNumber: [
         (v) => !!v || 'This field is required & should be an integer.',
-        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99' 
+        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
       ],
       repeatTerm: [
         (v) => !!v || 'This field is required & should be an integer.',
-        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99' 
+        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
       ],
       intervalType: [
         (v) => !!v || 'This field is required & should be an interval.',
@@ -589,7 +682,7 @@ export default {
       var diffInDays = 0;
       if(this.schedule.openSubmissionDateTime && this.schedule.keepOpenForInterval && this.schedule.keepOpenForTerm){
         diffInDays = moment.duration({[this.schedule.keepOpenForInterval]: this.schedule.keepOpenForTerm}).asDays();// moment.duration(this.schedule.keepOpenForTerm, this.schedule.keepOpenForInterval).days();
-        
+
         if(this.schedule.allowLateSubmissions.enabled && this.schedule.allowLateSubmissions.forNext.term && this.schedule.allowLateSubmissions.forNext.intervalType){
           let durationoflatesubInDays = 0;
           if(this.schedule.allowLateSubmissions.forNext.intervalType === 'days'){
@@ -597,11 +690,11 @@ export default {
           }else{
             durationoflatesubInDays = moment.duration({[this.schedule.allowLateSubmissions.forNext.intervalType]: this.schedule.allowLateSubmissions.forNext.term}).asDays();
           }
-          
+
           diffInDays = Number(diffInDays)+Number(durationoflatesubInDays);
         }
       }
-      
+
       switch (true) {
         case (diffInDays > 7 && diffInDays <= 30):
           arrayOfption = ['months','quarters','years'];
@@ -610,7 +703,7 @@ export default {
         case (diffInDays > 30 && diffInDays <= 91):
           arrayOfption = ['quarters','years'];
           break;
-      
+
         case (diffInDays > 91):
           arrayOfption = ['years'];
           break;
@@ -619,7 +712,7 @@ export default {
           arrayOfption = ['weeks','months','quarters','years'];
           break;
       }
-      
+
       return arrayOfption;
     }
   },
