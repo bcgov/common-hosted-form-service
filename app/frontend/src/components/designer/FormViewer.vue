@@ -1,9 +1,9 @@
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-  
-    <div v-if="isformScheduleExpire">
+
+    <div v-if="!isformScheduleExpire">
       <template>
-        <v-alert 
+        <v-alert
           text
           prominent
           type="error"
@@ -207,7 +207,7 @@ export default {
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
         this.form = response.data.form;
-        if(!this.isDuplicate){ 
+        if(!this.isDuplicate){
           //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
           this.formSchema = response.data.version.schema;
           this.version = response.data.version.version;
@@ -267,14 +267,14 @@ export default {
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
-          
+
           if(response.data.schedule && response.data.schedule.enabled){
             var formScheduleStatus = isFormExpired(response.data.schedule);
             this.isformScheduleExpire = formScheduleStatus.expire;
             this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
             this.formScheduleExpireMessage = formScheduleStatus.message;
           }
-          
+
         }
       } catch (error) {
         if (this.authenticated) {
@@ -442,9 +442,9 @@ export default {
           this.submissionRecord = Object.assign(
             {},
             this.submissionId && this.isDuplicate  //Check if this submission is creating with the existing one
-              ? response.data 
-              : this.submissionId && !this.isDuplicate 
-                ? response.data.submission 
+              ? response.data
+              : this.submissionId && !this.isDuplicate
+                ? response.data.submission
                 : response.data
           );
           // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
