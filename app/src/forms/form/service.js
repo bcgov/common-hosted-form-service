@@ -322,6 +322,7 @@ const service = {
     // Recursively find all field key names
     // TODO: Consider if this should be a form utils function instead?
     let fields = [];
+
     const getParent = (obj) => {
       let key = (obj.key)? obj.key : '';
       let type = (obj.type) ? obj.type : '';
@@ -329,6 +330,7 @@ const service = {
       let pt =  key+ '_'+type+ '_' + label ;
       return pt;
     };
+
     const getFieldsObject = (obj, parent)=> {
       return { id: obj.id, key: obj.key, type: obj.type, label: obj.label, value:obj.values, unique: obj.unique, format: obj.format, parent: parent };
     };
@@ -348,7 +350,6 @@ const service = {
     };
 
     const findSubFields = (o, p) => {
-
       let flds = [];
       const findSubField = (obj, parent) => {
         if (!obj.hidden) {
@@ -365,8 +366,6 @@ const service = {
       findSubField(o, p);
       return flds;
     };
-
-
     const  fieldsManager = (obj, parent) => {
       let pt = getParent(obj);
       let results = [];
@@ -426,7 +425,7 @@ const service = {
       }
       return results;
     };
-    const getSymbs = (type) =>{
+    const getSymbs = (type) => {
       switch (type) {
         case 'datagrid' :
           return '$';
@@ -450,7 +449,6 @@ const service = {
         }
       }
     };
-
     const { schema } = await service.readVersion(formVersionId);
     findFields(schema, '', fields);
     return fields;
@@ -536,7 +534,6 @@ const service = {
       throw err;
     }
   },
-
   listSubmissionFields: (formVersionId, fields) => {
     return FormSubmission.query()
       .select('id', fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))))
@@ -558,7 +555,6 @@ const service = {
       .modify('filterFormVersionId', params.formVersionId)
       .modify('orderDescending');
   },
-
   createDraft: async (formId, data, currentUser) => {
     let trx;
     try {
@@ -580,7 +576,6 @@ const service = {
       throw err;
     }
   },
-
   updateDraft: async (formVersionDraftId, data, currentUser) => {
     let trx;
     try {
@@ -598,19 +593,16 @@ const service = {
       throw err;
     }
   },
-
   readDraft: async (formVersionDraftId) => {
     return FormVersionDraft.query()
       .findById(formVersionDraftId)
       .throwIfNotFound();
   },
-
   deleteDraft: async (formVersionDraftId) => {
     return FormVersionDraft.query()
       .deleteById(formVersionDraftId)
       .throwIfNotFound();
   },
-
   publishDraft: async (formId, formVersionDraftId, currentUser) => {
     let trx;
     try {
@@ -647,7 +639,6 @@ const service = {
       throw err;
     }
   },
-
   getStatusCodes: async (formId) => {
     return FormStatusCode.query()
       .withGraphFetched('statusCode')
