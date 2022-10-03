@@ -175,7 +175,6 @@
       </p>
     </BaseInfoCard>
     <FormBuilder
-      id="formBuilder"
       :form="formSchema"
       :key="reRenderFormIo"
       :options="designerOptions"
@@ -453,17 +452,14 @@ export default {
     },
     onAddSchemaComponent(_info, _parent, _path, _index, isNew) {
       if (isNew) {
-        console.log('new component added to schema');
         // Component Add Start, the user can still cancel/remove the add
         this.patch.componentAddedStart = true;
       } else {
-        console.log('component moved in schema');
         // The user has initiated a move
         this.patch.componentMovedStart = true;
       }
     },
     onRemoveSchemaComponent() {
-      console.log('component removed in schema');
       // Component remove start
       this.patch.componentRemovedStart = true;
     },
@@ -480,7 +476,6 @@ export default {
         if (flags !== undefined && modified !== undefined) {
           // Component was pasted here or edited and saved
           if (this.patch.componentAddedStart) {
-            console.log('component added');
             this.addPatchToHistory();
           } else {
             // Tab changed, Edit saved, paste occurred
@@ -488,7 +483,6 @@ export default {
               // Tab changed
               this.resetHistoryFlags();
             } else {
-              console.log('edit saved or paste occurred');
               // Edit saved or paste occurred
               this.addPatchToHistory();
             }
@@ -496,7 +490,6 @@ export default {
         } else {
           // If we removed a component but not during an add action
           if ((!this.patch.componentAddedStart && this.patch.componentRemovedStart) || this.patch.componentMovedStart) {
-            console.log('component removed');
             // Component was removed or moved
             this.addPatchToHistory();
           }
