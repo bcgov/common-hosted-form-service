@@ -235,7 +235,7 @@ export default {
         componentMovedStart: false,
         history: [],
         index: -1,
-        MAX_PATCHES: 999,
+        MAX_PATCHES: 30,
         originalSchema: null,
         redoClicked: false,
         undoClicked: false,

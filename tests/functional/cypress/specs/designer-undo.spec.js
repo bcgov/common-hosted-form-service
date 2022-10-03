@@ -38,16 +38,6 @@ describe('Form Designer', () => {
     cy.get('h1').contains('Form Design');
   });
 
-  afterEach(() => {
-    /*
-    cy.intercept(`/${depEnv}/api/v1/forms/*`).as('getForm');
-    cy.get('button').contains('settings').parent().click();
-    cy.wait('@getForm');
-    cy.get('button').contains('delete').click();
-    cy.get('button').contains('Delete').click();
-    '*/
-  });
- 
   it('Visits the designer page', () => {
     cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
     cy.get('button').contains('Basic Fields').click();
@@ -72,10 +62,28 @@ describe('Form Designer', () => {
     }
     cy.get('i').contains('undo').parent().contains((numComponents).toString());
     cy.get('i').contains('redo').parent().contains('0');
-    /*
-    cy.intercept('POST', `/${depEnv}/api/v1/forms`).as('saveForm');
-    cy.get('button').contains('save').click();
-    cy.wait(['@saveForm', '@getForm']);
-    */
+  });
+
+  it('Does not increment actions when switching tabs', () => {
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    cy.get('button').contains('Basic Layout').click();
+    cy.get('div.formio-builder-form').then($el => {
+      const bounds = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Tabs')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', bounds.x, -100, { force: true })
+        .trigger('mouseup', { force: true });
+
+      cy.wait(100);
+      cy.get('button').contains('Add Another').click();
+      cy.get('tbody').children().last().find('input').first().type('Tab 2');
+      cy.get('button').contains('Save').click();
+      cy.get('a').contains('Tab 2').click();
+      cy.get('i').contains('undo').parent().contains('1');
+      cy.get('i').contains('redo').parent().contains('0');
+      cy.get('a').contains('Tab 1').click();
+      cy.get('i').contains('undo').parent().contains('1');
+      cy.get('i').contains('redo').parent().contains('0');
+    });
   });
 });
