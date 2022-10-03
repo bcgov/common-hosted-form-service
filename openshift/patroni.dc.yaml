@@ -340,19 +340,19 @@ parameters:
     description: The base OpenShift docker registry
     displayName: Docker Image Registry
     required: true
-    value: image-registry.openshift-image-registry.svc:5000
+    value: artifacts.developer.gov.bc.ca
   - name: IMAGE_STREAM_NAMESPACE
     description:
       The OpenShift Namespace where the patroni and postgresql ImageStream
       resides.
     displayName: ImageStream Namespace
     required: true
-    value: bcgov
+    value: bcgov-docker-local
   - name: IMAGE_STREAM_TAG
     description: Patroni ImageTag
     displayName: ImageStream Tag
     required: true
-    value: patroni-postgres:12.4-latest
+    value: patroni-postgres:2.0.1-12.4-latest
   - name: CPU_REQUEST
     description: Starting amount of CPU the container can use.
     displayName: CPU Request
