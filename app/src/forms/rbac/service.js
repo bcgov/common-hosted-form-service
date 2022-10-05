@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
-
+const reminderService  = require('../email/reminderService');
 const {
   FormRoleUser,
   FormSubmissionUser,
@@ -14,13 +14,19 @@ const authService = require('../auth/service');
 
 const service = {
 
+  sendReminderToSubmitter: async ()=> {
+    var q = reminderService._sendReminderToSubmitter();
+    for(let i = 0 ; i < q.length ; i++) {
+      reminderService.initStatement(q[i]);
+    }
+    return { message:'Emails send'};
+  },
   list: async () => {
     return FormRoleUser.query()
       .allowGraph('[form, userRole, user]')
       .withGraphFetched('[form, userRole, user]')
       .modify('orderCreatedAtDescending');
   },
-
   create: async (data) => {
     let trx;
     try {

@@ -124,7 +124,7 @@ export function isFormPublic(form) {
  * Returns true for a form's schedule object if this form schedule available for that period
  * @param {Object} form Schedule data
  * @returns {boolean} TRUE if form not expired and Available to submission
- * 
+ *
  */
 export function isFormExpired(formSchedule = {}) {
   var result = {
@@ -136,7 +136,7 @@ export function isFormExpired(formSchedule = {}) {
   if(formSchedule && formSchedule.enabled)
   {
     //Check if Form open date is in past or Is form already started for submission
-    if(formSchedule.openSubmissionDateTime){ 
+    if(formSchedule.openSubmissionDateTime){
       var startDate = moment(formSchedule.openSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
       var isFormStartedAlready = moment().diff(startDate, 'seconds'); //If a positive number it means form get started
       if(isFormStartedAlready >= 0){
@@ -156,7 +156,7 @@ export function isFormExpired(formSchedule = {}) {
             formSchedule.repeatSubmission.repeatUntil
           ); //moment(formSchedule.closeSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
           var isBetweenStartAndCloseDate = moment().isBetween(startDate, closeDate);
-          
+
           if(isBetweenStartAndCloseDate){
             /** Check if form is Repeat enabled - start */
             /** Check if form is Repeat enabled and alow late submition - start */
@@ -172,10 +172,10 @@ export function isFormExpired(formSchedule = {}) {
                 formSchedule.repeatSubmission.repeatUntil
               );
               for (let i = 0; i < availableDates.length; i++) {
-                
+
                 //Check if today is the day when a submitter can submit the form for given period of repeat submission
                 var repeatIsBetweenStartAndCloseDate = moment().isBetween(availableDates[i].startDate, availableDates[i].closeDate);
-                
+
                 if(repeatIsBetweenStartAndCloseDate) {
                   result = {...result,expire:false}; //Form is available for given period to be submit.
                   break;
@@ -190,23 +190,23 @@ export function isFormExpired(formSchedule = {}) {
                   // );
                   if(isallowLateSubmissions){ //If late submission is allowed for the given repeat submission period then stop checking for other dates
                     result = {
-                      ...result, 
-                      expire:true, 
+                      ...result,
+                      expire:true,
                       allowLateSubmissions:isallowLateSubmissions
                     };
                     break;
-                  } 
+                  }
                   /** Check if form is alow late submition - end */
                 }else{
                   result = {...result, expire:true, allowLateSubmissions:false};
-                } 
-              } 
+                }
+              }
             }
             /** Check if form is Repeat enabled and alow late submition - end */
             /** Check if form is Repeat enabled - end */
           }else{
             //if close date not valid or not-in future OR close date not in between start and Today then block formSubmission but check the late submission if allowed
-            
+
             if(formSchedule.allowLateSubmissions.enabled){
               /** Check if form is alow late submition - start */
               result = {...result, expire:true, allowLateSubmissions:isEligibleLateSubmission(closeDate,formSchedule.allowLateSubmissions.forNext.term,formSchedule.allowLateSubmissions.forNext.intervalType)};
@@ -228,11 +228,11 @@ export function isFormExpired(formSchedule = {}) {
 /**
  * @function isEligibleLateSubmission
  * Get All possible dates in given period with Term and Interval
- * 
+ *
  * @param {Object[]} date An object of Moment JS date
  * @param {Integer} term An integer of number of Days/Weeks OR Years
  * @param {String} interval A string of days,Weeks,months
- * @returns {Boolean} Return true if form is available for late submission 
+ * @returns {Boolean} Return true if form is available for late submission
  */
 export function isEligibleLateSubmission(date,term,interval){
   var gracePeriodDate = moment(date,'YYYY-MM-DD HH:mm:ss').add(term,interval).format('YYYY-MM-DD HH:mm:ss');
@@ -243,7 +243,7 @@ export function isEligibleLateSubmission(date,term,interval){
 /**
  * @function getAvailableDates
  * Get All possible dates in given period with Term and Interval
- * 
+ *
  * @param {Integer} keepAliveFor An integer for number of days
  * @param {String} keepAliveForInterval A string of days,Weeks,months
  * @param {Object[]} substartDate An object of Moment JS date
@@ -254,7 +254,7 @@ export function isEligibleLateSubmission(date,term,interval){
  * @param {Object[]} repeatUntil An object of Moment JS date
  * @returns {Object[]} An object array of Available dates in given period
  */
-export function getAvailableDates(keepAliveFor=0,keepAliveForInterval='days',submstartDate,term=null,interval=null,allowLateTerm=null,allowLateInterval=null,repeatUntil) {
+export function getAvailableDates(keepAliveFor=0, keepAliveForInterval='days',submstartDate,term=null,interval=null,allowLateTerm=null,allowLateInterval=null,repeatUntil) {
   let substartDate = moment(submstartDate);
   repeatUntil = moment(repeatUntil);
   var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil);
@@ -264,13 +264,13 @@ export function getAvailableDates(keepAliveFor=0,keepAliveForInterval='days',sub
       var newDate = substartDate.clone();
       if(substartDate.isBefore(repeatUntil)){
         availableDates.push(Object({
-          startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'), 
+          startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
           closeDate:newDate.add(keepAliveFor,keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
           graceDate:newDate.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS')
         }));
       }
       substartDate.add(term,interval);
-    } 
+    }
   }
   // console.log('availableDates-',availableDates);
   return availableDates;
@@ -279,7 +279,7 @@ export function getAvailableDates(keepAliveFor=0,keepAliveForInterval='days',sub
 /**
  * @function getCalculatedCloseSubmissionDate
  * Get calculated Close date for a Form schedule setting with the given scenario
- * 
+ *
  * @param {Object[]} openDate An object of Moment JS date
  * keepOpenForTerm
  * keepOpenForInterval
@@ -305,7 +305,7 @@ export function getCalculatedCloseSubmissionDate(openDate=moment(),keepOpenForTe
       calculatedCloseDate = repeatSubmissionUntil.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
     }
   }
-  
+
   return calculatedCloseDate;
 }
 

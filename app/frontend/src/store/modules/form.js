@@ -17,7 +17,7 @@ const genInitialSchedule = () => ({
     'onSpecificDay': null,
     'everyIntervalType': null,
     'keepAliveFor': null,
-    
+
   },
   'allowLateSubmissions': {
     'enabled': null,
@@ -26,6 +26,13 @@ const genInitialSchedule = () => ({
       'intervalType': null
     }
   }
+});
+
+
+const genInitialReminder = () => ({
+  'enabled':null,
+  'allowAdditionalNotifications': null,
+  'intervalType': null
 });
 
 const genInitialForm = () => ({
@@ -40,6 +47,7 @@ const genInitialForm = () => ({
   showSubmissionConfirmation: true,
   snake: '',
   submissionReceivedEmails: [],
+  reminder: genInitialReminder(),
   schedule: genInitialSchedule(),
   userType: IdentityMode.TEAM,
   versions: []
@@ -242,12 +250,12 @@ export default {
         data.idps = identityProviders.idps;
         data.userType = identityProviders.userType;
         data.sendSubRecieviedEmail = data.submissionReceivedEmails && data.submissionReceivedEmails.length;
-        
+
         data.schedule = {
           ...genInitialSchedule(),
           ...data.schedule
         };
-       
+
         commit('SET_FORM', data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -312,6 +320,10 @@ export default {
           ...state.form.schedule
         } : {};
 
+        const reminder = state.form.schedule.enabled ? {
+          ...state.form.reminder
+        } : {};
+
         await formService.updateForm(state.form.id, {
           name: state.form.name,
           description: state.form.description,
@@ -323,7 +335,8 @@ export default {
           }),
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
-          schedule: schedule
+          schedule: schedule,
+          reminder : reminder
         });
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -386,7 +399,7 @@ export default {
           state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columnList : undefined;
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
-          : await formService.listSubmissions(formId, { deleted: false, fields: fields, createdAt: createdAt }); 
+          : await formService.listSubmissions(formId, { deleted: false, fields: fields, createdAt: createdAt });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {

@@ -44,4 +44,9 @@ routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) =
   await controller.setUserForms(req, res, next);
 });
 
+
+routes.get('/reminder', async (req, res, next) => {
+  await controller.sendReminderToSubmitter(req, res, next);
+});
+
 module.exports = routes;

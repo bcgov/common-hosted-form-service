@@ -1,7 +1,7 @@
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
 
-    <div v-if="!isformScheduleExpire">
+    <div v-if="isformScheduleExpire">
       <template>
         <v-alert
           text
