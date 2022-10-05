@@ -62,6 +62,7 @@ const service = {
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser.usernameIdp;
       obj.schedule = data.schedule;
+      obj.reminder = data.reminder;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -125,7 +126,8 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.usernameIdp,
-        schedule: data.schedule
+        schedule: data.schedule,
+        reminder: data.reminder
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);

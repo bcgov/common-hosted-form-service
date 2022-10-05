@@ -234,7 +234,6 @@
         <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished">
           <BasePanel class="fill-height">
             <template #title>Form Schedule Settings</template>
-
             <v-row class="m-0">
               <v-col cols="4" md="4" class="pl-0 pr-0 pb-0">
                 <v-menu
@@ -470,97 +469,45 @@
       </v-expand-transition>
 
       <v-expand-transition>
-        <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished">
+        <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished && this.userType !== this.ID_MODE.PUBLIC">
           <BasePanel class="fill-height">
             <template #title>Automated Notifications</template>
 
-
-
-            <v-checkbox class="my-0 m-0 p-0" v-model="schedule.allowLateSubmissions.enabled">
+            <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
               <template #label>
                 Enable automatic reminder notification setting
               </template>
             </v-checkbox>
 
-
-            <v-checkbox class="my-0 pt-0" v-model="schedule.repeatSubmission.enabled">
+            <v-checkbox class="my-0 pt-0" v-model="reminder.allowAdditionalNotifications">
               <template #label>
                 Additional notifications
               </template>
             </v-checkbox>
 
-            <v-expand-transition v-if="schedule.repeatSubmission.enabled">
+            <v-expand-transition v-if="reminder.allowAdditionalNotifications">
               <v-row class="m-0">
 
-                <v-col cols="4" class="m-0 p-0">
-                  <v-text-field
-                    label="Every"
-                    value="0"
-                    type="number"
-                    dense
-                    flat
-                    solid
-                    outlined
-                    v-model="schedule.repeatSubmission.everyTerm"
-                    class="m-0 p-0"
-                    :rules="repeatTerm"
-                  ></v-text-field>
-                </v-col>
-
-                <v-col cols="4" class="m-0 p-0">
+                <v-col cols="12" class="m-0 p-0">
                   <v-select
-                    :items="AVAILABLE_PERIOD_OPTIONS"
-                    label="Period"
+                    :items="AVAILABLE_PERIOD_INTERVAL"
+                    label="Period/Interval"
                     dense
                     flat
                     solid
                     outlined
                     class="mr-2 pl-2"
-                    v-model="schedule.repeatSubmission.everyIntervalType"
-                    :rules="repeatIntervalType"
+                    v-model="reminder.intervalType"
+                    :rules="repeatIntervalTypeReminder"
                   ></v-select>
                 </v-col>
-
-                <v-col cols="4" class="m-0 p-0">
-                  <v-menu
-                    v-model="repeatUntil"
-                    data-test="menu-form-repeatUntil"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="290px"
-
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-text-field
-                        v-model="schedule.repeatSubmission.repeatUntil"
-                        placeholder="yyyy-mm-dd"
-                        append-icon="event"
-                        v-on:click:append="repeatUntil = true"
-                        readonly
-                        label="Repeat until"
-                        v-on="on"
-                        dense
-                        outlined
-                        :rules="repeatUntilDate"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="schedule.repeatSubmission.repeatUntil"
-                      data-test="picker-form-repeatUntil"
-                      @input="repeatUntil = false"
-                    ></v-date-picker>
-                  </v-menu>
-
-                </v-col>
-
               </v-row>
             </v-expand-transition>
 
           </BasePanel>
         </v-col>
       </v-expand-transition>
+
     </v-row>
   </v-container>
 </template>
@@ -626,8 +573,12 @@ export default {
         (v) => !!v || 'This field is required & should be an interval.',
       ],
       repeatIntervalType: [
-        (v) => !!v || 'This field is required & should be an interval.',
+        (v) => !! v || 'This field is required & should be an interval.',
         (v) => this.AVAILABLE_PERIOD_OPTIONS.includes(v) || 'This field is required & should be a valid interval.',
+      ],
+      repeatIntervalTypeReminder: [
+        (v) => !! v || 'This field is required & should be an interval.',
+        (v) => this.AVAILABLE_PERIOD_INTERVAL.includes(v) || 'This field is required & should be a valid interval.',
       ],
       closeMessage: [
         (v) => !!v || 'This field is required.',
@@ -650,6 +601,7 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.schedule',
+      'form.reminder',
       'form.versions'
     ]),
     ID_MODE() {
@@ -714,6 +666,10 @@ export default {
       }
 
       return arrayOfption;
+    },
+    AVAILABLE_PERIOD_INTERVAL() {
+      var arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+      return arrayOfption;
     }
   },
   methods: {
@@ -722,7 +678,9 @@ export default {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
+        this.reminder = {};
       }
+      console.log(this.form);
     },
   },
 };
