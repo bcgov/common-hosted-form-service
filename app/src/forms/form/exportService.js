@@ -4,6 +4,11 @@ const Problem = require('api-problem');
 
 const { Form, FormVersion } = require('../common/models');
 const moment = require('moment');
+const { Roles } = require('../common/constants');
+
+const {
+  UserFormAccess
+} = require('../common/models');
 class SubmissionData extends Model {
   static get tableName() {
     return 'submissions_data_vw';
@@ -300,12 +305,11 @@ const service = {
   },
   _getListSubmitersByFormId :  (formId, obj ) => {
 
-    return [ SubmissionData.query()
-      .select('confirmationId', 'createdAt', 'submissionId', 'formVersionId','userId','firstName','lastName', 'email')
+    return [ UserFormAccess.query()
+      .select('formVersionId','formName','userId','firstName','lastName', 'email')
       .where('formId',formId)
-      .modify('filterDrafts', false)
-      .modify('filterDeleted', false)
-      .modify('filterCreatedAt', obj.report.old_dates.startDate, obj.report.old_dates.graceDate)
+      .modify('filterActive', true)
+      .modify('filterByAccess', undefined, Roles.FORM_SUBMITTER, undefined)
       .modify('orderDefault'),
     SubmissionData.query()
       .select('confirmationId', 'createdAt', 'submissionId', 'formVersionId','userId','firstName','lastName', 'email')

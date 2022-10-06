@@ -12,6 +12,7 @@ const rbac = require('../forms/rbac');
 const role = require('../forms/role');
 const user = require('../forms/user');
 const submission = require('../forms/submission');
+const publicRoute = require('../forms/public');
 
 admin.mount(router);
 const filePath = file.mount(router);
@@ -21,6 +22,7 @@ const rbacPath = rbac.mount(router);
 const rolePath = role.mount(router);
 const userPath = user.mount(router);
 const submissionPath = submission.mount(router);
+const publicPath = publicRoute.mount(router);
 
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../docs/v1.api-spec.yaml'), 'utf8');
@@ -41,7 +43,8 @@ router.get('/', (_req, res) => {
       rbacPath,
       rolePath,
       submissionPath,
-      userPath
+      userPath,
+      publicPath
     ]
   });
 });
