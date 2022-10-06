@@ -1,13 +1,14 @@
 
 const { getAvailableDates } = require('../common/utils');
 const exportService  = require('../form/exportService');
+//const emailService  = require('./emailService');
 const { Form } = require('../common/models');
 const moment = require('moment');
 const service = {
-  _getCurrentPeriod(dates) {
+  getCurrentPeriod(dates) {
     var now = moment().format('YYYY-MM-DD HH:MM:SS');
 
-    for (let i = 0; i<dates.length; i++) {
+    for (let i = 0; i <dates.length; i++) {
       if(moment(now).isBetween(dates[i].startDate, dates[i].graceDate)) {
         const rep ={
           state : 1,
@@ -29,7 +30,7 @@ const service = {
     };
 
   },
-  _listDates: (schedule) =>{
+  listDates: (schedule) =>{
     return  getAvailableDates(
       schedule.keepOpenForTerm,
       schedule.keepOpenForInterval,
@@ -49,41 +50,58 @@ const service = {
       .then(forms => {
         for (let i = 0; i< forms.length; i++) {
           var obj = {};
-          obj.avalaibleDate = service._listDates(forms[i].schedule);
+          obj.avalaibleDate = service.listDates(forms[i].schedule);
           if (obj.avalaibleDate.length<=1) {
-            continue ;
+            continue;
           }
-          obj.report = service._getCurrentPeriod(obj.avalaibleDate);
-          obj.formId = forms[i].id;
-          obj.formName = forms[i].name;
-          if (obj.report .state != 1 || obj.report.index <= 0) continue;
+          obj.report = service.getCurrentPeriod(obj.avalaibleDate);
+          obj.form= forms[i];
+          if (obj.report.state != 1 || obj.report.index <= 0) continue;
           reminder.push(exportService._getListSubmitersByFormId(forms[i].id, obj));
         }
-
       });
+
     return reminder;
   },
-  runQueries : (queries) => {
+  runQueries : async (queries) => {
     var obj = queries[2];
-    queries[0].then(async function(passed_data) {
-      obj.passed_submiters = passed_data;
+    obj.fillers = [];
+    await queries[0].then(function(data) {
+      obj.submiters = data;
     });
-    queries[1].then(async function(data) {
-      obj.current_submiters = data;
-    });
-
-    return obj;
+    if(obj.submiters && obj.submiters.length>0){
+      await queries[1].then(function(data2) {
+        obj.fillers = (data2) ? data2 : [];
+      });
+    }
+    return  obj;
   },
-  getDifference : (array1, array2) => {
+  getDifference : async (array1, array2) => {
     return array1.filter(object1 => {
       return !array2.some(object2 => {
         return object1.userId === object2.userId;
       });
     });
   },
-  initStatement : (query) => {
-    var obj = service.runQueries(query);
+  _initStatement : async (query) => {
+    const obj = await service.runQueries(query);
+
+    const statement = {};
+    statement.form = obj.form;
+    statement.report = obj.report;
+    if(!obj.submiters || obj.submiters.length == 0) return ;
+    if(!obj.fillers || obj.fillers.length == 0) statement.submiters = obj.submiters;
+    if( (obj.submiters && obj.fillers) && (obj.submiters.length != 0 && obj.fillers.length != 0) ) statement.submiters = await service.getDifference(obj.submiters, obj.fillers);
+    console.log(statement);
+    /// service.initMaillSender(statement);
+    return;
+
+  },
+  initMaillSender: (statement) => {
+    statement.submiters.forEach((element)=>{
+      console.log(element);
+      // emailService.formOpen({form : statement.form,report : statement.report,submiter : element});
+    });
   }
 };
-
 module.exports = service;

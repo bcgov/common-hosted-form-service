@@ -112,6 +112,55 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
   };
 };
 
+/** Helper function used to build the email template based on email type and contents for reminder */
+const buildEmailTemplateFormForReminder = async (form, emailType, contextToVal) => {
+  let configData = {};
+
+  if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
+    configData = {
+      bodyTemplate: 'reminder-form-open.html',
+      title: `Reminder for ${form.name} `,
+      subject: 'reminder',
+      messageLinkText: `The form ${form.name} is open.`,
+      priority: 'normal',
+      form,
+    };
+  } else if (emailType === EmailTypes.REMINDER_FORM_NOT_FILL) {
+    configData = {
+      bodyTemplate: 'reminder-form-not-fill.html',
+      title: `${form.name} Has Been Completed`,
+      subject: 'Form Has Been Completed',
+      messageLinkText: `Your submission from ${form.name} has been Completed.`,
+      priority: 'normal',
+      form,
+    };
+  } else if (emailType === EmailTypes.REMINDER_FORM_WILL_CLOSE) {
+    configData = {
+      bodyTemplate: 'submission-unassigned.html',
+      title: `Uninvited From ${form.name} Draft`,
+      subject: 'Uninvited From Submission Draft',
+      messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
+      priority: 'normal',
+      form,
+    };
+
+  }
+
+  return {
+    configData,
+    contexts: [{
+      context: {
+        allFormSubmissionUrl: '',
+        form: configData.form,
+        messageLinkText: configData.messageLinkText,
+        messageLinkUrl: 'null',
+        title: configData.title
+      },
+      to: contextToVal
+    }]
+  };
+};
+
 const service = {
   /**
    * @function _appUrl
@@ -158,7 +207,6 @@ const service = {
       body,
       template.substring(bodyInsertIndex, template.length),
     ].join('');
-
     return result;
   },
 
@@ -361,6 +409,26 @@ const service = {
         submissionId: submissionId,
         body: body,
         referer: referer
+      });
+      throw e;
+    }
+  },
+  /**
+   * @function formOpen
+   * Manual email confirmation after form has been submitted
+   * @param {object} information about the submitter and the form
+   * @returns The result of the email merge operation
+   */
+  formOpen: async (obj) => {
+    try {
+      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, EmailTypes.REMINDER_FORM_OPEN);
+      return service._sendEmailTemplate(configData, contexts);
+
+    } catch (e) {
+      log.error(e.message, {
+        function: EmailTypes.REMINDER_FORM_OPEN,
+        formId: obj.form.id,
+        body: obj.body,
       });
       throw e;
     }
