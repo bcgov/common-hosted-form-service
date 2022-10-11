@@ -1,0 +1,30 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pi
+spec:
+  schedule: "0 0 * * *"
+  concurrencyPolicy: "Replace"
+  startingDeadlineSeconds: 200
+  suspend: false
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            parent: "cronjobpi"
+        spec:
+        containers:
+          - name: my-container
+            image: curlimages/curl:7.82
+            command:
+              - sh
+              - '-c'
+            args:
+              - >-
+               curl -X GET -ks
+               http://localhost:8080/app/api/v1/public/reminde
+      restartPolicy: OnFailure
+

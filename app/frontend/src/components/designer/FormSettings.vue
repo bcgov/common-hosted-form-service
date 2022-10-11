@@ -469,7 +469,7 @@
       </v-expand-transition>
 
       <v-expand-transition>
-        <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished && this.userType !== this.ID_MODE.PUBLIC">
+        <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished && this.userType ==='team' ">
           <BasePanel class="fill-height">
             <template #title>Automated Notifications</template>
 
@@ -479,7 +479,7 @@
               </template>
             </v-checkbox>
 
-            <v-checkbox class="my-0 pt-0" v-model="reminder.allowAdditionalNotifications">
+            <v-checkbox class="my-0 pt-0" v-model="reminder.allowAdditionalNotifications" >
               <template #label>
                 Additional notifications
               </template>
@@ -664,12 +664,47 @@ export default {
           arrayOfption = ['weeks','months','quarters','years'];
           break;
       }
-
       return arrayOfption;
+    },
+    INTERVAL_OPEN() {
+      return  moment.duration({[this.schedule.keepOpenForInterval]: this.schedule.keepOpenForTerm}).asDays();
     },
     AVAILABLE_PERIOD_INTERVAL() {
       var arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+
+      var diffInDays = this.INTERVAL_OPEN;
+      switch (true) {
+        case (diffInDays <= 7):
+          arrayOfption = ['Daily'];
+          break;
+        case (diffInDays > 7 && diffInDays <= 14):
+          arrayOfption = ['Daily','Weekly'];
+          break;
+        case (diffInDays > 14 && diffInDays <= 31):
+          arrayOfption = ['Daily','Weekly','Bi-weekly'];
+          break;
+        case (diffInDays > 31 && diffInDays <= 91):
+          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly'];
+          break;
+        case (diffInDays > 91 && diffInDays <= 183):
+          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly'];
+          break;
+        case (diffInDays > 183 && diffInDays <= 365):
+          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually'];
+          break;
+        default:
+          arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+          break;
+      }
       return arrayOfption;
+    }
+  },
+  watch: {
+    INTERVAL_OPEN: {
+      deep: true,
+      handler: function (day) {
+        this.reminder.allowAdditionalNotifications = (day<=1) ? false : this.reminder.allowAdditionalNotifications;
+      }
     }
   },
   methods: {
@@ -678,10 +713,15 @@ export default {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
+      }
+      if (this.userType !== 'team') {
         this.reminder = {};
       }
-      console.log(this.form);
+
     },
+    getTotalDay(){
+      ['weeks','months','quarters','years'];
+    }
   },
 };
 </script>
