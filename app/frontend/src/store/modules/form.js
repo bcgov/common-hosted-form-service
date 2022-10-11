@@ -30,8 +30,8 @@ const genInitialSchedule = () => ({
 
 
 const genInitialReminder = () => ({
-  'enabled':null,
-  'allowAdditionalNotifications': null,
+  'enabled':false,
+  'allowAdditionalNotifications': false,
   'intervalType': null
 });
 
@@ -250,10 +250,14 @@ export default {
         data.idps = identityProviders.idps;
         data.userType = identityProviders.userType;
         data.sendSubRecieviedEmail = data.submissionReceivedEmails && data.submissionReceivedEmails.length;
-
         data.schedule = {
           ...genInitialSchedule(),
           ...data.schedule
+        };
+
+        data.reminder = {
+          ...genInitialReminder(),
+          ...data.reminder
         };
 
         commit('SET_FORM', data);

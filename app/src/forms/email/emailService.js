@@ -113,33 +113,51 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
 };
 
 /** Helper function used to build the email template based on email type and contents for reminder */
-const buildEmailTemplateFormForReminder = async (form, emailType, contextToVal) => {
+const buildEmailTemplateFormForReminder = async (form, emailType, user, report) => {
   let configData = {};
 
   if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
     configData = {
       bodyTemplate: 'reminder-form-open.html',
-      title: `Reminder for ${form.name} `,
-      subject: 'reminder',
-      messageLinkText: `The form ${form.name} is open.`,
+      title: `Submission Start for ${form.name} `,
+      subject: 'Submission open',
+      messageLinkText: `Hi,
+      You are receiving this message because you are currently identified as a submitter for the form ${form.name}.
+      A new submission period for this form is now starting and you will have until the ${ report.dates.closeDate } to submit your information.
+      Please do not hesitate to reach out to the MoH HelpDesk HLTH.Helpdesk@gov.bc.ca
+      if you shouldn’t be identified as a submitter or if you run into any issues while submitting your data.
+      Thank you.
+      `,
       priority: 'normal',
       form,
     };
   } else if (emailType === EmailTypes.REMINDER_FORM_NOT_FILL) {
     configData = {
       bodyTemplate: 'reminder-form-not-fill.html',
-      title: `${form.name} Has Been Completed`,
-      subject: 'Form Has Been Completed',
-      messageLinkText: `Your submission from ${form.name} has been Completed.`,
+      title: `Submission Reminder for ${form.name}`,
+      subject: 'Submission Reminder',
+      messageLinkText: `Hi,
+      You are receiving this message because you are currently identified as a submitter for the form ${form.name}.
+      This message is to remind you to submit the data before the end of the submission period on ${ report.dates.closeDate }.
+      Please do not hesitate to reach out to the MoH HelpDesk HLTH.Helpdesk@gov.bc.ca if you shouldn’t be identified as a submitter or if you run into any issues while submitting your data.
+
+      Thank you.
+      `,
       priority: 'normal',
       form,
     };
   } else if (emailType === EmailTypes.REMINDER_FORM_WILL_CLOSE) {
     configData = {
-      bodyTemplate: 'submission-unassigned.html',
-      title: `Uninvited From ${form.name} Draft`,
-      subject: 'Uninvited From Submission Draft',
-      messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
+      bodyTemplate: 'reminder-form-will-close.html',
+      title: `Submission Closing for ${form.name}`,
+      subject: 'Submission Closing',
+      messageLinkText: `Hi,
+      You are receiving this message because you are currently identified as a submitter for the form ${form.name} and that you have until ${ report.dates.closeDate } midnight to submit your data.
+
+      Please do not hesitate to reach out to the MoH HelpDesk HLTH.Helpdesk@gov.bc.ca if you shouldn’t be identified as a submitter or if you run into any issues while submitting your data.
+
+      Thank you.
+      `,
       priority: 'normal',
       form,
     };
@@ -156,7 +174,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, contextToVal) 
         messageLinkUrl: 'null',
         title: configData.title
       },
-      to: contextToVal
+      to: [user.email]
     }]
   };
 };
@@ -419,16 +437,14 @@ const service = {
    * @param {object} information about the submitter and the form
    * @returns The result of the email merge operation
    */
-  formOpen: async (obj) => {
+  initReminder: async (obj) => {
     try {
-      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, EmailTypes.REMINDER_FORM_OPEN);
+      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.submiter, obj.report);
       return service._sendEmailTemplate(configData, contexts);
-
     } catch (e) {
       log.error(e.message, {
-        function: EmailTypes.REMINDER_FORM_OPEN,
+        function: obj.state,
         formId: obj.form.id,
-        body: obj.body,
       });
       throw e;
     }

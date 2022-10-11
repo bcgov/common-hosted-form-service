@@ -232,7 +232,15 @@ const getCalculatedCloseSubmissionDate = (openDate=moment(),keepOpenForTerm=0,ke
   return calculatedCloseDate;
 };
 
-
+const periodType = {
+  Daily        : { name : 'Daily', value : 1, regex : 'days'} ,
+  Weekly       : { name : 'Weekly' , value : 7, regex : 'days'},
+  BiWeekly     : { name : 'Bi-weekly' , value : 14 , regex : 'days'} ,
+  Monthly      : { name : 'Monthly' , value : 1 , regex : 'months' } ,
+  Quaterly     : { name : 'Quaterly'   , value : 3 , regex : 'months'} ,
+  SemiAnnually : { name : 'Semi-Annually'   , value : 6 , regex : 'months'},
+  Annually     : { name : 'Annually'   , value : 1 , regex : 'years'}
+};
 
 module.exports = {
   falsey,
@@ -242,5 +250,6 @@ module.exports = {
   isFormExpired,
   getCalculatedCloseSubmissionDate,
   getAvailableDates,
-  isEligibleLateSubmission
+  isEligibleLateSubmission,
+  periodType
 };
