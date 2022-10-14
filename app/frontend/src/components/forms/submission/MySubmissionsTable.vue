@@ -70,6 +70,9 @@
       <template #[`item.submittedDate`]="{ item }">
         {{ item.submittedDate | formatDateLong }}
       </template>
+      <template #[`item.originalName`]="{ item }">
+        {{ item.originalName }}
+      </template>
       <template #[`item.completedDate`]="{ item }">
         {{ item.completedDate | formatDateLong }}
       </template>
@@ -111,6 +114,7 @@ export default {
     headers() {
       let headers = [
         { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
+        { text: 'Submission Type', align: 'start', value: 'submissionType',   sortable: true },
         { text: 'Status', align: 'start', value: 'status' },
         {
           text: 'Submission Date',
@@ -118,6 +122,7 @@ export default {
           value: 'submittedDate',
           sortable: true,
         },
+        { text: 'File Name', align: 'start', value: 'originalName',   sortable: true, },
         {
           text: 'Actions',
           align: 'end',
@@ -190,7 +195,9 @@ export default {
             permissions: s.permissions,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
-            submittedDate: this.getStatusDate(s, 'SUBMITTED')
+            submittedDate: this.getStatusDate(s, 'SUBMITTED'),
+            originalName: s.originalName,
+            submissionType: (s.originalName) ? 'Bulk Submission' : 'Single Submission'
           };
         });
         this.submissionTable = tableRows;
