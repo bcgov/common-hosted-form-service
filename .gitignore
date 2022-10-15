@@ -10,6 +10,7 @@ dist
 **/cypress/**/screenshots
 **/cypress/**/videos
 node_modules
+chefs_build
 # Ignore only top-level package-lock.json
 /package-lock.json
 
