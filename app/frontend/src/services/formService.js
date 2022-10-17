@@ -238,6 +238,17 @@ export default {
   },
 
   /**
+   * @function restoreSubmission
+   * Restores an existing submission
+   * @param {string} submissionId The form uuid
+   * @param {Object} requestBody The form data for the submission
+   * @returns {Promise} An axios response
+   */
+  restoreSubmission(submissionId, requestBody) {
+    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}/restore`, requestBody);
+  },
+
+  /**
    * @function updateSubmission
    * Update an existing submission
    * @param {string} submissionId The form uuid
