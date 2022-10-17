@@ -107,9 +107,7 @@ const service = {
   getNumberDayFromIntervalType : (type, now, date)=>{
     for (const key in periodType) {
       var interval = moment(now).diff(date, periodType[key].regex);
-      console.log(now, ' | ', date,'| INTERVAL '+key, interval);
       if( key==type &&  interval%periodType[key].value==0 ) {
-        console.log('FOUND = > ',periodType[key]);
         return true;
       }
     }
