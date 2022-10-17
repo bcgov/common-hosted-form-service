@@ -122,7 +122,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report) 
       title: `Submission Start for ${form.name} `,
       subject: 'Submission open',
       messageLinkText: `Hi,
-      You are receiving this message because you are currently identified as a submitter for the form ${form.name}.
+      You are receiving this message because you are currently identified as a submitter for the form ${ form.name }.
       A new submission period for this form is now starting and you will have until the ${ report.dates.closeDate } to submit your information.
       Please do not hesitate to reach out to the MoH HelpDesk HLTH.Helpdesk@gov.bc.ca
       if you shouldn’t be identified as a submitter or if you run into any issues while submitting your data.
@@ -170,6 +170,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report) 
       context: {
         allFormSubmissionUrl: '',
         form: configData.form,
+        report: report,
         messageLinkText: configData.messageLinkText,
         messageLinkUrl: 'null',
         title: configData.title
