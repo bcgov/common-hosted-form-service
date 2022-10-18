@@ -39,7 +39,7 @@
       <v-col cols="12" lg="4">
         <h2>CHEFS How-to Videos</h2>
         <p>
-          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a href="https://trainingmodules.nrs.gov.bc.ca/Provincial/IIT/CHEFSquickstart">Get started!</a>
+          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a href="https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53">Get started!</a>
         </p>
       </v-col>
       <v-col cols="12" lg="4">
