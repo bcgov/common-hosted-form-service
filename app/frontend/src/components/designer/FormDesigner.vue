@@ -11,7 +11,7 @@
           <template #activator="{ on, attrs }">
             <v-btn
               class="mx-md-1 mx-0"
-              @click="submitFormSchema"
+              @click="submitFormButtonClick"
               color="primary"
               icon
               v-bind="attrs"
@@ -220,6 +220,11 @@ export default {
         { text: 'Advanced Mode', value: true },
       ],
       designerStep: 1,
+      autosaveFormSchemaHead:{
+        display: 'form',
+        type: 'form',
+        components: [],
+      },
       formSchema: {
         display: 'form',
         type: 'form',
@@ -228,6 +233,7 @@ export default {
       displayVersion: 1,
       reRenderFormIo: 0,
       saving: false,
+      isSavedButtonClick: false,
       patch: {
         componentAddedStart: false,
         componentRemovedStart: false,
@@ -380,6 +386,7 @@ export default {
         if (this.patch.history.length === 0) {
           // We are fetching an existing form, so we get the original schema here because
           // using the original schema in the mount will give you the default schema
+          this.autosaveFormSchemaHead = deepClone(this.formSchema);
           this.patch.originalSchema = deepClone(this.formSchema);
         }
       } catch (error) {
@@ -459,16 +466,19 @@ export default {
         this.patch.componentMovedStart = true;
       }
     },
-    onRemoveSchemaComponent() {
+    async onRemoveSchemaComponent() {
+      await this.setDirtyFlag(false);
+      this.submitFormSchema();
       // Component remove start
       this.patch.componentRemovedStart = true;
+      this.undoPatchFromHistory();
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
     // Patch History
     // ---------------------------------------------------------------------------------------------------
-    onSchemaChange(_changed, flags, modified) {
+    async onSchemaChange(_changed, flags, modified) {
       // If the form changed but was not done so through the undo
       // or redo button
       if (!this.patch.undoClicked && !this.patch.redoClicked) {
@@ -501,6 +511,10 @@ export default {
         this.patch.redoClicked = false;
         this.resetHistoryFlags();
       }
+      if(modified) {
+        await this.setDirtyFlag(false);
+        this.submitFormSchema();
+      }
     },
     addPatchToHistory() {
       // Determine if there is even a difference with the action
@@ -529,6 +543,10 @@ export default {
 
       this.resetHistoryFlags();
     },
+    submitFormButtonClick() {
+      this.isSavedButtonClick=true;
+      this.submitFormSchema();
+    },
     getPatch(idx) {
       // Generate the form from the original schema
       let form = deepClone(this.patch.originalSchema);
@@ -544,20 +562,24 @@ export default {
       }
       return form;
     },
-    undoPatchFromHistory() {
+    async undoPatchFromHistory() {
       // Only allow undo if there was an action made
       if (this.canUndoPatch()) {
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
+        await this.setDirtyFlag(false);
+        this.submitFormSchema();
       }
     },
-    redoPatchFromHistory() {
+    async redoPatchFromHistory() {
       // Only allow redo if there was an action made
       if (this.canRedoPatch()) {
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
+        await this.setDirtyFlag(false);
+        this.submitFormSchema();
       }
     },
     resetHistoryFlags(flag = false) {
@@ -581,7 +603,6 @@ export default {
         this.saving = true;
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
-
         if (this.formId) {
           if (this.versionId) {
             // If creating a new draft from an existing version
@@ -605,10 +626,11 @@ export default {
         this.saving = false;
       }
     },
-    onUndoClick() {
+    async onUndoClick() {
       this.undoPatchFromHistory();
+
     },
-    onRedoClick() {
+    async onRedoClick() {
       this.redoPatchFromHistory();
     },
     async schemaCreateNew() {
@@ -643,10 +665,15 @@ export default {
       });
     },
     async schemaCreateDraftFromVersion() {
+      let diff = compare(this.autosaveFormSchemaHead,this.formSchema);
       const { data } = await formService.createDraft(this.formId, {
-        schema: this.formSchema,
+        schema: diff,
         formVersionId: this.versionId,
       });
+
+      this.formSchema = { ...this.formSchema, ...data.schema };
+      this.autosaveFormSchemaHead = deepClone(this.formSchema);
+
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -656,16 +683,21 @@ export default {
           sv: true,
         },
       });
+      console.log('I am here -------->>>>>>');
     },
     async schemaUpdateExistingDraft() {
-      await formService.updateDraft(this.formId, this.draftId, {
-        schema: this.formSchema,
+      let diff = compare(this.autosaveFormSchemaHead,this.formSchema);
+      let res = await formService.updateDraft(this.formId, this.draftId, {
+        schema: diff,
       });
+      this.formSchema = { ...this.formSchema, ...res.data.schema };
+      this.autosaveFormSchemaHead = deepClone(this.formSchema);
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
         query: { ...this.$route.query, sv: true },
       });
+
     },
     // ----------------------------------------------------------------------------------/ Saving Schema
   },
