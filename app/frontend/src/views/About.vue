@@ -24,7 +24,7 @@
           <div class="video-wrapper">
             <iframe width="100%"
                     height="100%"
-                    src="https://www.youtube.com/embed/obOhyYusMjM"
+                    :src="getConfigVideosUrl&&getConfigVideosUrl.chefsTourUrl"
                     title="Introduction to the Common Hosted Forms Service (CHEFS)"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -39,7 +39,7 @@
       <v-col cols="12" lg="4">
         <h2>CHEFS How-to Videos</h2>
         <p>
-          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a href="https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53">Get started!</a>
+          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a :href="getConfigVideosUrl&&getConfigVideosUrl.howToUrl">Get started!</a>
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -110,10 +110,20 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Vue from 'vue';
 
 export default {
   name: 'About',
-  computed: mapGetters('auth', ['authenticated']),
+  computed:{
+    ...mapGetters('auth', ['authenticated']),
+    getConfigVideosUrl() {
+      if (Vue.prototype.$config) {
+        return Vue.prototype.$config.landingPageVideosURLs;
+      }
+      return undefined;
+    }
+  }
+
 };
 </script>
 
