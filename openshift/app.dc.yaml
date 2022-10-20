@@ -162,7 +162,10 @@ objects:
                 - name: VUE_APP_FRONTEND_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: VUE_APP_CONTACT
-                  value: "${APP_CONTACT_EMAIL}"
+                  valueFrom:
+                    secretKeyRef:
+                      key: email
+                      name: "${APP_NAME}-contact-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: SERVER_KC_CLIENTID
