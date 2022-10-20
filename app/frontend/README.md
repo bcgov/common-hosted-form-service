@@ -8,7 +8,7 @@ The CHEFS frontend will require some configuration. The API it invokes will be l
 
 ## Super Quickstart
 
-Ensure that you have filled in all the appropriate configurations following [../config/custom-environment-variables.json](../config/custom-environment-variables.json) before proceeding.
+Ensure that you have filled in all the appropriate configurations following [../config/custom-environment-variables.json](../config/custom-environment-variables.json) before proceeding. Other environment variables such as the app title and contact information must be configured using the Vue environment files [.env](.env), [.env.development](.env.development), [.env.test](.env.test)
 
 ### Project setup
 
