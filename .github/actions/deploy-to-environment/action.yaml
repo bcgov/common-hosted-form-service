@@ -29,10 +29,6 @@ inputs:
     description: Route Subpath Mount point
     required: true
     default: "/app"
-  app_contact_email:
-    description: Application contact information
-    required: true
-    default: "submit.digital@gov.bc.ca"
 
 runs:
   using: composite
@@ -70,7 +66,7 @@ runs:
     - name: Deploy App
       shell: bash
       run: |
-        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.dc.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.acronym }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -p APP_CONTACT_EMAIL=${{ inputs.app_contact_email }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.dc.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.acronym }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
 
     - name: Wait on App
       shell: bash
