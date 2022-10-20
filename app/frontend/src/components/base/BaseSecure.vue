@@ -16,7 +16,7 @@
       <h1 class="my-8">401: Unauthorized. :(</h1>
       <p>
         Your account is not set up correctly.<br />Please contact
-        <a :href="mailToLink">submit.digital@gov.bc.ca</a>
+        <a :href="mailToLink">{{contactInfo}}</a>
       </p>
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" large>
@@ -61,12 +61,15 @@ export default {
       'identityProvider',
       'isAdmin',
       'isUser',
-      'keycloakReady',
+      'keycloakReady'
     ]),
     mailToLink() {
-      return `mailto:submit.digital@gov.bc.ca?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
+      return `mailto:${process.env.VUE_APP_CONTACT}?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
         location
       )}.`;
+    },
+    contactInfo(){
+      return process.env.VUE_APP_CONTACT;
     },
   },
   methods: mapActions('auth', ['login']),
