@@ -7,7 +7,7 @@ const proxyObject = {
 };
 
 module.exports = {
-  publicPath: process.env.FRONTEND_BASEPATH ? process.env.FRONTEND_BASEPATH : '/app',
+  publicPath: process.env.VUE_APP_FRONTEND_BASEPATH ? process.env.VUE_APP_FRONTEND_BASEPATH : '/app',
   'transpileDependencies': [
     'vuetify'
   ],
