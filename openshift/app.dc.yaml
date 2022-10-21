@@ -162,6 +162,8 @@ objects:
                 - name: VUE_APP_FRONTEND_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: VUE_APP_CONTACT
+                - name: VUE_APP_HOWTOURL
+                - name: VUE_APP_CHEFSTOURURL
                   valueFrom:
                     secretKeyRef:
                       key: email
