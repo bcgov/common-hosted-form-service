@@ -11,11 +11,12 @@ const service = {
     if(q.length!==0) {
       for(let i = 0 ; i < q.length ; i++) {
         if(!q[i].error){
-          const obj = await reminderService.runQueries(q[i].statement);
+          const obj = await  reminderService.runQueries(q[i].statement);
           let result = await reminderService._initStatement(obj);
           reminderService.initMaillSender(result);
           resolve.push({
-            form :  result.form.name,
+            formId:result.form.id,
+            formName :  result.form.name,
             type_mail : result.state,
             number_mail: result.submiters.length
           });
