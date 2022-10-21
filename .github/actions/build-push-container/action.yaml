@@ -38,10 +38,10 @@ inputs:
     required: true
   app_howtourl:
     description: Landing page video URL for HOWTO section
-    required:true
+    required: true
   app_chefstoururl:
     description: Landing page video URL for CHEFS TOUR section
-    required:true
+    required: true
 
 
 runs:
