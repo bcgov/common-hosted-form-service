@@ -7,12 +7,30 @@
       :saved="sv"
       :versionId="v"
     />
+    <BaseDialog :value=this.showDialog type="SAVEDDELETE"
+                @close-dialog="closeDialog"
+                @delete-dialog="deleteDialog"
+                @continue-dialog="navigateToRoute"
+                :showCloseButton='true'>
+      <template #title>Confirm Deletion</template>
+      <template #icon>
+        <v-icon large>info</v-icon>
+      </template>
+      <template #text>
+        Do you want to keep this form?
+      </template>
+      <template #button-text-continue>
+        <span>Keep</span>
+      </template>
+      <template #button-text-delete>
+        <span>delete</span>
+      </template>
+    </BaseDialog>
   </BaseSecure>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
+import { mapGetters, mapActions } from 'vuex';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import { IdentityProviders } from '@/utils/constants';
 
@@ -27,18 +45,41 @@ export default {
     sv: Boolean,
     v: String,
   },
+  data() {
+    return {
+      showDialog:false,
+      toRouterPathName:''
+    };
+  },
   computed: {
     ...mapGetters('form', ['form']),
     IDP: () => IdentityProviders,
   },
-  beforeRouteLeave(_to, _from, next) {
-    this.form.isDirty
-      ? next(
-        window.confirm(
-          'Do you really want to leave this page? Changes you made will not be saved.'
-        )
-      )
-      : next();
+  methods:{
+    ...mapActions('form', ['deleteCurrentForm','setIsSavedButtonClicked']),
+    closeDialog() {
+      this.showDialog=false;
+    },
+    deleteDialog() {
+      this.deleteCurrentForm();
+      this.navigateToRoute();
+    },
+    async navigateToRoute() {
+      this.showDialog=false;
+      await this.setIsSavedButtonClicked(true);
+      this.$router.push({name:this.toRouterPathName.trim()});
+    },
   },
+  mounted() {
+    this.setIsSavedButtonClicked(false);
+  },
+  beforeRouteLeave(_to, _from, next) {
+    if(_to.name!==this.$route.name) {
+      this.toRouterPathName = _to.name;
+      !this.form.isSavedButtonClicked? this.showDialog=true: next();
+    }
+    //next();
+  },
+
 };
 </script>

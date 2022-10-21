@@ -369,7 +369,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
+    ...mapActions('form', ['fetchForm','setIsSavedButtonClicked']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -448,14 +448,11 @@ export default {
     },
     onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
-      if (!this.isDirty) this.setDirtyFlag(true);
-
       this.onSchemaChange(changed, flags, modified);
     },
     onRenderMethod() {
       const el = document.querySelector('input.builder-sidebar_search:focus');
       if (el && el.value === '') this.reRenderFormIo += 1;
-      this.setDirtyFlag(false);
     },
     onAddSchemaComponent(_info, _parent, _path, _index, isNew) {
       if (isNew) {
@@ -466,9 +463,8 @@ export default {
         this.patch.componentMovedStart = true;
       }
     },
-    async onRemoveSchemaComponent() {
-      await this.setDirtyFlag(false);
-      this.submitFormSchema();
+    onRemoveSchemaComponent() {
+      this.autosaveEventTrigger();
       // Component remove start
       this.patch.componentRemovedStart = true;
       this.undoPatchFromHistory();
@@ -478,7 +474,7 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     // Patch History
     // ---------------------------------------------------------------------------------------------------
-    async onSchemaChange(_changed, flags, modified) {
+    onSchemaChange(_changed, flags, modified) {
       // If the form changed but was not done so through the undo
       // or redo button
       if (!this.patch.undoClicked && !this.patch.redoClicked) {
@@ -512,8 +508,7 @@ export default {
         this.resetHistoryFlags();
       }
       if(modified) {
-        await this.setDirtyFlag(false);
-        this.submitFormSchema();
+        this.autosaveEventTrigger();
       }
     },
     addPatchToHistory() {
@@ -543,8 +538,12 @@ export default {
 
       this.resetHistoryFlags();
     },
-    submitFormButtonClick() {
-      this.isSavedButtonClick=true;
+    async autosaveEventTrigger() {
+      await this.setIsSavedButtonClicked(false);
+      this.submitFormSchema();
+    },
+    async submitFormButtonClick() {
+      await this.setIsSavedButtonClicked(true);
       this.submitFormSchema();
     },
     getPatch(idx) {
@@ -568,8 +567,6 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
-        await this.setDirtyFlag(false);
-        this.submitFormSchema();
       }
     },
     async redoPatchFromHistory() {
@@ -578,8 +575,7 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
-        await this.setDirtyFlag(false);
-        this.submitFormSchema();
+        this.autosaveEventTrigger();
       }
     },
     resetHistoryFlags(flag = false) {
@@ -602,7 +598,6 @@ export default {
       try {
         this.saving = true;
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
-        await this.setDirtyFlag(false);
         if (this.formId) {
           if (this.versionId) {
             // If creating a new draft from an existing version
@@ -616,7 +611,6 @@ export default {
           await this.schemaCreateNew();
         }
       } catch (error) {
-        await this.setDirtyFlag(true);
         this.addNotification({
           message:
             'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
@@ -683,7 +677,6 @@ export default {
           sv: true,
         },
       });
-      console.log('I am here -------->>>>>>');
     },
     async schemaUpdateExistingDraft() {
       let diff = compare(this.autosaveFormSchemaHead,this.formSchema);

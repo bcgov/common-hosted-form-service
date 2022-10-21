@@ -51,9 +51,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
@@ -79,7 +77,13 @@ export default {
       ],
     };
   },
-  methods: mapActions('form', ['resetForm']),
+  methods: {
+    preventNav(event) {
+      if (!this.isEditing) return;
+      event.preventDefault();
+      event.returnValue = null;
+    }
+  },
   created() {
     this.resetForm();
   },
@@ -89,14 +93,12 @@ export default {
         this.$refs.settingsForm.validate();
     },
   },
-  beforeRouteLeave(_to, _from, next) {
-    this.isDirty
-      ? next(
-        window.confirm(
-          'Do you really want to leave this page? Changes you made will not be saved.'
-        )
-      )
-      : next();
+  beforeMount() {
+    window.addEventListener('beforeunload', this.preventNav);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.preventNav);
   },
 };
 </script>
