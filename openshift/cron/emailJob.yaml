@@ -25,6 +25,6 @@ spec:
             args:
               - >-
                curl -X GET -ks
-               http://localhost:8080/app/api/v1/public/reminde
+               http://localhost:8080/app/api/v1/public/reminder
       restartPolicy: OnFailure
 

@@ -91,7 +91,7 @@ const service = {
     var state = undefined;
     const now = moment().format('YYYY-MM-DD');
     const start_date = moment(report.dates.startDate).format('YYYY-MM-DD');
-    var end_date = moment(report.dates.startDate).format('YYYY-MM-DD');
+    var end_date = moment(report.dates.closeDate).format('YYYY-MM-DD');
     if(moment(now).isSame(start_date) && reminder.enabled) {
       return EmailTypes.REMINDER_FORM_OPEN;
     }
@@ -154,7 +154,6 @@ const service = {
     }
     return statement;
   },
-
   initMaillSender: (statement) => {
     statement.submiters.forEach((element)=>{
       const data = { form :statement.form, report : statement.report, submiter : element, state : statement.state };
