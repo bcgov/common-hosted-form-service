@@ -33,6 +33,9 @@ inputs:
     description: Route Subpath Mount point
     required: true
     default: "/app"
+  app_contact:
+    description: Application contact email
+    required: true
 
 runs:
   using: composite
@@ -43,7 +46,7 @@ runs:
     - name: Creates env variables
       env:
         VUE_APP_TITLE: ${{ inputs.app_title }}
-        VUE_APP_CONTACT: ${{ secrets.VUE_APP_CONTACT }}
+        VUE_APP_CONTACT: ${{ inputs.VUE_APP_CONTACT }}
         VUE_APP_FRONTEND_BASEPATH: ${{ inputs.route_path }}
         ENV_PATH: ./app/frontend/.env
       shell: bash
