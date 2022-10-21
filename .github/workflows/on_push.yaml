@@ -31,6 +31,7 @@ jobs:
           image_name: ${{ env.APP_NAME }}
           github_username: ${{ github.repository_owner }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          app_contact: ${{ secrets.VUE_APP_CONTACT }}
 
   deploy-dev:
     name: Deploy to Dev
