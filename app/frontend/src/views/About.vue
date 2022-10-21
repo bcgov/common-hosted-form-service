@@ -116,10 +116,10 @@ export default {
   computed:{
     ...mapGetters('auth', ['authenticated']),
     howToVideoUrl() {
-      return process.env&&process.env.VUE_APP_HOWTOURL;
+      return process.env.VUE_APP_HOWTOURL;
     },
     chefsTourVideoUrl() {
-      return process.env&&process.env.VUE_APP_CHEFSTOURURL;
+      return process.env.VUE_APP_CHEFSTOURURL;
     }
   }
 
