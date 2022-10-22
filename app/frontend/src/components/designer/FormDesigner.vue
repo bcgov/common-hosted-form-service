@@ -327,6 +327,7 @@ export default {
               button: true,
               // Prevent duplicate appearance of orgbook component
               orgbook: false,
+              address:false
             },
           },
           data: {
@@ -339,6 +340,7 @@ export default {
             components: {
               orgbook: true,
               simplefile: this.userType !== this.ID_MODE.PUBLIC,
+              address:true
             },
           },
         },
