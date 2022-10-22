@@ -162,12 +162,20 @@ objects:
                 - name: VUE_APP_FRONTEND_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: VUE_APP_CONTACT
-                - name: VUE_APP_HOWTOURL
-                - name: VUE_APP_CHEFSTOURURL
                   valueFrom:
                     secretKeyRef:
                       key: email
                       name: "${APP_NAME}-contact-secret"
+                - name: VUE_APP_HOWTOURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: howtovideourl
+                      name: "${APP_NAME}-landingpagevideourls-secret"
+                - name: VUE_APP_CHEFSTOURURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: chefstourvideourl
+                      name: "${APP_NAME}-landingpagevideourls-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: SERVER_KC_CLIENTID
