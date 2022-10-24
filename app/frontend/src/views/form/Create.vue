@@ -51,6 +51,8 @@
 </template>
 
 <script>
+
+import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
@@ -65,7 +67,7 @@ export default {
     FormDisclaimer,
   },
   computed: {
-    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
+    ...mapFields('form', ['form.idps', 'form.userType']),
     IDP: () => IdentityProviders,
   },
   data() {
@@ -77,13 +79,7 @@ export default {
       ],
     };
   },
-  methods: {
-    preventNav(event) {
-      if (!this.isEditing) return;
-      event.preventDefault();
-      event.returnValue = null;
-    }
-  },
+  methods: mapActions('form', ['resetForm']),
   created() {
     this.resetForm();
   },
@@ -93,13 +89,7 @@ export default {
         this.$refs.settingsForm.validate();
     },
   },
-  beforeMount() {
-    window.addEventListener('beforeunload', this.preventNav);
-  },
 
-  beforeDestroy() {
-    window.removeEventListener('beforeunload', this.preventNav);
-  },
 };
 </script>
 

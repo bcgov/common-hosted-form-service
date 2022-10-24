@@ -12,12 +12,14 @@
                 @delete-dialog="deleteDialog"
                 @continue-dialog="navigateToRoute"
                 :showCloseButton='true'>
-      <template #title>Confirm Deletion</template>
+      <template #title>Confirm Navigation</template>
       <template #icon>
-        <v-icon large>info</v-icon>
+        <v-icon large color="primary">help_outline</v-icon>
       </template>
       <template #text>
-        Do you want to keep this form?
+        <div class="dialogMessageText">
+          You are about to navigate from this page. Do you want to keep this form?
+        </div>
       </template>
       <template #button-text-continue>
         <span>Keep</span>
@@ -65,21 +67,25 @@ export default {
       this.navigateToRoute();
     },
     async navigateToRoute() {
-      this.showDialog=false;
       await this.setIsSavedButtonClicked(true);
+      this.showDialog=false;
       this.$router.push({name:this.toRouterPathName.trim()});
+
     },
-  },
-  mounted() {
-    this.setIsSavedButtonClicked(false);
   },
   beforeRouteLeave(_to, _from, next) {
     if(_to.name!==this.$route.name) {
       this.toRouterPathName = _to.name;
       !this.form.isSavedButtonClicked? this.showDialog=true: next();
     }
-    //next();
   },
 
 };
 </script>
+<style lang="css" scoped>
+  .dialogMessageText {
+    color: #494949 !important;
+    font-size: 17px;
+    padding: 0;
+  }
+</style>

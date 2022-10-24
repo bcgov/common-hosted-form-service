@@ -254,7 +254,6 @@ export default {
       'form.enableSubmitterDraft',
       'form.enableStatusUpdates',
       'form.idps',
-      'form.isDirty',
       'form.name',
       'form.sendSubRecieviedEmail',
       'form.showSubmissionConfirmation',
