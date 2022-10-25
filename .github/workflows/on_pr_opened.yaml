@@ -34,6 +34,9 @@ jobs:
           image_name: ${{ env.APP_NAME }}
           github_username: ${{ github.repository_owner }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          app_title: Common Hosted Forms - PR-${{ github.event.number }}
+          route_path: /pr-${{ github.event.number }}
+          app_contact: ${{ secrets.VUE_APP_CONTACT }}
 
   deploy-pr-dev:
     name: Deploy Pull Request to Dev
