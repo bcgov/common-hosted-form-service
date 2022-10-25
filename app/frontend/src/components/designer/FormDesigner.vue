@@ -332,11 +332,13 @@ export default {
           data: {
             title: 'Advanced Data',
             weight: 50,
+            address:false,
           },
           customControls: {
             title: 'BC Government',
             weight: 60,
             components: {
+              address:true,
               orgbook: true,
               simplefile: this.userType !== this.ID_MODE.PUBLIC,
             },
