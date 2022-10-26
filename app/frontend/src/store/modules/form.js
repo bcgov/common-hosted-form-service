@@ -31,7 +31,7 @@ const genInitialSchedule = () => ({
 
 const genInitialReminder = () => ({
   'enabled':false,
-  'allowAdditionalNotifications': false,
+  'allowAdditionalNotifications': true,
   'intervalType': null
 });
 

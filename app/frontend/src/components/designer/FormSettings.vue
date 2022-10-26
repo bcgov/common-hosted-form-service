@@ -305,7 +305,6 @@
 
             <v-expand-transition v-if="schedule.allowLateSubmissions.enabled" class="pl-3 ">
               <v-row class="m-0">
-
                 <v-col cols="6" class="m-0 p-0">
                   <v-text-field
                     label="After close date for"
@@ -411,6 +410,13 @@
               </v-row>
             </v-expand-transition>
 
+            <!-- NEW FEATURE ADD BY ASGARD -->
+            <v-checkbox class="my-0 m-0 p-0" v-if="this.userType ==='team'" v-model="reminder.enabled">
+              <template #label>
+                Enable automatic reminder notification
+              </template>
+            </v-checkbox>
+
             <v-row class="mb-0 mt-0">
               <v-col class="mb-0 mt-0 pb-0 pt-0">
                 <template #title>Closing Message</template>
@@ -427,11 +433,6 @@
                 />
               </v-col>
             </v-row>
-
-
-
-
-
 
             <v-row class="p-0 m-0" v-if="schedule.enabled && schedule.openSubmissionDateTime && schedule.openSubmissionDateTime.length">
               <v-col class="p-0 m-0" cols="12" md="12">Summary of schedule setup:</v-col>
@@ -463,46 +464,6 @@
                 </v-tooltip>
               </v-col>
             </v-row>
-
-          </BasePanel>
-        </v-col>
-      </v-expand-transition>
-
-      <v-expand-transition>
-        <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished && this.userType ==='team' ">
-          <BasePanel class="fill-height">
-            <template #title>Automated Notifications</template>
-
-            <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
-              <template #label>
-                Enable automatic reminder notification setting
-              </template>
-            </v-checkbox>
-
-            <v-checkbox class="my-0 pt-0" v-model="reminder.allowAdditionalNotifications" >
-              <template #label>
-                Additional notifications
-              </template>
-            </v-checkbox>
-
-            <v-expand-transition v-if="reminder.allowAdditionalNotifications">
-              <v-row class="m-0">
-
-                <v-col cols="12" class="m-0 p-0">
-                  <v-select
-                    :items="AVAILABLE_PERIOD_INTERVAL"
-                    label="Period/Interval"
-                    dense
-                    flat
-                    solid
-                    outlined
-                    class="mr-2 pl-2"
-                    v-model="reminder.intervalType"
-                    :rules="repeatIntervalTypeReminder"
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-expand-transition>
 
           </BasePanel>
         </v-col>
