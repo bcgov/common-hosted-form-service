@@ -32,7 +32,7 @@ const service = {
     };
 
   },
-  listDates: (schedule) =>{
+  _listDates: (schedule) =>{
     return  getAvailableDates(
       schedule.keepOpenForTerm,
       schedule.keepOpenForInterval,
@@ -58,7 +58,7 @@ const service = {
     var reminder = [];
     for (let i = 0; i< forms.length; i++) {
       var obj = {};
-      obj.avalaibleDate = service.listDates(forms[i].schedule);
+      obj.avalaibleDate = service._listDates(forms[i].schedule);
       if (obj.avalaibleDate.length<=1) {
         reminder.push({ error:true, message : `Form ${forms[i].name }, has only one period.` });
         continue;
@@ -73,10 +73,9 @@ const service = {
       obj.state = service._getMailType(obj.report, forms[i].reminder);
 
       if(obj.state == undefined) {
-        reminder.push({ error:true, message : ` Form ${forms[i].name } ` });
+        reminder.push({ error:true, message : ` Form ${forms[i].name } has valid date ` });
         continue;
       }
-
       await reminder.push(
         {
           error : false,
@@ -88,28 +87,39 @@ const service = {
     return reminder;
   },
   _getMailType : (report, reminder) => {
+    if(!reminder.enabled) return undefined;
     var state = undefined;
     const now = moment().format('YYYY-MM-DD');
     const start_date = moment(report.dates.startDate).format('YYYY-MM-DD');
     var end_date = moment(report.dates.closeDate).format('YYYY-MM-DD');
-    if(moment(now).isSame(start_date) && reminder.enabled) {
+
+    if(moment(now).isSame(start_date)) {
       return EmailTypes.REMINDER_FORM_OPEN;
     }
-    if(reminder.allowAdditionalNotifications && service.getNumberDayFromIntervalType(reminder.intervalType, now, start_date) ){
+
+    if(service.getNumberDayFromIntervalType(reminder.intervalType, now, start_date, end_date) ){
       return EmailTypes.REMINDER_FORM_NOT_FILL;
     }
+
     const yend_date = moment(end_date).subtract(1, 'day');
-    if(moment(now).isSame(yend_date) && reminder.enabled){
+    if(moment(now).isSame(yend_date)){
       return EmailTypes.REMINDER_FORM_WILL_CLOSE;
     }
     return state;
   },
-  getNumberDayFromIntervalType : (type, now, date)=>{
-    for (const key in periodType) {
-      var interval = moment(now).diff(date, periodType[key].regex);
-      if( key==type &&  interval%periodType[key].value==0 ) {
-        return true;
+
+  getNumberDayFromIntervalType : (type, now, start_date, end_date )=>{
+    if(type!=null && type) {
+      for (const key in periodType) {
+        const interval = moment(now).diff(start_date, periodType[key].regex);
+        if( key==type &&  interval%periodType[key].value==0 ) {
+          return true;
+        }
       }
+    } else {
+      let interval = Math.ceil(moment(end_date).diff(start_date,'days')/2);
+      let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
+      return moment(now).isSame(mail_date);
     }
     return false;
   },
