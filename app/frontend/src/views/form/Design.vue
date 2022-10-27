@@ -4,14 +4,15 @@
       class="mt-6"
       :draftId="d"
       :formId="f"
-      :saved="sv"
+      :saved="Boolean(sv)"
       :versionId="v"
+      :newForm="Boolean(nf)"
     />
-    <BaseDialog :value=this.showDialog type="SAVEDDELETE"
+    <BaseDialog :value=Boolean(this.showDialog) type="SAVEDDELETE"
                 @close-dialog="closeDialog"
                 @delete-dialog="deleteDialog"
                 @continue-dialog="navigateToRoute"
-                :showCloseButton='true'>
+                :showCloseButton=true>
       <template #title>Confirm Navigation</template>
       <template #icon>
         <v-icon large color="primary">help_outline</v-icon>
@@ -45,6 +46,7 @@ export default {
     d: String,
     f: String,
     sv: Boolean,
+    nf:Boolean,
     v: String,
   },
   data() {
@@ -53,13 +55,21 @@ export default {
       toRouterPathName:''
     };
   },
+
   computed: {
-    ...mapGetters('form', ['form']),
+    ...mapGetters('form', ['form','isLogoutButtonClicked','showWarningDialog','canLogout']),
     IDP: () => IdentityProviders,
   },
+  watch: {
+    isLogoutButtonClicked(){
+      this.showDialog=true;
+    }
+  },
   methods:{
-    ...mapActions('form', ['deleteCurrentForm','setIsSavedButtonClicked']),
-    closeDialog() {
+    ...mapActions('form', ['deleteCurrentForm','setIsLogoutButtonClicked','setShowWarningDialog','setCanLogout']),
+    ...mapActions('auth', ['logoutWithUrl']),
+    async closeDialog() {
+      await this.setIsLogoutButtonClicked(false);
       this.showDialog=false;
     },
     deleteDialog() {
@@ -67,16 +77,19 @@ export default {
       this.navigateToRoute();
     },
     async navigateToRoute() {
-      await this.setIsSavedButtonClicked(true);
       this.showDialog=false;
+      await this.setShowWarningDialog(false);
+      await this.setCanLogout(true);
+      if(this.isLogoutButtonClicked){
+        this.logoutWithUrl();
+      }
       this.$router.push({name:this.toRouterPathName.trim()});
-
     },
   },
   beforeRouteLeave(_to, _from, next) {
     if(_to.name!==this.$route.name) {
       this.toRouterPathName = _to.name;
-      !this.form.isSavedButtonClicked? this.showDialog=true: next();
+      this.showWarningDialog? this.showDialog=true: next();
     }
   },
 
