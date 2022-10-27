@@ -39,7 +39,7 @@
       <v-col cols="12" lg="4">
         <h2>CHEFS How-to Videos</h2>
         <p>
-          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a :href="howToVideoUrl">Get started!</a>
+          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a :href="howToVideoUrl" target="_blank">Get started!</a>
         </p>
       </v-col>
       <v-col cols="12" lg="4">
