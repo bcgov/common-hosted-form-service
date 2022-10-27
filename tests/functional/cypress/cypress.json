@@ -4,7 +4,12 @@
     "depEnv": "app",
     "auth_base_url": "http://localhost:8082",
     "auth_realm": "cp1qly2d",
-    "auth_client_id": "chefs"
+    "auth_client_id": "chefs",
+    "keycloakUrl": "http://localhost:8082",
+    "keycloakRealm": "cp1qly2d",
+    "keycloakClientId": "chefs",
+    "keycloakUsername": "test",
+    "keycloakPassword": "test"
   },
   "pluginsFile": "plugins/index.js",
   "video": false
