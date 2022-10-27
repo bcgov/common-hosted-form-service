@@ -540,7 +540,7 @@ export default {
       this.resetHistoryFlags();
     },
 
-    //
+    //this method is used for autosave action
     async autosaveEventTrigger() {
       if(this.newForm) {
         await this.setShowWarningDialog(true);
@@ -551,6 +551,8 @@ export default {
       }
       this.submitFormSchema();
     },
+
+    //This method is called by submit button
     async submitFormButtonClick() {
       await this.setShowWarningDialog(false);
       await this.setCanLogout(true);
