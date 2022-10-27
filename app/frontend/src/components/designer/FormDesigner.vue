@@ -212,6 +212,10 @@ export default {
       default: false,
     },
     versionId: String,
+    newForm:{
+      type:Boolean,
+      default:true,
+    }
   },
   data() {
     return {
@@ -368,7 +372,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setIsSavedButtonClicked']),
+    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -463,10 +467,11 @@ export default {
       }
     },
     onRemoveSchemaComponent() {
-      this.autosaveEventTrigger();
+
       // Component remove start
       this.patch.componentRemovedStart = true;
       this.undoPatchFromHistory();
+      this.autosaveEventTrigger();
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -506,22 +511,19 @@ export default {
         this.patch.redoClicked = false;
         this.resetHistoryFlags();
       }
-      if(modified) {
-        this.autosaveEventTrigger();
-      }
     },
     addPatchToHistory() {
       // Determine if there is even a difference with the action
       const form = this.getPatch(this.patch.index + 1);
       const patch = compare(form, this.formSchema);
-
+      this.autosaveEventTrigger();
       if(patch.length > 0) {
+
         // Remove any actions past the action we were on
         this.patch.index += 1;
         if (this.patch.history.length > 0) {
           this.patch.history.length = this.patch.index;
         }
-
         // Add the patch to the history
         this.patch.history.push(patch);
 
@@ -537,12 +539,21 @@ export default {
 
       this.resetHistoryFlags();
     },
+
+    //
     async autosaveEventTrigger() {
-      await this.setIsSavedButtonClicked(false);
+      if(this.newForm) {
+        await this.setShowWarningDialog(true);
+        await this.setCanLogout(false);
+      } else {
+        await this.setShowWarningDialog(false);
+        await this.setCanLogout(true);
+      }
       this.submitFormSchema();
     },
     async submitFormButtonClick() {
-      await this.setIsSavedButtonClicked(true);
+      await this.setShowWarningDialog(false);
+      await this.setCanLogout(true);
       this.submitFormSchema();
     },
     getPatch(idx) {
@@ -563,18 +574,22 @@ export default {
     async undoPatchFromHistory() {
       // Only allow undo if there was an action made
       if (this.canUndoPatch()) {
+        this.autosaveEventTrigger();
         // Flag for formio to know we are setting the form
+
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
+
       }
     },
     async redoPatchFromHistory() {
       // Only allow redo if there was an action made
       if (this.canRedoPatch()) {
+        this.autosaveEventTrigger();
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
-        this.autosaveEventTrigger();
+
       }
     },
     resetHistoryFlags(flag = false) {
@@ -646,7 +661,6 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -654,16 +668,15 @@ export default {
           f: response.data.id,
           d: response.data.draft.id,
           sv: true,
+          nf:this.newForm,
         },
       });
     },
     async schemaCreateDraftFromVersion() {
-      let diff = compare(this.autosaveFormSchemaHead,this.formSchema);
       const { data } = await formService.createDraft(this.formId, {
-        schema: diff,
+        schema: this.formSchema,
         formVersionId: this.versionId,
       });
-
       this.formSchema = { ...this.formSchema, ...data.schema };
       this.autosaveFormSchemaHead = deepClone(this.formSchema);
 
@@ -674,20 +687,22 @@ export default {
           f: this.formId,
           d: data.id,
           sv: true,
+          nf:this.newForm,
         },
       });
     },
     async schemaUpdateExistingDraft() {
-      let diff = compare(this.autosaveFormSchemaHead,this.formSchema);
+      let diff = deepClone(compare(this.autosaveFormSchemaHead,this.formSchema));
       let res = await formService.updateDraft(this.formId, this.draftId, {
         schema: diff,
       });
+      console.log('++++++++++----B');
       this.formSchema = { ...this.formSchema, ...res.data.schema };
       this.autosaveFormSchemaHead = deepClone(this.formSchema);
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true },
+        query: { ...this.$route.query, sv: true,nf:this.newForm, },
       });
 
     },

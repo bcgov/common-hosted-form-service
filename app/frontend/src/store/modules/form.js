@@ -11,7 +11,6 @@ const genInitialForm = () => ({
   enableStatusUpdates: false,
   id: '',
   idps: [],
-  isSavedButtonClicked: false,
   name: '',
   sendSubRecieviedEmail: false,
   showSubmissionConfirmation: true,
@@ -29,6 +28,9 @@ export default {
   state: {
     apiKey: undefined,
     drafts: [],
+    isLogoutButtonClicked:false,
+    showWarningDialog:false,
+    canLogout: true,
     form: genInitialForm(),
     formFields: [],
     formList: [],
@@ -56,7 +58,10 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
-    version: state => state.version
+    version: state => state.version,
+    isLogoutButtonClicked:state=>state.isLogoutButtonClicked,
+    showWarningDialog:state=>state.showWarningDialog,
+    canLogout:state=>state.canLogout,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -78,8 +83,14 @@ export default {
     SET_FORM_FIELDS(state, formFields) {
       state.formFields = formFields;
     },
-    SET_IS_SAVED_BUTTON_CLICKED(state, isSavedButtonClicked) {
-      state.form.isSavedButtonClicked =isSavedButtonClicked;
+    SET_SHOW_WARNING_DIALOG(state, showWarningDialog) {
+      state.showWarningDialog =showWarningDialog;
+    },
+    SET_CAN_LOGOUT(state, canLogout) {
+      state.canLogout =canLogout;
+    },
+    SET_IS_LOGOUT_BUTTON_CLICKED(state, isLogoutButtonClicked) {
+      state.isLogoutButtonClicked =isLogoutButtonClicked;
     },
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
@@ -261,9 +272,14 @@ export default {
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
     },
-    async setIsSavedButtonClicked ({ commit}, isSavedButtonClicked) {
-      window.onbeforeunload = null;
-      commit('SET_IS_SAVED_BUTTON_CLICKED', isSavedButtonClicked);
+    async setShowWarningDialog ({ commit}, showWarningDialog) {
+      commit('SET_SHOW_WARNING_DIALOG', showWarningDialog);
+    },
+    async setIsLogoutButtonClicked ({ commit}, isLogoutButtonClicked) {
+      commit('SET_IS_LOGOUT_BUTTON_CLICKED', isLogoutButtonClicked);
+    },
+    async setCanLogout ({ commit}, canLogout) {
+      commit('SET_CAN_LOGOUT', canLogout);
     },
     async updateForm({ state, dispatch }) {
       try {
