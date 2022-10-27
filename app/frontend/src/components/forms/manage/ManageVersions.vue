@@ -104,6 +104,7 @@
           </v-tooltip>
         </span>
 
+
         <!-- export -->
         <span>
           <v-tooltip bottom>
@@ -306,7 +307,7 @@ export default {
       } else {
         this.$router.push({
           name: 'FormDesigner',
-          query: { f: formId, v: versionId },
+          query: { f: formId, v: versionId, nf:false },
         });
       }
     },
