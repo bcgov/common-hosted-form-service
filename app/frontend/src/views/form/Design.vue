@@ -80,6 +80,8 @@ export default {
       this.showDialog=false;
       await this.setShowWarningDialog(false);
       await this.setCanLogout(true);
+      //checks if form designers is trying to log out without
+      //clicking on the save button
       if(this.isLogoutButtonClicked){
         this.logoutWithUrl();
       }
@@ -87,6 +89,9 @@ export default {
     },
   },
   beforeRouteLeave(_to, _from, next) {
+    //if not the same route, and showWarningDialog is true
+    // it will ask form designers if they want to delete or
+    //or keep the forms
     if(_to.name!==this.$route.name) {
       this.toRouterPathName = _to.name;
       this.showWarningDialog? this.showDialog=true: next();
