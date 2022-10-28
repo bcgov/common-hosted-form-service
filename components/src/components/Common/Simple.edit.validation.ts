@@ -1,14 +1,7 @@
+import UseForCopy from './UseForCopy';
 /* eslint-disable quotes, max-len */
 export default [
-    {
-        weight: 10,
-        type: 'checkbox',
-        defaultValue: true,
-        label: 'Use for copy',
-        tooltip: 'When checked, the value of this field can be use for copy submission feature.',
-        key: 'validate.isUseForCopy',
-        input: true
-    },
+    UseForCopy,
     {
         weight: 10,
         type: 'checkbox',
