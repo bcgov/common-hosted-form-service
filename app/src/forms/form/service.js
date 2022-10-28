@@ -1,7 +1,6 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const moment = require('moment');
 
 const {
   FileStorage,
@@ -228,7 +227,7 @@ const service = {
       .modify('filterVersion', params.version)
       .modify('filterCreatedAt', params.createdAt[0], params.createdAt[1])
       .modify('orderDefault');
-      const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId'];
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId'];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
