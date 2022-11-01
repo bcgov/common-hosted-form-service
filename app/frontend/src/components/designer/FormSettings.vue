@@ -477,7 +477,7 @@
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import { IdentityMode, IdentityProviders, Regex } from '@/utils/constants';
-import { getAvailableDates } from '@/utils/permissionUtils';
+import { getAvailableDates } from '@/utils/transformUtils';
 import moment from 'moment';
 
 export default {
@@ -578,7 +578,7 @@ export default {
         this.versions.some((v) => v.published)
       );
     },
-    AVAILABLE_DATES() { //return [];
+    AVAILABLE_DATES() {
       return getAvailableDates(
         this.schedule.keepOpenForTerm,
         this.schedule.keepOpenForInterval,
@@ -632,7 +632,6 @@ export default {
     },
     AVAILABLE_PERIOD_INTERVAL() {
       var arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
-
       var diffInDays = this.INTERVAL_OPEN;
       switch (true) {
         case (diffInDays <= 7):

@@ -27,14 +27,11 @@ const genInitialSchedule = () => ({
     }
   }
 });
-
-
 const genInitialReminder = () => ({
   'enabled':false,
   'allowAdditionalNotifications': true,
   'intervalType': null
 });
-
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -259,7 +256,6 @@ export default {
           ...genInitialReminder(),
           ...data.reminder
         };
-
         commit('SET_FORM', data);
       } catch (error) {
         dispatch('notifications/addNotification', {
