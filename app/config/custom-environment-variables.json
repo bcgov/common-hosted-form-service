@@ -30,7 +30,7 @@
   },
   "frontend": {
     "apiPath": "FRONTEND_APIPATH",
-    "basePath": "FRONTEND_BASEPATH",
+    "basePath": "VUE_APP_FRONTEND_BASEPATH",
     "keycloak": {
       "clientId": "FRONTEND_KC_CLIENTID",
       "realm": "FRONTEND_KC_REALM",
