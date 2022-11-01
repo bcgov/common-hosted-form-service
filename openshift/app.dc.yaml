@@ -159,6 +159,23 @@ objects:
                       name: "patroni-${JOB_NAME}-secret"
                 - name: FRONTEND_BASEPATH
                   value: "${ROUTE_PATH}"
+                - name: VUE_APP_FRONTEND_BASEPATH
+                  value: "${ROUTE_PATH}"
+                - name: VUE_APP_CONTACT
+                  valueFrom:
+                    secretKeyRef:
+                      key: email
+                      name: "${APP_NAME}-contact-secret"
+                - name: VUE_APP_HOWTOURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: howtovideourl
+                      name: "${APP_NAME}-landingpagevideourls-secret"
+                - name: VUE_APP_CHEFSTOURURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: chefstourvideourl
+                      name: "${APP_NAME}-landingpagevideourls-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: SERVER_KC_CLIENTID
@@ -328,7 +345,7 @@ parameters:
     displayName: Route host
     required: true
   - name: ROUTE_PATH
-    description: Configure the route path (ex. /pr-5 or /app), also used for FRONTEND_BASEPATH
+    description: Configure the route path (ex. /pr-5 or /app), also used for VUE_APP_FRONTEND_BASEPATH
     displayName: Route path
     required: true
   - name: JOB_NAME
