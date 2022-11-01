@@ -30,7 +30,9 @@ describe('form getters', () => {
     },
     permissions: ['SUBMIT', 'READ'],
     submissionList: ['test', 'sub'],
-    version: { type: 'form' }
+    version: { type: 'form' },
+    reminder : {},
+    schedule : {}
   };
 
   beforeEach(() => {

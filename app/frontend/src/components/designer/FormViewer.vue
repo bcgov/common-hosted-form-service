@@ -102,7 +102,8 @@ import { Form } from 'vue-formio';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
-import { isFormPublic, isFormExpired } from '@/utils/permissionUtils';
+import { isFormPublic } from '@/utils/permissionUtils';
+import { isFormExpired } from '@/utils/transformUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
 
