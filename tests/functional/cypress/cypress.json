@@ -1,11 +1,13 @@
 {
-  "baseUrl": "http://localhost:8081",
+  "baseUrl": "http://localhost:8083",
   "env": {
     "depEnv": "app",
+    "appUrl":"http://localhost:8080/app/api/v1/",
     "auth_base_url": "http://localhost:8082",
-    "auth_realm": "cp1qly2d",
+    "auth_realm": "standard",
     "auth_client_id": "chefs"
   },
   "pluginsFile": "plugins/index.js",
-  "video": false
+  "video": false,
+  "chromeWebSecurity": false
 }

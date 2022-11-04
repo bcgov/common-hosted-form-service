@@ -26,7 +26,7 @@
         <span>Keep</span>
       </template>
       <template #button-text-delete>
-        <span>delete</span>
+        <span>Delete</span>
       </template>
     </BaseDialog>
   </BaseSecure>
