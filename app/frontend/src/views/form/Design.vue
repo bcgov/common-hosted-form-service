@@ -92,7 +92,7 @@ export default {
     //if not the same route, and showWarningDialog is true
     // it will ask form designers if they want to delete or
     //or keep the forms
-    if(_to.name!==this.$route.name) {
+    if(_to.name!==_from.name) {
       this.toRouterPathName = _to.name;
       this.showWarningDialog? this.showDialog=true: next();
     }
