@@ -16,6 +16,7 @@
               icon
               v-bind="attrs"
               v-on="on"
+              data-cy="saveButton"
             >
               <v-icon>save</v-icon>
             </v-btn>
@@ -698,7 +699,6 @@ export default {
       let res = await formService.updateDraft(this.formId, this.draftId, {
         schema: diff,
       });
-      console.log('++++++++++----B');
       this.formSchema = { ...this.formSchema, ...res.data.schema };
       this.autosaveFormSchemaHead = deepClone(this.formSchema);
       // Update this route with saved flag
