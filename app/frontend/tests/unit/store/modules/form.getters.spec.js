@@ -81,4 +81,15 @@ describe('form getters', () => {
   it('version should return the state version', () => {
     expect(store.getters.version).toEqual(sampleState.version);
   });
+  it('canLogout should return the state canLogout', () => {
+    expect(store.getters.canLogout).toEqual(sampleState.canLogout);
+  });
+
+  it('showWarningDialog should return the state showWarningDialog', () => {
+    expect(store.getters.showWarningDialog).toEqual(sampleState.showWarningDialog);
+  });
+
+  it('isLogoutButtonClicked should return the state isLogoutButtonClicked', () => {
+    expect(store.getters.isLogoutButtonClicked).toEqual(sampleState.isLogoutButtonClicked);
+  });
 });
