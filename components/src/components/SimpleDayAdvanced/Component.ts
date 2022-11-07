@@ -7,7 +7,6 @@ import { Constants } from '../Common/Constants';
 
 const ID = 'simpledayadvanced';
 const DISPLAY = 'Day';
-
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {
         return ParentComponent.schema({

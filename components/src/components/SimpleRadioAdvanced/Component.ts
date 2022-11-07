@@ -7,7 +7,6 @@ import { Constants } from '../Common/Constants';
 
 const ID = 'simpleradioadvanced';
 const DISPLAY = 'Radio';
-
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {
         return ParentComponent.schema({

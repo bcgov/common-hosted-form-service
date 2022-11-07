@@ -6,6 +6,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'simplebuttonadvanced';
+
 const DISPLAY = 'Button';
 
 export default class Component extends (ParentComponent as any) {
