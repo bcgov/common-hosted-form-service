@@ -6,6 +6,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'simplecurrencyadvanced';
+
 const DISPLAY = 'Currency';
 
 export default class Component extends (ParentComponent as any) {
