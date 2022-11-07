@@ -1,0 +1,175 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  annotations:
+    description: Caddy Server
+    iconClass: icon-caddy
+    openshift.io/display-name: Caddy Server
+    openshift.io/long-description: |
+      Caddy 2 is a powerful, enterprise-ready, open source web server with automatic HTTPS written in Go.
+    tags: caddy
+  name: "${APP_NAME}-reverse-proxy-dc"
+labels:
+  app: "${APP_NAME}-reverse-proxy"
+  app.kubernetes.io/component: reverse-proxy
+  app.kubernetes.io/instance: ${INSTANCE}
+  app.kubernetes.io/name: caddy
+  app.kubernetes.io/managed-by: template
+  app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
+  app.kubernetes.io/version: ${IMAGE_TAG}
+  app.openshift.io/runtime: golang
+  template: "${APP_NAME}-reverse-proxy-template"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}-caddyfile"
+    data:
+      Caddyfile: |
+        {
+            admin off
+            auto_https off
+            http_port 8088
+            https_port 8433
+        }
+
+        :8080 {
+            encode gzip
+            log
+            redir https://submit.digital.gov.bc.ca{uri} 308
+        }
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "${APP_NAME}-reverse-proxy"
+    spec:
+      ports:
+        - name: http
+          port: 8080
+        - name: https
+          port: 8433
+      selector:
+        app: "${APP_NAME}-reverse-proxy"
+        deploymentconfig: "${APP_NAME}-reverse-proxy"
+        role: reverse-proxy
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: "${APP_NAME}-reverse-proxy"
+    spec:
+      replicas: ${{REPLICAS}}
+      selector:
+        app: "${APP_NAME}-reverse-proxy"
+        deploymentconfig: "${APP_NAME}-reverse-proxy"
+        role: reverse-proxy
+      strategy:
+        resources: {}
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: "${APP_NAME}-reverse-proxy"
+            app.kubernetes.io/component: reverse-proxy
+            app.kubernetes.io/instance: ${INSTANCE}
+            app.kubernetes.io/name: caddy
+            app.kubernetes.io/managed-by: template
+            app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
+            app.kubernetes.io/version: "2"
+            app.openshift.io/runtime: golang
+            deploymentconfig: "${APP_NAME}-reverse-proxy"
+            role: reverse-proxy
+        spec:
+          containers:
+            - name: caddy
+              image: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+              imagePullPolicy: IfNotPresent
+              command:
+                - sh
+                - -c
+                - exec caddy run --config /mnt/Caddyfile --adapter caddyfile
+              livenessProbe:
+                tcpSocket:
+                  port: 8080
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+              ports:
+                - containerPort: 8080
+                  name: http
+                - containerPort: 8433
+                  name: https
+              readinessProbe:
+                tcpSocket:
+                  port: 8080
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              volumeMounts:
+                - mountPath: /mnt
+                  name: caddyfile
+                  readOnly: true
+          volumes:
+            - name: caddyfile
+              configMap:
+                defaultMode: 420
+                name: "${APP_NAME}-caddyfile"
+      test: false
+      triggers:
+        - type: ConfigChange
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: INSTANCE
+    description: The name of this instance of the application
+    displayName: Application Instance Name
+    required: true
+  - name: REPLICAS
+    description: The number of replicas to use.
+    displayName: Replicas
+    required: true
+    value: "2"
+  - name: IMAGE_REGISTRY
+    description: The base docker registry
+    displayName: Docker Image Registry
+    required: true
+    value: artifacts.developer.gov.bc.ca/docker-remote
+  - name: IMAGE_NAME
+    description: Image Name
+    displayName: Image Name
+    required: true
+    value: caddy
+  - name: IMAGE_TAG
+    description: Image Tag
+    displayName: Image Tag
+    required: true
+    value: 2.5.2-alpine
+  - name: CPU_REQUEST
+    description: Starting amount of CPU the container can use.
+    displayName: CPU Request
+    required: true
+    value: 25m
+  - name: CPU_LIMIT
+    description: Maximum amount of CPU the container can use.
+    displayName: CPU Limit
+    required: true
+    value: 100m
+  - name: MEMORY_REQUEST
+    description: Starting amount of memory the container can use.
+    displayName: Memory Request
+    required: true
+    value: 64Mi
+  - name: MEMORY_LIMIT
+    description: Maximum amount of memory the container can use.
+    displayName: Memory Limit
+    required: true
+    value: 256Mi

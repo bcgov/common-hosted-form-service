@@ -56,11 +56,11 @@ objects:
       strategy:
         dockerStrategy:
           env:
-            - name: FRONTEND_BASEPATH
+            - name: VUE_APP_FRONTEND_BASEPATH
               value: "${ROUTE_PATH}"
           from:
             kind: DockerImage
-            name: docker.io/node:16.14.2-alpine
+            name: docker.io/node:16.15.0-alpine
         type: Docker
       successfulBuildsHistoryLimit: 3
 parameters:
@@ -69,7 +69,7 @@ parameters:
     displayName: Repository Name
     required: true
   - name: ROUTE_PATH
-    description: Configure the route path (ex. /pr-5 or /app), also used for FRONTEND_BASEPATH
+    description: Configure the route path (ex. /pr-5 or /app), also used for VUE_APP_FRONTEND_BASEPATH
     displayName: Route path
     required: true
   - name: JOB_NAME

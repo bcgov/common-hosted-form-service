@@ -71,7 +71,7 @@ objects:
         rollingParams:
           timeoutSeconds: 600
           pre:
-            failurePolicy: Abort
+            failurePolicy: Retry
             execNewPod:
               command:
                 - npm
@@ -109,7 +109,7 @@ objects:
         spec:
           containers:
             - name: app
-              image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}"
+              image: "${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${REPO_NAME}:${IMAGE_TAG}"
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:
@@ -159,6 +159,23 @@ objects:
                       name: "patroni-${JOB_NAME}-secret"
                 - name: FRONTEND_BASEPATH
                   value: "${ROUTE_PATH}"
+                - name: VUE_APP_FRONTEND_BASEPATH
+                  value: "${ROUTE_PATH}"
+                - name: VUE_APP_CONTACT
+                  valueFrom:
+                    secretKeyRef:
+                      key: email
+                      name: "${APP_NAME}-contact-secret"
+                - name: VUE_APP_HOWTOURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: howtovideourl
+                      name: "${APP_NAME}-landingpagevideourls-secret"
+                - name: VUE_APP_CHEFSTOURURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: chefstourvideourl
+                      name: "${APP_NAME}-landingpagevideourls-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: SERVER_KC_CLIENTID
@@ -191,8 +208,8 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-objectstorage-secret"
-                - name: SERVER_LOGFILE
-                  value: "/var/log/app.log"
+                # - name: SERVER_LOGFILE
+                #   value: "/var/log/app.log"
               envFrom:
                 - configMapRef:
                     name: "${APP_NAME}-frontend-config"
@@ -202,79 +219,79 @@ objects:
                     name: "${APP_NAME}-server-config"
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
-              volumeMounts:
-                - name: log-storage
-                  mountPath: /var/log
+              # volumeMounts:
+              #   - name: log-storage
+              #     mountPath: /var/log
             # Fluent-bit log aggregator/forwarder
-            - name: fluent-bit
-              image: docker.io/fluent/fluent-bit:1.8
-              imagePullPolicy: IfNotPresent
-              livenessProbe:
-                httpGet:
-                  path: /
-                  port: 2020
-                  scheme: HTTP
-                initialDelaySeconds: 10
-                timeoutSeconds: 1
-                failureThreshold: 3
-              ports:
-                - containerPort: 2020
-                  name: metrics
-                  protocol: TCP
-                - containerPort: 80
-                  name: http-plugin
-                  protocol: TCP
-              readinessProbe:
-                httpGet:
-                  path: /
-                  port: 2020
-                  scheme: HTTP
-                initialDelaySeconds: 10
-                timeoutSeconds: 1
-                failureThreshold: 3
-              resources:
-                requests:
-                  cpu: "${LOGGING_CPU_REQUEST}"
-                  memory: "${LOGGING_MEMORY_REQUEST}"
-                limits:
-                  cpu: "${LOGGING_CPU_LIMIT}"
-                  memory: "${LOGGING_MEMORY_LIMIT}"
-              env:
-                - name: AWS_ACCESS_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      key: username
-                      name: "${APP_NAME}-aws-kinesis-secret"
-                - name: AWS_SECRET_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      key: password
-                      name: "${APP_NAME}-aws-kinesis-secret"
-              volumeMounts:
-                - name: log-storage
-                  mountPath: /var/log
-                - name: fluent-bit-config
-                  mountPath: /fluent-bit/etc/
+            # - name: fluent-bit
+            #   image: docker.io/fluent/fluent-bit:1.8
+            #   imagePullPolicy: IfNotPresent
+            #   livenessProbe:
+            #     httpGet:
+            #       path: /
+            #       port: 2020
+            #       scheme: HTTP
+            #     initialDelaySeconds: 10
+            #     timeoutSeconds: 1
+            #     failureThreshold: 3
+            #   ports:
+            #     - containerPort: 2020
+            #       name: metrics
+            #       protocol: TCP
+            #     - containerPort: 80
+            #       name: http-plugin
+            #       protocol: TCP
+            #   readinessProbe:
+            #     httpGet:
+            #       path: /
+            #       port: 2020
+            #       scheme: HTTP
+            #     initialDelaySeconds: 10
+            #     timeoutSeconds: 1
+            #     failureThreshold: 3
+            #   resources:
+            #     requests:
+            #       cpu: "${LOGGING_CPU_REQUEST}"
+            #       memory: "${LOGGING_MEMORY_REQUEST}"
+            #     limits:
+            #       cpu: "${LOGGING_CPU_LIMIT}"
+            #       memory: "${LOGGING_MEMORY_LIMIT}"
+            #   env:
+            #     - name: AWS_ACCESS_KEY_ID
+            #       valueFrom:
+            #         secretKeyRef:
+            #           key: username
+            #           name: "${APP_NAME}-aws-kinesis-secret"
+            #     - name: AWS_SECRET_ACCESS_KEY
+            #       valueFrom:
+            #         secretKeyRef:
+            #           key: password
+            #           name: "${APP_NAME}-aws-kinesis-secret"
+            #   volumeMounts:
+            #     - name: log-storage
+            #       mountPath: /var/log
+            #     - name: fluent-bit-config
+            #       mountPath: /fluent-bit/etc/
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           volumes:
             - name: log-storage
               emptyDir: {}
-            - name: fluent-bit-config
-              configMap:
-                name: fluent-bit-config
+            # - name: fluent-bit-config
+            #   configMap:
+            #     name: fluent-bit-config
       test: false
       triggers:
         - type: ConfigChange
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - app
-            from:
-              kind: ImageStreamTag
-              name: "${REPO_NAME}-app:${JOB_NAME}"
-              namespace: "${NAMESPACE}"
-          type: ImageChange
+        # - imageChangeParams:
+        #     automatic: true
+        #     containerNames:
+        #       - app
+        #     from:
+        #       kind: ImageStreamTag
+        #       name: "${REPO_NAME}-app:${JOB_NAME}"
+        #       namespace: "${NAMESPACE}"
+        #   type: ImageChange
   #- apiVersion: v1
   #  kind: PersistentVolumeClaim
   #  metadata:
@@ -328,7 +345,7 @@ parameters:
     displayName: Route host
     required: true
   - name: ROUTE_PATH
-    description: Configure the route path (ex. /pr-5 or /app), also used for FRONTEND_BASEPATH
+    description: Configure the route path (ex. /pr-5 or /app), also used for VUE_APP_FRONTEND_BASEPATH
     displayName: Route path
     required: true
   - name: JOB_NAME
@@ -336,10 +353,20 @@ parameters:
     displayName: Job Branch Name
     required: true
   - name: IMAGE_REGISTRY
-    description: The base OpenShift docker registry
+    description: The container registry
     displayName: Docker Image Registry
     required: true
-    value: image-registry.openshift-image-registry.svc:5000
+    value: ghcr.io
+  - name: IMAGE_NAMESPACE
+    description: The image namespace
+    displayName: Docker Image Namespace
+    required: true
+    value: bcgov
+  - name: IMAGE_TAG
+    description: The specific image tag to deploy
+    displayName: Docker Image Tag
+    required: true
+    value: latest
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace

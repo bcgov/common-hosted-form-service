@@ -13,8 +13,8 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   contact:
-    name: NR Common Service Showcase
-    email: NR.CommonServiceShowcase@gov.bc.ca
+    name: Forminators
+    email: submit.digital@gov.bc.ca
 externalDocs:
   description: Project Readmes
   url: https://github.com/bcgov/common-hosted-form-service
@@ -1801,6 +1801,14 @@ paths:
             example: c6455376-382c-439d-a811-0381a012d696
           description: form id
           required: true
+        - in: query
+          name: userId
+          schema:
+            type: string
+            format: uuid
+            example: d7455376-382c-439d-a811-0381a012d696
+          description: user id
+          required: true
       requestBody:
         required: true
         content:
@@ -2443,6 +2451,46 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormUserList'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/forms/{formId}/addUser:
+    put:
+      summary: Add user permissions to a form
+      operationId: adminAddUser
+      tags:
+        - Admin
+      security:
+        - OpenID:
+            - admin
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - in: query
+          name: userId
+          schema:
+            type: string
+          description: The user to add permissions to
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormRoleUser'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccess'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
