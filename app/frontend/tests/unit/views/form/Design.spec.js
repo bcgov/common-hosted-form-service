@@ -1,6 +1,5 @@
 import {createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-import BaseDialog from '@/components/base/BaseDialog.vue';
 import Design from '@/views/form/Design.vue';
 
 const localVue = createLocalVue();

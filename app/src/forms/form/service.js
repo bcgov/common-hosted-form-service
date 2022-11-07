@@ -19,7 +19,6 @@ const {
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
-const { applyPatch,deepClone  } = require('fast-json-patch');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const service = {
@@ -443,12 +442,11 @@ const service = {
   updateDraft: async (formVersionDraftId, data, currentUser) => {
     let trx;
     try {
-      //applyOperation, deepClone, compare, applyPatch
+
       const obj = await service.readDraft(formVersionDraftId);
-      let document = deepClone(applyPatch(obj.schema, data.schema).newDocument);
       trx = await FormVersionDraft.startTransaction();
       await FormVersionDraft.query(trx).patchAndFetchById(formVersionDraftId, {
-        schema: document,
+        schema: data.schema,
         formVersionId: data.formVersionId,
         updatedBy: currentUser.usernameIdp
       });

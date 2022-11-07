@@ -213,10 +213,6 @@ export default {
       default: false,
     },
     versionId: String,
-    newForm:{
-      type:Boolean,
-      default:true,
-    }
   },
   data() {
     return {
@@ -225,11 +221,6 @@ export default {
         { text: 'Advanced Mode', value: true },
       ],
       designerStep: 1,
-      autosaveFormSchemaHead:{
-        display: 'form',
-        type: 'form',
-        components: [],
-      },
       formSchema: {
         display: 'form',
         type: 'form',
@@ -390,7 +381,6 @@ export default {
         if (this.patch.history.length === 0) {
           // We are fetching an existing form, so we get the original schema here because
           // using the original schema in the mount will give you the default schema
-          this.autosaveFormSchemaHead = deepClone(this.formSchema);
           this.patch.originalSchema = deepClone(this.formSchema);
         }
       } catch (error) {
@@ -543,7 +533,7 @@ export default {
 
     //this method is used for autosave action
     async autosaveEventTrigger() {
-      if(this.newForm) {
+      if(this.formId && this.draftId) {
         await this.setShowWarningDialog(true);
         await this.setCanLogout(false);
       } else {
@@ -681,7 +671,6 @@ export default {
         formVersionId: this.versionId,
       });
       this.formSchema = { ...this.formSchema, ...data.schema };
-      this.autosaveFormSchemaHead = deepClone(this.formSchema);
 
       // Navigate back to this page with ID updated
       this.$router.push({
@@ -695,12 +684,10 @@ export default {
       });
     },
     async schemaUpdateExistingDraft() {
-      let diff = deepClone(compare(this.autosaveFormSchemaHead,this.formSchema));
       let res = await formService.updateDraft(this.formId, this.draftId, {
-        schema: diff,
+        schema: this.formSchema,
       });
       this.formSchema = { ...this.formSchema, ...res.data.schema };
-      this.autosaveFormSchemaHead = deepClone(this.formSchema);
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
