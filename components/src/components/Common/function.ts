@@ -12,5 +12,5 @@ export function reArrangeComponents(neededposition=[], components=[]) {
     return Array.from(new Set(newPosition.map(a => a.key)))
     .map(key => {
       return newPosition.find(a => a.key === key)
-    });;
+    });
 }

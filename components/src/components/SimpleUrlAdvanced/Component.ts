@@ -6,7 +6,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'simpleurladvanced';
-const DISPLAY = 'Url'+Constants.ADV;
+const DISPLAY = 'Url';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {

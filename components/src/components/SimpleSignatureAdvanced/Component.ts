@@ -6,7 +6,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'simplesignatureadvanced';
-const DISPLAY = 'Signature'+Constants.ADV;;
+const DISPLAY = 'Signature';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {

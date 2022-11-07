@@ -6,7 +6,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'simpledatetimeadvanced';
-const DISPLAY = 'Date / Time'+Constants.ADV;;
+const DISPLAY = 'Date / Time';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {

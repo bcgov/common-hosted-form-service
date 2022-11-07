@@ -6,7 +6,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'simpleselectboxesadvanced';
-const DISPLAY = 'Select Boxes'+Constants.ADV;;
+const DISPLAY = 'Select Boxes';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {

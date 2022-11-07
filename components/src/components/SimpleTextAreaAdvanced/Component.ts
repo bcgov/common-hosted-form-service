@@ -6,7 +6,7 @@ import editForm from './Component.form';
 import { Constants } from '../Common/Constants';
 
 const ID = 'simpletextareaadvanced';
-const DISPLAY = 'Text Area'+Constants.ADV;;
+const DISPLAY = 'Text Area';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {
