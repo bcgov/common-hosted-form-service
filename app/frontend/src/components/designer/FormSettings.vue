@@ -579,7 +579,7 @@ export default {
       );
     },
     AVAILABLE_DATES() {
-      return getAvailableDates(
+      return getAvailableDates (
         this.schedule.keepOpenForTerm,
         this.schedule.keepOpenForInterval,
         this.schedule.openSubmissionDateTime,

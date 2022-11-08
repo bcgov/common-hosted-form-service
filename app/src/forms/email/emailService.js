@@ -113,9 +113,8 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
 };
 
 /** Helper function used to build the email template based on email type and contents for reminder */
-const buildEmailTemplateFormForReminder = async (form, emailType, user, report) => {
+const buildEmailTemplateFormForReminder = async (form, emailType, user, report, referer) => {
   let configData = {};
-
   if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
     configData = {
       bodyTemplate: 'reminder-form-open.html',
@@ -153,9 +152,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report) 
       subject: 'Submission Closing',
       messageLinkText: `Hi,
       You are receiving this message because you are currently identified as a submitter for the form ${form.name} and that you have until ${ report.dates.closeDate } midnight to submit your data.
-
       Please do not hesitate to reach out to the MoH HelpDesk HLTH.Helpdesk@gov.bc.ca if you shouldn’t be identified as a submitter or if you run into any issues while submitting your data.
-
       Thank you.
       `,
       priority: 'normal',
@@ -163,7 +160,6 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report) 
     };
 
   }
-
   return {
     configData,
     contexts: [{
@@ -172,7 +168,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report) 
         form: configData.form,
         report: report,
         messageLinkText: configData.messageLinkText,
-        messageLinkUrl: 'null',
+        messageLinkUrl:`${service._appUrl(referer)}/form/submit?f=${configData.form.id}`,
         title: configData.title
       },
       to: [user.email]
@@ -440,7 +436,7 @@ const service = {
    */
   initReminder: async (obj) => {
     try {
-      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.submiter, obj.report);
+      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.submiter, obj.report, obj.referer);
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {

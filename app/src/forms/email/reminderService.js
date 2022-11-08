@@ -164,9 +164,9 @@ const service = {
     }
     return statement;
   },
-  initMaillSender: (statement) => {
+  initMaillSender: (statement, req) => {
     statement.submiters.forEach((element)=>{
-      const data = { form :statement.form, report : statement.report, submiter : element, state : statement.state };
+      const data = { form :statement.form, report : statement.report, submiter : element, state : statement.state, referer: req.headers.referer };
       emailService.initReminder(data);
     });
   }
