@@ -1,7 +1,10 @@
 {
-  "baseUrl": "https://chefs-test.apps.silver.devops.gov.bc.ca",
+  "baseUrl": "http://localhost:8081",
   "env": {
-    "depEnv": "app"
+    "depEnv": "app",
+    "auth_base_url": "http://localhost:8082",
+    "auth_realm": "cp1qly2d",
+    "auth_client_id": "chefs"
   },
   "pluginsFile": "plugins/index.js",
   "video": false

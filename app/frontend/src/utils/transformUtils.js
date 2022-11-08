@@ -1,6 +1,7 @@
 import formioUtils from 'formiojs/utils';
-import { IdentityMode } from '@/utils/constants';
 import moment from 'moment';
+import { IdentityMode } from '@/utils/constants';
+
 //
 // Transformation Functions for converting form objects
 //
@@ -64,7 +65,6 @@ export function attachAttributesToLinks(formSchemaComponents) {
     }
   });
 }
-
 
 
 /**
@@ -202,7 +202,16 @@ export function isEligibleLateSubmission(date,term,interval){
  * @param {Object[]} repeatUntil An object of Moment JS date
  * @returns {Object[]} An object array of Available dates in given period
  */
-export function getAvailableDates(keepAliveFor=0, keepAliveForInterval='days',submstartDate,term=null,interval=null,allowLateTerm=null,allowLateInterval=null,repeatUntil) {
+export function getAvailableDates(
+  keepAliveFor=0,
+  keepAliveForInterval='days',
+  submstartDate,
+  term=null,
+  interval=null,
+  allowLateTerm=null,
+  allowLateInterval=null,
+  repeatUntil
+) {
   let substartDate = moment(submstartDate);
   repeatUntil = moment(repeatUntil);
   var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil);
@@ -220,7 +229,6 @@ export function getAvailableDates(keepAliveFor=0, keepAliveForInterval='days',su
       substartDate.add(term,interval);
     }
   }
-  // console.log('availableDates-',availableDates);
   return availableDates;
 }
 
@@ -256,3 +264,4 @@ export function getCalculatedCloseSubmissionDate(openDate=moment(),keepOpenForTe
 
   return calculatedCloseDate;
 }
+
