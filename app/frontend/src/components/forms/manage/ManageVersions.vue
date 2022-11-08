@@ -86,7 +86,7 @@
               <router-link
                 :to="{
                   name: 'FormDesigner',
-                  query: { d: item.id, f: item.formId },
+                  query: { d: item.id, f: item.formId, nf:false },
                 }"
               >
                 <v-btn
@@ -397,7 +397,7 @@ export default {
         });
       }
     },
-  },
+  }
 };
 </script>
 

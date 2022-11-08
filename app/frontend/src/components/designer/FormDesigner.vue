@@ -213,6 +213,7 @@ export default {
       default: false,
     },
     versionId: String,
+    newForm:Boolean
   },
   data() {
     return {
@@ -241,6 +242,7 @@ export default {
         redoClicked: false,
         undoClicked: false,
       },
+
     };
   },
   computed: {
@@ -533,7 +535,8 @@ export default {
 
     //this method is used for autosave action
     async autosaveEventTrigger() {
-      if(this.formId && this.draftId) {
+      if(this.newForm) {
+
         await this.setShowWarningDialog(true);
         await this.setCanLogout(false);
       } else {
@@ -691,7 +694,7 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true,nf:this.newForm, },
+        query: { ...this.$route.query, sv: true,nf:this.newForm },
       });
 
     },
@@ -713,7 +716,7 @@ export default {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    }
+    },
   },
 };
 </script>

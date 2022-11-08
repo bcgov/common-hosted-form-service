@@ -46,8 +46,8 @@ export default {
     d: String,
     f: String,
     sv: Boolean,
-    nf:Boolean,
     v: String,
+    nf:Boolean
   },
   data() {
     return {
@@ -63,7 +63,7 @@ export default {
   watch: {
     isLogoutButtonClicked(){
       this.showDialog=true;
-    }
+    },
   },
   methods:{
     ...mapActions('form', ['deleteCurrentForm','setIsLogoutButtonClicked','setShowWarningDialog','setCanLogout']),
@@ -88,7 +88,7 @@ export default {
       this.$router.push({name:this.toRouterPathName.trim()});
     },
   },
-  beforeRouteLeave(_to, _from, next) {
+  beforeRouteLeave(_to, _from,next) {
     //if not the same route, and showWarningDialog is true
     // it will ask form designers if they want to delete or
     //or keep the forms
