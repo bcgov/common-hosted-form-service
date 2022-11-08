@@ -477,7 +477,7 @@
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import { IdentityMode, IdentityProviders, Regex } from '@/utils/constants';
-import { getAvailableDates } from '@/utils/transformUtils';
+import { getAvailableDates } from  '@/utils/transformUtils' ;
 import moment from 'moment';
 
 export default {

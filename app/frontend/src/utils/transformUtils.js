@@ -74,7 +74,7 @@ export function attachAttributesToLinks(formSchemaComponents) {
  * @returns {boolean} TRUE if form not expired and Available to submission
  *
  */
- export function isFormExpired(formSchedule = {}) {
+export function isFormExpired(formSchedule = {}) {
   var result = {
     allowLateSubmissions:false,
     expire:false,
@@ -202,7 +202,7 @@ export function isEligibleLateSubmission(date,term,interval){
  * @param {Object[]} repeatUntil An object of Moment JS date
  * @returns {Object[]} An object array of Available dates in given period
  */
- export function getAvailableDates(keepAliveFor=0, keepAliveForInterval='days',submstartDate,term=null,interval=null,allowLateTerm=null,allowLateInterval=null,repeatUntil) {
+export function getAvailableDates(keepAliveFor=0, keepAliveForInterval='days',submstartDate,term=null,interval=null,allowLateTerm=null,allowLateInterval=null,repeatUntil) {
   let substartDate = moment(submstartDate);
   repeatUntil = moment(repeatUntil);
   var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil);
