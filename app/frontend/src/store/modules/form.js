@@ -1,8 +1,32 @@
 import { getField, updateField } from 'vuex-map-fields';
-
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { apiKeyService, formService, rbacService, userService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
+
+const genInitialSchedule = () => ({
+  'enabled':null,
+  'openSubmissionDateTime': null,
+  'keepOpenForTerm': null,
+  'keepOpenForInterval': null,
+  'closingMessage': null,
+  'closeSubmissionDateTime': null,
+  'repeatSubmission': {
+    'enabled': null,
+    'repeatUntil': null,
+    'everyTerm': null,
+    'onSpecificDay': null,
+    'everyIntervalType': null,
+    'keepAliveFor': null,
+    
+  },
+  'allowLateSubmissions': {
+    'enabled': null,
+    'forNext': {
+      'term': null,
+      'intervalType': null
+    }
+  }
+});
 
 const genInitialForm = () => ({
   description: '',
@@ -16,6 +40,7 @@ const genInitialForm = () => ({
   showSubmissionConfirmation: true,
   snake: '',
   submissionReceivedEmails: [],
+  schedule: genInitialSchedule(),
   userType: IdentityMode.TEAM,
   versions: []
 });
@@ -217,6 +242,12 @@ export default {
         data.idps = identityProviders.idps;
         data.userType = identityProviders.userType;
         data.sendSubRecieviedEmail = data.submissionReceivedEmails && data.submissionReceivedEmails.length;
+        
+        data.schedule = {
+          ...genInitialSchedule(),
+          ...data.schedule
+        };
+       
         commit('SET_FORM', data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -276,6 +307,11 @@ export default {
             Array.isArray(state.form.submissionReceivedEmails)
             ? state.form.submissionReceivedEmails
             : [];
+
+        const schedule = state.form.schedule.enabled ? {
+          ...state.form.schedule
+        } : {};
+
         await formService.updateForm(state.form.id, {
           name: state.form.name,
           description: state.form.description,
@@ -286,7 +322,8 @@ export default {
             userType: state.form.userType,
           }),
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
-          submissionReceivedEmails: emailList
+          submissionReceivedEmails: emailList,
+          schedule: schedule
         });
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -341,7 +378,7 @@ export default {
         }, { root: true });
       }
     },
-    async fetchSubmissions({ commit, dispatch, state }, { formId, userView }) {
+    async fetchSubmissions({ commit, dispatch, state }, { formId, userView, createdAt }) {
       try {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of active submissions for this form (for either all submissions, or just single user)
@@ -349,7 +386,7 @@ export default {
           state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columnList : undefined;
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
-          : await formService.listSubmissions(formId, { deleted: false, fields: fields });
+          : await formService.listSubmissions(formId, { deleted: false, fields: fields, createdAt: createdAt }); 
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {

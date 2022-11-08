@@ -24,6 +24,34 @@
       </v-tooltip>
     </router-link>
 
+    <span v-if="submission.status === 'SUBMITTED'">
+      <router-link
+        v-if="submission.status === 'SUBMITTED'"
+        :to="{
+          name: 'UserFormDuplicate',
+          query: {
+            s: submission.submissionId,
+            f: formId,
+          },
+        }"
+      >
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              :disabled="!hasViewPerm()"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>app_registration</v-icon>
+            </v-btn>
+          </template>
+          <span>Copy This Submission</span>
+        </v-tooltip>
+      </router-link>
+    </span>
+
     <span v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'">
       <router-link
         v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
@@ -74,6 +102,10 @@ export default {
       type: Object,
       required: true,
     },
+    formId: {
+      type: String,
+      required: true
+    }
   },
   methods: {
     draftDeleted() {

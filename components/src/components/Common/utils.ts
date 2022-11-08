@@ -126,11 +126,13 @@ const EditFormUtils = {
 
     return {
       type: 'panel',
+      // tslint:disable-next-line: object-literal-shorthand
       title: title,
       theme: 'default',
       collapsible: true,
       collapsed: true,
       key: `${property}Panel`,
+      // tslint:disable-next-line: object-literal-shorthand
       weight: weight,
       components
     };
