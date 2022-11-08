@@ -160,6 +160,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
     };
 
   }
+
   return {
     configData,
     contexts: [{
