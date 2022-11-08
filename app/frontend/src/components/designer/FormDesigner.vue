@@ -234,9 +234,10 @@ export default {
         componentMovedStart: false,
         history: [],
         index: -1,
+        MAX_PATCHES: 30,
+        originalSchema: null,
         redoClicked: false,
         undoClicked: false,
-        originalSchema: null,
       },
     };
   },
@@ -473,10 +474,18 @@ export default {
       if (!this.patch.undoClicked && !this.patch.redoClicked) {
         // flags and modified are defined when a component is added
         if (flags !== undefined && modified !== undefined) {
-          if (this.patch.componentAddedStart !== null) {
+          // Component was pasted here or edited and saved
+          if (this.patch.componentAddedStart) {
             this.addPatchToHistory();
           } else {
-            this.resetHistoryFlags();
+            // Tab changed, Edit saved, paste occurred
+            if (typeof modified == 'boolean') {
+              // Tab changed
+              this.resetHistoryFlags();
+            } else {
+              // Edit saved or paste occurred
+              this.addPatchToHistory();
+            }
           }
         } else {
           // If we removed a component but not during an add action
@@ -494,17 +503,29 @@ export default {
       }
     },
     addPatchToHistory() {
-      // Remove any actions past the action we were on
-      if (this.patch.history.length > 0) {
-        this.patch.history.length = this.patch.index + 1;
-      }
-
-      // Get the differences between the last patch 
-      // and the current form
-      const form = this.getPatch(++this.patch.index);
+      // Determine if there is even a difference with the action
+      const form = this.getPatch(this.patch.index + 1);
       const patch = compare(form, this.formSchema);
-      // Add the patch to the history
-      this.patch.history.push(patch);
+
+      if(patch.length > 0) {
+        // Remove any actions past the action we were on
+        this.patch.index += 1;
+        if (this.patch.history.length > 0) {
+          this.patch.history.length = this.patch.index;
+        }
+
+        // Add the patch to the history
+        this.patch.history.push(patch);
+
+        // If we've exceeded the limit on actions
+        if (this.patch.history.length > this.patch.MAX_PATCHES) {
+          // We need to set the original schema to the first patch
+          const newHead = this.getPatch(0);
+          this.patch.originalSchema = newHead;
+          this.patch.history.shift();
+          --this.patch.index;
+        }
+      }
 
       this.resetHistoryFlags();
     },
@@ -528,8 +549,7 @@ export default {
       if (this.canUndoPatch()) {
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
-        this.patch.index--;
-        this.formSchema = this.getPatch(this.patch.index);
+        this.formSchema = this.getPatch(--this.patch.index);
       }
     },
     redoPatchFromHistory() {
@@ -537,8 +557,7 @@ export default {
       if (this.canRedoPatch()) {
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
-        this.patch.index++;
-        this.formSchema = this.getPatch(this.patch.index);
+        this.formSchema = this.getPatch(++this.patch.index);
       }
     },
     resetHistoryFlags(flag = false) {

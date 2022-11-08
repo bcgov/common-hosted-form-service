@@ -25,12 +25,52 @@ inputs:
   dockerhub_token:
     description: Dockerhub Container Registry Authorization Token
     required: false
+  app_title:
+    description: Application title
+    required: false
+    default: Common Hosted Forms
+  route_path:
+    description: Route Subpath Mount point
+    required: true
+    default: "/app"
+  app_contact:
+    description: Application contact email
+    required: true
+  app_howtourl:
+    description: Landing page video URL for HOWTO section
+    required: true
+    default: "https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53"
+  app_chefstoururl:
+    description: Landing page video URL for CHEFS TOUR section
+    required: true
+    default: "https://www.youtube.com/embed/obOhyYusMjM"
+
 
 runs:
   using: composite
   steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
+    - name: Creates env variables
+      env:
+        VUE_APP_TITLE: ${{ inputs.app_title }}
+        VUE_APP_CONTACT: ${{ inputs.VUE_APP_CONTACT }}
+        VUE_APP_HOWTOURL: ${{ inputs.app_howtourl }}
+        VUE_APP_CHEFSTOURURL: ${{ inputs.app_chefstoururl }}
+        VUE_APP_FRONTEND_BASEPATH: ${{ inputs.route_path }}
+        ENV_PATH: ./app/frontend/.env
+      shell: bash
+      run: |
+        touch $ENV_PATH
+        echo VUE_APP_TITLE=$VUE_APP_TITLE >> $ENV_PATH
+        echo VUE_APP_CONTACT=$VUE_APP_CONTACT >> $ENV_PATH
+        echo VUE_APP_HOWTOURL=$VUE_APP_HOWTOURL >> $ENV_PATH
+        echo VUE_APP_CHEFSTOURURL=$VUE_APP_CHEFSTOURURL >> $ENV_PATH
+        echo VUE_APP_FRONTEND_BASEPATH=$VUE_APP_FRONTEND_BASEPATH >> $ENV_PATH
+
+        echo "cat $ENV_PATH"
+        cat $ENV_PATH
 
     - name: Parse Input Values
       shell: bash
