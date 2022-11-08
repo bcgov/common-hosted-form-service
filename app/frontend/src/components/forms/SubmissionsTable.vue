@@ -145,7 +145,6 @@ export default {
         //push new header for late submission if Form is setup for scheduling
         headers = [...headers,{ text: 'Late Submission', align: 'start', value: 'lateEntry' }];
       }
-      // console.log('headers=',headers);
       // If status flow enabled add that column
       if (this.showStatus) {
         headers.splice(3, 0, {

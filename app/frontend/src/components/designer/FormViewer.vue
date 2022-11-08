@@ -102,9 +102,9 @@ import { Form } from 'vue-formio';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
+
 import { isFormPublic } from '@/utils/permissionUtils';
-import { isFormExpired } from '@/utils/transformUtils';
-import { attachAttributesToLinks } from '@/utils/transformUtils';
+import { attachAttributesToLinks, isFormExpired } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
@@ -212,6 +212,15 @@ export default {
           //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
           this.formSchema = response.data.version.schema;
           this.version = response.data.version.version;
+        }else{
+          /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
+          if(response.data?.version?.schema?.components && response.data?.version?.schema?.components.length){
+            response.data.version.schema.components.map((component) => {
+              if(!component?.validate?.isUseForCopy){
+                delete this.submission.data[component.key];
+              }
+            });
+          }
         }
         // Get permissions
         if (!this.staffEditMode && !isFormPublic(this.form)) {
