@@ -77,6 +77,7 @@
         <MySubmissionsActions
           @draft-deleted="populateSubmissionsTable"
           :submission="item"
+          :formId="formId"
         />
       </template>
     </v-data-table>

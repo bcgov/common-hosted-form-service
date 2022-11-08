@@ -100,14 +100,17 @@ class Form extends Timestamps(Model) {
       },
       orderNameAscending(builder) {
         builder.orderByRaw('lower("name")');
-      }
+      },
+      hasReminder(query) {
+        query.where('reminder','<>' ,{});
+      },
     };
   }
 
   // exclude labels and submissionReceivedEmails arrays from explicit JSON conversion
   // encounter malformed array literal
   static get jsonAttributes() {
-    return ['id', 'name', 'description', 'active', 'showSubmissionConfirmation', 'enableStatusUpdates', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
+    return ['id', 'name', 'description', 'active', 'showSubmissionConfirmation', 'enableStatusUpdates', 'schedule','reminder', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
   }
 
   static get jsonSchema() {
@@ -124,6 +127,8 @@ class Form extends Timestamps(Model) {
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         enableStatusUpdates: { type: 'boolean' },
         enableSubmitterDraft: { type: 'boolean' },
+        schedule: { type: 'object' },
+        reminder: { type: 'object' },
         ...stamps
       },
       additionalProperties: false
