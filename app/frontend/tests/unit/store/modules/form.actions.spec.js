@@ -258,4 +258,31 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
   });
+  describe('can logout check', () => {
+    it('canLogout should commit to SET_CAN_LOGOUT', async () => {
+      await store.actions.setCanLogout(mockStore, true);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_CAN_LOGOUT',true);
+
+    });
+  });
+  describe('logout button clicked check', () => {
+    it('isLogoutButtonClicked should commit to SET_IS_LOGOUT_BUTTON_CLICKED', async () => {
+      await store.actions.setIsLogoutButtonClicked(mockStore, true);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_IS_LOGOUT_BUTTON_CLICKED', true);
+
+    });
+  });
+  describe('show warning dialog check', () => {
+    it('showWarningDialog should commit to SET_SHOW_WARNING_DIALOG', async () => {
+      await store.actions.setShowWarningDialog(mockStore, true);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_SHOW_WARNING_DIALOG', true);
+
+    });
+  });
 });
