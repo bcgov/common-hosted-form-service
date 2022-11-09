@@ -23,8 +23,10 @@
   "dependencies": {
     "cypress": "^9.1.0",
     "cypress-drag-drop": "^1.1.1",
-    "cypress-keycloak-commands": "^1.2.0",
     "date-fns": "^2.26.0",
     "har-validator": "^5.1.5"
+  },
+  "devDependencies": {
+    "cypress-keycloak-commands": "^1.2.0"
   }
 }
