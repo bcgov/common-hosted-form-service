@@ -125,7 +125,7 @@
       </v-col>
     </v-row>
     <v-alert
-      :value="saved || saving"
+      :value="(saved || saving) && isSavedButtonClick"
       :class="
         saving
           ? NOTIFICATIONS_TYPES.INFO.class
@@ -535,6 +535,7 @@ export default {
 
     //this method is used for autosave action
     async autosaveEventTrigger() {
+      this.isSavedButtonClick=false;
       if(this.newForm) {
 
         await this.setShowWarningDialog(true);
@@ -550,7 +551,9 @@ export default {
     async submitFormButtonClick() {
       await this.setShowWarningDialog(false);
       await this.setCanLogout(true);
+      this.isSavedButtonClick=true;
       this.submitFormSchema();
+
     },
     getPatch(idx) {
       // Generate the form from the original schema
@@ -605,8 +608,8 @@ export default {
     // Saving the Schema
     // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
+      this.saving = true;
       try {
-        this.saving = true;
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         if (this.formId) {
           if (this.versionId) {

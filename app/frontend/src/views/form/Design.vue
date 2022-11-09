@@ -14,19 +14,16 @@
                 @continue-dialog="navigateToRoute"
                 :showCloseButton=true>
       <template #title>Confirm</template>
-      <template #icon>
-        <v-icon large color="primary">warning</v-icon>
-      </template>
       <template #text>
         <div class="dialogMessageText">
-          Do you want to save this form?
+          Do you want to save this form before exit
         </div>
       </template>
       <template #button-text-continue>
-        <span>Save</span>
+        <span>Yes</span>
       </template>
       <template #button-text-delete>
-        <span>Delete</span>
+        <span>No</span>
       </template>
     </BaseDialog>
   </BaseSecure>
@@ -100,11 +97,3 @@ export default {
 
 };
 </script>
-<style lang="css" scoped>
-  .dialogMessageText {
-    color: #494949 !important;
-    font-size: 19px;
-    line-height: 30px;
-    padding: 0;
-  }
-</style>
