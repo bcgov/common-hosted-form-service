@@ -13,17 +13,17 @@
                 @delete-dialog="deleteDialog"
                 @continue-dialog="navigateToRoute"
                 :showCloseButton=true>
-      <template #title>Confirm Navigation</template>
+      <template #title>Confirm</template>
       <template #icon>
-        <v-icon large color="primary">help_outline</v-icon>
+        <v-icon large color="primary">warning</v-icon>
       </template>
       <template #text>
         <div class="dialogMessageText">
-          You are about to navigate from this page. Do you want to keep this form?
+          Do you want to save this form?
         </div>
       </template>
       <template #button-text-continue>
-        <span>Keep</span>
+        <span>Save</span>
       </template>
       <template #button-text-delete>
         <span>Delete</span>
@@ -103,7 +103,8 @@ export default {
 <style lang="css" scoped>
   .dialogMessageText {
     color: #494949 !important;
-    font-size: 17px;
+    font-size: 19px;
+    line-height: 30px;
     padding: 0;
   }
 </style>
