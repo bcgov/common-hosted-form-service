@@ -86,7 +86,7 @@
               <router-link
                 :to="{
                   name: 'FormDesigner',
-                  query: { d: item.id, f: item.formId },
+                  query: { d: item.id, f: item.formId, nf:false },
                 }"
               >
                 <v-btn
@@ -103,6 +103,7 @@
             <span>Edit Version</span>
           </v-tooltip>
         </span>
+
 
         <!-- export -->
         <span>
@@ -275,9 +276,9 @@ export default {
     versionList() {
       if (this.hasDraft) {
         // reformat draft object and then join with versions array
-        const reDraft = this.drafts.map((obj) => {
+        const reDraft = this.drafts.map((obj, idx) => {
           obj.published = false;
-          obj.version = this.form.versions.length + 1;
+          obj.version = this.form.versions.length + this.drafts.length - idx;
           obj.isDraft = true;
           delete obj.formVersionId;
           delete obj.schema;
@@ -306,7 +307,7 @@ export default {
       } else {
         this.$router.push({
           name: 'FormDesigner',
-          query: { f: formId, v: versionId },
+          query: { f: formId, v: versionId, nf:false },
         });
       }
     },
@@ -396,7 +397,7 @@ export default {
         });
       }
     },
-  },
+  }
 };
 </script>
 
