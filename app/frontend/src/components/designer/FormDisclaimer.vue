@@ -27,13 +27,9 @@
       <li>
         If you will be using this form to gather information from the general 
         public on topics that are of general interest to the public, you are 
-        required to contact 
-        <a href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/central-government-agencies/government-communications" target="_blank">
-          GCPE <v-icon small color="primary">open_in_new</v-icon>
-        </a>
-          so that your engagement can be listed on
+        required to contact the GCPE so that your engagement can be listed on
         <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
-          govTogetherBC <v-icon small color="primary">open_in_new</v-icon>
+          govTogetherBC. <v-icon small color="primary">open_in_new</v-icon>
         </a>
       </li>
     </ul>
