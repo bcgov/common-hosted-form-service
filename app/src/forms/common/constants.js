@@ -55,4 +55,10 @@ module.exports = Object.freeze({
     OBJECT_STORAGE: 'objectStorage',
     LOCAL_STORES: ['uploads', 'localStorage']
   },
+  Restricted: {
+    IDP: {
+      BCEID_BASIC: 'bceid-basic',
+      BCEID_BUSINESS: 'bceid-business',
+    }
+  },
 });
