@@ -54,7 +54,7 @@ routes.put('/forms/:formId/addUser', async (req, res, next) => {
 // Users
 //
 routes.get('/users', async (req, res, next) => {
-  await userController.list(req, res, next);
+  await controller.getUsers(req, res, next);
 });
 
 routes.get('/users/:userId', async (req, res, next) => {

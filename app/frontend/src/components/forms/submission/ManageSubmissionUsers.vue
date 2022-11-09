@@ -163,7 +163,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import { FormPermissions, IdentityProviders, NotificationTypes } from '@/utils/constants';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
 import { rbacService, userService } from '@/services';
 
 export default {
@@ -302,13 +302,9 @@ export default {
       this.isLoadingDropdown = true;
       try {
         // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
-        const idp =
-          this.form.identityProviders && this.form.identityProviders.length
-            ? this.form.identityProviders[0].code
-            : IdentityProviders.IDIR;
         const response = await userService.getUsers({
           search: input,
-          idpCode: idp,
+          idpCode: 'idir',
         });
         this.userSearchResults = response.data;
       } catch (error) {

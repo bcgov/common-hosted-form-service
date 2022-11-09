@@ -147,7 +147,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should return 200', async () => {
     // mock a success return value...
-    userService.list = jest.fn().mockReturnValue([]);
+    service.getUsers = jest.fn().mockReturnValue([]);
 
     const response = await request(app).get(`${basePath}/users`);
 
@@ -157,7 +157,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    userService.list = jest.fn(() => { throw new Problem(401); });
+    service.getUsers = jest.fn(() => { throw new Problem(401); });
 
     const response = await request(app).get(`${basePath}/users`);
 
@@ -167,7 +167,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    userService.list = jest.fn(() => { throw new Error(); });
+    service.getUsers = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).get(`${basePath}/users`);
 
