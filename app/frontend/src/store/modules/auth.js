@@ -63,15 +63,13 @@ export default {
         email: '',
         idp: 'public',
         public: !getters.authenticated
-      };      
-
+      };
       if (getters.authenticated) {
         if (getters.tokenParsed.identity_provider_identity) {
           user.username = getters.tokenParsed.identity_provider_identity;
         } else {
           user.username = getters.tokenParsed.preferred_username;
         }
-      
         user.firstName = getters.tokenParsed.given_name;
         user.lastName = getters.tokenParsed.family_name;
         user.fullName = getters.tokenParsed.name;
@@ -120,14 +118,22 @@ export default {
         }
       }
     },
-    logout({ getters }) {
+    logoutWithUrl({getters}) {
+      window.location.replace(
+        getters.createLogoutUrl({
+          redirectUri: `${location.origin}/${Vue.prototype.$config.basePath}`,
+        })
+      );
+    },
+    logout({dispatch,getters, rootGetters}) {
       if (getters.keycloakReady) {
-        window.location.replace(
-          getters.createLogoutUrl({
-            redirectUri: `${location.origin}/${Vue.prototype.$config.basePath}`,
-          })
-        );
+        if(!rootGetters['form/canLogout']) {
+          dispatch('form/setIsLogoutButtonClicked',true,{root:true});
+        } else if (rootGetters['form/canLogout']) {
+          dispatch('logoutWithUrl');
+        }
       }
     },
+
   },
 };
