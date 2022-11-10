@@ -16,7 +16,7 @@
       <template #title>Confirm</template>
       <template #text>
         <div class="dialogMessageText">
-          Do you want to save this form before exit
+          Do you want to save this form before exiting?
         </div>
       </template>
       <template #button-text-continue>
