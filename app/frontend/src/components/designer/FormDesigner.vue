@@ -120,8 +120,15 @@
         <h3 v-if="name">{{ name }}</h3>
       </v-col>
       <!-- version number-->
-      <v-col class="mb-3" cols="12" order="4">
+      <v-col cols="12" order="4">
         <em>Version: {{ this.displayVersion }}</em>
+      </v-col>
+      <v-col class="mb-3" cols="12" order="5">
+        <v-switch
+          color="success"
+          label="AutoSave"
+          @change="autoSaveTogglePublish($event)"
+        />
       </v-col>
     </v-row>
     <v-alert
@@ -229,6 +236,7 @@ export default {
       },
       displayVersion: 1,
       reRenderFormIo: 0,
+      enableAutosave:false,
       saving: false,
       isSavedButtonClick: false,
       patch: {
@@ -532,19 +540,24 @@ export default {
 
       this.resetHistoryFlags();
     },
+    // use to turn off and on autosave
+    autoSaveTogglePublish(event) {
+      this.enableAutosave=event;
+    },
 
     //this method is used for autosave action
     async autosaveEventTrigger() {
-      this.isSavedButtonClick=false;
-      if(this.newForm) {
-
-        await this.setShowWarningDialog(true);
-        await this.setCanLogout(false);
-      } else {
-        await this.setShowWarningDialog(false);
-        await this.setCanLogout(true);
+      if(this.enableAutosave) {
+        if(this.newForm) {
+          await this.setShowWarningDialog(true);
+          await this.setCanLogout(false);
+        } else {
+          await this.setShowWarningDialog(false);
+          await this.setCanLogout(true);
+        }
+        this.isSavedButtonClick=false;
+        this.submitFormSchema();
       }
-      this.submitFormSchema();
     },
 
     //This method is called by submit button
@@ -553,7 +566,6 @@ export default {
       await this.setCanLogout(true);
       this.isSavedButtonClick=true;
       this.submitFormSchema();
-
     },
     getPatch(idx) {
       // Generate the form from the original schema
@@ -608,8 +620,8 @@ export default {
     // Saving the Schema
     // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
-      this.saving = true;
       try {
+        this.saving = true;
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         if (this.formId) {
           if (this.versionId) {
