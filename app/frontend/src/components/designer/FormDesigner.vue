@@ -6,8 +6,8 @@
         <h1>Form Design</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">    
-       
+      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -165,7 +165,7 @@ export default {
       },
     };
   },
-  
+
   computed: {
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapFields('form', [
@@ -185,8 +185,8 @@ export default {
     ID_MODE() {
       return IdentityMode;
     },
-    
-    
+
+
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -368,16 +368,10 @@ export default {
       // Since change is triggered during loading
     },
     onChangeMethod(changed, flags, modified) {
-     
+
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
 
-      // check if a component has been dropped into form builder before calling the 
-      // method to save recent schema into the database
-      if(flags && this.saved){
-        this.submitFormSchema();
-      }
-      
 
       this.onSchemaChange(changed, flags, modified);
     },
@@ -398,12 +392,6 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
-
-      // saves schema when component is remove
-      if(this.saved)
-      {
-        this.submitFormSchema();
-      }
     },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
@@ -443,7 +431,7 @@ export default {
         this.patch.history.length = this.patch.index + 1;
       }
 
-      // Get the differences between the last patch 
+      // Get the differences between the last patch
       // and the current form
       const form = this.getPatch(++this.patch.index);
       const patch = compare(form, this.formSchema);
@@ -496,7 +484,7 @@ export default {
     canRedoPatch() {
       return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
     },
-    
+
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -504,14 +492,14 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
       try {
-       
+
         this.saving = true;
         this.savedStatus='Saving';
 
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
 
-      
+
         if (this.formId) {
           if (this.versionId) {
             // If creating a new draft from an existing version
@@ -525,7 +513,7 @@ export default {
           await this.schemaCreateNew();
         }
         this.savedStatus='Saved';
-        
+
       } catch (error) {
         await this.setDirtyFlag(true);
         this.savedStatus='Not Saved';
@@ -536,7 +524,7 @@ export default {
         });
       } finally {
         this.saving = false;
-        
+
       }
     },
     onUndoClick() {
@@ -545,7 +533,7 @@ export default {
     onRedoClick() {
       this.redoPatchFromHistory();
     },
-    
+
     async schemaCreateNew() {
       const emailList =
         this.sendSubRecieviedEmail &&
@@ -553,7 +541,7 @@ export default {
         Array.isArray(this.submissionReceivedEmails)
           ? this.submissionReceivedEmails
           : [];
-     
+
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -567,7 +555,7 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
-      
+
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -577,7 +565,7 @@ export default {
           sv: true,
         },
       }).catch(()=>{});
-      
+
     },
     async schemaCreateDraftFromVersion() {
       const { data } = await formService.createDraft(this.formId, {
@@ -586,7 +574,7 @@ export default {
       });
 
       this.savedStatus='save';
-       
+
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -609,7 +597,7 @@ export default {
         name: 'FormDesigner',
         query: { ...this.$route.query, sv: true },
       });
-    }, 
+    },
   },
   created() {
     if (this.formId) {
@@ -629,7 +617,7 @@ export default {
       this.reRenderFormIo += 1;
     }
   },
-  
+
 };
 </script>
 
@@ -667,7 +655,7 @@ export default {
  position: sticky;
  top:0;
   right:0;
- 
+
  position: -webkit-sticky;
 }
 
