@@ -674,7 +674,6 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
-      console.log('I am there --------->>>>> ', this.enableAutosave);
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
