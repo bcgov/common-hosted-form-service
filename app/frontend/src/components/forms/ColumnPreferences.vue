@@ -5,6 +5,7 @@
         <span v-bind="attrs" v-on="on">
           <v-btn
             class="mx-1"
+            data-cy="viewColumnPreferences"
             @click="openPrefs()"
             color="primary"
             :disabled="!canSetColumnPrefs"
@@ -24,11 +25,11 @@
         <v-card-subtitle class="mt-1 d-flex" :style="subTitleWrapper">
           <font-awesome-icon icon="fa-solid fa-circle-info" class="mt-1" color="#003366A1" />
           <span>To export selected data go to: <v-icon>get_app</v-icon>export submissions</span>
-          
+
         </v-card-subtitle>
         <v-card-text style="padding-top:0px;margin-top:0px;">
           <hr style="height: 1px; border: none;background-color:#707070C1;margin-bottom:0px">
-          
+
           <div class="d-flex flex-row align-center" style="gap:30px;">
             <div class="d-flex flex-row align-center searchField">
               <font-awesome-icon icon="fa-magnifying-glass" style="font-size:16px; color:#000000;"/>
@@ -36,20 +37,20 @@
                 <input type="search" placeholder="Search form fields" v-model="onSearchInputChange">
                 <font-awesome-icon icon="fa-solid fa-circle-xmark" color="#003366A1" class="fa-sm clearButton" :style="{display:isClearButtonDisplay}" @click="onInputSearchClear"/>
               </div>
-            </div>    
-            <v-checkbox class="checkbox" v-model="selectedAll" :style="{pointerEvents:selectAllPointerEvent}" @change="onSelectAllCheckboxChange">
+            </div>
+            <v-checkbox class="checkbox" data-cy="selectAll-checkbox" v-model="selectedAll" :style="{pointerEvents:selectAllPointerEvent}" @change="onSelectAllCheckboxChange">
               <template v-slot:label>
                 <span class="checkboxLabel">Select All</span>
               </template>
             </v-checkbox>
-            <v-checkbox v-model="noneSelected" @change="clear" :style="{pointerEvents:noneCheckBoxPointerEvent}">
+            <v-checkbox data-cy="none-checkbox" v-model="noneSelected" @change="clear" :style="{pointerEvents:noneCheckBoxPointerEvent}">
               <template v-slot:label>
                 <span class="checkboxLabel">None</span>
               </template>
             </v-checkbox>
           </div>
           <div class="fieldCheckBoxeswrapper">
-            <v-checkbox 
+            <v-checkbox
               v-for="(field, index) in filteredFormFields"
               :input-value="selectedFields.get(field)"
               :key="field"
@@ -63,7 +64,7 @@
           </div>
         </v-card-text>
         <v-card-actions class="justify-center">
-          <v-btn class="mb-5 mr-5" :style="saveButtonWrapper" color="primary" @click="saveColumns">
+          <v-btn data-cy="columnPreferencesSaveBtn" class="mb-5 mr-5" :style="saveButtonWrapper" color="primary" @click="saveColumns">
             <span>Save</span>
           </v-btn>
           <v-btn class="mb-5" :style="cancelButtonWrapper" outlined @click="dialog = false">
@@ -169,10 +170,11 @@ export default {
           this.userFormPreferences.preferences.columnList.includes(field)
             ?this.selectedFields.set(field,true)
             :this.selectedFields.set(field,value);
+
         }
         this.checkAllCheckboxesChecked();
         this.noneSelected=false;
-        this.noneCheckBoxPointerEvent='auto';  
+        this.noneCheckBoxPointerEvent='auto';
       }
       else {
         this.resetFormFieldValue(fields,value);
@@ -184,7 +186,7 @@ export default {
     resetFormFieldValue(fields, value) {
       for(const field of fields){
         this.selectedFields.set(field,value);
-      } 
+      }
     },
 
     //check if all checkboxes are checked
@@ -214,7 +216,7 @@ export default {
       }
       this.selectedAll=false;
       this.selectAllPointerEvent='auto';
-      this.noneCheckBoxPointerEvent='auto'; 
+      this.noneCheckBoxPointerEvent='auto';
     },
 
     //clear search input
@@ -269,7 +271,7 @@ export default {
       this.setSelectALLCheckboxVModel(fields,false);
     }
   }
-  
+
 };
 </script>
 <style lang="scss" scoped>
@@ -283,8 +285,8 @@ export default {
   }
 
   .searchField{
-    background: #60606014 0% 0% no-repeat padding-box; 
-    border-radius: 4px; 
+    background: #60606014 0% 0% no-repeat padding-box;
+    border-radius: 4px;
     width:50%;
     height:35px;
     gap:10px;
@@ -297,7 +299,7 @@ export default {
   }
   .searchField input:focus{
     outline: none;
-   
+
   }
 
   .searchField input::placeholder {
@@ -318,9 +320,9 @@ export default {
     max-height: 300px;
     padding:20px;
     overflow-y:scroll;
-  } 
+  }
 .clearButton:hover{
   cursor: pointer;
   color:orange;
-} 
+}
 </style>
