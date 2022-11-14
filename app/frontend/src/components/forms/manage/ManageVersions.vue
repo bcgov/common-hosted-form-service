@@ -59,6 +59,7 @@
       <!-- Status  -->
       <template #[`item.status`]="{ item }">
         <v-switch
+          data-cy="formPublishedSwitch"
           color="success"
           value
           :input-value="item.published"
