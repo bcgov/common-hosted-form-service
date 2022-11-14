@@ -5,6 +5,8 @@ const emailService  = require('./emailService');
 const { Form } = require('../common/models');
 const moment = require('moment');
 const {  EmailTypes } = require('../common/constants');
+const config = require('config');
+const log = require('../../components/log')(module.filename);
 const service = {
   getCurrentPeriod(dates) {
 
@@ -164,9 +166,22 @@ const service = {
     }
     return statement;
   },
+  _getReferer : (req) => {
+    try {
+      const basePath = config.get('frontend.basePath');
+      const host = req.headers.host;
+      return `${host}${basePath}`;
+    } catch (error){
+      log.error(error.message, {
+        function: '_getReferer'
+      });
+      throw error;
+    }
+  },
   initMaillSender: (statement, req) => {
-    statement.submiters.forEach((element)=>{
-      const data = { form :statement.form, report : statement.report, submiter : element, state : statement.state, referer: req.headers.referer };
+    let referer = service._getReferer(req);
+    statement.submiters.forEach((element)=> {
+      const data = { form :statement.form, report : statement.report, submiter : element, state : statement.state, referer };
       emailService.initReminder(data);
     });
   }
