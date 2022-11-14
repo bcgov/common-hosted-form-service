@@ -7,6 +7,7 @@
       :saved="Boolean(sv)"
       :versionId="v"
       :newForm="Boolean(nf)"
+      :autosave="Boolean(as)"
     />
     <BaseDialog :value=Boolean(this.showDialog) type="SAVEDDELETE"
                 @close-dialog="closeDialog"
@@ -44,7 +45,8 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
-    nf:Boolean
+    nf:Boolean,
+    as:Boolean
   },
   data() {
     return {
@@ -71,7 +73,25 @@ export default {
     },
     deleteDialog() {
       this.deleteCurrentForm();
-      this.navigateToRoute();
+      this.onDeleteDialogCheck();
+    },
+    async onDeleteDialogCheck() {
+
+      this.showDialog=false;
+      await this.setShowWarningDialog(false);
+      await this.setCanLogout(true);
+      //checks if form designers is trying to log out without
+      //clicking on the save button
+      if(this.isLogoutButtonClicked){
+        this.logoutWithUrl();
+      }
+      if(this.toRouterPathName==='FormManage') {
+
+        this.$router.push({name:'UserForms'});
+      }
+      else {
+        this.$router.push({name:this.toRouterPathName.trim()});
+      }
     },
     async navigateToRoute() {
       this.showDialog=false;
@@ -90,6 +110,7 @@ export default {
     // it will ask form designers if they want to delete or
     //or keep the forms
     if(_to.name!==_from.name) {
+
       this.toRouterPathName = _to.name;
       this.showWarningDialog? this.showDialog=true: next();
     }
