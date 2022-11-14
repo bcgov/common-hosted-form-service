@@ -127,7 +127,7 @@
         <v-switch
           color="success"
           label="AutoSave"
-          @change="autoSaveTogglePublish($event)"
+          v-model="enableAutosave"
         />
       </v-col>
     </v-row>
@@ -220,7 +220,11 @@ export default {
       default: false,
     },
     versionId: String,
-    newForm:Boolean
+    newForm:Boolean,
+    autosave:{
+      type:Boolean,
+      default:false
+    }
   },
   data() {
     return {
@@ -236,7 +240,7 @@ export default {
       },
       displayVersion: 1,
       reRenderFormIo: 0,
-      enableAutosave:false,
+      enableAutosave:this.autosave,
       saving: false,
       isSavedButtonClick: false,
       patch: {
@@ -540,10 +544,7 @@ export default {
 
       this.resetHistoryFlags();
     },
-    // use to turn off and on autosave
-    autoSaveTogglePublish(event) {
-      this.enableAutosave=event;
-    },
+
 
     //this method is used for autosave action
     async autosaveEventTrigger() {
@@ -673,6 +674,7 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
+      console.log('I am there --------->>>>> ', this.enableAutosave);
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -681,6 +683,7 @@ export default {
           d: response.data.draft.id,
           sv: true,
           nf:this.newForm,
+          as:this.enableAutosave
         },
       });
     },
@@ -699,6 +702,7 @@ export default {
           d: data.id,
           sv: true,
           nf:this.newForm,
+          as:this.enableAutosave
         },
       });
     },
@@ -710,7 +714,7 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true,nf:this.newForm },
+        query: { ...this.$route.query, sv: true,nf:this.newForm, as:this.enableAutosave },
       });
 
     },
