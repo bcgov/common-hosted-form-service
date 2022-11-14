@@ -160,6 +160,12 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
     };
 
   }
+
+  let  messageLinkUrl = `${service._appUrl(referer)}/form/submit?f=${configData.form.id}`;
+  // this line will be remove in prod
+  // eslint-disable-next-line no-console
+  console.log('CUSTOM LINK : ',messageLinkUrl);
+
   return {
     configData,
     contexts: [{
@@ -168,7 +174,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
         form: configData.form,
         report: report,
         messageLinkText: configData.messageLinkText,
-        messageLinkUrl:`${service._appUrl(referer)}/form/submit?f=${configData.form.id}`,
+        messageLinkUrl,
         title: configData.title
       },
       to: [user.email]
