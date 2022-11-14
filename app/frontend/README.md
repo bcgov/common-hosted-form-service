@@ -8,7 +8,17 @@ The CHEFS frontend will require some configuration. The API it invokes will be l
 
 ## Super Quickstart
 
-Ensure that you have filled in all the appropriate configurations following [../config/custom-environment-variables.json](../config/custom-environment-variables.json) before proceeding.
+Ensure that you have filled in all the appropriate configurations following [../config/custom-environment-variables.json](../config/custom-environment-variables.json) before proceeding. Other environment variables such as the app title and contact information must be configured using the Vue environment files [.env](.env), [.env.development](.env.development), [.env.test](.env.test).
+
+Entries in the JSON file are deployed with the application. Entries in the .env files are per-environment.
+
+### Required .env variables
+
+| Name | Description | Example |
+|---|---|---|
+| VUE_APP_TITLE | The application title | Common Hosted Forms Service |
+| VUE_APP_CONTACT | Contact information such as email | submit.digital@gov.bc.ca |
+| VUE_APP_FRONTEND_BASEPATH | The path to the Vue application | /app |
 
 ### Project setup
 

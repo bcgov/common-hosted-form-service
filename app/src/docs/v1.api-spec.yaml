@@ -13,8 +13,8 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   contact:
-    name: NR Common Service Showcase
-    email: NR.CommonServiceShowcase@gov.bc.ca
+    name: Forminators
+    email: submit.digital@gov.bc.ca
 externalDocs:
   description: Project Readmes
   url: https://github.com/bcgov/common-hosted-form-service

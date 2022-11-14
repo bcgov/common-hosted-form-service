@@ -51,7 +51,7 @@ export AWS_ROLE_ARN=<AWS credential>
 
 oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
   --from-literal=FRONTEND_APIPATH=api/v1 \
-  --from-literal=FRONTEND_BASEPATH=/app \
+  --from-literal=VUE_APP_FRONTEND_BASEPATH=/app \
   --from-literal=FRONTEND_ENV=dev \
   --from-literal=FRONTEND_KC_REALM=cp1qly2d \
   --from-literal=FRONTEND_KC_SERVERURL=https://dev.oidc.gov.bc.ca/auth
