@@ -19,7 +19,6 @@ const {
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
-
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const service = {
@@ -224,7 +223,7 @@ const service = {
       .modify('filterVersion', params.version)
       .modify('orderDefault');
 
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId'];
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
@@ -443,6 +442,7 @@ const service = {
   updateDraft: async (formVersionDraftId, data, currentUser) => {
     let trx;
     try {
+
       const obj = await service.readDraft(formVersionDraftId);
       trx = await FormVersionDraft.startTransaction();
       await FormVersionDraft.query(trx).patchAndFetchById(formVersionDraftId, {

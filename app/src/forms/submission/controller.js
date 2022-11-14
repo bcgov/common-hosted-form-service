@@ -28,6 +28,14 @@ module.exports = {
       next(error);
     }
   },
+  restore: async (req, res, next) => {
+    try {
+      const response = await service.restore(req.params.formSubmissionId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   readOptions: async (req, res, next) => {
     try {
       const response = await service.readOptions(req.params.formSubmissionId);
