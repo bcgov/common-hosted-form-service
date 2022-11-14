@@ -126,8 +126,9 @@
       <v-col class="mb-3" cols="12" order="5">
         <v-switch
           color="success"
+          :input-value="enableFormAutosave"
           label="AutoSave"
-          v-model="enableAutosave"
+          @change="togglePublish($event)"
         />
       </v-col>
     </v-row>
@@ -221,10 +222,6 @@ export default {
     },
     versionId: String,
     newForm:Boolean,
-    autosave:{
-      type:Boolean,
-      default:false
-    }
   },
   data() {
     return {
@@ -240,7 +237,6 @@ export default {
       },
       displayVersion: 1,
       reRenderFormIo: 0,
-      enableAutosave:this.autosave,
       saving: false,
       isSavedButtonClick: false,
       patch: {
@@ -254,7 +250,7 @@ export default {
         redoClicked: false,
         undoClicked: false,
       },
-
+      isComponentRemoved:false,
     };
   },
   computed: {
@@ -271,6 +267,7 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.versions',
+      'enableFormAutosave'
     ]),
     ID_MODE() {
       return IdentityMode;
@@ -378,7 +375,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout']),
+    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout','setFormAutosave']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -476,7 +473,7 @@ export default {
       // Component remove start
       this.patch.componentRemovedStart = true;
       this.undoPatchFromHistory();
-      this.autosaveEventTrigger();
+      this.isComponentRemoved=true;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -521,9 +518,9 @@ export default {
       // Determine if there is even a difference with the action
       const form = this.getPatch(this.patch.index + 1);
       const patch = compare(form, this.formSchema);
-      this.autosaveEventTrigger();
-      if(patch.length > 0) {
 
+      if(patch.length > 0) {
+        this.autosaveEventTrigger();
         // Remove any actions past the action we were on
         this.patch.index += 1;
         if (this.patch.history.length > 0) {
@@ -545,10 +542,14 @@ export default {
       this.resetHistoryFlags();
     },
 
+    togglePublish(event) {
+      this.setFormAutosave(event);
+    },
+
 
     //this method is used for autosave action
     async autosaveEventTrigger() {
-      if(this.enableAutosave) {
+      if(this.enableFormAutosave) {
         if(this.newForm) {
           await this.setShowWarningDialog(true);
           await this.setCanLogout(false);
@@ -565,6 +566,7 @@ export default {
     async submitFormButtonClick() {
       await this.setShowWarningDialog(false);
       await this.setCanLogout(true);
+      await this.setFormAutosave(false);
       this.isSavedButtonClick=true;
       this.submitFormSchema();
 
@@ -682,7 +684,6 @@ export default {
           d: response.data.draft.id,
           sv: true,
           nf:this.newForm,
-          as:this.enableAutosave
         },
       });
     },
@@ -701,7 +702,6 @@ export default {
           d: data.id,
           sv: true,
           nf:this.newForm,
-          as:this.enableAutosave
         },
       });
     },
@@ -713,7 +713,7 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true,nf:this.newForm, as:this.enableAutosave },
+        query: { ...this.$route.query, sv: true,nf:this.newForm },
       });
 
     },
@@ -726,6 +726,7 @@ export default {
     }
   },
   mounted() {
+
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
@@ -736,7 +737,7 @@ export default {
     userType() {
       this.reRenderFormIo += 1;
     },
-  },
+  }
 };
 </script>
 
