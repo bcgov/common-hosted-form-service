@@ -222,6 +222,10 @@ export default {
     },
     versionId: String,
     newForm:Boolean,
+    autosave:{
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -237,6 +241,8 @@ export default {
       },
       displayVersion: 1,
       reRenderFormIo: 0,
+      enableFormAutosave:this.autosave,
+      isNewForm:this.newForm,
       saving: false,
       isSavedButtonClick: false,
       patch: {
@@ -266,8 +272,7 @@ export default {
       'form.snake',
       'form.submissionReceivedEmails',
       'form.userType',
-      'form.versions',
-      'enableFormAutosave'
+      'form.versions'
     ]),
     ID_MODE() {
       return IdentityMode;
@@ -375,7 +380,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout','setFormAutosave']),
+    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -469,18 +474,16 @@ export default {
       }
     },
     onRemoveSchemaComponent() {
-
       // Component remove start
       this.patch.componentRemovedStart = true;
       this.undoPatchFromHistory();
-      this.isComponentRemoved=true;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
     // Patch History
     // ---------------------------------------------------------------------------------------------------
-    onSchemaChange(_changed, flags, modified) {
+    async onSchemaChange(_changed, flags, modified) {
       // If the form changed but was not done so through the undo
       // or redo button
       if (!this.patch.undoClicked && !this.patch.redoClicked) {
@@ -488,7 +491,7 @@ export default {
         if (flags !== undefined && modified !== undefined) {
           // Component was pasted here or edited and saved
           if (this.patch.componentAddedStart) {
-            this.addPatchToHistory();
+            await this.addPatchToHistory();
           } else {
             // Tab changed, Edit saved, paste occurred
             if (typeof modified == 'boolean') {
@@ -518,9 +521,7 @@ export default {
       // Determine if there is even a difference with the action
       const form = this.getPatch(this.patch.index + 1);
       const patch = compare(form, this.formSchema);
-
       if(patch.length > 0) {
-        this.autosaveEventTrigger();
         // Remove any actions past the action we were on
         this.patch.index += 1;
         if (this.patch.history.length > 0) {
@@ -537,40 +538,42 @@ export default {
           this.patch.history.shift();
           --this.patch.index;
         }
-      }
 
+      }
+      this.autosaveEventTrigger();
       this.resetHistoryFlags();
     },
+    async togglePublish(event) {
+      this.enableFormAutosave=event;
+      const query = Object.assign({}, this.$route.query);
+      query.as = event;
+      await this.$router.push({ query });
 
-    togglePublish(event) {
-      this.setFormAutosave(event);
     },
-
 
     //this method is used for autosave action
     async autosaveEventTrigger() {
       if(this.enableFormAutosave) {
-        if(this.newForm) {
+        if(this.isNewForm) {
           await this.setShowWarningDialog(true);
           await this.setCanLogout(false);
-        } else {
+        }
+        else {
           await this.setShowWarningDialog(false);
           await this.setCanLogout(true);
         }
-        this.isSavedButtonClick=false;
         this.submitFormSchema();
       }
     },
-
     //This method is called by submit button
     async submitFormButtonClick() {
       await this.setShowWarningDialog(false);
       await this.setCanLogout(true);
-      await this.setFormAutosave(false);
+      this.isNewForm=false;
       this.isSavedButtonClick=true;
       this.submitFormSchema();
-
     },
+
     getPatch(idx) {
       // Generate the form from the original schema
       let form = deepClone(this.patch.originalSchema);
@@ -589,22 +592,20 @@ export default {
     async undoPatchFromHistory() {
       // Only allow undo if there was an action made
       if (this.canUndoPatch()) {
-        this.autosaveEventTrigger();
         // Flag for formio to know we are setting the form
-
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
+        this.autosaveEventTrigger();
 
       }
     },
     async redoPatchFromHistory() {
       // Only allow redo if there was an action made
       if (this.canRedoPatch()) {
-        this.autosaveEventTrigger();
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
-
+        this.autosaveEventTrigger();
       }
     },
     resetHistoryFlags(flag = false) {
@@ -683,7 +684,8 @@ export default {
           f: response.data.id,
           d: response.data.draft.id,
           sv: true,
-          nf:this.newForm,
+          as:this.enableFormAutosave,
+          nf:this.isNewForm
         },
       });
     },
@@ -693,16 +695,16 @@ export default {
         formVersionId: this.versionId,
       });
       this.formSchema = { ...this.formSchema, ...data.schema };
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
-        query: {
+        query: Object.assign({}, {
           f: this.formId,
           d: data.id,
           sv: true,
-          nf:this.newForm,
-        },
+          nf:this.isNewForm,
+          as:this.enableFormAutosave
+        }),
       });
     },
     async schemaUpdateExistingDraft() {
@@ -713,7 +715,7 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true,nf:this.newForm },
+        query: Object.assign({}, { ...this.$route.query, sv: true,nf:this.isNewForm, as:this.enableFormAutosave }),
       });
 
     },
@@ -731,10 +733,12 @@ export default {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
+
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
+
       this.reRenderFormIo += 1;
     },
   }
