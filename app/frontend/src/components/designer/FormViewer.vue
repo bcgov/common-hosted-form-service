@@ -105,7 +105,6 @@ import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks, isFormExpired } from '@/utils/transformUtils';
-
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
@@ -223,7 +222,6 @@ export default {
             });
           }
         }
-
         // Get permissions
         if (!this.staffEditMode && !isFormPublic(this.form)) {
           const permRes = await rbacService.getUserSubmissions({
