@@ -380,7 +380,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout','setFormAutosave']),
+    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {

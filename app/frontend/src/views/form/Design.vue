@@ -67,7 +67,7 @@ export default {
     },
   },
   methods:{
-    ...mapActions('form', ['deleteCurrentForm','setIsLogoutButtonClicked','setShowWarningDialog','setCanLogout', 'setFormAutosave']),
+    ...mapActions('form', ['deleteCurrentForm','setIsLogoutButtonClicked','setShowWarningDialog','setCanLogout']),
     ...mapActions('auth', ['logoutWithUrl']),
     async closeDialog() {
       await this.setIsLogoutButtonClicked(false);
@@ -82,7 +82,6 @@ export default {
       this.showDialog=false;
       await this.setShowWarningDialog(false);
       await this.setCanLogout(true);
-      await this.setFormAutosave(false);
       //checks if form designers is trying to log out without
       //clicking on the save button
       if(this.isLogoutButtonClicked){
@@ -99,7 +98,6 @@ export default {
     async navigateToRoute() {
       this.showDialog=false;
       await this.setShowWarningDialog(false);
-      await this.setFormAutosave(false);
       await this.setCanLogout(true);
 
       //checks if form designers is trying to log out without
@@ -116,7 +114,6 @@ export default {
     // it will ask form designers if they want to delete or
     //or keep the forms
     if(_to.name!==_from.name) {
-      this.setFormAutosave(false);
       this.toRouterPathName = _to.name;
       this.showWarningDialog? this.showDialog=true: next();
     }
