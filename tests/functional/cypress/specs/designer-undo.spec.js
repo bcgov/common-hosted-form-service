@@ -103,8 +103,9 @@ describe('Form Designer', () => {
   });
 
 
-  it('form should autosave and should not be deleted when click keep button on confimation dialog', () => {
+  it('form should autosave and should not be deleted when click Yes button on confimation dialog', () => {
     cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    cy.get('.v-input__slot').contains('AutoSave').click()
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const bounds = $el[0].getBoundingClientRect();
@@ -115,18 +116,20 @@ describe('Form Designer', () => {
       cy.get('button').contains('Save').click();
     });
     cy.wait('@getForm').then(()=>{
+      cy.get('.v-input__slot').contains('AutoSave').click();
       let routerLink =cy.get('[data-cy=aboutLinks]');
       expect(routerLink).to.not.be.null;
       routerLink.trigger('click');
-      cy.contains('Confirm Navigation').should('be.visible');
-      cy.contains('Keep').should('be.visible');
-      cy.contains('Keep').trigger('click');
+      cy.contains('Confirm').should('be.visible');
+      cy.contains('Yes').should('be.visible');
+      cy.contains('Yes').trigger('click');
       cy.location('pathname').should('eq', `/${depEnv}/`);
     })
   });
 
-  it('form should autosave and should delet when click Delete button on confimation dialog', () => {
+  it('form should autosave and should delet when click No button on confimation dialog', () => {
     cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    cy.get('.v-input__slot').contains('AutoSave').click()
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const bounds = $el[0].getBoundingClientRect();
@@ -140,15 +143,16 @@ describe('Form Designer', () => {
       let routerLink =cy.get('[data-cy=aboutLinks]');
       expect(routerLink).to.not.be.null;
       routerLink.trigger('click');
-      cy.contains('Confirm Navigation').should('be.visible');
-      cy.contains('Delete').should('be.visible');
-      cy.contains('Delete').trigger('click');
+      cy.contains('Confirm').should('be.visible');
+      cy.contains('No').should('be.visible');
+      cy.contains('No').trigger('click');
       cy.location('pathname').should('eq', `/${depEnv}/`);
     })
   });
 
   it('form should autosave and should not show confirmation dialog if save button is clicked', () => {
     cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    cy.get('.v-input__slot').contains('AutoSave').click()
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const bounds = $el[0].getBoundingClientRect();
@@ -167,7 +171,7 @@ describe('Form Designer', () => {
       let routerLink =cy.get('[data-cy=aboutLinks]');
       expect(routerLink).to.not.be.null;
       routerLink.trigger('click');
-      cy.contains('Confirm Navigation').should('not.exist');
+      cy.contains('Confirm').should('not.exist');
       cy.location('pathname').should('eq', `/${depEnv}/`);
     })
   });

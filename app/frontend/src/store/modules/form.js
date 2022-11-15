@@ -31,6 +31,7 @@ export default {
     isLogoutButtonClicked:false,
     showWarningDialog:false,
     canLogout: true,
+    enableFormAutosave:false,
     form: genInitialForm(),
     formFields: [],
     formList: [],
@@ -62,6 +63,7 @@ export default {
     isLogoutButtonClicked:state=>state.isLogoutButtonClicked,
     showWarningDialog:state=>state.showWarningDialog,
     canLogout:state=>state.canLogout,
+    enableFormAutosave:state=>state.enableFormAutosave
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -113,6 +115,10 @@ export default {
     SET_VERSION(state, version) {
       state.version = version;
     },
+
+    SET_ENABLE_FORM_AUTOSAVE(state, enableFormAutosave) {
+      state.enableFormAutosave = enableFormAutosave;
+    }
   },
   actions: {
     //
@@ -454,5 +460,16 @@ export default {
         }, { root: true });
       }
     },
+
+    async setFormAutosave({ commit, dispatch }, enableFormAutosave) {
+      try {
+        commit('SET_ENABLE_FORM_AUTOSAVE', enableFormAutosave);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while trying to enabled form autosave',
+          consoleError: 'Error autosaving form',
+        }, { root: true });
+      }
+    }
   },
 };

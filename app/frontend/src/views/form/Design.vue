@@ -14,19 +14,16 @@
                 @continue-dialog="navigateToRoute"
                 :showCloseButton=true>
       <template #title>Confirm</template>
-      <template #icon>
-        <v-icon large color="primary">warning</v-icon>
-      </template>
       <template #text>
         <div class="dialogMessageText">
-          Do you want to save this form?
+          Do you want to save this form before exiting?
         </div>
       </template>
       <template #button-text-continue>
-        <span>Save</span>
+        <span>Yes</span>
       </template>
       <template #button-text-delete>
-        <span>Delete</span>
+        <span>No</span>
       </template>
     </BaseDialog>
   </BaseSecure>
@@ -47,7 +44,7 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
-    nf:Boolean
+    nf:Boolean,
   },
   data() {
     return {
@@ -66,7 +63,7 @@ export default {
     },
   },
   methods:{
-    ...mapActions('form', ['deleteCurrentForm','setIsLogoutButtonClicked','setShowWarningDialog','setCanLogout']),
+    ...mapActions('form', ['deleteCurrentForm','setIsLogoutButtonClicked','setShowWarningDialog','setCanLogout', 'setFormAutosave']),
     ...mapActions('auth', ['logoutWithUrl']),
     async closeDialog() {
       await this.setIsLogoutButtonClicked(false);
@@ -74,11 +71,31 @@ export default {
     },
     deleteDialog() {
       this.deleteCurrentForm();
-      this.navigateToRoute();
+      this.onDeleteDialogCheck();
+    },
+    async onDeleteDialogCheck() {
+
+      this.showDialog=false;
+      await this.setShowWarningDialog(false);
+      await this.setCanLogout(true);
+      await this.setFormAutosave(false);
+      //checks if form designers is trying to log out without
+      //clicking on the save button
+      if(this.isLogoutButtonClicked){
+        this.logoutWithUrl();
+      }
+      if(this.toRouterPathName==='FormManage') {
+
+        this.$router.push({name:'UserForms'});
+      }
+      else {
+        this.$router.push({name:this.toRouterPathName.trim()});
+      }
     },
     async navigateToRoute() {
       this.showDialog=false;
       await this.setShowWarningDialog(false);
+      await this.setFormAutosave(false);
       await this.setCanLogout(true);
       //checks if form designers is trying to log out without
       //clicking on the save button
@@ -93,6 +110,7 @@ export default {
     // it will ask form designers if they want to delete or
     //or keep the forms
     if(_to.name!==_from.name) {
+      this.setFormAutosave(false);
       this.toRouterPathName = _to.name;
       this.showWarningDialog? this.showDialog=true: next();
     }
@@ -100,11 +118,3 @@ export default {
 
 };
 </script>
-<style lang="css" scoped>
-  .dialogMessageText {
-    color: #494949 !important;
-    font-size: 19px;
-    line-height: 30px;
-    padding: 0;
-  }
-</style>
