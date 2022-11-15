@@ -182,6 +182,10 @@ const service = {
   },
   initMaillSender: (statement, req) => {
     let referer = service._getReferer(req);
+    // this is just for test
+    // eslint-disable-next-line no-console
+    console.log(referer);
+
     statement.submiters.forEach((element)=> {
       const data = { form :statement.form, report : statement.report, submiter : element, state : statement.state, referer };
       emailService.initReminder(data);

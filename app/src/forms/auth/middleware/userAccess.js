@@ -97,19 +97,6 @@ const hasSubmissionPermissions = (permissions) => {
     // Get the submission results so we know what form this submission is for
     const submissionForm = await service.getSubmissionForm(submissionId);
 
-    // Deleted submissions are inaccessible
-    if (submissionForm.submission.deleted) {
-      return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
-    }
-
-    // TODO: consider whether DRAFT submissions are restricted as deleted above
-
-    // Public (annonymous) forms are publicly viewable
-    const publicAllowed = submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
-    if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
-      return next();
-    }
-
     // Does the user have permissions for this submission due to their FORM permissions
     if (req.currentUser) {
       let formFromCurrentUser = req.currentUser.forms.find(f => f.formId === submissionForm.form.id);
@@ -123,6 +110,19 @@ const hasSubmissionPermissions = (permissions) => {
           return next();
         }
       }
+    }
+
+    // Deleted submissions are inaccessible
+    if (submissionForm.submission.deleted) {
+      return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+    }
+
+    // TODO: consider whether DRAFT submissions are restricted as deleted above
+
+    // Public (annonymous) forms are publicly viewable
+    const publicAllowed = submissionForm.form.identityProviders.find(p => p.code === 'public') !== undefined;
+    if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
+      return next();
     }
 
     // check against the submission level permissions assigned to the user...
