@@ -177,7 +177,9 @@ const service = {
       log.error(error.message, {
         function: '_getReferer'
       });
-      throw error;
+      // this just for draft it will remove in prod mode
+      return 'referer';
+      // throw error;
     }
   },
   initMaillSender: (statement, req) => {
