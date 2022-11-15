@@ -169,6 +169,8 @@ const service = {
   _getReferer : (req) => {
     try {
       const basePath = config.get('frontend.basePath');
+      // this line will be remove in prod
+      console.log('CURRENT BASE BATH :',basePath);
       const host = req.headers.host;
       return `${host}${basePath}`;
     } catch (error){
