@@ -126,8 +126,8 @@
       <v-col class="mb-3" cols="12" order="5">
         <v-switch
           color="success"
-          label="AutoSave"
           :input-value="enableFormAutosave"
+          label="AutoSave"
           @change="togglePublish($event)"
         />
       </v-col>
@@ -256,7 +256,7 @@ export default {
         redoClicked: false,
         undoClicked: false,
       },
-
+      isComponentRemoved:false,
     };
   },
   computed: {
@@ -380,7 +380,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout']),
+    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout','setFormAutosave']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -741,7 +741,7 @@ export default {
 
       this.reRenderFormIo += 1;
     },
-  },
+  }
 };
 </script>
 
