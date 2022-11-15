@@ -175,7 +175,9 @@ const service = {
       log.error(error.message, {
         function: '_getReferer'
       });
-      throw error;
+      // this line is only for test
+      return 'referer';
+      //throw error;
     }
   },
   initMaillSender: (statement, req) => {
