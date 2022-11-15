@@ -698,13 +698,13 @@ export default {
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
-        query: Object.assign({}, {
+        query: {
           f: this.formId,
           d: data.id,
           sv: true,
           nf:this.isNewForm,
           as:this.enableFormAutosave
-        }),
+        },
       });
     },
     async schemaUpdateExistingDraft() {
@@ -715,7 +715,7 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: Object.assign({}, { ...this.$route.query, sv: true,nf:this.isNewForm, as:this.enableFormAutosave }),
+        query: { ...this.$route.query, sv: true,nf:this.isNewForm, as:this.enableFormAutosave },
       });
 
     },
