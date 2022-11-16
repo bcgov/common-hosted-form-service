@@ -11,7 +11,7 @@
           <template #activator="{ on, attrs }">
             <v-btn
               class="mx-md-1 mx-0"
-              @click="submitFormButtonClick"
+              @click="submitFormSchema"
               color="primary"
               icon
               v-bind="attrs"
@@ -123,6 +123,7 @@
       <v-col cols="12" order="4">
         <em>Version: {{ this.displayVersion }}</em>
       </v-col>
+      <!--
       <v-col class="mb-3" cols="12" order="5">
         <v-switch
           color="success"
@@ -130,10 +131,10 @@
           label="AutoSave"
           @change="togglePublish($event)"
         />
-      </v-col>
+      </v-col> -->
     </v-row>
     <v-alert
-      :value="(saved || saving) && isSavedButtonClick"
+      :value="(saved || saving)"
       :class="
         saving
           ? NOTIFICATIONS_TYPES.INFO.class
@@ -272,7 +273,9 @@ export default {
       'form.snake',
       'form.submissionReceivedEmails',
       'form.userType',
-      'form.versions'
+      'form.versions',
+      'form.isDirty',
+
     ]),
     ID_MODE() {
       return IdentityMode;
@@ -380,7 +383,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout']),
+    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout','setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -458,11 +461,14 @@ export default {
     },
     onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
+      if (!this.isDirty) this.setDirtyFlag(true);
+
       this.onSchemaChange(changed, flags, modified);
     },
     onRenderMethod() {
       const el = document.querySelector('input.builder-sidebar_search:focus');
       if (el && el.value === '') this.reRenderFormIo += 1;
+      this.setDirtyFlag(false);
     },
     onAddSchemaComponent(_info, _parent, _path, _index, isNew) {
       if (isNew) {
@@ -540,7 +546,7 @@ export default {
         }
 
       }
-      this.autosaveEventTrigger();
+      //this.autosaveEventTrigger();
       this.resetHistoryFlags();
     },
     async togglePublish(event) {
@@ -595,7 +601,7 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
-        this.autosaveEventTrigger();
+        //this.autosaveEventTrigger();
 
       }
     },
@@ -605,7 +611,7 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
-        this.autosaveEventTrigger();
+        //this.autosaveEventTrigger();
       }
     },
     resetHistoryFlags(flag = false) {
@@ -626,6 +632,7 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
       this.saving = true;
+      await this.setDirtyFlag(false);
       try {
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         if (this.formId) {
@@ -641,6 +648,7 @@ export default {
           await this.schemaCreateNew();
         }
       } catch (error) {
+        await this.setDirtyFlag(true);
         this.addNotification({
           message:
             'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
