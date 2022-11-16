@@ -53,21 +53,26 @@ const service = {
     try {
       trx = etrx ? etrx : await FormSubmission.startTransaction();
 
-      if (!data.draft) {
-        // Write a SUBMITTED status only if this is in REVISING state OR is a brand new submission
-        const statuses = await FormSubmissionStatus.query()
-          .modify('filterSubmissionId', formSubmissionId)
-          .modify('orderDescending');
-        if (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING) {
-          await service.changeStatusState(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser, trx);
-          // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
-          const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
-          emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => { });
+      // If we're restoring a submission
+      if (data['deleted'] !== undefined && typeof data.deleted == 'boolean') {
+        await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: data.deleted, updatedBy: currentUser.usernameIdp });
+      } else {
+        if (!data.draft) {
+          // Write a SUBMITTED status only if this is in REVISING state OR is a brand new submission
+          const statuses = await FormSubmissionStatus.query()
+            .modify('filterSubmissionId', formSubmissionId)
+            .modify('orderDescending');
+          if (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING) {
+            await service.changeStatusState(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser, trx);
+            // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
+            const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
+            emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => { });
+          }
         }
-      }
 
-      // Patch the submission record with the updated changes
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.usernameIdp });
+        // Patch the submission record with the updated changes
+        await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.usernameIdp });
+      }
 
       if (!etrx) await trx.commit();
 
@@ -112,6 +117,22 @@ const service = {
       trx = await FormSubmission.startTransaction();
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
         deleted: true,
+        updatedBy: currentUser.usernameIdp
+      });
+      await trx.commit();
+      return await service.read(formSubmissionId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  restore: async (formSubmissionId, data, currentUser) => {
+    let trx;
+    try {
+      trx = await FormSubmission.startTransaction();
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
+        deleted: data.deleted,
         updatedBy: currentUser.usernameIdp
       });
       await trx.commit();
