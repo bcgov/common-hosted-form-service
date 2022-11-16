@@ -165,7 +165,6 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
   // this line will be remove in prod
   // eslint-disable-next-line no-console
   console.log('CUSTOM LINK : ',messageLinkUrl);
-
   return {
     configData,
     contexts: [{

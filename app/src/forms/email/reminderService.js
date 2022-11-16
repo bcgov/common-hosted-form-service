@@ -169,15 +169,18 @@ const service = {
   _getReferer : (req) => {
     try {
       const basePath = config.get('frontend.basePath');
+      // this line will be remove in prod
+      // eslint-disable-next-line no-console
+      console.log('CURRENT BASE BATH :',basePath);
       const host = req.headers.host;
       return `${host}${basePath}`;
     } catch (error){
       log.error(error.message, {
         function: '_getReferer'
       });
-      // this line is only for test
+      // this just for draft it will remove in prod mode
       return 'referer';
-      //throw error;
+      // throw error;
     }
   },
   initMaillSender: (statement, req) => {
