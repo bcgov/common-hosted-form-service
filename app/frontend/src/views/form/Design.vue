@@ -107,17 +107,28 @@ export default {
       }
       this.$router.push({name:this.toRouterPathName.trim()});
     },
+    beforeRouteLeave(_to, _from,next) {
+      this.form.isDirty
+        ? next(
+          window.confirm(
+            'Do you really want to leave this page? Changes you made will not be saved.'
+          )
+        )
+        : next();
+      // part of autosave faature
+      /*
+      //if not the same route, and showWarningDialog is true
+      // it will ask form designers if they want to delete or
+      //or keep the forms
+      if(_to.name!==_from.name) {
+        this.toRouterPathName = _to.name;
+        this.showWarningDialog? this.showDialog=true: next();
+      }
+      */
+    },
   },
 
-  beforeRouteLeave(_to, _from,next) {
-    //if not the same route, and showWarningDialog is true
-    // it will ask form designers if they want to delete or
-    //or keep the forms
-    if(_to.name!==_from.name) {
-      this.toRouterPathName = _to.name;
-      this.showWarningDialog? this.showDialog=true: next();
-    }
-  },
+
 
 };
 </script>
