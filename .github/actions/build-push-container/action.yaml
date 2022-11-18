@@ -1,0 +1,127 @@
+name: Build & Push Container
+description: Builds a container from a Dockerfile and pushes to registry
+
+inputs:
+  context:
+    description: Effective Working Directory
+    required: true
+    default: "./"
+  image_name:
+    description: Image Name
+    required: true
+  github_username:
+    description: Github Container Registry Username
+    required: true
+  github_token:
+    description: Github Container Registry Authorization Token
+    required: true
+  dockerhub_username:
+    description: Dockerhub Container Registry Username
+    required: false
+  dockerhub_organization:
+    description: Dockerhub Container Registry Organization
+    required: false
+    default: bcgovimages
+  dockerhub_token:
+    description: Dockerhub Container Registry Authorization Token
+    required: false
+  app_title:
+    description: Application title
+    required: false
+    default: Common Hosted Forms
+  route_path:
+    description: Route Subpath Mount point
+    required: true
+    default: "/app"
+  app_contact:
+    description: Application contact email
+    required: true
+  app_howtourl:
+    description: Landing page video URL for HOWTO section
+    required: true
+    default: "https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53"
+  app_chefstoururl:
+    description: Landing page video URL for CHEFS TOUR section
+    required: true
+    default: "https://www.youtube.com/embed/obOhyYusMjM"
+
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Creates env variables
+      env:
+        VUE_APP_TITLE: ${{ inputs.app_title }}
+        VUE_APP_CONTACT: ${{ inputs.VUE_APP_CONTACT }}
+        VUE_APP_HOWTOURL: ${{ inputs.app_howtourl }}
+        VUE_APP_CHEFSTOURURL: ${{ inputs.app_chefstoururl }}
+        VUE_APP_FRONTEND_BASEPATH: ${{ inputs.route_path }}
+        ENV_PATH: ./app/frontend/.env
+      shell: bash
+      run: |
+        touch $ENV_PATH
+        echo VUE_APP_TITLE=$VUE_APP_TITLE >> $ENV_PATH
+        echo VUE_APP_CONTACT=$VUE_APP_CONTACT >> $ENV_PATH
+        echo VUE_APP_HOWTOURL=$VUE_APP_HOWTOURL >> $ENV_PATH
+        echo VUE_APP_CHEFSTOURURL=$VUE_APP_CHEFSTOURURL >> $ENV_PATH
+        echo VUE_APP_FRONTEND_BASEPATH=$VUE_APP_FRONTEND_BASEPATH >> $ENV_PATH
+
+        echo "cat $ENV_PATH"
+        cat $ENV_PATH
+
+    - name: Parse Input Values
+      shell: bash
+      run: |
+        echo "GH_USERNAME=$(tr '[:upper:]' '[:lower:]' <<< '${{ inputs.github_username }}')" >> $GITHUB_ENV
+        echo "HAS_DOCKERHUB=${{ fromJson(inputs.dockerhub_username != '' && inputs.dockerhub_token != '') }}" >> $GITHUB_ENV
+
+    - name: Login to Github Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ env.GH_USERNAME }}
+        password: ${{ inputs.github_token }}
+
+    - name: Login to Dockerhub Container Registry
+      if: env.HAS_DOCKERHUB == 'true'
+      uses: docker/login-action@v1
+      with:
+        registry: docker.io
+        username: ${{ inputs.dockerhub_username }}
+        password: ${{ inputs.dockerhub_token }}
+
+    - name: Prepare Container Metadata tags
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: |
+          ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}
+          docker.io/${{ inputs.dockerhub_organization }}/${{ inputs.image_name }},enable=${{ env.HAS_DOCKERHUB }}
+        # Always updates the 'latest' tag
+        flavor: |
+          latest=true
+        # Creates tags based off of branch names and semver tags
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=sha
+
+    - name: Build and Push to Container Registry
+      id: builder
+      uses: docker/build-push-action@v3
+      with:
+        context: ${{ inputs.context }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Inspect Docker Image
+      shell: bash
+      run: |
+        docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:latest

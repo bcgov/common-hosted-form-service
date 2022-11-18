@@ -7,7 +7,6 @@
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -51,9 +50,18 @@
         <h3 v-if="name">{{ name }}</h3>
       </v-col>
       <!-- version number-->
-      <v-col class="mb-3" cols="12" order="4">
+      <v-col cols="12" order="4">
         <em>Version: {{ this.displayVersion }}</em>
       </v-col>
+      <!--
+      <v-col class="mb-3" cols="12" order="5">
+        <v-switch
+          color="success"
+          :input-value="enableFormAutosave"
+          label="AutoSave"
+          @change="togglePublish($event)"
+        />
+      </v-col> -->
     </v-row>
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
@@ -128,6 +136,11 @@ export default {
       default: false,
     },
     versionId: String,
+    newForm:Boolean,
+    autosave:{
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -152,17 +165,22 @@ export default {
       },
       displayVersion: 1,
       reRenderFormIo: 0,
+      enableFormAutosave:this.autosave,
+      isNewForm:this.newForm,
       saving: false,
+      isSavedButtonClick: false,
       patch: {
         componentAddedStart: false,
         componentRemovedStart: false,
         componentMovedStart: false,
         history: [],
         index: -1,
+        MAX_PATCHES: 30,
+        originalSchema: null,
         redoClicked: false,
         undoClicked: false,
-        originalSchema: null,
       },
+      isComponentRemoved:false,
     };
   },
 
@@ -173,7 +191,6 @@ export default {
       'form.enableSubmitterDraft',
       'form.enableStatusUpdates',
       'form.idps',
-      'form.isDirty',
       'form.name',
       'form.sendSubRecieviedEmail',
       'form.showSubmissionConfirmation',
@@ -181,6 +198,8 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.versions',
+      'form.isDirty',
+
     ]),
     ID_MODE() {
       return IdentityMode;
@@ -284,7 +303,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
+    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout','setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
     undoCount() {
       return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
@@ -392,6 +411,7 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
+      this.undoPatchFromHistory();
     },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
@@ -405,10 +425,18 @@ export default {
       if (!this.patch.undoClicked && !this.patch.redoClicked) {
         // flags and modified are defined when a component is added
         if (flags !== undefined && modified !== undefined) {
-          if (this.patch.componentAddedStart !== null) {
+          // Component was pasted here or edited and saved
+          if (this.patch.componentAddedStart) {
             this.addPatchToHistory();
           } else {
-            this.resetHistoryFlags();
+            // Tab changed, Edit saved, paste occurred
+            if (typeof modified == 'boolean') {
+              // Tab changed
+              this.resetHistoryFlags();
+            } else {
+              // Edit saved or paste occurred
+              this.addPatchToHistory();
+            }
           }
         } else {
           // If we removed a component but not during an add action
@@ -435,11 +463,59 @@ export default {
       // and the current form
       const form = this.getPatch(++this.patch.index);
       const patch = compare(form, this.formSchema);
-      // Add the patch to the history
-      this.patch.history.push(patch);
+      if(patch.length > 0) {
+        // Remove any actions past the action we were on
+        this.patch.index += 1;
+        if (this.patch.history.length > 0) {
+          this.patch.history.length = this.patch.index;
+        }
+        // Add the patch to the history
+        this.patch.history.push(patch);
 
+        // If we've exceeded the limit on actions
+        if (this.patch.history.length > this.patch.MAX_PATCHES) {
+          // We need to set the original schema to the first patch
+          const newHead = this.getPatch(0);
+          this.patch.originalSchema = newHead;
+          this.patch.history.shift();
+          --this.patch.index;
+        }
+
+      }
+      //this.autosaveEventTrigger();
       this.resetHistoryFlags();
     },
+    async togglePublish(event) {
+      this.enableFormAutosave=event;
+      const query = Object.assign({}, this.$route.query);
+      query.as = event;
+      await this.$router.push({ query });
+
+    },
+
+    //this method is used for autosave action
+    async autosaveEventTrigger() {
+      if(this.enableFormAutosave) {
+        if(this.isNewForm) {
+          await this.setShowWarningDialog(true);
+          await this.setCanLogout(false);
+        }
+        else {
+          await this.setShowWarningDialog(false);
+          await this.setCanLogout(true);
+        }
+        this.submitFormSchema();
+      }
+    },
+    //This method is called by submit button
+    async submitFormButtonClick() {
+      await this.setShowWarningDialog(false);
+      await this.setCanLogout(true);
+      this.isNewForm=false;
+      this.isSavedButtonClick=true;
+      this.submitFormSchema();
+    },
+
     getPatch(idx) {
       // Generate the form from the original schema
       let form = deepClone(this.patch.originalSchema);
@@ -455,22 +531,23 @@ export default {
       }
       return form;
     },
-    undoPatchFromHistory() {
+    async undoPatchFromHistory() {
       // Only allow undo if there was an action made
       if (this.canUndoPatch()) {
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
-        this.patch.index--;
-        this.formSchema = this.getPatch(this.patch.index);
+        this.formSchema = this.getPatch(--this.patch.index);
+        //this.autosaveEventTrigger();
+
       }
     },
-    redoPatchFromHistory() {
+    async redoPatchFromHistory() {
       // Only allow redo if there was an action made
       if (this.canRedoPatch()) {
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
-        this.patch.index++;
-        this.formSchema = this.getPatch(this.patch.index);
+        this.formSchema = this.getPatch(++this.patch.index);
+        //this.autosaveEventTrigger();
       }
     },
     resetHistoryFlags(flag = false) {
@@ -491,6 +568,8 @@ export default {
     // Saving the Schema
     // ---------------------------------------------------------------------------------------------------
     async submitFormSchema() {
+      this.saving = true;
+      await this.setDirtyFlag(false);
       try {
 
         this.saving = true;
@@ -527,10 +606,11 @@ export default {
 
       }
     },
-    onUndoClick() {
+    async onUndoClick() {
       this.undoPatchFromHistory();
+
     },
-    onRedoClick() {
+    async onRedoClick() {
       this.redoPatchFromHistory();
     },
 
@@ -555,7 +635,6 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -563,6 +642,8 @@ export default {
           f: response.data.id,
           d: response.data.draft.id,
           sv: true,
+          as:this.enableFormAutosave,
+          nf:this.isNewForm
         },
       }).catch(()=>{});
 
@@ -582,11 +663,13 @@ export default {
           f: this.formId,
           d: data.id,
           sv: true,
+          nf:this.isNewForm,
+          as:this.enableFormAutosave
         },
       });
     },
     async schemaUpdateExistingDraft() {
-      await formService.updateDraft(this.formId, this.draftId, {
+      let res = await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
       });
 
@@ -595,8 +678,9 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true },
+        query: { ...this.$route.query, sv: true,nf:this.isNewForm, as:this.enableFormAutosave },
       });
+
     },
   },
   created() {
@@ -606,14 +690,17 @@ export default {
     }
   },
   mounted() {
+
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
+
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
+
       this.reRenderFormIo += 1;
     }
   },
