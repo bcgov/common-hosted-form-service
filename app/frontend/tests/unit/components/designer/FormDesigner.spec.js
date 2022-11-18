@@ -1,22 +1,20 @@
 /* TODO: More research on how to write  */
 //More research to be
-/*
+
 import {createLocalVue, mount} from "@vue/test-utils";
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import Vuex from 'vuex';
 import { getField, updateField } from 'vuex-map-fields';
 import { IdentityMode } from '@/utils/constants';
-*/
-//import VueRouter from 'vue-router';
-//import Actions from '../../../src/components/Actions'
-//import store from '@/store/modules/form';
 
-//const localVue = createLocalVue();
-//localVue.use(Vuex);
-//localVue.use(mapFields);
+import VueRouter from 'vue-router';
+
+const localVue = createLocalVue();
+localVue.use(Vuex);
+localVue.use(mapFields);
 
 describe('Design.vue', () => {
-  /* const mockTokenParsedGetter = jest.fn();
+  const mockTokenParsedGetter = jest.fn();
   const mockUserGetter = jest.fn();
   const mockFormFields = jest.fn([{
     description: '',
@@ -44,8 +42,6 @@ describe('Design.vue', () => {
   const mockMethod6 = jest.spyOn(FormDesigner.methods, 'loadFile');
   const mockMethod7 = jest.spyOn(FormDesigner.methods, 'getFormSchema');
   const mockMethod8 = jest.spyOn(FormDesigner.methods, 'addPatchToHistory');
-  const mockMethod9 = jest.spyOn(FormDesigner.methods, 'autosaveEventTrigger');
-  const mockMethod10 = jest.spyOn(FormDesigner.methods, 'submitFormButtonClick');
   const mockMethod11 = jest.spyOn(FormDesigner.methods, 'getPatch');
   const mockMethod12 = jest.spyOn(FormDesigner.methods, 'schemaUpdateExistingDraft');
   const mockMethod13 = jest.spyOn(FormDesigner.methods, 'schemaCreateDraftFromVersion');
@@ -89,9 +85,9 @@ describe('Design.vue', () => {
     mockUserGetter.mockReset();
     mockFormFields.mockReset();
   });
-*/
+
   it('renders', () => {
-    /*
+
     const wrapper = mount(FormDesigner,{
       localVue,
       propsData: { draftId: '' ,formId:'', saved:true, versionId:'', newForm:''},
@@ -133,7 +129,7 @@ describe('Design.vue', () => {
       }
     });
     expect(wrapper.find('form-builder').exists()).toBe(true);
-    */
+
     expect(true).toBe(true);
   });
 });
