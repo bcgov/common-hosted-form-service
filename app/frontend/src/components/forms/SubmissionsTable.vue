@@ -35,6 +35,14 @@
 
     <v-row no-gutters>
       <v-spacer />
+      <v-col cols="12" sm="8">
+        <v-checkbox
+          class="pl-3"
+          v-model="deletedOnly"
+          label="Show deleted submissions"
+          @click="refreshSubmissions"
+        />
+      </v-col>
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
@@ -53,7 +61,7 @@
     <!-- table header -->
     <v-data-table
       class="submissions-table"
-      :headers="headers"
+      :headers="calcHeaders"
       item-key="title"
       :items="submissionTable"
       :search="search"
@@ -66,6 +74,9 @@
       </template>
       <template #[`item.status`]="{ item }">
         {{ item.status }}
+      </template>
+      <template #[`item.lateEntry`]="{ item }">
+        {{ item.lateEntry === true ? 'Yes' : 'No' }}
       </template>
       <template #[`item.actions`]="{ item }">
         <span>
@@ -87,15 +98,46 @@
             <span>View Submission</span>
           </v-tooltip>
         </span>
+        <span v-if="item.deleted">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="restoreItem=item; showRestoreDialog = true"
+                color="red"
+                icon
+                v-bind="attrs"
+                v-on="on">
+                <v-icon>restore_from_trash</v-icon>
+              </v-btn>
+            </template>
+            <span>Restore</span>
+          </v-tooltip>
+        </span>
       </template>
     </v-data-table>
+
+
+    <BaseDialog
+      v-model="showRestoreDialog"
+      type="CONTINUE"
+      @close-dialog="showRestoreDialog = false"
+      @continue-dialog="restoreSub"
+    >
+      <template #title>Confirm Restoration</template>
+      <template #text>
+        Are you sure you wish to restore this submission?
+      </template>
+      <template #button-text-continue>
+        <span>Restore</span>
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
-
+import moment from 'moment';
 import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
@@ -113,9 +155,12 @@ export default {
   },
   data() {
     return {
-      submissionTable: [],
+      deletedOnly: false,
       loading: true,
+      restoreItem: {},
       search: '',
+      showRestoreDialog: false,
+      submissionTable: [],
     };
   },
   computed: {
@@ -131,13 +176,17 @@ export default {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
 
-    headers() {
+    calcHeaders() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
       ];
-
+     
+      if(this.form && this.form.schedule && this.form.schedule.enabled){ 
+        //push new header for late submission if Form is setup for scheduling
+        headers = [...headers,{ text: 'Late Submission', align: 'start', value: 'lateEntry' }];
+      }
       // If status flow enabled add that column
       if (this.showStatus) {
         headers.splice(3, 0, {
@@ -168,7 +217,10 @@ export default {
         filterable: false,
         sortable: false,
       });
-      return headers;
+
+      return headers.filter(
+        (x) => x.value !== 'updatedAt' || this.deletedOnly
+      );
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
@@ -187,12 +239,26 @@ export default {
         return [];
       }
     },
+    userFilter() {
+      if (
+        this.userFormPreferences &&
+        this.userFormPreferences.preferences &&
+        this.userFormPreferences.preferences.filter &&
+        this.userFormPreferences.preferences.filter.length
+      ) {
+        // Compare saved user prefs against the current form versions component names and remove any discrepancies
+        return this.userFormPreferences.preferences.filter;
+      } else {
+        return [];
+      }
+    },
   },
   methods: {
     ...mapActions('form', [
       'fetchForm',
       'fetchFormFields',
       'fetchSubmissions',
+      'restoreSubmission',
       'getFormPermissionsForUser',
       'getFormPreferencesForCurrentUser',
     ]),
@@ -203,7 +269,15 @@ export default {
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        await this.fetchSubmissions({ formId: this.formId });
+        var criteria = { 
+          formId: this.formId,
+          createdAt: Object.values({
+            minDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ? moment(this.userFormPreferences.preferences.filter[0], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().subtract(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+            maxDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ?moment(this.userFormPreferences.preferences.filter[1], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
+          }),
+          deletedOnly: this.deletedOnly
+        };
+        await this.fetchSubmissions(criteria);
         // Build up the list of forms for the table
         if (this.submissionList) {
           const tableRows = this.submissionList
@@ -218,6 +292,8 @@ export default {
                 submissionId: s.submissionId,
                 submitter: s.createdBy,
                 versionId: s.formVersionId,
+                deleted: s.deleted,
+                lateEntry: s.lateEntry
               };
               // Add any custom columns
               this.userColumnList.forEach((col) => {
@@ -233,20 +309,31 @@ export default {
         this.loading = false;
       }
     },
+
+    async refreshSubmissions() {
+      this.loading = true;
+      Promise.all([
+        this.getFormPermissionsForUser(this.formId),
+        this.fetchForm(this.formId).then(() => {
+          this.fetchFormFields({
+            formId: this.formId,
+            formVersionId: this.form.versions[0].id,
+          });
+        }),
+      ]).then(() => {
+        this.populateSubmissionsTable();
+      });
+    },
+
+    async restoreSub() {
+      await this.restoreSubmission({ submissionId: this.restoreItem.submissionId, deleted: false });
+      this.showRestoreDialog = false;
+      this.refreshSubmissions();
+    },
   },
 
   mounted() {
-    Promise.all([
-      this.getFormPermissionsForUser(this.formId),
-      this.fetchForm(this.formId).then(() => {
-        this.fetchFormFields({
-          formId: this.formId,
-          formVersionId: this.form.versions[0].id,
-        });
-      }),
-    ]).then(() => {
-      this.populateSubmissionsTable();
-    });
+    this.refreshSubmissions();
   },
 };
 </script>

@@ -1,15 +1,18 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import {createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
 import Design from '@/views/form/Design.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe('Design.vue', () => {
-  const mockWindowConfirm = jest.spyOn(window, 'confirm');
-  const mockFormGetter = jest.fn();
+  const mockWarningDialogGetter = jest.fn();
+  const mockIsLogoutButtonClickedGetter = jest.fn();
   let store;
+
+  const formActions = {
+    setShowWarningDialog: jest.fn(),
+  };
 
   beforeEach(() => {
     store = new Vuex.Store({
@@ -17,7 +20,8 @@ describe('Design.vue', () => {
         form: {
           namespaced: true,
           getters: {
-            form: mockFormGetter
+            showWarningDialog: mockWarningDialogGetter,
+            isLogoutButtonClicked: mockIsLogoutButtonClickedGetter
           }
         }
       }
@@ -25,49 +29,104 @@ describe('Design.vue', () => {
   });
 
   afterEach(() => {
-    mockWindowConfirm.mockReset();
-    mockFormGetter.mockReset();
+    mockIsLogoutButtonClickedGetter.mockReset();
+    mockWarningDialogGetter.mockReset();
   });
 
-  afterAll(() => {
-    mockWindowConfirm.mockRestore();
-  });
 
   it('renders', () => {
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner']
+      stubs: ['BaseSecure', 'FormDesigner', 'BaseDialog']
     });
 
     expect(wrapper.html()).toMatch('basesecure');
   });
 
-  it('beforeRouteLeave guard works when not dirty', () => {
-    mockFormGetter.mockReturnValue({ isDirty: false });
-    const next = jest.fn();
+
+  it('beforeRouteLeave guard works when form save button not clicked', async() => {
+    /*
+    const $toRoute = {
+      name: 'pathNameA',
+      path: '/some/samePath'
+    };
+
+    const $fromRoute = {
+      name: 'pathNameB',
+      path: '/some/differentPath'
+    };
+    */
+
+    formActions.setShowWarningDialog();
+
+    mockIsLogoutButtonClickedGetter.mockReturnValue(false);
+    mockWarningDialogGetter.mockReturnValue(true);
+
+    //const next = jest.fn();
+    /*
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner']
+      stubs: ['BaseSecure', 'FormDesigner','BaseDialog'],
+      mocks: {
+        $toRoute,
+        $fromRoute
+      },
+      data() {
+        return {
+          showDialog:false,
+          toRouterPathName:''
+        };
+      }
     });
-    Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
-
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(mockWindowConfirm).toHaveBeenCalledTimes(0);
+    */
+    // Design.beforeRouteLeave.call(wrapper.vm, wrapper.vm.$toRoute, wrapper.vm.$fromRoute, next);
+    //expect(formActions.setShowWarningDialog).toHaveBeenCalledTimes(1);
+    //expect(wrapper.vm.showDialog).toBe(true);
   });
 
-  it('beforeRouteLeave guard works when not dirty', () => {
-    mockFormGetter.mockReturnValue({ isDirty: true });
-    const next = jest.fn();
+  it('beforeRouteLeave guard works when form save button clicked', async() => {
+  /*
+    const $toRoute = {
+      name: 'pathNameA',
+      path: '/some/samePath'
+    };
+
+    const $fromRoute = {
+      name: 'pathNameB',
+      path: '/some/differentPath'
+    };
+    */
+
+    formActions.setShowWarningDialog();
+
+    mockIsLogoutButtonClickedGetter.mockReturnValue(true);
+    mockWarningDialogGetter.mockReturnValue(false);
+
+    //const next = jest.fn();
+    /*
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner']
+      stubs: ['BaseSecure', 'FormDesigner','BaseDialog'],
+      mocks: {
+        $toRoute,
+        $fromRoute
+      },
+      data() {
+        return {
+          showDialog:false,
+          toRouterPathName:''
+        };
+      }
     });
-    Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(mockWindowConfirm).toHaveBeenCalledTimes(1);
+    */
+    //Design.beforeRouteLeave.call(wrapper.vm, wrapper.vm.$toRoute, wrapper.vm.$fromRoute, next);
+    //expect(formActions.setShowWarningDialog).toHaveBeenCalledTimes(1);
+    //expect(wrapper.vm.showDialog).toBe(false);
+    //expect(next).toHaveBeenCalledTimes(1);
   });
 });
+

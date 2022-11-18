@@ -38,11 +38,27 @@ describe('Form Designer', () => {
     cy.get('h1').contains('Form Design');
   });
 
-  it('Visits the designer page', () => {
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+  it('Visits the designer page and trigger form auto save', async() => {
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm1');
+    cy.intercept('POST', `/${depEnv}/api/v1/forms/*`).as('postForm');
+
     cy.get('button').contains('Basic Fields').click();
     const numComponents = 6;
-    for (let i = 0; i < numComponents; i++) {
+
+    cy.get('div.formio-builder-form').then($el => {
+      const bounds = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Text Field')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', bounds.x, -50, { force: true })
+        .trigger('mouseup', { force: true });
+      cy.get('button').contains('Save').click();
+    })
+
+    cy.location('pathname').should('eq', `/${depEnv}/form/design`);
+
+    cy.wait('@getForm1').then(()=>{
+      cy.intercept('PUT', `/${depEnv}/api/v1/forms/*`).as('putForm');
+      cy.get('button').contains('Basic Fields').click();
       cy.get('div.formio-builder-form').then($el => {
         const bounds = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Text Field')
@@ -50,18 +66,17 @@ describe('Form Designer', () => {
           .trigger('mousemove', bounds.x, -50, { force: true })
           .trigger('mouseup', { force: true });
         cy.get('button').contains('Save').click();
+        cy.undo();
+
+        cy.get('i').contains('undo').parent().contains((0).toString());
+        cy.get('i').contains('redo').parent().contains((1).toString());
+        cy.redo();
+
+        cy.get('i').contains('undo').parent().contains((1).toString());
+        cy.get('i').contains('redo').parent().contains('0');
       });
-    }
-    for (let i = 0; i < (numComponents / 2); i++) {
-      cy.undo();
-    }
-    cy.get('i').contains('undo').parent().contains((numComponents / 2).toString());
-    cy.get('i').contains('redo').parent().contains((numComponents / 2).toString());
-    for (let i = 0; i < (numComponents / 2); i++) {
-      cy.redo();
-    }
-    cy.get('i').contains('undo').parent().contains((numComponents).toString());
-    cy.get('i').contains('redo').parent().contains('0');
+
+    });
   });
 
   it('Does not increment actions when switching tabs', () => {
@@ -85,5 +100,83 @@ describe('Form Designer', () => {
       cy.get('i').contains('undo').parent().contains('1');
       cy.get('i').contains('redo').parent().contains('0');
     });
+  });
+
+
+  it('form should autosave and should not be deleted when click Yes button on confimation dialog', () => {
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    cy.get('.v-input__slot').contains('AutoSave').click()
+    cy.get('button').contains('Basic Fields').click();
+    cy.get('div.formio-builder-form').then($el => {
+      const bounds = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Text Field')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', bounds.x, -100, { force: true })
+        .trigger('mouseup', { force: true });
+      cy.get('button').contains('Save').click();
+    });
+    /*cy.wait('@getForm').then(()=>{
+      cy.get('.v-input__slot').contains('AutoSave').click();
+      let routerLink =cy.get('[data-cy=aboutLinks]');
+      expect(routerLink).to.not.be.null;
+      routerLink.trigger('click');
+      cy.contains('Confirm').should('be.visible');
+      cy.contains('Yes').should('be.visible');
+      cy.contains('Yes').trigger('click');
+      cy.location('pathname').should('eq', `/${depEnv}/`);
+    })
+    */
+  });
+
+  it('form should autosave and should delet when click No button on confimation dialog', () => {
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    cy.get('.v-input__slot').contains('AutoSave').click()
+    cy.get('button').contains('Basic Fields').click();
+    cy.get('div.formio-builder-form').then($el => {
+      const bounds = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Text Field')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', bounds.x, -100, { force: true })
+        .trigger('mouseup', { force: true });
+      cy.get('button').contains('Save').click();
+    });
+    /*
+    cy.wait('@getForm').then(()=>{
+      let routerLink =cy.get('[data-cy=aboutLinks]');
+      expect(routerLink).to.not.be.null;
+      routerLink.trigger('click');
+      cy.contains('Confirm').should('be.visible');
+      cy.contains('No').should('be.visible');
+      cy.contains('No').trigger('click');
+      cy.location('pathname').should('eq', `/${depEnv}/`);
+    })
+    */
+  });
+
+  it('form should autosave and should not show confirmation dialog if save button is clicked', () => {
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    cy.get('.v-input__slot').contains('AutoSave').click()
+    cy.get('button').contains('Basic Fields').click();
+    cy.get('div.formio-builder-form').then($el => {
+      const bounds = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Text Field')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', bounds.x, -100, { force: true })
+        .trigger('mouseup', { force: true });
+      cy.get('button').contains('Save').click();
+    });
+    /*
+    let savedButton = cy.get('[data-cy=saveButton]');
+    expect(savedButton).to.not.be.null;
+    savedButton.trigger('click');
+
+    cy.wait('@getForm').then(()=>{
+      let routerLink =cy.get('[data-cy=aboutLinks]');
+      expect(routerLink).to.not.be.null;
+      routerLink.trigger('click');
+      cy.contains('Confirm').should('not.exist');
+      cy.location('pathname').should('eq', `/${depEnv}/`);
+    })
+    */
   });
 });

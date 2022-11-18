@@ -40,7 +40,7 @@
         </v-stepper-content>
 
         <v-stepper-content step="2" class="pa-1">
-          <FormDesigner />
+          <FormDesigner :newForm="true"/>
           <v-btn class="my-4" outlined @click="creatorStep = 1">
             <span>Back</span>
           </v-btn>
@@ -51,9 +51,9 @@
 </template>
 
 <script>
+
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
@@ -67,7 +67,7 @@ export default {
     FormDisclaimer,
   },
   computed: {
-    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
+    ...mapFields('form', ['form.idps', 'form.userType', 'form.isDirty']),
     IDP: () => IdentityProviders,
   },
   data() {
@@ -89,6 +89,7 @@ export default {
         this.$refs.settingsForm.validate();
     },
   },
+
   beforeRouteLeave(_to, _from, next) {
     this.isDirty
       ? next(
@@ -98,6 +99,7 @@ export default {
       )
       : next();
   },
+
 };
 </script>
 
