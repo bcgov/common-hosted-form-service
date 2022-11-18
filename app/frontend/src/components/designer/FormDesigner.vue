@@ -53,15 +53,6 @@
       <v-col cols="12" order="4">
         <em>Version: {{ this.displayVersion }}</em>
       </v-col>
-      <!--
-      <v-col class="mb-3" cols="12" order="5">
-        <v-switch
-          color="success"
-          :input-value="enableFormAutosave"
-          label="AutoSave"
-          @change="togglePublish($event)"
-        />
-      </v-col> -->
     </v-row>
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
@@ -135,12 +126,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    versionId: String,
-    newForm:Boolean,
-    autosave:{
-      type: Boolean,
-      default: false,
-    },
+    versionId: String
   },
   data() {
     return {
@@ -165,10 +151,7 @@ export default {
       },
       displayVersion: 1,
       reRenderFormIo: 0,
-      enableFormAutosave:this.autosave,
-      isNewForm:this.newForm,
       saving: false,
-      isSavedButtonClick: false,
       patch: {
         componentAddedStart: false,
         componentRemovedStart: false,
@@ -198,8 +181,7 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.versions',
-      'form.isDirty',
-
+      'form.isDirty'
     ]),
     ID_MODE() {
       return IdentityMode;
@@ -303,7 +285,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout','setDirtyFlag']),
+    ...mapActions('form', ['fetchForm','setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
     undoCount() {
       return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
@@ -482,40 +464,8 @@ export default {
         }
 
       }
-      //this.autosaveEventTrigger();
       this.resetHistoryFlags();
     },
-    async togglePublish(event) {
-      this.enableFormAutosave=event;
-      const query = Object.assign({}, this.$route.query);
-      query.as = event;
-      await this.$router.push({ query });
-
-    },
-
-    //this method is used for autosave action
-    async autosaveEventTrigger() {
-      if(this.enableFormAutosave) {
-        if(this.isNewForm) {
-          await this.setShowWarningDialog(true);
-          await this.setCanLogout(false);
-        }
-        else {
-          await this.setShowWarningDialog(false);
-          await this.setCanLogout(true);
-        }
-        this.submitFormSchema();
-      }
-    },
-    //This method is called by submit button
-    async submitFormButtonClick() {
-      await this.setShowWarningDialog(false);
-      await this.setCanLogout(true);
-      this.isNewForm=false;
-      this.isSavedButtonClick=true;
-      this.submitFormSchema();
-    },
-
     getPatch(idx) {
       // Generate the form from the original schema
       let form = deepClone(this.patch.originalSchema);
@@ -537,7 +487,6 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
-        //this.autosaveEventTrigger();
 
       }
     },
@@ -547,7 +496,6 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
-        //this.autosaveEventTrigger();
       }
     },
     resetHistoryFlags(flag = false) {
@@ -642,8 +590,6 @@ export default {
           f: response.data.id,
           d: response.data.draft.id,
           sv: true,
-          as:this.enableFormAutosave,
-          nf:this.isNewForm
         },
       }).catch(()=>{});
 
@@ -663,8 +609,6 @@ export default {
           f: this.formId,
           d: data.id,
           sv: true,
-          nf:this.isNewForm,
-          as:this.enableFormAutosave
         },
       });
     },
@@ -678,7 +622,7 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true,nf:this.isNewForm, as:this.enableFormAutosave },
+        query: { ...this.$route.query, sv: true },
       });
 
     },
