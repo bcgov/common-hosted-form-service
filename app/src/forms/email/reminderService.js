@@ -8,31 +8,39 @@ const {  EmailTypes } = require('../common/constants');
 const config = require('config');
 const log = require('../../components/log')(module.filename);
 const service = {
-  getCurrentPeriod(dates) {
+  getCurrentPeriod (dates, toDay) {
+    if(dates.length==0) return null;
 
-    for (let i = 0; i <dates.length; i++) {
-      var sd = moment(dates[i].startDate).format('YYYY-MM-DD');
-      var gd = moment(dates[i].graceDate).format('YYYY-MM-DD');
-      if(moment().isBetween(sd,gd) ) {
-        return {
-          state : 1,
-          index: i ,
-          dates: dates[i],
-          old_dates : (i==0) ? null :  dates[i-1],
-          late: (moment().isBetween(dates[i].closeDate, dates[i].graceDate))? 1 : 0
-        };
+    try {
+      for (let i = 0; i <dates.length; i++) {
+        var startDate = moment(dates[i].startDate).format('YYYY-MM-DD');
+        var graceDate = moment(dates[i].graceDate).format('YYYY-MM-DD');
+        if(toDay.isBetween(startDate, graceDate)) {
+          return {
+            state : 1,
+            index: i ,
+            dates: dates[i],
+            old_dates : (i==0) ? null :  dates[i-1],
+            late: (toDay.isBetween(dates[i].closeDate, dates[i].graceDate))? 1 : 0
+          };
 
+        }
       }
-    }
-    var first = dates[0];
-    return {
-      state: (moment().isBefore(first.startDate)) ? -1 : 0,
-      index: -1,
-      dates: false,
-      old_dates : false,
-      late: -1
-    };
 
+      var first = dates[0];
+      return {
+        state: (toDay.isBefore(first.startDate)) ? -1 : 0,
+        index: -1,
+        dates: false,
+        old_dates : false,
+        late: -1
+      };
+    } catch (error) {
+      log.error(error.message, {
+        function: 'getCurrentPeriod'
+      });
+      throw error;
+    }
   },
   _listDates: (schedule) =>{
     return  getAvailableDates(
@@ -58,6 +66,7 @@ const service = {
   },
   _getReminders : async (forms)=>{
     var reminder = [];
+    var toDay = moment();
     for (let i = 0; i< forms.length; i++) {
       var obj = {};
       obj.avalaibleDate = service._listDates(forms[i].schedule);
@@ -65,7 +74,8 @@ const service = {
         reminder.push({ error:true, message : `Form ${forms[i].name }, has only one period.` });
         continue;
       }
-      obj.report = service.getCurrentPeriod(obj.avalaibleDate);
+      obj.report = service.getCurrentPeriod(obj.avalaibleDate, toDay);
+
       obj.form   = forms[i];
       if (obj.report.state != 1 || obj.report.index <= 0)  {
         reminder.push({ error:true, message : `Form ${forms[i].name }, we are in the first period. ` });
@@ -125,7 +135,7 @@ const service = {
     }
     return false;
   },
-  runQueries : async (queries) => {
+  _runQueries : async (queries) => {
     var obj = queries[2];
     obj.fillers = [];
     await queries[0].then(function(data) {
@@ -169,26 +179,16 @@ const service = {
   _getReferer : (req) => {
     try {
       const basePath = config.get('frontend.basePath');
-      // this line will be remove in prod
-      // eslint-disable-next-line no-console
-      console.log('CURRENT BASE BATH :',basePath);
       const host = req.headers.host;
-      return `${host}${basePath}`;
+      return `https://${host}${basePath}`;
     } catch (error){
       log.error(error.message, {
         function: '_getReferer'
       });
-      // this just for draft it will remove in prod mode
-      return 'referer';
-      // throw error;
+      throw error;
     }
   },
-  initMaillSender: (statement, req) => {
-    let referer = service._getReferer(req);
-    // this is just for test
-    // eslint-disable-next-line no-console
-    console.log(referer);
-
+  _initMaillSender: (statement, referer) => {
     statement.submiters.forEach((element)=> {
       const data = { form :statement.form, report : statement.report, submiter : element, state : statement.state, referer };
       emailService.initReminder(data);
