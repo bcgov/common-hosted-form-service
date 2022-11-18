@@ -9,9 +9,8 @@ const config = require('config');
 const log = require('../../components/log')(module.filename);
 const service = {
   getCurrentPeriod (dates, toDay) {
-    if(dates.length==0) return null;
-
     try {
+      if(dates.length==0) return null;
       for (let i = 0; i <dates.length; i++) {
         var startDate = moment(dates[i].startDate).format('YYYY-MM-DD');
         var graceDate = moment(dates[i].graceDate).format('YYYY-MM-DD');
