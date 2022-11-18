@@ -66,12 +66,18 @@ describe('getCurrentPeriod', () => {
 
   it('should return the current period', () => {
 
-    // eslint-disable-next-line no-console
+    let toDay = moment('2022-09-12');
+    let periodes = reminderService._listDates(schedule);
+    let periode =  reminderService.getCurrentPeriod(periodes, toDay);
+    expect(periode.state).toEqual(1);
+    expect(periode.index).toEqual(2);
   });
 
   it('should return null', () => {
     let toDay = moment('2022-11-12');
     let periode =  reminderService.getCurrentPeriod([], toDay);
+    expect(periode).toBe(null);
+    periode =  reminderService.getCurrentPeriod([], toDay);
     expect(periode).toBe(null);
     // eslint-disable-next-line no-console
   });
@@ -91,17 +97,6 @@ describe('getCurrentPeriod', () => {
     expect(periode.state).toEqual(-1);
     expect(periode.index).toEqual(-1);
   });
-
-
-
-
-  it('should rethrow exceptions', () => {
-    let toDay = moment('2022-11-05');
-    expect(() => reminderService.getCurrentPeriod(null, toDay)).toThrow(
-      "Cannot read properties of null (reading 'length')"
-    );
-  });
-
 });
 
 

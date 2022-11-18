@@ -9,37 +9,33 @@ const config = require('config');
 const log = require('../../components/log')(module.filename);
 const service = {
   getCurrentPeriod (dates, toDay) {
-    try {
-      if(dates.length==0) return null;
-      for (let i = 0; i <dates.length; i++) {
-        var startDate = moment(dates[i].startDate).format('YYYY-MM-DD');
-        var graceDate = moment(dates[i].graceDate).format('YYYY-MM-DD');
-        if(toDay.isBetween(startDate, graceDate)) {
-          return {
-            state : 1,
-            index: i ,
-            dates: dates[i],
-            old_dates : (i==0) ? null :  dates[i-1],
-            late: (toDay.isBetween(dates[i].closeDate, dates[i].graceDate))? 1 : 0
-          };
 
-        }
+    if(dates.length==0) return null;
+    if(dates==null || dates==undefined) return null;
+    for (let i = 0; i <dates.length; i++) {
+      var startDate = moment(dates[i].startDate).format('YYYY-MM-DD');
+      var graceDate = moment(dates[i].graceDate).format('YYYY-MM-DD');
+      if(toDay.isBetween(startDate, graceDate)) {
+        return {
+          state : 1,
+          index: i ,
+          dates: dates[i],
+          old_dates : (i==0) ? null :  dates[i-1],
+          late: (toDay.isBetween(dates[i].closeDate, dates[i].graceDate))? 1 : 0
+        };
+
       }
-
-      var first = dates[0];
-      return {
-        state: (toDay.isBefore(first.startDate)) ? -1 : 0,
-        index: -1,
-        dates: false,
-        old_dates : false,
-        late: -1
-      };
-    } catch (error) {
-      log.error(error.message, {
-        function: 'getCurrentPeriod'
-      });
-      throw error;
     }
+
+    var first = dates[0];
+    return {
+      state: (toDay.isBefore(first.startDate)) ? -1 : 0,
+      index: -1,
+      dates: false,
+      old_dates : false,
+      late: -1
+    };
+
   },
   _listDates: (schedule) =>{
     return  getAvailableDates(
