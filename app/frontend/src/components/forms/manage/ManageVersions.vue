@@ -86,7 +86,7 @@
               <router-link
                 :to="{
                   name: 'FormDesigner',
-                  query: { d: item.id, f: item.formId },
+                  query: { d: item.id, f: item.formId, nf:false },
                 }"
               >
                 <v-btn
@@ -103,6 +103,7 @@
             <span>Edit Version</span>
           </v-tooltip>
         </span>
+
 
         <!-- export -->
         <span>
@@ -306,7 +307,7 @@ export default {
       } else {
         this.$router.push({
           name: 'FormDesigner',
-          query: { f: formId, v: versionId },
+          query: { f: formId, v: versionId, nf:false },
         });
       }
     },
@@ -396,7 +397,7 @@ export default {
         });
       }
     },
-  },
+  }
 };
 </script>
 

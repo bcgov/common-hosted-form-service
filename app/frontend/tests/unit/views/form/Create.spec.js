@@ -49,17 +49,4 @@ describe('Create.vue', () => {
     expect(wrapper.html()).toMatch('basesecure');
     expect(formActions.resetForm).toHaveBeenCalledTimes(1);
   });
-
-  it('beforeRouteLeave guard works when not dirty', () => {
-    const next = jest.fn();
-    const wrapper = shallowMount(Create, {
-      localVue,
-      store,
-      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer']
-    });
-    Create.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
-
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(mockWindowConfirm).toHaveBeenCalledTimes(0);
-  });
 });
