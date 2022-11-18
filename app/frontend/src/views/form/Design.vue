@@ -4,9 +4,10 @@
       class="mt-6"
       :draftId="d"
       :formId="f"
-      :saved="Boolean(sv)"
+      :saved="JSON.parse(sv)"
       :versionId="v"
-      :newForm="Boolean(nf)"
+      :newForm="JSON.parse(nf)"
+      :autosave="JSON.parse(as)"
     />
     <BaseDialog :value=Boolean(this.showDialog) type="SAVEDDELETE"
                 @close-dialog="closeDialog"
@@ -45,6 +46,9 @@ export default {
     sv: Boolean,
     v: String,
     nf:Boolean,
+    as:{
+      default:false
+    }
   },
   data() {
     return {
@@ -63,7 +67,7 @@ export default {
     },
   },
   methods:{
-    ...mapActions('form', ['deleteCurrentForm','setIsLogoutButtonClicked','setShowWarningDialog','setCanLogout', 'setFormAutosave']),
+    ...mapActions('form', ['deleteCurrentForm','setIsLogoutButtonClicked','setShowWarningDialog','setCanLogout']),
     ...mapActions('auth', ['logoutWithUrl']),
     async closeDialog() {
       await this.setIsLogoutButtonClicked(false);
@@ -78,7 +82,6 @@ export default {
       this.showDialog=false;
       await this.setShowWarningDialog(false);
       await this.setCanLogout(true);
-      await this.setFormAutosave(false);
       //checks if form designers is trying to log out without
       //clicking on the save button
       if(this.isLogoutButtonClicked){
@@ -95,8 +98,8 @@ export default {
     async navigateToRoute() {
       this.showDialog=false;
       await this.setShowWarningDialog(false);
-      await this.setFormAutosave(false);
       await this.setCanLogout(true);
+
       //checks if form designers is trying to log out without
       //clicking on the save button
       if(this.isLogoutButtonClicked){
@@ -104,17 +107,28 @@ export default {
       }
       this.$router.push({name:this.toRouterPathName.trim()});
     },
+    beforeRouteLeave(_to, _from,next) {
+      this.form.isDirty
+        ? next(
+          window.confirm(
+            'Do you really want to leave this page? Changes you made will not be saved.'
+          )
+        )
+        : next();
+      // part of autosave faature
+      /*
+      //if not the same route, and showWarningDialog is true
+      // it will ask form designers if they want to delete or
+      //or keep the forms
+      if(_to.name!==_from.name) {
+        this.toRouterPathName = _to.name;
+        this.showWarningDialog? this.showDialog=true: next();
+      }
+      */
+    },
   },
-  beforeRouteLeave(_to, _from,next) {
-    //if not the same route, and showWarningDialog is true
-    // it will ask form designers if they want to delete or
-    //or keep the forms
-    if(_to.name!==_from.name) {
-      this.setFormAutosave(false);
-      this.toRouterPathName = _to.name;
-      this.showWarningDialog? this.showDialog=true: next();
-    }
-  },
+
+
 
 };
 </script>
