@@ -482,7 +482,7 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
-      this.undoPatchFromHistory();
+      //this.undoPatchFromHistory();
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
