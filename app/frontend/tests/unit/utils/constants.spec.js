@@ -92,7 +92,7 @@ describe('Constants', () => {
       },
       WARNING: {
         type: 'warning',
-        class:'alert-warning',
+        class: 'alert-warning',
         icon: 'warning',
       },
     });
