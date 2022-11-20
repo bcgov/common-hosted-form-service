@@ -92,10 +92,11 @@
       :saving="saving"
       :savedStatus="savedStatus"
       :saved="saved"
+      :isFormSaved="isFormSaved"
       :formId="formId"
       :draftId="draftId"
-      :undoCount="undoCount()"
-      :redoCount="redoCount()"
+      :undoEnabled="undoEnabled()===0?false:undoEnabled()"
+      :redoEnabled="redoEnabled()===0?false:redoEnabled()"
     />
   </div>
 </template>
@@ -138,6 +139,7 @@ export default {
       ],
       offset: true,
       savedStatus: 'Save',
+      isFormSaved:true,
       scrollTop:true,
       advancedItems: [
         { text: 'Simple Mode', value: false },
@@ -277,22 +279,11 @@ export default {
         },
       };
     },
-    undoEnabled() {
-      return this.canUndoPatch();
-    },
-    redoEnabled() {
-      return this.canRedoPatch();
-    },
   },
   methods: {
     ...mapActions('form', ['fetchForm','setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
-    undoCount() {
-      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
-    },
-    redoCount() {
-      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
-    },
+
 
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -393,7 +384,6 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
-      this.undoPatchFromHistory();
     },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
@@ -436,16 +426,15 @@ export default {
       }
     },
     addPatchToHistory() {
-      // Remove any actions past the action we were on
-      if (this.patch.history.length > 0) {
-        this.patch.history.length = this.patch.index + 1;
-      }
 
-      // Get the differences between the last patch
-      // and the current form
-      const form = this.getPatch(++this.patch.index);
+
+      // Determine if there is even a difference with the action
+      const form = this.getPatch(this.patch.index+1);
       const patch = compare(form, this.formSchema);
+
       if(patch.length > 0) {
+        this.savedStatus='Save';
+        this.isFormSaved=false;
         // Remove any actions past the action we were on
         this.patch.index += 1;
         if (this.patch.history.length > 0) {
@@ -484,6 +473,8 @@ export default {
     async undoPatchFromHistory() {
       // Only allow undo if there was an action made
       if (this.canUndoPatch()) {
+        this.savedStatus='Save';
+        this.isFormSaved=false;
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
@@ -493,6 +484,8 @@ export default {
     async redoPatchFromHistory() {
       // Only allow redo if there was an action made
       if (this.canRedoPatch()) {
+        this.savedStatus='Save';
+        this.isFormSaved=false;
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
@@ -509,6 +502,12 @@ export default {
     canRedoPatch() {
       return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
     },
+    undoEnabled() {
+      return this.canUndoPatch();
+    },
+    redoEnabled() {
+      return this.canRedoPatch();
+    },
 
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -522,6 +521,7 @@ export default {
 
         this.saving = true;
         this.savedStatus='Saving';
+
 
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
@@ -540,10 +540,12 @@ export default {
           await this.schemaCreateNew();
         }
         this.savedStatus='Saved';
+        this.isFormSaved=true;
 
       } catch (error) {
         await this.setDirtyFlag(true);
         this.savedStatus='Not Saved';
+        this.isFormSaved=false;
         this.addNotification({
           message:
             'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
@@ -583,6 +585,9 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
+
+      this.savedStatus='save';
+
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -613,7 +618,7 @@ export default {
       });
     },
     async schemaUpdateExistingDraft() {
-      let res = await formService.updateDraft(this.formId, this.draftId, {
+      await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
       });
 

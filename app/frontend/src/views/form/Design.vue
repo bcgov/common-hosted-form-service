@@ -33,16 +33,15 @@ export default {
   },
   methods:{
     ...mapActions('form', ['deleteCurrentForm']),
-
-    beforeRouteLeave(_to, _from,next) {
-      this.form.isDirty
-        ? next(
-          window.confirm(
-            'Do you really want to leave this page? Changes you made will not be saved.'
-          )
+  },
+  beforeRouteLeave(_to, _from,next) {
+    this.form.isDirty
+      ? next(
+        window.confirm(
+          'Do you really want to leave this page? Changes you made will not be saved.'
         )
-        : next();
-    },
+      )
+      : next();
   },
 };
 </script>

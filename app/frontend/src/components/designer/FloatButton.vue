@@ -1,7 +1,7 @@
 <template>
   <div :style="[{display:'flex',
-                 width:'92px', 
-                 flexDirection:fabItemsDirection, 
+                 width:'92px',
+                 flexDirection:fabItemsDirection,
                  gap:fabItemsGap,
                  zIndex:fabZIndex,
                  position:'fixed'},
@@ -13,8 +13,8 @@
         class="fabItemsInverColor"
         :size=fabItemsSize
       >
-        <v-icon 
-          :color="baseIconColor" 
+        <v-icon
+          :color="baseIconColor"
           :size="fabItemsIconsSize"
         >
           {{baseIconName}}
@@ -34,7 +34,7 @@
           :size=fabItemsSize
         >
           <v-icon
-             
+
             :color="saved?fabItemsInvertedColor:disabledInvertedFabItemsColor"
             :size="fabItemsIconsSize"
           >
@@ -53,48 +53,48 @@
           class="fabItemsInverColor"
           :size=fabItemsSize
         >
-          <v-icon 
+          <v-icon
             :color="saved?fabItemsInvertedColor:disabledInvertedFabItemsColor"
             :size="fabItemsIconsSize"
           >
-            
+
             settings
           </v-icon>
         </v-avatar>
-        
+
       </router-link>
-     
-      <div 
+
+      <div
         class="fabAction"
-        :class="{ 'disabled-router': !isUndo && !isRedo}" 
+        :class="{ 'disabled-router': !redoEnabled}"
       >
-        <div v-text="'Redo'"/> 
+        <div v-text="'Redo'"/>
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
           @click="toParent('redo')"
         >
-          <v-icon 
-            :color="isUndo||isRedo?fabItemsColor:disabledFabItemsColor"
+          <v-icon
+            :color="redoEnabled?fabItemsColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
           >
             redo
           </v-icon>
         </v-avatar>
       </div>
-      <div 
+      <div
         class="fabAction"
-        :class="{ 'disabled-router': !isUndo && !isRedo}"
+        :class="{ 'disabled-router': !undoEnabled}"
       >
-        
-        <div v-text="'Undo'"/> 
+
+        <div v-text="'Undo'"/>
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
           @click="toParent('undo')"
         >
           <v-icon
-            :color="isUndo||isRedo?fabItemsColor:disabledFabItemsColor"
+            :color="undoEnabled?fabItemsColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
           >
             undo
@@ -106,24 +106,25 @@
         @click="gotoPreview"
         :class="{ 'disabled-router': !formId || !draftId}"
       >
-        <div v-text="'Preview'"/> 
+        <div v-text="'Preview'"/>
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
         >
-          <v-icon 
+          <v-icon
             :color="formId?fabItemsColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
           >
             remove_red_eye
           </v-icon>
         </v-avatar>
-        
+
       </div>
-      <div class="fabAction" >
-     
-         
-       
+      <div class="fabAction"
+           :class="{ 'disabled-router': isFormSaved}">
+
+
+
         <div>{{this.savedStatus}}</div>
         <v-avatar
           class="fabItems"
@@ -132,12 +133,12 @@
         >
           <v-icon
             v-if='!this.saving'
-            :color="fabItemsColor"
+            :color="!isFormSaved?fabItemsColor:disabledFabItemsColor"
             :size="fabItemsIconsSize"
             dark
           >
 
-            save  
+            save
           </v-icon>
 
           <v-progress-circular
@@ -146,44 +147,44 @@
             color="#1A5A96"
             size=25
           ></v-progress-circular>
-         
+
         </v-avatar>
-        
+
       </div>
       <div class="fabAction">
         <div>{{scrollName}}</div>
-         
+
         <v-avatar
           class="fabItems"
           :size=fabItemsSize
           @click="onHandleScroll"
         >
-          <v-icon 
+          <v-icon
             :color="fabItemsColor"
             :size="fabItemsIconsSize"
           >
             {{scrollIconName}}
           </v-icon>
         </v-avatar>
-        
+
       </div>
-      
+
     </div>
     <div class="fabAction" v-if="!isFABActionsOpen">
-      <div>{{scrollName}}</div> 
+      <div>{{scrollName}}</div>
       <v-avatar
         class="fabItems"
         :size=fabItemsSize
         @click="onHandleScroll"
       >
-        <v-icon 
+        <v-icon
           :color="fabItemsColor"
           :size="fabItemsIconsSize"
         >
           {{scrollIconName}}
         </v-icon>
       </v-avatar>
-        
+
     </div>
   </div>
 </template>
@@ -200,23 +201,21 @@ export default {
       fabItemsPosition:{},
       fabItemsSize:36,
       fabItemsIconsSize:31,
-      isUndo:false,
-      isRedo:false,
 
       //base fab item variable start
       baseFABItemName:'Actions',
       baseIconName:'menu',
       baseIconColor:'#ffffff', //end
-      
+
       // fab items icons variables start
       fabItemsColor:'#1A5A96',
       fabItemsInvertedColor:'#ffffff',
       disabledInvertedFabItemsColor:'#ffffff',
       disabledFabItemsColor:'#707070C1',// end
-   
+
       scrollIconName:'north',
       scrollName:'Top',
-      isScrollToTop:true,   
+      isScrollToTop:true,
     };
   },
   props: {
@@ -226,22 +225,23 @@ export default {
       type:Boolean,
       default:false
     },
-    redoCount:{
-      type:Number,
-      default:0
+    undoEnabled:{
+      type:Boolean,
+      default:false
     },
-    undoCount:{
-      type:Number,
-      default:0
+    redoEnabled:{
+      type:Boolean,
+      default:false
     },
     saved: {
       type: Boolean,
       default: false,
     },
+    isFormSaved:Boolean,
     savedStatus:String,
     placement: {
       type:String,
-      default:'bottom-right' 
+      default:'bottom-right'
     },
     fabItemsGap:{
       type:String,
@@ -287,7 +287,7 @@ export default {
       this.floatButtonSize={};
 
       switch(this.size){
-        
+
         case 'x-large':
           this.fabItemsSize=52;
           this.fabItemsIconsSize=47;
@@ -325,7 +325,7 @@ export default {
         this.fabItemsDirection='column';
       }
     },
-   
+
     //checks if FAB is placed at the bottom right or bottom left of the screen
     bottomLeftRight(){
       if(this.placement==='bottom-right' || this.placement==='bottom-left'){
@@ -400,18 +400,6 @@ export default {
   watch: {
     size(){
       this.setSizes();
-    },
-    undoCount(value){
-      this.isUndo=false;
-      if(value>0){
-        this.isUndo=true;
-      }
-    },
-    redoCount(value){
-      this.isRedo=false;
-      if(value>0){
-        this.isRedo=true;
-      }
     }
   },
   mounted(){
@@ -424,7 +412,7 @@ export default {
   destroyed () {
     window.removeEventListener('scroll', this.handleScroll);
   },
- 
+
 };
 </script>
 
@@ -435,7 +423,7 @@ export default {
   pointer-events: none;
 }
 
- 
+
  .fabAction{
 
   display: flex;
@@ -454,10 +442,10 @@ export default {
   font-family: BCSans !important;
   cursor: pointer;
  }
- 
+
  .fabItemsInverColor{
   background: #1A5A96 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029; 
+  box-shadow: 0px 3px 6px #00000029;
   transition: background 1s;
  }
 
@@ -468,7 +456,7 @@ export default {
 
  .fabItems{
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029; 
+  box-shadow: 0px 3px 6px #00000029;
   border: 1px solid #70707063;
   transition: border 1s;
  }
