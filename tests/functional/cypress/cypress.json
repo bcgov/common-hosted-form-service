@@ -1,17 +1,16 @@
 {
-  "baseUrl": "http://localhost:8083",
+  "baseUrl": "http://localhost:8081",
   "env": {
     "depEnv": "app",
     "auth_base_url": "http://localhost:8082",
-    "auth_realm": "standard",
+    "auth_realm": "cp1qly2d",
     "auth_client_id": "chefs",
     "keycloakUrl": "http://localhost:8082",
-    "keycloakRealm": "standard",
+    "keycloakRealm": "cp1qly2d",
     "keycloakClientId": "chefs",
     "keycloakUsername": "test",
     "keycloakPassword": "test"
   },
   "pluginsFile": "plugins/index.js",
-  "chromeWebSecurity": false,
   "video": false
 }
