@@ -1,41 +1,40 @@
 /* TODO: More research on how to write  */
 //More research to be
-/*
-import {createLocalVue, mount} from "@vue/test-utils";
-import FormDesigner from '@/components/designer/FormDesigner.vue';
-import Vuex from 'vuex';
-import { getField, updateField } from 'vuex-map-fields';
-import { IdentityMode } from '@/utils/constants';
-*/
+
+//import {createLocalVue} from '@vue/test-utils';
+//import FormDesigner from '@/components/designer/FormDesigner.vue';
+//import Vuex from 'vuex';
+//import { getField, updateField } from 'vuex-map-fields';
+//import { IdentityMode } from '@/utils/constants';
+
+
 //import VueRouter from 'vue-router';
-//import Actions from '../../../src/components/Actions'
-//import store from '@/store/modules/form';
 
 //const localVue = createLocalVue();
 //localVue.use(Vuex);
-//localVue.use(mapFields);
+
 
 describe('Design.vue', () => {
-  /* const mockTokenParsedGetter = jest.fn();
-  const mockUserGetter = jest.fn();
-  const mockFormFields = jest.fn([{
-    description: '',
+  /*
+  const mockTokenParsedGetter = jest.fn().mockReturnValue({'tokenParsed':'fgbd44567xcgnghtrb'});
+  const mockUserGetter = jest.fn().mockReturnValue({'user':'test'});
+
+  const mockFormFields = jest.fn({
+    description: 'It is a test form',
     enableSubmitterDraft: false,
     enableStatusUpdates: false,
-    id: '',
     idps: [],
-    name: '',
+    name: 'Test Form',
     sendSubRecieviedEmail: false,
     showSubmissionConfirmation: true,
     snake: '',
     submissionReceivedEmails: [],
     userType: IdentityMode.TEAM,
-    versions: []
-  }]);
+    versions: [],
+    isDirty:false
+  });
   let store;
-  const formActions = {
-    setShowWarningDialog: jest.fn(),
-  };
+
   const mockMethod1 = jest.spyOn(FormDesigner.methods, 'onRemoveSchemaComponent');
   const mockMethod2 = jest.spyOn(FormDesigner.methods, 'onAddSchemaComponent');
   const mockMethod3 = jest.spyOn(FormDesigner.methods, 'onRenderMethod');
@@ -44,8 +43,6 @@ describe('Design.vue', () => {
   const mockMethod6 = jest.spyOn(FormDesigner.methods, 'loadFile');
   const mockMethod7 = jest.spyOn(FormDesigner.methods, 'getFormSchema');
   const mockMethod8 = jest.spyOn(FormDesigner.methods, 'addPatchToHistory');
-  const mockMethod9 = jest.spyOn(FormDesigner.methods, 'autosaveEventTrigger');
-  const mockMethod10 = jest.spyOn(FormDesigner.methods, 'submitFormButtonClick');
   const mockMethod11 = jest.spyOn(FormDesigner.methods, 'getPatch');
   const mockMethod12 = jest.spyOn(FormDesigner.methods, 'schemaUpdateExistingDraft');
   const mockMethod13 = jest.spyOn(FormDesigner.methods, 'schemaCreateDraftFromVersion');
@@ -60,7 +57,31 @@ describe('Design.vue', () => {
   const mockMethod22 = jest.spyOn(FormDesigner.methods, 'redoPatchFromHistory');
   const mockMethod23 = jest.spyOn(FormDesigner.methods, 'undoPatchFromHistory');
   const mockMethod24 = jest.spyOn(FormDesigner.methods, 'undoPatchFromHistory');
+  */
+
   beforeEach(() => {
+
+    /*
+    jest.mock('vuex-map-fields', () => ({
+      getterType: jest.fn(),
+      mapFields: jest.fn({
+        description: '',
+        enableSubmitterDraft: false,
+        enableStatusUpdates: false,
+        idps: [],
+        name: 'Test',
+        sendSubRecieviedEmail: false,
+        showSubmissionConfirmation: true,
+        snake: '',
+        submissionReceivedEmails: [],
+        userType: 'team',
+        versions: [],
+        isDirty:false
+      }),
+
+    }));
+    */
+    /*
     store = new Vuex.Store({
       modules: {
         auth: {
@@ -72,31 +93,30 @@ describe('Design.vue', () => {
         },
         form:{
           namespaced: true,
-          state:{form:{name:"tttt"}},
           getters: {
             getField,
             form:mockFormFields,
           },
           mutations: {
             updateField
-        }
+          }
         }
       }
     });
+    */
   });
   afterEach(() => {
-    mockTokenParsedGetter.mockReset();
-    mockUserGetter.mockReset();
-    mockFormFields.mockReset();
+    // mockTokenParsedGetter.mockReset();
+    // mockFormFields.mockReset();
   });
-*/
+
   it('renders', () => {
+
     /*
     const wrapper = mount(FormDesigner,{
       localVue,
       propsData: { draftId: '' ,formId:'', saved:true, versionId:'', newForm:''},
       store,
-      stubs: ['FormBuilder'],
       data() {
         return {
           advancedItems: [
@@ -132,8 +152,9 @@ describe('Design.vue', () => {
         }
       }
     });
-    expect(wrapper.find('form-builder').exists()).toBe(true);
-    */
+
+    expect(wrapper.find('.formio-builder-form').exists()).toBe(false);
+*/
     expect(true).toBe(true);
   });
 });
