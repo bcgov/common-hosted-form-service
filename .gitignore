@@ -12,8 +12,7 @@ dist
 node_modules
 # Ignore only top-level package-lock.json
 /package-lock.json
-/docker/imports/keycloak/realm-export.json
-docker-compose.yml
+
 
 # local env files
 local.*
