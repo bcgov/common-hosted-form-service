@@ -6,6 +6,7 @@
       :formId="f"
       :saved="JSON.parse(sv)"
       :versionId="v"
+      :isSavedStatus="svs"
     />
   </BaseSecure>
 </template>
@@ -25,6 +26,7 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
+    svs:String
   },
 
   computed: {

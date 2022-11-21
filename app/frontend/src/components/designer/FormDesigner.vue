@@ -127,6 +127,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isSavedStatus:{
+      type:String,
+      default:'Save'
+    },
     versionId: String
   },
   data() {
@@ -138,7 +142,7 @@ export default {
         { title: 'Click Me 2' },
       ],
       offset: true,
-      savedStatus: 'Save',
+      savedStatus: this.isSavedStatus,
       isFormSaved:true,
       scrollTop:true,
       advancedItems: [
@@ -540,6 +544,7 @@ export default {
           // If creating a new form, add the form and a draft
           await this.schemaCreateNew();
         }
+
         this.savedStatus='Saved';
         this.isFormSaved=true;
 
@@ -587,8 +592,6 @@ export default {
         submissionReceivedEmails: emailList,
       });
 
-      this.savedStatus='save';
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -596,6 +599,7 @@ export default {
           f: response.data.id,
           d: response.data.draft.id,
           sv: true,
+          svs:'Saved'
         },
       }).catch(()=>{});
 
@@ -606,8 +610,6 @@ export default {
         formVersionId: this.versionId,
       });
 
-      this.savedStatus='save';
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -615,6 +617,7 @@ export default {
           f: this.formId,
           d: data.id,
           sv: true,
+          svs:'Saved'
         },
       });
     },
@@ -623,12 +626,10 @@ export default {
         schema: this.formSchema,
       });
 
-      this.savedStatus='save';
-
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true },
+        query: { ...this.$route.query, sv: true, svs:'Saved'},
       });
 
     },
