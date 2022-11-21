@@ -3,17 +3,18 @@ const reminderService  = require('../email/reminderService');
 const service = {
 
   sendReminderToSubmitter: async (req)=> {
-    var forms = await reminderService._getForms();
-    var q     = await reminderService._getReminders(forms);
+    const forms = await reminderService._getForms();
+    const q     = await reminderService._getReminders(forms);
+    const referer = reminderService._getReferer(req);
     const resolve = [];
     const errors = [];
     var mail = 0;
     if(q.length!==0) {
       for(let i = 0 ; i < q.length ; i++) {
         if(!q[i].error){
-          const obj = await  reminderService.runQueries(q[i].statement);
+          const obj = await  reminderService._runQueries(q[i].statement);
           let result = await reminderService._initStatement(obj);
-          reminderService.initMaillSender(result, req);
+          reminderService._initMaillSender(result, referer);
           resolve.push({
             formId:result.form.id,
             formName :  result.form.name,

@@ -67,7 +67,7 @@ export default {
     FormDisclaimer,
   },
   computed: {
-    ...mapFields('form', ['form.idps', 'form.userType']),
+    ...mapFields('form', ['form.idps', 'form.userType', 'form.isDirty']),
     IDP: () => IdentityProviders,
   },
   data() {
@@ -88,6 +88,16 @@ export default {
       if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
         this.$refs.settingsForm.validate();
     },
+  },
+
+  beforeRouteLeave(_to, _from, next) {
+    this.isDirty
+      ? next(
+        window.confirm(
+          'Do you really want to leave this page? Changes you made will not be saved.'
+        )
+      )
+      : next();
   },
 
 };

@@ -38,6 +38,7 @@ const genInitialForm = () => ({
   enableStatusUpdates: false,
   id: '',
   idps: [],
+  isDirty: false,
   name: '',
   sendSubRecieviedEmail: false,
   showSubmissionConfirmation: true,
@@ -60,7 +61,6 @@ export default {
     isLogoutButtonClicked:false,
     showWarningDialog:false,
     canLogout: true,
-    enableFormAutosave:false,
     form: genInitialForm(),
     formFields: [],
     formList: [],
@@ -92,7 +92,6 @@ export default {
     isLogoutButtonClicked:state=>state.isLogoutButtonClicked,
     showWarningDialog:state=>state.showWarningDialog,
     canLogout:state=>state.canLogout,
-    enableFormAutosave:state=>state.enableFormAutosave
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -145,9 +144,9 @@ export default {
       state.version = version;
     },
 
-    SET_ENABLE_FORM_AUTOSAVE(state, enableFormAutosave) {
-      state.enableFormAutosave = enableFormAutosave;
-    }
+    SET_FORM_DIRTY(state, isDirty) {
+      state.form.isDirty = isDirty;
+    },
   },
   actions: {
     //
@@ -509,16 +508,13 @@ export default {
         }, { root: true });
       }
     },
-
-    async setFormAutosave({ commit, dispatch }, enableFormAutosave) {
-      try {
-        commit('SET_ENABLE_FORM_AUTOSAVE', enableFormAutosave);
-      } catch (error) {
-        dispatch('notifications/addNotification', {
-          message: 'An error occurred while trying to enabled form autosave',
-          consoleError: 'Error autosaving form',
-        }, { root: true });
-      }
-    }
+    async setDirtyFlag({ commit, state }, isDirty) {
+      // When the form is detected to be dirty set the browser guards for closing the tab etc
+      // There are also Vue route-specific guards so that we can ask before navigating away with the links
+      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
+      if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
+      window.onbeforeunload = isDirty ? () => true : null;
+      commit('SET_FORM_DIRTY', isDirty);
+    },
   },
 };
