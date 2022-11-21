@@ -211,8 +211,8 @@ export default {
       fabItemsIconsSize:31,
 
       //base fab item variable start
-      baseFABItemName:'Actions',
-      baseIconName:'menu',
+      baseFABItemName:'Collapse',
+      baseIconName:'close',
       baseIconColor:'#ffffff', //end
 
       // fab items icons variables start
