@@ -85,7 +85,7 @@
       :baseFABBorderColor="'#C0C0C0'"
       :fabZIndex=1000
       :size="'small'"
-      fabItemsGap="10px"
+      fabItemsGap="7px"
       @undo="onUndoClick"
       @redo="onRedoClick"
       @save="submitFormSchema"
