@@ -23,6 +23,8 @@
     </div>
     <div :style="[{display:'flex', flexDirection:fabItemsDirection, gap:fabItemsGap}]" v-if="isFABActionsOpen">
       <router-link
+        ref="publishRouterLink"
+        data-cy="publishRouterLink"
         class="fabAction"
         :to="{ name: 'FormManage', query: {f: formId, fd:'formDesigner',d: draftId } }"
         :class="{ 'disabled-router': !formId}"
@@ -44,6 +46,8 @@
       </router-link>
       <router-link
         class="fabAction"
+        data-cy="settingsRouterLink"
+        ref="settingsRouterLink"
         :to="{ name: 'FormManage', query: { f: formId } }"
         :class="{ 'disabled-router': !formId }"
         tag="div"
@@ -65,7 +69,9 @@
       </router-link>
 
       <div
+        ref="redoButton"
         class="fabAction"
+        data-cy="redoButton"
         :class="{ 'disabled-router': !redoEnabled}"
       >
         <div v-text="'Redo'"/>
@@ -83,7 +89,9 @@
         </v-avatar>
       </div>
       <div
+        ref="undoButton"
         class="fabAction"
+        data-cy="undoButton"
         :class="{ 'disabled-router': !undoEnabled}"
       >
 
@@ -103,6 +111,7 @@
       </div>
       <div
         class="fabAction"
+        ref="previewRouterLink"
         @click="gotoPreview"
         :class="{ 'disabled-router': !formId || !draftId}"
       >
@@ -121,10 +130,9 @@
 
       </div>
       <div class="fabAction"
+           data-cy="saveButton"
+           ref="saveButton"
            :class="{ 'disabled-router': isFormSaved}">
-
-
-
         <div>{{this.savedStatus}}</div>
         <v-avatar
           class="fabItems"
