@@ -253,7 +253,7 @@ export default {
     },
     fabItemsGap:{
       type:String,
-      default:'15px'
+      default:'13px'
     },
     size:{
       type:String,
@@ -449,10 +449,13 @@ export default {
   font-weight:normal;
   font-family: BCSans !important;
   cursor: pointer;
+  border-radius: 100%;
+  padding:3px;
  }
 
  .fabItemsInverColor{
   background: #1A5A96 0% 0% no-repeat padding-box;
+  border-radius: 100%;
   box-shadow: 0px 3px 6px #00000029;
   transition: background 1s;
  }
@@ -464,9 +467,13 @@ export default {
 
  .fabItems{
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029;
   border: 1px solid #70707063;
   transition: border 1s;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 100%;
+  box-shadow: 0px 3px 6px #00000029;
  }
 
  .fabItems:hover{
