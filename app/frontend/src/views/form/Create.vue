@@ -66,7 +66,7 @@ export default {
     FormDisclaimer,
   },
   computed: {
-    ...mapFields('form', ['form.idps', 'form.userType', 'form.isDirty']),
+    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
     IDP: () => IdentityProviders,
   },
   data() {
