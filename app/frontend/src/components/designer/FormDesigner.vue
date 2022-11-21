@@ -357,6 +357,7 @@ export default {
     // FormIO event handlers
     // ---------------------------------------------------------------------------------------------------
     init() {
+      this.setDirtyFlag(false);
       // Since change is triggered during loading
     },
     onChangeMethod(changed, flags, modified) {
@@ -639,7 +640,6 @@ export default {
     }
   },
   mounted() {
-
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
