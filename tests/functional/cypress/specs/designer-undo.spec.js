@@ -115,7 +115,7 @@ describe('Form Designer', () => {
         .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    cy.wait('@getForm').then(()=>{
+    /*cy.wait('@getForm').then(()=>{
       cy.get('.v-input__slot').contains('AutoSave').click();
       let routerLink =cy.get('[data-cy=aboutLinks]');
       expect(routerLink).to.not.be.null;
@@ -125,6 +125,7 @@ describe('Form Designer', () => {
       cy.contains('Yes').trigger('click');
       cy.location('pathname').should('eq', `/${depEnv}/`);
     })
+    */
   });
 
   it('form should autosave and should delet when click No button on confimation dialog', () => {
@@ -139,6 +140,7 @@ describe('Form Designer', () => {
         .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
+    /*
     cy.wait('@getForm').then(()=>{
       let routerLink =cy.get('[data-cy=aboutLinks]');
       expect(routerLink).to.not.be.null;
@@ -148,6 +150,7 @@ describe('Form Designer', () => {
       cy.contains('No').trigger('click');
       cy.location('pathname').should('eq', `/${depEnv}/`);
     })
+    */
   });
 
   it('form should autosave and should not show confirmation dialog if save button is clicked', () => {
@@ -162,7 +165,7 @@ describe('Form Designer', () => {
         .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-
+    /*
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
@@ -174,5 +177,6 @@ describe('Form Designer', () => {
       cy.contains('Confirm').should('not.exist');
       cy.location('pathname').should('eq', `/${depEnv}/`);
     })
+    */
   });
 });
