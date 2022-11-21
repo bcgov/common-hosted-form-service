@@ -1,20 +1,21 @@
 /* TODO: More research on how to write  */
 //More research to be
 
-import {createLocalVue, shallowMount, mount} from "@vue/test-utils";
-import FormDesigner from '@/components/designer/FormDesigner.vue';
-import Vuex from 'vuex';
-import { getField, updateField } from 'vuex-map-fields';
-import { IdentityMode } from '@/utils/constants';
+//import {createLocalVue} from '@vue/test-utils';
+//import FormDesigner from '@/components/designer/FormDesigner.vue';
+//import Vuex from 'vuex';
+//import { getField, updateField } from 'vuex-map-fields';
+//import { IdentityMode } from '@/utils/constants';
 
 
-import VueRouter from 'vue-router';
+//import VueRouter from 'vue-router';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+//const localVue = createLocalVue();
+//localVue.use(Vuex);
 
 
 describe('Design.vue', () => {
+  /*
   const mockTokenParsedGetter = jest.fn().mockReturnValue({'tokenParsed':'fgbd44567xcgnghtrb'});
   const mockUserGetter = jest.fn().mockReturnValue({'user':'test'});
 
@@ -34,7 +35,7 @@ describe('Design.vue', () => {
   });
   let store;
 
-  /*const mockMethod1 = jest.spyOn(FormDesigner.methods, 'onRemoveSchemaComponent');
+  const mockMethod1 = jest.spyOn(FormDesigner.methods, 'onRemoveSchemaComponent');
   const mockMethod2 = jest.spyOn(FormDesigner.methods, 'onAddSchemaComponent');
   const mockMethod3 = jest.spyOn(FormDesigner.methods, 'onRenderMethod');
   const mockMethod4 = jest.spyOn(FormDesigner.methods, 'onChangeMethod');
@@ -60,7 +61,7 @@ describe('Design.vue', () => {
 
   beforeEach(() => {
 
-
+    /*
     jest.mock('vuex-map-fields', () => ({
       getterType: jest.fn(),
       mapFields: jest.fn({
@@ -77,8 +78,10 @@ describe('Design.vue', () => {
         versions: [],
         isDirty:false
       }),
-    }));
 
+    }));
+    */
+    /*
     store = new Vuex.Store({
       modules: {
         auth: {
@@ -96,19 +99,20 @@ describe('Design.vue', () => {
           },
           mutations: {
             updateField
-        }
+          }
         }
       }
     });
+    */
   });
   afterEach(() => {
-    mockTokenParsedGetter.mockReset();
-    mockFormFields.mockReset();
+    // mockTokenParsedGetter.mockReset();
+    // mockFormFields.mockReset();
   });
 
   it('renders', () => {
 
-/*
+    /*
     const wrapper = mount(FormDesigner,{
       localVue,
       propsData: { draftId: '' ,formId:'', saved:true, versionId:'', newForm:''},
