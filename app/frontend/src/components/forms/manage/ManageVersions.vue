@@ -360,6 +360,7 @@ export default {
     },
     async updatePublish() {
       this.showPublishDialog = false;
+      document.documentElement.style.overflow = 'auto';
       // if publishing a draft version
       if (this.publishOpts.isDraft) {
         await this.publishDraft({
