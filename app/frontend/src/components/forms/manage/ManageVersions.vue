@@ -230,6 +230,7 @@ import { FormPermissions } from '@/utils/constants';
 
 export default {
   name: 'ManageVersions',
+  inject:['fd','draftId','formId'],
   data() {
     return {
       headers: [
@@ -317,6 +318,18 @@ export default {
     // -----------------------------------------------------------------------------------------------------
     cancelPublish() {
       this.showPublishDialog = false;
+      document.documentElement.style.overflow = 'auto';
+      if(this.draftId){
+        this.$router.replace({
+          name: 'FormDesigner',
+          query: {
+            f: this.formId,
+            d: this.draftId,
+            saved: true,
+          },
+        }).catch(()=>{});
+        return;
+      }
       // To get the toggle back to original state
       this.rerenderTable += 1;
     },
@@ -328,6 +341,22 @@ export default {
         isDraft: isDraft,
       };
       this.showPublishDialog = true;
+    },
+    turnOnPublish(){
+      if(this.versionList){
+        for (const item  of this.versionList) {
+          if(item.id===this.draftId){
+            this.publishOpts = {
+              publishing: true,
+              version: item.version,
+              id: item.id,
+              isDraft: item.isDraft,
+            };
+            document.documentElement.style.overflow = 'hidden';
+            this.showPublishDialog = true;
+          }
+        }
+      }
     },
     async updatePublish() {
       this.showPublishDialog = false;
@@ -352,6 +381,7 @@ export default {
       this.fetchForm(this.form.id);
     },
     // ----------------------------------------------------------------------/ Publish/unpublish actions
+
 
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;
@@ -397,7 +427,15 @@ export default {
         });
       }
     },
-  }
+  },
+  created(){
+    //check if the navigation to this page is from FormDesigner
+    if(this.fd)
+    {
+      this.turnOnPublish();
+    }
+
+  },
 };
 </script>
 
