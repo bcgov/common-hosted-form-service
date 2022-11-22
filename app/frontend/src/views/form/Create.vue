@@ -38,9 +38,8 @@
             <span>Continue</span>
           </v-btn>
         </v-stepper-content>
-
         <v-stepper-content step="2" class="pa-1">
-          <FormDesigner :newForm="true"/>
+          <FormDesigner @create-stepper="creatorStep = 1"/>
           <v-btn class="my-4" outlined @click="creatorStep = 1">
             <span>Back</span>
           </v-btn>
@@ -67,7 +66,7 @@ export default {
     FormDisclaimer,
   },
   computed: {
-    ...mapFields('form', ['form.idps', 'form.userType', 'form.isDirty']),
+    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
     IDP: () => IdentityProviders,
   },
   data() {
@@ -79,7 +78,9 @@ export default {
       ],
     };
   },
-  methods: mapActions('form', ['resetForm']),
+  methods: {
+    ...mapActions('form', ['resetForm']),
+  },
   created() {
     this.resetForm();
   },
