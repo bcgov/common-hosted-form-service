@@ -78,6 +78,7 @@
       @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
     />
+
     <FloatButton
       placement="bottom-right"
       :baseFABItemsBGColor="'#ffffff'"
@@ -127,6 +128,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    newVersion: {
+      type: Boolean,
+      default: false,
+    },
     isSavedStatus:{
       type:String,
       default:'Save'
@@ -143,7 +148,7 @@ export default {
       ],
       offset: true,
       savedStatus: this.isSavedStatus,
-      isFormSaved:true,
+      isFormSaved:!this.newVersion,
       scrollTop:true,
       advancedItems: [
         { text: 'Simple Mode', value: false },
@@ -650,7 +655,6 @@ export default {
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
-
       this.reRenderFormIo += 1;
     }
   },

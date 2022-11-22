@@ -7,6 +7,7 @@
       :saved="JSON.parse(sv)"
       :versionId="v"
       :isSavedStatus="svs"
+      :newVersion="nv"
     />
   </BaseSecure>
 </template>
@@ -26,7 +27,11 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
-    svs:String
+    svs:String,
+    nv:{
+      type:Boolean,
+      default:false
+    }
   },
 
   computed: {
