@@ -221,9 +221,8 @@ export default {
       disabledInvertedFabItemsColor:'#ffffff',
       disabledFabItemsColor:'#707070C1',// end
 
-      scrollIconName:'north',
-      scrollName:'Top',
-      isScrollToTop:true,
+      scrollIconName:'south',
+      scrollName:'Bottom',
     };
   },
   props: {
@@ -381,29 +380,39 @@ export default {
       if(window.scrollY==0){
         this.scrollIconName='south';
         this.scrollName='Bottom';
-        this.isScrollToTop=false;
       }
       else if((window.innerHeight + window.scrollY) >= document.body.offsetHeight){
         this.scrollIconName='north';
         this.scrollName='Top';
-        this.isScrollToTop=true;
       }
     },
 
     // function for click scroll event
     onHandleScroll(){
-      if(this.isScrollToTop){
-        window.scrollTo(0,0);
-        this.scrollIconName='north';
-        this.scrollName='Top';
-        this.isScrollToTop=false;
-        return;
+      if(window.scrollY===0) {
+        this.bottomScroll();
       }
-      window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+      else if (this.scrollName==='Bottom' && window.scrollY>0) {
+        this.bottomScroll();
+      }
+      else if (this.scrollName==='Top' && window.scrollY>0) {
+        this.topScroll();
+      }
+      else {
+        this.topScroll();
+      }
+
+    },
+    topScroll() {
+      window.scrollTo(0,0);
       this.scrollIconName='south';
       this.scrollName='Bottom';
-      this.isScrollToTop=true;
     },
+    bottomScroll() {
+      window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+      this.scrollIconName='north';
+      this.scrollName='Top';
+    }
   },
   watch: {
     size(){
@@ -411,6 +420,7 @@ export default {
     }
   },
   mounted(){
+    window.scrollTo(0,0);
     this.setPosition();
     this.setSizes();
   },
