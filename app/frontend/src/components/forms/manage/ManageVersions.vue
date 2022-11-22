@@ -224,7 +224,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-
 import { formService } from '@/services';
 import { FormPermissions } from '@/utils/constants';
 
@@ -308,7 +307,7 @@ export default {
       } else {
         this.$router.push({
           name: 'FormDesigner',
-          query: { f: formId, v: versionId, nf:false },
+          query: { f: formId, v: versionId,nv:true},
         });
       }
     },
