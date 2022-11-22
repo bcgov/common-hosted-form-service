@@ -377,11 +377,11 @@ export default {
 
     // callback function for window scroll event
     handleScroll () {
-      if(window.scrollY==0){
+      if(window.scrollY===0){
         this.scrollIconName='south';
         this.scrollName='Bottom';
       }
-      else if((window.innerHeight + window.scrollY) >= document.body.offsetHeight){
+      else if(window.pageYOffset + window.innerHeight >= document.documentElement.scrollHeight-50){
         this.scrollIconName='north';
         this.scrollName='Top';
       }
