@@ -10,56 +10,6 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              class="mx-md-1 mx-0"
-              @click="submitFormSchema"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-              data-cy="saveButton"
-            >
-              <v-icon>save</v-icon>
-            </v-btn>
-          </template>
-          <span>Save Design</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              :disabled="!undoEnabled"
-              class="mx-1"
-              @click="onUndoClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>undo</v-icon>
-              {{ undoCount }}
-            </v-btn>
-          </template>
-          <span>Undo</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              :disabled="!redoEnabled"
-              class="mx-1"
-              @click="onRedoClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              {{ redoCount }}
-              <v-icon>redo</v-icon>
-            </v-btn>
-          </template>
-          <span>Redo</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
               class="mx-1"
               @click="onExportClick"
               color="primary"
@@ -94,26 +44,6 @@
           </template>
           <span>Import Design</span>
         </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <router-link
-              :to="{ name: 'FormManage', query: { f: formId } }"
-              :class="{ 'disabled-router': !formId }"
-            >
-              <v-btn
-                class="mx-1"
-                color="primary"
-                :disabled="!formId"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>settings</v-icon>
-              </v-btn>
-            </router-link>
-          </template>
-          <span>Manage Form</span>
-        </v-tooltip>
       </v-col>
       <!-- form name -->
       <v-col cols="12" order="3">
@@ -123,54 +53,7 @@
       <v-col cols="12" order="4">
         <em>Version: {{ this.displayVersion }}</em>
       </v-col>
-      <!--
-      <v-col class="mb-3" cols="12" order="5">
-        <v-switch
-          color="success"
-          :input-value="enableFormAutosave"
-          label="AutoSave"
-          @change="togglePublish($event)"
-        />
-      </v-col> -->
     </v-row>
-    <v-alert
-      :value="(saved || saving)"
-      :class="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.class
-          : NOTIFICATIONS_TYPES.SUCCESS.class
-      "
-      :color="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.color
-          : NOTIFICATIONS_TYPES.SUCCESS.color
-      "
-      :icon="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.icon
-          : NOTIFICATIONS_TYPES.SUCCESS.icon
-      "
-      transition="scale-transition"
-    >
-      <div v-if="saving">
-        <v-progress-linear indeterminate />
-        Saving
-      </div>
-      <div v-else>
-        Your form has been successfully saved
-        <router-link
-          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
-          target="_blank"
-          class="mx-5"
-        >
-          Preview
-        </router-link>
-        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-          Go to Manage Form to Publish
-        </router-link>
-      </div>
-    </v-alert>
-
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
@@ -195,24 +78,48 @@
       @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
     />
+
+    <FloatButton
+      placement="bottom-right"
+      :baseFABItemsBGColor="'#ffffff'"
+      :baseFABIconColor="'#1976D2'"
+      :baseFABBorderColor="'#C0C0C0'"
+      :fabZIndex=1000
+      :size="'small'"
+      fabItemsGap="7px"
+      @undo="onUndoClick"
+      @redo="onRedoClick"
+      @save="submitFormSchema"
+      :saving="saving"
+      :savedStatus="savedStatus"
+      :saved="saved"
+      :isFormSaved="isFormSaved"
+      :formId="formId"
+      :draftId="draftId"
+      :undoEnabled="undoEnabled()===0?false:undoEnabled()"
+      :redoEnabled="redoEnabled()===0?false:redoEnabled()"
+    />
   </div>
 </template>
 
 <script>
-import { compare, applyPatch, deepClone } from 'fast-json-patch';
+//import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
-
+import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { generateIdps } from '@/utils/transformUtils';
+import FloatButton from '@/components/designer/FloatButton.vue';
+
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
+    FloatButton
   },
   props: {
     draftId: String,
@@ -221,15 +128,28 @@ export default {
       type: Boolean,
       default: false,
     },
-    versionId: String,
-    newForm:Boolean,
-    autosave:{
+    newVersion: {
       type: Boolean,
       default: false,
     },
+    isSavedStatus:{
+      type:String,
+      default:'Save'
+    },
+    versionId: String
   },
   data() {
     return {
+      items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ],
+      offset: true,
+      savedStatus: this.isSavedStatus,
+      isFormSaved:!this.newVersion,
+      scrollTop:true,
       advancedItems: [
         { text: 'Simple Mode', value: false },
         { text: 'Advanced Mode', value: true },
@@ -242,10 +162,7 @@ export default {
       },
       displayVersion: 1,
       reRenderFormIo: 0,
-      enableFormAutosave:this.autosave,
-      isNewForm:this.newForm,
       saving: false,
-      isSavedButtonClick: false,
       patch: {
         componentAddedStart: false,
         componentRemovedStart: false,
@@ -260,6 +177,7 @@ export default {
       isComponentRemoved:false,
     };
   },
+
   computed: {
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapFields('form', [
@@ -274,12 +192,13 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.versions',
-      'form.isDirty',
-
+      'form.isDirty'
     ]),
     ID_MODE() {
       return IdentityMode;
     },
+
+
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -369,22 +288,12 @@ export default {
         },
       };
     },
-    undoCount() {
-      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
-    },
-    redoCount() {
-      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
-    },
-    undoEnabled() {
-      return this.canUndoPatch();
-    },
-    redoEnabled() {
-      return this.canRedoPatch();
-    },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setShowWarningDialog','setCanLogout','setDirtyFlag']),
+    ...mapActions('form', ['fetchForm','setDirtyFlag']),
     ...mapActions('notifications', ['addNotification']),
+
+
     // TODO: Put this into vuex form module
     async getFormSchema() {
       try {
@@ -457,11 +366,14 @@ export default {
     // FormIO event handlers
     // ---------------------------------------------------------------------------------------------------
     init() {
+      this.setDirtyFlag(false);
       // Since change is triggered during loading
     },
     onChangeMethod(changed, flags, modified) {
+
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
+
 
       this.onSchemaChange(changed, flags, modified);
     },
@@ -482,8 +394,8 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
-      //this.undoPatchFromHistory();
     },
+
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -524,10 +436,15 @@ export default {
       }
     },
     addPatchToHistory() {
+
+
       // Determine if there is even a difference with the action
-      const form = this.getPatch(this.patch.index + 1);
+      const form = this.getPatch(this.patch.index+1);
       const patch = compare(form, this.formSchema);
+
       if(patch.length > 0) {
+        this.savedStatus='Save';
+        this.isFormSaved=false;
         // Remove any actions past the action we were on
         this.patch.index += 1;
         if (this.patch.history.length > 0) {
@@ -546,40 +463,8 @@ export default {
         }
 
       }
-      //this.autosaveEventTrigger();
       this.resetHistoryFlags();
     },
-    async togglePublish(event) {
-      this.enableFormAutosave=event;
-      const query = Object.assign({}, this.$route.query);
-      query.as = event;
-      await this.$router.push({ query });
-
-    },
-
-    //this method is used for autosave action
-    async autosaveEventTrigger() {
-      if(this.enableFormAutosave) {
-        if(this.isNewForm) {
-          await this.setShowWarningDialog(true);
-          await this.setCanLogout(false);
-        }
-        else {
-          await this.setShowWarningDialog(false);
-          await this.setCanLogout(true);
-        }
-        this.submitFormSchema();
-      }
-    },
-    //This method is called by submit button
-    async submitFormButtonClick() {
-      await this.setShowWarningDialog(false);
-      await this.setCanLogout(true);
-      this.isNewForm=false;
-      this.isSavedButtonClick=true;
-      this.submitFormSchema();
-    },
-
     getPatch(idx) {
       // Generate the form from the original schema
       let form = deepClone(this.patch.originalSchema);
@@ -598,20 +483,22 @@ export default {
     async undoPatchFromHistory() {
       // Only allow undo if there was an action made
       if (this.canUndoPatch()) {
+        this.savedStatus='Save';
+        this.isFormSaved=false;
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
-        //this.autosaveEventTrigger();
 
       }
     },
     async redoPatchFromHistory() {
       // Only allow redo if there was an action made
       if (this.canRedoPatch()) {
+        this.savedStatus='Save';
+        this.isFormSaved=false;
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
-        //this.autosaveEventTrigger();
       }
     },
     resetHistoryFlags(flag = false) {
@@ -625,6 +512,13 @@ export default {
     canRedoPatch() {
       return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
     },
+    undoEnabled() {
+      return this.canUndoPatch();
+    },
+    redoEnabled() {
+      return this.canRedoPatch();
+    },
+
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -634,7 +528,15 @@ export default {
       this.saving = true;
       await this.setDirtyFlag(false);
       try {
+
+        this.saving = true;
+        this.savedStatus='Saving';
+
+
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
+        await this.setDirtyFlag(false);
+
+
         if (this.formId) {
           if (this.versionId) {
             // If creating a new draft from an existing version
@@ -647,8 +549,14 @@ export default {
           // If creating a new form, add the form and a draft
           await this.schemaCreateNew();
         }
+
+        this.savedStatus='Saved';
+        this.isFormSaved=true;
+
       } catch (error) {
         await this.setDirtyFlag(true);
+        this.savedStatus='Not Saved';
+        this.isFormSaved=false;
         this.addNotification({
           message:
             'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
@@ -656,6 +564,7 @@ export default {
         });
       } finally {
         this.saving = false;
+
       }
     },
     async onUndoClick() {
@@ -665,6 +574,7 @@ export default {
     async onRedoClick() {
       this.redoPatchFromHistory();
     },
+
     async schemaCreateNew() {
       const emailList =
         this.sendSubRecieviedEmail &&
@@ -672,6 +582,7 @@ export default {
         Array.isArray(this.submissionReceivedEmails)
           ? this.submissionReceivedEmails
           : [];
+
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -685,6 +596,7 @@ export default {
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
       });
+
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -692,17 +604,17 @@ export default {
           f: response.data.id,
           d: response.data.draft.id,
           sv: true,
-          as:this.enableFormAutosave,
-          nf:this.isNewForm
+          svs:'Saved'
         },
-      });
+      }).catch(()=>{});
+
     },
     async schemaCreateDraftFromVersion() {
       const { data } = await formService.createDraft(this.formId, {
         schema: this.formSchema,
         formVersionId: this.versionId,
       });
-      this.formSchema = { ...this.formSchema, ...data.schema };
+
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -710,24 +622,22 @@ export default {
           f: this.formId,
           d: data.id,
           sv: true,
-          nf:this.isNewForm,
-          as:this.enableFormAutosave
+          svs:'Saved'
         },
       });
     },
     async schemaUpdateExistingDraft() {
-      let res = await formService.updateDraft(this.formId, this.draftId, {
+      await formService.updateDraft(this.formId, this.draftId, {
         schema: this.formSchema,
       });
-      this.formSchema = { ...this.formSchema, ...res.data.schema };
+
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true,nf:this.isNewForm, as:this.enableFormAutosave },
+        query: { ...this.$route.query, sv: true, svs:'Saved'},
       });
 
     },
-    // ----------------------------------------------------------------------------------/ Saving Schema
   },
   created() {
     if (this.formId) {
@@ -736,7 +646,6 @@ export default {
     }
   },
   mounted() {
-
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
@@ -746,10 +655,10 @@ export default {
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
-
       this.reRenderFormIo += 1;
-    },
-  }
+    }
+  },
+
 };
 </script>
 
@@ -761,4 +670,34 @@ export default {
 .disabled-router {
   pointer-events: none;
 }
+
+
+.formSubmit{
+  background-color:red;
+}
+
+.formExport{
+ position: sticky;
+ top:0;
+  right:0;
+
+ position: -webkit-sticky;
+}
+
+.formImport{
+  position: sticky;
+  top:0;
+  right:0;
+
+ position: -webkit-sticky;
+}
+
+.formSetting{
+ position: sticky;
+ top:0;
+  right:0;
+
+ position: -webkit-sticky;
+}
+
 </style>

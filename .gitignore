@@ -16,6 +16,7 @@ node_modules
 docker-compose.yml
 /docker/imports/keycloak/realm-export.json
 
+
 # local env files
 local.*
 local-*.*
