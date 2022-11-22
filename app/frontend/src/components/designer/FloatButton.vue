@@ -223,8 +223,6 @@ export default {
 
       scrollIconName:'south',
       scrollName:'Bottom',
-
-      lastScroll:0
     };
   },
   props: {
