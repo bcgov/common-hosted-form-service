@@ -114,25 +114,4 @@ describe('form mutations', () => {
     expect(state.version).toBeTruthy();
     expect(state.version).toEqual(obj);
   });
-
-  it('SET_SHOW_WARNING_DIALOG should update form state', () => {
-    const obj = true;
-    store.mutations.SET_SHOW_WARNING_DIALOG(state, obj);
-
-    expect(state.showWarningDialog).toBeTruthy();
-  });
-
-  it('SET_CAN_LOGOUT should update form state', () => {
-    const obj = true;
-    store.mutations.SET_CAN_LOGOUT(state, obj);
-
-    expect(state.canLogout).toBeTruthy();
-  });
-
-  it('SET_IS_LOGOUT_BUTTON_CLICKED should update form state', () => {
-    const obj = true;
-    store.mutations.SET_IS_LOGOUT_BUTTON_CLICKED(state, obj);
-
-    expect(state.isLogoutButtonClicked).toBeTruthy();
-  });
 });
