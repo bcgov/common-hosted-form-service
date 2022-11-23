@@ -42,7 +42,7 @@
             <v-expand-transition>
               <BaseInfoCard
                 v-if="userType == ID_MODE.PUBLIC"
-                class="mr-4"
+                class="mr-4 mb-3"
               >
                 <h4 class="primary--text">
                   <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
