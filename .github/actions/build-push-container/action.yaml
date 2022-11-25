@@ -44,6 +44,13 @@ inputs:
     description: Landing page video URL for CHEFS TOUR section
     required: true
     default: "https://www.youtube.com/embed/obOhyYusMjM"
+  app_bc_geo_address_apikey:
+    description: BC Geo Address API key used by BC Address Form.io Custom Component
+    required: true
+  app_bc_geo_address_apiurl:
+    description: BC Geo Address url used by BC Address Form.io Custom Component
+    required: true
+
 
 
 runs:
@@ -59,6 +66,8 @@ runs:
         VUE_APP_HOWTOURL: ${{ inputs.app_howtourl }}
         VUE_APP_CHEFSTOURURL: ${{ inputs.app_chefstoururl }}
         VUE_APP_FRONTEND_BASEPATH: ${{ inputs.route_path }}
+        VUE_APP_BC_GEO_ADDRESS_APIKEY: ${{ inputs.app_bc_geo_address_apikey }}
+        VUE_APP_BC_GEO_ADDRESS_APIURL: ${{ inputs.app_bc_geo_address_apiurl }}
         ENV_PATH: ./app/frontend/.env
       shell: bash
       run: |
