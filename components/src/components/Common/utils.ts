@@ -131,7 +131,7 @@ const EditFormUtils = {
       collapsible: true,
       collapsed: true,
       key: `${property}Panel`,
-      weight: `${weight},
+      weight: `${weight}`,
       components
     };
   }
