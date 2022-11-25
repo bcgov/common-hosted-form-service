@@ -24,6 +24,7 @@ import simpletabs from './SimpleTabs/Component';
 import simpletextarea from './SimpleTextArea/Component';
 import simpletextfield from './SimpleTextField/Component';
 import simpletime from './SimpleTime/Component';
+import bcaddress from './BCAddress/Component';
 
 export default {
   orgbook,
@@ -50,5 +51,6 @@ export default {
   simpletabs,
   simpletextarea,
   simpletextfield,
-  simpletime
+  simpletime,
+  bcaddress
 };
