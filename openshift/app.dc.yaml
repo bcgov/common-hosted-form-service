@@ -176,6 +176,16 @@ objects:
                     secretKeyRef:
                       key: chefstourvideourl
                       name: "${APP_NAME}-landingpagevideourls-secret"
+                - name: VUE_APP_BC_GEO_ADDRESS_APIKEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: bcgeoaddressapikey
+                      name: "${APP_NAME}-bcgeoaddress-secret"
+                - name: VUE_APP_BC_GEO_ADDRESS_APIURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: bcgeoaddressapiurl
+                      name: "${APP_NAME}-bcgeoaddress-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: SERVER_KC_CLIENTID
