@@ -11,6 +11,7 @@ const genInitialForm = () => ({
   enableStatusUpdates: false,
   id: '',
   idps: [],
+  isDirty: false,
   name: '',
   sendSubRecieviedEmail: false,
   showSubmissionConfirmation: true,
@@ -28,9 +29,6 @@ export default {
   state: {
     apiKey: undefined,
     drafts: [],
-    isLogoutButtonClicked:false,
-    showWarningDialog:false,
-    canLogout: true,
     form: genInitialForm(),
     formFields: [],
     formList: [],
@@ -59,9 +57,6 @@ export default {
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
     version: state => state.version,
-    isLogoutButtonClicked:state=>state.isLogoutButtonClicked,
-    showWarningDialog:state=>state.showWarningDialog,
-    canLogout:state=>state.canLogout,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -83,15 +78,6 @@ export default {
     SET_FORM_FIELDS(state, formFields) {
       state.formFields = formFields;
     },
-    SET_SHOW_WARNING_DIALOG(state, showWarningDialog) {
-      state.showWarningDialog =showWarningDialog;
-    },
-    SET_CAN_LOGOUT(state, canLogout) {
-      state.canLogout =canLogout;
-    },
-    SET_IS_LOGOUT_BUTTON_CLICKED(state, isLogoutButtonClicked) {
-      state.isLogoutButtonClicked =isLogoutButtonClicked;
-    },
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
     },
@@ -112,6 +98,10 @@ export default {
     },
     SET_VERSION(state, version) {
       state.version = version;
+    },
+
+    SET_FORM_DIRTY(state, isDirty) {
+      state.form.isDirty = isDirty;
     },
   },
   actions: {
@@ -271,15 +261,6 @@ export default {
     },
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
-    },
-    async setShowWarningDialog ({ commit}, showWarningDialog) {
-      commit('SET_SHOW_WARNING_DIALOG', showWarningDialog);
-    },
-    async setIsLogoutButtonClicked ({ commit}, isLogoutButtonClicked) {
-      commit('SET_IS_LOGOUT_BUTTON_CLICKED', isLogoutButtonClicked);
-    },
-    async setCanLogout ({ commit}, canLogout) {
-      commit('SET_CAN_LOGOUT', canLogout);
     },
     async updateForm({ state, dispatch }) {
       try {
@@ -453,6 +434,14 @@ export default {
           consoleError: `Error getting API Key for form ${formId}: ${error}`,
         }, { root: true });
       }
+    },
+    async setDirtyFlag({ commit, state }, isDirty) {
+      // When the form is detected to be dirty set the browser guards for closing the tab etc
+      // There are also Vue route-specific guards so that we can ask before navigating away with the links
+      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
+      if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
+      window.onbeforeunload = isDirty ? () => true : null;
+      commit('SET_FORM_DIRTY', isDirty);
     },
   },
 };
