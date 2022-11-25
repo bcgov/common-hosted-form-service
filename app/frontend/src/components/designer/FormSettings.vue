@@ -38,26 +38,32 @@
             :rules="loginRequiredRules"
             @change="userTypeChanged"
           >
-            <v-radio
-              class="mb-4"
-              label="Public (anonymous)"
-              :value="ID_MODE.PUBLIC"
-            />
+            <v-radio class="mb-4" label="Public (anonymous)" :value="ID_MODE.PUBLIC"/>
+            <v-expand-transition>
+              <BaseInfoCard
+                v-if="userType == ID_MODE.PUBLIC"
+                class="mr-4 mb-3"
+              >
+                <h4 class="primary--text">
+                  <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+                </h4>
+                <p class="mt-2 mb-0">
+                  If you will be using this form to gather information from the general 
+                  public on topics that are of general interest to the public, you are 
+                  required to contact the GCPE so that your engagement can be listed on
+                  <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
+                    govTogetherBC. <v-icon small color="primary">open_in_new</v-icon>
+                  </a>
+                </p>
+              </BaseInfoCard>
+            </v-expand-transition>
             <v-radio class="mb-4" label="Log-in Required" value="login" />
             <v-expand-transition>
               <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6">
                 <v-radio-group class="my-0" v-model="idps[0]">
                   <v-radio class="mx-2" label="IDIR" :value="ID_PROVIDERS.IDIR" />
-                  <v-radio
-                    class="mx-2"
-                    label="Basic BCeID"
-                    :value="ID_PROVIDERS.BCEIDBASIC"
-                  />
-                  <v-radio
-                    class="mx-2"
-                    label="Business BCeID"
-                    :value="ID_PROVIDERS.BCEIDBUSINESS"
-                  />
+                  <v-radio class="mx-2" label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC"/>
+                  <v-radio class="mx-2" label="Business BCeID" :value="ID_PROVIDERS.BCEIDBUSINESS"/>
                   <!-- Mandatory BCeID process notification -->
                   <v-expand-transition>
                     <BaseInfoCard
