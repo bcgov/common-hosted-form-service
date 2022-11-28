@@ -1,6 +1,6 @@
 import formioUtils from 'formiojs/utils';
 import moment from 'moment';
-import { IdentityMode, ScheduleType } from '@/utils/constants';
+import { IdentityMode } from '@/utils/constants';
 
 //
 // Transformation Functions for converting form objects
@@ -81,7 +81,6 @@ export function isFormExpired(formSchedule = {}) {
     message:''
   };
   
-  console.log('ScheduleType-',ScheduleType.CLOSINGDATE);
   if(formSchedule && formSchedule.enabled)
   {
     //Check if Form open date is in past or Is form already started for submission
