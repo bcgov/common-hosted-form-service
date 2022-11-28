@@ -288,6 +288,9 @@ export default {
         }
       } catch (error) {
         if (this.authenticated) {
+          this.isformScheduleExpire = true;
+          this.isLateSubmissionAllowed = false;
+          this.formScheduleExpireMessage = 'An error occurred fetching this form';
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,
