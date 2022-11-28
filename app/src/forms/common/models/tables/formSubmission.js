@@ -10,6 +10,11 @@ class FormSubmission extends Timestamps(Model) {
 
   static get modifiers() {
     return {
+      filterCreatedBy(query, value) {
+        if (value) {
+          query.where('createdBy', 'ilike', `%${value}%`);
+        }
+      },
       filterFormVersionId(query, value) {
         if (value !== undefined) {
           query.where('formVersionId', value);
