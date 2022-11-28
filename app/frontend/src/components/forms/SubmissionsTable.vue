@@ -35,11 +35,19 @@
 
     <v-row no-gutters>
       <v-spacer />
-      <v-col cols="12" sm="8">
+      <v-col cols="4" sm="4">
         <v-checkbox
           class="pl-3"
           v-model="deletedOnly"
           label="Show deleted submissions"
+          @click="refreshSubmissions"
+        />
+      </v-col>
+      <v-col cols="4" sm="4">
+        <v-checkbox
+          class="pl-3"
+          v-model="currentUserOnly"
+          label="Show my submissions"
           @click="refreshSubmissions"
         />
       </v-col>
@@ -56,6 +64,8 @@
           />
         </div>
       </v-col>
+    </v-row>
+    <v-row no-gutters>
     </v-row>
 
     <!-- table header -->
@@ -156,6 +166,7 @@ export default {
   data() {
     return {
       deletedOnly: false,
+      currentUserOnly: false,
       loading: true,
       restoreItem: {},
       search: '',
@@ -170,6 +181,9 @@ export default {
       'permissions',
       'submissionList',
       'userFormPreferences',
+    ]),
+    ...mapGetters('auth', [
+      'user'
     ]),
 
     checkFormManage() {
@@ -275,7 +289,8 @@ export default {
             minDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ? moment(this.userFormPreferences.preferences.filter[0], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().subtract(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
             maxDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ?moment(this.userFormPreferences.preferences.filter[1], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
           }),
-          deletedOnly: this.deletedOnly
+          deletedOnly: this.deletedOnly,
+          createdBy: (this.currentUserOnly) ? `${this.user.username}@${this.user.idp}` : ''
         };
         await this.fetchSubmissions(criteria);
         // Build up the list of forms for the table

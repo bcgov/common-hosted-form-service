@@ -131,22 +131,12 @@ describe('auth actions', () => {
       expect(mockStore.getters.createLogoutUrl).toHaveBeenCalledTimes(0);
     });
 
-    it('should trigger navigation action if keycloak is ready and user can logout', () => {
+    it('should trigger navigation action if keycloak is ready', () => {
       mockStore.getters.keycloakReady = true;
-      mockStore.rootGetters['form/canLogout'] = true;
-      mockStore.dispatch= jest.fn();
       store.actions.logout(mockStore);
-      //expect(mockStore.dispatch).toHaveBeenCalledWith('logoutWithUrl');
-      //expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-    });
 
-    it('should trigger navigation action if keycloak is ready and user cannot logout', () => {
-      mockStore.getters.keycloakReady = true;
-      mockStore.rootGetters['form/canLogout'] = false;
-      mockStore.dispatch= jest.fn();
-      store.actions.logout(mockStore);
-      //expect(mockStore.dispatch).toHaveBeenCalledWith('form/setIsLogoutButtonClicked', true, {'root': true});
-      //expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(window.location.replace).toHaveBeenCalledTimes(1);
+      expect(mockStore.getters.createLogoutUrl).toHaveBeenCalledTimes(1);
     });
 
   });
