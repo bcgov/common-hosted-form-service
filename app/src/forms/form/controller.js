@@ -113,7 +113,7 @@ module.exports = {
   },
   listSubmissions: async (req, res, next) => {
     try {
-      const response = await service.listSubmissions(req.params.formVersionId);
+      const response = await service.listSubmissions(req.params.formVersionId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
