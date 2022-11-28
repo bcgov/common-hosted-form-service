@@ -38,6 +38,7 @@ const genInitialForm = () => ({
   enableStatusUpdates: false,
   id: '',
   idps: [],
+  isDirty: false,
   name: '',
   sendSubRecieviedEmail: false,
   showSubmissionConfirmation: true,
@@ -57,10 +58,6 @@ export default {
   state: {
     apiKey: undefined,
     drafts: [],
-    isLogoutButtonClicked:false,
-    showWarningDialog:false,
-    canLogout: true,
-    enableFormAutosave:false,
     form: genInitialForm(),
     formFields: [],
     formList: [],
@@ -89,10 +86,6 @@ export default {
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
     version: state => state.version,
-    isLogoutButtonClicked:state=>state.isLogoutButtonClicked,
-    showWarningDialog:state=>state.showWarningDialog,
-    canLogout:state=>state.canLogout,
-    enableFormAutosave:state=>state.enableFormAutosave
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -113,15 +106,6 @@ export default {
     },
     SET_FORM_FIELDS(state, formFields) {
       state.formFields = formFields;
-    },
-    SET_SHOW_WARNING_DIALOG(state, showWarningDialog) {
-      state.showWarningDialog =showWarningDialog;
-    },
-    SET_CAN_LOGOUT(state, canLogout) {
-      state.canLogout =canLogout;
-    },
-    SET_IS_LOGOUT_BUTTON_CLICKED(state, isLogoutButtonClicked) {
-      state.isLogoutButtonClicked =isLogoutButtonClicked;
     },
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
@@ -145,9 +129,9 @@ export default {
       state.version = version;
     },
 
-    SET_ENABLE_FORM_AUTOSAVE(state, enableFormAutosave) {
-      state.enableFormAutosave = enableFormAutosave;
-    }
+    SET_FORM_DIRTY(state, isDirty) {
+      state.form.isDirty = isDirty;
+    },
   },
   actions: {
     //
@@ -316,15 +300,6 @@ export default {
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
     },
-    async setShowWarningDialog ({ commit}, showWarningDialog) {
-      commit('SET_SHOW_WARNING_DIALOG', showWarningDialog);
-    },
-    async setIsLogoutButtonClicked ({ commit}, isLogoutButtonClicked) {
-      commit('SET_IS_LOGOUT_BUTTON_CLICKED', isLogoutButtonClicked);
-    },
-    async setCanLogout ({ commit}, canLogout) {
-      commit('SET_CAN_LOGOUT', canLogout);
-    },
     async updateForm({ state, dispatch }) {
       try {
         const emailList =
@@ -424,7 +399,7 @@ export default {
         }, { root: true });
       }
     },
-    async fetchSubmissions({ commit, dispatch, state }, { formId, userView, deletedOnly = false }) {
+    async fetchSubmissions({ commit, dispatch, state }, { formId, userView, deletedOnly = false, createdBy = '' }) {
       try {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of active submissions for this form (for either all submissions, or just single user)
@@ -432,7 +407,7 @@ export default {
           state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columnList : undefined;
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
-          : await formService.listSubmissions(formId, { deleted: deletedOnly, fields: fields });
+          : await formService.listSubmissions(formId, { deleted: deletedOnly, fields: fields, createdBy: createdBy  });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -509,16 +484,13 @@ export default {
         }, { root: true });
       }
     },
-
-    async setFormAutosave({ commit, dispatch }, enableFormAutosave) {
-      try {
-        commit('SET_ENABLE_FORM_AUTOSAVE', enableFormAutosave);
-      } catch (error) {
-        dispatch('notifications/addNotification', {
-          message: 'An error occurred while trying to enabled form autosave',
-          consoleError: 'Error autosaving form',
-        }, { root: true });
-      }
-    }
+    async setDirtyFlag({ commit, state }, isDirty) {
+      // When the form is detected to be dirty set the browser guards for closing the tab etc
+      // There are also Vue route-specific guards so that we can ask before navigating away with the links
+      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
+      if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
+      window.onbeforeunload = isDirty ? () => true : null;
+      commit('SET_FORM_DIRTY', isDirty);
+    },
   },
 };

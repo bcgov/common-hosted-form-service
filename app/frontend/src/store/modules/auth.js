@@ -118,22 +118,14 @@ export default {
         }
       }
     },
-    logoutWithUrl({getters}) {
-      window.location.replace(
-        getters.createLogoutUrl({
-          redirectUri: `${location.origin}/${Vue.prototype.$config.basePath}`,
-        })
-      );
-    },
-    logout({dispatch,getters, rootGetters}) {
+    logout({ getters }) {
       if (getters.keycloakReady) {
-        if(!rootGetters['form/canLogout']) {
-          dispatch('form/setIsLogoutButtonClicked',true,{root:true});
-        } else if (rootGetters['form/canLogout']) {
-          dispatch('logoutWithUrl');
-        }
+        window.location.replace(
+          getters.createLogoutUrl({
+            redirectUri: `${location.origin}/${Vue.prototype.$config.basePath}`,
+          })
+        );
       }
     },
-
   },
 };
