@@ -5,9 +5,11 @@ import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 const genInitialSchedule = () => ({
   'enabled':null,
+  'scheduleType':null,
   'openSubmissionDateTime': null,
   'keepOpenForTerm': null,
   'keepOpenForInterval': null,
+  'closingMessageEnabled':null,
   'closingMessage': null,
   'closeSubmissionDateTime': null,
   'repeatSubmission': {
