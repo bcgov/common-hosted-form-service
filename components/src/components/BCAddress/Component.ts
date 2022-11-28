@@ -60,7 +60,7 @@ export default class Component extends (ParentComponent as any) {
     async attach(element) {
         super.attach(element);
         try {
-
+            console.log(this.builderMode,this.manualMode);
             this.searchInput.forEach((element, index) => {
                 autocompleter({
                 input: element,
@@ -70,11 +70,13 @@ export default class Component extends (ParentComponent as any) {
                   this.makeRequestChefsURL(query).then(update);
                 },
                 render: (address) => {
+                    console.log("I am in render", address);
                   const div = this.ce('div');
                   div.textContent = this.getDisplayValues(address);
                   return div;
                 },
                 onSelect: (address) => {
+                    console.log("I am in onSelect", address);
                   this.onSelectAddress(address, element, index);
                 },
               });
@@ -83,6 +85,27 @@ export default class Component extends (ParentComponent as any) {
             console.log(`This error is from Custom BC Address component in form.io: Failed to acquire configuration: ${err.message}`);
         }
     }
+
+    onSelectAddress(address, element, index) {
+        if (this.isMultiple) {
+          this.address[index] = address;
+          this.address = [...this.address];
+        }
+        else {
+          this.address = address;
+        }
+
+        this.triggerChange({
+          modified: true,
+        });
+
+        if (element) {
+            console.log("-------------->>>>>>",this.getDisplayValue(this.isMultiple ? this.address[index] : this.address));
+          element.value = this.getDisplayValue(this.isMultiple ? this.address[index] : this.address);
+        }
+
+        this.updateRemoveIcon(index);
+      }
 
     getDisplayValue(address) {
         let {
