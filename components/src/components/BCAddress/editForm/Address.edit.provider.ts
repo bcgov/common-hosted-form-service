@@ -4,7 +4,7 @@ export default [
   {
     type: 'textfield',
     input: true,
-    key: 'providerOptions.url',
+    key: 'url',
     label: 'Url',
     placeholder: 'Enter Url',
     weight: 10,
@@ -13,13 +13,11 @@ export default [
       required: true,
     },
   },
-
   {
     type: 'textfield',
     input: true,
-    key: 'providerOptions.queryProperty',
+    key: 'queryProperty',
     label: 'Query Property',
-    defaultValue: 'addressString',
     placeholder: 'Enter Query Property',
     weight: 20,
     tooltip: 'Which query param should be used to pass as a search string. Default is `query`.',
@@ -27,8 +25,7 @@ export default [
   {
     type: 'textfield',
     input: true,
-    defaultValue: 'features',
-    key: 'providerOptions.responseProperty',
+    key: 'responseProperty',
     label: 'Response Property',
     placeholder: 'Enter Response Property',
     weight: 30,
@@ -37,8 +34,7 @@ export default [
   {
     type: 'textfield',
     input: true,
-    defaultValue: 'properties.fullAddress',
-    key: 'providerOptions.displayValueProperty',
+    key: 'displayValueProperty',
     label: 'Display Value Property',
     placeholder: 'Display Value Property',
     weight: 40,
