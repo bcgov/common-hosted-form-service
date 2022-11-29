@@ -166,6 +166,7 @@ objects:
                     secretKeyRef:
                       key: email
                       name: "${APP_NAME}-contact-secret"
+
                 - name: VUE_APP_HOWTOURL
                   valueFrom:
                     secretKeyRef:
@@ -176,10 +177,10 @@ objects:
                     secretKeyRef:
                       key: chefstourvideourl
                       name: "${APP_NAME}-landingpagevideourls-secret"
-                - name: VUE_APP_BC_GEO_ADDRESS_APIKEY
+                - name: VUE_APP_CHEFS_GEO_ADDRESS_APIURL
                   valueFrom:
                     secretKeyRef:
-                      key: bcgeoaddressapikey
+                      key: chefsgeoaddressapiurl
                       name: "${APP_NAME}-bcgeoaddress-secret"
                 - name: VUE_APP_BC_GEO_ADDRESS_APIURL
                   valueFrom:
