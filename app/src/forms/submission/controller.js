@@ -2,8 +2,30 @@ const { Statuses } = require('../common/constants');
 const cdogsService = require('../../components/cdogsService');
 const emailService = require('../email/emailService');
 const service = require('./service');
+const { jsPDF } = require("jspdf");
+const doc = new jsPDF();
+let index=0;
 
-module.exports = {
+const controller = {
+
+  reArrangeJSon: (obj, keyPath)=> {
+    index = index+1;
+    console.log("++---------->>> ", index);
+    Object.keys(obj).forEach((key)=>{
+      if(obj[key].constructor.name==="Array") {
+        for (value of obj[key]){
+          controller.reArrangeJSon(value, keyPath+"."+key);
+        }
+      }
+      if(obj[key].constructor.name==="Object") {
+        controller.reArrangeJSon(obj[key],keyPath+"."+key);
+      }
+      else if (obj[key].constructor.name==="String" || obj[key].constructor.name==="Number" || obj[key].constructor.name==="Boolean" ) {
+        doc.text(`${keyPath+"."+key}`+":"+obj[key],0, (50+(index)*50));
+      }
+    })
+  },
+
   read: async (req, res, next) => {
     try {
       const response = await service.read(req.params.formSubmissionId);
@@ -100,6 +122,45 @@ module.exports = {
   templateUploadAndRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
+      let index=0;
+      //await controller.reArrangeJSon(submission.submission.submission.data, "data",index);
+
+      let flatten = function(data) {
+        var result = {};
+        function recurse (cur, prop) {
+            if (Object(cur) !== cur) {
+                result[prop] = cur;
+            } else if (Array.isArray(cur)) {
+                 for(var i=0, l=cur.length; i<l; i++)
+                     recurse(cur[i], prop + "[" + i + "]");
+                if (l == 0)
+                    result[prop] = [];
+            } else {
+                var isEmpty = true;
+                for (var p in cur) {
+                    isEmpty = false;
+                    recurse(cur[p], prop ? prop+"."+p : p);
+                }
+                if (isEmpty && prop)
+                    result[prop] = {};
+            }
+        }
+        recurse(data, "");
+        return result;
+    }
+    let b = flatten(submission.submission.submission.data);
+      let entries = Object.entries(b);
+      const doc = new jsPDF();
+
+
+      for(let [index, [key, value]] of entries.entries()){
+        doc.text(`${key}`+":"+value,0, (5+(index)*5));
+      }
+
+     // doc.text(eval(submission.submission.submission.data), 10, 10);
+
+      doc.save("a4.pdf");
+
       const templateBody = { ...req.body, data: submission.submission.submission.data };
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];
@@ -112,6 +173,7 @@ module.exports = {
       next(error);
     }
   },
+
   listEdits: async (req, res, next) => {
     try {
       const response = await service.listEdits(req.params.formSubmissionId);
@@ -121,3 +183,5 @@ module.exports = {
     }
   },
 };
+
+module.exports = controller;
