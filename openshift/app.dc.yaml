@@ -230,6 +230,8 @@ objects:
                     name: "${APP_NAME}-server-config"
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
+                - configMapRef:
+                    name: "${APP_NAME}-custombcaddressformiocomponent-config"
               # volumeMounts:
               #   - name: log-storage
               #     mountPath: /var/log
