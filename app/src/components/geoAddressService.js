@@ -2,15 +2,12 @@ const config = require('config');
 const axios = require('axios');
 
 const errorToProblem = require('./errorToProblem');
-const log = require('./log')(module.filename);
 
 const SERVICE = 'GeoAddressService';
 
 class GeoAddressService {
   constructor({ apiKey, bcAddressURL,queryParameters }) {
-    log.debug(`Constructed with apiKey, ${bcAddressURL}, ${queryParameters}`, { function: 'constructor' });
     if (!apiKey || !bcAddressURL || !queryParameters ) {
-      log.error('Invalid configuration.', { function: 'constructor' });
       throw new Error('GeoAddressService is not configured. Check configuration.');
     }
 
@@ -26,8 +23,6 @@ class GeoAddressService {
 
       const url = !preferUrl || (preferUrl===this.apiUrl)?this.apiUrl:preferUrl;
       const queryParameters = {...query, ...this.queryParameters };
-
-      log.debug(`Get to ${url}`, { function: 'addressQuerySearch' });
 
       axios.defaults.headers['X-API-KEY'] = this.apiKey;
       const {data} = await axios.get(url, { params: { ...queryParameters } });
