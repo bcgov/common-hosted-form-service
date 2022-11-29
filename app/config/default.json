@@ -65,7 +65,7 @@
     }
   },
   "customBcAddressFormioComponent":{
-    "apikey":"",
+    "apikey":"xxxxxxxxxxxxxxx",
     "bcAddressURL":"https://geocoder.api.gov.bc.ca/addresses.json",
     "queryParameters":{
       "echo": false,
