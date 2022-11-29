@@ -4,7 +4,7 @@ export default [
   {
     type: 'textfield',
     input: true,
-    key: 'url',
+    key: 'providerOptions.bcGeoAddressURL',
     label: 'Url',
     placeholder: 'Enter Url',
     weight: 10,
@@ -13,11 +13,13 @@ export default [
       required: true,
     },
   },
+
   {
     type: 'textfield',
     input: true,
-    key: 'queryProperty',
+    key: 'providerOptions.queryProperty',
     label: 'Query Property',
+    defaultValue: 'addressString',
     placeholder: 'Enter Query Property',
     weight: 20,
     tooltip: 'Which query param should be used to pass as a search string. Default is `query`.',
@@ -25,7 +27,8 @@ export default [
   {
     type: 'textfield',
     input: true,
-    key: 'responseProperty',
+    defaultValue: 'features',
+    key: 'providerOptions.responseProperty',
     label: 'Response Property',
     placeholder: 'Enter Response Property',
     weight: 30,
@@ -34,7 +37,8 @@ export default [
   {
     type: 'textfield',
     input: true,
-    key: 'displayValueProperty',
+    defaultValue: 'properties.fullAddress',
+    key: 'providerOptions.displayValueProperty',
     label: 'Display Value Property',
     placeholder: 'Display Value Property',
     weight: 40,
