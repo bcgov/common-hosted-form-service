@@ -2,7 +2,7 @@ const config = require('config');
 const axios = require('axios');
 const errorToProblem = require('./errorToProblem');
 const SERVICE = 'GeoAddressService';
-const url = require('url');
+
 
 class GeoAddressService {
   constructor({ apiKey, bcAddressURL,queryParameters }) {
@@ -28,7 +28,9 @@ class GeoAddressService {
       const parsedUrl = new URL(url);
 
       const {data} = await axios.get(parsedUrl.href, { params: { ...queryParameters } });
+
       return data;
+
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
