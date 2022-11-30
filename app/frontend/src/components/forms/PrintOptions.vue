@@ -20,9 +20,14 @@
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
             <span>Browser Print</span>
           </v-btn>
-
           <p>
-            <strong>2.</strong> Upload a <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload" target="blank">CDOGS template</a> to have a structured version
+            <strong>2.</strong> Download this submission as pdf
+          </p>
+          <v-btn class="mb-5 mr-5" color="primary" @click="downloadPDF">
+            <span>Download PDF</span>
+          </v-btn>
+          <p>
+            <strong>3.</strong> Upload a <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload" target="blank">CDOGS template</a> to have a structured version
           </p>
           <v-file-input
             counter
@@ -61,7 +66,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { formService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
@@ -82,11 +87,13 @@ export default {
     submissionId: String,
   },
   computed: {
+    ...mapGetters('form', ['formSubmission']),
     files() {
       return this.templateForm.files;
     },
   },
   methods: {
+    ...mapActions('form', ['genSubmissionToPDF']),
     ...mapActions('notifications', ['addNotification']),
     async printBrowser() {
       this.dialog = false;
@@ -94,6 +101,9 @@ export default {
       setTimeout(() => {
         window.print();
       }, 500);
+    },
+    async downloadPDF() {
+      await this.genSubmissionToPDF(this.submissionId);
     },
     splitFileName(filename = undefined) {
       let name = undefined;

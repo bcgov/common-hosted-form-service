@@ -372,6 +372,19 @@ export default {
   },
 
   /**
+  * @function docGenSubmissionToPdf
+  * Upload a template to generate PDF from CDOGS API
+  * @param {string} submissionId The form submission identifier
+  * @returns {Promise} An axios response
+  */
+  docGenSubmissionToPdf(submissionId) {
+    return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/pdf`,{
+      responseType: 'arraybuffer', // Needed for binaries unless you want pain
+      timeout: 30000, // Override default timeout as this call could take a while
+    });
+  },
+
+  /**
   * @function updateSubmissionStatus
   * Add a new status entry to the submission
   * @param {string} submissionId The form submission identifier

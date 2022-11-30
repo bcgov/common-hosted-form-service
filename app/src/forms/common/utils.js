@@ -42,9 +42,52 @@ const queryUtils = {
   }
 };
 
+const reArrangeJSon = (obj, keyPath, submissionMap) => {
+
+  Object.keys(obj).forEach((key)=>{
+    if(obj[key].constructor.name==="Array") {
+      for (value of obj[key]){
+        reArrangeJSon(value, keyPath+"."+key, submissionMap);
+      }
+    }
+    if(obj[key].constructor.name==="Object") {
+      reArrangeJSon(obj[key],keyPath+"."+key, submissionMap);
+    }
+    else if (obj[key].constructor.name==="String" || obj[key].constructor.name==="Number" || obj[key].constructor.name==="Boolean" ) {
+      submissionMap.add([keyPath+"."+key,obj[key]]);
+    }
+  })
+}
+
+const flatten = (data)=> {
+  var result = {};
+  function recurse (cur, prop) {
+      if (Object(cur) !== cur) {
+          result[prop] = cur;
+      } else if (Array.isArray(cur)) {
+           for(var i=0, l=cur.length; i<l; i++)
+               recurse(cur[i], prop + "[" + i + "]");
+          if (l == 0)
+              result[prop] = [];
+      } else {
+          var isEmpty = true;
+          for (var p in cur) {
+              isEmpty = false;
+              recurse(cur[p], prop ? prop+"."+p : p);
+          }
+          if (isEmpty && prop)
+              result[prop] = {};
+      }
+  }
+  recurse(data, "");
+  return result;
+}
+
 module.exports = {
   falsey,
   setupMount,
   queryUtils,
   typeUtils,
+  flatten,
+  reArrangeJSon
 };
