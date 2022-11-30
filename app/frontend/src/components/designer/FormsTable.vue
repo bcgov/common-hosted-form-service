@@ -49,6 +49,7 @@
     >
       <template #[`item.name`]="{ item }">
         <router-link
+          :is="item.published ? 'router-link' : 'span'"
           :to="{
             name: 'FormSubmit',
             query: { f: item.id },
@@ -59,7 +60,7 @@
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">{{ item.name }}</span>
             </template>
-            <span>
+            <span v-if="item.published">
               View Form
               <v-icon>open_in_new</v-icon>
             </span>
