@@ -120,7 +120,8 @@ export default {
           idps: f.idps,
           name: f.formName,
           description: f.formDescription,
-          permissions: f.permissions
+          permissions: f.permissions,
+          published: f.published
         }));
         commit('SET_FORMLIST', forms);
       } catch (error) {
