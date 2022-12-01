@@ -49,7 +49,7 @@
     >
       <template #[`item.name`]="{ item }">
         <router-link
-          :is="item.published ? 'router-link' : 'span'"
+          v-if="item.published"
           :to="{
             name: 'FormSubmit',
             query: { f: item.id },
@@ -66,6 +66,7 @@
             </span>
           </v-tooltip>
         </router-link>
+        <span v-else>{{ item.name }}</span>
         <!-- link to description in dialog -->
         <v-icon
           v-if="item.description.trim()"
