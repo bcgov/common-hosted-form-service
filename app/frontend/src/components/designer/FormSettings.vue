@@ -259,41 +259,7 @@
               </v-col>
             </v-row>
 
-            <v-expand-transition v-if="schedule.allowLateSubmissions.enabled" class="pl-3 ">
-              <v-row class="m-0">
-                <v-col cols="6" class="m-0 p-0">
-                  <v-text-field
-                    label="After close date for"
-                    value="0"
-                    type="number"
-                    dense
-                    flat
-                    solid
-                    outlined
-                    v-model="schedule.allowLateSubmissions.forNext.term"
-                    class="m-0 p-0"
-                    :rules="roundNumber"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="6" class="m-0 p-0">
-                  <v-select
-                    :items="['days','weeks','months','quarters','years']"
-                    label="Period"
-                    dense
-                    flat
-                    solid
-                    outlined
-                    class="mr-1 pl-2"
-                    v-model="schedule.allowLateSubmissions.forNext.intervalType"
-                    :rules="intervalType"
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-expand-transition>
-
-
-            <v-checkbox class="my-0 pt-0" v-model="schedule.repeatSubmission.enabled"
-                        v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
+            <v-checkbox class="my-0 pt-0" v-model="schedule.repeatSubmission.enabled" v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
               <template #label>
                 Repeat period
               </template>
