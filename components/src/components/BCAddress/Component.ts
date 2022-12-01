@@ -67,7 +67,7 @@ export default class Component extends (ParentComponent as any) {
                     providerOptions["params"]={}
                 }
                 if(queryParameters) {
-                    providerOptions.params ={...providerOptions.params,...queryParameters,bcGeoAddressURL:providerOptions["bcGeoAddressURL"]}
+                    providerOptions.params ={...providerOptions.params,...queryParameters}
                 }
             }
 
