@@ -314,11 +314,11 @@ export function calculateCloseDate(
 export function getCalculatedCloseSubmissionDate(openedDate=moment(),keepOpenForTerm=0,keepOpenForInterval='days',allowLateTerm=0,allowLateInterval='days',repeatSubmissionTerm=0,repeatSubmissionInterval='days',repeatSubmissionUntil=moment()){
   const openDate = openedDate.clone();
   var calculatedCloseDate = moment(openDate);
-  repeatSubmissionUntil = moment(openDate);
+  repeatSubmissionUntil = moment(repeatSubmissionUntil);
   if(!allowLateTerm && !allowLateInterval && !repeatSubmissionTerm && !repeatSubmissionInterval){
     calculatedCloseDate = openDate.add(keepOpenForTerm,keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
   }else{
-    if(repeatSubmissionTerm && repeatSubmissionInterval){
+    if(repeatSubmissionTerm && repeatSubmissionInterval && repeatSubmissionUntil){
       calculatedCloseDate = repeatSubmissionUntil;
     }
     if(allowLateTerm && allowLateInterval){
