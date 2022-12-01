@@ -1,5 +1,4 @@
 const { v4: uuidv4 } = require('uuid');
-const { jsPDF } = require("jspdf");
 const { Statuses } = require('../common/constants');
 const {
   Form,
@@ -311,14 +310,14 @@ const service = {
   },
   /** get the audit history metadata (nothing that edited a draft for now) */
   genSubmissionToPdf: async(submissionId) => {
-    var doc = new jsPDF('p', 'pt');
+    //var doc = new jsPDF('p', 'pt');
     //const doc = new jsPDF();
     const submission = await service.read(submissionId);
     const submissionMap = new Set();
     //autoTable
-    await reArrangeJSon (submission.submission.submission.data, "data", submissionMap);
-    const iterator1 = submissionMap.values();
-    let index =0;
+    let level = await reArrangeJSon (submission.submission.submission.data, "data", submissionMap,"isObject",0,-1);
+    //const iterator1 = submissionMap.values();
+    /*let index =0;
     let bodyData =[];
     for (const entry of submissionMap.values()) {
       bodyData.push(entry);
@@ -329,7 +328,9 @@ const service = {
     doc.autoTable(['Name', 'Value'], bodyData);
     //doc.save('table.pdf');
     doc.save("table.pdf");
-
+*/
+console.log(level);
+console.log(submissionMap);
 console.log("I am hete")
    //let r = await flatten(submission.submission.submission.data)
 

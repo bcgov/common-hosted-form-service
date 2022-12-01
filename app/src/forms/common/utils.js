@@ -42,21 +42,33 @@ const queryUtils = {
   }
 };
 
-const reArrangeJSon = (obj, keyPath, submissionMap) => {
-
+const reArrangeJSon = (obj, keyPath, submissionMap, objectType, level, indexA) => {
+  let indexes = level;
+  let index = indexA
   Object.keys(obj).forEach((key)=>{
     if(obj[key].constructor.name==="Array") {
-      for (value of obj[key]){
-        reArrangeJSon(value, keyPath+"."+key, submissionMap);
+      let a = level+1;
+      console.log("key-----> ", obj[key]);
+      for (let [index, value] of obj[key].entries()){
+
+         indexes = reArrangeJSon(value, keyPath+"."+key, submissionMap, "isArray", a, index);
       }
     }
-    if(obj[key].constructor.name==="Object") {
-      reArrangeJSon(obj[key],keyPath+"."+key, submissionMap);
+
+    if(objectType==="isArray" && obj[key].constructor.name==="Object"){
+      indexes = reArrangeJSon(obj[key],keyPath+"."+key, submissionMap, "isArray",level,index);
     }
+
+    if(objectType==="isObject" && obj[key].constructor.name==="Object"){
+      let a = level+1;
+      indexes = reArrangeJSon(obj[key],keyPath+"."+key, submissionMap, "isObject",a,-1);
+    }
+
     else if (obj[key].constructor.name==="String" || obj[key].constructor.name==="Number" || obj[key].constructor.name==="Boolean" ) {
-      submissionMap.add([keyPath+"."+key,obj[key]]);
+      submissionMap.add({[keyPath+"."+key]:obj[key],"level":level,"objectType":objectType,"index":index});
     }
   })
+  return indexes;
 }
 
 const flatten = (data)=> {
