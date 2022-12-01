@@ -17,7 +17,7 @@ class GeoAddressService {
 
   async addressQuerySearch(query) {
     try {
-      let preferUrl = query.bcGeoAddressURL;
+      //let preferUrl = query.bcGeoAddressURL;
       delete query.bcGeoAddressURL;
 
       const queryParameters = {...query, ...this.queryParameters };
