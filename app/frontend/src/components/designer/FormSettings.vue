@@ -360,8 +360,8 @@
                       schedule.allowLateSubmissions.forNext.intervalType && 
                       schedule.allowLateSubmissions.forNext.term
                     ) 
-                      ? AVAILABLE_DATES[0]['graceDate'].split(" ")[0] 
-                      : AVAILABLE_DATES[0]['closeDate'].split(" ")[0] 
+                      ? AVAILABLE_DATES && AVAILABLE_DATES[0] && AVAILABLE_DATES[0]['graceDate'] && AVAILABLE_DATES[0]['graceDate'].split(" ")[0] 
+                      : AVAILABLE_DATES && AVAILABLE_DATES[0] && AVAILABLE_DATES[0]['closeDate'] && AVAILABLE_DATES[0]['closeDate'].split(" ")[0] 
                     : ''
                   }}
 
@@ -576,6 +576,7 @@ export default {
         this.schedule.scheduleType,
         this.schedule.closeSubmissionDateTime
       );
+      console.log('getDates-',getDates);
       return getDates;
     },
     CALCULATE_CLOSE_DATE() {
