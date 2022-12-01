@@ -164,6 +164,7 @@ const isEligibleLateSubmission = (date,term,interval) => {
   return isBetweenClosrAndGraceDate;
 };
 
+
 /**
  * @function getAvailableDates
  * Get All possible dates in given period with Term and Interval
@@ -176,14 +177,28 @@ const isEligibleLateSubmission = (date,term,interval) => {
  * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
  * @param {String} allowLateInterval A string of days,Weeks,months
  * @param {Object[]} repeatUntil An object of Moment JS date
+ * @param {String} scheduleType A string one of Manual, ClosingDate OR Period
+ * @param {Object[]} closeDate An object of Moment JS date
  * @returns {Object[]} An object array of Available dates in given period
  */
-const  getAvailableDates = (keepAliveFor=0,keepAliveForInterval='days',submstartDate,term=null,interval=null,allowLateTerm=null,allowLateInterval=null,repeatUntil) => {
+const  getAvailableDates = (
+  keepAliveFor=0,
+  keepAliveForInterval='days',
+  submstartDate,
+  term=null,
+  interval=null,
+  allowLateTerm=null,
+  allowLateInterval=null,
+  repeatUntil,
+  scheduleType,
+  closeDate=null
+) => {
+
   let substartDate = moment(submstartDate);
   repeatUntil = moment(repeatUntil);
-  var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil);
+  var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
   var availableDates = [];
-  if(calculatedsubcloseDate){
+  if(calculatedsubcloseDate && term && interval) {
     while (substartDate.isBefore(calculatedsubcloseDate)) {
       var newDate = substartDate.clone();
       if(substartDate.isBefore(repeatUntil)){
@@ -196,9 +211,19 @@ const  getAvailableDates = (keepAliveFor=0,keepAliveForInterval='days',submstart
       substartDate.add(term,interval);
     }
   }
-  // console.log('availableDates-',availableDates);
+
+  if((term == null && interval == null) && (keepAliveFor && keepAliveForInterval)){
+    var newDates = substartDate.clone();
+    availableDates.push(Object({
+      startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
+      closeDate:newDates.add(keepAliveFor,keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
+      graceDate: allowLateTerm && allowLateInterval ? newDates.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS') : null
+    }));
+  }
   return availableDates;
 };
+
+
 
 /**
  * @function getCalculatedCloseSubmissionDate
@@ -214,11 +239,13 @@ const  getAvailableDates = (keepAliveFor=0,keepAliveForInterval='days',submstart
  * @param {Integer} repeatSubmissionTerm An integer of number of Days/Weeks OR Years
  * @param {String} repeatSubmissionInterval A string of days,Weeks,months
  * @param {Object[]} repeatUntil An object of Moment JS date
+ * @param {Object[]} closeDate and object of moment JS date
  * @returns {Object[]} An object of Moment JS date
  */
 const getCalculatedCloseSubmissionDate = (openDate=moment(),keepOpenForTerm=0,keepOpenForInterval='days',allowLateTerm=0,allowLateInterval='days',repeatSubmissionTerm=0,repeatSubmissionInterval='days',repeatSubmissionUntil=moment()) => {
-  var calculatedCloseDate = openDate;
-  repeatSubmissionUntil = moment(repeatSubmissionUntil);
+
+  var calculatedCloseDate = moment(openDate);
+  repeatSubmissionUntil = moment(openDate);
   if(!allowLateTerm && !allowLateInterval && !repeatSubmissionTerm && !repeatSubmissionInterval){
     calculatedCloseDate = openDate.add(keepOpenForTerm,keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
   }else{
@@ -226,11 +253,13 @@ const getCalculatedCloseSubmissionDate = (openDate=moment(),keepOpenForTerm=0,ke
       calculatedCloseDate = repeatSubmissionUntil;
     }
     if(allowLateTerm && allowLateInterval){
-      calculatedCloseDate = repeatSubmissionUntil.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+      calculatedCloseDate = calculatedCloseDate.add(keepOpenForTerm,keepOpenForInterval).add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
     }
   }
+
   return calculatedCloseDate;
 };
+
 
 const periodType = {
   Daily        : { name : 'Daily', value : 1, regex : 'days'} ,

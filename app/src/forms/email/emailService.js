@@ -114,7 +114,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
 };
 
 /** Helper function used to build the email template based on email type and contents for reminder */
-const buildEmailTemplateFormForReminder = async (form, emailType, user, report, referer) => {
+const buildEmailTemplateFormForReminder = async (form, emailType, users, report, referer) => {
   let configData = {};
   if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
     configData = {
@@ -173,7 +173,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
         messageLinkUrl : `${referer}/form/submit?f=${configData.form.id}`,
         title: configData.title
       },
-      to: [user.email]
+      to: users
     }]
   };
 };
@@ -438,7 +438,7 @@ const service = {
    */
   initReminder: async (obj) => {
     try {
-      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.submiter, obj.report, obj.referer);
+      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.submiters, obj.report, obj.referer);
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {

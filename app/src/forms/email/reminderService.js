@@ -4,55 +4,137 @@ const exportService  = require('../form/exportService');
 const emailService  = require('./emailService');
 const { Form } = require('../common/models');
 const moment = require('moment');
-const {  EmailTypes } = require('../common/constants');
+const {  EmailTypes, ScheduleType } = require('../common/constants');
 const config = require('config');
 const log = require('../../components/log')(module.filename);
 const service = {
-  getCurrentPeriod (dates, toDay) {
+  _init: async ()=> {
+    const forms = await service._getForms();
+    const q     = await service._getReminders(forms);
+    const referer = service._getReferer();
+    const resolve = [];
+    const errors = [];
+    var mail = 0;
+    if(q.length!==0) {
+      for(let i = 0 ; i < q.length ; i++) {
+        if(!q[i].error){
+          const obj = await  service._runQueries(q[i].statement);
+          let result = await service._initStatement(obj);
+          service._initMaillSender(result, referer);
+          resolve.push({
+            formId:result.form.id,
+            formName :  result.form.name,
+            type_mail : result.state,
+            number_mail: result.submiters.length
+          });
+          // eslint-disable-next-line no-unused-vars
+          mail+= result.submiters.length;
+        } else{
+          errors.push(q[i].message);
+        }
+      }
+      return {
+        messsage: `${q.length} Forms found , ${mail} mails sent.`,
+        errors,
+        resolve
+      };
+    }
+    else {
+      return {
+        messsage: '0 email sent',
+        data: q,
+      };
+    }
+  },
+  getCurrentPeriod (dates, toDay, late) {
 
-    if(dates.length==0) return null;
+    // if send and empty date
     if(dates==null || dates==undefined) return null;
+
+    // list periods is null
+    if(dates.length==0) return null;
+
+    // if period has no closed date
+    if(dates.length==1 && dates[0].endDate == null) {
+      return Object({
+        state : 1,
+        index: 0 ,
+        dates: dates[0],
+        old_dates : null,
+        late: 0
+      });
+    }
+
+    // check for the current period
     for (let i = 0; i <dates.length; i++) {
       var startDate = moment(dates[i].startDate).format('YYYY-MM-DD');
-      var graceDate = moment(dates[i].graceDate).format('YYYY-MM-DD');
+      var graceDate = (late) ? moment(dates[i].graceDate).format('YYYY-MM-DD') : moment(dates[i].closeDate).format('YYYY-MM-DD') ;
       if(toDay.isBetween(startDate, graceDate)) {
-        return {
+        return Object({
           state : 1,
           index: i ,
           dates: dates[i],
           old_dates : (i==0) ? null :  dates[i-1],
           late: (toDay.isBetween(dates[i].closeDate, dates[i].graceDate))? 1 : 0
-        };
+        });
 
       }
     }
 
     var first = dates[0];
-    return {
+    return Object({
       state: (toDay.isBefore(first.startDate)) ? -1 : 0,
       index: -1,
       dates: false,
       old_dates : false,
       late: -1
-    };
+    });
 
   },
   _listDates: (schedule) =>{
-    return  getAvailableDates(
-      schedule.keepOpenForTerm,
-      schedule.keepOpenForInterval,
-      schedule.openSubmissionDateTime,
-      schedule.repeatSubmission.everyTerm,
-      schedule.repeatSubmission.everyIntervalType,
-      schedule.allowLateSubmissions.forNext.term,
-      schedule.allowLateSubmissions.forNext.intervalType,
-      schedule.repeatSubmission.repeatUntil,
-    );
+
+
+    if (schedule.scheduleType == ScheduleType.PERIOD){
+      return getAvailableDates(
+        schedule.keepOpenForTerm,
+        schedule.keepOpenForInterval,
+        schedule.openSubmissionDateTime,
+        schedule.repeatSubmission.everyTerm,
+        schedule.repeatSubmission.everyIntervalType,
+        schedule.allowLateSubmissions.forNext.term,
+        schedule.allowLateSubmissions.forNext.intervalType,
+        schedule.repeatSubmission.repeatUntil,
+        schedule.scheduleType,
+        schedule.closeSubmissionDateTime
+      );
+    }
+    if (schedule.scheduleType == ScheduleType.MANUAL){
+      return [ Object({
+        startDate: schedule.openSubmissionDateTime,
+        closeDate:  null,
+        graceDate:  null
+      })];
+    }
+
+    if (schedule.scheduleType == ScheduleType.CLOSINGDATE){
+      return [ Object({
+        startDate: schedule.openSubmissionDateTime,
+        closeDate: schedule.closeSubmissionDateTime,
+        graceDate: service._getGraceDate(schedule)
+      })];
+    }
+
+  },
+  _getGraceDate: (schedule)=>{
+    let substartDate = moment(schedule.openSubmissionDateTime);
+    var newDate = substartDate.clone();
+    return (schedule.allowLateSubmissions.enabled) ?   newDate.add(schedule.allowLateSubmissions.forNext.term , schedule.allowLateSubmissions.forNext.intervalType).format('YYYY-MM-DD HH:MM:SS') : null ;
   },
   _getForms: async ()=> {
     var fs = [];
     await Form.query()
       .modify('hasReminder')
+      .modify('reminderEnabled')
       .modify('filterActive', true)
       .then(forms => {
         fs = forms;
@@ -64,25 +146,31 @@ const service = {
     var toDay = moment();
     for (let i = 0; i< forms.length; i++) {
       var obj = {};
-      obj.avalaibleDate = service._listDates(forms[i].schedule);
-      if (obj.avalaibleDate.length<=1) {
-        reminder.push({ error:true, message : `Form ${forms[i].name }, has only one period.` });
+
+      obj.avalaibleDate =  service._listDates(forms[i].schedule) ;
+
+      // eslint-disable-next-line no-console
+      console.log(obj.avalaibleDate);
+
+      if (obj.avalaibleDate.length==0) {
+        reminder.push({ error:true, message : `Form ${forms[i].name } has no avalaible date.` });
         continue;
       }
-      obj.report = service.getCurrentPeriod(obj.avalaibleDate, toDay);
+
+      obj.report = service.getCurrentPeriod(obj.avalaibleDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
+
+      // eslint-disable-next-line no-console
+      // console.log(obj.report);
 
       obj.form   = forms[i];
-      if (obj.report.state != 1 || obj.report.index <= 0)  {
-        reminder.push({ error:true, message : `Form ${forms[i].name }, we are in the first period. ` });
-        continue;
-      }
 
-      obj.state = service._getMailType(obj.report, forms[i].reminder);
+      obj.state = service._getMailType(obj.report, forms[i].reminder, forms[i].schedule.allowLateSubmissions.enabled);
 
       if(obj.state == undefined) {
-        reminder.push({ error:true, message : ` Form ${forms[i].name } has valid date ` });
+        reminder.push({ error:true, message : ` Form ${forms[i].name } has no valid date ` });
         continue;
       }
+
       await reminder.push(
         {
           error : false,
@@ -93,16 +181,19 @@ const service = {
 
     return reminder;
   },
-  _getMailType : (report, reminder) => {
+  _getMailType : (report, reminder, late) => {
+
     if(!reminder.enabled) return undefined;
     var state = undefined;
     const now = moment().format('YYYY-MM-DD');
     const start_date = moment(report.dates.startDate).format('YYYY-MM-DD');
-    var end_date = moment(report.dates.closeDate).format('YYYY-MM-DD');
+    const   end_date = (late) ? moment(report.dates.graceDate).format('YYYY-MM-DD') : moment(report.dates.closeDate).format('YYYY-MM-DD');
 
     if(moment(now).isSame(start_date)) {
       return EmailTypes.REMINDER_FORM_OPEN;
     }
+
+    if(report.dates.closeDate==null) return state;
 
     if(service.getNumberDayFromIntervalType(reminder.intervalType, now, start_date, end_date) ){
       return EmailTypes.REMINDER_FORM_NOT_FILL;
@@ -112,9 +203,9 @@ const service = {
     if(moment(now).isSame(yend_date)){
       return EmailTypes.REMINDER_FORM_WILL_CLOSE;
     }
+
     return state;
   },
-
   getNumberDayFromIntervalType : (type, now, start_date, end_date )=>{
     if(type!=null && type) {
       for (const key in periodType) {
@@ -171,11 +262,14 @@ const service = {
     }
     return statement;
   },
-  _getReferer : (req) => {
+  _getReferer : () => {
     try {
+      const prod = 'https://chefs.nrs.gov.bc.ca';
+      const dev  = 'https://chefs-dev.apps.silver.devops.gov.bc.ca';
       const basePath = config.get('frontend.basePath');
-      const host = req.headers.host;
-      return `https://${host}${basePath}`;
+      const type = true;
+      const host = (type) ? prod : dev;
+      return `${host}${basePath}`;
     } catch (error){
       log.error(error.message, {
         function: '_getReferer'
@@ -184,10 +278,12 @@ const service = {
     }
   },
   _initMaillSender: (statement, referer) => {
-    statement.submiters.forEach((element)=> {
-      const data = { form :statement.form, report : statement.report, submiter : element, state : statement.state, referer };
-      emailService.initReminder(data);
+    const submiters =  statement.submiters.map(element => {
+      return element['email'];
     });
+    console.log(submiters);
+    const data = { form :statement.form, report : statement.report, submiters, state : statement.state, referer };
+    emailService.initReminder(data);
   }
 
 };

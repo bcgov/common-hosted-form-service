@@ -104,6 +104,9 @@ class Form extends Timestamps(Model) {
       hasReminder(query) {
         query.where('reminder','<>' ,{});
       },
+      reminderEnabled(query) {
+        query.whereRaw('cast(reminder->>? as boolean) = ?', ['enabled', 'true']);
+      },
     };
   }
 

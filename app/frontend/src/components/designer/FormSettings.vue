@@ -259,12 +259,6 @@
               </v-col>
             </v-row>
 
-            <v-checkbox class="my-0 m-0 p-0" v-model="schedule.allowLateSubmissions.enabled">
-              <template #label>
-                Allow late submissions
-              </template>
-            </v-checkbox>
-
             <v-expand-transition v-if="schedule.allowLateSubmissions.enabled" class="pl-3 ">
               <v-row class="m-0">
                 <v-col cols="6" class="m-0 p-0">
@@ -336,12 +330,7 @@
               </v-row>
             </v-expand-transition>
 
-            <!-- NEW FEATURE ADD BY ASGARD -->
-            <v-checkbox class="my-0 m-0 p-0" v-if="this.userType ==='team'" v-model="reminder.enabled">
-              <template #label>
-                Enable automatic reminder notification
-              </template>
-            </v-checkbox>
+
 
             <v-checkbox class="my-0 m-0 p-0" v-model="schedule.allowLateSubmissions.enabled"
                         v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)" :rules="allowLateSubmissionRule" >
@@ -455,12 +444,12 @@
 
             <hr v-if="schedule.scheduleType !== null" />
 
-            <v-row class="p-0 m-0"
-                   v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)">
+            <v-row class="p-0 m-0" v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)">
               <v-col cols="12" md="12" class="p-0">
                 <v-checkbox class="my-0 pt-0" v-model="schedule.closingMessageEnabled">
                   <template #label>
-                    Set custom closing message <v-tooltip bottom>
+                    Set custom closing message
+                    <v-tooltip bottom>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
                           help_outline
@@ -485,7 +474,36 @@
                   </v-row>
                 </v-expand-transition>
               </v-col>
+
             </v-row>
+
+            <v-row class="p-0 m-0">
+              <v-col cols="12" md="12" class="p-0">
+                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null" >
+                  <v-row class="mb-0 mt-0">
+                    <v-col class="mb-0 mt-0 pb-0 pt-0">
+                      <template #title>sEND Reminder email</template>
+                      <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
+                        <template #label>
+                          Enable automatic reminder notification
+                          <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                                help_outline
+                              </v-icon>
+                            </template>
+                            <span>
+                              Send automated reminder emails with the form link before and after the publishing date and prior to the closing date.
+                            </span>
+                          </v-tooltip>
+                        </template>
+                      </v-checkbox>
+                    </v-col>
+                  </v-row>
+                </v-expand-transition>
+              </v-col>
+            </v-row>
+
           </BasePanel>
         </v-col>
       </v-expand-transition>
@@ -779,5 +797,5 @@ export default {
       }
     }
   }
-}
+};
 </script>

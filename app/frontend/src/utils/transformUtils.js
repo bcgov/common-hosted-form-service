@@ -80,7 +80,7 @@ export function isFormExpired(formSchedule = {}) {
     expire:false,
     message:''
   };
-  
+
   if(formSchedule && formSchedule.enabled)
   {
     //Check if Form open date is in past or Is form already started for submission
@@ -93,7 +93,7 @@ export function isFormExpired(formSchedule = {}) {
       var isFormStartedAlready = moment().diff(startDate, 'seconds'); //If a positive number it means form get started
       if(isFormStartedAlready >= 0){
 
-        
+
         //Form have valid past open date for scheduling so lets check for the next conditions
         if(isFormStartedAlready && formSchedule.enabled && formSchedule.scheduleType !== 'manual'){
           if(formSchedule.closingMessageEnabled){
@@ -105,7 +105,7 @@ export function isFormExpired(formSchedule = {}) {
           }else{
             result = {...result,message:'This form is expired for the period.'};
           }
-          
+
           var closeDate = formSchedule.scheduleType === 'period' ? getCalculatedCloseSubmissionDate(
             startDate,
             formSchedule.keepOpenForTerm,
@@ -118,7 +118,7 @@ export function isFormExpired(formSchedule = {}) {
             formSchedule.scheduleType,
             formSchedule.closeSubmissionDateTime
           ) : closingDate ; //moment(formSchedule.closeSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
-          
+
           // var closeDate = getCalculatedCloseSubmissionDate(
           //   startDate,
           //   formSchedule.keepOpenForTerm,
@@ -194,7 +194,7 @@ export function isFormExpired(formSchedule = {}) {
             }
           }
         }
-        
+
       }else{
         //Form schedule open date is in the future so form will not be available for submission
         result = {...result, expire:true, allowLateSubmissions:false, message:'This form is not yet available for submission.'};
@@ -247,7 +247,7 @@ export function getAvailableDates(
   scheduleType,
   closeDate=null
 ) {
-  
+
   let substartDate = moment(submstartDate);
   repeatUntil = moment(repeatUntil);
   var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
@@ -269,7 +269,7 @@ export function getAvailableDates(
   if((term == null && interval == null) && (keepAliveFor && keepAliveForInterval)){
     var newDates = substartDate.clone();
     availableDates.push(Object({
-      startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'), 
+      startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
       closeDate:newDates.add(keepAliveFor,keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
       graceDate: allowLateTerm && allowLateInterval ? newDates.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS') : null
     }));
@@ -277,22 +277,7 @@ export function getAvailableDates(
   return availableDates;
 }
 
-/**
- * @function calculateCloseDate
- * Get close date when provided a given period for late submission
- * 
- * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
- * @param {String} allowLateInterval A string of days,Weeks,months
- */
-export function calculateCloseDate(
-  subcloseDate=moment(),
-  allowLateTerm=null,
-  allowLateInterval=null
-) {
-  let closeDate = moment(subcloseDate);
-  const closeDateRet = closeDate.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
-  return closeDateRet;
-}
+
 
 /**
  * @function getCalculatedCloseSubmissionDate
@@ -329,3 +314,20 @@ export function getCalculatedCloseSubmissionDate(openDate=moment(),keepOpenForTe
   return calculatedCloseDate;
 }
 
+
+/**
+ * @function calculateCloseDate
+ * Get close date when provided a given period for late submission
+ *
+ * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
+ * @param {String} allowLateInterval A string of days,Weeks,months
+ */
+export function calculateCloseDate(
+  subcloseDate=moment(),
+  allowLateTerm=null,
+  allowLateInterval=null
+) {
+  let closeDate = moment(subcloseDate);
+  const closeDateRet = closeDate.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+  return closeDateRet;
+}

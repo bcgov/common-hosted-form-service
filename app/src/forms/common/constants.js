@@ -64,4 +64,9 @@ module.exports = Object.freeze({
       BCEID_BUSINESS: 'bceid-business',
     }
   },
+  ScheduleType: {
+    MANUAL: 'manual',
+    CLOSINGDATE: 'closingDate',
+    PERIOD: 'period'
+  }
 });

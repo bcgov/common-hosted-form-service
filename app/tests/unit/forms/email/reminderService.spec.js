@@ -7,28 +7,29 @@ const moment = require('moment');
 
 const schedule  = {
   "enabled": true,
-  "closingMessage": "form closed",
-  "keepOpenForTerm": "10",
+  "scheduleType": "manual",
+  "closingMessage": null,
+  "keepOpenForTerm": null,
   "repeatSubmission": {
-    "enabled": true,
-    "everyTerm": "1",
+    "enabled": null,
+    "everyTerm": null,
     "repeatUntil": "2023-08-10",
     "keepAliveFor": null,
     "onSpecificDay": null,
-    "everyIntervalType": "months"
+    "everyIntervalType": null
   },
-  "keepOpenForInterval": "days",
+  "keepOpenForInterval": null,
   "allowLateSubmissions": {
-    "enabled": false,
+    "enabled": null,
     "forNext": {
       "term": null,
       "intervalType": null
     }
   },
+  "closingMessageEnabled": null,
   "openSubmissionDateTime": "2022-07-10",
   "closeSubmissionDateTime": null
 };
-
 
 describe('getDifference', () => {
 
@@ -68,16 +69,16 @@ describe('getCurrentPeriod', () => {
 
     let toDay = moment('2022-09-12');
     let periodes = reminderService._listDates(schedule);
-    let periode =  reminderService.getCurrentPeriod(periodes, toDay);
+    let periode =  reminderService.getCurrentPeriod(periodes, toDay, schedule.allowLateSubmissions.enabled);
     expect(periode.state).toEqual(1);
     expect(periode.index).toEqual(2);
   });
 
   it('should return null', () => {
     let toDay = moment('2022-11-12');
-    let periode =  reminderService.getCurrentPeriod([], toDay);
+    let periode =  reminderService.getCurrentPeriod([], toDay, schedule.allowLateSubmissions.enabled);
     expect(periode).toBe(null);
-    periode =  reminderService.getCurrentPeriod([], toDay);
+    periode =  reminderService.getCurrentPeriod([], toDay, schedule.allowLateSubmissions.enabled);
     expect(periode).toBe(null);
     // eslint-disable-next-line no-console
   });
@@ -85,7 +86,7 @@ describe('getCurrentPeriod', () => {
   it('should return any period but the current date is after the periodes', () => {
     let toDay = moment('2023-11-12');
     let periodes = reminderService._listDates(schedule);
-    let periode =  reminderService.getCurrentPeriod(periodes, toDay);
+    let periode =  reminderService.getCurrentPeriod(periodes, toDay, schedule.allowLateSubmissions.enabled);
     expect(periode.state).toEqual(0);
     expect(periode.index).toEqual(-1);
   });
@@ -93,7 +94,7 @@ describe('getCurrentPeriod', () => {
   it('should return any period  but the current date is before the periodes', () => {
     let toDay = moment('2021-11-12');
     let periodes = reminderService._listDates(schedule);
-    let periode =  reminderService.getCurrentPeriod(periodes, toDay);
+    let periode =  reminderService.getCurrentPeriod(periodes, toDay, schedule.allowLateSubmissions.enabled);
     expect(periode.state).toEqual(-1);
     expect(periode.index).toEqual(-1);
   });
