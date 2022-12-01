@@ -10,20 +10,16 @@ class GeoAddressService {
       throw new Error('GeoAddressService is not configured. Check configuration.');
     }
 
-    this.apiUrl = bcAddressURL;
     this.apiKey=apiKey;
     this.queryParameters = queryParameters;
   }
 
   async addressQuerySearch(query) {
     try {
-      //let preferUrl = query.bcGeoAddressURL;
-      delete query.bcGeoAddressURL;
 
       const queryParameters = {...query, ...this.queryParameters };
 
       axios.defaults.headers['X-API-KEY'] = this.apiKey;
-
 
       const {data} = await axios.get(config.get('customBcAddressFormioComponent.bcAddressURL'), { params: { ...queryParameters } });
 
