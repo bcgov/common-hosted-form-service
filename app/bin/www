@@ -6,11 +6,18 @@ const http = require('http');
 const log = require('../src/components/log')(module.filename);
 
 const app = require('../app');
+// const cron = require('node-cron');
+// const reminderService = require('../src/forms/email/reminderService');
+
+// // Sending emails every day at midnight.
+// // '0 0 * * *' midnight
+// cron.schedule('0 0 * * *', function() {
+//   reminderService._init();
+// });
 
 /** Normalize a port into a number, string, or false. */
 const normalizePort = val => {
   const port = parseInt(val, 10);
-
   if (isNaN(port)) {
     // named pipe
     return val;

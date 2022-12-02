@@ -93,7 +93,6 @@ const service = {
   },
   _listDates: (schedule) =>{
 
-
     if (schedule.scheduleType == ScheduleType.PERIOD){
       return getAvailableDates(
         schedule.keepOpenForTerm,
@@ -109,7 +108,7 @@ const service = {
       );
     }
     if (schedule.scheduleType == ScheduleType.MANUAL){
-      return [ Object({
+      return [Object({
         startDate: schedule.openSubmissionDateTime,
         closeDate:  null,
         graceDate:  null
@@ -149,18 +148,12 @@ const service = {
 
       obj.avalaibleDate =  service._listDates(forms[i].schedule) ;
 
-      // eslint-disable-next-line no-console
-      console.log(obj.avalaibleDate);
-
-      if (obj.avalaibleDate.length==0) {
+      if (obj.avalaibleDate.length == 0) {
         reminder.push({ error:true, message : `Form ${forms[i].name } has no avalaible date.` });
         continue;
       }
 
       obj.report = service.getCurrentPeriod(obj.avalaibleDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
-
-      // eslint-disable-next-line no-console
-      // console.log(obj.report);
 
       obj.form   = forms[i];
 
@@ -270,7 +263,7 @@ const service = {
       const type = true;
       const host = (type) ? prod : dev;
       return `${host}${basePath}`;
-    } catch (error){
+    } catch (error) {
       log.error(error.message, {
         function: '_getReferer'
       });
@@ -281,7 +274,6 @@ const service = {
     const submiters =  statement.submiters.map(element => {
       return element['email'];
     });
-    console.log(submiters);
     const data = { form :statement.form, report : statement.report, submiters, state : statement.state, referer };
     emailService.initReminder(data);
   }

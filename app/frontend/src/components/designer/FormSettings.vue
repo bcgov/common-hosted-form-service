@@ -259,7 +259,7 @@
               </v-col>
             </v-row>
 
-            <v-checkbox class="my-0 pt-0" v-model="schedule.repeatSubmission.enabled" v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
+            <v-checkbox class="my-0 pt-0" @change="repeatSubmissionChanged" v-model="schedule.repeatSubmission.enabled" v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
               <template #label>
                 Repeat period
               </template>
@@ -607,7 +607,6 @@ export default {
         this.schedule.scheduleType,
         this.schedule.closeSubmissionDateTime
       );
-      console.log('getDates-',getDates);
       return getDates;
     },
     CALCULATE_CLOSE_DATE() {
@@ -705,6 +704,13 @@ export default {
         this.reminder = {};
       }
 
+    },
+    repeatSubmissionChanged (){
+      if(!this.schedule.repeatSubmission.enabled){
+        this.schedule.repeatSubmission.everyTerm = null;
+        this.schedule.repeatSubmission.everyIntervalType = null;
+        this.schedule.repeatSubmission.repeatUntil = null;
+      }
     },
     scheduleTypeChanged() {
       if(this.schedule.scheduleType === ScheduleType.MANUAL){

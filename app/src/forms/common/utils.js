@@ -165,7 +165,6 @@ const isEligibleLateSubmission = (date,term,interval) => {
 };
 
 
-
 /**
  * @function getAvailableDates
  * Get All possible dates in given period with Term and Interval
@@ -198,7 +197,6 @@ const  getAvailableDates = (
   let substartDate = moment(submstartDate);
   repeatUntil = moment(repeatUntil);
   var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
-  console.log(calculatedsubcloseDate);
   var availableDates = [];
   if(calculatedsubcloseDate && term && interval) {
     while (substartDate.isBefore(calculatedsubcloseDate)) {
@@ -247,19 +245,22 @@ const  getAvailableDates = (
 const getCalculatedCloseSubmissionDate = (openedDate=moment(),keepOpenForTerm=0,keepOpenForInterval='days',allowLateTerm=0,allowLateInterval='days',repeatSubmissionTerm=0,repeatSubmissionInterval='days',repeatSubmissionUntil=moment()) => {
   const openDate = openedDate.clone();
   var calculatedCloseDate = moment(openDate);
-  repeatSubmissionUntil = moment(openDate);
+  repeatSubmissionUntil = moment(repeatSubmissionUntil);
   if(!allowLateTerm && !allowLateInterval && !repeatSubmissionTerm && !repeatSubmissionInterval){
     calculatedCloseDate = openDate.add(keepOpenForTerm,keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
   }else{
-    if(repeatSubmissionTerm && repeatSubmissionInterval){
+    if(repeatSubmissionTerm && repeatSubmissionInterval && repeatSubmissionUntil){
       calculatedCloseDate = repeatSubmissionUntil;
     }
     if(allowLateTerm && allowLateInterval){
       calculatedCloseDate = calculatedCloseDate.add(keepOpenForTerm,keepOpenForInterval).add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
     }
   }
+
   return calculatedCloseDate;
 };
+
+
 
 
 const periodType = {
