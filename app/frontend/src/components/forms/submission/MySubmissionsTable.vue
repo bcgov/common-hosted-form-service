@@ -108,6 +108,9 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['form', 'submissionList', 'permissions']),
+    ...mapGetters('auth', [
+      'user'
+    ]),
     headers() {
       let headers = [
         { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
@@ -179,7 +182,7 @@ export default {
     async populateSubmissionsTable() {
       this.loading = true;
       // Get the submissions for this form
-      await this.fetchSubmissions({ formId: this.formId, userView: true });
+      await this.fetchSubmissions({ formId: this.formId, userView: true, createdBy: `${this.user.username}@${this.user.idp}` });
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {

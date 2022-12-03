@@ -35,11 +35,19 @@
 
     <v-row no-gutters>
       <v-spacer />
-      <v-col cols="12" sm="8">
+      <v-col cols="4" sm="4">
         <v-checkbox
           class="pl-3"
           v-model="deletedOnly"
           label="Show deleted submissions"
+          @click="refreshSubmissions"
+        />
+      </v-col>
+      <v-col cols="4" sm="4">
+        <v-checkbox
+          class="pl-3"
+          v-model="currentUserOnly"
+          label="Show my submissions"
           @click="refreshSubmissions"
         />
       </v-col>
@@ -56,6 +64,8 @@
           />
         </div>
       </v-col>
+    </v-row>
+    <v-row no-gutters>
     </v-row>
 
     <!-- table header -->
@@ -153,6 +163,7 @@ export default {
   data() {
     return {
       deletedOnly: false,
+      currentUserOnly: false,
       loading: true,
       restoreItem: {},
       search: '',
@@ -167,6 +178,9 @@ export default {
       'permissions',
       'submissionList',
       'userFormPreferences',
+    ]),
+    ...mapGetters('auth', [
+      'user'
     ]),
 
     checkFormManage() {
@@ -249,7 +263,7 @@ export default {
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        await this.fetchSubmissions({ formId: this.formId, deletedOnly: this.deletedOnly });
+        await this.fetchSubmissions({ formId: this.formId, deletedOnly: this.deletedOnly, createdBy: (this.currentUserOnly) ? `${this.user.username}@${this.user.idp}` : '' });
         // Build up the list of forms for the table
         if (this.submissionList) {
           const tableRows = this.submissionList
