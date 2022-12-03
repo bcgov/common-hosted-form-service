@@ -42,42 +42,35 @@ const queryUtils = {
 };
 
 
-const reArrangeFormSubmissionJSon = (obj, objectType) => {
+const reArrangeFormSubmissionJSon = (obj) => {
   let objectMap = [];
-  const findField = (obj) => {
+  const findField = (obj,objectType,level) => {
+
+
 
     Object.keys(obj).forEach((key)=>{
       if(obj[key].constructor.name==='Array') {
+        objectMap.push([key, level]);
 
         for (let value of obj[key]) {
 
-          objectMap.push(key);
-
-          findField(value, 'isArray');
-
+          findField(value, 'isArray',level+1);
         }
-
       }
 
-      if(objectType==='isArray' && obj[key].constructor.name==='Object') {
-
-        findField(obj[key], 'isArray');
-      }
-
-      if(objectType==='isObject' && obj[key].constructor.name==='Object'){
-
-        findField(obj[key], 'isObject');
+      if(obj[key].constructor.name==='Object'){
+        findField(obj[key], 'isObject',level+1);
       }
 
       else if (obj[key].constructor.name==='String' || obj[key].constructor.name==='Number' || obj[key].constructor.name==='Boolean') {
-
-        objectMap.push({[key] : obj[key]});
-
+        if(key!=='submit') {
+          objectMap.push([{[key] : obj[key]}, level]);
+        }
       }
     });
   };
 
-  findField(obj, 'isObject');
+  findField(obj, 'isObject', 0);
 
   return objectMap;
 

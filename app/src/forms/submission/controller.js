@@ -145,19 +145,18 @@ module.exports = {
           height = (count.value)*30;
         }
 
-        if(typeof val === 'string'){
+        if(typeof val[0] === 'string'){
           doc.fontSize(20)
-            .font('Courier-Bold').text(val, 10, height);
+            .font('Courier-Bold').text(val[0], (val[1]*10)+10, height);
         }
         else if (typeof val === 'object') {
-          doc.fontSize(18).font('Courier').text(''+Object.keys(val)+' : '+ Object.values(val), 10, height);
+          doc.fontSize(18).font('Courier').text(''+Object.keys(val[0])+' : '+ Object.values(val[0]), (val[1]*10)+10, height);
         }
       }
       doc.pipe(res)
         .on('finish', function () {
         });
       doc.end();
-
       res.status(200);
 
     } catch (error) {
