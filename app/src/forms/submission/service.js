@@ -9,7 +9,7 @@ const {
   SubmissionAudit,
   SubmissionMetadata
 } = require('../common/models');
-const {reArrangeJSon, flatten} = require('../common/utils')
+const {reArrangeFormSubmissionJSon} = require('../common/utils');
 const emailService = require('../email/emailService');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
@@ -309,32 +309,8 @@ const service = {
     }
   },
   /** get the audit history metadata (nothing that edited a draft for now) */
-  genSubmissionToPdf: async(submissionId) => {
-    //var doc = new jsPDF('p', 'pt');
-    //const doc = new jsPDF();
-    const submission = await service.read(submissionId);
-    const submissionMap = new Set();
-    //autoTable
-    let level = await reArrangeJSon (submission.submission.submission.data, "data", submissionMap,"isObject",0,-1);
-    //const iterator1 = submissionMap.values();
-    /*let index =0;
-    let bodyData =[];
-    for (const entry of submissionMap.values()) {
-      bodyData.push(entry);
-      //console.log(entry);
-     // doc.text(`${Object.keys(entry)[0]}`+":"+Object.values(entry)[0],0, (5+(index)*5));
-     // index=index+1;
-    }
-    doc.autoTable(['Name', 'Value'], bodyData);
-    //doc.save('table.pdf');
-    doc.save("table.pdf");
-*/
-console.log(level);
-console.log(submissionMap);
-console.log("I am hete")
-   //let r = await flatten(submission.submission.submission.data)
-
-    return null;
+  genSubmissionToPdf: async(submission) => {
+    return reArrangeFormSubmissionJSon(submission);
   },
   // -------------------------------------------------------------------------------------------------/Notes
 };

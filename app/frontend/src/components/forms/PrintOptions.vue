@@ -69,6 +69,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import { formService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
+import { mapFields } from 'vuex-map-fields';
 
 export default {
   data() {
@@ -87,7 +88,10 @@ export default {
     submissionId: String,
   },
   computed: {
-    ...mapGetters('form', ['formSubmission']),
+    ...mapGetters('form', ['submissionToPDF']),
+    ...mapFields('form', [
+      'form.name',
+    ]),
     files() {
       return this.templateForm.files;
     },
@@ -102,8 +106,14 @@ export default {
         window.print();
       }, 500);
     },
+
     async downloadPDF() {
       await this.genSubmissionToPDF(this.submissionId);
+      const blob = new Blob([this.submissionToPDF], {
+        type: 'application/pdf',
+      });
+      // Generate Temporary Download Link
+      this.createDownload(blob, this.name+'_submission'+'.pdf');
     },
     splitFileName(filename = undefined) {
       let name = undefined;

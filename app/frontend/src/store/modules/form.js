@@ -451,7 +451,6 @@ export default {
     async genSubmissionToPDF ({ commit, dispatch }, submissionId) {
 
       try {
-        console.log('----->>> ', submissionId);
         // Get this submission
         const response = await formService.docGenSubmissionToPdf(
           submissionId
