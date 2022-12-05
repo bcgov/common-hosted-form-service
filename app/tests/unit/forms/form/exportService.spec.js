@@ -100,10 +100,13 @@ describe('_readSchemaFields', () => {
 describe('_buildCsvHeaders', () => {
   it('should build correct csv headers', async () => {
     //
-    // form object from db
-    const form = { id: 123 };
+
     // form schema from db
     const formSchema = require('../../../fixtures/form/kitchen_sink_schema.json');
+
+    // form object from db
+    const form = { id: 123 };
+
 
     // mock latestFormSchema
     exportService._readLatestFormSchema = jest.fn(() => { return formSchema; });
