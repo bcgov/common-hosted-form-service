@@ -313,9 +313,10 @@ const service = {
     return schema.components.flatMap(c => findFields(c));
   },
 
-  listSubmissions: async (formVersionId) => {
+  listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query()
       .where('formVersionId', formVersionId)
+      .modify('filterCreatedBy', params.createdBy)
       .modify('orderDescending');
   },
 
