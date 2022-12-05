@@ -45,9 +45,6 @@ const queryUtils = {
 const reArrangeFormSubmissionJSon = (obj) => {
   let objectMap = [];
   const findField = (obj,objectType,level) => {
-
-
-
     Object.keys(obj).forEach((key)=>{
       if(obj[key].constructor.name==='Array') {
         objectMap.push([key, level]);
