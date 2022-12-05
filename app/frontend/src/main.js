@@ -20,11 +20,6 @@ import BcGovFormioComponents from '@/formio/lib';
 import { Formio } from 'vue-formio';
 Formio.use(BcGovFormioComponents);
 
-/* import font awesome icon component */
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-/* add font awesome icon component */
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-
 
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
