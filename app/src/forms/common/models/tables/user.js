@@ -25,6 +25,16 @@ class User extends Timestamps(Model) {
 
   static get modifiers() {
     return {
+      filterIdpUserId(query, value) {
+        if (value) {
+          query.where('idpUserId', value);
+        }
+      },
+      filterIdpUsername(query, value) {
+        if (value) {
+          query.where('idpUsername', value);
+        }
+      },
       filterKeycloakId(query, value) {
         if (value) {
           query.where('keycloakId', value);
@@ -91,6 +101,8 @@ class User extends Timestamps(Model) {
       required: ['keycloakId'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
+        idpUserId: { type: 'string', maxLength: 255 },
+        idpUsername: { type: 'string', maxLength: 255 },
         keycloakId: { type: 'string', pattern: Regex.UUID },
         username: { type: ['string', 'null'], maxLength: 255 },
         firstName: { type: ['string', 'null'], maxLength: 255 },
