@@ -4,27 +4,11 @@
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
           <template #title>Form Title</template>
-          <v-text-field
-            dense
-            flat
-            solid
-            outlined
-            label="Form Title"
-            data-test="text-name"
-            v-model="name"
-            :rules="nameRules"
-          />
+          <v-text-field dense flat solid outlined label="Form Title" data-test="text-name" v-model="name"
+                        :rules="nameRules" />
 
-          <v-text-field
-            dense
-            flat
-            solid
-            outlined
-            label="Form Description"
-            data-test="text-description"
-            v-model="description"
-            :rules="descriptionRules"
-          />
+          <v-text-field dense flat solid outlined label="Form Description" data-test="text-description"
+                        v-model="description" :rules="descriptionRules" />
         </BasePanel>
       </v-col>
 
@@ -48,8 +32,8 @@
                   <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
                 </h4>
                 <p class="mt-2 mb-0">
-                  If you will be using this form to gather information from the general 
-                  public on topics that are of general interest to the public, you are 
+                  If you will be using this form to gather information from the general
+                  public on topics that are of general interest to the public, you are
                   required to contact the GCPE so that your engagement can be listed on
                   <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
                     govTogetherBC. <v-icon small color="primary">open_in_new</v-icon>
@@ -68,24 +52,21 @@
                   <v-expand-transition>
                     <BaseInfoCard
                       v-if="idps[0] && [ID_PROVIDERS.BCEIDBASIC, ID_PROVIDERS.BCEIDBUSINESS].includes(idps[0])"
-                      class="mr-4"
-                    >
+                      class="mr-4">
                       <h4 class="primary--text">
                         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
                       </h4>
                       <p class="my-2">
                         You must notify the Identity Information Management (IDIM)
-                        team by email (<a href="mailto:IDIM.Consulting@gov.bc.ca"
-                        >IDIM.Consulting@gov.bc.ca</a
-                        >) your intent to leverage BCeID to verify the identities of
+                        team by email (<a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a>) your
+                        intent to leverage BCeID to verify the identities of
                         your form submitters.
                       </p>
                       <p class="mt-2 mb-0">
                         Please reference our
                         <a
-                          href="https://github.com/bcgov/common-hosted-form-service/wiki/Accessing-forms#Notify-the-idim-team-if-you-are-using-bceid"
-                        >user guide</a
-                        >
+                          href="https://github.com/bcgov/common-hosted-form-service/wiki/Accessing-forms#Notify-the-idim-team-if-you-are-using-bceid">user
+                          guide</a>
                         for more details.
                       </p>
                     </BaseInfoCard>
@@ -93,10 +74,8 @@
                 </v-radio-group>
               </v-row>
             </v-expand-transition>
-            <v-radio
-              label="Specific Team Members (You can specify users on the form's management screen once created.)"
-              value="team"
-            />
+            <v-radio label="Specific Team Members (You can specify users on the form's management screen once created.)"
+                     value="team" />
           </v-radio-group>
         </BasePanel>
       </v-col>
@@ -106,11 +85,7 @@
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
           <template #title>Form Functionality</template>
-          <v-checkbox
-            class="my-0"
-            v-model="enableSubmitterDraft"
-            :disabled="userType === ID_MODE.PUBLIC"
-          >
+          <v-checkbox class="my-0" v-model="enableSubmitterDraft" :disabled="userType === ID_MODE.PUBLIC">
             <template #label>
               <span>
                 Submitters can
@@ -125,6 +100,35 @@
                 Reviewers can <strong>Update the Status</strong> of this form
                 (i.e. Submitted, Assigned, Completed)
               </span>
+            </template>
+          </v-checkbox>
+
+          <v-checkbox v-if="!isFormPublished" disabled class="my-0">
+            <template #label>
+              Schedule form submission will be available in the Form settings after the
+              form published.
+            </template>
+          </v-checkbox>
+
+          <v-checkbox v-if="isFormPublished" class="my-0" v-model="schedule.enabled">
+            <template #label>
+              Enable this form for schedule settings.
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                    help_outline
+                  </v-icon>
+                </template>
+                <span>
+                  Selecting this option controls this form to be open or close
+                  for a given period.<br />
+                  If checked, it will display form schedule section where you can
+                  <ul>
+                    <li>Set form submissions open and close date</li>
+                    <li>Set form recurrence settings</li>
+                  </ul>
+                </span>
+              </v-tooltip>
             </template>
           </v-checkbox>
         </BasePanel>
@@ -175,24 +179,10 @@
             </template>
           </v-checkbox>
 
-          <v-combobox
-            v-if="sendSubRecieviedEmail"
-            v-model="submissionReceivedEmails"
-            :rules="emailArrayRules"
-            dense
-            flat
-            solid
-            outlined
-            hide-selected
-            clearable
-            hint="Add one or more valid email addresses"
-            label="Notification Email Addresses"
-            multiple
-            small-chips
-            deletable-chips
-            :delimiters="[' ', ',']"
-            append-icon=""
-          >
+          <v-combobox v-if="sendSubRecieviedEmail" v-model="submissionReceivedEmails" :rules="emailArrayRules" dense
+                      flat solid outlined hide-selected clearable hint="Add one or more valid email addresses"
+                      label="Notification Email Addresses" multiple small-chips deletable-chips :delimiters="[' ', ',']"
+                      append-icon="">
             <template v-slot:no-data>
               <v-list-item>
                 <v-list-item-content>
@@ -206,6 +196,284 @@
           </v-combobox>
         </BasePanel>
       </v-col>
+
+      <v-expand-transition>
+        <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished">
+          <BasePanel class="fill-height">
+            <template #title>Form Schedule Settings</template>
+            <v-row class="m-0">
+              <v-col cols="8" md="8" class="pl-0 pr-0 pb-0">
+                <v-menu v-model="openSubmissionDateDraw" data-test="menu-form-openSubmissionDateDraw"
+                        :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y
+                        min-width="290px">
+                  <template v-slot:activator="{ on }">
+                    <v-text-field v-model="schedule.openSubmissionDateTime" placeholder="yyyy-mm-dd" append-icon="event"
+                                  v-on:click:append="openSubmissionDateDraw = true" readonly label="Open submissions" v-on="on"
+                                  dense outlined :rules="scheduleOpenDate"></v-text-field>
+                  </template>
+                  <v-date-picker v-model="schedule.openSubmissionDateTime"
+                                 data-test="picker-form-openSubmissionDateDraw" @input="openSubmissionDateDraw = false">
+                  </v-date-picker>
+                </v-menu>
+              </v-col>
+
+              <v-col cols="12" md="12" class="p-0">
+                <template>
+                  <p class="font-weight-black">How long do you want to receive submissions?</p>
+                </template>
+                <v-expand-transition>
+                  <v-row>
+                    <v-radio-group class="my-0" v-model="schedule.scheduleType" :rules="scheduleTypedRules" @change="scheduleTypeChanged">
+                      <v-radio class="mx-2" label="Keep open until manually unpubished" :value="SCHEDULE_TYPE.MANUAL" />
+                      <v-radio class="mx-2" label="Schedule a closing date" :value="SCHEDULE_TYPE.CLOSINGDATE" />
+                      <v-radio class="mx-2" label="Set up submission period" :value="SCHEDULE_TYPE.PERIOD" />
+                    </v-radio-group>
+                  </v-row>
+                </v-expand-transition>
+              </v-col>
+
+
+              <v-col cols="8" md="8" class="pl-0 pr-0 pb-0" v-if="schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE">
+                <v-menu v-model="closeSubmissionDateDraw" data-test="menu-form-closeSubmissionDateDraw"
+                        :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y
+                        min-width="290px">
+                  <template v-slot:activator="{ on }">
+                    <v-text-field v-model="schedule.closeSubmissionDateTime" placeholder="yyyy-mm-dd"
+                                  append-icon="event" v-on:click:append="closeSubmissionDateDraw = true" readonly
+                                  label="Close submissions" v-on="on" dense outlined :rules="scheduleCloseDate"></v-text-field>
+                  </template>
+                  <v-date-picker v-model="schedule.closeSubmissionDateTime"
+                                 data-test="picker-form-closeSubmissionDateDraw" @input="closeSubmissionDateDraw = false">
+                  </v-date-picker>
+                </v-menu>
+              </v-col>
+
+              <v-col cols="4" md="4" class="pl-0 pr-0 pb-0" v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
+                <v-text-field label="Keep open for" value="0" type="number" dense flat solid outlined
+                              v-model="schedule.keepOpenForTerm" class="m-0 p-0" :rules="roundNumber"></v-text-field>
+              </v-col>
+
+              <v-col cols="4" md="4" class="pl-0 pr-0 pb-0" v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
+                <v-select :items="['days', 'weeks', 'months', 'quarters', 'years']" label="Period" dense flat solid outlined
+                          class="mr-2 pl-2" v-model="schedule.keepOpenForInterval" :rules="intervalType"></v-select>
+              </v-col>
+            </v-row>
+
+            <v-checkbox class="my-0 pt-0" @change="repeatSubmissionChanged" v-model="schedule.repeatSubmission.enabled" v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
+              <template #label>
+                Repeat period
+              </template>
+            </v-checkbox>
+
+            <v-expand-transition
+              v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD && schedule.repeatSubmission.enabled">
+              <v-row class="m-0">
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-text-field label="Every" value="0" type="number" dense flat solid outlined
+                                v-model="schedule.repeatSubmission.everyTerm" class="m-0 p-0" :rules="repeatTerm"></v-text-field>
+                </v-col>
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-select :items="AVAILABLE_PERIOD_OPTIONS" label="Period" dense flat solid outlined class="mr-2 pl-2"
+                            v-model="schedule.repeatSubmission.everyIntervalType" :rules="repeatIntervalType"></v-select>
+                </v-col>
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-menu v-model="repeatUntil" data-test="menu-form-repeatUntil" :close-on-content-click="false"
+                          :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                    <template v-slot:activator="{ on }">
+                      <v-text-field v-model="schedule.repeatSubmission.repeatUntil" placeholder="yyyy-mm-dd"
+                                    append-icon="event" v-on:click:append="repeatUntil = true" readonly label="Repeat until"
+                                    v-on="on" dense outlined :rules="repeatUntilDate"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="schedule.repeatSubmission.repeatUntil" data-test="picker-form-repeatUntil"
+                                   @input="repeatUntil = false"></v-date-picker>
+                  </v-menu>
+
+                </v-col>
+
+              </v-row>
+            </v-expand-transition>
+
+
+
+            <v-checkbox class="my-0 m-0 p-0" v-model="schedule.allowLateSubmissions.enabled"
+                        v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)" :rules="allowLateSubmissionRule" >
+              <template #label>
+                Allow late submissions <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                      help_outline
+                    </v-icon>
+                  </template>
+                  <span>
+                    If checked, submitters will be able to submit data after the closing date.
+                  </span>
+                </v-tooltip>
+              </template>
+            </v-checkbox>
+
+            <v-expand-transition
+              v-if="schedule.allowLateSubmissions.enabled && [SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)"
+              class="pl-3 ">
+              <v-row class="m-0">
+
+                <v-col cols="4" md="4" class="m-0 p-0">
+                  <v-text-field label="After close date for" value="0" type="number" dense flat solid outlined
+                                v-model="schedule.allowLateSubmissions.forNext.term" class="m-0 p-0" :rules="roundNumber">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="4" md="4" class="m-0 p-0">
+                  <v-select :items="['days', 'weeks', 'months', 'quarters', 'years']" label="Period" dense flat solid
+                            outlined class="mr-1 pl-2" v-model="schedule.allowLateSubmissions.forNext.intervalType"
+                            :rules="intervalType"></v-select>
+                </v-col>
+              </v-row>
+            </v-expand-transition>
+
+
+
+
+            <v-row class="p-0 m-0"
+                   v-if="schedule.enabled && schedule.openSubmissionDateTime && schedule.openSubmissionDateTime.length && (schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE ? schedule.closeSubmissionDateTime && schedule.closeSubmissionDateTime.length : true) && [SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)">
+              <v-col class="p-0 m-0" cols="12" md="12"><template>
+                <p class="font-weight-black m-0">Summary</p>
+              </template></v-col>
+
+              <v-col class="p-0 m-0" cols="12" md="12"
+                     v-if="schedule.openSubmissionDateTime && schedule.openSubmissionDateTime.length">Your form will first be published from
+                <b>{{ schedule.openSubmissionDateTime }}</b> to <b>
+                  <!-- close date according to Schedule type 'CLOSINGDATE' OR 'PERIOD' -->
+                  {{
+                    schedule.scheduleType === SCHEDULE_TYPE.PERIOD &&
+                      (
+                        schedule.keepOpenForTerm &&
+                        schedule.keepOpenForInterval &&
+                        schedule.openSubmissionDateTime
+                      ) ? (
+                      schedule.allowLateSubmissions.enabled &&
+                      schedule.allowLateSubmissions.forNext.intervalType &&
+                      schedule.allowLateSubmissions.forNext.term
+                    )
+                      ? AVAILABLE_DATES && AVAILABLE_DATES[0] && AVAILABLE_DATES[0]['graceDate'] && AVAILABLE_DATES[0]['graceDate'].split(" ")[0]
+                      : AVAILABLE_DATES && AVAILABLE_DATES[0] && AVAILABLE_DATES[0]['closeDate'] && AVAILABLE_DATES[0]['closeDate'].split(" ")[0]
+                    : ''
+                  }}
+
+                  {{ schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE ? schedule.allowLateSubmissions.enabled &&
+                    schedule.allowLateSubmissions.forNext.intervalType && schedule.allowLateSubmissions.forNext.term &&
+                    schedule.closeSubmissionDateTime.length ? CALCULATE_CLOSE_DATE.split(" ")[0] :
+                      schedule.closeSubmissionDateTime : ''
+                  }}
+                </b>
+
+                <!-- REPEAT SUBMISSION SENTENCE -->
+                <span
+                  v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD && schedule.repeatSubmission.enabled === true && schedule.repeatSubmission.everyTerm && schedule.repeatSubmission.repeatUntil && schedule.repeatSubmission.everyIntervalType && AVAILABLE_DATES[1]">It
+                  will then become published from <b>{{ AVAILABLE_DATES[1]['startDate'].split(" ")[0] }}</b> to
+                  <b>{{ schedule.allowLateSubmissions.enabled ? AVAILABLE_DATES[1]['graceDate'].split(" ")[0] :
+                    AVAILABLE_DATES[1]['closeDate'].split(" ")[0]
+                  }}</b></span>
+
+
+
+                <!-- REPEAT SUBMISSION SENTENCE -->
+                <span
+                  v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD && schedule.repeatSubmission.enabled && schedule.repeatSubmission.everyTerm && schedule.repeatSubmission.repeatUntil && schedule.repeatSubmission.everyIntervalType">
+                  and repeat being published for <b>{{ schedule.keepOpenForTerm }} {{ schedule.keepOpenForInterval }}</b>
+                  every {{ schedule.repeatSubmission.everyTerm }} {{ schedule.repeatSubmission.everyIntervalType }} untill
+                  <b>{{ schedule.repeatSubmission.repeatUntil }}</b>.<v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                        help_outline
+                      </v-icon>
+                    </template>
+                    <span>
+                      <!-- MORE FUTURE OCCURENCES -->
+                      As per the settings these are the available dates of submissions:
+                      <ul>
+                        <li :key="date.startDate + Math.random()" v-for="date in AVAILABLE_DATES">From {{
+                          date.startDate.split(" ")[0]
+                        }} <span v-if="schedule.enabled"> to {{ date.closeDate.split(" ")[0] }} <span
+                          v-if="schedule.allowLateSubmissions.enabled && date.closeDate !== date.graceDate">with
+                          late submission untill {{ date.graceDate.split(" ")[0] }}</span></span></li>
+                      </ul>
+                    </span>
+                  </v-tooltip></span>
+
+
+              </v-col>
+            </v-row>
+
+
+
+            <hr v-if="schedule.scheduleType !== null" />
+
+            <v-row class="p-0 m-0" v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)">
+              <v-col cols="12" md="12" class="p-0">
+                <v-checkbox class="my-0 pt-0" v-model="schedule.closingMessageEnabled">
+                  <template #label>
+                    Set custom closing message
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                          help_outline
+                        </v-icon>
+                      </template>
+                      <span>
+                        Allow you to add a customized message for your users when they visit a closed form.
+                      </span>
+                    </v-tooltip>
+                  </template>
+                </v-checkbox>
+              </v-col>
+
+              <v-col cols="12" md="12" class="p-0">
+                <v-expand-transition v-if="schedule.closingMessageEnabled">
+                  <v-row class="mb-0 mt-0">
+                    <v-col class="mb-0 mt-0 pb-0 pt-0">
+                      <template #title>Closing Message</template>
+                      <v-textarea dense rows="2" flat solid outlined label="Closing Message" data-test="text-name"
+                                  v-model="schedule.closingMessage" :rules="closeMessage" />
+                    </v-col>
+                  </v-row>
+                </v-expand-transition>
+              </v-col>
+
+            </v-row>
+
+            <v-row class="p-0 m-0">
+              <v-col cols="12" md="12" class="p-0">
+                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null" >
+                  <v-row class="mb-0 mt-0">
+                    <v-col class="mb-0 mt-0 pb-0 pt-0">
+                      <template #title>sEND Reminder email</template>
+                      <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
+                        <template #label>
+                          Enable automatic reminder notification
+                          <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                                help_outline
+                              </v-icon>
+                            </template>
+                            <span>
+                              Send automated reminder emails with the form link before and after the publishing date and prior to the closing date.
+                            </span>
+                          </v-tooltip>
+                        </template>
+                      </v-checkbox>
+                    </v-col>
+                  </v-row>
+                </v-expand-transition>
+              </v-col>
+            </v-row>
+
+          </BasePanel>
+        </v-col>
+      </v-expand-transition>
+
     </v-row>
   </v-container>
 </template>
@@ -213,7 +481,9 @@
 <script>
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { IdentityMode, IdentityProviders, Regex } from '@/utils/constants';
+import { IdentityMode, IdentityProviders, Regex, ScheduleType } from '@/utils/constants';
+import { getAvailableDates, calculateCloseDate } from '@/utils/transformUtils';
+import moment from 'moment';
 
 export default {
   name: 'FormSettings',
@@ -221,7 +491,11 @@ export default {
     formId: String,
   },
   data() {
+    // debugger;
     return {
+      repeatUntil: false,
+      closeSubmissionDateDraw: false,
+      openSubmissionDateDraw: false,
       valid: false,
       // Validation
       loginRequiredRules: [
@@ -251,6 +525,44 @@ export default {
           v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
           'Please enter all valid email addresses',
       ],
+      scheduleOpenDate: [
+        (v) => !!v || 'This field is required & should be valid date.',
+      ],
+      scheduleCloseDate: [
+        (v) => !!v || 'This field is required & should be valid date.',
+        (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Close Submission date should be greater then open submission date.',
+      ],
+      roundNumber: [
+        (v) => !!v || 'This field is required & should be an integer.',
+        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
+      ],
+      repeatTerm: [
+        (v) => !!v || 'This field is required & should be an integer.',
+        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
+      ],
+      scheduleTypedRules: [
+        (v) => !!v || 'Please select atleast 1 option'
+      ],
+      allowLateSubmissionRule: [
+        // (v) => !!v || 'This field is required'
+      ],
+      intervalType: [
+        (v) => !!v || 'This field is required & should be an interval.',
+      ],
+      repeatIntervalType: [
+        (v) => !! v || 'This field is required & should be an interval.',
+        (v) => this.AVAILABLE_PERIOD_OPTIONS.includes(v) || 'This field is required & should be a valid interval.',
+      ],
+      repeatIntervalTypeReminder: [
+        (v) => !! v || 'This field is required & should be an interval.',
+        (v) => this.AVAILABLE_PERIOD_INTERVAL.includes(v) || 'This field is required & should be a valid interval.',
+      ],
+      closeMessage: [
+        (v) => !!v || 'This field is required.',
+      ],
+      repeatUntilDate: [
+        (v) => !!v || 'This field is required & should be valid date.',
+      ]
     };
   },
   computed: {
@@ -265,12 +577,120 @@ export default {
       'form.showSubmissionConfirmation',
       'form.submissionReceivedEmails',
       'form.userType',
+      'form.schedule',
+      'form.reminder',
+      'form.versions'
     ]),
     ID_MODE() {
       return IdentityMode;
     },
     ID_PROVIDERS() {
       return IdentityProviders;
+    },
+    isFormPublished() {
+      return (
+        this.versions &&
+        this.versions.length &&
+        this.versions.some((v) => v.published)
+      );
+    },
+    AVAILABLE_DATES() { //return [];
+      const getDates = getAvailableDates(
+        this.schedule.keepOpenForTerm,
+        this.schedule.keepOpenForInterval,
+        this.schedule.openSubmissionDateTime,
+        this.schedule.repeatSubmission.everyTerm,
+        this.schedule.repeatSubmission.everyIntervalType,
+        this.schedule.allowLateSubmissions.forNext.term,
+        this.schedule.allowLateSubmissions.forNext.intervalType,
+        this.schedule.repeatSubmission.repeatUntil,
+        this.schedule.scheduleType,
+        this.schedule.closeSubmissionDateTime
+      );
+      return getDates;
+    },
+    CALCULATE_CLOSE_DATE() {
+      const closeDateCalculated = calculateCloseDate(this.schedule.closeSubmissionDateTime, this.schedule.allowLateSubmissions.forNext.term, this.schedule.allowLateSubmissions.forNext.intervalType);
+      return closeDateCalculated;
+    },
+    AVAILABLE_PERIOD_OPTIONS() {
+      var arrayOfption = ['weeks', 'months', 'quarters', 'years'];
+      var diffInDays = 0;
+      if(this.schedule.openSubmissionDateTime && this.schedule.keepOpenForInterval && this.schedule.keepOpenForTerm){
+        diffInDays = moment.duration({[this.schedule.keepOpenForInterval]: this.schedule.keepOpenForTerm}).asDays();// moment.duration(this.schedule.keepOpenForTerm, this.schedule.keepOpenForInterval).days();
+
+        if(this.schedule.allowLateSubmissions.enabled && this.schedule.allowLateSubmissions.forNext.term && this.schedule.allowLateSubmissions.forNext.intervalType){
+          let durationoflatesubInDays = 0;
+          if (this.schedule.allowLateSubmissions.forNext.intervalType === 'days') {
+            durationoflatesubInDays = this.schedule.allowLateSubmissions.forNext.term;
+          } else {
+            durationoflatesubInDays = moment.duration({ [this.schedule.allowLateSubmissions.forNext.intervalType]: this.schedule.allowLateSubmissions.forNext.term }).asDays();
+          }
+
+          diffInDays = Number(diffInDays) + Number(durationoflatesubInDays);
+        }
+      }
+
+      switch (true) {
+        case (diffInDays > 7 && diffInDays <= 30):
+          arrayOfption = ['months', 'quarters', 'years'];
+          break;
+
+        case (diffInDays > 30 && diffInDays <= 91):
+          arrayOfption = ['quarters', 'years'];
+          break;
+
+        case (diffInDays > 91):
+          arrayOfption = ['years'];
+          break;
+
+        default:
+          arrayOfption = ['weeks', 'months', 'quarters', 'years'];
+          break;
+      }
+      return arrayOfption;
+    },
+    INTERVAL_OPEN() {
+      return  moment.duration({[this.schedule.keepOpenForInterval]: this.schedule.keepOpenForTerm}).asDays();
+    },
+    AVAILABLE_PERIOD_INTERVAL() {
+      var arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+      var diffInDays = this.INTERVAL_OPEN;
+      switch (true) {
+        case (diffInDays <= 7):
+          arrayOfption = ['Daily'];
+          break;
+        case (diffInDays > 7 && diffInDays <= 14):
+          arrayOfption = ['Daily','Weekly'];
+          break;
+        case (diffInDays > 14 && diffInDays <= 31):
+          arrayOfption = ['Daily','Weekly','Bi-weekly'];
+          break;
+        case (diffInDays > 31 && diffInDays <= 91):
+          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly'];
+          break;
+        case (diffInDays > 91 && diffInDays <= 183):
+          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly'];
+          break;
+        case (diffInDays > 183 && diffInDays <= 365):
+          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually'];
+          break;
+        default:
+          arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+          break;
+      }
+      return arrayOfption;
+    },
+    SCHEDULE_TYPE() {
+      return ScheduleType;
+    }
+  },
+  watch: {
+    INTERVAL_OPEN: {
+      deep: true,
+      handler: function (day) {
+        this.reminder.allowAdditionalNotifications = (day<=1) ? false : this.reminder.allowAdditionalNotifications;
+      }
     },
   },
   methods: {
@@ -280,7 +700,75 @@ export default {
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
       }
+      if (this.userType !== 'team') {
+        this.reminder = {};
+      }
+
     },
-  },
+    repeatSubmissionChanged (){
+      if(!this.schedule.repeatSubmission.enabled){
+        this.schedule.repeatSubmission.everyTerm = null;
+        this.schedule.repeatSubmission.everyIntervalType = null;
+        this.schedule.repeatSubmission.repeatUntil = null;
+      }
+    },
+    scheduleTypeChanged() {
+      if(this.schedule.scheduleType === ScheduleType.MANUAL){
+        this.schedule.keepOpenForTerm = null;
+        this.schedule.keepOpenForInterval = null;
+        this.schedule.closingMessageEnabled = null;
+        this.schedule.closingMessage = null;
+        this.schedule.closeSubmissionDateTime = null;
+        this.schedule.repeatSubmission = {
+          'enabled': null,
+          'repeatUntil': null,
+          'everyTerm': null,
+          'onSpecificDay': null,
+          'everyIntervalType': null,
+          'keepAliveFor': null
+        },
+        this.schedule.allowLateSubmissions = {
+          'enabled': null,
+          'forNext': {
+            'term': null,
+            'intervalType': null
+          }
+        };
+      }
+      if(this.schedule.scheduleType === ScheduleType.CLOSINGDATE){
+        this.schedule.keepOpenForTerm = null;
+        this.schedule.keepOpenForInterval = null;
+        this.schedule.closingMessageEnabled = null;
+        this.schedule.closingMessage = null;
+        this.schedule.repeatSubmission = {
+          'enabled': null,
+          'repeatUntil': null,
+          'everyTerm': null,
+          'onSpecificDay': null,
+          'everyIntervalType': null,
+          'keepAliveFor': null
+        },
+        this.schedule.allowLateSubmissions = {
+          'enabled': null,
+          'forNext': {
+            'term': null,
+            'intervalType': null
+          }
+        };
+      }
+      if(this.schedule.scheduleType === ScheduleType.PERIOD){
+        this.schedule.closeSubmissionDateTime = null;
+        this.schedule.closingMessageEnabled = null;
+        this.schedule.closingMessage = null;
+        this.schedule.allowLateSubmissions = {
+          'enabled': null,
+          'forNext': {
+            'term': null,
+            'intervalType': null
+          }
+        };
+      }
+    }
+  }
 };
 </script>

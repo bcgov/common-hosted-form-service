@@ -117,3 +117,4 @@ export function isFormPublic(form) {
   return form &&
     (form.identityProviders && form.identityProviders.some(i => i.code === IdentityMode.PUBLIC));
 }
+

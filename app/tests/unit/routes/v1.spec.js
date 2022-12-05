@@ -10,7 +10,6 @@ const app = expressHelper(basePath, router);
 describe(`GET ${basePath}`, () => {
   it('should return all available endpoints', async () => {
     const response = await request(app).get(`${basePath}`);
-
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
     expect(Array.isArray(response.body.endpoints)).toBeTruthy();

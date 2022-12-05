@@ -8,7 +8,10 @@ module.exports = Object.freeze({
     STATUS_ASSIGNED: 'statusAssigned',
     STATUS_REVISING: 'statusRevising',
     SUBMISSION_RECEIVED: 'submissionReceived',
-    SUBMISSION_CONFIRMATION: 'submissionConfirmation'
+    SUBMISSION_CONFIRMATION: 'submissionConfirmation',
+    REMINDER_FORM_OPEN: 'formOpen',
+    REMINDER_FORM_WILL_CLOSE: 'formWillClose',
+    REMINDER_FORM_NOT_FILL: 'formNotFill'
   },
   Permissions: {
     FORM_API_CREATE: 'form_api_create',
@@ -61,4 +64,9 @@ module.exports = Object.freeze({
       BCEID_BUSINESS: 'bceid-business',
     }
   },
+  ScheduleType: {
+    MANUAL: 'manual',
+    CLOSINGDATE: 'closingDate',
+    PERIOD: 'period'
+  }
 });
