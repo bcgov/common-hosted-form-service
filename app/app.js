@@ -12,14 +12,7 @@ const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
-//const cron = require('node-cron');
-
 const apiRouter = express.Router();
-// cron.schedule('*/2 * * * * *', function() {
-//   // eslint-disable-next-line no-console
-//   console.log('Process running every minute');
-
-// });
 const state = {
   connections: {
     data: false

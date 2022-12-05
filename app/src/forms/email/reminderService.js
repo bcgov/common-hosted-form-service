@@ -215,7 +215,6 @@ const service = {
       let interval = Math.ceil(days_diff/2);
       // eslint-disable-next-line no-console
       let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
-
       return moment(now).isSame(mail_date);
     }
     return false;

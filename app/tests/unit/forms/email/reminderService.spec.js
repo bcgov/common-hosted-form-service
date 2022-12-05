@@ -5,20 +5,46 @@ const moment = require('moment');
 //const formService = require('../../../../src/forms/form/service');
 //const fs = require('fs');
 
+// const schedule  = {
+//   "enabled": true,
+//   "scheduleType": "period",
+//   "closingMessage": null,
+//   "keepOpenForTerm": null,
+//   "repeatSubmission": {
+//     "enabled": null,
+//     "everyTerm": null,
+//     "repeatUntil": "2023-08-10",
+//     "keepAliveFor": null,
+//     "onSpecificDay": null,
+//     "everyIntervalType": null
+//   },
+//   "keepOpenForInterval": null,
+//   "allowLateSubmissions": {
+//     "enabled": null,
+//     "forNext": {
+//       "term": null,
+//       "intervalType": null
+//     }
+//   },
+//   "closingMessageEnabled": null,
+//   "openSubmissionDateTime": "2022-07-10",
+//   "closeSubmissionDateTime": null
+// };
+
 const schedule  = {
   "enabled": true,
-  "scheduleType": "manual",
+  "scheduleType": "period",
   "closingMessage": null,
-  "keepOpenForTerm": null,
+  "keepOpenForTerm": "10",
   "repeatSubmission": {
-    "enabled": null,
-    "everyTerm": null,
+    "enabled": true,
+    "everyTerm": "1",
     "repeatUntil": "2023-08-10",
     "keepAliveFor": null,
     "onSpecificDay": null,
-    "everyIntervalType": null
+    "everyIntervalType": "months"
   },
-  "keepOpenForInterval": null,
+  "keepOpenForInterval": "days",
   "allowLateSubmissions": {
     "enabled": null,
     "forNext": {
@@ -62,11 +88,7 @@ describe('getDifference', () => {
 
 
 describe('getCurrentPeriod', () => {
-
-
-
   it('should return the current period', () => {
-
     let toDay = moment('2022-09-12');
     let periodes = reminderService._listDates(schedule);
     let periode =  reminderService.getCurrentPeriod(periodes, toDay, schedule.allowLateSubmissions.enabled);
