@@ -41,36 +41,43 @@ const queryUtils = {
   }
 };
 
+const unCamelCase = (str) => {
+  return str
+      // insert a space between lower & upper
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      // space before last upper in a sequence followed by lower
+      .replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1 $2$3')
+      // uppercase the first character
+      .replace(/^./, function(str){ return str.toUpperCase(); })
+}
+
 
 const reArrangeFormSubmissionJSon = (obj) => {
   let objectMap = [];
-  const findField = (obj,objectType,level) => {
-
-
-
+  const findField = (obj, level) => {
     Object.keys(obj).forEach((key)=>{
       if(obj[key].constructor.name==='Array') {
-        objectMap.push([key, level]);
+        objectMap.push([unCamelCase(key), level]);
 
         for (let value of obj[key]) {
 
-          findField(value, 'isArray',level+1);
+          findField(value, level+1);
         }
       }
 
       if(obj[key].constructor.name==='Object'){
-        findField(obj[key], 'isObject',level+1);
+        findField(obj[key], level+1);
       }
 
       else if (obj[key].constructor.name==='String' || obj[key].constructor.name==='Number' || obj[key].constructor.name==='Boolean') {
         if(key!=='submit') {
-          objectMap.push([{[key] : obj[key]}, level]);
+          objectMap.push([{[unCamelCase(key)] : obj[key]}, level]);
         }
       }
     });
   };
 
-  findField(obj, 'isObject', 0);
+  findField(obj, 0);
 
   return objectMap;
 

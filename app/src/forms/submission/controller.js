@@ -3,7 +3,7 @@ const cdogsService = require('../../components/cdogsService');
 const emailService = require('../email/emailService');
 const service = require('./service');
 const PDFDocument = require('pdfkit');
-var counter = require('counter');
+const counter = require('counter');
 
 
 module.exports = {
@@ -147,10 +147,10 @@ module.exports = {
 
         if(typeof val[0] === 'string'){
           doc.fontSize(20)
-            .font('Helvetica-Bold').text(val[0], (val[1]*10)+10, height);
+            .font('Helvetica-Bold').text(val[0], (val[1]*10)+20, height);
         }
         else if (typeof val === 'object') {
-          doc.fontSize(18).font('Helvetica').text(''+Object.keys(val[0])+' : '+ Object.values(val[0]), (val[1]*10)+10, height);
+          doc.fontSize(18).font('Helvetica').text(''+Object.keys(val[0])+' : '+ Object.values(val[0]), (val[1]*20)+10, height);
         }
       }
       doc.pipe(res)

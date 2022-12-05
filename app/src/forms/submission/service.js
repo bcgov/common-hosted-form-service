@@ -9,7 +9,7 @@ const {
   SubmissionAudit,
   SubmissionMetadata
 } = require('../common/models');
-const {reArrangeFormSubmissionJSon} = require('../common/utils');
+const { reArrangeFormSubmissionJSon } = require('../common/utils');
 const emailService = require('../email/emailService');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
