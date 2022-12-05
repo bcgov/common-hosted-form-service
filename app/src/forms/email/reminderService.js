@@ -25,7 +25,8 @@ const service = {
             formId:result.form.id,
             formName :  result.form.name,
             type_mail : result.state,
-            number_mail: result.submiters.length
+            number_mail: result.submiters.length,
+            period_type : q[i].periodType
           });
           // eslint-disable-next-line no-unused-vars
           mail+= result.submiters.length;
@@ -167,7 +168,8 @@ const service = {
       await reminder.push(
         {
           error : false,
-          statement : exportService._getListSubmitersByFormId(forms[i].id, obj)
+          statement : exportService._getListSubmitersByFormId(forms[i].id, obj),
+          periodType : forms[i].schedule.scheduleType
         }
       );
     }
@@ -177,16 +179,17 @@ const service = {
   _getMailType : (report, reminder, late) => {
 
     if(!reminder.enabled) return undefined;
+
     var state = undefined;
     const now = moment().format('YYYY-MM-DD');
     const start_date = moment(report.dates.startDate).format('YYYY-MM-DD');
-    const   end_date = (late) ? moment(report.dates.graceDate).format('YYYY-MM-DD') : moment(report.dates.closeDate).format('YYYY-MM-DD');
+    const end_date = (late) ? moment(report.dates.graceDate).format('YYYY-MM-DD') : moment(report.dates.closeDate).format('YYYY-MM-DD');
 
     if(moment(now).isSame(start_date)) {
       return EmailTypes.REMINDER_FORM_OPEN;
     }
 
-    if(report.dates.closeDate==null) return state;
+    if(report.dates.closeDate==null) return  state;
 
     if(service.getNumberDayFromIntervalType(reminder.intervalType, now, start_date, end_date) ){
       return EmailTypes.REMINDER_FORM_NOT_FILL;
@@ -208,8 +211,11 @@ const service = {
         }
       }
     } else {
-      let interval = Math.ceil(moment(end_date).diff(start_date,'days')/2);
+      const days_diff = moment(end_date).diff(start_date,'days');
+      let interval = Math.ceil(days_diff/2);
+      // eslint-disable-next-line no-console
       let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
+
       return moment(now).isSame(mail_date);
     }
     return false;

@@ -5,7 +5,7 @@ const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
 const formService = require('../form/service');
-
+const moment = require('moment');
 /** Helper function used to build the email template based on email type and contents */
 const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
@@ -116,17 +116,17 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
 /** Helper function used to build the email template based on email type and contents for reminder */
 const buildEmailTemplateFormForReminder = async (form, emailType, users, report, referer) => {
   let configData = {};
+  const closeDate = moment(report.dates.closeDate).format('MMM. D, YYYY');
+  const subject = 'CHEFS Submission Reminder';
+  const message = (report.dates.closeDate) ? `This email is to inform you that the ${form.name} form is now open for submissions and will stay open until ${closeDate}.Please ensure to complete your submission before the period is closed.
+  Thank you.` : `This email is to inform you that the ${form.name} form is now open for submissions.
+  Thank you. `;
   if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
     configData = {
       bodyTemplate: 'reminder-form-open.html',
       title: `Submission Start for ${form.name} `,
-      subject: 'Submission open',
-      messageLinkText: `Hi,
-      You are receiving this message because you are currently identified as a submitter for the form ${ form.name }.
-      A new submission period for this form is now starting and you will have until the ${ report.dates.closeDate } to submit your information.
-      Please do not hesitate to reach out to the MoH HelpDesk HLTH.Helpdesk@gov.bc.ca
-      if you shouldn’t be identified as a submitter or if you run into any issues while submitting your data.
-      Thank you.
+      subject: subject,
+      messageLinkText: `Hi,\n ${message}
       `,
       priority: 'normal',
       form,
@@ -135,12 +135,9 @@ const buildEmailTemplateFormForReminder = async (form, emailType, users, report,
     configData = {
       bodyTemplate: 'reminder-form-not-fill.html',
       title: `Submission Reminder for ${form.name}`,
-      subject: 'Submission Reminder',
+      subject: subject,
       messageLinkText: `Hi,
-      You are receiving this message because you are currently identified as a submitter for the form ${form.name}.
-      This message is to remind you to submit the data before the end of the submission period on ${ report.dates.closeDate }.
-      Please do not hesitate to reach out to the MoH HelpDesk HLTH.Helpdesk@gov.bc.ca if you shouldn’t be identified as a submitter or if you run into any issues while submitting your data.
-
+      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }.Please ensure to complete your submission before the period is closed.
       Thank you.
       `,
       priority: 'normal',
@@ -152,10 +149,8 @@ const buildEmailTemplateFormForReminder = async (form, emailType, users, report,
       title: `Submission Closing for ${form.name}`,
       subject: 'Submission Closing',
       messageLinkText: `Hi,
-      You are receiving this message because you are currently identified as a submitter for the form ${form.name} and that you have until ${ report.dates.closeDate } midnight to submit your data.
-      Please do not hesitate to reach out to the MoH HelpDesk HLTH.Helpdesk@gov.bc.ca if you shouldn’t be identified as a submitter or if you run into any issues while submitting your data.
-      Thank you.
-      `,
+      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }.Please ensure to complete your submission before the period is closed.
+      Thank you. `,
       priority: 'normal',
       form,
     };
