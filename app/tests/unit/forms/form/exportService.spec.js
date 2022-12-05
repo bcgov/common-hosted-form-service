@@ -98,7 +98,6 @@ describe('_readSchemaFields', () => {
 
 
 describe('_buildCsvHeaders', () => {
-
   it('should build correct csv headers', async () => {
 
     // form object from db
@@ -114,7 +113,7 @@ describe('_buildCsvHeaders', () => {
 
     // build csv headers
     // gets a a list of form meta fieldfs followed by submission fields
-    const result = await exportService._buildCsvHeaders(form, submissionsExport);
+    const result = await exportService._buildCsvHeaders(form, submissionsExport,null);
 
     expect(result).toHaveLength(34);
     expect(result).toEqual(expect.arrayContaining(['form.confirmationId', 'textFieldNested1', 'textFieldNested2']));
