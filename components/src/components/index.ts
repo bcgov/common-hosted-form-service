@@ -44,6 +44,7 @@ import simpleradioadvanced from './SimpleRadioAdvanced/Component';
 import simplesurveyadvanced from './SimpleSurveyAdvanced/Component';
 import simplesignatureadvanced from './SimpleSignatureAdvanced/Component';
 import simplebuttonadvanced from './SimpleButtonAdvanced/Component';
+import bcaddress from './BCAddress/Component';
 
 export default {
   orgbook,
@@ -90,5 +91,6 @@ export default {
   simpleradioadvanced,
   simplesurveyadvanced,
   simplesignatureadvanced,
-  simplebuttonadvanced
+  simplebuttonadvanced,
+  bcaddress
 };

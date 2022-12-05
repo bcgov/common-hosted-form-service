@@ -166,6 +166,7 @@ objects:
                     secretKeyRef:
                       key: email
                       name: "${APP_NAME}-contact-secret"
+
                 - name: VUE_APP_HOWTOURL
                   valueFrom:
                     secretKeyRef:
@@ -176,6 +177,16 @@ objects:
                     secretKeyRef:
                       key: chefstourvideourl
                       name: "${APP_NAME}-landingpagevideourls-secret"
+                - name: VUE_APP_CHEFS_GEO_ADDRESS_APIURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: chefsgeoaddressapiurl
+                      name: "${APP_NAME}-bcgeoaddress-secret"
+                - name: VUE_APP_BC_GEO_ADDRESS_APIURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: bcgeoaddressapiurl
+                      name: "${APP_NAME}-bcgeoaddress-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
                 - name: SERVER_KC_CLIENTID
@@ -219,6 +230,8 @@ objects:
                     name: "${APP_NAME}-server-config"
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
+                - configMapRef:
+                    name: "${APP_NAME}-custombcaddressformiocomponent-config"
               # volumeMounts:
               #   - name: log-storage
               #     mountPath: /var/log

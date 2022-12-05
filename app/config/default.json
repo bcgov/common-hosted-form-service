@@ -63,5 +63,20 @@
       "tokenEndpoint": "https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token",
       "username": "CHEFS_SERVICE_CLIENT"
     }
+  },
+  "customBcAddressFormioComponent":{
+    "apikey":"xxxxxxxxxxxxxxx",
+    "bcAddressURL":"https://geocoder.api.gov.bc.ca/addresses.json",
+    "queryParameters":{
+      "echo": false,
+      "brief": true,
+      "minScore": 55,
+      "onlyCivic": true,
+      "maxResults": 15,
+      "autocomplete": true,
+      "matchAccuracy": 100,
+      "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
+      "precisionPoints": 100
+    }
   }
 }
