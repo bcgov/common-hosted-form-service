@@ -1,5 +1,4 @@
 const falsey = require('falsey');
-
 const setupMount = (type, app, routes, dataErrors) => {
   const p = `/${type}`;
   app.use(p, routes);
@@ -42,9 +41,46 @@ const queryUtils = {
   }
 };
 
+
+const reArrangeFormSubmissionJSon = (obj) => {
+  let objectMap = [];
+  const findField = (obj,objectType,level) => {
+
+
+
+    Object.keys(obj).forEach((key)=>{
+      if(obj[key].constructor.name==='Array') {
+        objectMap.push([key, level]);
+
+        for (let value of obj[key]) {
+
+          findField(value, 'isArray',level+1);
+        }
+      }
+
+      if(obj[key].constructor.name==='Object'){
+        findField(obj[key], 'isObject',level+1);
+      }
+
+      else if (obj[key].constructor.name==='String' || obj[key].constructor.name==='Number' || obj[key].constructor.name==='Boolean') {
+        if(key!=='submit') {
+          objectMap.push([{[key] : obj[key]}, level]);
+        }
+      }
+    });
+  };
+
+  findField(obj, 'isObject', 0);
+
+  return objectMap;
+
+};
+
+
 module.exports = {
   falsey,
   setupMount,
   queryUtils,
   typeUtils,
+  reArrangeFormSubmissionJSon
 };

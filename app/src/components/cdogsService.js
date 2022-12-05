@@ -132,7 +132,6 @@ class CdogsService {
     });
   }
 
-
 }
 
 const endpoint = config.get('serviceClient.commonServices.cdogs.endpoint');

@@ -2,6 +2,9 @@ const { Statuses } = require('../common/constants');
 const cdogsService = require('../../components/cdogsService');
 const emailService = require('../email/emailService');
 const service = require('./service');
+const PDFDocument = require('pdfkit');
+var counter = require('counter');
+
 
 module.exports = {
   read: async (req, res, next) => {
@@ -120,4 +123,45 @@ module.exports = {
       next(error);
     }
   },
+
+  genSubmissionToPdf: async (req, res, next) => {
+    try {
+
+      const submission = await service.read(req.params.formSubmissionId);
+      const data = await service.genSubmissionToPdf(submission.submission.submission.data);
+      const doc = new PDFDocument({size: 'A4', bufferPages: true, autoFirstPage: false});
+      doc.addPage();
+      let count = counter(0);
+      let height =0;
+
+      for (let val of data){
+        count.value+=1;
+        height = (count.value)*30 ;
+
+        if(height>710) {
+          count = counter(0);
+          doc.addPage();
+          count.value+=1;
+          height = (count.value)*30;
+        }
+
+        if(typeof val[0] === 'string'){
+          doc.fontSize(20)
+            .font('Helvetica-Bold').text(val[0], (val[1]*10)+10, height);
+        }
+        else if (typeof val === 'object') {
+          doc.fontSize(18).font('Helvetica').text(''+Object.keys(val[0])+' : '+ Object.values(val[0]), (val[1]*10)+10, height);
+        }
+      }
+      doc.pipe(res)
+        .on('finish', function () {
+        });
+      doc.end();
+      res.status(200);
+
+    } catch (error) {
+      next(error);
+    }
+  },
+
 };

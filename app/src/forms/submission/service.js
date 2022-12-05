@@ -1,5 +1,4 @@
 const { v4: uuidv4 } = require('uuid');
-
 const { Statuses } = require('../common/constants');
 const {
   Form,
@@ -10,6 +9,7 @@ const {
   SubmissionAudit,
   SubmissionMetadata
 } = require('../common/models');
+const {reArrangeFormSubmissionJSon} = require('../common/utils');
 const emailService = require('../email/emailService');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
@@ -307,6 +307,10 @@ const service = {
       if (!etrx && trx) await trx.rollback();
       throw err;
     }
+  },
+  /** get the audit history metadata (nothing that edited a draft for now) */
+  genSubmissionToPdf: async(submission) => {
+    return reArrangeFormSubmissionJSon(submission);
   },
   // -------------------------------------------------------------------------------------------------/Notes
 };

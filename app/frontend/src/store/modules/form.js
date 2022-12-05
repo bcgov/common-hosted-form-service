@@ -1,5 +1,4 @@
 import { getField, updateField } from 'vuex-map-fields';
-
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { apiKeyService, formService, rbacService, userService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
@@ -32,6 +31,7 @@ export default {
     form: genInitialForm(),
     formFields: [],
     formList: [],
+    submissionToPDF:{},
     formSubmission: {
       confirmationId: '',
       submission: {
@@ -56,6 +56,7 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
+    submissionToPDF: state => state.submissionToPDF,
     version: state => state.version,
   },
   mutations: {
@@ -103,6 +104,10 @@ export default {
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
     },
+
+    SET_FORM_SUBMISSION_TO_PDF(state,submissionToPDF) {
+      state.submissionToPDF = submissionToPDF;
+    }
   },
   actions: {
     //
@@ -444,5 +449,22 @@ export default {
       window.onbeforeunload = isDirty ? () => true : null;
       commit('SET_FORM_DIRTY', isDirty);
     },
+    async genSubmissionToPDF ({ commit, dispatch }, submissionId) {
+
+      try {
+        // Get this submission
+        const response = await formService.docGenSubmissionToPdf(
+          submissionId
+        );
+        commit('SET_FORM_SUBMISSION_TO_PDF', response.data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while trying to convert submission to pdf.',
+          consoleError: `Error getting submission ${submissionId}: ${error}`,
+        }, { root: true });
+      }
+    }
   },
+
+
 };
