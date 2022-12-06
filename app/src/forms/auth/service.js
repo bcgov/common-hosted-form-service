@@ -21,6 +21,7 @@ const service = {
 
       const obj = {
         id: uuidv4(),
+        idpUserId: data.idpUserId,
         keycloakId: data.keycloakId,
         username: data.username,
         fullName: data.fullName,
@@ -53,6 +54,7 @@ const service = {
       trx = await User.startTransaction();
 
       const update = {
+        idpUserId: data.idpUserId,
         keycloakId: data.keycloakId,
         username: data.username,
         fullName: data.fullName,
@@ -76,6 +78,8 @@ const service = {
     try {
       // identity_provider_* will be undefined if user login is to local keycloak (userid/password)
       const {
+        idp_userid: idpUserId,
+        idp_username: idpUsername,
         identity_provider_identity: identity,
         identity_provider: idp,
         preferred_username: username,
@@ -87,6 +91,8 @@ const service = {
       } = token.content;
 
       return {
+        idpUserId: idpUserId,
+        idpUsername: idpUsername,
         keycloakId: keycloakId,
         username: identity ? identity : username,
         firstName: firstName,

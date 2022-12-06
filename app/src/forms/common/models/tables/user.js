@@ -30,11 +30,6 @@ class User extends Timestamps(Model) {
           query.where('idpUserId', value);
         }
       },
-      filterIdpUsername(query, value) {
-        if (value) {
-          query.where('idpUsername', value);
-        }
-      },
       filterKeycloakId(query, value) {
         if (value) {
           query.where('keycloakId', value);
@@ -102,7 +97,6 @@ class User extends Timestamps(Model) {
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         idpUserId: { type: 'string', maxLength: 255 },
-        idpUsername: { type: 'string', maxLength: 255 },
         keycloakId: { type: 'string', pattern: Regex.UUID },
         username: { type: ['string', 'null'], maxLength: 255 },
         firstName: { type: ['string', 'null'], maxLength: 255 },
