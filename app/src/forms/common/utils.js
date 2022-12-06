@@ -243,7 +243,7 @@ const  getAvailableDates = (
  * @returns {Object[]} An object of Moment JS date
  */
 const getCalculatedCloseSubmissionDate = (openedDate=moment(),keepOpenForTerm=0,keepOpenForInterval='days',allowLateTerm=0,allowLateInterval='days',repeatSubmissionTerm=0,repeatSubmissionInterval='days',repeatSubmissionUntil=moment()) => {
-  const openDate = openedDate.clone();
+  const openDate = moment(openedDate).clone();
   var calculatedCloseDate = moment(openDate);
   repeatSubmissionUntil = moment(repeatSubmissionUntil);
   if(!allowLateTerm && !allowLateInterval && !repeatSubmissionTerm && !repeatSubmissionInterval){

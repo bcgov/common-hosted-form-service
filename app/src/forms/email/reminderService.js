@@ -276,11 +276,12 @@ const service = {
     }
   },
   _initMaillSender: (statement, referer) => {
-    const submiters =  statement.submiters.map(element => {
-      return element['email'];
+
+    statement.submiters.forEach(user => {
+      const data = { form :statement.form, report : statement.report, user , state : statement.state, referer};
+      emailService.initReminder(data);
     });
-    const data = { form :statement.form, report : statement.report, submiters, state : statement.state, referer };
-    emailService.initReminder(data);
+
   }
 
 };

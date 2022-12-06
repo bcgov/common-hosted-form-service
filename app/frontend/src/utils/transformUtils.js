@@ -297,7 +297,7 @@ export function getAvailableDates(
  * @returns {Object[]} An object of Moment JS date
  */
 export function getCalculatedCloseSubmissionDate(openedDate=moment(),keepOpenForTerm=0,keepOpenForInterval='days',allowLateTerm=0,allowLateInterval='days',repeatSubmissionTerm=0,repeatSubmissionInterval='days',repeatSubmissionUntil=moment()){
-  const openDate = openedDate.clone();
+  const openDate = moment(openedDate).clone();
   var calculatedCloseDate = moment(openDate);
   repeatSubmissionUntil = moment(repeatSubmissionUntil);
   if(!allowLateTerm && !allowLateInterval && !repeatSubmissionTerm && !repeatSubmissionInterval){
@@ -310,7 +310,6 @@ export function getCalculatedCloseSubmissionDate(openedDate=moment(),keepOpenFor
       calculatedCloseDate = calculatedCloseDate.add(keepOpenForTerm,keepOpenForInterval).add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
     }
   }
-
   return calculatedCloseDate;
 }
 

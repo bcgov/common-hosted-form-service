@@ -12,7 +12,8 @@ const reminderService = require('../src/forms/email/reminderService');
 // Sending emails every day at midnight.
 // '0 0 * * *' midnight
 // */1 * * * * every 1 minutes
-cron.schedule('0 0 * * *', async function() {
+// 0 12 * * * every day at midday
+cron.schedule('0 12 * * *', async function() {
   log.info('Mail is sending !!! \n');
   const resp = await reminderService._init();
   log.info(resp.messsage+' \n');
