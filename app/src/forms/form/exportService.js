@@ -209,7 +209,7 @@ const service = {
     return {};
   },
 
-  _formatData: async (exportFormat, exportType, form, data = {}, columnsPreferences,) => {
+  _formatData: async (exportFormat, exportType, form, data = {}, columnsPreferences) => {
     // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map(obj => {
       const { submission, ...form } = obj;
@@ -248,7 +248,7 @@ const service = {
     };
   },
 
-  _formatSubmissionsCsv: async (form, columnsPreferences, data) => {
+  _formatSubmissionsCsv: async (form, data, columnsPreferences) => {
     try {
       const options = {
         fillGaps: true,
