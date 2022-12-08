@@ -9,6 +9,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
+const zeroGuid = '00000000000000000000000000000000';
 
 const keycloakHelper = (mockKcObject) => {
   // TODO: Find better way to set up keycloak object mock without deleting first
@@ -50,6 +51,7 @@ describe('auth getters', () => {
             name: 'John Doe',
             email: 'e@mail.com',
             identity_provider: 'idir',
+            idp_userid: zeroGuid,
             preferred_username: 'johndoe',
             realm_access: {},
             resource_access: {
@@ -183,6 +185,11 @@ describe('auth getters', () => {
 
   it('keycloakReady should return a boolean', () => {
     expect(store.getters.keycloakReady).toBeTruthy();
+  });
+
+  it('identityProviderIdentity should return a string', () => {
+    expect(store.getters.identityProviderIdentity).toBeTruthy();
+    expect(store.getters.identityProviderIdentity).toMatch(zeroGuid);
   });
 
   it('keycloakSubject should return a string', () => {

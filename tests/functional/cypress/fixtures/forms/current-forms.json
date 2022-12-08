@@ -1,7 +1,7 @@
 {
   "id":"11111111-1111-1111-1111-111111111112",
   "usernameIdp":"7ddfdd92d0c64cfc8d96a29a8a5bdcd7@idir@idir",
-  "keycloakId":"a58e69f2-d18e-4647-8040-2f00f1e8a54c",
+  "idpUserId": "ao9rsqw60nvf24pemkdik5e3fmo2kb6l",
   "username":"7ddfdd92d0c64cfc8d96a29a8a5bdcd7@idir",
   "firstName":"Jason",
   "lastName":"Chung",
