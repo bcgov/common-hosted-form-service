@@ -51,7 +51,7 @@ inputs:
   app_chefs_geo_address_apiurl:
     description: Proxy URL to BC Geo Address API URL
     required: true
-    default: "http://localhost:8080/app/api/v1/bcgeoaddress/address"
+    default: "https://submit.digital.gov.bc.ca/app/api/v1/bcgeoaddress/address"
 
 runs:
   using: composite
