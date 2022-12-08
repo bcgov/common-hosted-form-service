@@ -9,7 +9,7 @@ describe('parseToken', () => {
   it('returns a default object when an exception happens', () => {
     const result = service.parseToken(undefined);
     expect(result).toEqual({
-      keycloakId: undefined,
+      idpUserId: undefined,
       username: 'public',
       firstName: undefined,
       lastName: undefined,
