@@ -1715,10 +1715,10 @@ paths:
             type: string
           description: user ID
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -1936,10 +1936,10 @@ paths:
             type: string
           description: user id
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -2074,10 +2074,10 @@ paths:
         - User
       parameters:
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -2645,10 +2645,10 @@ components:
           type: string
           description: ID of the user
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-        keycloakId:
+        idpUserId:
           type: string
-          description: ID of the user
-          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+          description: ID of the user provided by the identity provider
+          example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
         username:
           type: string
           description: Username of this user
@@ -3344,10 +3344,10 @@ components:
               type: string
               description: ID of the user
               example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-            keycloakID:
+            idpUserId:
               type: string
-              description: ID of the user in the external Keycloak system
-              example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+              description: ID of the user in the external identity provider system
+              example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
             username:
               type: string
               description: Username of this user
@@ -3375,10 +3375,10 @@ components:
           type: string
           description: ID of the user
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-        keycloakId:
+        idpUserId:
           type: string
-          description: ID of the user
-          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+          description: ID of the user in the external identity provider system
+          example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
         username:
           type: string
           description: Username of this user
