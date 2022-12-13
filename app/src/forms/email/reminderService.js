@@ -262,11 +262,8 @@ const service = {
   },
   _getReferer : () => {
     try {
-      const prod = 'https://chefs.nrs.gov.bc.ca';
-      const dev  = 'https://chefs-dev.apps.silver.devops.gov.bc.ca';
       const basePath = config.get('frontend.basePath');
-      const type = true;
-      const host = (type) ? prod : dev;
+      const host = process.env.FRONTEND_PATH;
       return `${host}${basePath}`;
     } catch (error) {
       log.error(error.message, {
