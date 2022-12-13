@@ -18,13 +18,15 @@ spec:
         spec:
         containers:
           - name: my-container
-            image: curlimages/curl:7.82
+            image: docker.io/curlimages/curl:7.82
             command:
               - sh
               - '-c'
             args:
               - >-
                curl -X GET -ks
-               http://localhost:8080/app/api/v1/public/reminder
+               https://localhost:8080/app/api/v1/public/reminder
+               -H "apikey: be184d51-3d27-45bd-8cb4-e64585edc9ad"
+               -H "Content-Type: application/json"
       restartPolicy: OnFailure
 

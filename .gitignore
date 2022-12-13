@@ -52,6 +52,7 @@ build
 .env
 .idea
 .project
+ENV.txt
 
 !app/frontend/.env
 !local-infrastructure/.env
