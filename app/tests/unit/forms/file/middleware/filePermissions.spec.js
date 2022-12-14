@@ -40,7 +40,7 @@ describe('currentFileRecord', () => {
     const testReq = {
       params: {},
       currentUser: {
-        keycloakId: zeroUuid,
+        idpUserId: zeroUuid,
         username: 'jsmith@idir',
       }
     };
@@ -59,7 +59,7 @@ describe('currentFileRecord', () => {
     const testReq = {
       params: { id: zeroUuid },
       currentUser: {
-        keycloakId: oneUuid,
+        idpUserId: oneUuid,
         username: 'jsmith@idir',
       }
     };
@@ -81,7 +81,7 @@ describe('currentFileRecord', () => {
     const testReq = {
       params: { id: zeroUuid },
       currentUser: {
-        keycloakId: oneUuid,
+        idpUserId: oneUuid,
         username: 'jsmith@idir',
       }
     };
@@ -103,7 +103,7 @@ describe('currentFileRecord', () => {
     const testReq = {
       params: { id: zeroUuid },
       currentUser: {
-        keycloakId: oneUuid,
+        idpUserId: oneUuid,
         username: 'jsmith@idir',
       }
     };
@@ -148,7 +148,7 @@ describe('hasFileCreate', () => {
   it('403s if the current user is not an actual user (IE, public)', async () => {
     const testReq = {
       currentUser: {
-        keycloakId: undefined,
+        idpUserId: undefined,
         username: 'public',
       }
     };
@@ -166,7 +166,7 @@ describe('hasFileCreate', () => {
   it('passes if a authed user is on the request', async () => {
     const testReq = {
       currentUser: {
-        keycloakId: zeroUuid,
+        idpUserId: zeroUuid,
         username: 'jsmith@idir',
       }
     };
@@ -211,7 +211,7 @@ describe('hasFilePermissions', () => {
     const nxt = jest.fn();
     const req = {
       currentUser: {
-        keycloakId: undefined,
+        idpUserId: undefined,
         username: 'public',
       }
     };
@@ -226,7 +226,7 @@ describe('hasFilePermissions', () => {
     const nxt = jest.fn();
     const req = {
       currentUser: {
-        keycloakId: zeroUuid,
+        idpUserId: zeroUuid,
         username: 'jsmith@idir',
       },
       currentFileRecord: {
@@ -249,7 +249,7 @@ describe('hasFilePermissions', () => {
     const req = {
       query: {},
       currentUser: {
-        keycloakId: zeroUuid,
+        idpUserId: zeroUuid,
         username: 'jsmith@idir',
       },
       currentFileRecord: {
