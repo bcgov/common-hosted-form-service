@@ -204,6 +204,7 @@ export function isFormExpired(formSchedule = {}) {
 }
 
 /**
+ * This function could be removed from frontend in the next commits
  * @function isEligibleLateSubmission
  * Get All possible dates in given period with Term and Interval
  *

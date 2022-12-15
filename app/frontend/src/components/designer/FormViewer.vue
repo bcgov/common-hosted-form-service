@@ -104,7 +104,7 @@ import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 
 import { isFormPublic } from '@/utils/permissionUtils';
-import { attachAttributesToLinks, isFormExpired } from '@/utils/transformUtils';
+import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
@@ -160,7 +160,7 @@ export default {
       versionIdToSubmitTo: this.versionId,
       isformScheduleExpire: false,
       attemptLateSubmission: false,
-      formScheduleExpireMessage: 'Quarterly Form Submission period has expired.',
+      formScheduleExpireMessage: 'Form Submission is not available for this moment.',
       isLateSubmissionAllowed: false
     };
   },
@@ -278,8 +278,8 @@ export default {
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
 
-          if(response.data.schedule && response.data.schedule.enabled){
-            var formScheduleStatus = isFormExpired(response.data.schedule);
+          if(response.data.schedule && response.data.schedule.expire){
+            var formScheduleStatus = response.data.schedule; //isFormExpired(response.data.schedule);
             this.isformScheduleExpire = formScheduleStatus.expire;
             this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
             this.formScheduleExpireMessage = formScheduleStatus.message;
@@ -331,7 +331,7 @@ export default {
       }
     },
     async sendSubmission(isDraft, submission) {
-      const formScheduleStatus = isFormExpired(this.form.schedule);
+      const formScheduleStatus = this.form.schedule; //isFormExpired(this.form.schedule);
       submission.data.lateEntry = formScheduleStatus.expire === true ? formScheduleStatus.allowLateSubmissions : false;
       const body = {
         draft: isDraft,
