@@ -89,41 +89,95 @@ class Parser {
       const rows = [];
       const fillAndPush = (row) => rows.push(row.map(col => col != null ? col : ''));
       // initialize the array with empty strings to handle 'unpopular' headers
-      const newRow = () => new Array(self._headers.length).fill(null);
+      const newRow = () => new Array(self._headers.length).fill('');
       //check if the all values in an array are null
-      const allNullArrayValues = (arr) =>arr.every(element => element === null);
+      const allNullArrayValues = (arr) =>arr.every(element => element === '');
 
-      const emptyRowIndexByHeader = {};
-      let currentRow = newRow();
-      for (let element of result) {
-        let elementHeaderIndex = getHeaderIndex(element.item);
-        if (currentRow[elementHeaderIndex] != undefined) {
-          fillAndPush(currentRow);
-          currentRow = newRow();
-        }
-        emptyRowIndexByHeader[elementHeaderIndex] = emptyRowIndexByHeader[elementHeaderIndex] || 0;
-        // make sure there isn't a empty row for this header
-        if (self._options.fillTopRow && emptyRowIndexByHeader[elementHeaderIndex] < rows.length) {
-          let max = Math.max(...Object.values(emptyRowIndexByHeader));
-          if(rows.length<max){
+      const groupArray = self._getArraysList(result);
+
+      if(groupArray.size===1) {
+
+        const emptyRowIndexByHeader = {};
+        let currentRow = newRow();
+        for (let element of result) {
+          let elementHeaderIndex = getHeaderIndex(element.item);
+          if (currentRow[elementHeaderIndex] !=='') {
             fillAndPush(currentRow);
             currentRow = newRow();
           }
+          emptyRowIndexByHeader[elementHeaderIndex] = emptyRowIndexByHeader[elementHeaderIndex] || 0;
+          // make sure there isn't a empty row for this header
+          if (self._options.fillTopRow && emptyRowIndexByHeader[elementHeaderIndex] < rows.length) {
+            let max = Math.max(...Object.values(emptyRowIndexByHeader));
+            if(rows.length<max){
+              fillAndPush(currentRow);
+              currentRow = newRow();
+            }
 
-          //fillAndPush(currentRow);
-          self._fillEachRowGap(elementHeaderIndex, self._escape(element.value), rows);
-          //rows[emptyRowIndexByHeader[elementHeaderIndex]][elementHeaderIndex] = self._escape(element.value);
+            self._fillEachRowGap(elementHeaderIndex, self._escape(element.value), rows);
+            emptyRowIndexByHeader[elementHeaderIndex] += 1;
+            continue;
+          }
+          currentRow[elementHeaderIndex] = self._escape(element.value);
           emptyRowIndexByHeader[elementHeaderIndex] += 1;
-          continue;
         }
-        currentRow[elementHeaderIndex] = self._escape(element.value);
-        emptyRowIndexByHeader[elementHeaderIndex] += 1;
+        // push last row
+        if (!allNullArrayValues(currentRow)) {
+          fillAndPush(currentRow);
+        }
+        fileRows = fileRows.concat(self._checkRows(rows));
       }
-      // push last row
-      if (!allNullArrayValues(currentRow)) {
-        fillAndPush(currentRow);
+      else {
+        let currentRow = newRow();
+        let objectRow = newRow();
+        let arrayRow = [];
+        for (let element of result) {
+          let elementHeaderIndex = getHeaderIndex(element.item);
+          if (currentRow[elementHeaderIndex] != '' && currentRow[elementHeaderIndex] != undefined ) {
+            arrayRow.push(currentRow);
+            currentRow = newRow();
+            currentRow[elementHeaderIndex]= element.value;
+          }
+          else {
+            if(!element.parent) {
+              objectRow[elementHeaderIndex]= element.value;
+            }
+            else{
+              if(!groupArray.get(element.parent)){
+                if(!allNullArrayValues(currentRow)) {
+                  arrayRow.push(currentRow);
+                  currentRow = newRow();
+                }
+                groupArray.set(element.parent, true);
+              }
+              currentRow[elementHeaderIndex]= element.value;
+            }
+          }
+
+        }
+
+        // push last row
+        if(!allNullArrayValues(currentRow)){
+          arrayRow.push(currentRow);
+        }
+
+        const filledrows = arrayRow.map(row =>{
+          let missing = self._headers.length - row.length;
+          row = row.concat(Array(missing).fill(''));
+          return row;
+        });
+
+        for (let i in objectRow) {
+          for (let j in filledrows) {
+            if(objectRow[i]!=='') {
+
+              filledrows[j][i] = objectRow[i];
+            }
+          }
+        }
+
+        fileRows = filledrows.map(row=>row.join());
       }
-      fileRows = fileRows.concat(self._checkRows(rows));
     };
     for (let item of json) {
       //Call checkType to list all items inside this object
@@ -148,6 +202,17 @@ class Parser {
       }
     }
   }
+
+  _getArraysList(result) {
+    const map = new Map();
+    for(let val of result) {
+      if(val.parent) map.set(val.parent, false);
+    }
+
+    return map;
+  }
+
+
 
   _parseObject(json) {
     let self = this;

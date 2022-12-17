@@ -16,11 +16,12 @@ class Handler {
    *
    * @returns [{item, value}] result
    */
-  _setHeaders(result, item) {
+  _setHeaders(result, item, parent) {
     let self = this;
     if (!item) return result;
     return result.map(function(element) {
       element.item = element.item ? item + self._options.headerPathString + element.item : item;
+      element.parent = parent;
       return element;
     });
   }
@@ -49,7 +50,7 @@ class Handler {
     //Check if element is an Array
     else if (helper.isArray(element)) {
       var resultArray = this._handleArray(element, item);
-      return this._setHeaders(resultArray, item);
+      return this._setHeaders(resultArray, item, item);
     }
     //Check if element is a Object
     else if (helper.isObject(element)) {
