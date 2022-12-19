@@ -184,7 +184,6 @@ class Parser {
       //Call checkType to list all items inside this object
       //Items are returned as a object {item: 'Prop Value, Item Name', value: 'Prop Data Value'}
       let itemResult = self._handler.check(item, self._options.mainPathItem, item, json);
-      console.log("----->>> ", itemResult);
       fillRows(itemResult);
     }
 
