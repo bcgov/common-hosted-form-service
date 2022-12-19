@@ -1,4 +1,4 @@
-const jsonexport = require('jsonexport');
+const jsonexport = require('@bc_gov_forminators/json_to_csv_export');
 const { Model } = require('objection');
 const Problem = require('api-problem');
 
