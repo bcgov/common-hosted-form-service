@@ -1,0 +1,151 @@
+.stepper .nav-tabs {
+  display: flex;
+  flex-direction:row;
+
+}
+
+.stepper .nav-tabs > li {
+  width: 30%;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+.stepper .nav-tabs > li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  background: #f1f1f1;
+  display: block;
+  width: 100%;
+  height: 5px;
+  top: 32px;
+ 
+  z-index: 1;
+}
+
+.stepper .nav-tabs > li:last-child {
+  width: auto;
+}
+
+.stepper .nav-tabs > li.completed::after {
+  background: #34bc9b;
+}
+
+.stepper .nav-tabs > li.errors::after {
+  background: #34bc9b;
+}
+
+
+.stepper .nav-tabs [data-toggle='tab'] {
+  width: 25px;
+  height: 25px;
+  margin: 20px auto;
+  border-radius: 100%;
+  border: none;
+  padding: 0;
+  color: #f1f1f1;
+}
+.stepper .nav-tabs [data-toggle='tab']:hover {
+  background: transparent;
+  border: none;
+}
+.stepper .nav-tabs > .active > [data-toggle='tab'], .stepper .nav-tabs > .active > [data-toggle='tab']:hover, .stepper .nav-tabs > .active > [data-toggle='tab']:focus {
+  color: #34bc9b;
+  cursor: default;
+  border: none;
+}
+.stepper .tab-pane {
+  position: relative;
+  padding-top: 50px;
+}
+.stepper .round-tab {
+  width: 35px;
+  height: 35px;
+  line-height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  align-content: center;
+  text-align: center;
+  border-radius: 25px;
+  background: #fff;
+  border: 2px solid #34bc9b;
+  color: #34bc9b;
+  z-index: 2;
+  position: absolute;
+  left: 0;
+  text-align: center;
+  font-size: 14px;
+  
+}
+
+.stepper .active .round-tab > span {
+  visibility: visible;
+  
+}
+
+.stepper .disabled .round-tab > span {
+  visibility: visible;
+  
+}
+
+.stepper .errors .round-tab > span {
+  visibility: hidden;
+}
+
+.stepper .completed .round-tab > span {
+  visibility: hidden;
+}
+
+.stepper .errors .round-tab {
+  background: #ffffff;
+}
+
+.stepper .completed .round-tab {
+  background: #34bc9b;
+}
+
+.stepper .completed .round-tab::after {
+  content: '✔';
+  color: #fff;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  top: 0;
+  display: block;
+}
+
+.stepper .errors .round-tab::after {
+  content: '[x]';
+  color: #F20000;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  top: 0;
+  display: block;
+}
+.stepper .active .round-tab {
+  background: #fff;
+  border: 2px solid #34bc9b;
+}
+.stepper .active .round-tab:hover {
+  background: #fff;
+  border: 2px solid #34bc9b;
+}
+.stepper .active .round-tab::after {
+  display: none;
+}
+.stepper .disabled .round-tab {
+  background: #fff;
+  color: #f1f1f1;
+  border-color: #f1f1f1;
+}
+.stepper .disabled .round-tab:hover {
+  color: #4dd3b6;
+  border: 2px solid #a6dfd3;
+}
+.stepper .disabled .round-tab::after {
+  display: none;
+}
