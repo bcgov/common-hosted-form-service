@@ -111,7 +111,7 @@ const service = {
       // do a quick transform into a simple structure.
       .map(fa => ({
         userId: fa.userId,
-        keycloakId: fa.keycloakId,
+        idpUserId: fa.idpUserId,
         username: fa.username,
         email: fa.email,
         roles: fa.roles

@@ -17,7 +17,7 @@ const {
   IdentityProvider,
   SubmissionMetadata
 } = require('../common/models');
-const { falsey, queryUtils } = require('../common/utils');
+const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
@@ -211,6 +211,8 @@ const service = {
       .then(form => {
         // there are some configs that we don't want returned here...
         delete form.submissionReceivedEmails;
+        //Lets Replace the original schedule Object as it should not expose schedule data to FE users.
+        form.schedule = checkIsFormExpired(form.schedule);
         return form;
       });
   },

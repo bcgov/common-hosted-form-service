@@ -4,20 +4,7 @@
 const config = require('config');
 const http = require('http');
 const log = require('../src/components/log')(module.filename);
-
 const app = require('../app');
-const cron = require('node-cron');
-const reminderService = require('../src/forms/email/reminderService');
-
-// Sending emails every day at midnight.
-// '0 0 * * *' midnight
-// */1 * * * * every 1 minutes
-// 0 12 * * * every day at midday
-cron.schedule('0 12 * * *', async function() {
-  log.info('Mail is sending !!! \n');
-  const resp = await reminderService._init();
-  log.info(resp.messsage+' \n');
-});
 
 /** Normalize a port into a number, string, or false. */
 const normalizePort = val => {

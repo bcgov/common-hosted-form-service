@@ -69,9 +69,8 @@ export function attachAttributesToLinks(formSchemaComponents) {
 
 /**
  * @function isFormExpired
- * Returns true for a form's schedule object if this form schedule available for that period
  * @param {Object} form Schedule data
- * @returns {boolean} TRUE if form not expired and Available to submission
+ * @returns {Object} {allowLateSubmissions:Boolean,expire:Boolean,message:String}
  *
  */
 export function isFormExpired(formSchedule = {}) {
@@ -205,6 +204,7 @@ export function isFormExpired(formSchedule = {}) {
 }
 
 /**
+ * This function could be removed from frontend in the next commits
  * @function isEligibleLateSubmission
  * Get All possible dates in given period with Term and Interval
  *
