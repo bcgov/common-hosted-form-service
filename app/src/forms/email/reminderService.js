@@ -273,9 +273,11 @@ const service = {
     }
   },
   _initMaillSender: (statement, referer) => {
+    console.log('\n \n',statement.submiters,'\n \n');
 
     statement.submiters.forEach(user => {
       const data = { form :statement.form, report : statement.report, user , state : statement.state, referer};
+      console.log('\n \n', data ,'\n \n');
       emailService.initReminder(data);
     });
 
