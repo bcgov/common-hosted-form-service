@@ -8,7 +8,7 @@ routes.use('/reminder', (req, res, next) => {
       const apikey = process.env.CRONJOB_APIKEY;
       if (req.headers.apikey === apikey){
         next();
-      } else {
+      }else{
         return res.status(401).json({'message': 'Invalid apikey'});
       }
     } else{
@@ -16,7 +16,7 @@ routes.use('/reminder', (req, res, next) => {
     }
   }
   catch(err)  {
-    return res.status(404).json({'message':err.message});
+    return res.status(500).json({'message':err.message});
   }
 });
 
