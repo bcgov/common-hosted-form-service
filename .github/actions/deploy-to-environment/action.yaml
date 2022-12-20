@@ -37,7 +37,8 @@ runs:
       uses: actions/checkout@v3
 
     - name: Login to OpenShift Cluster
-      uses: redhat-actions/oc-login@v1
+      uses: jasonchung1871/oc-login@v1.1.2
+
       with:
         openshift_server_url: ${{ inputs.openshift_server }}
         openshift_token: ${{ inputs.openshift_token }}
