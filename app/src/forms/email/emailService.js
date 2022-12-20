@@ -436,6 +436,9 @@ const service = {
   initReminder: async (obj) => {
     try {
       const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.user, obj.report, obj.referer);
+
+      console.log('\n \n',contexts,'\n \n');
+
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {

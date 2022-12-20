@@ -5,8 +5,12 @@ routes.use('/reminder', (req, res, next) => {
   // eslint-disable-next-line no-empty
   try {
     if (req.method == 'GET'){
-      const apikey = process.env.CRONJOB_APIKEY;
-      if (req.headers.apikey === apikey){
+      const apikeyEnv = process.env.CRONJOB_APIKEY;
+      const apikeyIncome = req.headers.apikey;
+
+      // if(apikeyEnv==apikeyIncome &&  (apikeyIncome==undefined || apikeyIncome=='')) return res.status(401).json({'message': 'No apikey provide'});
+
+      if (apikeyIncome === apikeyEnv){
         next();
       }else{
         return res.status(401).json({'message': 'Invalid apikey'});
@@ -14,8 +18,7 @@ routes.use('/reminder', (req, res, next) => {
     } else{
       return res.status(404).json({'message':'Only GET request is accept'});
     }
-  }
-  catch(err)  {
+  } catch(err)  {
     return res.status(500).json({'message':err.message});
   }
 });
