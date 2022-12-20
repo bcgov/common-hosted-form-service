@@ -1,4 +1,4 @@
-const jsonexport = require('jsonexport');
+const jsonexport = require('@bc_gov_forminators/json_to_csv_export');
 const { Model } = require('objection');
 const Problem = require('api-problem');
 
@@ -258,7 +258,6 @@ const service = {
         // re-organize our headers to change column ordering or header labels, etc
         headers: await service._buildCsvHeaders(form, data)
       };
-
       const csv = await jsonexport(data, options);
       return {
         data: csv,
