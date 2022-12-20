@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Check CodeClimate Secrets
         id: check-secrets
-        run: echo "HAS_CC_SECRETS::${{ secrets.CC_TEST_REPORTER_ID != '' }}" >> $GITHUB_OUTPUT
+        run: echo "HAS_CC_SECRETS=${{ secrets.CC_TEST_REPORTER_ID != '' }}" >> $GITHUB_OUTPUT
       - name: Use Node.js ${{ matrix.version }}
         uses: actions/setup-node@v3
         with:
