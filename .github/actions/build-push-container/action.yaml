@@ -90,7 +90,7 @@ runs:
         echo "HAS_DOCKERHUB=${{ fromJson(inputs.dockerhub_username != '' && inputs.dockerhub_token != '') }}" >> $GITHUB_ENV
 
     - name: Login to Github Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ env.GH_USERNAME }}
@@ -98,7 +98,7 @@ runs:
 
     - name: Login to Dockerhub Container Registry
       if: env.HAS_DOCKERHUB == 'true'
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: docker.io
         username: ${{ inputs.dockerhub_username }}
@@ -106,7 +106,7 @@ runs:
 
     - name: Prepare Container Metadata tags
       id: meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
           ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}
