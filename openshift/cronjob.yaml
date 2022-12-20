@@ -19,14 +19,24 @@ spec:
         containers:
           - name: my-container
             image: docker.io/curlimages/curl:7.82
+            env:
+            - name: URL
+              valueFrom:
+              configMapKeyRef:
+                name: endpoints-configmap
+                key: mail_notification_uri
+            - name: APITOKEN
+              valueFrom:
+              secretKeyRef:
+                name: apitokens
+                key: mailapitoken
             command:
               - sh
               - '-c'
             args:
               - >-
                curl -X GET -ks
-               https://localhost:8080/app/api/v1/public/reminder
-               -H "apikey: be184d51-3d27-45bd-8cb4-e64585edc9ad"
+               $URL
+               -H "apikey: $APITOKEN"
                -H "Content-Type: application/json"
       restartPolicy: OnFailure
-
