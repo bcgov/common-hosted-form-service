@@ -264,8 +264,8 @@ const service = {
   _getReferer : () => {
     try {
       const basePath = config.get('frontend.basePath');
-      const host = process.env.FRONTEND_PATH;
-      return `${host}${basePath}`;
+      const host = process.env.SERVER_HOST;
+      return`${host}${basePath}`;
     } catch (error) {
       log.error(error.message, {
         function: '_getReferer'
@@ -274,11 +274,9 @@ const service = {
     }
   },
   _initMaillSender: (statement, referer) => {
-    console.log('\n submitters \n',statement.submiters,'\n \n');
     const chesResponse = [];
     statement.submiters.forEach(user => {
       const data = { form :statement.form, report : statement.report, user , state : statement.state, referer};
-      console.log('\n \n', data ,'\n \n');
       chesResponse.push(emailService.initReminder(data));
     });
     return chesResponse;

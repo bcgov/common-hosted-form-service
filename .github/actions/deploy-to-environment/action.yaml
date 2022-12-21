@@ -37,8 +37,7 @@ runs:
       uses: actions/checkout@v3
 
     - name: Login to OpenShift Cluster
-      uses: jasonchung1871/oc-login@v1.1.2
-
+      uses: redhat-actions/oc-login@v1
       with:
         openshift_server_url: ${{ inputs.openshift_server }}
         openshift_token: ${{ inputs.openshift_token }}
@@ -64,6 +63,11 @@ runs:
       run: |
         oc rollout --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} status statefulset/patroni-${{ inputs.job_name }} --watch=true
 
+    - name: Deploy App Secret
+      shell: bash
+      run: >-
+        oc get --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} secret chefs-${{ inputs.job_name }}-secret || oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.secret.yaml -p INSTANCE=${{ inputs.job_name }} | oc create --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+
     - name: Deploy App
       shell: bash
       run: |
@@ -73,3 +77,8 @@ runs:
       shell: bash
       run: |
         oc rollout --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} status dc/${{ inputs.acronym }}-app-${{ inputs.job_name }} --watch=true
+
+    - name: Create Cron Jobs
+      shell: bash
+      run: |
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.cronjob.yaml -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
