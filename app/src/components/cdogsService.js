@@ -136,9 +136,9 @@ class CdogsService {
 }
 
 const endpoint = config.get('serviceClient.commonServices.cdogs.endpoint');
-const tokenEndpoint = config.get('serviceClient.commonServices.tokenEndpoint');
-const username = config.get('serviceClient.commonServices.username');
-const password = config.get('serviceClient.commonServices.password');
+const tokenEndpoint = config.get('serviceClient.commonServices.cdogs.tokenEndpoint');
+const clientId = config.get('serviceClient.commonServices.cdogs.clientId');
+const clientSecret = config.get('serviceClient.commonServices.cdogs.clientSecret');
 
-let cdogsService = new CdogsService({tokenUrl: tokenEndpoint, clientId: username, clientSecret: password, apiUrl: endpoint});
+let cdogsService = new CdogsService({tokenUrl: tokenEndpoint, clientId: clientId, clientSecret: clientSecret, apiUrl: endpoint});
 module.exports = cdogsService;

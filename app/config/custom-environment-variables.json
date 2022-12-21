@@ -55,14 +55,17 @@
   "serviceClient": {
     "commonServices": {
       "ches": {
-        "endpoint": "SC_CS_CHES_ENDPOINT"
+        "endpoint": "SC_CS_CHES_ENDPOINT",
+        "tokenEndpoint": "SC_CS_CHES_TOKEN_ENDPOINT",
+        "clientId": "SC_CS_CHES_CLIENT_ID",
+        "clientSecret": "SC_CS_CHES_CLIENT_SECRET"
       },
       "cdogs": {
-        "endpoint": "SC_CS_CDOGS_ENDPOINT"
-      },
-      "tokenEndpoint": "SC_CS_TOKEN_ENDPOINT",
-      "username": "SC_CS_USERNAME",
-      "password": "SC_CS_PASSWORD"
+        "endpoint": "SC_CS_CDOGS_ENDPOINT",
+        "tokenEndpoint": "SC_CS_CDOGS_TOKEN_ENDPOINT",
+        "clientId": "SC_CS_CDOGS_CLIENT_ID",
+        "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
+      }
     }
   }
 }
