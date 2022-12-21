@@ -199,15 +199,25 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-keycloak-secret"
-                - name: SC_CS_USERNAME
+                - name: SC_CS_CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
-                      key: username
+                      key: ches_client_id
                       name: "${APP_NAME}-sc-cs-secret"
-                - name: SC_CS_PASSWORD
+                - name: SC_CS_CHES_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
-                      key: password
+                      key: ches_client_secret
+                      name: "${APP_NAME}-sc-cs-secret"
+                - name: SC_CS_CDOGS_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: cdogs_client_id
+                      name: "${APP_NAME}-sc-cs-secret"
+                - name: SC_CS_CDOGS_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: cdogs_client_secret
                       name: "${APP_NAME}-sc-cs-secret"
                 - name: FILES_OBJECTSTORAGE_ACCESSKEYID
                   valueFrom:
