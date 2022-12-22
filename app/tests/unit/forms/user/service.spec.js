@@ -20,7 +20,7 @@ describe('list', () => {
       email: 'email',
       firstName: 'firstName',
       fullName: 'fullName',
-      keycloakId: 'keycloakId',
+      idpUserId: 'idpUserId',
       lastName: 'lastName',
       search: 'search',
       username: 'username',
@@ -32,7 +32,7 @@ describe('list', () => {
     expect(MockModel.query).toHaveBeenCalledTimes(1);
     expect(MockModel.query).toHaveBeenCalledWith();
     expect(MockModel.modify).toHaveBeenCalledTimes(10);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterKeycloakId', params.keycloakId);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterIdpUserId', params.idpUserId);
     expect(MockModel.modify).toHaveBeenCalledWith('filterIdpCode', params.idpCode);
     expect(MockModel.modify).toHaveBeenCalledWith('filterRestricted');
     expect(MockModel.modify).toHaveBeenCalledWith('filterUsername', params.username);
