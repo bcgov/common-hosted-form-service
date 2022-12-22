@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 
 import { formService, rbacService } from '@/services';
 
@@ -89,9 +89,6 @@ export default {
       notes: [],
       showNoteField: false,
     };
-  },
-  computed: {
-    ...mapGetters('auth', ['keycloakSubject']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),

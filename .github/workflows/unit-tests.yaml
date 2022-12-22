@@ -18,23 +18,19 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        node-version:
-          - '12.x'
-          - '14.x'
-          - '16.x'
+        version: [12, 14, 16]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Check CodeClimate Secrets
         id: check-secrets
-        run: |
-          echo "::set-output name=HAS_CC_SECRETS::${{ secrets.CC_TEST_REPORTER_ID != '' }}"
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        run: echo "HAS_CC_SECRETS=${{ secrets.CC_TEST_REPORTER_ID != '' }}" >> $GITHUB_OUTPUT
+      - name: Use Node.js ${{ matrix.version }}
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.version }}
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-app
         env:
           cache-name: cache-node-modules
@@ -53,14 +49,14 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.node-version == '16.x'
-        uses: actions/upload-artifact@v2
+        if: matrix.version == 16
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
           retention-days: 1
       - name: Monitor Coverage
-        if: "matrix.node-version == '16.x' && ! github.event.pull_request.head.repo.fork"
+        if: "matrix.version == 16 && ! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
         with:
           comment_mode: update
@@ -82,19 +78,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        node-version:
-          - '12.x'
-          - '14.x'
-          - '16.x'
+        version: [12, 14, 16]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - name: Use Node.js ${{ matrix.version }}
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.version }}
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-frontend
         env:
           cache-name: cache-node-modules
@@ -113,14 +106,14 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.node-version == '16.x'
-        uses: actions/upload-artifact@v2
+        if: matrix.version == 16
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
           retention-days: 1
       - name: Monitor Coverage
-        if: "matrix.node-version == '16.x' && ! github.event.pull_request.head.repo.fork"
+        if: "matrix.version == 16 && ! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
         with:
           comment_mode: update
@@ -142,9 +135,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Restore Coverage Results
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
       - name: Publish code coverage
-        uses: paambaati/codeclimate-action@v2.7.5
+        uses: paambaati/codeclimate-action@v3.2.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
