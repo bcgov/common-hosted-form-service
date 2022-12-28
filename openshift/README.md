@@ -59,9 +59,10 @@ oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
 
 ```sh
 oc create -n $NAMESPACE configmap $APP_NAME-sc-config \
-  --from-literal=SC_CS_CHES_ENDPOINT=https://ches-dev.apps.silver.devops.gov.bc.ca/api \
-  --from-literal=SC_CS_CDOGS_ENDPOINT=https://cdogs-dev.apps.silver.devops.gov.bc.ca/api \
-  --from-literal=SC_CS_TOKEN_ENDPOINT=https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token
+  --from-literal=SC_CS_CHES_ENDPOINT=https://ches-dev.api.gov.bc.ca/api \
+  --from-literal=SC_CS_CDOGS_ENDPOINT=https://cdogs-dev.api.gov.bc.ca/api \
+  --from-literal=SC_CS_CHES_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
+  --from-literal=SC_CS_CDOGS_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
 ```
 
 ```sh
@@ -127,13 +128,17 @@ oc create -n $NAMESPACE secret generic $APP_NAME-keycloak-secret \
 ```
 
 ```sh
-export username=<username>
-export password=<password>
+export ches_client_id=<ches_client_id>
+export ches_client_secret=<ches_client_secret>
+export cdogs_client_id=<cdogs_client_id>
+export cdogs_client_secret=<cdogs_client_secret>
 
 oc create -n $NAMESPACE secret generic $APP_NAME-sc-cs-secret \
-  --type=kubernetes.io/basic-auth \
-  --from-literal=username=$username \
-  --from-literal=password=$password
+  --type=Opaque \
+  --from-literal=ches_client_id=$ches_client_id \
+  --from-literal=ches_client_secret=$ches_client_secret \
+  --from-literal=cdogs_client_id=$cdogs_client_id \
+  --from-literal=cdogs_client_secret=$cdogs_client_secret
 ```
 
 ```sh
