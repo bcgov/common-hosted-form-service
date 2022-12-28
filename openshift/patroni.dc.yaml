@@ -362,7 +362,7 @@ parameters:
     description: Maximum amount of CPU the container can use.
     displayName: CPU Limit
     required: true
-    value: "1"
+    value: "500m"
   - name: MEMORY_REQUEST
     description: Starting amount of memory the container can use.
     displayName: Memory Request
