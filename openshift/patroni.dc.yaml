@@ -377,7 +377,7 @@ parameters:
     description: The size of the persistent volume to create.
     displayName: Persistent Volume Size
     required: true
-    value: 1Gi
+    value: 512Mi
   - name: STORAGE_CLASS
     description: The type of the persistent volume to create.
     displayName: Persistent Volume Class
