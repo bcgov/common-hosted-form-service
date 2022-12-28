@@ -1,117 +1,65 @@
-﻿kind: CronJob
-apiVersion: batch/v1
+﻿---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/instance: "${APP_NAME}-${JOB_NAME}"
+  app.kubernetes.io/managed-by: github
+  app.kubernetes.io/name: nodejs
+  app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "chefs-app-cronjob-template"
 metadata:
-  name: cronjobs
-  namespace: c2da03-dev
-  uid: 27298492-5145-4191-8996-24135a02573a
-  resourceVersion: '5421029280'
-  generation: 2
-  creationTimestamp: '2022-12-28T22:34:37Z'
-  labels:
-    app: chefs-master
-    app.kubernetes.io/component: app
-    app.kubernetes.io/instance: chefs-master
-    app.kubernetes.io/managed-by: github
-    app.kubernetes.io/name: nodejs
-    app.kubernetes.io/part-of: chefs-master
-    template: chefs-app-cronjob-template
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: >
-      {"apiVersion":"batch/v1","kind":"CronJob","metadata":{"annotations":{},"labels":{"app":"chefs-master","app.kubernetes.io/component":"app","app.kubernetes.io/instance":"chefs-master","app.kubernetes.io/managed-by":"github","app.kubernetes.io/name":"nodejs","app.kubernetes.io/part-of":"chefs-master","template":"chefs-app-cronjob-template"},"name":"cronjobs","namespace":"c2da03-dev"},"spec":{"concurrencyPolicy":"Replace","failedJobsHistoryLimit":1,"jobTemplate":{"spec":{"template":{"metadata":{"labels":{"parent":"cronjobpi"}},"spec":{"containers":[{"command":["curl
-      -X GET -ks -H","apikey: $APITOKEN","-H","Content-Type:
-      application/json","http://chefs-app-master:8080/app/api/v1/public/reminder"],"env":[{"name":"APITOKEN","secretKeyRef":{"key":"mailapitoken","name":"${NAME}-${INSTANCE}-secret"},"valueFrom":null}],"image":"docker.io/curlimages/curl:7.82","name":"my-container"}],"restartPolicy":"OnFailure"}}}},"schedule":"0
-      0 * *
-      *","startingDeadlineSeconds":200,"successfulJobsHistoryLimit":3,"suspend":false}}
-  managedFields:
-    - manager: kubectl-client-side-apply
-      operation: Update
-      apiVersion: batch/v1
-      time: '2022-12-28T22:34:37Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            .: {}
-            'f:kubectl.kubernetes.io/last-applied-configuration': {}
-          'f:labels':
-            .: {}
-            'f:app': {}
-            'f:app.kubernetes.io/component': {}
-            'f:app.kubernetes.io/instance': {}
-            'f:app.kubernetes.io/managed-by': {}
-            'f:app.kubernetes.io/name': {}
-            'f:app.kubernetes.io/part-of': {}
-            'f:template': {}
-        'f:spec':
-          'f:concurrencyPolicy': {}
-          'f:failedJobsHistoryLimit': {}
-          'f:jobTemplate':
-            'f:spec':
-              'f:template':
-                'f:metadata':
-                  'f:labels':
-                    .: {}
-                    'f:parent': {}
-                'f:spec':
-                  'f:containers':
-                    'k:{"name":"my-container"}':
-                      .: {}
-                      'f:command': {}
-                      'f:env':
-                        .: {}
-                        'k:{"name":"APITOKEN"}':
-                          .: {}
-                          'f:name': {}
-                      'f:image': {}
-                      'f:imagePullPolicy': {}
-                      'f:name': {}
-                      'f:resources': {}
-                      'f:terminationMessagePath': {}
-                      'f:terminationMessagePolicy': {}
-                  'f:dnsPolicy': {}
-                  'f:restartPolicy': {}
-                  'f:schedulerName': {}
-                  'f:securityContext': {}
-                  'f:terminationGracePeriodSeconds': {}
-          'f:schedule': {}
-          'f:startingDeadlineSeconds': {}
-          'f:successfulJobsHistoryLimit': {}
-          'f:suspend': {}
-spec:
-  schedule: 0 0 * * *
-  startingDeadlineSeconds: 200
-  concurrencyPolicy: Replace
-  suspend: false
-  jobTemplate:
+  name: "chefs-app-cronjob"
+objects:
+  - apiVersion: batch/v1
+    kind: CronJob
     metadata:
-      creationTimestamp: null
+      name: cronjobs
     spec:
-      template:
-        metadata:
-          creationTimestamp: null
-          labels:
-            parent: cronjobpi
+      schedule: "0 0 * * *"
+      concurrencyPolicy: "Replace"
+      startingDeadlineSeconds: 200
+      suspend: false
+      successfulJobsHistoryLimit: 3
+      failedJobsHistoryLimit: 1
+      jobTemplate:
         spec:
-          containers:
-            - name: my-container
-              image: 'docker.io/curlimages/curl:7.82'
-              command:
-                - curl -X GET -ks -H
-                - 'apikey: $APITOKEN'
-                - '-H'
-                - 'Content-Type: application/json'
-                - 'http://chefs-app-master:8080/app/api/v1/public/reminder'
-              env:
+          template:
+            metadata:
+              labels:
+                parent: "cronjobpi"
+            spec:
+              containers:
+              - name: my-container
+                image: docker.io/curlimages/curl:7.82
+                env:
                 - name: APITOKEN
-              resources: {}
-              terminationMessagePath: /dev/termination-log
-              terminationMessagePolicy: File
-              imagePullPolicy: IfNotPresent
-          restartPolicy: OnFailure
-          terminationGracePeriodSeconds: 30
-          dnsPolicy: ClusterFirst
-          securityContext: {}
-          schedulerName: default-scheduler
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 1
-status: {}
+                  valueFrom:
+                  secretKeyRef:
+                    name: "${NAME}-${INSTANCE}-secret"
+                    key: mailapitoken
+                command:
+                  - curl -X GET -ks -H
+                  - "apikey: $APITOKEN"
+                  - "-H"
+                  - "Content-Type: application/json"
+                  - "http://${APP_NAME}-app-${JOB_NAME}:8080/${ROUTE_PATH}/api/v1/public/reminder"
+              restartPolicy: OnFailure
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: ROUTE_PATH
+    description: Configure the route path (ex. /pr-5 or /app), also used for VUE_APP_FRONTEND_BASEPATH
+    displayName: Route path
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'wfezkf-dev')
+    displayName: Target Namespace
+    required: true
