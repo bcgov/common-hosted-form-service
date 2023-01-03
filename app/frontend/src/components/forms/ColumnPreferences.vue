@@ -165,9 +165,9 @@ export default {
     //used to set foem fields to either true or false
     setSelectALLCheckboxVModel(fields, value) {
       if(this.userFormPreferences&&this.userFormPreferences.preferences
-        &&this.userFormPreferences.preferences.columnList && this.userFormPreferences.preferences.columnList.length>0) {
+        &&this.userFormPreferences.preferences.columns && this.userFormPreferences.preferences.columns.length>0) {
         for(const field of fields){
-          this.userFormPreferences.preferences.columnList.includes(field)
+          this.userFormPreferences.preferences.columns.includes(field)
             ?this.selectedFields.set(field,true)
             :this.selectedFields.set(field,value);
 
@@ -240,7 +240,7 @@ export default {
         }
       });
       const userPrefs = {
-        columnList:Array.from(this.userSelectedColumns),
+        columns:Array.from(this.userSelectedColumns),
       };
       this.loading = true;
       await this.updateFormPreferencesForCurrentUser({
