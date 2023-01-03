@@ -60,7 +60,7 @@
               </v-radio-group>
             </v-col>
           </v-row>
-          
+
           <div v-if="dateRange">
             <v-row>
               <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
@@ -127,7 +127,7 @@
             </v-row>
           </div>
 
-          <p class="subTitleObjectStyle]" :class="!dateRange ? 'mt-8' : ''">Select your export options</p>
+          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-8' : ''">Select your export options</p>
           <v-radio-group v-model="exportFormat" hide-details="auto">
             <v-radio label="CSV" value="csv">
               <template v-slot:label>
@@ -281,6 +281,7 @@ export default {
     font: normal normal bold 18px/24px Open Sans;
     letter-spacing: 0px;
     color: #FFFFFF;
+    text-transform:capitalize;
   }
 
   .cancelButtonStyle {
@@ -290,5 +291,6 @@ export default {
     font: normal normal bold 18px/24px Open Sans;
     letter-spacing: 0px;
     color: #38598A;
+    text-transform:capitalize;
   }
 </style>
