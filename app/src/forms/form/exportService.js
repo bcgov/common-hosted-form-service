@@ -25,11 +25,6 @@ class SubmissionData extends Model {
           query.where('deleted', false);
         }
       },
-      filterFields(query, fields) {
-        if(fields)
-        query.select(fields)
-        //query.returning('*')
-      },
       filterDrafts(query, value) {
         if (!value) {
           query.where('draft', false);
@@ -131,7 +126,7 @@ const service = {
     return findFields(schema);
   },
 
-  _buildCsvHeaders: async (form,  data, columns) => {
+  _buildCsvHeaders: async (form,  data) => {
     /**
      * get column order to match field order in form design
      * object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
@@ -149,7 +144,7 @@ const service = {
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    return metaHeaders.concat(columns?columns:fieldNames);
+    return metaHeaders.concat(fieldNames);
   },
 
   _exportType: (params = {}) => {
@@ -166,7 +161,7 @@ const service = {
     return `${form.snake()}_${type}.${format}`.toLowerCase();
   },
 
-  _submissionsColumns: (form, params = {}) => {
+  _submissionsColumns: (form) => {
     // Custom columns not defined - return default column selection behavior
     let columns = [
       'confirmationId',
@@ -216,7 +211,7 @@ const service = {
 
   _getSubmissions: async (form, params) => {
     let preference = JSON.parse(params.preference);
-    let t = await service._submissionsColumns(form, params);
+
     // params for this export include minDate and maxDate (full timestamp dates).
     let submissionData = await SubmissionData.query()
       .column(service._submissionsColumns(form, params))
@@ -225,17 +220,17 @@ const service = {
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault');
-      if(params.columns){
-        for(let index in submissionData) {
-          let keys = Object.keys(submissionData[index].submission);
-          for(let key of keys) {
-            if(!params.columns.includes(key)) {
-              delete submissionData[0].submission[key]
-            }
+    if(params.columns){
+      for(let index in submissionData) {
+        let keys = Object.keys(submissionData[index].submission);
+        for(let key of keys) {
+          if(!params.columns.includes(key)) {
+            delete submissionData[index].submission[key];
           }
         }
       }
-      return submissionData;
+    }
+    return submissionData;
   },
 
   _formatSubmissionsJson: (form,data) => {
