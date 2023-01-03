@@ -67,7 +67,7 @@
           <v-btn data-cy="columnPreferencesSaveBtn" class="mb-5 mr-5" :style="saveButtonWrapper" color="primary" @click="saveColumns">
             <span>Save</span>
           </v-btn>
-          <v-btn class="mb-5" :style="cancelButtonWrapper" outlined @click="dialog = false">
+          <v-btn class="mb-5" :style="cancelButtonWrapper" outlined @click="()=>{dialog = false; this.onSearchInputChange='';}">
             <span>Cancel</span>
           </v-btn>
         </v-card-actions>
@@ -279,8 +279,10 @@ export default {
     formFields(fields) {
       this.filteredFormFields=[...fields];
       this.setSelectALLCheckboxVModel(fields,false);
-    }
-  }
+      this.sortFields();
+    },
+  },
+
 
 };
 </script>

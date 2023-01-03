@@ -126,7 +126,7 @@ const service = {
     return findFields(schema);
   },
 
-  _buildCsvHeaders: async (form,  data) => {
+  _buildCsvHeaders: async (form,  data, columns) => {
     /**
      * get column order to match field order in form design
      * object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
@@ -134,8 +134,12 @@ const service = {
 
     // get correctly ordered field names (keys) from latest form version
     const latestFormDesign = await service._readLatestFormSchema(form.id);
-    const fieldNames = await service._readSchemaFields(latestFormDesign);
 
+    const fieldNames = await service._readSchemaFields(latestFormDesign);
+    let filteredFieldName;
+    if(columns) {
+      filteredFieldName = fieldNames.filter(fieldName => columns.includes(fieldName)||columns.includes(fieldName.split('.')[0]));
+    }
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data.length>0&&data[0].form);
     const metaHeaders = metaKeys.map(x => 'form.' + x);
@@ -144,7 +148,7 @@ const service = {
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    return metaHeaders.concat(fieldNames);
+    return metaHeaders.concat(filteredFieldName||fieldNames);
   },
 
   _exportType: (params = {}) => {
@@ -297,7 +301,6 @@ const service = {
     const columns = params.columns?params.columns:undefined;
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, form, params);
-
     const result = await service._formatData(exportFormat, exportType, form, data, columns);
 
     return { data: result.data, headers: result.headers };
