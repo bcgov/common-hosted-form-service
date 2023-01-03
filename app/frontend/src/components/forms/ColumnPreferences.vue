@@ -35,7 +35,7 @@
               <font-awesome-icon icon="fa-magnifying-glass" style="font-size:16px; color:#000000;"/>
               <div class="d-flex flex-row align-center justify-space-between" style="width:100%;">
                 <input type="search" placeholder="Search form fields" v-model="onSearchInputChange">
-                <font-awesome-icon icon="fa-solid fa-circle-xmark" color="#003366A1" class="fa-sm clearButton" :style="{display:isClearButtonDisplay}" @click="onInputSearchClear"/>
+                <font-awesome-icon icon="fa-solid fa-circle-xmark" color="#003366A1" class="fa-sm clearButton" :style="{display:isClearButtonDisplay, marginRight:'5px'}" @click="onInputSearchClear"/>
               </div>
             </div>
             <v-checkbox class="checkbox" data-cy="selectAll-checkbox" v-model="selectedAll" :style="{pointerEvents:selectAllPointerEvent}" @change="onSelectAllCheckboxChange">
@@ -209,8 +209,10 @@ export default {
 
     // listen to each form fields checkbox checked/unchecked
     onColumnsCheckBox(value, index, column) {
+
       this.selectedFields.set(column,value);
       this.noneSelected=false;
+      this.sortFields();
       if(this.checkAllCheckboxesChecked()){
         return;
       }
@@ -222,6 +224,7 @@ export default {
     //clear search input
     onInputSearchClear(){
       this.onSearchInputChange='';
+
     },
     async openPrefs() {
       this.loading = true;
@@ -251,6 +254,10 @@ export default {
       this.$emit('preferences-saved');
       this.dialog = false;
     },
+    // Selected fields should be top stacked
+    async sortFields() {
+      this.filteredFormFields = [...this.selectedFields.entries()].sort((a, b) =>b[1] - a[1]).map(row=>row[0]);
+    }
   },
   watch: {
     onSearchInputChange(value) {
@@ -264,7 +271,10 @@ export default {
         this.filteredFormFields = this.formFields.filter(column=>column.toLowerCase()
           .startsWith(value.toLowerCase()));
       }
-      this.checkAllCheckboxesChecked();
+      else {
+        this.sortFields();
+      }
+      //this.checkAllCheckboxesChecked();
     },
     formFields(fields) {
       this.filteredFormFields=[...fields];
