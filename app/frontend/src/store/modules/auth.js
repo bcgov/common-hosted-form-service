@@ -47,6 +47,8 @@ export default {
     isUser: (_state, getters) => getters.hasResourceRoles('chefs', ['user']),
     keycloakReady: () => Vue.prototype.$keycloak.ready,
     keycloakSubject: () => Vue.prototype.$keycloak.subject,
+    identityProviderIdentity: () =>
+      Vue.prototype.$keycloak.tokenParsed.idp_userid,
     moduleLoaded: () => !!Vue.prototype.$keycloak,
     realmAccess: () => Vue.prototype.$keycloak.tokenParsed.realm_access,
     redirectUri: (state) => state.redirectUri,
@@ -63,15 +65,13 @@ export default {
         email: '',
         idp: 'public',
         public: !getters.authenticated
-      };      
-
+      };
       if (getters.authenticated) {
-        if (getters.tokenParsed.identity_provider_identity) {
-          user.username = getters.tokenParsed.identity_provider_identity;
+        if (getters.tokenParsed.idp_username) {
+          user.username = getters.tokenParsed.idp_username;
         } else {
           user.username = getters.tokenParsed.preferred_username;
         }
-      
         user.firstName = getters.tokenParsed.given_name;
         user.lastName = getters.tokenParsed.family_name;
         user.fullName = getters.tokenParsed.name;

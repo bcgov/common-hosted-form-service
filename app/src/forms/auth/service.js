@@ -21,6 +21,7 @@ const service = {
 
       const obj = {
         id: uuidv4(),
+        idpUserId: data.idpUserId,
         keycloakId: data.keycloakId,
         username: data.username,
         fullName: data.fullName,
@@ -53,6 +54,7 @@ const service = {
       trx = await User.startTransaction();
 
       const update = {
+        idpUserId: data.idpUserId,
         keycloakId: data.keycloakId,
         username: data.username,
         fullName: data.fullName,
@@ -76,7 +78,8 @@ const service = {
     try {
       // identity_provider_* will be undefined if user login is to local keycloak (userid/password)
       const {
-        identity_provider_identity: identity,
+        idp_userid: idpUserId,
+        idp_username: identity,
         identity_provider: idp,
         preferred_username: username,
         given_name: firstName,
@@ -87,6 +90,7 @@ const service = {
       } = token.content;
 
       return {
+        idpUserId: idpUserId,
         keycloakId: keycloakId,
         username: identity ? identity : username,
         firstName: firstName,
@@ -99,6 +103,7 @@ const service = {
     } catch (e) {
       // any issues parsing the token, or if token doesn't exist, return a default "public" user
       return {
+        idpUserId: undefined,
         keycloakId: undefined,
         username: 'public',
         firstName: undefined,
@@ -121,7 +126,7 @@ const service = {
     // if this user does not exists, add...
     let user = await User.query()
       .first()
-      .where('keycloakId', obj.keycloakId);
+      .where('idpUserId', obj.idpUserId);
 
     if (!user) {
       // add to the system.

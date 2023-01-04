@@ -53,13 +53,6 @@ describe('form mutations', () => {
     expect(state.form).toEqual(expect.objectContaining(obj));
   });
 
-  it('SET_FORM_DIRTY should update form state', () => {
-    const obj = true;
-    store.mutations.SET_FORM_DIRTY(state, obj);
-
-    expect(state.form).toBeTruthy();
-    expect(state.form.isDirty).toBeTruthy();
-  });
 
   it('SET_FORM_PERMISSIONS should update permissions state', () => {
     const obj = { foo: 'bar' };

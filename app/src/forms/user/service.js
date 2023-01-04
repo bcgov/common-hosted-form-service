@@ -8,7 +8,8 @@ const service = {
   //
   list: (params) => {
     return User.query()
-      .modify('filterKeycloakId', params.keycloakId)
+      .modify('filterRestricted')
+      .modify('filterIdpUserId', params.idpUserId)
       .modify('filterIdpCode', params.idpCode)
       .modify('filterUsername', params.username)
       .modify('filterFullName', params.fullName)

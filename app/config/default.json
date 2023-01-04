@@ -19,9 +19,9 @@
       "path": ""
     },
     "objectStorage": {
-      "accessKeyId": "nr-iit-showcase",
-      "bucket": "egejyy",
-      "endpoint": "https://nrs.objectstore.gov.bc.ca",
+      "accessKeyId": "bcgov-citz-ccft",
+      "bucket": "chefs",
+      "endpoint": "https://commonservices.objectstore.gov.bc.ca",
       "key": "chefs/dev/"
     }
   },
@@ -30,8 +30,8 @@
     "basePath" : "/app",
     "keycloak": {
       "clientId": "chefs-frontend",
-      "realm": "cp1qly2d",
-      "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
+      "realm": "chefs",
+      "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth"
     }
   },
   "server": {
@@ -40,8 +40,8 @@
     "bodyLimit": "30mb",
     "keycloak": {
       "clientId": "chefs",
-      "realm": "cp1qly2d",
-      "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
+      "realm": "chefs",
+      "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth"
     },
     "logLevel": "http",
     "port": "8080",
@@ -55,13 +55,32 @@
   "serviceClient": {
     "commonServices": {
       "ches": {
-        "endpoint": "https://ches-dev.apps.silver.devops.gov.bc.ca/api"
+        "endpoint": "https://ches-dev.api.gov.bc.ca/api",
+        "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
+        "clientId": "CHES_CLIENT_ID",
+        "clientSecret": "CHES_CLIENT_SECRET"
       },
       "cdogs": {
-        "endpoint": "https://cdogs-dev.apps.silver.devops.gov.bc.ca/api"
-      },
-      "tokenEndpoint": "https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token",
-      "username": "CHEFS_SERVICE_CLIENT"
+        "endpoint": "https://cdogs-dev.api.gov.bc.ca/api",
+        "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
+        "clientId": "CDOGS_CLIENT_ID",
+        "clientSecret": "CDOGS_CLIENT_SECRET"
+      }
+    }
+  },
+  "customBcAddressFormioComponent":{
+    "apikey":"xxxxxxxxxxxxxxx",
+    "bcAddressURL":"https://geocoder.api.gov.bc.ca/addresses.json",
+    "queryParameters":{
+      "echo": false,
+      "brief": true,
+      "minScore": 55,
+      "onlyCivic": true,
+      "maxResults": 15,
+      "autocomplete": true,
+      "matchAccuracy": 100,
+      "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
+      "precisionPoints": 100
     }
   }
 }

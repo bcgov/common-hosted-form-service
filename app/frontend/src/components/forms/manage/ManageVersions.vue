@@ -86,7 +86,7 @@
               <router-link
                 :to="{
                   name: 'FormDesigner',
-                  query: { d: item.id, f: item.formId },
+                  query: { d: item.id, f: item.formId, nf:false },
                 }"
               >
                 <v-btn
@@ -103,6 +103,7 @@
             <span>Edit Version</span>
           </v-tooltip>
         </span>
+
 
         <!-- export -->
         <span>
@@ -223,12 +224,12 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-
 import { formService } from '@/services';
 import { FormPermissions } from '@/utils/constants';
 
 export default {
   name: 'ManageVersions',
+  inject:['fd','draftId','formId'],
   data() {
     return {
       headers: [
@@ -275,9 +276,9 @@ export default {
     versionList() {
       if (this.hasDraft) {
         // reformat draft object and then join with versions array
-        const reDraft = this.drafts.map((obj) => {
+        const reDraft = this.drafts.map((obj, idx) => {
           obj.published = false;
-          obj.version = this.form.versions.length + 1;
+          obj.version = this.form.versions.length + this.drafts.length - idx;
           obj.isDraft = true;
           delete obj.formVersionId;
           delete obj.schema;
@@ -306,7 +307,7 @@ export default {
       } else {
         this.$router.push({
           name: 'FormDesigner',
-          query: { f: formId, v: versionId },
+          query: { f: formId, v: versionId,nv:true},
         });
       }
     },
@@ -316,6 +317,18 @@ export default {
     // -----------------------------------------------------------------------------------------------------
     cancelPublish() {
       this.showPublishDialog = false;
+      document.documentElement.style.overflow = 'auto';
+      if(this.draftId){
+        this.$router.replace({
+          name: 'FormDesigner',
+          query: {
+            f: this.formId,
+            d: this.draftId,
+            saved: true,
+          },
+        }).catch(()=>{});
+        return;
+      }
       // To get the toggle back to original state
       this.rerenderTable += 1;
     },
@@ -328,8 +341,25 @@ export default {
       };
       this.showPublishDialog = true;
     },
+    turnOnPublish(){
+      if(this.versionList){
+        for (const item  of this.versionList) {
+          if(item.id===this.draftId){
+            this.publishOpts = {
+              publishing: true,
+              version: item.version,
+              id: item.id,
+              isDraft: item.isDraft,
+            };
+            document.documentElement.style.overflow = 'hidden';
+            this.showPublishDialog = true;
+          }
+        }
+      }
+    },
     async updatePublish() {
       this.showPublishDialog = false;
+      document.documentElement.style.overflow = 'auto';
       // if publishing a draft version
       if (this.publishOpts.isDraft) {
         await this.publishDraft({
@@ -351,6 +381,7 @@ export default {
       this.fetchForm(this.form.id);
     },
     // ----------------------------------------------------------------------/ Publish/unpublish actions
+
 
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;
@@ -396,6 +427,14 @@ export default {
         });
       }
     },
+  },
+  created(){
+    //check if the navigation to this page is from FormDesigner
+    if(this.fd)
+    {
+      this.turnOnPublish();
+    }
+
   },
 };
 </script>
