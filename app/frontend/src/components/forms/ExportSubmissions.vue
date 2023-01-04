@@ -22,7 +22,7 @@
       content-class="export-submissions-dlg"
     >
       <v-card>
-        <v-card-title class="text-h5 pb-0" :style="titleObjectStyle">Export Submissions to File</v-card-title>
+        <v-card-title class="text-h5 pb-0 titleObjectStyle">Export Submissions to File</v-card-title>
         <v-card-text>
           <hr style="height: 2px; border: none;background-color:#707070C1;margin-top:5px;"/>
           <v-row>
@@ -143,10 +143,10 @@
             </v-radio>
           </v-radio-group>
 
-          <p class="mt-8 fileLabelStyle">
+          <div class="mt-6 mb-3 fileLabelStyle">
             File Name and Type: <strong>{{ fileName }}</strong>
-          </p>
-          <p class="fileLabelStyle" :style="{'color': '#70707063'}">
+          </div>
+          <div class="fileLabelStyle" :style="{'color': '#70707063'}">
             <small class="text--disabled">
               * The export data feature works well for simple form designs that
               don't contain complex nested arrays of form components. If you
@@ -154,7 +154,7 @@
               also change. We therefore caution against implementing automation
               with other systems without accounting for these factors.
             </small>
-          </p>
+          </div>
         </v-card-text>
 
         <v-card-actions class="justify-center">
@@ -185,12 +185,7 @@ export default {
       exportFormat: 'csv',
       startDate: '',
       startDateMenu: false,
-      titleObjectStyle:{
-        textAlign: 'left',
-        font: 'normal normal bold 24px/33px Open Sans',
-        letterSpacing: '0px',
-        color: '#000000'
-      },
+
     };
   },
   computed: {
@@ -265,44 +260,51 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
+  .titleObjectStyle {
+    text-align: left !important;
+    font: normal normal bold 22px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #000000 !important;
+  };
   .subTitleObjectStyle {
-    text-align:left;
-    text-decoration: underline;
-    font: normal normal normal 18px/24px Open Sans;
-    letter-spacing: 0px;
-    color: #000000;;
+    text-align: left !important;
+    text-decoration: underline !important;
+    font: normal normal normal 18px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #000000 !important;
   };
   .radioboxLabelStyle {
-    text-align: left;
-    font: normal normal normal 14px/19px Open Sans;
-    letter-spacing: 0px;
-    color: #000000;
+    text-align: left !important;
+    font: normal normal normal 14px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #000000 !important;
   };
 
   .fileLabelStyle {
-    text-align: left;
-    font: normal normal bold 14px/19px Open Sans;
-    letter-spacing: 0px;
-    color: #000000;
+    text-align: left !important;
+    font: normal normal bold 14px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #000000 !important;
   }
 
   .exportButtonStyle {
-    background: #003366 0% 0% no-repeat padding-box;
-    border: 1px solid #707070;
-    border-radius: 3px;
-    font: normal normal bold 18px/24px Open Sans;
-    letter-spacing: 0px;
-    color: #FFFFFF;
-    text-transform:capitalize;
+    background: #003366 0% 0% no-repeat padding-box !important;
+    border: 1px solid #707070 !important;
+    border-radius: 3px !important;
+    font: normal normal bold 18px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #FFFFFF !important;
+    text-transform:capitalize !important;
   }
 
   .cancelButtonStyle {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 1px solid #003366;
-    border-radius: 3px;
-    font: normal normal bold 18px/24px Open Sans;
-    letter-spacing: 0px;
-    color: #38598A;
-    text-transform:capitalize;
+    background: #FFFFFF 0% 0% no-repeat padding-box !important;
+    border: 1px solid #003366 !important;
+    border-radius: 3px !important;
+    font: normal normal bold 18px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #38598A !important;
+    text-transform:capitalize !important;
   }
 </style>

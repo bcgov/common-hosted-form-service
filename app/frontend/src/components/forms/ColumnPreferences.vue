@@ -104,11 +104,11 @@ export default {
       isClearButtonDisplay:'none',
       titleWrapper:{
         textAlign: 'left',
-        font: 'normal normal bold 20px/27px Open Sans',
+        font: 'normal normal bold 20px Open Sans',
         color: '#000000',
       },
       subTitleWrapper:{
-        font: 'normal normal normal 18px/24px Open Sans',
+        font: 'normal normal normal 18px Open Sans',
         color: '#707070C1',
         gap:'10px',
         paddingBottom:'0px',
@@ -287,51 +287,50 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
   .checkboxLabel{
-    text-align: left;
-    font: normal normal normal 16px/22px Open Sans;
-    text-transform: capitalize;
-    letter-spacing: 0px;
-    color: #313132;
+    text-align: left !important;
+    font: normal normal normal 16px Open Sans !important;
+    text-transform: capitalize !important;
+    letter-spacing: 0px !important;
+    color: #313132 !important;
   }
 
   .searchField{
-    background: #60606014 0% 0% no-repeat padding-box;
-    border-radius: 4px;
-    width:50%;
-    height:35px;
-    gap:10px;
-    padding:3px;
-    padding-left:15px;
-    text-align: left;
-    font: normal normal 300 18px/24px Open Sans;
-    letter-spacing: 0px;
-    color: #606060;
+    background: #60606014 0% 0% no-repeat padding-box !important;
+    border-radius: 4px !important;
+    width:50% !important;
+    height:35px !important;
+    gap:10px !important;
+    padding:3px !important;
+    padding-left:15px !important;
+    text-align: left !important;
+    font: normal normal 300 18px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #606060 !important;
   }
   .searchField input:focus{
-    outline: none;
+    outline: none !important;
 
   }
 
   .searchField input::placeholder {
-    text-align: left;
-    font-size: 18px;
-    font-weight: normal;
-    font-style:normal;
-    letter-spacing: 0px;
-    color: #606060;
-    opacity: 1;
+    text-align: left !important;
+    font-size: 18px !important;
+    font-weight: normal !important;
+    font-style:normal !important;
+    letter-spacing: 0px !important;
+    color: #606060 !important;
+    opacity: 1 !important;
   }
   .fieldCheckBoxeswrapper{
-    background: #60606005 0% 0% no-repeat padding-box;
-    border: 1px solid #7070703F;
-    border-radius: 4px;
-    opacity: 1;
-    height:300px;
-    max-height: 300px;
-    padding:20px;
-    overflow-y:scroll;
+    background: #60606005 0% 0% no-repeat padding-box !important;
+    border: 1px solid #7070703F !important;
+    border-radius: 4px !important;
+    opacity: 1 !important;
+    height: 300px !important;
+    max-height: 300px !important;
+    padding: 20px !important;
+    overflow-y: scroll !important;
   }
 .clearButton:hover{
   cursor: pointer;
