@@ -64,6 +64,11 @@ runs:
       run: |
         oc rollout --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} status statefulset/patroni-${{ inputs.job_name }} --watch=true
 
+    - name: Deploy App Secret
+      shell: bash
+      run: >-
+        oc get --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} secret chefs-${{ inputs.job_name }}-secret || oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.secret.yaml -p INSTANCE=${{ inputs.job_name }} | oc create --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+
     - name: Deploy App
       shell: bash
       run: |
