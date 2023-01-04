@@ -126,11 +126,8 @@ export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
-<<<<<<< HEAD
+    FloatButton,
     InformationLinkPreviewDialog
-=======
-    FloatButton
->>>>>>> 842d0c446bc27953ec082e83b058abf0af220497
   },
   props: {
     draftId: String,
@@ -185,12 +182,9 @@ export default {
         redoClicked: false,
         undoClicked: false,
       },
-<<<<<<< HEAD
       showHelpLinkDialog:false,
       component:{},
-=======
       isComponentRemoved:false,
->>>>>>> 842d0c446bc27953ec082e83b058abf0af220497
     };
 
   },
@@ -228,84 +222,7 @@ export default {
           ALLOWED_TAGS: ['iframe'],
         },
         noDefaultSubmitButton: false,
-<<<<<<< HEAD
         builder: this.builder,
-=======
-        builder: {
-          basic: false,
-          premium: false,
-          layoutControls: {
-            title: 'Basic Layout',
-            default: true,
-            weight: 10,
-            components: {
-              simplecols2: true,
-              simplecols3: true,
-              simplecols4: true,
-              simplecontent: true,
-              simplefieldset: false,
-              simpleheading: false,
-              simplepanel: true,
-              simpleparagraph: false,
-              simpletabs: true,
-            },
-          },
-          entryControls: {
-            title: 'Basic Fields',
-            weight: 20,
-            components: {
-              simplecheckbox: true,
-              simplecheckboxes: true,
-              simpledatetime: true,
-              simpleday: true,
-              simpleemail: true,
-              simplenumber: true,
-              simplephonenumber: true,
-              simpleradios: true,
-              simpleselect: true,
-              simpletextarea: true,
-              simpletextfield: true,
-              simpletime: false,
-            },
-          },
-          layout: {
-            title: 'Advanced Layout',
-            weight: 30,
-          },
-          advanced: {
-            title: 'Advanced Fields',
-            weight: 40,
-            components: {
-              // Need to re-define Formio basic fields here
-              textfield: true,
-              textarea: true,
-              number: true,
-              password: true,
-              checkbox: true,
-              selectboxes: true,
-              select: true,
-              radio: true,
-              button: true,
-              // Prevent duplicate appearance of orgbook component
-              orgbook: false,
-              bcaddress:false
-            },
-          },
-          data: {
-            title: 'Advanced Data',
-            weight: 50,
-          },
-          customControls: {
-            title: 'BC Government',
-            weight: 60,
-            components: {
-              orgbook: true,
-              simplefile: this.userType !== this.ID_MODE.PUBLIC,
-              bcaddress:true
-            },
-          },
-        },
->>>>>>> 842d0c446bc27953ec082e83b058abf0af220497
         templates: templateExtensions,
       };
     },
@@ -417,7 +334,6 @@ export default {
       // Component remove start
       this.patch.componentRemovedStart = true;
     },
-<<<<<<< HEAD
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
@@ -475,9 +391,6 @@ export default {
     onShowClosePreveiwDialog(){
       this.showHelpLinkDialog=!this.showHelpLinkDialog;
     },
-=======
-
->>>>>>> 842d0c446bc27953ec082e83b058abf0af220497
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -734,11 +647,6 @@ export default {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
-<<<<<<< HEAD
-
-=======
-
->>>>>>> 842d0c446bc27953ec082e83b058abf0af220497
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder

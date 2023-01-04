@@ -40,14 +40,11 @@ export default {
     });
   },
   methods:{
-    ...mapActions('form', ['listFormComponentsHelpInfo']),
+    ...mapActions('form', ['listFormComponentsHelpInfo','deleteCurrentForm']),
   },
   computed: {
     ...mapGetters('form', ['form']),
     IDP: () => IdentityProviders,
-  },
-  methods:{
-    ...mapActions('form', ['deleteCurrentForm']),
   },
   beforeRouteLeave(_to, _from,next) {
     this.form.isDirty
