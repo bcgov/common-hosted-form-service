@@ -146,9 +146,9 @@ class ChesService {
 }
 
 const endpoint = config.get('serviceClient.commonServices.ches.endpoint');
-const tokenEndpoint = config.get('serviceClient.commonServices.tokenEndpoint');
-const username = config.get('serviceClient.commonServices.username');
-const password = config.get('serviceClient.commonServices.password');
+const tokenEndpoint = config.get('serviceClient.commonServices.ches.tokenEndpoint');
+const clientId = config.get('serviceClient.commonServices.ches.clientId');
+const clientSecret = config.get('serviceClient.commonServices.ches.clientSecret');
 
-let chesService = new ChesService({tokenUrl: tokenEndpoint, clientId: username, clientSecret: password, apiUrl: endpoint});
+let chesService = new ChesService({tokenUrl: tokenEndpoint, clientId: clientId, clientSecret: clientSecret, apiUrl: endpoint});
 module.exports = chesService;

@@ -4,6 +4,7 @@ import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import { apiKeyService, formService, rbacService, userService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
+
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -153,9 +154,6 @@ export default {
     SET_FORM_FIELDS(state, formFields) {
       state.formFields = formFields;
     },
-    SET_FORM_DIRTY(state, isDirty) {
-      state.form.isDirty = isDirty;
-    },
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
     },
@@ -183,6 +181,9 @@ export default {
     SET_FCHELPINFOGroupObject(state,fcHelpInfoGroupObject){
       state.fcHelpInfoGroupObject = fcHelpInfoGroupObject;
     },
+    SET_FORM_DIRTY(state, isDirty) {
+      state.form.isDirty = isDirty;
+    },
   },
   actions: {
     //
@@ -201,7 +202,8 @@ export default {
           idps: f.idps,
           name: f.formName,
           description: f.formDescription,
-          permissions: f.permissions
+          permissions: f.permissions,
+          published: f.published
         }));
         commit('SET_FORMLIST', forms);
       } catch (error) {
@@ -343,14 +345,6 @@ export default {
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
     },
-    async setDirtyFlag({ commit, state }, isDirty) {
-      // When the form is detected to be dirty set the browser guards for closing the tab etc
-      // There are also Vue route-specific guards so that we can ask before navigating away with the links
-      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
-      if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
-      window.onbeforeunload = isDirty ? () => true : null;
-      commit('SET_FORM_DIRTY', isDirty);
-    },
     async updateForm({ state, dispatch }) {
       try {
         const emailList =
@@ -397,6 +391,21 @@ export default {
         }, { root: true });
       }
     },
+    async restoreSubmission({ dispatch }, { submissionId, deleted }) {
+      try {
+        // Get this submission
+        await formService.restoreSubmission(submissionId, { deleted });
+        dispatch('notifications/addNotification', {
+          message: 'Submission restored successfully.',
+          ...NotificationTypes.SUCCESS,
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while restoring this submission.',
+          consoleError: `Error restoring submission ${submissionId}: ${error}`,
+        }, { root: true });
+      }
+    },
     async fetchSubmissionUsers({ commit, dispatch }, formSubmissionId) {
       try {
         // Get user list for this submission
@@ -424,7 +433,7 @@ export default {
         }, { root: true });
       }
     },
-    async fetchSubmissions({ commit, dispatch, state }, { formId, userView }) {
+    async fetchSubmissions({ commit, dispatch, state }, { formId, userView, deletedOnly = false, createdBy = '' }) {
       try {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of active submissions for this form (for either all submissions, or just single user)
@@ -432,7 +441,7 @@ export default {
           state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columnList : undefined;
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
-          : await formService.listSubmissions(formId, { deleted: false, fields: fields });
+          : await formService.listSubmissions(formId, { deleted: deletedOnly, fields: fields, createdBy: createdBy  });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -516,12 +525,20 @@ export default {
         const response = await formService.listFormComponentsHelpInfo();
         commit('SET_FCHELPINFOGroupObject',response.data);
       } catch(error) {
-        
+
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching form builder components',
           consoleError: 'Error getting form builder components',
         }, { root: true });
       }
+    },
+    async setDirtyFlag({ commit, state }, isDirty) {
+      // When the form is detected to be dirty set the browser guards for closing the tab etc
+      // There are also Vue route-specific guards so that we can ask before navigating away with the links
+      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
+      if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
+      window.onbeforeunload = isDirty ? () => true : null;
+      commit('SET_FORM_DIRTY', isDirty);
     },
   },
 };

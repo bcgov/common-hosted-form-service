@@ -16,6 +16,19 @@ export default {
       type: String,
       required: true,
     },
+    d: {
+      type: String,
+    },
+    fd: {
+      type: String,
+    },
+  },
+  provide() {
+    return {
+      fd: this.fd,
+      draftId:this.d,
+      formId:this.f
+    };
   },
   computed: {
     IDP: () => IdentityProviders,
