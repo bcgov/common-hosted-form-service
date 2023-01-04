@@ -1,12 +1,4 @@
 {
   "username": "test",
-<<<<<<< HEAD
-  "password": "test",
-  "onLoad": "login-required",
-  "checkLoginIframe": false,
-  "pkceMethod": "S256"
-  
-=======
   "password": "test"
->>>>>>> 842d0c446bc27953ec082e83b058abf0af220497
 }
