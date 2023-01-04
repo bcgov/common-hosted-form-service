@@ -137,8 +137,8 @@ const service = {
 
     const fieldNames = await service._readSchemaFields(latestFormDesign);
     let filteredFieldName;
-    if(Array.isArray(columns) && columns.length) {
-      filteredFieldName = fieldNames.filter(fieldName => Array.isArray(columns)&&columns.includes(fieldName)||columns.includes(fieldName.split('.')[0]));
+    if(Array.isArray(columns)) {
+      filteredFieldName = fieldNames.filter(fieldName => (Array.isArray(columns) && columns.includes(fieldName))|| (Array.isArray(columns) && columns.includes(fieldName.split('.')[0])));
     }
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data.length>0&&data[0].form);
