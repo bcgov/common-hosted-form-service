@@ -90,6 +90,7 @@
                     v-model="startDate"
                     data-test="picker-form-startDate"
                     @input="startDateMenu = false"
+                    :max="maxDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -121,6 +122,7 @@
                     v-model="endDate"
                     data-test="picker-form-endDate"
                     @input="endDateMenu = false"
+                    :min="startDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -192,6 +194,11 @@ export default {
     };
   },
   computed: {
+    maxDate() {
+      let momentObj = moment(Date());
+      let  momentString = momentObj.format('YYYY-MM-DD');
+      return momentString;
+    },
     ...mapGetters('form', ['form', 'userFormPreferences']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
@@ -250,6 +257,11 @@ export default {
       }
     },
   },
+  watch:{
+    startDate() {
+      this.endDate='';
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
