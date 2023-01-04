@@ -21,8 +21,8 @@
 
     <v-dialog v-model="dialog" width="700">
       <v-card>
-        <v-card-title class="text-h5 pb-0" :style="titleWrapper">Search and select fields to show under your dashboard</v-card-title>
-        <v-card-subtitle class="mt-1 d-flex" :style="subTitleWrapper">
+        <v-card-title class="text-h5 pb-0 titleWrapper" >Search and select fields to show under your dashboard</v-card-title>
+        <v-card-subtitle class="mt-1 d-flex subTitleWrapper">
           <font-awesome-icon icon="fa-solid fa-circle-info" class="mt-1" color="#003366A1" />
           <span>To export selected data go to: <v-icon>get_app</v-icon>export submissions</span>
 
@@ -64,10 +64,10 @@
           </div>
         </v-card-text>
         <v-card-actions class="justify-center">
-          <v-btn data-cy="columnPreferencesSaveBtn" class="mb-5 mr-5" :style="saveButtonWrapper" color="primary" @click="saveColumns">
+          <v-btn data-cy="columnPreferencesSaveBtn" class="mb-5 mr-5 saveButtonWrapper" color="primary" @click="saveColumns">
             <span>Save</span>
           </v-btn>
-          <v-btn class="mb-5" :style="cancelButtonWrapper" outlined @click="()=>{dialog = false; this.onSearchInputChange='';}">
+          <v-btn class="mb-5 cancelButtonWrapper" outlined @click="()=>{dialog = false; this.onSearchInputChange='';}">
             <span>Cancel</span>
           </v-btn>
         </v-card-actions>
@@ -102,38 +102,8 @@ export default {
       noneCheckBoxPointerEvent:'none',
       selectAllPointerEvent:'auto',
       isClearButtonDisplay:'none',
-      titleWrapper:{
-        textAlign: 'left',
-        font: 'normal normal bold 20px Open Sans',
-        color: '#000000',
-      },
-      subTitleWrapper:{
-        font: 'normal normal normal 18px Open Sans',
-        color: '#707070C1',
-        gap:'10px',
-        paddingBottom:'0px',
-        marginBottom:'0px',
-      },
-      cancelButtonWrapper:{
-        background: '#FFFFFF 0% 0% no-repeat padding-box',
-        border: '1px solid #003366',
-        borderRadius: '3px',
-        textAlign: 'left',
-        font: 'normal normal bold 18px Open Sans',
-        letterSpacing: '0px',
-        color: '#38598A',
-        textTransform: 'capitalize'
-      },
-      saveButtonWrapper:{
-        border: '1px solid #707070',
-        background: '#003366 0% 0% no-repeat padding-box',
-        borderRadius: '3px',
-        textAlign: 'left',
-        font: 'normal normal bold 18px Open Sans',
-        letterSpacing: '0px',
-        color: '#FFFFFF',
-        textTransform: 'capitalize'
-      }
+
+
     };
   },
   computed: {
@@ -287,6 +257,43 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
+  .subTitleWrapper {
+    font: normal normal normal 18px Open Sans !important;
+    color: #707070C1 !important;
+    gap:10px !important;
+    padding-bottom:0px !important;
+    margin-bottom:0px !important;
+  }
+
+  .cancelButtonWrapper {
+    background: #FFFFFF 0% 0% no-repeat padding-box !important;
+    border: 1px solid #003366 !important;
+    border-radius: 3px !important;
+    text-align: left !important;
+    font: normal normal bold 18px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #38598A !important;
+    text-transform: capitalize !important;
+  }
+
+  .saveButtonWrapper {
+    border: 1px solid #707070 !important;
+    background: #003366 0% 0% no-repeat padding-box !important;
+    border-radius: 3px !important;
+    text-align: left !important;
+    font: normal normal bold 18px Open Sans !important;
+    letter-spacing: 0px !important;
+    color: #FFFFFF !important;
+    text-transform: capitalize !important;
+  }
+
+  .titleWrapper {
+    text-align: left !important;
+    font: normal normal bold 22px Open Sans !important;
+    color: #000000 !important;
+  }
+
   .checkboxLabel{
     text-align: left !important;
     font: normal normal normal 16px Open Sans !important;
