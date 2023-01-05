@@ -20,13 +20,14 @@ const service = {
         if(!q[i].error){
           const obj = await  service._runQueries(q[i].statement);
           let result = await service._initStatement(obj);
-          service._initMaillSender(result, referer);
+          let chesResponses = service._initMaillSender(result, referer);
           resolve.push({
             formId:result.form.id,
             formName :  result.form.name,
             type_mail : result.state,
             number_mail: result.submiters.length,
-            period_type : q[i].periodType
+            period_type : q[i].periodType,
+            chesResponses
           });
           // eslint-disable-next-line no-unused-vars
           mail+= result.submiters.length;
@@ -262,12 +263,9 @@ const service = {
   },
   _getReferer : () => {
     try {
-      const prod = 'https://chefs.nrs.gov.bc.ca';
-      const dev  = 'https://chefs-dev.apps.silver.devops.gov.bc.ca';
       const basePath = config.get('frontend.basePath');
-      const type = true;
-      const host = (type) ? prod : dev;
-      return `${host}${basePath}`;
+      const host = process.env.SERVER_HOST;
+      return`${host}${basePath}`;
     } catch (error) {
       log.error(error.message, {
         function: '_getReferer'
@@ -276,12 +274,12 @@ const service = {
     }
   },
   _initMaillSender: (statement, referer) => {
-
+    const chesResponse = [];
     statement.submiters.forEach(user => {
       const data = { form :statement.form, report : statement.report, user , state : statement.state, referer};
-      emailService.initReminder(data);
+      chesResponse.push(emailService.initReminder(data));
     });
-
+    return chesResponse;
   }
 
 };
