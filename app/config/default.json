@@ -31,7 +31,7 @@
     "keycloak": {
       "clientId": "chefs-frontend",
       "realm": "chefs",
-      "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth"
+      "serverUrl": "http://localhost:8082"
     }
   },
   "server": {
@@ -41,7 +41,8 @@
     "keycloak": {
       "clientId": "chefs",
       "realm": "chefs",
-      "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth"
+      "serverUrl": "http://localhost:8082",
+      "clientSecret": "ZaPmOWB8O2PoEQvpu6Bm759XvINbdGz3"
     },
     "logLevel": "http",
     "port": "8080",

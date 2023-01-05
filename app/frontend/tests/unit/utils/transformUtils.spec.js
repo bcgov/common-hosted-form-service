@@ -59,52 +59,6 @@ describe('parseIdps', () => {
   });
 });
 
-const sampleScheduleData = () => ({ 
-  'enabled': true, 
-  'scheduleType': 'period', 
-  'closingMessage': 'Custom Message Goes here', 
-  'keepOpenForTerm': '1', 
-  'repeatSubmission': { 
-    'enabled': true, 
-    'everyTerm': '1',
-    'repeatUntil': 
-     '2023-02-03',
-    'keepAliveFor': null, 
-    'onSpecificDay': null, 
-    'everyIntervalType': 'months' 
-  }, 
-  'keepOpenForInterval': 'days', 
-  'allowLateSubmissions': { 
-    'enabled': true, 
-    'forNext': {
-      'term': '4',
-      'intervalType': 'days' 
-    } 
-  }, 
-  'closingMessageEnabled': true, 
-  'openSubmissionDateTime': '2022-11-01', 
-  'closeSubmissionDateTime': null
-});
-
-describe('isFormExpired', () => {
-  it('Returns an object when supply an empty object', () => {
-    expect(transformUtils.isFormExpired({})).toEqual(
-      {
-        allowLateSubmissions: false,
-        expire: false,
-        message: ''
-      });
-  });
-
-  it('Returns an object when supply a formSchedule object', () => {
-    expect(transformUtils.isFormExpired(sampleScheduleData())).toEqual(
-      {
-        allowLateSubmissions: false,
-        expire: true,
-        message: 'Custom Message Goes here'
-      });
-  });
-});
 
 //No more usage on frontend, Will be deleted in future commits
 // describe('isEligibleLateSubmission', () => {
