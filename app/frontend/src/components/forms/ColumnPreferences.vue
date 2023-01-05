@@ -270,7 +270,7 @@ export default {
   }
 
   .cancelButtonWrapper {
-    width: 80px !important;
+    width: 100px !important;
     background: #FFFFFF 0% 0% no-repeat padding-box !important;
     border: 1px solid #003366 !important;
     border-radius: 3px !important;
@@ -282,7 +282,7 @@ export default {
   }
 
   .saveButtonWrapper {
-    width: 80px !important;
+    width: 100px !important;
     border: 1px solid #707070 !important;
     background: #003366 0% 0% no-repeat padding-box !important;
     border-radius: 3px !important;
