@@ -263,48 +263,48 @@ export default {
 
   .titleObjectStyle {
     text-align: left !important;
-    font: normal normal bold 22px Open Sans !important;
+    font: normal normal bold 22px !important;
     letter-spacing: 0px !important;
     color: #000000 !important;
   };
   .subTitleObjectStyle {
     text-align: left !important;
     text-decoration: underline !important;
-    font: normal normal normal 18px Open Sans !important;
+    font: normal normal normal 18px !important;
     letter-spacing: 0px !important;
     color: #000000 !important;
   };
   .radioboxLabelStyle {
     text-align: left !important;
-    font: normal normal normal 14px Open Sans !important;
+    font: normal normal normal 14px !important;
     letter-spacing: 0px !important;
     color: #000000 !important;
   };
 
   .fileLabelStyle {
     text-align: left !important;
-    font: normal normal bold 14px Open Sans !important;
+    font: normal normal bold 14px !important;
     letter-spacing: 0px !important;
     color: #000000 !important;
   }
 
   .exportButtonStyle {
-    width: 100px !important;
+    width: 80px !important;
     background: #003366 0% 0% no-repeat padding-box !important;
     border: 1px solid #707070 !important;
     border-radius: 3px !important;
-    font: normal normal bold 18px Open Sans !important;
+    font: normal normal bold 18px !important;
     letter-spacing: 0px !important;
     color: #FFFFFF !important;
     text-transform:capitalize !important;
   }
 
   .cancelButtonStyle {
-    width: 100px !important;
+    width: 80px !important;
     background: #FFFFFF 0% 0% no-repeat padding-box !important;
     border: 1px solid #003366 !important;
     border-radius: 3px !important;
-    font: normal normal bold 18px Open Sans !important;
+    font: normal normal bold 18px !important;
     letter-spacing: 0px !important;
     color: #38598A !important;
     text-transform:capitalize !important;
