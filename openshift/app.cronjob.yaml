@@ -17,7 +17,7 @@ objects:
     metadata:
       name: cronjobs
     spec:
-      schedule: "0 0 * * *"
+      schedule: "0 8 * * *"
       concurrencyPolicy: "Replace"
       startingDeadlineSeconds: 200
       suspend: false
@@ -32,7 +32,7 @@ objects:
             spec:
               containers:
               - name: my-container
-                image: docker.io/curlimages/curl:7.82
+                image: docker.io/curlimages/curl:7.82.0
                 env:
                 - name: APITOKEN
                   valueFrom:
@@ -40,11 +40,9 @@ objects:
                     name: "${NAME}-${INSTANCE}-secret"
                     key: mailapitoken
                 command:
-                  - curl -X GET -ks -H
-                  - "apikey: $APITOKEN"
-                  - "-H"
-                  - "Content-Type: application/json"
-                  - "http://${APP_NAME}-app-${JOB_NAME}:8080/${ROUTE_PATH}/api/v1/public/reminder"
+                  - /bin/sh
+                  - -ec
+                  - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "http://${APP_NAME}-app-${JOB_NAME}:8080${ROUTE_PATH}/api/v1/public/reminder"||exit 0'
               restartPolicy: OnFailure
 parameters:
   - name: APP_NAME
