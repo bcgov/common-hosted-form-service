@@ -102,11 +102,6 @@ objects:
                   value: "${ROUTE_PATH}"
                 - name: SERVER_HOST
                   value: "${SERVER_HOST}"
-                - name: APITOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: "chefs-${JOB_NAME}-secret"
-                      key: mailapitoken
       template:
         metadata:
           labels:
@@ -236,6 +231,11 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-objectstorage-secret"
+                - name: APITOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: "chefs-${JOB_NAME}-secret"
+                      key: mailapitoken
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:
