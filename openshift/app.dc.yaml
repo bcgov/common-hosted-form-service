@@ -100,11 +100,6 @@ objects:
                       name: "patroni-${JOB_NAME}-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
-                - name: APITOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: "chefs-${JOB_NAME}-secret"
-                      key: mailapitoken
       template:
         metadata:
           labels:
@@ -234,6 +229,11 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-objectstorage-secret"
+                - name: APITOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: "chefs-${JOB_NAME}-secret"
+                      key: mailapitoken
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:
