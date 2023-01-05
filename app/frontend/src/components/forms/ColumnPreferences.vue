@@ -34,7 +34,10 @@
             <div class="d-flex flex-row align-center searchField">
               <font-awesome-icon icon="fa-magnifying-glass" style="font-size:16px; color:#000000;"/>
               <div class="d-flex flex-row align-center justify-space-between" style="width:100%;">
-                <input type="search" placeholder="Search form fields" v-model="onSearchInputChange">
+                <input type="search" :placeholder="searchPlaceOrder"
+                       @focus="()=>{searchPlaceOrder=''}"
+                       @blur="()=>{searchPlaceOrder='Search form fields'}"
+                       v-model="onSearchInputChange">
                 <font-awesome-icon icon="fa-solid fa-circle-xmark" color="#003366A1" class="fa-sm clearButton" :style="{display:isClearButtonDisplay, marginRight:'5px'}" @click="onInputSearchClear"/>
               </div>
             </div>
@@ -102,7 +105,7 @@ export default {
       noneCheckBoxPointerEvent:'none',
       selectAllPointerEvent:'auto',
       isClearButtonDisplay:'none',
-
+      searchPlaceOrder:'Search form fields'
 
     };
   },
@@ -267,6 +270,7 @@ export default {
   }
 
   .cancelButtonWrapper {
+    width: 80px !important;
     background: #FFFFFF 0% 0% no-repeat padding-box !important;
     border: 1px solid #003366 !important;
     border-radius: 3px !important;
@@ -278,6 +282,7 @@ export default {
   }
 
   .saveButtonWrapper {
+    width: 80px !important;
     border: 1px solid #707070 !important;
     background: #003366 0% 0% no-repeat padding-box !important;
     border-radius: 3px !important;
@@ -320,6 +325,17 @@ export default {
 
   }
 
+  .searchField input:focus::placeholder { color:transparent;outline: none !important; }
+
+    /* Mozilla Firefox 4 to 18 */
+  .searchField input:focus:-moz-placeholder { color:transparent; outline: none !important; }
+
+    /* Mozilla Firefox 19+ */
+  .searchField input:focus::-moz-placeholder { color:transparent; outline: none !important;}
+
+    /* Internet Explorer 10+ */
+  .searchField input:focus:-ms-input-placeholder { color:transparent;outline: none !important; }
+
   .searchField input::placeholder {
     text-align: left !important;
     font-size: 18px !important;
@@ -343,4 +359,5 @@ export default {
   cursor: pointer;
   color:orange;
 }
+
 </style>

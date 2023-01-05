@@ -136,7 +136,9 @@ const service = {
     const latestFormDesign = await service._readLatestFormSchema(form.id);
 
     const fieldNames = await service._readSchemaFields(latestFormDesign);
+
     let filteredFieldName;
+
     if(Array.isArray(columns)) {
       filteredFieldName = fieldNames.filter(fieldName => (Array.isArray(columns) && columns.includes(fieldName))|| (Array.isArray(columns) && columns.includes(fieldName.split('.')[0])));
     }
@@ -148,7 +150,7 @@ const service = {
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    return metaHeaders.concat(filteredFieldName||fieldNames);
+    return metaHeaders.concat(fieldNames||filteredFieldName);
   },
 
   _exportType: (params = {}) => {
@@ -229,6 +231,15 @@ const service = {
         let keys = Object.keys(submissionData[index].submission);
         for(let key of keys) {
           if(Array.isArray(params.columns) && !params.columns.includes(key)) {
+            delete submissionData[index].submission[key];
+          }
+        }
+      }
+    } else {
+      for(let index in submissionData) {
+        let keys = Object.keys(submissionData[index].submission);
+        for(let key of keys) {
+          if(key==='submit') {
             delete submissionData[index].submission[key];
           }
         }
