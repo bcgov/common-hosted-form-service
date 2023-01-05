@@ -279,7 +279,7 @@ export default {
           this.formSchema = response.data.versions[0].schema;
 
           if(response.data.schedule && response.data.schedule.expire){
-            var formScheduleStatus = response.data.schedule; //isFormExpired(response.data.schedule);
+            var formScheduleStatus = response.data.schedule;
             this.isformScheduleExpire = formScheduleStatus.expire;
             this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
             this.formScheduleExpireMessage = formScheduleStatus.message;
@@ -331,7 +331,7 @@ export default {
       }
     },
     async sendSubmission(isDraft, submission) {
-      const formScheduleStatus = this.form.schedule; //isFormExpired(this.form.schedule);
+      const formScheduleStatus = this.form.schedule; 
       submission.data.lateEntry = formScheduleStatus.expire === true ? formScheduleStatus.allowLateSubmissions : false;
       const body = {
         draft: isDraft,
