@@ -262,7 +262,7 @@ export default {
 <style lang="scss" scoped>
 
   .subTitleWrapper {
-    font: normal normal normal 18px Open Sans !important;
+    font: normal normal normal 18px !important;
     color: #707070C1 !important;
     gap:10px !important;
     padding-bottom:0px !important;
@@ -270,24 +270,24 @@ export default {
   }
 
   .cancelButtonWrapper {
-    width: 100px !important;
+    width: 80px !important;
     background: #FFFFFF 0% 0% no-repeat padding-box !important;
     border: 1px solid #003366 !important;
     border-radius: 3px !important;
     text-align: left !important;
-    font: normal normal bold 18px Open Sans !important;
+    font: normal normal bold 18px !important;
     letter-spacing: 0px !important;
     color: #38598A !important;
     text-transform: capitalize !important;
   }
 
   .saveButtonWrapper {
-    width: 100px !important;
+    width: 80px !important;
     border: 1px solid #707070 !important;
     background: #003366 0% 0% no-repeat padding-box !important;
     border-radius: 3px !important;
     text-align: left !important;
-    font: normal normal bold 18px Open Sans !important;
+    font: normal normal bold 18px !important;
     letter-spacing: 0px !important;
     color: #FFFFFF !important;
     text-transform: capitalize !important;
@@ -295,13 +295,13 @@ export default {
 
   .titleWrapper {
     text-align: left !important;
-    font: normal normal bold 22px Open Sans !important;
+    font: normal normal bold 22px !important;
     color: #000000 !important;
   }
 
   .checkboxLabel{
     text-align: left !important;
-    font: normal normal normal 16px Open Sans !important;
+    font: normal normal normal 16px !important;
     text-transform: capitalize !important;
     letter-spacing: 0px !important;
     color: #313132 !important;
@@ -316,7 +316,7 @@ export default {
     padding:3px !important;
     padding-left:15px !important;
     text-align: left !important;
-    font: normal normal 300 18px Open Sans !important;
+    font: normal normal 300 18px !important;
     letter-spacing: 0px !important;
     color: #606060 !important;
   }
