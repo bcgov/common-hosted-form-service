@@ -150,7 +150,7 @@ const service = {
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    return metaHeaders.concat(fieldNames||filteredFieldName);
+    return metaHeaders.concat(filteredFieldName||fieldNames);
   },
 
   _exportType: (params = {}) => {
