@@ -1,6 +1,5 @@
 const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
-
 const {
   FormRoleUser,
   FormSubmissionUser,
@@ -20,7 +19,6 @@ const service = {
       .withGraphFetched('[form, userRole, user]')
       .modify('orderCreatedAtDescending');
   },
-
   create: async (data) => {
     let trx;
     try {

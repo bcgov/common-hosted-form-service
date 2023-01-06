@@ -1,72 +1,95 @@
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-    <div v-if="displayTitle">
-      <div v-if="!isFormPublic(form)">
-        <FormViewerActions
-          :draftEnabled="form.enableSubmitterDraft"
-          :formId="form.id"
-          :isDraft="submissionRecord.draft"
-          :permissions="permissions"
-          :readOnly="readOnly"
-          :submissionId="submissionId"
-          @save-draft="saveDraft"
-        />
-      </div>
-      <h1 class="my-6 text-center">{{ form.name }}</h1>
-    </div>
-    <div class="form-wrapper">
-      <v-alert
-        :value="saved || saving"
-        :class="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.class
-            : NOTIFICATIONS_TYPES.SUCCESS.class
-        "
-        :color="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.color
-            : NOTIFICATIONS_TYPES.SUCCESS.color
-        "
-        :icon="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.icon
-            : NOTIFICATIONS_TYPES.SUCCESS.icon
-        "
-        transition="scale-transition"
-      >
-        <div v-if="saving">
-          <v-progress-linear indeterminate />
-          Saving
+
+    <div v-if="isformScheduleExpire">
+      <template>
+        <v-alert
+          text
+          prominent
+          type="error"
+        >
+          {{formScheduleExpireMessage}}
+        </v-alert>
+
+        <div v-if="isLateSubmissionAllowed">
+          <v-col cols="3" md="2">
+            <v-btn color="primary" @click="isformScheduleExpire = false">
+              <span>Create late submission</span>
+            </v-btn>
+          </v-col>
         </div>
-        <div v-else>Draft Saved</div>
-      </v-alert>
+      </template>
+    </div>
 
-      <slot name="alert" v-bind:form="form" />
+    <div v-else>
+      <div v-if="displayTitle">
+        <div v-if="!isFormPublic(form)">
+          <FormViewerActions
+            :draftEnabled="form.enableSubmitterDraft"
+            :formId="form.id"
+            :isDraft="submissionRecord.draft"
+            :permissions="permissions"
+            :readOnly="readOnly"
+            :submissionId="submissionId"
+            @save-draft="saveDraft"
+          />
+        </div>
+        <h1 class="my-6 text-center">{{ form.name }}</h1>
+      </div>
+      <div class="form-wrapper">
+        <v-alert
+          :value="saved || saving"
+          :class="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.class
+              : NOTIFICATIONS_TYPES.SUCCESS.class
+          "
+          :color="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.color
+              : NOTIFICATIONS_TYPES.SUCCESS.color
+          "
+          :icon="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.icon
+              : NOTIFICATIONS_TYPES.SUCCESS.icon
+          "
+          transition="scale-transition"
+        >
+          <div v-if="saving">
+            <v-progress-linear indeterminate />
+            Saving
+          </div>
+          <div v-else>Draft Saved</div>
+        </v-alert>
 
-      <BaseDialog
-        v-model="showSubmitConfirmDialog"
-        type="CONTINUE"
-        @close-dialog="showSubmitConfirmDialog = false"
-        @continue-dialog="continueSubmit"
-      >
-        <template #title>Please Confirm</template>
-        <template #text>Are you sure you wish to submit your form?</template>
-        <template #button-text-continue>
-          <span>Submit</span>
-        </template>
-      </BaseDialog>
+        <slot name="alert" v-bind:form="form" />
 
-      <Form
-        :form="formSchema"
-        :key="reRenderFormIo"
-        :submission="submission"
-        @submit="onSubmit"
-        @submitDone="onSubmitDone"
-        @submitButton="onSubmitButton"
-        @customEvent="onCustomEvent"
-        :options="viewerOptions"
-      />
-      <p v-if="version" class="text-right">Version: {{ version }}</p>
+        <BaseDialog
+          v-model="showSubmitConfirmDialog"
+          type="CONTINUE"
+          @close-dialog="showSubmitConfirmDialog = false"
+          @continue-dialog="continueSubmit"
+        >
+          <template #title>Please Confirm</template>
+          <template #text>Are you sure you wish to submit your form?</template>
+          <template #button-text-continue>
+            <span>Submit</span>
+          </template>
+        </BaseDialog>
+
+        <Form
+          :form="formSchema"
+          :key="reRenderFormIo"
+          :submission="submission"
+          @submit="onSubmit"
+          @submitDone="onSubmitDone"
+          @submitButton="onSubmitButton"
+          @customEvent="onCustomEvent"
+          :options="viewerOptions"
+        />
+        <p v-if="version" class="text-right">Version: {{ version }}</p>
+      </div>
     </div>
   </v-skeleton-loader>
 </template>
@@ -79,6 +102,7 @@ import { Form } from 'vue-formio';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
+
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { NotificationTypes } from '@/utils/constants';
@@ -111,6 +135,10 @@ export default {
     },
     submissionId: String,
     versionId: String,
+    isDuplicate: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -125,11 +153,15 @@ export default {
       saving: false,
       showSubmitConfirmDialog: false,
       submission: {
-        data: {},
+        data: {lateEntry:false},
       },
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      isformScheduleExpire: false,
+      attemptLateSubmission: false,
+      formScheduleExpireMessage: 'Form Submission is not available for this moment.',
+      isLateSubmissionAllowed: false
     };
   },
   computed: {
@@ -176,8 +208,20 @@ export default {
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
         this.form = response.data.form;
-        this.formSchema = response.data.version.schema;
-        this.version = response.data.version.version;
+        if(!this.isDuplicate){
+          //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
+          this.formSchema = response.data.version.schema;
+          this.version = response.data.version.version;
+        }else{
+          /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
+          if(response.data?.version?.schema?.components && response.data?.version?.schema?.components.length){
+            response.data.version.schema.components.map((component) => {
+              if(!component?.validate?.isUseForCopy){
+                delete this.submission.data[component.key];
+              }
+            });
+          }
+        }
         // Get permissions
         if (!this.staffEditMode && !isFormPublic(this.form)) {
           const permRes = await rbacService.getUserSubmissions({
@@ -233,9 +277,20 @@ export default {
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
+
+          if(response.data.schedule && response.data.schedule.expire){
+            var formScheduleStatus = response.data.schedule;
+            this.isformScheduleExpire = formScheduleStatus.expire;
+            this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
+            this.formScheduleExpireMessage = formScheduleStatus.message;
+          }
+
         }
       } catch (error) {
         if (this.authenticated) {
+          this.isformScheduleExpire = true;
+          this.isLateSubmissionAllowed = false;
+          this.formScheduleExpireMessage = 'An error occurred fetching this form';
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,
@@ -276,13 +331,17 @@ export default {
       }
     },
     async sendSubmission(isDraft, submission) {
+      const formScheduleStatus = this.form.schedule; 
+      submission.data.lateEntry = formScheduleStatus.expire === true ? formScheduleStatus.allowLateSubmissions : false;
       const body = {
         draft: isDraft,
         submission: submission,
+
       };
 
       let response;
-      if (this.submissionId) {
+      //let's check if this is a submission from existing one, If isDuplicate then create new submission if now isDuplicate then update the submission
+      if (this.submissionId && !this.isDuplicate) {
         // Updating an existing submission
         response = await formService.updateSubmission(this.submissionId, body);
       } else {
@@ -395,7 +454,11 @@ export default {
           // store our submission result...
           this.submissionRecord = Object.assign(
             {},
-            this.submissionId ? response.data.submission : response.data
+            this.submissionId && this.isDuplicate  //Check if this submission is creating with the existing one
+              ? response.data
+              : this.submissionId && !this.isDuplicate
+                ? response.data.submission
+                : response.data
           );
           // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
@@ -435,7 +498,10 @@ export default {
     },
   },
   created() {
-    if (this.submissionId) {
+    if (this.submissionId && this.isDuplicate) { //Run when make new submission from existing one called.
+      this.getFormData();
+      this.getFormSchema(); //We need this to be called as well, because we need latest version of form
+    } else if(this.submissionId && !this.isDuplicate) {
       this.getFormData();
     } else {
       this.getFormSchema();

@@ -1,5 +1,5 @@
 const emailService = require('../email/emailService');
-const formService = require('../../../../app/src/forms/submission/service');
+const formService = require('../submission/service');
 const service = require('./service');
 module.exports = {
   list: async (req, res, next) => {
@@ -125,5 +125,4 @@ module.exports = {
       next(error);
     }
   }
-
 };

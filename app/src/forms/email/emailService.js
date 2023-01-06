@@ -5,7 +5,7 @@ const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
 const formService = require('../form/service');
-
+const moment = require('moment');
 /** Helper function used to build the email template based on email type and contents */
 const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
@@ -95,6 +95,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
     };
   }
 
+
   return {
     configData,
     contexts: [{
@@ -105,6 +106,68 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
         messageLinkText: configData.messageLinkText,
         messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
         emailContent: additionalProperties.emailContent,
+        title: configData.title
+      },
+      to: contextToVal
+    }]
+  };
+};
+
+/** Helper function used to build the email template based on email type and contents for reminder */
+const buildEmailTemplateFormForReminder = async (form, emailType, user, report, referer) => {
+  let configData = {};
+  const closeDate = moment(report.dates.closeDate).format('MMM. D, YYYY');
+  const subject = 'CHEFS Submission Reminder';
+  const message = (report.dates.closeDate) ? `This email is to inform you that the ${form.name} form is now open for submissions and will stay open until ${closeDate}.Please ensure to complete your submission before the period is closed.
+  Thank you.` : `This email is to inform you that the ${form.name} form is now open for submissions.
+  Thank you. `;
+  const contextToVal = [user.email];
+  const names = `${user.firstName} ${user.lastName}`;
+  if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
+    configData = {
+      bodyTemplate: 'reminder-form-open.html',
+      title: `Submission Start for ${form.name} `,
+      subject: subject,
+      messageLinkText: `Hi ${names},\n ${message}
+      `,
+      priority: 'normal',
+      form,
+    };
+  } else if (emailType === EmailTypes.REMINDER_FORM_NOT_FILL) {
+    configData = {
+      bodyTemplate: 'reminder-form-not-fill.html',
+      title: `Submission Reminder for ${form.name}`,
+      subject: subject,
+      messageLinkText: `Hi ${names},
+      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }.Please ensure to complete your submission before the period is closed.
+      Thank you.
+      `,
+      priority: 'normal',
+      form,
+    };
+  } else if (emailType === EmailTypes.REMINDER_FORM_WILL_CLOSE) {
+    configData = {
+      bodyTemplate: 'reminder-form-will-close.html',
+      title: `Submission Closing for ${form.name}`,
+      subject: subject,
+      messageLinkText: `Hi ${names},
+      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }.Please ensure to complete your submission before the period is closed.
+      Thank you. `,
+      priority: 'normal',
+      form,
+    };
+
+  }
+
+  return {
+    configData,
+    contexts: [{
+      context: {
+        allFormSubmissionUrl: '',
+        form: configData.form,
+        report: report,
+        messageLinkText: configData.messageLinkText,
+        messageLinkUrl : `${referer}/form/submit?f=${configData.form.id}`,
         title: configData.title
       },
       to: contextToVal
@@ -158,7 +221,6 @@ const service = {
       body,
       template.substring(bodyInsertIndex, template.length),
     ].join('');
-
     return result;
   },
 
@@ -365,6 +427,28 @@ const service = {
       throw e;
     }
   },
+  /**
+   * @function formOpen
+   * Manual email confirmation after form has been submitted
+   * @param {object} information about the submitter and the form
+   * @returns The result of the email merge operation
+   */
+  initReminder: async (obj) => {
+    try {
+      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.user, obj.report, obj.referer);
+
+      console.log('\n \n',contexts,'\n \n');
+
+      return service._sendEmailTemplate(configData, contexts);
+    } catch (e) {
+      log.error(e.message, {
+        function: obj.state,
+        formId: obj.form.id,
+      });
+      throw e;
+    }
+  },
+
 };
 
 module.exports = service;

@@ -3,7 +3,12 @@ const { Model } = require('objection');
 const Problem = require('api-problem');
 
 const { Form, FormVersion } = require('../common/models');
+const moment = require('moment');
+const { Roles } = require('../common/constants');
 
+const {
+  UserFormAccess
+} = require('../common/models');
 class SubmissionData extends Model {
   static get tableName() {
     return 'submissions_data_vw';
@@ -13,10 +18,14 @@ class SubmissionData extends Model {
     return {
       filterCreatedAt(query, minDate, maxDate) {
         if (minDate && maxDate) {
+          minDate = moment(minDate).format('YYYY-MM-DD HH:MM:SS');
+          maxDate = moment(maxDate).format('YYYY-MM-DD HH:MM:SS');
           query.whereBetween('createdAt', [minDate, maxDate]);
         } else if (minDate) {
+          minDate = moment(minDate).format('YYYY-MM-DD HH:MM:SS');
           query.where('createdAt', '>=', minDate);
         } else if (maxDate) {
+          maxDate = moment(maxDate).format('YYYY-MM-DD HH:MM:SS');
           query.where('createdAt', '<=', maxDate);
         }
       },
@@ -292,6 +301,24 @@ const service = {
     const result = await service._formatData(exportFormat, exportType, form, data);
 
     return { data: result.data, headers: result.headers };
+  },
+  _getListSubmitersByFormId :  (formId, obj ) => {
+
+    return [ UserFormAccess.query()
+      .select('formVersionId','formName','userId','firstName','lastName', 'email')
+      .where('formId',formId)
+      .modify('filterActive', true)
+      .modify('filterByAccess', undefined, Roles.FORM_SUBMITTER, undefined)
+      .modify('orderDefault'),
+    SubmissionData.query()
+      .select('confirmationId', 'createdAt', 'submissionId', 'formVersionId','userId','firstName','lastName', 'email')
+      .where('formId',formId)
+      .modify('filterDrafts', false)
+      .modify('filterDeleted', false)
+      .modify('filterCreatedAt', obj.report.dates.startDate, obj.report.dates.graceDate)
+      .modify('orderDefault'),
+    obj
+    ];
   }
 
 };
