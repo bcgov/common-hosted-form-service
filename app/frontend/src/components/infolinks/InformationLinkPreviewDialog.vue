@@ -37,7 +37,7 @@
           </v-row>
           <v-row>
             <v-col class="d-flex flex-row align-center text-decoration-underline linkWrapper">
-              <a :href="component&&component.moreHelpInfoLink" class="preview_info_link_field" :target="'_blank'" :class="{disabledLink:component&&component.moreHelpInfoLink===''}"> <div class="mr-1 cursor" >Learn more 
+              <a :href="component&&component.moreHelpInfoLink" class="preview_info_link_field" :target="'_blank'" :class="{disabledLink:component&&component.moreHelpInfoLink===''}"> <div class="mr-1 cursor" >Learn more
                 <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /> </div></a>
             </v-col>
           </v-row>
@@ -87,35 +87,38 @@ export default {
 </script>
 <style lang="scss" scoped>
   .cursor{
-    cursor:pointer;
+    cursor:pointer !important;
   }
   .text{
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    letter-spacing: 0px;
-    color: #000000;
-    opacity: 1;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 18px !important;
+    font-family: BCSans !important;
+    letter-spacing: 0px !important;
+    color: #000000 !important;
+    opacity: 1 !important;
   }
   .linkWrapper{
-    text-align: left;
-    text-decoration: underline;
-    font-weight: normal;
-    font-style: normal;
-    font-size:18px;
-    letter-spacing: 0px;
-    color: #1A5A96;
+    text-align: left !important;
+    text-decoration: underline !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    font-family: BCSans !important;
+    font-size: 18px !important;
+    letter-spacing: 0px !important;
+    color: #1A5A96 !important;
   }
   .headerWrapper{
-    height:40px;
-    background: #1A5A96 0% 0% no-repeat padding-box;
-    text-align: left;
-    font-weight: normal;
-    font-style: normal;
-    font-size:25px;
-    letter-spacing: 0px;
-    color: #F2F2F2;
-    text-transform: capitalize;
+    height:40px !important;
+    background: #1A5A96 0% 0% no-repeat padding-box !important;
+    text-align: left !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    font-family: BCSans !important;
+    font-size: 25px !important;
+    letter-spacing: 0px !important;
+    color: #F2F2F2 !important;
+    text-transform: capitalize !important;
   }
   .disabledLink {
     pointer-events: none;

@@ -9,11 +9,11 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      
+
       <template #[`item.componentName`]="{ item}">
         <div>
           <template>
-            <div style="text-transform: capitalize" :style="label">{{ item.componentName }}</div>
+            <div style="text-transform: capitalize label">{{ item.componentName }}</div>
           </template>
         </div>
       </template>
@@ -27,9 +27,9 @@
           </div>
           <div>
             <v-btn data-cy="preview_button" color="primary" text small
-                   @click="onOpenPreviewDialog(item.componentName)" 
+                   @click="onOpenPreviewDialog(item.componentName)"
                    :disabled="canDisabled(item.componentName)">
-    
+
               <font-awesome-icon icon="fa-solid fa-eye" />
               <span class="d-none d-sm-flex" style="font-size:16px;">PREVIEW</span>
             </v-btn>
@@ -44,12 +44,12 @@
       </template>
     </v-data-table>
     <InformationLinkDialog :showDialog="showDialog"
-                           :groupName="groupName" 
+                           :groupName="groupName"
                            :componentName="componentName"
-                           @close-dialog="onDialog" 
+                           @close-dialog="onDialog"
                            :component="component"/>
-    <InformationLinkPreviewDialog :showDialog="showPreviewDialog" 
-                                  @close-dialog="onPreviewDialog" 
+    <InformationLinkPreviewDialog :showDialog="showPreviewDialog"
+                                  @close-dialog="onPreviewDialog"
                                   :component="component"/>
   </div>
 </template>
@@ -88,16 +88,9 @@ export default{
           width: '1%',
         },
       ],
-      label:{
-        textAlign: 'left',
-        fontWeight: 'normal', 
-        fontStyle:'normal',
-        fontSize:'18px',
-        color: '#003366'
-      }
     };
   },
-  
+
   props:{
     layoutList:{
       type:Array,
@@ -121,8 +114,8 @@ export default{
       this.showPreviewDialog=!this.showPreviewDialog;
     },
     canDisabled(componentName) {
-      return this.componentsList.filter(component =>component.componentName === componentName).length == 0; 
-    }, 
+      return this.componentsList.filter(component =>component.componentName === componentName).length == 0;
+    },
 
     isComponentPublish(componentName,index) {
       for(let component of this.componentsList) {
@@ -151,38 +144,45 @@ export default{
       for (const component of this.componentsList) {
         if(component.componentName===componentName) {
           this.updateFormComponentsHelpInfoStatus({
-            componentId:component.id, 
+            componentId:component.id,
             publishStatus:this.publish[index]
           });
-        } 
+        }
       }
     }
-   
+
   }
 };
 </script>
-<style lang="css" scoped>
+<style lang="scss" scoped>
   .submissions-table >>> tbody tr {
-    background: #BFBDBD14;
-    border: 1px solid #7070703F;
-    margin-bottom: 35px;
-    border-spacing: 15px 50px;
+    background: #BFBDBD14 !important;
+    border: 1px solid #7070703F !important;
+    margin-bottom: 35px !important;
+    border-spacing: 15px 50px !important;
   }
-  
+
   .actions > div{
-    border-left: 1px solid #7070703F;
-    padding-left:10px;
-    padding-right:10px;
-    display:flex;
-    justify-content: center;
+    border-left: 1px solid #7070703F !important;
+    padding-left:10px !important;
+    padding-right:10px !important;
+    display:flex !important;
+    justify-content: center !important;
   }
-  
+
+  .label {
+    text-align: left !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    font-size: 18px !important;
+    color: #003366 !important;
+  }
 
   .actions > div:last-child{
-    border-left: 1px solid #7070703F;
-    width: 240px;
-    display:flex;
-    justify-content: center;
-  } 
-  
+    border-left: 1px solid #7070703F !important;
+    width: 240px !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+
 </style>
