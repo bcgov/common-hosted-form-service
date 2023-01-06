@@ -17,6 +17,7 @@
     </v-tooltip>
 
     <v-dialog
+      v-if="dialog"
       v-model="dialog"
       width="900"
       content-class="export-submissions-dlg"
@@ -179,11 +180,11 @@ export default {
     return {
       dateRange: false,
       dialog: false,
-      endDate: '',
+      endDate: moment(Date()).format('YYYY-MM-DD'),
       endDateMenu: false,
       dataFields:false,
       exportFormat: 'csv',
-      startDate: '',
+      startDate: moment(Date()).format('YYYY-MM-DD'),
       startDateMenu: false,
 
     };
@@ -254,7 +255,13 @@ export default {
   },
   watch:{
     startDate() {
-      this.endDate='';
+      this.endDate= moment(Date()).format('YYYY-MM-DD');
+    },
+    dateRange(value) {
+      if(!value) {
+        this.endDate= moment(Date()).format('YYYY-MM-DD');
+        this.startDate= moment(Date()).format('YYYY-MM-DD');
+      }
     }
   }
 };
