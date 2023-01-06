@@ -169,6 +169,7 @@ export default {
         this.selectedAll=true;
         this.selectAllPointerEvent='none';
       }
+      this.selectedAll=false;
       return checker;
     },
 
