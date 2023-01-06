@@ -172,9 +172,10 @@ export default{
 
   .label {
     text-align: left !important;
-    font-weight: normal !important;
     font-style: normal !important;
     font-size: 18px !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
     color: #003366 !important;
   }
 

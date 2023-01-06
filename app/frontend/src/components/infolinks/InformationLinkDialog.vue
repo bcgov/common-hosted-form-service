@@ -225,20 +225,21 @@ export default {
   .blueColorWrapper {
     text-align: left !important;
     font-style: normal !important;
-    font-weight: normal !important;
     font-size: 18px !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
     letter-spacing: 0px !important;
     color: #1A5A96 !important;
-    font-family: BCSans !important;
+
     text-transform: capitalize !important;
   }
   .blackColorWrapper{
     text-align: left !important;
     text-decoration: underline !important;
     font-style: normal !important;
-    font-weight: normal !important;
     font-size: 18px !important;
     font-family: BCSans !important;
+    font-weight: normal !important;
     color: #313132 !important;
   }
 
@@ -246,9 +247,9 @@ export default {
     text-align: left !important;
     text-decoration: none !important;
     font-style: normal !important;
-    font-weight: normal !important;
     font-size: 16px !important;
     font-family: BCSans !important;
+    font-weight: normal !important;
     color: #313132 !important;
   }
 
@@ -256,8 +257,8 @@ export default {
     text-align: left !important;
     text-decoration: underline !important;
     font-style: normal !important;
-    font-weight: normal !important;
     font-family: BCSans !important;
+    font-weight: normal !important;
     font-size: 18px !important;
     color: #313132 !important;
   }
@@ -280,8 +281,8 @@ export default {
   }
   .text-style textarea {
     text-align: left !important;
-    font-family: BCSans !important;
     font-style: normal !important;
+    font-family: BCSans !important;
     font-weight: normal !important;
     font-size: 18px !important;
     letter-spacing: 0px !important;
@@ -291,9 +292,11 @@ export default {
   .saveButtonWrapper {
     background: #003366 0% 0% no-repeat padding-box !important;
     border: 1px solid #707070;
-    font-family: BCSans !important;
     border-radius: 3px;
-    font: normal normal bold 18px !important;
+    font-style: normal !important;
+    font-family: BCSans !important;
+    font-weight: bold !important;
+    font-size: 18px !important;
     letter-spacing: 0px !important;
     color: #F2F2F2;
     width: 117px;
@@ -302,10 +305,12 @@ export default {
   }
   .cancelButtonWrapper {
     border: 1px solid #003366 !important;
-    font-family: BCSans !important;
     background: #FFFFFF 0% 0% no-repeat padding-box !important;
     border-radius: 3px !important;
-    font: normal normal bold 18px !important;
+    font-style: normal !important;
+    font-family: BCSans !important;
+    font-weight: bold !important;
+    font-size: 18px !important;
     letter-spacing: 0px !important;
     color: #38598A !important;
     width: 117px !important;
