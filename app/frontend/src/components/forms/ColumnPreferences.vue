@@ -262,7 +262,11 @@ export default {
 <style lang="scss" scoped>
 
   .subTitleWrapper {
-    font: normal normal normal 18px Open Sans !important;
+    font-style: normal !important;
+    font-size: 18px !important;
+    font-variant: normal !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
     color: #707070C1 !important;
     gap:10px !important;
     padding-bottom:0px !important;
@@ -270,24 +274,32 @@ export default {
   }
 
   .cancelButtonWrapper {
-    width: 100px !important;
+    width: 80px !important;
     background: #FFFFFF 0% 0% no-repeat padding-box !important;
     border: 1px solid #003366 !important;
     border-radius: 3px !important;
     text-align: left !important;
-    font: normal normal bold 18px Open Sans !important;
+    font-style: normal !important;
+    font-size: 18px !important;
+    font-variant: normal !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
     letter-spacing: 0px !important;
     color: #38598A !important;
     text-transform: capitalize !important;
   }
 
   .saveButtonWrapper {
-    width: 100px !important;
+    width: 80px !important;
     border: 1px solid #707070 !important;
     background: #003366 0% 0% no-repeat padding-box !important;
     border-radius: 3px !important;
     text-align: left !important;
-    font: normal normal bold 18px Open Sans !important;
+    font-style: normal !important;
+    font-size: 18px !important;
+    font-variant: normal !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
     letter-spacing: 0px !important;
     color: #FFFFFF !important;
     text-transform: capitalize !important;
@@ -295,13 +307,21 @@ export default {
 
   .titleWrapper {
     text-align: left !important;
-    font: normal normal bold 22px Open Sans !important;
+    font-style: normal !important;
+    font-size: 22px !important;
+    font-weight: bold !important;
+    font-variant: normal !important;
+    font-family: BCSans !important;
     color: #000000 !important;
   }
 
   .checkboxLabel{
     text-align: left !important;
-    font: normal normal normal 16px Open Sans !important;
+    font-style: normal !important;
+    font-size: 16px !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    font-family: BCSans !important;
     text-transform: capitalize !important;
     letter-spacing: 0px !important;
     color: #313132 !important;
@@ -316,7 +336,11 @@ export default {
     padding:3px !important;
     padding-left:15px !important;
     text-align: left !important;
-    font: normal normal 300 18px Open Sans !important;
+    font-style: normal !important;
+    font-size: 18px !important;
+    font-weight: 300 !important;
+    font-variant: normal !important;
+    font-family: BCSans !important;
     letter-spacing: 0px !important;
     color: #606060 !important;
   }
@@ -341,6 +365,8 @@ export default {
     font-size: 18px !important;
     font-weight: normal !important;
     font-style:normal !important;
+    font-variant: normal !important;
+    font-family: BCSans !important;
     letter-spacing: 0px !important;
     color: #606060 !important;
     opacity: 1 !important;
