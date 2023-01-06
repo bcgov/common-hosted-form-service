@@ -102,16 +102,15 @@
               <div class="d-flex flex-row justify-space-between align-end">
                 <div>
                   <v-btn
-                    class="mr-4"
+                    class="mr-4 saveButtonWrapper"
                     @click="submit"
-                    :style="saveButtonWrapper" 
                     data-cy="more_help_info_link_save_button"
                   >
                     Save
                   </v-btn>
                   <v-btn
+                    class="cancelButtonWrapper"
                     @click="onCloseDialog"
-                    :style="cancelButtonWrapper"
                     data-cy="more_help_info_link_cancel_button"
                   >
                     Cancel
@@ -120,7 +119,7 @@
                 <div class="d-flex flex-row align-end versionLabel">
                   <div class="mr-3"><span style="color: #939393;">Current:</span> <span class="font-weight-bold" style="color: #313132;">Version {{version+1}}</span></div>
                   <div>
-                    <span style="color: #707070C1;">Version: {{version}}</span> 
+                    <span style="color: #707070C1;">Version: {{version}}</span>
                     <span style="color: #1A5A96;"> - </span>
                     <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(version)===0?'disabled':''" @click="setPreviousVersion">Restore
                     </span>
@@ -155,28 +154,7 @@ export default {
       dialog: this.showDialog,
       color1:'#1A5A96',
       image:'',
-      saveButtonWrapper:{
-        background: '#003366 0% 0% no-repeat padding-box',
-        border: '1px solid #707070',
-        borderRadius: '3px',
-        font: 'normal normal bold 18px Open Sans',
-        letterSpacing: '0px',
-        color: '#F2F2F2',
-        width: '117px',
-        height: '36px',
-        textTransform: 'capitalize'
-      },
-      cancelButtonWrapper:{
-        border: '1px solid #003366',
-        background: '#FFFFFF 0% 0% no-repeat padding-box',
-        borderRadius: '3px',
-        font: 'normal normal bold 18px Open Sans',
-        letterSpacing: '0px',
-        color: '#38598A',
-        width: '117px',
-        height: '36px',
-        textTransform: 'capitalize'
-      },
+
     };
   },
   props:{
@@ -205,7 +183,7 @@ export default {
     submit() {
       this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload?this.fcHelpInfoImageUpload:this.component&&this.component.imageUrl,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
         groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false});
-      this.onCloseDialog();              
+      this.onCloseDialog();
     },
     resetDialog() {
       this.description='';
@@ -238,70 +216,100 @@ export default {
 </script>
 <style lang="scss" scoped>
   .active:hover {
-    text-decoration: underline;
-    cursor:pointer;
+    text-decoration: underline !important;
+    cursor:pointer !important;
   }
   .disabled{
-    pointer-events: none;
+    pointer-events: none !important;
   }
   .blueColorWrapper {
-    text-align: left;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    letter-spacing: 0px;
-    color: #1A5A96;
-    text-transform: capitalize;
+    text-align: left !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 18px !important;
+    letter-spacing: 0px !important;
+    color: #1A5A96 !important;
+    font-family: BCSans !important;
+    text-transform: capitalize !important;
   }
   .blackColorWrapper{
-    text-align: left;
-    text-decoration: underline;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    color: #313132;
+    text-align: left !important;
+    text-decoration: underline !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 18px !important;
+    font-family: BCSans !important;
+    color: #313132 !important;
   }
 
   .v-label{
-    text-align: left;
-    text-decoration: none;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 16px;
-    color: #313132;
+    text-align: left !important;
+    text-decoration: none !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 16px !important;
+    font-family: BCSans !important;
+    color: #313132 !important;
   }
 
   .blackColorWrapper{
-    text-align: left;
-    text-decoration: underline;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    color: #313132;
+    text-align: left !important;
+    text-decoration: underline !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-family: BCSans !important;
+    font-size: 18px !important;
+    color: #313132 !important;
   }
-  
+
   .versionLabel{
-    font-style: normal;
-    font-weight: normal;
-    font-size: 16px;
+    font-style: normal !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
+    font-size: 16px !important;
   }
   .v-text-field input {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    caret-color: #1A5A96;
-    letter-spacing: 0px;
+    font-style: normal !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
+    font-size: 18px !important;
+    caret-color: #1A5A96 !important;
+    letter-spacing: 0px !important;
     color: #1A5A96 !important;
-    border-bottom:1px solid #1A5A96;
+    border-bottom:1px solid #1A5A96 !important;
   }
   .text-style textarea {
-    text-align: left;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    letter-spacing: 0px;
+    text-align: left !important;
+    font-family: BCSans !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 18px !important;
+    letter-spacing: 0px !important;
     caret-color: #1A5A96 !important;
     color: #1A5A96 !important;
-    
+  }
+  .saveButtonWrapper {
+    background: #003366 0% 0% no-repeat padding-box !important;
+    border: 1px solid #707070;
+    font-family: BCSans !important;
+    border-radius: 3px;
+    font: normal normal bold 18px !important;
+    letter-spacing: 0px !important;
+    color: #F2F2F2;
+    width: 117px;
+    height: 36px;
+    text-transform: capitalize;
+  }
+  .cancelButtonWrapper {
+    border: 1px solid #003366 !important;
+    font-family: BCSans !important;
+    background: #FFFFFF 0% 0% no-repeat padding-box !important;
+    border-radius: 3px !important;
+    font: normal normal bold 18px !important;
+    letter-spacing: 0px !important;
+    color: #38598A !important;
+    width: 117px !important;
+    height: 36px !important;
+    text-transform: capitalize !important;
   }
 </style>
