@@ -2,65 +2,45 @@ import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 
 import { rbacService } from '@/services';
-import Developer from '@/components/admin/FormComponentsHelpInfo.vue';
+import FormComponentsHelpInfo from '@/components/admin/FormComponentsHelpInfo.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
-describe('Developer.vue', () => {
-  const mockConsoleError = jest.spyOn(console, 'error');
-  const getCurrentUserSpy = jest.spyOn(rbacService, 'getCurrentUser');
+describe('FormComponentsHelpInfo.vue', () => {
+  const extractGroupComponentsSpy = jest.spyOn(FormComponentsHelpInfo, 'extractGroupComponents');
   let store;
 
   beforeEach(() => {
-    mockConsoleError.mockReset();
-    getCurrentUserSpy.mockReset();
-
+    extractGroupComponentsSpy.mockReset();
     store = new Vuex.Store();
-    store.registerModule('auth', {
+    store.registerModule('form', {
       namespaced: true,
       getters: {
-        fullName: () => 'fullName',
-        token: () => 'token',
-        tokenParsed: () => ({}),
-        userName: () => 'userName'
+        fcHelpInfoGroupObject: () => {},
+        builder: () => {},
+      }
+    });
+    store.registerModule('admin', {
+      namespaced: true,
+      getters: {
+        fcHelpInfo: () => {},
       }
     });
   });
 
   afterAll(() => {
-    mockConsoleError.mockRestore();
-    getCurrentUserSpy.mockRestore();
+    extractGroupComponentsSpy.mockRestore();
   });
 
-  it('renders without error', async () => {
-    const data = {};
-    getCurrentUserSpy.mockImplementation(() => ({ data: data }));
-    const wrapper = shallowMount(Developer, {
+  it('renders ', async () => {
+    const wrapper = shallowMount(FormComponentsHelpInfo, {
       localVue,
       store,
-      stubs: ['BaseSecure']
+      stubs: ['GeneralLayout']
     });
-    await localVue.nextTick();
 
-    expect(wrapper.text()).toMatch('Developer Resources');
-    expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.apiRes).toEqual(data);
-  });
-
-  it('renders with error', async () => {
-    getCurrentUserSpy.mockImplementation(() => {
-      throw new Error('error');
-    });
-    const wrapper = shallowMount(Developer, {
-      localVue,
-      store,
-      stubs: ['BaseSecure']
-    });
-    await localVue.nextTick();
-
-    expect(wrapper.text()).toMatch('Developer Resources');
-    expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.apiRes).toMatch('');
+    wrapper.vm.onExpansionPanelClick('Basic Layout');
+    expect(extractGroupComponentsSpy).toHaveBeenCalledTimes(1);
   });
 });
