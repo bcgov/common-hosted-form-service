@@ -356,7 +356,7 @@ export default {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of active submissions for this form (for either all submissions, or just single user)
         const fields = state.userFormPreferences &&
-          state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columnList : undefined;
+          state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columns : undefined;
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
           : await formService.listSubmissions(formId, { deleted: deletedOnly, fields: fields, createdBy: createdBy  });
