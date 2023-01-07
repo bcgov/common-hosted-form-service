@@ -169,7 +169,10 @@ export default {
         this.selectedAll=true;
         this.selectAllPointerEvent='none';
       }
-      this.selectedAll=false;
+      else {
+        this.selectedAll=false;
+      }
+      //
       return checker;
     },
 
@@ -248,7 +251,7 @@ export default {
       else {
         this.sortFields();
       }
-      //this.checkAllCheckboxesChecked();
+      this.checkAllCheckboxesChecked();
     },
     formFields(fields) {
       this.filteredFormFields=[...fields];
