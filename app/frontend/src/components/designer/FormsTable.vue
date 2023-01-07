@@ -89,6 +89,7 @@
           </v-btn>
         </router-link>
         <router-link
+          data-cy="formSubmissionsLink"
           v-if="checkSubmissionView(item)"
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
