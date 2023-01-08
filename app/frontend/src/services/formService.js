@@ -304,16 +304,18 @@ export default {
    * @function exportSubmissions
    * Get the export file for a range of form submittions
    * @param {string} formId The form uuid
+   * @param {Array} preference selected fields by the user
    * @param {string} format The export file format csv or json
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, format, options = {}) {
+  exportSubmissions(formId, format, preference, options = {}) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
       {
         params: {
           format: format,
           type: 'submissions',
+          preference:preference,
           ...options
         },
         responseType: 'blob'
