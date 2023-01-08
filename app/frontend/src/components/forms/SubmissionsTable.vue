@@ -205,7 +205,7 @@ export default {
 
       // Add any custom columns if the user has them
       const maxHeaderLength = 25;
-      this.userColumnList.forEach((col) => {
+      this.userColumns.forEach((col) => {
         headers.push({
           text:
             col.length > maxHeaderLength
@@ -232,14 +232,14 @@ export default {
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
     },
-    userColumnList() {
+    userColumns() {
       if (
         this.userFormPreferences &&
         this.userFormPreferences.preferences &&
-        this.userFormPreferences.preferences.columnList
+        this.userFormPreferences.preferences.columns
       ) {
         // Compare saved user prefs against the current form versions component names and remove any discrepancies
-        return this.userFormPreferences.preferences.columnList.filter(
+        return this.userFormPreferences.preferences.columns.filter(
           (x) => this.formFields.indexOf(x) !== -1
         );
       } else {
@@ -281,7 +281,7 @@ export default {
                 deleted: s.deleted,
               };
               // Add any custom columns
-              this.userColumnList.forEach((col) => {
+              this.userColumns.forEach((col) => {
                 fields[col] = s[col];
               });
               return fields;

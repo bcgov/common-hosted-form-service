@@ -33,6 +33,8 @@ Vue.config.productionTip = false;
 NProgress.configure({ showSpinner: false });
 NProgress.start();
 
+
+
 // Globally register all components with base in the name
 const requireComponent = require.context('@/components', true, /Base[A-Z]\w+\.(vue|js)$/);
 requireComponent.keys().forEach(fileName => {
