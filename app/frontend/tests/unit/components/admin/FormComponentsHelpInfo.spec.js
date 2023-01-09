@@ -1,14 +1,13 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 
-import { rbacService } from '@/services';
 import FormComponentsHelpInfo from '@/components/admin/FormComponentsHelpInfo.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe('FormComponentsHelpInfo.vue', () => {
-  const extractGroupComponentsSpy = jest.spyOn(FormComponentsHelpInfo, 'extractGroupComponents');
+  const extractGroupComponentsSpy = jest.spyOn(FormComponentsHelpInfo.methods, 'extractGroupComponents');
   let store;
 
   beforeEach(() => {

@@ -124,9 +124,9 @@ module.exports = {
       const response = await fileService.signedUrl(req.params);
       res.status(200).json(response);
     } catch(error){
-        next(error);
-      }
-    },
+      next(error);
+    }
+  },
   setFormUserRoles: async (req, res, next) => {
     try {
       // Safety guard that this admin call isn't ever used without a form or user id
