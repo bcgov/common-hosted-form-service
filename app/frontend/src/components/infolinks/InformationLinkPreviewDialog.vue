@@ -17,7 +17,7 @@
           </v-row>
           <v-row class="mt-6" v-if="component&&component.imageUrl">
             <v-col md="6" >
-              <div class="text" data-cy="preview_text_field">
+              <div class="text" data-cy="preview_text_field" ref="preview_text_field">
                 {{component&&component.description}}
               </div>
             </v-col>
@@ -30,7 +30,7 @@
           </v-row>
           <v-row class="mt-6" v-else>
             <v-col md="12" >
-              <div class="text" data-cy="preview_text_field">
+              <div class="text" data-cy="preview_text_field" ref="preview_text_field" >
                 {{component&&component.description}}
               </div>
             </v-col>
