@@ -37,7 +37,7 @@
                 </v-radio>
                 <v-radio label="Select Date Range" :value="true">
                   <template v-slot:label>
-                    <span class="radioboxLabelStyle">Selected Data/fields</span>
+                    <span class="radioboxLabelStyle">Selected data/fields</span>
                     <v-icon class="ml-3" color="#003366"> view_week</v-icon>
                   </template>
                 </v-radio>
@@ -55,7 +55,7 @@
                 </v-radio>
                 <v-radio label="Select Date range" :value="true">
                   <template v-slot:label>
-                    <span class="radioboxLabelStyle">Select Date range</span>
+                    <span class="radioboxLabelStyle">Select date range</span>
                   </template>
                 </v-radio>
               </v-radio-group>
