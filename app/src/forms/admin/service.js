@@ -120,6 +120,7 @@ const service = {
   },
   /**
 
+
   /**
    * @function createFormComponentsHelpInfo
    * insert each Form Component Help Info
@@ -130,10 +131,10 @@ const service = {
     let trx;
     try{
       const obj = {};
-      
+
       trx = await FormComponentsHelpInfo.startTransaction();
 
-      let result = await FormComponentsHelpInfo.query(trx).modify('findByComponentName');
+      let result = await FormComponentsHelpInfo.query(trx).modify('findByComponentName', data.componentName);
 
       let id  = result.length? result[0].id : uuidv4();
 
@@ -148,10 +149,8 @@ const service = {
           publishstatus:data.status,
           createdBy:'ADMIN'
         });
-       
       }
-     
-      else { 
+      else {
         obj.id = id;
         obj.componentname = data.componentName;
         obj.morehelpinfolink = data.moreHelpInfoLink;
@@ -164,11 +163,11 @@ const service = {
         await FormComponentsHelpInfo.query(trx).insert(obj);
       }
       await trx.commit();
-      
+
       return service.readFormComponentsHelpInfo(id);
-      
+
     } catch(err){
-     
+
       if (trx) await trx.rollback();
       throw err;
     }
