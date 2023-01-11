@@ -18,7 +18,79 @@ const genInitialForm = () => ({
   snake: '',
   submissionReceivedEmails: [],
   userType: IdentityMode.TEAM,
-  versions: []
+  versions: [],
+});
+
+const genInitialBuilder = () => ({
+  basic: false,
+  premium: false,
+  layoutControls: {
+    title: 'Basic Layout',
+    default: true,
+    weight: 10,
+    components: {
+      simplecols2: true,
+      simplecols3: true,
+      simplecols4: true,
+      simplecontent: true,
+      simplefieldset: false,
+      simpleheading: false,
+      simplepanel: true,
+      simpleparagraph: false,
+      simpletabs: true,
+    },
+  },
+  entryControls: {
+    title: 'Basic Fields',
+    weight: 20,
+    components: {
+      simplecheckbox: true,
+      simplecheckboxes: true,
+      simpledatetime: true,
+      simpleday: true,
+      simpleemail: true,
+      simplenumber: true,
+      simplephonenumber: true,
+      simpleradios: true,
+      simpleselect: true,
+      simpletextarea: true,
+      simpletextfield: true,
+      simpletime: false,
+    },
+  },
+  layout: {
+    title: 'Advanced Layout',
+    weight: 30,
+  },
+  advanced: {
+    title: 'Advanced Fields',
+    weight: 40,
+    components: {
+      // Need to re-define Formio basic fields here
+      textfield: true,
+      textarea: true,
+      number: true,
+      password: true,
+      checkbox: true,
+      selectboxes: true,
+      select: true,
+      radio: true,
+      button: true,
+      // Prevent duplicate appearance of orgbook component
+      orgbook: false,
+    },
+  },
+  data: {
+    title: 'Advanced Data',
+    weight: 50,
+  },
+  customControls: {
+    title: 'BC Government',
+    weight: 60,
+    components: {
+      orgbook: true,
+    },
+  }
 });
 
 /**
@@ -42,7 +114,9 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    version: {}
+    fcProactiveHelpGroupObject:{}, // Form Components Proactive Help Group Object
+    version: {},
+    builder: genInitialBuilder(),
   },
   getters: {
     getField, // vuex-map-fields
@@ -56,7 +130,9 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
+    fcProactiveHelpGroupObject: state => state.fcProactiveHelpGroupObject, // Form Components Proactive Help Group Object
     version: state => state.version,
+    builder: state => state.builder,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -99,7 +175,13 @@ export default {
     SET_VERSION(state, version) {
       state.version = version;
     },
-
+    SET_BUILDER(state, builder) {
+      state.builder = builder;
+    },
+    //Form Component Proactive Help Group Object
+    SET_FCPROACTIVEHELPGROUPOBJECT(state,fcProactiveHelpGroupObject){
+      state.fcProactiveHelpGroupObject = fcProactiveHelpGroupObject;
+    },
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
     },
@@ -107,6 +189,7 @@ export default {
   actions: {
     //
     // Current User
+    //
     //
     async getFormsForCurrentUser({ commit, dispatch }) {
       try {
@@ -433,6 +516,22 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while trying to fetch the API Key.',
           consoleError: `Error getting API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp({ commit, dispatch }) {
+      try {
+        // Get Form Components Proactive Help Group Object
+        commit('SET_FCPROACTIVEHELPGROUPOBJECT',{});
+        const response = await formService.listFCProactiveHelp();
+        commit('SET_FCPROACTIVEHELPGROUPOBJECT',response.data);
+      } catch(error) {
+
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
         }, { root: true });
       }
     },

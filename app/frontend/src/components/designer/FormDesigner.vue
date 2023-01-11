@@ -71,13 +71,18 @@
       :form="formSchema"
       :key="reRenderFormIo"
       :options="designerOptions"
+      ref="formioForm"
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
+      @formLoad="onFormLoad"
     />
+    <InformationLinkPreviewDialog :showDialog="showHelpLinkDialog"
+                                  @close-dialog="onShowClosePreveiwDialog"
+                                  :component="component"/>
 
     <FloatButton
       placement="bottom-right"
@@ -111,15 +116,18 @@ import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
+import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
+
 
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
-    FloatButton
+    FloatButton,
+    InformationLinkPreviewDialog
   },
   props: {
     draftId: String,
@@ -174,12 +182,17 @@ export default {
         redoClicked: false,
         undoClicked: false,
       },
+      showHelpLinkDialog:false,
+      component:{},
       isComponentRemoved:false,
     };
+
   },
 
   computed: {
+    ...mapGetters('form', ['fcProactiveHelpGroupObject']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
+    ...mapGetters('form', ['builder']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
@@ -209,85 +222,8 @@ export default {
           ALLOWED_TAGS: ['iframe'],
         },
         noDefaultSubmitButton: false,
-        builder: {
-          basic: false,
-          premium: false,
-          layoutControls: {
-            title: 'Basic Layout',
-            default: true,
-            weight: 10,
-            components: {
-              simplecols2: true,
-              simplecols3: true,
-              simplecols4: true,
-              simplecontent: true,
-              simplefieldset: false,
-              simpleheading: false,
-              simplepanel: true,
-              simpleparagraph: false,
-              simpletabs: true,
-            },
-          },
-          entryControls: {
-            title: 'Basic Fields',
-            weight: 20,
-            components: {
-              simplecheckbox: true,
-              simplecheckboxes: true,
-              simpledatetime: true,
-              simpleday: true,
-              simpleemail: true,
-              simplenumber: true,
-              simplephonenumber: true,
-              simpleradios: true,
-              simpleselect: true,
-              simpletextarea: true,
-              simpletextfield: true,
-              simpletime: false,
-            },
-          },
-          layout: {
-            title: 'Advanced Layout',
-            weight: 30,
-          },
-          advanced: {
-            title: 'Advanced Fields',
-            weight: 40,
-            components: {
-              // Need to re-define Formio basic fields here
-              textfield: true,
-              textarea: true,
-              number: true,
-              password: true,
-              checkbox: true,
-              selectboxes: true,
-              select: true,
-              radio: true,
-              button: true,
-              // Prevent duplicate appearance of orgbook component
-              orgbook: false,
-              bcaddress:false
-            },
-          },
-          data: {
-            title: 'Advanced Data',
-            weight: 50,
-          },
-          customControls: {
-            title: 'BC Government',
-            weight: 60,
-            components: {
-              orgbook: true,
-              simplefile: this.userType !== this.ID_MODE.PUBLIC,
-              bcaddress:true
-            },
-          },
-        },
+        builder: this.builder,
         templates: templateExtensions,
-        evalContext: {
-          token: this.tokenParsed,
-          user: this.user,
-        },
       };
     },
   },
@@ -370,6 +306,7 @@ export default {
     init() {
       this.setDirtyFlag(false);
       // Since change is triggered during loading
+      this.onFormLoad();
     },
     onChangeMethod(changed, flags, modified) {
 
@@ -397,7 +334,63 @@ export default {
       // Component remove start
       this.patch.componentRemovedStart = true;
     },
+    onFormLoad() {
+      // Contains the names of every category of components
+      let builder = this.$refs.formioForm.builder.instance.builder;
+      if(this.fcProactiveHelpGroupObject){
+        for (const  [title,elements] of Object.entries(this.fcProactiveHelpGroupObject)) {
+          let extractedElementsNames = this.extractPublishedElement(elements);
+          for (const [key,builderElements] of Object.entries(builder)) {
+            if(title===builderElements.title){
+              let containerId = `group-container-${key}`;
+              let containerEl = document.getElementById(containerId);
+              if(containerEl){
+                for(var i=0; i<containerEl.children.length; i++){
+                  if(extractedElementsNames.includes(containerEl.children[i].getAttribute('data-key')))
+                  {
+                    // Append the info el
+                    let child = document.createElement('i');
+                    child.className = 'fa fa-info info-helper';
+                    child.style.float='right';
+                    child.addEventListener('click', this.showHelperClicked);
+                    containerEl.children[i].appendChild(child);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
 
+    },
+    extractPublishedElement(elements){
+      let publishedComponentsNames=[];
+      for(let element of elements) {
+        if(element.status)
+        {
+          publishedComponentsNames.push(element.componentName);
+        }
+      }
+      return  publishedComponentsNames;
+    },
+    showHelperClicked(evt) {
+      let target = evt.target;
+      let parent = target.parentNode;
+      let type = parent.getAttribute('data-type');
+      for (const [, elements] of Object.entries(this.fcProactiveHelpGroupObject))
+      {
+        for(let element of elements ){
+          if(type===element.componentName)
+          {
+            this.component=element;
+          }
+        }
+      }
+      this.onShowClosePreveiwDialog();
+    },
+    onShowClosePreveiwDialog(){
+      this.showHelpLinkDialog=!this.showHelpLinkDialog;
+    },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -646,19 +639,20 @@ export default {
       this.getFormSchema();
       this.fetchForm(this.formId);
     }
+
   },
+
   mounted() {
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
-
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    }
+    },
   },
 
 };
