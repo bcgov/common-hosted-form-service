@@ -234,7 +234,7 @@ module.exports = {
       next(error);
     }
   },
-  listFormComponentsProactiveHelp:async(req,res,next)=>{
+  listFormComponentsProactiveHelp:async(req,res,next)=> {
     try{
       const response = await service.listFormComponentsProactiveHelp();
       res.status(200).json(response);

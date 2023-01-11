@@ -155,8 +155,8 @@ import { mapActions,mapGetters } from 'vuex';
 
 export default {
   name:'InformationLinkDialog',
-  data(){
-    return{
+  data() {
+    return {
       errors: [],
       componentName_:'',
       description:'',
@@ -168,7 +168,7 @@ export default {
 
     };
   },
-  props:{
+  props: {
     showDialog:{ type: Boolean, required: true },
     component:{ type: Object },
     componentName:{type:String,require:true,default:''},
@@ -254,7 +254,7 @@ export default {
     text-decoration: underline !important;
     cursor:pointer !important;
   }
-  .disabled{
+  .disabled {
     pointer-events: none !important;
   }
   .blueColorWrapper {
@@ -268,7 +268,7 @@ export default {
 
     text-transform: capitalize !important;
   }
-  .blackColorWrapper{
+  .blackColorWrapper {
     text-align: left !important;
     text-decoration: underline !important;
     font-style: normal !important;
@@ -278,7 +278,7 @@ export default {
     color: #313132 !important;
   }
 
-  .v-label{
+  .v-label {
     text-align: left !important;
     text-decoration: none !important;
     font-style: normal !important;
@@ -288,7 +288,7 @@ export default {
     color: #313132 !important;
   }
 
-  .blackColorWrapper{
+  .blackColorWrapper {
     text-align: left !important;
     text-decoration: underline !important;
     font-style: normal !important;
@@ -298,7 +298,7 @@ export default {
     color: #313132 !important;
   }
 
-  .versionLabel{
+  .versionLabel {
     font-style: normal !important;
     font-family: BCSans !important;
     font-weight: normal !important;

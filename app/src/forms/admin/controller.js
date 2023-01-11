@@ -101,7 +101,7 @@ module.exports = {
     }
   },
 
-  updateFormComponentsProactiveHelp:async(req,res,next)=>{
+  updateFormComponentsProactiveHelp:async(req,res,next)=> {
     try{
       const response = await service.updateFormComponentsProactiveHelp(req.params);
       res.status(200).json(response);
@@ -109,7 +109,7 @@ module.exports = {
       next(error);
     }
   },
-  uploadImage: async(req,res,next)=>{
+  uploadImage: async(req,res,next)=> {
     try{
       const response = await fileService.create(req.body);
       res.status(200).json({'key':response.key});
@@ -118,8 +118,7 @@ module.exports = {
     }
   },
 
-  getSignedImageUrl:async(req, res, next)=>{
-
+  getSignedImageUrl:async(req, res, next)=> {
     try{
       const response = await fileService.signedUrl(req.params);
       res.status(200).json(response);
