@@ -398,4 +398,15 @@ export default {
   requestReceiptEmail(submissionId, requestBody) {
     return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/email`, requestBody);
   },
+
+
+  /**
+   * listFormComponentsProactiveHelp
+   * @function listFCProactiveHelp
+   * Reads all form components help information
+   * @returns {Promise} An axios response
+   */
+  async listFCProactiveHelp() {
+    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/list`);
+  },
 };
