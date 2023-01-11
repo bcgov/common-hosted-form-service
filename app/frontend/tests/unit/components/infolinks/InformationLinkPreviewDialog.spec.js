@@ -2,6 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 
 import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
 
+
 describe('InformationLinkPreviewDialog.vue', () => {
 
   it('preview dialog', async () => {

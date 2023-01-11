@@ -92,18 +92,18 @@ module.exports = {
   //
   // Form Components Help Information
   //
-  createFormComponentsHelpInfo:async(req,res,next)=>{
+  createFormComponentsProactiveHelp:async(req,res,next)=>{
     try{
-      const response = await service.createFormComponentsHelpInfo(req.body);
+      const response = await service.createFormComponentsProactiveHelp(req.body);
       res.status(200).json(response);
     } catch(error){
       next(error);
     }
   },
 
-  updateFormComponentsHelpInfo:async(req,res,next)=>{
+  updateFormComponentsProactiveHelp:async(req,res,next)=>{
     try{
-      const response = await service.updateFormComponentsHelpInfo(req.params);
+      const response = await service.updateFormComponentsProactiveHelp(req.params);
       res.status(200).json(response);
     } catch(error){
       next(error);

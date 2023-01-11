@@ -114,7 +114,7 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    fcHelpInfoGroupObject:{}, // Form Components Help Information Object
+    fcProactiveHelpGroupObject:{}, // Form Components Proactive Help Group Object
     version: {},
     builder: genInitialBuilder(),
   },
@@ -130,7 +130,7 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
-    fcHelpInfoGroupObject: state => state.fcHelpInfoGroupObject,
+    fcProactiveHelpGroupObject: state => state.fcProactiveHelpGroupObject, // Form Components Proactive Help Group Object
     version: state => state.version,
     builder: state => state.builder,
   },
@@ -178,8 +178,9 @@ export default {
     SET_BUILDER(state, builder) {
       state.builder = builder;
     },
-    SET_FCHELPINFOGroupObject(state,fcHelpInfoGroupObject){
-      state.fcHelpInfoGroupObject = fcHelpInfoGroupObject;
+    //Form Component Proactive Help Group Object
+    SET_FCPROACTIVEHELPGROUPOBJECT(state,fcProactiveHelpGroupObject){
+      state.fcProactiveHelpGroupObject = fcProactiveHelpGroupObject;
     },
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
@@ -518,12 +519,14 @@ export default {
         }, { root: true });
       }
     },
-    async listFormComponentsHelpInfo({ commit, dispatch }) {
+
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp({ commit, dispatch }) {
       try {
-        // Get Common Components Help Information
-        commit('SET_FCHELPINFOGroupObject',{});
-        const response = await formService.listFormComponentsHelpInfo();
-        commit('SET_FCHELPINFOGroupObject',response.data);
+        // Get Form Components Proactive Help Group Object
+        commit('SET_FCPROACTIVEHELPGROUPOBJECT',{});
+        const response = await formService.listFCProactiveHelp();
+        commit('SET_FCPROACTIVEHELPGROUPOBJECT',response.data);
       } catch(error) {
 
         dispatch('notifications/addNotification', {

@@ -12,7 +12,17 @@
               <span class="text-h5" style="font-weight:bold;">Component Information Link</span>
             </v-col>
           </v-row>
-          <v-row class="mt-8" no-gutters>
+          <v-row>
+            <v-col>
+              <p v-if="errors.length">
+                <b>Please correct the following error(s):</b>
+                <ul class="red--text">
+                  <li v-for="(err, index) in errors" :key="index">{{ err }}</li>
+                </ul>
+              </p>
+            </v-col>
+          </v-row>
+          <v-row class="mt-5" no-gutters>
             <span class="text-decoration-underline mr-2 blackColorWrapper">
               Component Name:
             </span>
@@ -147,6 +157,7 @@ export default {
   name:'InformationLinkDialog',
   data(){
     return{
+      errors: [],
       componentName_:'',
       description:'',
       moreHelpInfoLink:'',
@@ -164,7 +175,7 @@ export default {
     groupName:{type:String,require:true}
   },
   methods:{
-    ...mapActions('admin', ['addFormComponentHelpInfo','uploadFormComponentsHelpInfoImage']),
+    ...mapActions('admin', ['addFCProactiveHelp','uploadFCProactiveHelpImage']),
     onCloseDialog() {
       this.resetDialog();
       this.$emit('close-dialog');
@@ -172,18 +183,42 @@ export default {
     async selectImage(image) {
       const reader = new FileReader();
       reader.onload=async(e)=> {
+
         this.image=e.target.result;
-        await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:this.image});
+        //await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:this.image});
       };
       if(image) {
         await reader.readAsDataURL(image);
       }
     },
+    async validateFields() {
+      this.errors = [];
+      let isError = false;
+      if(this.componentName_==='') {
+        this.errors.push('Name required.');
+        isError=true;
+      }
+
+      if(this.image==='') {
+        this.errors.push('Image required.');
+        isError=true;
+      }
+
+      if(this.description==='') {
+        this.errors.push('description required.');
+        isError=true;
+      }
+
+      return isError;
+
+    },
 
     submit() {
-      this.addFormComponentHelpInfo({componentName:this.componentName_,imageUrl:this.fcHelpInfoImageUpload?this.fcHelpInfoImageUpload:this.component&&this.component.imageUrl,moreHelpInfoLink:this.moreHelpInfoLink,version:this.version+1,
-        groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false});
-      this.onCloseDialog();
+      if(!this.validateFields()) {
+        this.addFCProactiveHelp({componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,version:this.version+1,
+          groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false});
+        this.onCloseDialog();
+      }
     },
     resetDialog() {
       this.description='';
@@ -193,7 +228,7 @@ export default {
       if(this.component){
         this.componentName_=this.component.componentName;
         this.description=this.component.description;
-        this.moreHelpInfoLink=this.component.moreHelpInfoLink;
+        this.moreHelpInfoLink=this.component.externalLink;
       }
     }
   },

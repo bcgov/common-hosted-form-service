@@ -39,8 +39,9 @@ export default {
       this.$refs.formDesigner.onFormLoad();
     });
   },
+
   methods:{
-    ...mapActions('form', ['listFormComponentsHelpInfo','deleteCurrentForm']),
+    ...mapActions('form', ['listFCProactiveHelp','deleteCurrentForm']),
   },
   computed: {
     ...mapGetters('form', ['form']),
@@ -56,7 +57,7 @@ export default {
       : next();
   },
   beforeMount() {
-    this.listFormComponentsHelpInfo();
+    this.listFCProactiveHelp();
   },
 };
 </script>

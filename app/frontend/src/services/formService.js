@@ -401,11 +401,12 @@ export default {
 
 
   /**
-   * @function listFormComponentsHelpInfo
+   * listFormComponentsProactiveHelp
+   * @function listFCProactiveHelp
    * Reads all form components help information
    * @returns {Promise} An axios response
    */
-  async listFormComponentsHelpInfo() {
-    return await appAxios().get(`${ApiRoutes.FORMS}/formComponents/helpInfo/list`);
+  async listFCProactiveHelp() {
+    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/list`);
   },
 };

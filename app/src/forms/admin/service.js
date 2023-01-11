@@ -1,4 +1,4 @@
-const { Form, FormVersion, User, UserFormAccess,FormComponentsHelpInfo } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess,FormComponentsProactiveHelp } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
 
@@ -122,28 +122,27 @@ const service = {
 
 
   /**
-   * @function createFormComponentsHelpInfo
+   * @function createFormComponentsProactiveHelp
    * insert each Form Component Help Info
    * @param {Object} data Form Component Help Info object
    * @returns {Promise} An objection query promise
    */
-  createFormComponentsHelpInfo: async(data)=> {
+  createFormComponentsProactiveHelp: async(data)=> {
     let trx;
     try{
       const obj = {};
-
-      trx = await FormComponentsHelpInfo.startTransaction();
-
-      let result = await FormComponentsHelpInfo.query(trx).modify('findByComponentName', data.componentName);
-
+      trx = await FormComponentsProactiveHelp.startTransaction();
+      let result = await FormComponentsProactiveHelp.query(trx).modify('findByComponentName', data.componentName);
       let id  = result.length? result[0].id : uuidv4();
-
+      let buf =data.image.split(',')[1];
+      let imageType = (data.image.split(';')[0]).split(':')[1];
       if(result.length) {
-        await FormComponentsHelpInfo.query(trx).patchAndFetchById(id, {
+        await FormComponentsProactiveHelp.query(trx).patchAndFetchById(id, {
           componentname:data.componentName,
-          morehelpinfolink: data.moreHelpInfoLink,
-          imageurl:data.imageUrl,
-          versions:data.version,
+          externallink: data.externalLink,
+          image:buf,
+          imagetype:imageType,
+          version:data.version,
           groupname:data.groupName,
           description:data.description,
           publishstatus:data.status,
@@ -153,54 +152,56 @@ const service = {
       else {
         obj.id = id;
         obj.componentname = data.componentName;
-        obj.morehelpinfolink = data.moreHelpInfoLink;
-        obj.imageurl = data.imageUrl;
-        obj.versions = data.version;
+        obj.externallink = data.externalLink;
+        obj.image = buf;
+        obj.imagetype = imageType,
+        obj.version = data.version;
         obj.groupname = data.groupName;
         obj.description = data.description;
         obj.publishstatus=data.status;
         obj.createdBy = 'ADMIN';
-        await FormComponentsHelpInfo.query(trx).insert(obj);
+        await FormComponentsProactiveHelp.query(trx).insert(obj);
       }
       await trx.commit();
 
-      return service.readFormComponentsHelpInfo(id);
+      return service.readFormComponentsProactiveHelp(id);
 
     } catch(err){
 
       if (trx) await trx.rollback();
       throw err;
     }
+
   },
 
   /**
-   * @function readFormComponentsHelpInfo
+   * @function readFormComponentsProactiveHelp
    * fetch Form Component Help Info by formComponentHelpInfoId
-   * @param {String} formComponentHelpInfoId Form Component Help Info Id
+   * @param {String} formComponentsProactiveHelpId Form Component Help Info Id
    * @returns {Promise} An objection query promise
    */
 
-  readFormComponentsHelpInfo: async(formComponentHelpInfoId)=> {
-    return await FormComponentsHelpInfo.query()
-      .where('id', formComponentHelpInfoId);
+  readFormComponentsProactiveHelp: async(formComponentsProactiveHelpId)=> {
+    return await FormComponentsProactiveHelp.query()
+      .where('id', formComponentsProactiveHelpId);
   },
 
   /**
-   * @function updateFormComponentsHelpInfo
+   * @function updateFormComponentsProactiveHelp
    * update the publish status of each form component information help information
    * @param {Object} param consist of publishStatus and componentId.
    * @returns {Promise} An objection query promise
    */
-  updateFormComponentsHelpInfo: async(param)=> {
+  updateFormComponentsProactiveHelp: async(param)=> {
     let trx;
     try {
-      trx = await FormComponentsHelpInfo.startTransaction();
-      await FormComponentsHelpInfo.query(trx).patchAndFetchById(param.componentId, {
+      trx = await FormComponentsProactiveHelp.startTransaction();
+      await FormComponentsProactiveHelp.query(trx).patchAndFetchById(param.componentId, {
         publishstatus: JSON.parse(param.publishStatus),
         updatedBy: 'ADMIN'
       });
       await trx.commit();
-      return await service.readFormComponentsHelpInfo(param.componentId);
+      return await service.readFormComponentsProactiveHelp(param.componentId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

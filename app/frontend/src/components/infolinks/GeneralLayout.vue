@@ -103,7 +103,7 @@ export default{
     groupName:String
   },
   methods:{
-    ...mapActions('admin', ['updateFormComponentsHelpInfoStatus']),
+    ...mapActions('admin', ['updateFCProactiveHelpStatus']),
 
     //used to open form component help information dialog
     onDialog() {
@@ -143,7 +143,7 @@ export default{
     onSwitchChange(componentName, index) {
       for (const component of this.componentsList) {
         if(component.componentName===componentName) {
-          this.updateFormComponentsHelpInfoStatus({
+          this.updateFCProactiveHelpStatus({
             componentId:component.id,
             publishStatus:this.publish[index]
           });

@@ -1,13 +1,13 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 
-import FormComponentsHelpInfo from '@/components/admin/FormComponentsHelpInfo.vue';
+import FormComponentsProactiveHelp from '@/components/admin/FormComponentsProactiveHelp.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
-describe('FormComponentsHelpInfo.vue', () => {
-  const extractGroupComponentsSpy = jest.spyOn(FormComponentsHelpInfo.methods, 'extractGroupComponents');
+describe('FormComponentsProactiveHelp.vue', () => {
+  const extractGroupComponentsSpy = jest.spyOn(FormComponentsProactiveHelp.methods, 'extractGroupComponents');
   let store;
 
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('FormComponentsHelpInfo.vue', () => {
     store.registerModule('form', {
       namespaced: true,
       getters: {
-        fcHelpInfoGroupObject: () => {},
+        proactiveHelpInfoGroupObject: () => {},
         builder: () => {},
       }
     });
@@ -33,7 +33,7 @@ describe('FormComponentsHelpInfo.vue', () => {
   });
 
   it('renders ', async () => {
-    const wrapper = shallowMount(FormComponentsHelpInfo, {
+    const wrapper = shallowMount(FormComponentsProactiveHelp, {
       localVue,
       store,
       stubs: ['GeneralLayout']

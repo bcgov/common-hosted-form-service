@@ -190,7 +190,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('form', ['fcHelpInfoGroupObject']),
+    ...mapGetters('form', ['fcProactiveHelpGroupObject']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapGetters('form', ['builder']),
     ...mapFields('form', [
@@ -337,8 +337,8 @@ export default {
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
-      if(this.fcHelpInfoGroupObject){
-        for (const  [title,elements] of Object.entries(this.fcHelpInfoGroupObject)) {
+      if(this.fcProactiveHelpGroupObject){
+        for (const  [title,elements] of Object.entries(this.fcProactiveHelpGroupObject)) {
           let extractedElementsNames = this.extractPublishedElement(elements);
           for (const [key,builderElements] of Object.entries(builder)) {
             if(title===builderElements.title){
@@ -377,7 +377,7 @@ export default {
       let target = evt.target;
       let parent = target.parentNode;
       let type = parent.getAttribute('data-type');
-      for (const [, elements] of Object.entries(this.fcHelpInfoGroupObject))
+      for (const [, elements] of Object.entries(this.fcProactiveHelpGroupObject))
       {
         for(let element of elements ){
           if(type===element.componentName)

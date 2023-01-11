@@ -234,9 +234,9 @@ module.exports = {
       next(error);
     }
   },
-  listFormComponentsHelpInfo:async(req,res,next)=>{
+  listFormComponentsProactiveHelp:async(req,res,next)=>{
     try{
-      const response = await service.listFormComponentsHelpInfo();
+      const response = await service.listFormComponentsProactiveHelp();
       res.status(200).json(response);
     } catch(error){
       next(error);
