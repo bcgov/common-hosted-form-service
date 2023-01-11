@@ -15,7 +15,7 @@
               }"/></div>
             </v-col>
           </v-row>
-          <v-row class="mt-6" v-if="component&&component.imageUrl">
+          <v-row class="mt-6" v-if="component&&component.image">
             <v-col md="6" >
               <div class="text" data-cy="preview_text_field" ref="preview_text_field">
                 {{component&&component.description}}
@@ -24,7 +24,7 @@
             <v-col md="6" >
               <v-img
                 data-cy="preview_image_field"
-                :src="fcPresignedUrl"
+                :src="component.image"
               ></v-img>
             </v-col>
           </v-row>
@@ -37,7 +37,7 @@
           </v-row>
           <v-row>
             <v-col class="d-flex flex-row align-center text-decoration-underline linkWrapper">
-              <a :href="component&&component.moreHelpInfoLink" class="preview_info_link_field" :target="'_blank'" :class="{disabledLink:component&&component.moreHelpInfoLink===''}"> <div class="mr-1 cursor" >Learn more
+              <a :href="component&&component.externalLink" class="preview_info_link_field" :target="'_blank'" :class="{disabledLink:component&&component.moreHelpInfoLink===''}"> <div class="mr-1 cursor" >Learn more
                 <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /> </div></a>
             </v-col>
           </v-row>
@@ -73,14 +73,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('admin',['fcPresignedUrl'])
+    ...mapGetters('admin',['fcPresignedUrl']),
   },
   watch: {
+
     showDialog() {
       this.dialog = this.showDialog;
-      if(this.dialog){
-        this.getPresignedUrl(this.component.imageUrl);
-      }
+      //if(this.dialog){
+      //  this.getPresignedUrl(this.component.imageUrl);
+      //}
     },
   },
 };

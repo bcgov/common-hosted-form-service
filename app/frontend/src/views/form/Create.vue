@@ -80,7 +80,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('form', ['listFormComponentsHelpInfo','resetForm']),
+    ...mapActions('form', ['listFCProactiveHelp','resetForm']),
     reRenderFormDesigner() {
       this.creatorStep = 2;
       this.$refs.formDesigner.onFormLoad();
@@ -90,7 +90,7 @@ export default {
     this.resetForm();
   },
   mounted() {
-    this.listFormComponentsHelpInfo();
+    this.listFCProactiveHelp();
     this.$nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });

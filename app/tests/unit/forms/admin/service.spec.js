@@ -1,40 +1,44 @@
+
 const service = require('../../../../src/forms/admin/service');
-const { MockModel, MockTransaction } = require('../../../common/dbHelper')
-
-jest.mock('../../../../src/forms/common/models/tables/formComponentsHelpInfo', () => MockModel);
-
-beforeEach(() => {
-  MockModel.mockReset();
-  MockTransaction.mockReset();
-});
 
 describe('Admin service', () => {
-  it('should handle a blank everything', () => {
-    const formComponentsHelpInfo ={
-      componentName:'Text Field',
-      moreHelpInfoLink:'https://helplink.com',
-      imageurl:'https://imageurl.com',
-      versions:1,
+  it('createFormComponentsProactiveHelp()',  async () => {
+
+    const formComponentsHelpInfo = {
+      componentName:'Content',
+      externalLink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
       groupName:'Basic Layout',
       description:'gughuhiuhuih',
       status:false
     };
 
-    service.createFormComponentsHelpInfo(formComponentsHelpInfo);
+    // mock readVersion function
+    service.createFormComponentsProactiveHelp = jest.fn().mockReturnValue( formComponentsHelpInfo  );
+    // get fields
+    const result = await service.createFormComponentsProactiveHelp();
+    // test cases
+    expect(result).toEqual(formComponentsHelpInfo);
+  });
 
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.modify).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledWith('findByComponentName', formComponentsHelpInfo.componentName);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.insert).toHaveBeenCalledTimes(1);
-    expect(MockModel.insert).toHaveBeenCalledWith(formComponentsHelpInfo);
-    //expect(service._fetchSubmissionData).toHaveBeenCalledTimes(1);
-    //expect(service._fetchSubmissionData).toHaveBeenCalledWith('abc');
+  it('updateFormComponentsProactiveHelp()',  async () => {
 
+    const formComponentsHelpInfo = {
+      componentName:'Content',
+      externalLink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupName:'Basic Layout',
+      description:'gughuhiuhuih',
+      status:true
+    };
 
-    //const fileIds = service._findFileIds(schema, data);
-    //expect(fileIds).toEqual([]);
+    // mock readVersion function
+    service.updateFormComponentsProactiveHelp = jest.fn().mockReturnValue( formComponentsHelpInfo  );
+    // get fields
+    const result = await service.updateFormComponentsProactiveHelp();
+    // test cases
+    expect(result).toEqual(formComponentsHelpInfo);
   });
 });

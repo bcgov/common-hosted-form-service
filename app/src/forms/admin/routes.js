@@ -65,19 +65,20 @@ routes.get('/users/:userId', async (req, res, next) => {
 //Form componets help info
 //
 
-routes.post('/formComponents/helpInfo/object', async(req,res,next) => {
-  await controller.createFormComponentsHelpInfo(req, res, next);
+routes.post('/formcomponents/proactivehelp/object', async(req,res,next) => {
+  await controller.createFormComponentsProactiveHelp(req, res, next);
 });
 
-routes.put('/formComponents/helpInfo/:publishStatus/:componentId', async (req, res, next) => {
-  await controller.updateFormComponentsHelpInfo(req, res, next);
+
+routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (req, res, next) => {
+  await controller.updateFormComponentsProactiveHelp(req, res, next);
 });
 
-routes.post('/formComponents/helpInfo/upload', async (req, res, next) => {
+routes.post('/formcomponents/proactivehelp/upload', async (req, res, next) => {
   await controller.uploadImage(req, res, next);
 });
 
-routes.get('/formComponents/helpInfo/signedUrl/:imageName', async (req, res, next) => {
+routes.get('/formcomponents/proactivehelp/signedUrl/:imageName', async (req, res, next) => {
   await controller.getSignedImageUrl(req, res, next);
 });
 

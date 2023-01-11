@@ -16,7 +16,7 @@ const {
   FormSubmissionUser,
   IdentityProvider,
   SubmissionMetadata,
-  FormComponentsHelpInfo
+  FormComponentsProactiveHelp
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -570,18 +570,28 @@ const service = {
   // ----------------------------------------------------------------------Api Key
 
   /**
-   * @function listFormComponentsHelpInfo
+   * @function listFormComponentsProactiveHelp
    * Search for all form components help information
    * @returns {Promise} An objection query promise
    */
-  listFormComponentsHelpInfo: async () => {
+  listFormComponentsProactiveHelp: async () => {
 
-    let result = await FormComponentsHelpInfo.query()
+    let result = await FormComponentsProactiveHelp.query()
       .modify('distinctOnComponentName')
       .modify('orderComponentNameVersionsDescending');
 
-    let filterResult= result.map(item=>({id:item.id,status:item.publishstatus,componentName:item.componentname,moreHelpInfoLink:item.morehelpinfolink,imageUrl:item.imageurl,
-      version:item.versions,groupName:item.groupname,description:item.description }));
+    if(result.length===0){
+      return result;
+    }
+
+
+    let filterResult= result.map(item=>{
+      let uri = 'data:' + item.imagetype + ';' + 'base64' + ',' + item.image;
+      return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+        version:item.version,groupName:item.groupname,description:item.description });
+
+    });
+
 
     return filterResult.reduce(function (r, a) {
       r[a.groupName] = r[a.groupName] || [];

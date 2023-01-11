@@ -1,5 +1,6 @@
 const service = require('../../../../src/forms/form/service');
 
+
 describe('_findFileIds', () => {
   it('should handle a blank everything', () => {
     const schema = {
@@ -320,31 +321,31 @@ describe('readVersionFields', () => {
   });
 
 
-  it('listFormComponentsHelpInfo()',  async () => {
+  it('listFormComponentsProactiveHelp()',  async () => {
 
     const formComponentsHelpInfo = [{
       componentname:'Content',
-      morehelpinfolink:'https://helplink.com',
-      imageurl:'https://imageurl.com',
-      versions:1,
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
       groupname:'Basic Layout',
       description:'gughuhiuhuih',
       publishstatus:false
     },
     {
       componentname:'Text Field',
-      morehelpinfolink:'https://helplink.com',
-      imageurl:'https://imageurl.com',
-      versions:1,
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
       groupname:'Basic Layout',
       description:'gughuhiuhuih',
       publishstatus:false
     }];
 
     // mock readVersion function
-    service.listFormComponentsHelpInfo = jest.fn().mockReturnValue( formComponentsHelpInfo  );
+    service.listFormComponentsProactiveHelp = jest.fn().mockReturnValue( formComponentsHelpInfo  );
     // get fields
-    const fields = await service.listFormComponentsHelpInfo();
+    const fields = await service.listFormComponentsProactiveHelp();
     // test cases
     expect(fields.length).toEqual(2);
   });

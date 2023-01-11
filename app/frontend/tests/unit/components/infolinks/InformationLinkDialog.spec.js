@@ -6,6 +6,7 @@ describe('InformationLinkDialog.vue', () => {
 
   it('selectImage()', async () => {
 
+
     const event = {
       target: {
         files: [
@@ -21,7 +22,7 @@ describe('InformationLinkDialog.vue', () => {
     const wrapper = shallowMount(InformationLinkDialog);
 
     const fileReaderSpy = jest.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementation(() => null);
-    const persistSpy = jest.spyOn(InformationLinkDialog.methods, 'uploadFormComponentsHelpInfoImage');
+    const persistSpy = jest.spyOn(InformationLinkDialog.methods, 'uploadFCProactiveHelpImage');
     wrapper.vm.selectImage(event);
     expect(fileReaderSpy).toHaveBeenCalledWith(event);
     expect(persistSpy).toHaveBeenCalledTimes(0);

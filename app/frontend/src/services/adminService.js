@@ -33,7 +33,7 @@ export default {
     return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
 
-  
+
   /**
    * @function listForms
    * Read all the forms in the DB
@@ -118,25 +118,27 @@ export default {
   },
 
   /**
-   * @function addFormComponentHelpInfo
+   * addFormComponentsProactiveHelp
+   * @function addFCProactiveHelp
    * Create a new Form
    * @param {Object} data An Object containing each form component help information
    * @returns {Promise} An axios response
    */
-  addFormComponentHelpInfo(data){
-    return appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/object`, data);
+  addFCProactiveHelp(data){
+    return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/object`, data);
   },
 
 
   /**
-   * @function updateFormComponentsHelpInfoStatus
+   * updateFormComponentsProactiveHelpStatus
+   * @function updateFCProactiveHelpStatus
    * Update publish status of each Form Components Help Link Information
    * @param {boolean} publishStatus This is used to determine if the help link information is published or not
    * @param {string} componentId component id
    * @returns {Promise} An axios response
    */
-  updateFormComponentsHelpInfoStatus(componentId, publishStatus){
-    return appAxios().put(`${ApiRoutes.ADMIN}/formComponents/helpInfo/${publishStatus}/${componentId}`);
+  updateFCProactiveHelpStatus(componentId, publishStatus){
+    return appAxios().put(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`);
   },
 
   /**
@@ -146,8 +148,8 @@ export default {
    * @returns {Promise} An axios response
    */
   async uploadImage(imageData) {
-    return appAxios().post(`${ApiRoutes.ADMIN}/formComponents/helpInfo/upload`,imageData);
-    
+    return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/upload`,imageData);
+
     //return await axios.post('http://localhost:3000/api/v1/object/singleUpload/1d295570-2ad7-491e-a23b-c7eac158fe72',
     //  {'folder':'commoncomponenthelplink',imageData:{...imageData}});
   },
@@ -159,7 +161,7 @@ export default {
    * @returns {Promise} An axios response
   */
   async getPresignedUrl(imageName) {
-    return appAxios().get(`${ApiRoutes.ADMIN}/formComponents/helpInfo/signedUrl/${imageName}`);
+    return appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/signedUrl/${imageName}`);
 
     //return await axios.get('http://localhost:3000/api/v1/object/signedUrl/1d295570-2ad7-491e-a23b-c7eac158fe72',
     //  { params: { imageName: imageName,folder:'commoncomponenthelplink'  } });

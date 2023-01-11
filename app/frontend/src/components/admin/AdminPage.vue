@@ -8,7 +8,7 @@
     <v-tab-item> <AdminFormsTable /> </v-tab-item>
     <v-tab-item> <AdminUsersTable /> </v-tab-item>
     <v-tab-item> <Developer /> </v-tab-item>
-    <v-tab-item> <FormComponentsHelpInfo /> </v-tab-item>
+    <v-tab-item> <FormComponentsProactiveHelp /> </v-tab-item>
   </v-tabs>
 </template>
 
@@ -19,7 +19,7 @@ export default {
     AdminFormsTable: () => import('@/components/admin/AdminFormsTable.vue'),
     AdminUsersTable: () => import('@/components/admin/AdminUsersTable.vue'),
     Developer: () => import('@/components/admin/Developer.vue'),
-    FormComponentsHelpInfo:()=>import('@/components/admin/FormComponentsHelpInfo.vue'),
+    FormComponentsProactiveHelp:()=>import('@/components/admin/FormComponentsProactiveHelp.vue'),
   },
 };
 </script>

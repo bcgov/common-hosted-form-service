@@ -3,7 +3,7 @@
     <v-expansion-panels class="nrmc-expand-collapse" flat data-cy="info_link_expansion_panels">
       <v-expansion-panel
         flat
-        v-for="(groupName, index) in groupList" :key="index" 
+        v-for="(groupName, index) in groupList" :key="index"
         @click="onExpansionPanelClick(groupName)">
         <v-expansion-panel-header>
           <div class="header">
@@ -11,11 +11,11 @@
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <GeneralLayout :groupName="groupName" 
-                         :layoutList="groupComponentsList" 
-                         :componentsList="fcHelpInfoGroupObject&&fcHelpInfoGroupObject[groupName]?fcHelpInfoGroupObject[groupName]:[]"/>
+          <GeneralLayout :groupName="groupName"
+                         :layoutList="groupComponentsList"
+                         :componentsList="fcProactiveHelpGroupObject&&fcProactiveHelpGroupObject[groupName]?fcProactiveHelpGroupObject[groupName]:[]"/>
         </v-expansion-panel-content>
-      </v-expansion-panel> 
+      </v-expansion-panel>
     </v-expansion-panels>
   </div>
 </template>
@@ -25,7 +25,7 @@ import GeneralLayout from '@/components/infolinks/GeneralLayout.vue';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: 'FormComponentsHelpInfo',
+  name: 'FormComponentsProactiveHelp',
   components:{GeneralLayout},
   data(){
     return{
@@ -35,8 +35,8 @@ export default {
     };
   },
   methods:{
-    ...mapActions('form',['listFormComponentsHelpInfo']),
-    
+    ...mapActions('form',['listFCProactiveHelp']),
+
     onExpansionPanelClick(groupName) {
       if(this.isPanelOpened.get(groupName)===undefined || !this.isPanelOpened.get(groupName)) {
         this.isPanelOpened.set(groupName,true);
@@ -61,7 +61,7 @@ export default {
           if(title) {
             allgroups.push(title);
             this.panelHeadStyle.set(title,this.notActivePanelHead);
-          } 
+          }
         }
       }
       return allgroups;
@@ -81,20 +81,20 @@ export default {
     }
   },
   computed:{
-    ...mapGetters('form', ['fcHelpInfoGroupObject','builder']),
-    ...mapGetters('admin',['fcHelpInfo']),
+    ...mapGetters('form', ['fcProactiveHelpGroupObject','builder']),
+    ...mapGetters('admin',['fcProactiveHelp']),
     groupList() {
       return this.extractGroups();
     },
 
   },
   watch:{
-    fcHelpInfo() {
-      this.listFormComponentsHelpInfo();
+    fcProactiveHelp() {
+      this.listFCProactiveHelp();
     }
   },
   mounted() {
-    this.listFormComponentsHelpInfo();
+    this.listFCProactiveHelp();
   },
 };
 </script>
@@ -112,7 +112,7 @@ export default {
     padding: 10px;
     background: #BFBDBD14;
     border: 1px solid #7070703F;
-    
+
     .header {
       font-weight:normal;
       font-style: normal;
@@ -120,10 +120,10 @@ export default {
       font-size: 18px;
       color: #313132;
     }
-    
+
     &:hover{
       background: #F1F8FF;
-      
+
     }
   }
 

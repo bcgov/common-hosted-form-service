@@ -13,8 +13,8 @@ export default {
     roles: [],
     user: {},
     userList: [],
-    fcHelpInfo:{}, // Form Component Help Information
-    fcHelpInfoImageUpload:'', // Form Component Help Information image upload url
+    fcProactiveHelp:{}, // Form Component Proactive Help
+    fcProactiveHelpImageUpload:'', // Form Component Proactive Help image upload
     fcPresignedUrl:''
   },
   getters: {
@@ -24,8 +24,8 @@ export default {
     roles: state => state.roles,
     user: state => state.user,
     userList: state => state.userList,
-    fcHelpInfo: state => state.fcHelpInfo,
-    fcHelpInfoImageUpload: state=> state.fcHelpInfoImageUpload,
+    fcProactiveHelp: state => state.fcProactiveHelp, //Form Component Proactive Help
+    fcProactiveHelpImageUpload: state=> state.fcProactiveHelpImageUpload, //Form Component Proactive Help Image Upload
     fcPresignedUrl: state=> state.fcPresignedUrl
   },
   mutations: {
@@ -47,13 +47,13 @@ export default {
     SET_USERLIST(state, users) {
       state.userList = users;
     },
-    SET_FCHELPINFO(state,fcHelpInfo) //Common Component Help Information
+    SET_FCPROACTIVEHELP(state,fcProactiveHelp) //Form Component Proactive Help
     {
-      state.fcHelpInfo = fcHelpInfo;
+      state.fcProactiveHelp = fcProactiveHelp;
     },
-    SET_FCHELPINFOIMAGEUPLOAD(state,fcHelpInfoImageUpload)
+    SET_FCPROACTIVeHELPIMAGEUPLOAD(state,fcProactiveHelpImageUpload) //Form Component Proactive Help IMAGE UPLOAD
     {
-      state.fcHelpInfoImageUpload = fcHelpInfoImageUpload;
+      state.fcProactiveHelpImageUpload = fcProactiveHelpImageUpload;
     },
     SET_FCPRESIGNEDURL(state,fcPresignedUrl)
     {
@@ -190,13 +190,13 @@ export default {
       }
     },
 
-   
-    async addFormComponentHelpInfo({ commit, dispatch },data) {
+    //addFormComponentsProactiveHelp
+    async addFCProactiveHelp({ commit, dispatch },data) {
       try {
         // Get Common Components Help Information
-        commit('SET_FCHELPINFO',{});
-        const response = await adminService.addFormComponentHelpInfo(data);
-        commit('SET_FCHELPINFO',response.data);
+        commit('SET_FCPROACTIVEHELP',{});
+        const response = await adminService.addFCProactiveHelp(data);
+        commit('SET_FCPROACTIVEHELP',response.data);
       } catch(error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while storing form component help information.',
@@ -219,12 +219,13 @@ export default {
       }
     },
 
-    async updateFormComponentsHelpInfoStatus({ commit, dispatch },{componentId, publishStatus}) {
+    //updateFormComponentsProactiveHelpStatus
+    async updateFCProactiveHelpStatus({ commit, dispatch },{componentId, publishStatus}) {
       try {
         // Get Common Components Help Information
-        commit('SET_FCHELPINFO',{});
-        const response = await adminService.updateFormComponentsHelpInfoStatus(componentId, publishStatus);
-        commit('SET_FCHELPINFO',response.data);
+        commit('SET_FCPROACTIVEHELP',{});
+        const response = await adminService.updateFCProactiveHelpStatus(componentId, publishStatus);
+        commit('SET_FCPROACTIVEHELP',response.data);
       } catch(error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while updating publish status',
@@ -232,13 +233,15 @@ export default {
         }, { root: true });
       }
     },
-    async uploadFormComponentsHelpInfoImage({ commit,dispatch },imageData) {
+
+    //uploadFormComponentsProactiveHelpImage
+    async uploadFCProactiveHelpImage({ commit,dispatch },imageData) {
       try {
-        
-        commit('SET_FCHELPINFOIMAGEUPLOAD','');
+
+        commit('SET_FCPROACTIVEHELPIMAGEUPLOAD','');
         const res = await adminService.uploadImage(imageData);
         if(res){
-          commit('SET_FCHELPINFOIMAGEUPLOAD',res.data.key);
+          commit('SET_FCPROACTIVEHELPIMAGEUPLOAD',res.data.key);
         }
       } catch(error) {
         dispatch('notifications/addNotification', {
@@ -248,5 +251,5 @@ export default {
       }
     }
   },
- 
+
 };
