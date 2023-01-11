@@ -15,9 +15,9 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: "allow-${APP_NAME}-cronjob-${JOB_NAME}-to-${APP_NAME}-app-${JOB_NAME"
+      name: "allow-${APP_NAME}-cronjob-${JOB_NAME}-to-${APP_NAME}-app-${JOB_NAME}"
     spec:
-      # Allow app to talk to Patroni cluster
+      # Allow cronjob to talk to chefs add via service
       ingress:
         - from:
             - podSelector:
