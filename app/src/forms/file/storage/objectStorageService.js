@@ -14,9 +14,9 @@ const TEMP_DIR = 'uploads';
 const Delimiter = '/';
 
 class ObjectStorageService {
-  constructor({endpoint, bucket, key, accessKeyId, secretAccessKey,region}) {
+  constructor({endpoint, bucket, key, accessKeyId, secretAccessKey}) {
     log.debug(`Constructed with ${endpoint}, ${bucket}, ${key}, ${accessKeyId}, secretAccessKey`, { function: 'constructor' });
-    if (!endpoint || !bucket || !key || !accessKeyId || !secretAccessKey || !region) {
+    if (!endpoint || !bucket || !key || !accessKeyId || !secretAccessKey) {
       log.error('Invalid configuration.', { function: 'constructor' });
       throw new Error('ObjectStorageService is not configured. Check configuration.');
     }
@@ -25,10 +25,8 @@ class ObjectStorageService {
     this._key = this._delimit(key);
     this._accessKeyId = accessKeyId;
     this._secretAccessKey = secretAccessKey;
-    this._region = region;
     this._s3 = new S3({
       endpoint: this._endpoint,
-      region:this._region,
       accessKeyId: this._accessKeyId,
       secretAccessKey: this._secretAccessKey,
       signatureVersion:'v4',
@@ -239,7 +237,7 @@ class ObjectStorageService {
 
     } catch (e) {
       errorToProblem(SERVICE, e);
-    }  
+    }
   }
 
 }
@@ -249,7 +247,7 @@ const bucket = config.get('files.objectStorage.bucket');
 const key = config.get('files.objectStorage.key');
 const accessKeyId = config.get('files.objectStorage.accessKeyId');
 const secretAccessKey = config.get('files.objectStorage.secretAccessKey');
-const region = config.get('files.objectStorage.region');
 
-let objectStorageService = new ObjectStorageService({accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, endpoint: endpoint,region:region, bucket: bucket, key: key});
+
+let objectStorageService = new ObjectStorageService({accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, endpoint: endpoint, bucket: bucket, key: key});
 module.exports = objectStorageService;
