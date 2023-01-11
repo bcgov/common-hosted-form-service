@@ -191,7 +191,7 @@ export default {
         await reader.readAsDataURL(image);
       }
     },
-    async validateFields() {
+    validateFields() {
       this.errors = [];
       let isError = false;
       if(this.componentName_==='') {
