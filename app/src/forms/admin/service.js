@@ -129,7 +129,7 @@ const service = {
    */
   createFormComponentsProactiveHelp: async(data)=> {
     let trx;
-    try{
+    try {
       const obj = {};
       trx = await FormComponentsProactiveHelp.startTransaction();
       let result = await FormComponentsProactiveHelp.query(trx).modify('findByComponentName', data.componentName);
@@ -166,7 +166,7 @@ const service = {
 
       return service.readFormComponentsProactiveHelp(id);
 
-    } catch(err){
+    } catch(err) {
 
       if (trx) await trx.rollback();
       throw err;

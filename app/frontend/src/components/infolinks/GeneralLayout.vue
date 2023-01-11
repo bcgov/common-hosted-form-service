@@ -67,8 +67,8 @@ library.add(faPenToSquare,faEye);
 export default{
   name: 'GeneralLayout',
   components:{InformationLinkDialog,InformationLinkPreviewDialog},
-  data(){
-    return{
+  data() {
+    return {
       loading:false,
       showDialog:false,
       showPreviewDialog:false,
@@ -91,18 +91,18 @@ export default{
     };
   },
 
-  props:{
-    layoutList:{
+  props: {
+    layoutList: {
       type:Array,
       required: true
     },
-    componentsList:{
+    componentsList: {
       type:Array,
       defualt:[]
     },
     groupName:String
   },
-  methods:{
+  methods: {
     ...mapActions('admin', ['updateFCProactiveHelpStatus']),
 
     //used to open form component help information dialog

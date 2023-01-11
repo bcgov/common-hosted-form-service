@@ -580,18 +580,15 @@ const service = {
       .modify('distinctOnComponentName')
       .modify('orderComponentNameVersionsDescending');
 
-    if(result.length===0){
+    if(result.length===0) {
       return result;
     }
 
-
-    let filterResult= result.map(item=>{
+    let filterResult= result.map(item=> {
       let uri = 'data:' + item.imagetype + ';' + 'base64' + ',' + item.image;
       return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
         version:item.version,groupName:item.groupname,description:item.description });
-
     });
-
 
     return filterResult.reduce(function (r, a) {
       r[a.groupName] = r[a.groupName] || [];

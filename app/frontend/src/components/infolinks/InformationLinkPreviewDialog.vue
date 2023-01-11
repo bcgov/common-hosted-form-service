@@ -87,10 +87,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-  .cursor{
+  .cursor {
     cursor:pointer !important;
   }
-  .text{
+  .text {
     font-style: normal !important;
     font-weight: normal !important;
     font-size: 18px !important;
@@ -99,7 +99,7 @@ export default {
     color: #000000 !important;
     opacity: 1 !important;
   }
-  .linkWrapper{
+  .linkWrapper {
     text-align: left !important;
     text-decoration: underline !important;
     font-weight: normal !important;
@@ -109,7 +109,7 @@ export default {
     letter-spacing: 0px !important;
     color: #1A5A96 !important;
   }
-  .headerWrapper{
+  .headerWrapper {
     height:40px !important;
     background: #1A5A96 0% 0% no-repeat padding-box !important;
     text-align: left !important;

@@ -124,7 +124,7 @@ export default {
    * @param {Object} data An Object containing each form component help information
    * @returns {Promise} An axios response
    */
-  addFCProactiveHelp(data){
+  addFCProactiveHelp(data) {
     return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/object`, data);
   },
 
@@ -137,7 +137,7 @@ export default {
    * @param {string} componentId component id
    * @returns {Promise} An axios response
    */
-  updateFCProactiveHelpStatus(componentId, publishStatus){
+  updateFCProactiveHelpStatus(componentId, publishStatus) {
     return appAxios().put(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`);
   },
 

@@ -205,7 +205,7 @@ export default {
       }
     },
 
-    async getPresignedUrl({ commit, dispatch },imageName){
+    async getPresignedUrl({ commit, dispatch },imageName) {
       try {
         // Get Common Components Help Information
         commit('SET_FCPRESIGNEDURL',{});
