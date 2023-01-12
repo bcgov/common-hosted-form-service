@@ -223,7 +223,6 @@ export default {
     async updateFCProactiveHelpStatus({ commit, dispatch },{componentId, publishStatus}) {
       try {
         // Get Common Components Help Information
-        commit('SET_FCPROACTIVEHELP',{});
         const response = await adminService.updateFCProactiveHelpStatus(componentId, publishStatus);
         commit('SET_FCPROACTIVEHELP',response.data);
       } catch(error) {
