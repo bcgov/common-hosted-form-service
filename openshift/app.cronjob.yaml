@@ -58,9 +58,9 @@ objects:
                 env:
                 - name: APITOKEN
                   valueFrom:
-                  secretKeyRef:
-                    name: "${NAME}-${INSTANCE}-secret"
-                    key: mailapitoken
+                    secretKeyRef:
+                      name: "chefs-${JOB_NAME}-secret"
+                      key: mailapitoken
                 command:
                   - /bin/sh
                   - -ec
