@@ -37,7 +37,7 @@
           <div>
             <v-btn data-cy="status_button" color="primary" text small :disabled="canDisabled(item.componentName)">
               <v-switch small color="success" :input-value="isComponentPublish(item.componentName,index)" v-model="publish[index]" @change="onSwitchChange(item.componentName,index)"></v-switch>
-              <span class="d-none d-sm-flex" style="font-size:16px;">{{ publish[index]?'PUBLISHED':'UNPUBLISHED'}}</span>
+              <span style="width:120px !important; font-size:16px;" class="d-none d-sm-flex" >{{ publish[index]?'PUBLISHED':'UNPUBLISHED'}}</span>
             </v-btn>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default{
     },
     componentsList: {
       type:Array,
-      defualt:[]
+      default: () => []
     },
     groupName:String
   },

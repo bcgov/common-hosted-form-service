@@ -2,7 +2,6 @@
   <v-row justify="center" class="mb-5" >
     <v-dialog
       v-model="dialog"
-      persistent
       width="70%"
     >
       <v-card>

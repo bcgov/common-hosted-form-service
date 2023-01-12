@@ -15,7 +15,7 @@ describe('GeneralLayout.vue', () => {
       propsData: {
         componentsList: {
           type:Array,
-          defualt:[]
+          default:[]
         }
       },
       data() {
@@ -43,7 +43,7 @@ describe('GeneralLayout.vue', () => {
       propsData: {
         componentsList: {
           type:Array,
-          defualt:[]
+          default:[]
         }
       },
       data() {
@@ -67,7 +67,7 @@ describe('GeneralLayout.vue', () => {
       propsData: {
         componentsList: {
           type:Array,
-          defualt:[]
+          default:[]
         }
       },
       data() {
@@ -90,7 +90,7 @@ describe('GeneralLayout.vue', () => {
       propsData: {
         componentsList: {
           type:Array,
-          defualt:[]
+          default:[]
         }
       },
       data() {
