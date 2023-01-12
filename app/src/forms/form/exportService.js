@@ -225,13 +225,12 @@ const service = {
   },
 
   _getSubmissions: async (form, params) => {
-    let preference = JSON.parse(params.preference);
-
+    let preference = params.preference?JSON.parse(params.preference):undefined;
     // params for this export include minDate and maxDate (full timestamp dates).
     let submissionData = await SubmissionData.query()
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
-      .modify('filterCreatedAt', preference.minDate, preference.maxDate)
+      .modify('filterCreatedAt', preference&&preference.minDate, preference&&preference.maxDate)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault');
