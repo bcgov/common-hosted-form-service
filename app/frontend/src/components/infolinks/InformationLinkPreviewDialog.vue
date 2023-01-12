@@ -3,16 +3,13 @@
     <v-dialog
       v-model="dialog"
       width="70%"
-      persistent
     >
       <v-card class="pb-16">
         <v-container class="overflow-auto">
           <v-row >
             <v-col class="d-flex justify-space-between headerWrapper pa-4">
               <div class="align-self-center">{{component&&component.componentName}}</div>
-              <div class="align-self-center cursor"><font-awesome-icon icon="fa-solid fa-xmark" :size="'1x'" inverse @click="()=>{
-                this.$emit('close-dialog');
-              }"/></div>
+              <div class="align-self-center cursor"><font-awesome-icon icon="fa-solid fa-xmark" :size="'1x'" inverse @click="onCloseDialog"/></div>
             </v-col>
           </v-row>
           <v-row class="mt-6" v-if="component&&component.image">

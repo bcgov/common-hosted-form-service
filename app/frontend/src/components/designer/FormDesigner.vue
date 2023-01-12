@@ -89,7 +89,7 @@
       :baseFABItemsBGColor="'#ffffff'"
       :baseFABIconColor="'#1976D2'"
       :baseFABBorderColor="'#C0C0C0'"
-      :fabZIndex=1000
+      :fabZIndex=1
       :size="'small'"
       fabItemsGap="7px"
       @undo="onUndoClick"
@@ -350,7 +350,8 @@ export default {
                   {
                     // Append the info el
                     let child = document.createElement('i');
-                    child.className = 'fa fa-info info-helper';
+
+                    child.setAttribute('class','fa fa-info-circle');
                     child.style.float='right';
                     child.addEventListener('click', this.showHelperClicked);
                     containerEl.children[i].appendChild(child);
