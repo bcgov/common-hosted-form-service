@@ -1,5 +1,6 @@
-const { Form, FormVersion, User, UserFormAccess } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess,FormComponentsProactiveHelp } = require('../common/models');
 const { queryUtils } = require('../common/utils');
+const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
@@ -116,7 +117,104 @@ const service = {
         email: fa.email,
         roles: fa.roles
       }));
+  },
+  /**
+
+
+  /**
+   * @function createFormComponentsProactiveHelp
+   * insert each Form Component Help Info
+   * @param {Object} data Form Component Help Info object
+   * @returns {Promise} An objection query promise
+   */
+  createFormComponentsProactiveHelp: async(data)=> {
+    let trx;
+    try {
+      const obj = {};
+      trx = await FormComponentsProactiveHelp.startTransaction();
+      let result = await FormComponentsProactiveHelp.query(trx).modify('findByComponentName', data.componentName);
+      let id  = result.length? result[0].id : uuidv4();
+      let buf, imageType;
+      if(data.image!==''){
+        buf = data.image.split(',')[1];
+        imageType = (data.image.split(';')[0]).split(':')[1];
+      }
+      if(result.length) {
+        await FormComponentsProactiveHelp.query(trx).patchAndFetchById(id, {
+          componentname:data.componentName,
+          externallink: data.externalLink,
+          image:buf,
+          imagetype:imageType,
+          islinkenabled:data.isLinkEnabled,
+          componentimagename:data.imageName,
+          version:data.version,
+          groupname:data.groupName,
+          description:data.description,
+          publishstatus:data.status,
+          createdBy:'ADMIN'
+        });
+      }
+      else {
+        obj.id = id;
+        obj.componentname = data.componentName;
+        obj.externallink = data.externalLink;
+        obj.image = buf;
+        obj.componentimagename = data.imageName;
+        obj.imagetype = imageType,
+        obj.version = data.version;
+        obj.groupname = data.groupName;
+        obj.islinkenabled = data.isLinkEnabled;
+        obj.description = data.description;
+        obj.publishstatus=data.status;
+        obj.createdBy = 'ADMIN';
+        await FormComponentsProactiveHelp.query(trx).insert(obj);
+      }
+      await trx.commit();
+
+      return service.readFormComponentsProactiveHelp(id);
+
+    } catch(err) {
+
+      if (trx) await trx.rollback();
+      throw err;
+    }
+
+  },
+
+  /**
+   * @function readFormComponentsProactiveHelp
+   * fetch Form Component Help Info by formComponentHelpInfoId
+   * @param {String} formComponentsProactiveHelpId Form Component Help Info Id
+   * @returns {Promise} An objection query promise
+   */
+
+  readFormComponentsProactiveHelp: async(formComponentsProactiveHelpId)=> {
+    return await FormComponentsProactiveHelp.query()
+      .where('id', formComponentsProactiveHelpId);
+  },
+
+  /**
+   * @function updateFormComponentsProactiveHelp
+   * update the publish status of each form component information help information
+   * @param {Object} param consist of publishStatus and componentId.
+   * @returns {Promise} An objection query promise
+   */
+  updateFormComponentsProactiveHelp: async(param)=> {
+    let trx;
+    try {
+      trx = await FormComponentsProactiveHelp.startTransaction();
+      await FormComponentsProactiveHelp.query(trx).patchAndFetchById(param.componentId, {
+        publishstatus: JSON.parse(param.publishStatus),
+        updatedBy: 'ADMIN'
+      });
+      await trx.commit();
+      return await service.readFormComponentsProactiveHelp(param.componentId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   }
+
 };
 
 module.exports = service;

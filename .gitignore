@@ -13,6 +13,9 @@ node_modules
 
 # Ignore only top-level package-lock.json
 /package-lock.json
+**/docker
+docker-compose.yml
+
 
 
 

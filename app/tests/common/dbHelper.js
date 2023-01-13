@@ -10,6 +10,7 @@ const retFn = (value) => {
  */
 class MockTransaction {}
 
+
 // Mocked Objection Functions
 MockTransaction.commit = jest.fn().mockReturnThis();
 MockTransaction.rollback = jest.fn().mockReturnThis();
