@@ -1,5 +1,6 @@
 import { appAxios } from '@/services/interceptors';
 import { ApiRoutes } from '@/utils/constants';
+//import axios from 'axios';
 
 export default {
   //
@@ -31,6 +32,7 @@ export default {
   deleteApiKey(formId) {
     return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
+
 
   /**
    * @function listForms
@@ -114,4 +116,55 @@ export default {
   readUser(userId) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`);
   },
+
+  /**
+   * addFormComponentsProactiveHelp
+   * @function addFCProactiveHelp
+   * Create a new Form
+   * @param {Object} data An Object containing each form component help information
+   * @returns {Promise} An axios response
+   */
+  addFCProactiveHelp(data) {
+    return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/object`, data);
+  },
+
+
+  /**
+   * updateFormComponentsProactiveHelpStatus
+   * @function updateFCProactiveHelpStatus
+   * Update publish status of each Form Components Help Link Information
+   * @param {boolean} publishStatus This is used to determine if the help link information is published or not
+   * @param {string} componentId component id
+   * @returns {Promise} An axios response
+   */
+  updateFCProactiveHelpStatus(componentId, publishStatus) {
+    return appAxios().put(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`);
+  },
+
+  /**
+   * @function uploadImage
+   * upload image to storage facility (e.g. s3)
+   * @param {Object} imageData component name and component image encoded into base64
+   * @returns {Promise} An axios response
+   */
+  async uploadImage(imageData) {
+    return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/upload`,imageData);
+
+    //return await axios.post('http://localhost:3000/api/v1/object/singleUpload/1d295570-2ad7-491e-a23b-c7eac158fe72',
+    //  {'folder':'commoncomponenthelplink',imageData:{...imageData}});
+  },
+
+  /**
+   * @function getPresignedUrl
+   * get signed image upload url
+   * @param {Object} imageName component name and component image encoded into base64
+   * @returns {Promise} An axios response
+  */
+  async getPresignedUrl(imageName) {
+    return appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/signedUrl/${imageName}`);
+
+    //return await axios.get('http://localhost:3000/api/v1/object/signedUrl/1d295570-2ad7-491e-a23b-c7eac158fe72',
+    //  { params: { imageName: imageName,folder:'commoncomponenthelplink'  } });
+  }
 };
+

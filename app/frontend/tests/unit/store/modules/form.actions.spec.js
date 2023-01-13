@@ -257,5 +257,15 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
+
+    it('listFCProactiveHelp should commit to SET_FCPROACTIVEHELPGROUPOBJECT', async () => {
+      formService.readVersion.mockRejectedValue('');
+      await store.actions.listFCProactiveHelp(mockStore,{});
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPOBJECT', expect.any(Object));
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
   });
 });
