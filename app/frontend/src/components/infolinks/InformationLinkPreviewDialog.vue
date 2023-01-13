@@ -2,7 +2,8 @@
   <v-row justify="center" class="mb-5">
     <v-dialog
       v-model="dialog"
-      width="70%"
+      :width="component.image?'70%':'40%'"
+      @click:outside="onCloseDialog"
     >
       <v-card class="pb-16">
         <v-container class="overflow-auto">
@@ -26,13 +27,13 @@
             </v-col>
           </v-row>
           <v-row class="mt-6" v-else>
-            <v-col md="12" >
+            <v-col cols="12" >
               <div class="text" data-cy="preview_text_field" ref="preview_text_field" >
                 {{component&&component.description}}
               </div>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row v-if="component&& component.isLinkEnabled">
             <v-col class="d-flex flex-row align-center text-decoration-underline linkWrapper">
               <a :href="component&&component.externalLink" class="preview_info_link_field" :target="'_blank'" :class="{disabledLink:component&&component.moreHelpInfoLink===''}"> <div class="mr-1 cursor" >Learn more
                 <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /> </div></a>

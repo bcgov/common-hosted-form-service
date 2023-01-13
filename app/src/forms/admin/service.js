@@ -134,14 +134,19 @@ const service = {
       trx = await FormComponentsProactiveHelp.startTransaction();
       let result = await FormComponentsProactiveHelp.query(trx).modify('findByComponentName', data.componentName);
       let id  = result.length? result[0].id : uuidv4();
-      let buf =data.image.split(',')[1];
-      let imageType = (data.image.split(';')[0]).split(':')[1];
+      let buf, imageType;
+      if(data.image!==''){
+        buf = data.image.split(',')[1];
+        imageType = (data.image.split(';')[0]).split(':')[1];
+      }
       if(result.length) {
         await FormComponentsProactiveHelp.query(trx).patchAndFetchById(id, {
           componentname:data.componentName,
           externallink: data.externalLink,
           image:buf,
           imagetype:imageType,
+          islinkenabled:data.isLinkEnabled,
+          imagename:data.imageName,
           version:data.version,
           groupname:data.groupName,
           description:data.description,
@@ -154,9 +159,11 @@ const service = {
         obj.componentname = data.componentName;
         obj.externallink = data.externalLink;
         obj.image = buf;
+        obj.imagename = data.imageName;
         obj.imagetype = imageType,
         obj.version = data.version;
         obj.groupname = data.groupName;
+        obj.islinkenabled = data.isLinkEnabled;
         obj.description = data.description;
         obj.publishstatus=data.status;
         obj.createdBy = 'ADMIN';

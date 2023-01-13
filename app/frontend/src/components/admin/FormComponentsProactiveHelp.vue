@@ -29,6 +29,17 @@ export default {
   components:{GeneralLayout},
   data(){
     return{
+      layout: {
+        'Basic Layout':['Text/Images','Columns - 2','Columns - 3','Columns - 4','Tabs','Panel'],
+        'Basic Fields':['Text Field','Multi-line Text','Select List','Checkbox','Checkbox Group',
+          'Radio Group','Number','Phone Number','Email','Date / Time','Day'],
+        'Advanced Layout': ['HTML Element','Content','Columns','Field Set','Panel','Table','Tabs','Well'],
+        'Advanced Fields': ['Text Field','Email','Text Area','Url','Number','Phone Number','Tags','Address',
+          'Password','Date / Time','Checkbox','Day','Time','Select Boxes', 'Select','Currency','Radio','Survey',
+          'Signature'],
+        'Advanced Data': ['Hidden', 'Container','Data Map','Data Grid','Edit Grid','Tree'],
+        'BC Government': ['File Upload', 'Business Name Search','BC Address']
+      },
       isPanelOpened : new Map(),
       groupComponentsList:[],
       panelHeadStyle:new Map(),
@@ -56,12 +67,10 @@ export default {
     //extract form builder layout groups.
     extractGroups() {
       let allgroups=[];
-      if(this.builder){
-        for (let  [, {title}] of Object.entries(this.builder)) {
-          if(title) {
-            allgroups.push(title);
-            this.panelHeadStyle.set(title,this.notActivePanelHead);
-          }
+      for(let [title, ] of Object.entries(this.layout)) {
+        if(title) {
+          allgroups.push(title);
+          this.panelHeadStyle.set(title,this.notActivePanelHead);
         }
       }
       return allgroups;
@@ -70,9 +79,9 @@ export default {
     //extract all components in the select group in form builder
     extractGroupComponents(groupName) {
       let groupComponents = [];
-      for (let  [, {title,components}] of Object.entries(this.builder)) {
+      for (let [title,components] of Object.entries(this.layout)) {
         if((title && title===groupName) && components) {
-          for(let componentName of Object.keys(components)) {
+          for(let componentName of components) {
             groupComponents.push({'componentName':componentName});
           }
         }
@@ -81,7 +90,7 @@ export default {
     }
   },
   computed:{
-    ...mapGetters('form', ['fcProactiveHelpGroupObject','builder']),
+    ...mapGetters('form', ['fcProactiveHelpGroupObject']),
     ...mapGetters('admin',['fcProactiveHelp']),
     groupList() {
       return this.extractGroups();
