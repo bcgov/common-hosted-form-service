@@ -5,10 +5,10 @@ exports.up = function(knex) {
     .then(() => knex.schema.createTable('form_components_proactive_help',table=>{
       table.uuid('id').primary();
       table.string('componentname').notNullable();
-      table.string('externallink',500);
+      table.string('externallink');
       table.binary('image');
       table.string('imagetype');
-      table.string('imagename');
+      table.string('componentimagename');
       table.integer('version').notNullable();
       table.string('groupname').notNullable();
       table.text('description');

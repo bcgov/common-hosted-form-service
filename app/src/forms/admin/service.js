@@ -146,7 +146,7 @@ const service = {
           image:buf,
           imagetype:imageType,
           islinkenabled:data.isLinkEnabled,
-          imagename:data.imageName,
+          componentimagename:data.imageName,
           version:data.version,
           groupname:data.groupName,
           description:data.description,
@@ -159,7 +159,7 @@ const service = {
         obj.componentname = data.componentName;
         obj.externallink = data.externalLink;
         obj.image = buf;
-        obj.imagename = data.imageName;
+        obj.componentimagename = data.imageName;
         obj.imagetype = imageType,
         obj.version = data.version;
         obj.groupname = data.groupName;
