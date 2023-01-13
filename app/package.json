@@ -45,7 +45,7 @@
     "dev:reset-db": "npm run migrate:rollback:all && npm run migrate"
   },
   "dependencies": {
-    "@bc_gov_forminators/json_to_csv_export": "^1.0.5",
+    "@bc_gov_forminators/json_to_csv_export": "^1.0.7",
     "api-problem": "^7.0.3",
     "aws-sdk": "^2.1167.0",
     "axios": "^0.27.2",
