@@ -6,11 +6,13 @@ exports.up = function(knex) {
       table.uuid('id').primary();
       table.string('componentname').notNullable();
       table.string('externallink',500);
-      table.binary('image').notNullable();
-      table.string('imagetype').notNullable();
+      table.binary('image');
+      table.string('imagetype');
+      table.string('imagename');
       table.integer('version').notNullable();
       table.string('groupname').notNullable();
-      table.text('description').notNullable();
+      table.text('description');
+      table.boolean('islinkenabled').defaultTo(false);
       table.boolean('publishstatus').defaultTo(false);
       table.unique(['componentname', 'version']);
       stamps(knex, table);

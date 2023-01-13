@@ -21,78 +21,6 @@ const genInitialForm = () => ({
   versions: [],
 });
 
-const genInitialBuilder = () => ({
-  basic: false,
-  premium: false,
-  layoutControls: {
-    title: 'Basic Layout',
-    default: true,
-    weight: 10,
-    components: {
-      simplecols2: true,
-      simplecols3: true,
-      simplecols4: true,
-      simplecontent: true,
-      simplefieldset: false,
-      simpleheading: false,
-      simplepanel: true,
-      simpleparagraph: false,
-      simpletabs: true,
-    },
-  },
-  entryControls: {
-    title: 'Basic Fields',
-    weight: 20,
-    components: {
-      simplecheckbox: true,
-      simplecheckboxes: true,
-      simpledatetime: true,
-      simpleday: true,
-      simpleemail: true,
-      simplenumber: true,
-      simplephonenumber: true,
-      simpleradios: true,
-      simpleselect: true,
-      simpletextarea: true,
-      simpletextfield: true,
-      simpletime: false,
-    },
-  },
-  layout: {
-    title: 'Advanced Layout',
-    weight: 30,
-  },
-  advanced: {
-    title: 'Advanced Fields',
-    weight: 40,
-    components: {
-      // Need to re-define Formio basic fields here
-      textfield: true,
-      textarea: true,
-      number: true,
-      password: true,
-      checkbox: true,
-      selectboxes: true,
-      select: true,
-      radio: true,
-      button: true,
-      // Prevent duplicate appearance of orgbook component
-      orgbook: false,
-    },
-  },
-  data: {
-    title: 'Advanced Data',
-    weight: 50,
-  },
-  customControls: {
-    title: 'BC Government',
-    weight: 60,
-    components: {
-      orgbook: true,
-    },
-  }
-});
-
 /**
  * Form Module
  */
@@ -116,7 +44,6 @@ export default {
     userFormPreferences: {},
     fcProactiveHelpGroupObject:{}, // Form Components Proactive Help Group Object
     version: {},
-    builder: genInitialBuilder(),
   },
   getters: {
     getField, // vuex-map-fields
