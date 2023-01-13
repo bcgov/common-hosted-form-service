@@ -588,7 +588,7 @@ const service = {
       let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
       return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
         version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-        imageName:item.imagename });
+        imageName:item.componentimagename });
     });
 
     return filterResult.reduce(function (r, a) {
