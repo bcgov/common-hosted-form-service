@@ -37,10 +37,10 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
         image: { type: 'string' },
         imagetype: { type: 'string' },
         version: { type: 'integer'},
+        imagename: { type: 'string' },
         groupname: { type: 'string', minLength: 1, maxLength: 255 },
         publishstatus:{type:'boolean'},
         islinkenabled: {type:'boolean'},
-        imagename: { type: 'string' },
         description: { type: 'string'},
         ...stamps
       },
