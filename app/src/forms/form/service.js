@@ -585,9 +585,10 @@ const service = {
     }
 
     let filterResult= result.map(item=> {
-      let uri = 'data:' + item.imagetype + ';' + 'base64' + ',' + item.image;
+      let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
       return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
-        version:item.version,groupName:item.groupname,description:item.description });
+        version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+        imageName:item.imagename });
     });
 
     return filterResult.reduce(function (r, a) {

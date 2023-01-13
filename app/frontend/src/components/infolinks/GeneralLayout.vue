@@ -44,11 +44,13 @@
       </template>
     </v-data-table>
     <InformationLinkDialog :showDialog="showDialog"
+                           v-if="showDialog"
                            :groupName="groupName"
                            :componentName="componentName"
                            @close-dialog="onDialog"
                            :component="component"/>
     <InformationLinkPreviewDialog :showDialog="showPreviewDialog"
+                                  v-if="showPreviewDialog"
                                   @close-dialog="onPreviewDialog"
                                   :component="component"/>
   </div>
@@ -118,6 +120,7 @@ export default{
     },
 
     isComponentPublish(componentName,index) {
+
       for(let component of this.componentsList) {
         if(component.componentName===componentName) {
           this.publish[index]=component.status;

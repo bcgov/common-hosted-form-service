@@ -3,6 +3,7 @@
     <v-dialog
       v-model="dialog"
       width="70%"
+      @click:outside="onCloseDialog"
     >
       <v-card>
         <v-container>
@@ -40,7 +41,7 @@
                     style="width:100%;"
                     v-model="moreHelpInfoLink"
                     flat
-                    :disabled="isLinkEnabled"
+                    :disabled="!isLinkEnabled"
                     :value="moreHelpInfoLink"
                     data-cy="more_help_info_link_text_field"
                     class="text-style"
@@ -50,11 +51,11 @@
                   </v-text-field>
                 </v-col>
                 <v-checkbox
+                  v-model="isLinkEnabled"
                   class="checkbox_data_cy"
-                  @click="isLinkEnabled=!isLinkEnabled"
                 >
                   <template v-slot:label>
-                    <span class="v-label">{{isLinkEnabled?'Click to enable link':'Click to disable link'}}</span>
+                    <span class="v-label">{{!isLinkEnabled?'Click to enable link':'Click to disable link'}}</span>
                   </template>
                 </v-checkbox>
               </div>
@@ -98,7 +99,7 @@
                     show-size
                     counter
                     accept="image/*"
-                    label="Image Upload:"
+                    :label="imagePlaceholder?imagePlaceholder:'Image Upload:'"
                     class="file_upload_data-cy"
                     @change="selectImage"
                   ></v-file-input>
@@ -157,14 +158,15 @@ export default {
   data() {
     return {
       errors: [],
-      componentName_:'',
-      description:'',
-      moreHelpInfoLink:'',
-      isLinkEnabled:true,
+      componentName_:this.component&&this.component.componentName?this.component.componentName:this.componentName,
+      description:this.component&&this.component.description?this.component.description:'',
+      moreHelpInfoLink:this.component&&this.component.externalLink?this.component.externalLink:'',
+      isLinkEnabled:this.component&&this.component.isLinkEnabled?this.component.isLinkEnabled:false,
       dialog: this.showDialog,
       color1:'#1A5A96',
       image:'',
-
+      imageName:this.component&&this.component.imageName?this.component.imageName:'',
+      imagePlaceholder:this.component&&this.component.imageName?this.component.imageName:undefined
     };
   },
   props: {
@@ -182,42 +184,21 @@ export default {
     async selectImage(image) {
       const reader = new FileReader();
       reader.onload=async(e)=> {
-
         this.image=e.target.result;
+        this.imageName=image.name;
         //await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:this.image});
       };
       if(image) {
         await reader.readAsDataURL(image);
       }
     },
-    validateFields() {
-      this.errors = [];
-      let isError = false;
-      if(this.componentName_==='') {
-        this.errors.push('Name required.');
-        isError=true;
-      }
-
-      if(this.image==='') {
-        this.errors.push('Image required.');
-        isError=true;
-      }
-
-      if(this.description==='') {
-        this.errors.push('description required.');
-        isError=true;
-      }
-
-      return isError;
-
-    },
 
     submit() {
-      if(!this.validateFields()) {
-        this.addFCProactiveHelp({componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,version:this.version+1,
-          groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false});
-        this.onCloseDialog();
-      }
+      this.addFCProactiveHelp({componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,version:this.version+1,
+        groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false,
+        isLinkEnabled:this.isLinkEnabled, imageName:this.imageName});
+      this.onCloseDialog();
+
     },
     resetDialog() {
       this.description='';
@@ -228,6 +209,8 @@ export default {
         this.componentName_=this.component.componentName;
         this.description=this.component.description;
         this.moreHelpInfoLink=this.component.externalLink;
+        this.isLinkEnabled=this.component.isLinkEnabled;
+        this.imagePlaceholder=this.component.imageName;
       }
     }
   },
