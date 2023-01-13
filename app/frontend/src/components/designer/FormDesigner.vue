@@ -101,8 +101,8 @@
       :isFormSaved="isFormSaved"
       :formId="formId"
       :draftId="draftId"
-      :undoEnabled="undoEnabled()===0?false:undoEnabled()"
-      :redoEnabled="redoEnabled()===0?false:redoEnabled()"
+      :undoEnabled="undoEnabled()===0?false : undoEnabled()"
+      :redoEnabled="redoEnabled()===0?false : redoEnabled()"
     />
   </div>
 </template>
@@ -222,8 +222,85 @@ export default {
           ALLOWED_TAGS: ['iframe'],
         },
         noDefaultSubmitButton: false,
-        builder: this.builder,
+        builder: {
+          basic: false,
+          premium: false,
+          layoutControls: {
+            title: 'Basic Layout',
+            default: true,
+            weight: 10,
+            components: {
+              simplecols2: true,
+              simplecols3: true,
+              simplecols4: true,
+              simplecontent: true,
+              simplefieldset: false,
+              simpleheading: false,
+              simplepanel: true,
+              simpleparagraph: false,
+              simpletabs: true,
+            },
+          },
+          entryControls: {
+            title: 'Basic Fields',
+            weight: 20,
+            components: {
+              simplecheckbox: true,
+              simplecheckboxes: true,
+              simpledatetime: true,
+              simpleday: true,
+              simpleemail: true,
+              simplenumber: true,
+              simplephonenumber: true,
+              simpleradios: true,
+              simpleselect: true,
+              simpletextarea: true,
+              simpletextfield: true,
+              simpletime: false,
+            },
+          },
+          layout: {
+            title: 'Advanced Layout',
+            weight: 30,
+          },
+          advanced: {
+            title: 'Advanced Fields',
+            weight: 40,
+            components: {
+              // Need to re-define Formio basic fields here
+              textfield: true,
+              textarea: true,
+              number: true,
+              password: true,
+              checkbox: true,
+              selectboxes: true,
+              select: true,
+              radio: true,
+              button: true,
+              // Prevent duplicate appearance of orgbook component
+              orgbook: false,
+              bcaddress:false
+            },
+          },
+          data: {
+            title: 'Advanced Data',
+            weight: 50,
+          },
+          customControls: {
+            title: 'BC Government',
+            weight: 60,
+            components: {
+              orgbook: true,
+              simplefile: this.userType !== this.ID_MODE.PUBLIC,
+              bcaddress:true
+            },
+          },
+        },
         templates: templateExtensions,
+        evalContext: {
+          token: this.tokenParsed,
+          user: this.user,
+        },
       };
     },
   },
@@ -346,12 +423,12 @@ export default {
               let containerEl = document.getElementById(containerId);
               if(containerEl){
                 for(var i=0; i<containerEl.children.length; i++){
-                  if(extractedElementsNames.includes(containerEl.children[i].getAttribute('data-key')))
+                  if(extractedElementsNames.includes(containerEl.children[i].textContent.trim()))
                   {
                     // Append the info el
                     let child = document.createElement('i');
 
-                    child.setAttribute('class','fa fa-info-circle');
+                    child.setAttribute('class','fa fa-info-circle info-helper');
                     child.style.float='right';
                     child.addEventListener('click', this.showHelperClicked);
                     containerEl.children[i].appendChild(child);
@@ -377,12 +454,11 @@ export default {
     showHelperClicked(evt) {
       let target = evt.target;
       let parent = target.parentNode;
-      let type = parent.getAttribute('data-type');
+      let type = parent.textContent.trim();
       for (const [, elements] of Object.entries(this.fcProactiveHelpGroupObject))
       {
-        for(let element of elements ){
-          if(type===element.componentName)
-          {
+        for(let element of elements ) {
+          if(type===element.componentName) {
             this.component=element;
           }
         }

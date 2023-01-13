@@ -29,7 +29,7 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['id','componentname','version','groupname','description'],
+      required: ['id','componentname','version','groupname'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         componentname: { type: 'string', minLength: 1, maxLength: 255 },
@@ -39,7 +39,9 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
         version: { type: 'integer'},
         groupname: { type: 'string', minLength: 1, maxLength: 255 },
         publishstatus:{type:'boolean'},
-        description: { type: 'string',minLength: 1,},
+        islinkenabled: {type:'boolean'},
+        imagename: { type: 'string' },
+        description: { type: 'string'},
         ...stamps
       },
       additionalProperties: false
