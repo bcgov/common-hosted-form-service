@@ -13,6 +13,7 @@ export default {
     roles: [],
     user: {},
     userList: [],
+    fcProactiveHelpVersion:{},
     fcProactiveHelp:{}, // Form Component Proactive Help
     fcProactiveHelpImageUpload:'', // Form Component Proactive Help image upload
     fcPresignedUrl:''
@@ -24,6 +25,7 @@ export default {
     roles: state => state.roles,
     user: state => state.user,
     userList: state => state.userList,
+    fcProactiveHelpVersion: state => state.fcProactiveHelpVersion,
     fcProactiveHelp: state => state.fcProactiveHelp, //Form Component Proactive Help
     fcProactiveHelpImageUpload: state=> state.fcProactiveHelpImageUpload, //Form Component Proactive Help Image Upload
     fcPresignedUrl: state=> state.fcPresignedUrl
@@ -54,6 +56,10 @@ export default {
     SET_FCPROACTIVeHELPIMAGEUPLOAD(state,fcProactiveHelpImageUpload) //Form Component Proactive Help IMAGE UPLOAD
     {
       state.fcProactiveHelpImageUpload = fcProactiveHelpImageUpload;
+    },
+    SET_FCPROACTIVEHELPVERSION(state, fcProactiveHelpVersion )
+    {
+      state.fcProactiveHelpVersion = fcProactiveHelpVersion;
     },
     SET_FCPRESIGNEDURL(state,fcPresignedUrl)
     {
@@ -225,6 +231,19 @@ export default {
         // Get Common Components Help Information
         const response = await adminService.updateFCProactiveHelpStatus(componentId, publishStatus);
         commit('SET_FCPROACTIVEHELP',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while updating publish status',
+          consoleError: 'Error updating publish status',
+        }, { root: true });
+      }
+    },
+    //updateFormComponentsProactiveHelpStatus
+    async getEachFCProactiveHelpVersion({ commit, dispatch },{componentName, version}) {
+      try {
+        // Get Common Components Help Information
+        const response = await adminService.getEachFCProactiveHelpVersion(componentName, version);
+        commit('SET_FCPROACTIVEHELPVERSION',response.data);
       } catch(error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while updating publish status',

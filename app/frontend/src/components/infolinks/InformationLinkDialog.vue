@@ -12,14 +12,9 @@
               <span class="text-h5" style="font-weight:bold;">Component Information Link</span>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row v-if="this.linkError">
             <v-col>
-              <p v-if="errors.length">
-                <b>Please correct the following error(s):</b>
-                <ul class="red--text">
-                  <li v-for="(err, index) in errors" :key="index">{{ err }}</li>
-                </ul>
-              </p>
+              <div style="margin:0px; padding:0px" v-text="'Learn More Link field cannot be empty.'" class="red--text"/>
             </v-col>
           </v-row>
           <v-row class="mt-5" no-gutters>
@@ -127,11 +122,15 @@
                   </v-btn>
                 </div>
                 <div class="d-flex flex-row align-end versionLabel">
-                  <div class="mr-3"><span style="color: #939393;">Current:</span> <span class="font-weight-bold" style="color: #313132;">Version {{version+1}}</span></div>
-                  <div>
-                    <span style="color: #707070C1;">Version: {{version}}</span>
+                  <div class="mr-3">
+                    <span class="font-weight-bold" style="color: #313132;">Current: </span>
                     <span style="color: #1A5A96;"> - </span>
-                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(version)===0?'disabled':''" @click="setPreviousVersion">Restore
+                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(version)===0?'disabled':''" @click="getCurrentVersion()">{{currentVersion}} </span>
+                  </div>
+                  <div>
+                    <span style="color: #707070C1;">Previous: </span>
+                    <span style="color: #1A5A96;"> - </span>
+                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(version)===0?'disabled':''" @click="getPreviousVersion()">{{previousVersion}}
                     </span>
                   </div>
                 </div>
@@ -166,7 +165,8 @@ export default {
       color1:'#1A5A96',
       image:'',
       imageName:this.component&&this.component.imageName?this.component.imageName:'',
-      imagePlaceholder:this.component&&this.component.imageName?this.component.imageName:undefined
+      imagePlaceholder:this.component&&this.component.imageName?this.component.imageName:undefined,
+      linkError:false
     };
   },
   props: {
@@ -176,10 +176,39 @@ export default {
     groupName:{type:String,require:true}
   },
   methods:{
-    ...mapActions('admin', ['addFCProactiveHelp','uploadFCProactiveHelpImage']),
+    ...mapActions('admin', ['addFCProactiveHelp','uploadFCProactiveHelpImage','getEachFCProactiveHelpVersion']),
     onCloseDialog() {
       this.resetDialog();
       this.$emit('close-dialog');
+    },
+    async getPreviousVersion() {
+      await this.getEachFCProactiveHelpVersion({componentName:this.componentName_, version:this.previousVersion});
+
+      if(this.fcProactiveHelpVersion) {
+        this.componentName_=this.fcProactiveHelpVersion.componentName;
+        this.description=this.fcProactiveHelpVersion.description;
+        this.moreHelpInfoLink=this.fcProactiveHelpVersion.externalLink;
+        this.isLinkEnabled=this.fcProactiveHelpVersion.isLinkEnabled;
+        this.imagePlaceholder=this.fcProactiveHelpVersion.imageName;
+      }
+    },
+    getCurrentVersion() {
+      if(this.component){
+        this.componentName_=this.component.componentName;
+        this.description=this.component.description;
+        this.moreHelpInfoLink=this.component.externalLink;
+        this.isLinkEnabled=this.component.isLinkEnabled;
+        this.imagePlaceholder=this.component.imageName;
+      }
+    },
+    validateLinkUrl() {
+      let error = false;
+      this.linkError=false;
+      if(this.isLinkEnabled && this.moreHelpInfoLink==='') {
+        error=true;
+        this.linkError=true;
+      }
+      return error;
     },
     async selectImage(image) {
       const reader = new FileReader();
@@ -192,27 +221,29 @@ export default {
         await reader.readAsDataURL(image);
       }
     },
-
     submit() {
-      this.addFCProactiveHelp({componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,version:this.version+1,
-        groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false,
-        isLinkEnabled:this.isLinkEnabled, imageName:this.imageName});
-      this.onCloseDialog();
+      if(!this.validateLinkUrl()) {
+        this.imageName = (this.image!=='')?this.imageName:'';
+        this.moreHelpInfoLink= !this.isLinkEnabled?'':this.moreHelpInfoLink;
+        this.addFCProactiveHelp({componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,version:this.version+1,
+          groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false,
+          isLinkEnabled:this.isLinkEnabled, imageName:this.imageName});
+        this.onCloseDialog();
+      }
 
     },
     resetDialog() {
+      this.componentName_='';
+      this.moreHelpInfoLink='';
+      this.isLinkEnabled= false;
+      this.image='';
+      this.imageName='';
+      this.imagePlaceholder=undefined;
+      this.linkError=false;
       this.description='';
       this.link='';
     },
-    setPreviousVersion() {
-      if(this.component){
-        this.componentName_=this.component.componentName;
-        this.description=this.component.description;
-        this.moreHelpInfoLink=this.component.externalLink;
-        this.isLinkEnabled=this.component.isLinkEnabled;
-        this.imagePlaceholder=this.component.imageName;
-      }
-    }
+
   },
   watch: {
     showDialog() {
@@ -223,9 +254,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('admin',['fcHelpInfoImageUpload']),
+    ...mapGetters('admin',['fcHelpInfoImageUpload','fcProactiveHelpVersion']),
     version() {
       if(this.component) return this.component.version;
+      return 0;
+    },
+    currentVersion() {
+      if(this.component) return this.component.version;
+      return 0;
+    },
+    previousVersion() {
+      if(this.component && this.component.version>0) return parseInt(this.component.version)-1;
       return 0;
     }
   }
