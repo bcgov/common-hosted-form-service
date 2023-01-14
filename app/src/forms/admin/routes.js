@@ -69,6 +69,10 @@ routes.post('/formcomponents/proactivehelp/object', async(req,res,next) => {
   await controller.createFormComponentsProactiveHelp(req, res, next);
 });
 
+routes.get('/formcomponents/proactivehelp/version', async(req,res,next) => {
+  await controller.getFormComponentsProactiveHelpVersion(req, res, next);
+});
+
 
 routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (req, res, next) => {
   await controller.updateFormComponentsProactiveHelp(req, res, next);
