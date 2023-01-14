@@ -154,6 +154,10 @@ export default {
     //  {'folder':'commoncomponenthelplink',imageData:{...imageData}});
   },
 
+  async getEachFCProactiveHelpVersion(componentName, version) {
+    return appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/version`, { params: { componentName: componentName, version:version } });
+  },
+
   /**
    * @function getPresignedUrl
    * get signed image upload url
