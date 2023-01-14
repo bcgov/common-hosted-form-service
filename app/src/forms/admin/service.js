@@ -131,46 +131,27 @@ const service = {
     let trx;
     try {
       const obj = {};
+      let id = uuidv4();
       trx = await FormComponentsProactiveHelp.startTransaction();
-      let result = await FormComponentsProactiveHelp.query(trx).modify('findByComponentName', data.componentName);
-      let id  = result.length? result[0].id : uuidv4();
       let buf, imageType;
       if(data.image!==''){
         buf = data.image.split(',')[1];
         imageType = (data.image.split(';')[0]).split(':')[1];
       }
-      if(result.length) {
-        await FormComponentsProactiveHelp.query(trx).patchAndFetchById(id, {
-          componentname:data.componentName,
-          externallink: data.externalLink,
-          image:buf,
-          imagetype:imageType,
-          islinkenabled:data.isLinkEnabled,
-          componentimagename:data.imageName,
-          version:data.version,
-          groupname:data.groupName,
-          description:data.description,
-          publishstatus:data.status,
-          createdBy:'ADMIN'
-        });
-      }
-      else {
-        obj.id = id;
-        obj.componentname = data.componentName;
-        obj.externallink = data.externalLink;
-        obj.image = buf;
-        obj.componentimagename = data.imageName;
-        obj.imagetype = imageType,
-        obj.version = data.version;
-        obj.groupname = data.groupName;
-        obj.islinkenabled = data.isLinkEnabled;
-        obj.description = data.description;
-        obj.publishstatus=data.status;
-        obj.createdBy = 'ADMIN';
-        await FormComponentsProactiveHelp.query(trx).insert(obj);
-      }
+      obj.id = id;
+      obj.componentname = data.componentName;
+      obj.externallink = data.externalLink;
+      obj.image = buf;
+      obj.componentimagename = data.imageName;
+      obj.imagetype = imageType,
+      obj.version = data.version;
+      obj.groupname = data.groupName;
+      obj.islinkenabled = data.isLinkEnabled;
+      obj.description = data.description;
+      obj.publishstatus=data.status;
+      obj.createdBy = 'ADMIN';
+      await FormComponentsProactiveHelp.query(trx).insert(obj);
       await trx.commit();
-
       return service.readFormComponentsProactiveHelp(id);
 
     } catch(err) {
@@ -179,6 +160,25 @@ const service = {
       throw err;
     }
 
+  },
+
+  /**
+   * @function getFormComponentsProactiveHelpVersion
+   * insert each Form Component Help Info
+   * @param {Object} data form component name and version
+   * @returns {Promise} An objection query promise
+   */
+  getFormComponentsProactiveHelpVersion: async(data)=> {
+
+    let componentName = data&&data.componentName;
+    let version = data.version;
+
+    let result = await FormComponentsProactiveHelp.query()
+      .modify('findByComponentNameAndVersion',componentName, parseInt(version));
+    let uri = result[0].image!==null?'data:' + result[0].imagetype + ';' + 'base64' + ',' +result[0].image:'';
+    return {id:result[0].id,status:result[0].publishstatus,componentName:result[0].componentname,externalLink:result[0].externallink,image:uri,
+      version:result[0].version,groupName:result[0].groupname,description:result[0].description, isLinkEnabled:result[0].islinkenabled,
+      imageName:result[0].componentimagename };
   },
 
   /**

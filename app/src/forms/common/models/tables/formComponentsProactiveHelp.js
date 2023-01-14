@@ -15,13 +15,17 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
           query.where('componentname', value);
         }
       },
+      findByComponentNameAndVersion(query, componentname,version) {
+        if (componentname !== undefined && version!==undefined) {
+          query.where('componentname', componentname)
+            .where('version', version);
+        }
+      },
       distinctOnComponentName(builder) {
         builder.distinctOn('componentname');
       },
       orderComponentNameVersionsDescending(builder) {
-
         builder.orderBy(['componentname',{column:'version', order:'desc'}]);
-
       },
     };
   }
