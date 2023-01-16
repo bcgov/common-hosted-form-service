@@ -125,12 +125,12 @@
                   <div class="mr-3">
                     <span class="font-weight-bold" style="color: #313132;">Current: </span>
                     <span style="color: #1A5A96;"> - </span>
-                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(version)===0?'disabled':''" @click="getCurrentVersion()">{{currentVersion}} </span>
+                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(currentVersion)===1?'disabled':''" @click="getCurrentVersion()">{{currentVersion}} </span>
                   </div>
                   <div>
                     <span style="color: #707070C1;">Previous: </span>
                     <span style="color: #1A5A96;"> - </span>
-                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(version)===0?'disabled':''" @click="getPreviousVersion()">{{previousVersion}}
+                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(previousVersion)===0?'disabled':''" @click="getPreviousVersion()">{{previousVersion}}
                     </span>
                   </div>
                 </div>
@@ -225,7 +225,7 @@ export default {
       if(!this.validateLinkUrl()) {
         this.imageName = (this.image!=='')?this.imageName:'';
         this.moreHelpInfoLink= !this.isLinkEnabled?'':this.moreHelpInfoLink;
-        this.addFCProactiveHelp({componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,version:this.version+1,
+        this.addFCProactiveHelp({componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,version:this.currentVersion,
           groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false,
           isLinkEnabled:this.isLinkEnabled, imageName:this.imageName});
         this.onCloseDialog();
@@ -255,18 +255,14 @@ export default {
   },
   computed: {
     ...mapGetters('admin',['fcHelpInfoImageUpload','fcProactiveHelpVersion']),
-    version() {
-      if(this.component) return this.component.version;
-      return 0;
-    },
     currentVersion() {
-      if(this.component) return this.component.version;
-      return 0;
+      if(this.component) return  parseInt(this.component.version)+1;
+      return 1;
     },
     previousVersion() {
-      if(this.component && this.component.version>0) return parseInt(this.component.version)-1;
+      if(this.component && this.component.version>0) return parseInt(this.component.version);
       return 0;
-    }
+    },
   }
 };
 </script>
