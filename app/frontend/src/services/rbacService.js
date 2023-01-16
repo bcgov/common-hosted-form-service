@@ -11,6 +11,7 @@ export default {
     return appAxios().get(`${ApiRoutes.RBAC}/current`, { params });
   },
 
+
   /**
   * @function getUserSubmissions
   * Get the submissions for a form that the current user has permissions on

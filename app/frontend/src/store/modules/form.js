@@ -138,6 +138,7 @@ export default {
         const response = await rbacService.getCurrentUser({ formId: formId });
         const data = response.data;
         if (data.forms[0]) {
+          console.log('----------===---------->>> ', data);
           commit('SET_FORM_PERMISSIONS', data.forms[0].permissions);
         } else {
           throw new Error('No form found');
