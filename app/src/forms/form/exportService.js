@@ -1,6 +1,7 @@
 const jsonexport = require('@bc_gov_forminators/json_to_csv_export');
 const { Model } = require('objection');
 const Problem = require('api-problem');
+const {flattenComponents} = require('../common/utils');
 
 const { Form, FormVersion } = require('../common/models');
 
@@ -62,6 +63,7 @@ const service = {
      * @param {Object} obj A form.io schema or subset of it
      * @returns {String[]} An array of strings
      */
+
     const findFields = (obj) => {
       const fields = [];
       const fieldsDefinedInSubmission = ['datamap', 'tree'];
@@ -95,6 +97,7 @@ const service = {
          * also exclude fieldnames defined in submission
          * eg datagrid, container, tree
          */
+
         else if (!obj.tree && !fieldsDefinedInSubmission.includes(obj.type)) {
           // Add current field key
           fields.push(obj.key);
@@ -123,6 +126,7 @@ const service = {
       return fields;
     };
 
+
     return findFields(schema);
   },
 
@@ -135,7 +139,9 @@ const service = {
     // get correctly ordered field names (keys) from latest form version
     const latestFormDesign = await service._readLatestFormSchema(form.id);
 
-    const fieldNames = await service._readSchemaFields(latestFormDesign);
+    const fieldNames = flattenComponents(latestFormDesign.components)
+
+    const fieldNamesA = await service._readSchemaFields(latestFormDesign);
 
     let filteredFieldName;
 
