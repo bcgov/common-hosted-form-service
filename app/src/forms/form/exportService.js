@@ -72,7 +72,7 @@ const service = {
       if (obj.key && obj.input && !obj.hidden && obj.type !== 'button') {
 
         // if the fieldname we want is defined in component's sub-values
-        const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'address'];
+        const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'address',];
         if (obj.type && componentsWithSubValues.includes(obj.type)) {
           // for survey component, get field name from obj.questions.value
           if (obj.type === 'survey') {
@@ -139,9 +139,9 @@ const service = {
     // get correctly ordered field names (keys) from latest form version
     const latestFormDesign = await service._readLatestFormSchema(form.id);
 
-    const fieldNames = flattenComponents(latestFormDesign.components)
+    const fieldNames = flattenComponents(latestFormDesign.components);
 
-    const fieldNamesA = await service._readSchemaFields(latestFormDesign);
+    //const fieldNamesA = await service._readSchemaFields(latestFormDesign);
 
     let filteredFieldName;
 
