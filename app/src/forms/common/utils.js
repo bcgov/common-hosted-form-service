@@ -42,9 +42,102 @@ const queryUtils = {
   }
 };
 
+const flattenComponents = (components, includeAll) => {
+  const flattened = [];
+  eachComponent(components, (component, path) => {
+    flattened.push(path);
+  }, includeAll);
+  return flattened;
+};
+
+const eachComponent = (components, fn, includeAll, path, parent, inRecursion) => {
+  if (!components) return;
+  path = path || '';
+  if (inRecursion) {
+    if (components.noRecurse) {
+      delete components.noRecurse;
+      return;
+    }
+    components.noRecurse = true;
+  }
+  components.forEach((component) => {
+    if (!component) {
+      return;
+    }
+    const hasColumns = component.columns && Array.isArray(component.columns);
+    const hasRows = component.rows && Array.isArray(component.rows);
+    const hasComps = component.components && Array.isArray(component.components);
+    let noRecurse = false;
+    const newPath = component.key ? (path ? (`${path}.${component.key}`) : component.key) : '';
+
+    // Keep track of parent references.
+    if (parent) {
+      // Ensure we don't create infinite JSON structures.
+      component.parent = clone(parent);
+      delete component.parent.components;
+      delete component.parent.componentMap;
+      delete component.parent.columns;
+      delete component.parent.rows;
+    }
+
+    // there's no need to add other layout components here because we expect that those would either have columns, rows or components
+    const layoutTypes = ['htmlelement', 'content'];
+    const isLayoutComponent = hasColumns || hasRows || (hasComps && !component.input) || layoutTypes.indexOf(component.type) > -1;
+
+    if (includeAll || component.tree || !isLayoutComponent) {
+      noRecurse = fn(component, newPath, components);
+    }
+
+    const subPath = () => {
+      if (
+        component.key &&
+        !['panel', 'table', 'well', 'columns', 'fieldset', 'tabs', 'form'].includes(component.type) &&
+        (
+          ['datagrid', 'container', 'editgrid', 'address', 'dynamicWizard', 'datatable', 'tagpad'].includes(component.type) ||
+          component.tree
+        )
+      ) {
+        return newPath;
+      }
+      else if (
+        component.key &&
+        component.type === 'form'
+      ) {
+        return `${newPath}.data`;
+      }
+      return path;
+    };
+
+    if (!noRecurse) {
+      if (hasColumns) {
+        component.columns.forEach((column) =>
+          eachComponent(column.components, fn, includeAll, subPath(), parent ? component : null), true);
+      }
+
+      else if (hasRows) {
+        component.rows.forEach((row) => {
+          if (Array.isArray(row)) {
+            row.forEach((column) =>
+              eachComponent(column.components, fn, includeAll, subPath(), parent ? component : null), true);
+          }
+        });
+      }
+
+      else if (hasComps) {
+        eachComponent(component.components, fn, includeAll, subPath(), parent ? component : null, true);
+      }
+    }
+  });
+  if (components.noRecurse) {
+    delete components.noRecurse;
+  }
+};
+
+
 module.exports = {
   falsey,
   setupMount,
   queryUtils,
   typeUtils,
+  flattenComponents
 };
