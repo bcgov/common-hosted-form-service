@@ -55,6 +55,8 @@
     <!-- team table -->
     <v-data-table
       class="team-table"
+      show-select
+      :single-select="true"
       :headers="headers"
       :items="tableData"
       :key="updateTableKey"
@@ -63,9 +65,15 @@
       no-data-text="Failed to load team role data"
       :search="search"
     >
+
       <!-- custom header markup - add tooltip to heading that are roles -->
-      <template v-for="h in headers.slice(2)" v-slot:[`header.${h.value}`]="{ headers }">
-        <v-tooltip :key="h.value" bottom>
+      <template v-for="(h, index) in headers" v-slot:[`header.${h.value}`]="{ headers }">
+        <v-checkbox style="display:block; background-color:red;height:35px; width:140px; padding:0px; margin-bottom:0px"
+                    v-if="h.value==='form_checkbox'"
+                    :key="index"
+                    v-model="selectAllCheckBox"
+                    @click="selectAllUsersToDelete()"/>
+        <v-tooltip v-else :key="h.value" bottom>
           <template v-slot:activator="{ on }">
             <span v-on="on">{{ h.text }}</span>
           </template>
@@ -75,13 +83,20 @@
       <template #item="{ item, isMobile, headers }">
         <!-- if showing in mobile view -->
         <tr v-if="isMobile" class="v-data-table__mobile-table-row">
+
           <td
-            v-for="header in headers"
+            v-for="(header, index) in headers"
             :key="header.value"
             class="v-data-table__mobile-row"
           >
             <div class="v-data-table__mobile-row__header">
               <!-- if header is a role with description, add tooltip -->
+              <v-checkbox style="display:block; background-color:red;height:35px; width:140px; padding:0px; margin-bottom:0px"
+                          v-if="header.value==='form_checkbox'"
+                          :key="index"
+                          v-model="selectAllCheckBox"
+                          @click="selectAllUsersToDelete()"/>
+
               <v-tooltip v-if="header.description" bottom>
                 <template v-slot:activator="{ on }">
                   <span
@@ -97,17 +112,22 @@
             </div>
             <div class="v-data-table__mobile-row__cell">
               <div v-if="typeof item[header.value] === 'boolean'">
-                <v-checkbox
-                  v-if="disableSubmitter(header.value, userType)"
-                  v-model="item[header.value]"
-                  disabled
-                />
-                <v-checkbox
-                  v-else
-                  v-model="item[header.value]"
-                  @click="onCheckboxToggle(item.userId, header.value)"
-                  :disabled="updating"
-                />
+                <v-checkbox v-if="header.text===''"
+                            v-model="selectedItemToDelete[tableData.indexOf(item)]"
+                            @click="selectEachUserToDelete()"/>
+                <div v-else>
+                  <v-checkbox
+                    v-if="disableSubmitter(header.value, userType)"
+                    v-model="item[header.value]"
+                    disabled
+                  />
+                  <v-checkbox
+                    v-else
+                    v-model="item[header.value]"
+                    @click="onCheckboxToggle(item.userId, header.value)"
+                    :disabled="updating"
+                  />
+                </div>
               </div>
               <v-btn
                 v-else-if="header.value === 'actions'"
@@ -124,14 +144,22 @@
         </tr>
         <!-- else display data-table in desktop view -->
         <tr v-else>
+
           <td
             v-for="header in headers"
+
             :key="header.value"
             :class="{ 'role-col': typeof item[header.value] === 'boolean' }"
           >
+
             <div v-if="typeof item[header.value] === 'boolean'">
               <v-checkbox
-                v-if="disableSubmitter(header.value, userType)"
+                v-if="header.text===''"
+                v-model="selectedItemToDelete[tableData.indexOf(item)]"
+                @click="selectEachUserToDelete(item,tableData.indexOf(item))"
+              />
+              <v-checkbox
+                v-else-if="disableSubmitter(header.value, userType)"
                 v-model="item[header.value]"
                 disabled
               />
@@ -211,7 +239,10 @@ export default {
       formUsers: [],
       isAddingUsers: false,
       loading: true,
+      selectAllCheckBox:false,
       roleList: [],
+      selectedItemToDelete:[],
+      itemToDelete: new Map(),
       search: '',
       showDeleteDialog: false,
       tableData: [],
@@ -259,6 +290,7 @@ export default {
     },
     createHeaders() {
       const headers = [
+        { text: '', value: 'form_checkbox' },
         { text: 'Full Name', value: 'fullName' },
         { text: 'Username', value: 'username' },
       ];
@@ -283,6 +315,7 @@ export default {
     createTableData() {
       this.tableData = this.formUsers.map((user) => {
         const row = {
+          form_checkbox:true,
           formId: this.formId,
           fullName: user.fullName,
           userId: user.userId,
@@ -293,7 +326,31 @@ export default {
           .forEach((role) => (row[role] = user.roles.includes(role)));
         return row;
       });
+
       this.edited = false;
+      this.selectedItemToDelete = new Array(this.tableData.length).fill(false);
+    },
+
+    selectAllUsersToDelete() {
+
+      this.selectedItemToDelete.fill(this.selectAllCheckBox);
+    },
+    selectEachUserToDelete() {
+
+      (!this.isAllUsersSelected())?this.selectAllCheckBox=false:this.selectAllCheckBox=true;
+
+      /*if(selectedItemToDelete[index]) {
+        itemToDelete.set(index, item);
+      }
+      else {
+        itemToDelete.set(index, null);
+      }
+      */
+
+    },
+    isAllUsersSelected() {
+      const allSelected = (currentValue) => currentValue ===true;
+      return this.selectedItemToDelete.every(allSelected);
     },
     // Is this the submitter column, and does this form have login type other than TEAM
     disableSubmitter: (header, userType) =>
@@ -427,12 +484,13 @@ export default {
       try {
         const user = this.tableData.filter((u) => u.userId === userId)[0];
         const userRoles = this.generateFormRoleUsers(user);
+        console.log('++++++++++--->> ', userRoles);
         await rbacService.setUserForms(userRoles, {
           formId: this.formId,
           userId: userId,
         });
-        await this.getFormPermissionsForUser(this.formId);
-        await this.getFormUsers();
+        //await this.getFormPermissionsForUser(this.formId);
+        //await this.getFormUsers();
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while attempting to update roles for a user',

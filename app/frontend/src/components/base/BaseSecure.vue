@@ -55,6 +55,7 @@ export default {
       default: undefined
     }
   },
+
   computed: {
     ...mapGetters('auth', [
       'authenticated',
@@ -71,6 +72,11 @@ export default {
     contactInfo(){
       return process.env.VUE_APP_CONTACT;
     },
+  },
+  watch: {
+    identityProvider() {
+      console.log('aaaaaaaaaa----------->>>', this.identityProvider);
+    }
   },
   methods: mapActions('auth', ['login']),
 };
