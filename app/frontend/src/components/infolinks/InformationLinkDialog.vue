@@ -256,13 +256,13 @@ export default {
   computed: {
     ...mapGetters('admin',['fcHelpInfoImageUpload','fcProactiveHelpVersion']),
     currentVersion() {
-      if(this.component) return this.component.version+1;
+      if(this.component) return  parseInt(this.component.version)+1;
       return 1;
     },
     previousVersion() {
       if(this.component && this.component.version>0) return parseInt(this.component.version);
       return 0;
-    }
+    },
   }
 };
 </script>
