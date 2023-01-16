@@ -1,4 +1,6 @@
 const falsey = require('falsey');
+const clone = require('lodash/clone');
+
 
 const setupMount = (type, app, routes, dataErrors) => {
   const p = `/${type}`;
@@ -81,7 +83,7 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
     }
 
     // there's no need to add other layout components here because we expect that those would either have columns, rows or components
-    const layoutTypes = ['htmlelement', 'content'];
+    const layoutTypes = ['htmlelement', 'content','simplecontent','button'];
     const isLayoutComponent = hasColumns || hasRows || (hasComps && !component.input) || layoutTypes.indexOf(component.type) > -1;
 
     if (includeAll || component.tree || !isLayoutComponent) {
@@ -93,7 +95,7 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
         component.key &&
         !['panel', 'table', 'well', 'columns', 'fieldset', 'tabs', 'form'].includes(component.type) &&
         (
-          ['datagrid', 'container', 'editgrid', 'address', 'dynamicWizard', 'datatable', 'tagpad'].includes(component.type) ||
+          ['datagrid', 'container', 'editgrid', 'address', 'dynamicWizard', 'datatable', 'tagpad',].includes(component.type) ||
           component.tree
         )
       ) {
