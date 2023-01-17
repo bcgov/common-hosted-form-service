@@ -5,6 +5,7 @@
       :headers="headers"
       hide-default-header
       hide-default-footer
+      disable-pagination
       :items="layoutList"
       :loading="loading"
       loading-text="Loading... Please wait"

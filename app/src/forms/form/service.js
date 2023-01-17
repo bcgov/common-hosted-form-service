@@ -577,7 +577,7 @@ const service = {
   listFormComponentsProactiveHelp: async () => {
 
     let result = await FormComponentsProactiveHelp.query()
-      .modify('distinctOnComponentName')
+      .modify('distinctOnComponentNameAndGroupName')
       .modify('orderComponentNameVersionsDescending');
 
     if(result.length===0) {

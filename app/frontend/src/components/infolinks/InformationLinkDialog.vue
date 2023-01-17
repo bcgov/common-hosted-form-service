@@ -182,7 +182,7 @@ export default {
       this.$emit('close-dialog');
     },
     async getPreviousVersion() {
-      await this.getEachFCProactiveHelpVersion({componentName:this.componentName_, version:this.previousVersion});
+      await this.getEachFCProactiveHelpVersion({componentName:this.componentName_, version:this.previousVersion, groupName:this.groupName});
 
       if(this.fcProactiveHelpVersion) {
         this.componentName_=this.fcProactiveHelpVersion.componentName;
