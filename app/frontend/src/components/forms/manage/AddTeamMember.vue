@@ -117,6 +117,7 @@ export default {
     },
 
     save() {
+      console.log('---------------------------->>>');
       // emit user (object) to the parent component
       this.$emit('new-users', [this.model]);
       // reset search field

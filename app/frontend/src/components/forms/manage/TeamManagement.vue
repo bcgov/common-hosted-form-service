@@ -114,7 +114,7 @@
               <div v-if="typeof item[header.value] === 'boolean'">
                 <v-checkbox v-if="header.text===''"
                             v-model="selectedItemToDelete[tableData.indexOf(item)]"
-                            @click="selectEachUserToDelete()"/>
+                            @click="selectEachUserToDelete(item,tableData.indexOf(item))"/>
                 <div v-else>
                   <v-checkbox
                     v-if="disableSubmitter(header.value, userType)"
@@ -227,6 +227,7 @@ export default {
   computed: {
     ...mapFields('form', ['form.userType']),
     ...mapGetters('form', ['permissions']),
+    ...mapGetters('auth', ['userName']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
@@ -264,6 +265,7 @@ export default {
           if (!this.tableData.some((obj) => obj.userId === user.id)) {
             // create new object for table row
             this.tableData.push({
+              form_checkbox:true,
               formId: this.formId,
               userId: user.id,
               form_submitter: false,
@@ -330,23 +332,29 @@ export default {
       this.edited = false;
       this.selectedItemToDelete = new Array(this.tableData.length).fill(false);
     },
-
     selectAllUsersToDelete() {
-
       this.selectedItemToDelete.fill(this.selectAllCheckBox);
+      let isOwnerFound = false;
+      for (const user of this.tableData) {
+        if(user.username===this.userName && user.owner) {
+          isOwnerFound=true;
+          return;
+        }
+        if(!isOwnerFound && user.owner) {
+          isOwnerFound=true;
+          return;
+        }
+        this.itemToDelete.add(user.userId);
+      }
     },
-    selectEachUserToDelete() {
-
+    selectEachUserToDelete(user, index) {
       (!this.isAllUsersSelected())?this.selectAllCheckBox=false:this.selectAllCheckBox=true;
-
-      /*if(selectedItemToDelete[index]) {
-        itemToDelete.set(index, item);
+      if(this.selectedItemToDelete[index]) {
+        this.itemToDelete.add(user.userId);
       }
       else {
-        itemToDelete.set(index, null);
+        this.itemToDelete.delete(user.userId);
       }
-      */
-
     },
     isAllUsersSelected() {
       const allSelected = (currentValue) => currentValue ===true;
@@ -417,11 +425,14 @@ export default {
       this.setUserForms(userId);
     },
     onRemoveClick(userId) {
+      (this.itemToDelete.size===0)?this.onSingleUserDelete(userId):this.onMultiUsersDelete();
+    },
+    onSingleUserDelete(userId) {
       const ownerCount = this.tableData.reduce(
         (acc, user) => (user.owner ? acc + 1 : acc),
         0
       );
-      const index = this.tableData.findIndex((u) => u.userId === userId);
+      const index = this.tableData.findIndex((u) => u.userId === this.userId);
 
       if (this.tableData[index].owner && ownerCount === 1) {
         this.ownerError(userId);
@@ -430,10 +441,23 @@ export default {
         this.showDeleteDialog = true;
       }
     },
-    ownerError(userId) {
+    onMultiUsersDelete() {
+      if(this.this.itemToDelete.length === this.this.tableData.length) {
+        this.showDeleteDialog = true;
+      }
+      else {
+        let difference = this.this.tableData.filter(user => !this.this.itemToDelete.includes(user.userId));
+        if(!difference.some((user) => user.owner)) {
+          this.ownerError();
+        }else {
+          this.showDeleteDialog = true;
+        }
+      }
+    },
+    ownerError() {
       this.addNotification({
         message: 'There must always be at least one form owner',
-        consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+        consoleError: 'Cannot remove as they are the only remaining owner of this form.',
       });
     },
     removeUser() {
@@ -484,7 +508,6 @@ export default {
       try {
         const user = this.tableData.filter((u) => u.userId === userId)[0];
         const userRoles = this.generateFormRoleUsers(user);
-        console.log('++++++++++--->> ', userRoles);
         await rbacService.setUserForms(userRoles, {
           formId: this.formId,
           userId: userId,

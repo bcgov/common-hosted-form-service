@@ -90,7 +90,7 @@ const service = {
       } = token.content;
 
       return {
-        idpUserId: idpUserId,
+        idpUserId: idpUserId?idpUserId:'085F22D7201D4C1B88BB26970264E2F3',
         keycloakId: keycloakId,
         username: identity ? identity : username,
         firstName: firstName,
