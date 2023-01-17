@@ -171,10 +171,11 @@ const service = {
   getFormComponentsProactiveHelpVersion: async(data)=> {
 
     let componentName = data&&data.componentName;
-    let version = data.version;
+    let version = data&&data.version;
+    let groupName = data&&data.groupName;
 
     let result = await FormComponentsProactiveHelp.query()
-      .modify('findByComponentNameAndVersion',componentName, parseInt(version));
+      .modify('findByComponentNameAndVersionAndGroup',componentName, parseInt(version), groupName);
     let uri = result[0].image!==null?'data:' + result[0].imagetype + ';' + 'base64' + ',' +result[0].image:'';
     return {id:result[0].id,status:result[0].publishstatus,componentName:result[0].componentname,externalLink:result[0].externallink,image:uri,
       version:result[0].version,groupName:result[0].groupname,description:result[0].description, isLinkEnabled:result[0].islinkenabled,

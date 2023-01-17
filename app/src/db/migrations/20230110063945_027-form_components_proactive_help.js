@@ -14,7 +14,7 @@ exports.up = function(knex) {
       table.text('description');
       table.boolean('islinkenabled').defaultTo(false);
       table.boolean('publishstatus').defaultTo(false);
-      table.unique(['componentname', 'version']);
+      table.unique(['componentname','groupname', 'version']);
       stamps(knex, table);
     }));
 };

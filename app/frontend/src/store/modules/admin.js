@@ -239,10 +239,10 @@ export default {
       }
     },
     //updateFormComponentsProactiveHelpStatus
-    async getEachFCProactiveHelpVersion({ commit, dispatch },{componentName, version}) {
+    async getEachFCProactiveHelpVersion({ commit, dispatch },{componentName, version, groupName}) {
       try {
         // Get Common Components Help Information
-        const response = await adminService.getEachFCProactiveHelpVersion(componentName, version);
+        const response = await adminService.getEachFCProactiveHelpVersion(componentName, version, groupName);
         commit('SET_FCPROACTIVEHELPVERSION',response.data);
       } catch(error) {
         dispatch('notifications/addNotification', {
