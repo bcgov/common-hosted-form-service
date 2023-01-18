@@ -238,19 +238,6 @@ export default {
         }, { root: true });
       }
     },
-    //updateFormComponentsProactiveHelpStatus
-    async getEachFCProactiveHelpVersion({ commit, dispatch },{componentName, version, groupName}) {
-      try {
-        // Get Common Components Help Information
-        const response = await adminService.getEachFCProactiveHelpVersion(componentName, version, groupName);
-        commit('SET_FCPROACTIVEHELPVERSION',response.data);
-      } catch(error) {
-        dispatch('notifications/addNotification', {
-          message: 'An error occurred while updating publish status',
-          consoleError: 'Error updating publish status',
-        }, { root: true });
-      }
-    },
 
     //uploadFormComponentsProactiveHelpImage
     async uploadFCProactiveHelpImage({ commit,dispatch },imageData) {

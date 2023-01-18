@@ -578,7 +578,6 @@ const service = {
 
     let result = await FormComponentsProactiveHelp.query()
       .modify('distinctOnComponentNameAndGroupName')
-      .modify('orderComponentNameVersionsDescending');
 
     if(result.length===0) {
       return result;
