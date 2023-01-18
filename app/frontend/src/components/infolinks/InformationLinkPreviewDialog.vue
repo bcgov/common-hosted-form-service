@@ -5,7 +5,7 @@
       :width="component.image?'70%':'40%'"
       @click:outside="onCloseDialog"
     >
-      <v-card class="pb-16">
+      <v-card >
         <v-container class="overflow-auto">
           <v-row >
             <v-col class="d-flex justify-space-between headerWrapper pa-4">
