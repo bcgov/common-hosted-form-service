@@ -81,4 +81,8 @@ describe('form getters', () => {
   it('version should return the state version', () => {
     expect(store.getters.version).toEqual(sampleState.version);
   });
+
+  it('fcProactiveHelpGroupObject should return the state fcProactiveHelpGroupObject', () => {
+    expect(store.getters.fcProactiveHelpGroupObject).toEqual(sampleState.fcProactiveHelpGroupObject);
+  });
 });

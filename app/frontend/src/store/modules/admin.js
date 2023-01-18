@@ -12,7 +12,11 @@ export default {
     formList: [],
     roles: [],
     user: {},
-    userList: []
+    userList: [],
+    fcProactiveHelpVersion:{},
+    fcProactiveHelp:{}, // Form Component Proactive Help
+    fcProactiveHelpImageUpload:'', // Form Component Proactive Help image upload
+    fcPresignedUrl:''
   },
   getters: {
     apiKey: state => state.apiKey,
@@ -20,7 +24,11 @@ export default {
     formList: state => state.formList,
     roles: state => state.roles,
     user: state => state.user,
-    userList: state => state.userList
+    userList: state => state.userList,
+    fcProactiveHelpVersion: state => state.fcProactiveHelpVersion,
+    fcProactiveHelp: state => state.fcProactiveHelp, //Form Component Proactive Help
+    fcProactiveHelpImageUpload: state=> state.fcProactiveHelpImageUpload, //Form Component Proactive Help Image Upload
+    fcPresignedUrl: state=> state.fcPresignedUrl
   },
   mutations: {
     SET_API_KEY(state, apiKey) {
@@ -40,7 +48,23 @@ export default {
     },
     SET_USERLIST(state, users) {
       state.userList = users;
-    }
+    },
+    SET_FCPROACTIVEHELP(state,fcProactiveHelp) //Form Component Proactive Help
+    {
+      state.fcProactiveHelp = fcProactiveHelp;
+    },
+    SET_FCPROACTIVeHELPIMAGEUPLOAD(state,fcProactiveHelpImageUpload) //Form Component Proactive Help IMAGE UPLOAD
+    {
+      state.fcProactiveHelpImageUpload = fcProactiveHelpImageUpload;
+    },
+    SET_FCPROACTIVEHELPVERSION(state, fcProactiveHelpVersion )
+    {
+      state.fcProactiveHelpVersion = fcProactiveHelpVersion;
+    },
+    SET_FCPRESIGNEDURL(state,fcPresignedUrl)
+    {
+      state.fcPresignedUrl = fcPresignedUrl;
+    },
   },
   actions: {
     //
@@ -171,5 +195,66 @@ export default {
         }, { root: true });
       }
     },
+
+    //addFormComponentsProactiveHelp
+    async addFCProactiveHelp({ commit, dispatch },data) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCPROACTIVEHELP',{});
+        const response = await adminService.addFCProactiveHelp(data);
+        commit('SET_FCPROACTIVEHELP',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while storing form component help information.',
+          consoleError: 'Error getting storing form component help information',
+        }, { root: true });
+      }
+    },
+
+    async getPresignedUrl({ commit, dispatch },imageName) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCPRESIGNEDURL',{});
+        const response = await adminService.getPresignedUrl(imageName);
+        commit('SET_FCPRESIGNEDURL',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while getting presigned url',
+          consoleError: 'Error getting presigned url',
+        }, { root: true });
+      }
+    },
+
+    //updateFormComponentsProactiveHelpStatus
+    async updateFCProactiveHelpStatus({ commit, dispatch },{componentId, publishStatus}) {
+      try {
+        // Get Common Components Help Information
+        const response = await adminService.updateFCProactiveHelpStatus(componentId, publishStatus);
+        commit('SET_FCPROACTIVEHELP',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while updating publish status',
+          consoleError: 'Error updating publish status',
+        }, { root: true });
+      }
+    },
+
+    //uploadFormComponentsProactiveHelpImage
+    async uploadFCProactiveHelpImage({ commit,dispatch },imageData) {
+      try {
+
+        commit('SET_FCPROACTIVEHELPIMAGEUPLOAD','');
+        const res = await adminService.uploadImage(imageData);
+        if(res){
+          commit('SET_FCPROACTIVEHELPIMAGEUPLOAD',res.data.key);
+        }
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while uploading image.',
+          consoleError: 'Error getting uploading image',
+        }, { root: true });
+      }
+    }
   },
+
 };

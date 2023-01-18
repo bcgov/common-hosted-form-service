@@ -15,7 +15,8 @@ const {
   FormSubmissionStatus,
   FormSubmissionUser,
   IdentityProvider,
-  SubmissionMetadata
+  SubmissionMetadata,
+  FormComponentsProactiveHelp
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -567,6 +568,34 @@ const service = {
       .throwIfNotFound();
   },
   // ----------------------------------------------------------------------Api Key
+
+  /**
+   * @function listFormComponentsProactiveHelp
+   * Search for all form components help information
+   * @returns {Promise} An objection query promise
+   */
+  listFormComponentsProactiveHelp: async () => {
+
+    let result = await FormComponentsProactiveHelp.query()
+      .modify('distinctOnComponentNameAndGroupName');
+
+    if(result.length===0) {
+      return result;
+    }
+
+    let filterResult= result.map(item=> {
+      let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+      return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+        version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+        imageName:item.componentimagename });
+    });
+
+    return filterResult.reduce(function (r, a) {
+      r[a.groupName] = r[a.groupName] || [];
+      r[a.groupName].push(a);
+      return r;
+    }, Object.create(null));
+  },
 };
 
 module.exports = service;
