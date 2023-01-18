@@ -47,6 +47,7 @@ runs:
         openshift_token: ${{ inputs.openshift_token }}
         insecure_skip_tls_verify: true
         namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        server_host: ${{ env.SERVER_HOST }}
 
     - name: Deploy Patroni Secret
       shell: bash
