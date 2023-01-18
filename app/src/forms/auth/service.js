@@ -78,7 +78,7 @@ const service = {
     try {
       // identity_provider_* will be undefined if user login is to local keycloak (userid/password)
       const {
-        idp_userid: idpUserId,
+        sid: idpUserId,
         idp_username: identity,
         identity_provider: idp,
         preferred_username: username,
@@ -90,7 +90,7 @@ const service = {
       } = token.content;
 
       return {
-        idpUserId: idpUserId?idpUserId:'085F22D7201D4C1B88BB26970264E2F3',
+        idpUserId: idpUserId,
         keycloakId: keycloakId,
         username: identity ? identity : username,
         firstName: firstName,

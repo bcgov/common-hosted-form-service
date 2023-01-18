@@ -73,11 +73,6 @@ export default {
       return process.env.VUE_APP_CONTACT;
     },
   },
-  watch: {
-    identityProvider() {
-      console.log('aaaaaaaaaa----------->>>', this.identityProvider);
-    }
-  },
   methods: mapActions('auth', ['login']),
 };
 </script>

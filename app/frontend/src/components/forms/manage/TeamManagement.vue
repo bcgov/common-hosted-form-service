@@ -68,7 +68,7 @@
 
       <!-- custom header markup - add tooltip to heading that are roles -->
       <template v-for="(h, index) in headers" v-slot:[`header.${h.value}`]="{ headers }">
-        <v-checkbox style="display:block; background-color:red;height:35px; width:140px; padding:0px; margin-bottom:0px"
+        <v-checkbox style="display:block; height:30px; width:140px; padding:0px; margin-bottom:0px"
                     v-if="h.value==='form_checkbox'"
                     :key="index"
                     v-model="selectAllCheckBox"
@@ -91,7 +91,7 @@
           >
             <div class="v-data-table__mobile-row__header">
               <!-- if header is a role with description, add tooltip -->
-              <v-checkbox style="display:block; background-color:red;height:35px; width:140px; padding:0px; margin-bottom:0px"
+              <v-checkbox style="display:block; height:35px; width:140px; padding:0px; margin-bottom:0px"
                           v-if="header.value==='form_checkbox'"
                           :key="index"
                           v-model="selectAllCheckBox"
@@ -243,8 +243,9 @@ export default {
       selectAllCheckBox:false,
       roleList: [],
       selectedItemToDelete:[],
-      itemToDelete: new Map(),
+      itemToDelete: new Set(),
       search: '',
+      deleteConfirmationMsg:'Are you sure you want to remove this team member?',
       showDeleteDialog: false,
       tableData: [],
       userId: '',
@@ -334,15 +335,14 @@ export default {
     },
     selectAllUsersToDelete() {
       this.selectedItemToDelete.fill(this.selectAllCheckBox);
-      let isOwnerFound = false;
+      let isOwnerFound = this.tableData.find( user  => user.username === this.userName)['owner'];
       for (const user of this.tableData) {
-        if(user.username===this.userName && user.owner) {
-          isOwnerFound=true;
-          return;
+        if( user.username===this.userName) {
+          continue;
         }
         if(!isOwnerFound && user.owner) {
           isOwnerFound=true;
-          return;
+          continue;
         }
         this.itemToDelete.add(user.userId);
       }
@@ -425,6 +425,7 @@ export default {
       this.setUserForms(userId);
     },
     onRemoveClick(userId) {
+
       (this.itemToDelete.size===0)?this.onSingleUserDelete(userId):this.onMultiUsersDelete();
     },
     onSingleUserDelete(userId) {
@@ -432,25 +433,29 @@ export default {
         (acc, user) => (user.owner ? acc + 1 : acc),
         0
       );
-      const index = this.tableData.findIndex((u) => u.userId === this.userId);
+      const index = this.tableData.findIndex((u) => u.userId === userId);
 
       if (this.tableData[index].owner && ownerCount === 1) {
         this.ownerError(userId);
       } else {
         this.userId = userId;
         this.showDeleteDialog = true;
+        this.deleteConfirmationMsg='Are you sure you want to remove this team member?';
       }
     },
     onMultiUsersDelete() {
-      if(this.this.itemToDelete.length === this.this.tableData.length) {
+      if(this.itemToDelete.size === this.tableData.length) {
         this.showDeleteDialog = true;
+        this.deleteConfirmationMsg='Are you sure you wish to delete selected members?';
+
       }
       else {
-        let difference = this.this.tableData.filter(user => !this.this.itemToDelete.includes(user.userId));
+        let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
         if(!difference.some((user) => user.owner)) {
           this.ownerError();
         }else {
           this.showDeleteDialog = true;
+          this.deleteConfirmationMsg='Are you sure you wish to delete selected members?';
         }
       }
     },
@@ -460,19 +465,65 @@ export default {
         consoleError: 'Cannot remove as they are the only remaining owner of this form.',
       });
     },
-    removeUser() {
+    userError() {
+      this.addNotification({
+        message: '',
+        consoleError: 'Cannot remove as they are the only remaining owner of this form.',
+      });
+    },
+
+    async removeUser() {
       this.showDeleteDialog = false;
       this.edited = true;
 
-      // Set all of userId's roles to false
-      const index = this.tableData.findIndex((u) => u.userId === this.userId);
-      this.roleList.forEach(
-        (role) => (this.tableData[index][role.code] = false)
-      );
+      if(this.itemToDelete.size===0) {
+        // Set all of userId's roles to false
+        const index = this.tableData.findIndex((u) => u.userId === this.userId);
+        this.roleList.forEach(
+          (role) => (this.tableData[index][role.code] = false)
+        );
+        this.setUserForms(this.userId);
+        this.tableData = this.tableData.filter((u) => u.userId !== this.userId);
+        this.userId = '';
+      }
+      else {
 
-      this.setUserForms(this.userId);
-      this.tableData = this.tableData.filter((u) => u.userId !== this.userId);
-      this.userId = '';
+        for (const userId of this.itemToDelete) {
+          const index = this.tableData.findIndex((u) => u.userId === userId);
+          this.roleList.forEach(
+            (role) => {
+              if(this.tableData[index][role.code])
+              {
+                this.tableData[index][role.code] = false;
+              }
+            }
+          );
+        }
+
+        for (const userId of this.itemToDelete) {
+          this.tableData = this.tableData.filter((u) => {
+            u.userId !== userId;
+          });
+        }
+        this.userId = '';
+        await this.removeMultiUsers();
+      }
+    },
+
+    async removeMultiUsers() {
+      try {
+        await rbacService.removeMultiUsers(Array.from(this.itemToDelete), {
+          formId: this.formId,
+        });
+        await this.getFormPermissionsForUser(this.formId);
+        await this.getFormUsers();
+      } catch (error) {
+        this.addNotification({
+          message: 'An error occurred while attempting to delete the selected users',
+          consoleError: `Error deleting users from form ${this.formId}: ${error}`,
+        });
+      }
+      this.updating = false;
     },
     /**
      * @function setFormUsers
@@ -512,8 +563,8 @@ export default {
           formId: this.formId,
           userId: userId,
         });
-        //await this.getFormPermissionsForUser(this.formId);
-        //await this.getFormUsers();
+        await this.getFormPermissionsForUser(this.formId);
+        await this.getFormUsers();
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while attempting to update roles for a user',
