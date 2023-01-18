@@ -234,6 +234,8 @@ objects:
                     secretKeyRef:
                       name: "chefs-${JOB_NAME}-secret"
                       key: mailapitoken
+                #- name: SERVER_HOST
+                #  value: "${SERVER_HOST}"
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:
@@ -243,6 +245,8 @@ objects:
                     name: "${APP_NAME}-sc-config"
                 - configMapRef:
                     name: "${APP_NAME}-server-config"
+                - configMapRef:
+                    name: "${APP_NAME}-service-config"
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
                 - configMapRef:

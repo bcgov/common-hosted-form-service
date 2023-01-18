@@ -29,6 +29,9 @@ inputs:
     description: Route Subpath Mount point
     required: true
     default: "/app"
+  server_host:
+    description: Official hostname where application lives
+    required: true
 
 runs:
   using: composite
@@ -68,7 +71,11 @@ runs:
       shell: bash
       run: >-
         oc get --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} secret chefs-${{ inputs.job_name }}-secret || oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.secret.yaml -p INSTANCE=${{ inputs.job_name }} | oc create --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
-
+    
+    - name: Deploy app ConfigMaps
+      shell: bash
+      run: |
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.cm.yaml -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p SERVER_HOST=${{ inputs.server_host }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
     - name: Deploy App
       shell: bash
       run: |
