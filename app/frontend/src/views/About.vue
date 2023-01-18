@@ -14,7 +14,7 @@
           </p>
 
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated" >Log in to get startedD</span>
+            <span v-if="!authenticated" >Log in to get started</span>
             <span v-else>Create a Form</span>
           </v-btn>
 
