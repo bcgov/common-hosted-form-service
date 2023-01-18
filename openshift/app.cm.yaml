@@ -23,6 +23,10 @@ parameters:
     description: Application name
     displayName: Application name
     required: true
+  - name: SERVER_HOST
+    description: Server domain to be used by end users
+    displayName: Application name
+    required: true
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace
