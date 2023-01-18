@@ -15,18 +15,14 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
           query.where('componentname', value);
         }
       },
-      findByComponentNameAndVersionAndGroup(query, componentname,version,groupname) {
-        if (componentname !== undefined && version!==undefined) {
+      findByComponentNameAndGroup(query, componentname, groupname) {
+        if (componentname !== undefined && groupname!==undefined) {
           query.where('componentname', componentname)
-            .where('version', version)
             .where('groupname', groupname);
         }
       },
       distinctOnComponentNameAndGroupName(builder) {
         builder.distinctOn(['componentname', 'groupname']);
-      },
-      orderComponentNameVersionsDescending(builder) {
-        builder.orderBy(['componentname','groupname',{column:'version', order:'desc'}]);
       },
     };
   }
@@ -34,7 +30,7 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['id','componentname','version','groupname'],
+      required: ['id','componentname','groupname'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         componentname: { type: 'string', minLength: 1, maxLength: 255 },
@@ -42,7 +38,6 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
         image: { type: 'string' },
         componentimagename: { type: 'string' },
         imagetype: { type: 'string' },
-        version: { type: 'integer'},
         groupname: { type: 'string', minLength: 1, maxLength: 255 },
         publishstatus:{type:'boolean'},
         islinkenabled: {type:'boolean'},

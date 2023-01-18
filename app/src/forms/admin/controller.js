@@ -109,14 +109,7 @@ module.exports = {
       next(error);
     }
   },
-  getFormComponentsProactiveHelpVersion:async(req,res,next)=> {
-    try{
-      const response = await service.getFormComponentsProactiveHelpVersion(req.query);
-      res.status(200).json(response);
-    } catch(error){
-      next(error);
-    }
-  },
+
   uploadImage: async(req,res,next)=> {
     try{
       const response = await fileService.create(req.body);

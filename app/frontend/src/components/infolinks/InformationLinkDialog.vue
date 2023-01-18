@@ -12,11 +12,17 @@
               <span class="text-h5" style="font-weight:bold;">Component Information Link</span>
             </v-col>
           </v-row>
-          <v-row v-if="this.linkError">
+          <v-row v-if="linkError">
             <v-col>
               <div style="margin:0px; padding:0px" v-text="'Learn More Link field cannot be empty.'" class="red--text"/>
             </v-col>
           </v-row>
+          <v-row v-if="imageSizeError">
+            <v-col>
+              <div style="margin:0px; padding:0px" v-text="'Large image. Image size cannot be large than 10mb'" class="red--text"/>
+            </v-col>
+          </v-row>
+
           <v-row class="mt-5" no-gutters>
             <span class="text-decoration-underline mr-2 blackColorWrapper">
               Component Name:
@@ -121,19 +127,6 @@
                     Cancel
                   </v-btn>
                 </div>
-                <div class="d-flex flex-row align-end versionLabel">
-                  <div class="mr-3">
-                    <span class="font-weight-bold" style="color: #313132;">Current: </span>
-                    <span style="color: #1A5A96;"> - </span>
-                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(currentVersion)===1?'disabled':''" @click="getCurrentVersion()">{{currentVersion}} </span>
-                  </div>
-                  <div>
-                    <span style="color: #707070C1;">Previous: </span>
-                    <span style="color: #1A5A96;"> - </span>
-                    <span style="color: #1A5A96;" class=" font-weight-medium active" :class="(previousVersion)===0?'disabled':''" @click="getPreviousVersion()">{{previousVersion}}
-                    </span>
-                  </div>
-                </div>
               </div>
             </v-col>
           </v-row>
@@ -164,6 +157,8 @@ export default {
       dialog: this.showDialog,
       color1:'#1A5A96',
       image:'',
+      imageSizeError:false,
+      componentId:this.component&&this.component.id?this.component.id:undefined,
       imageName:this.component&&this.component.imageName?this.component.imageName:'',
       imagePlaceholder:this.component&&this.component.imageName?this.component.imageName:undefined,
       linkError:false
@@ -181,26 +176,6 @@ export default {
       this.resetDialog();
       this.$emit('close-dialog');
     },
-    async getPreviousVersion() {
-      await this.getEachFCProactiveHelpVersion({componentName:this.componentName_, version:this.previousVersion, groupName:this.groupName});
-
-      if(this.fcProactiveHelpVersion) {
-        this.componentName_=this.fcProactiveHelpVersion.componentName;
-        this.description=this.fcProactiveHelpVersion.description;
-        this.moreHelpInfoLink=this.fcProactiveHelpVersion.externalLink;
-        this.isLinkEnabled=this.fcProactiveHelpVersion.isLinkEnabled;
-        this.imagePlaceholder=this.fcProactiveHelpVersion.imageName;
-      }
-    },
-    getCurrentVersion() {
-      if(this.component){
-        this.componentName_=this.component.componentName;
-        this.description=this.component.description;
-        this.moreHelpInfoLink=this.component.externalLink;
-        this.isLinkEnabled=this.component.isLinkEnabled;
-        this.imagePlaceholder=this.component.imageName;
-      }
-    },
     validateLinkUrl() {
       let error = false;
       this.linkError=false;
@@ -211,21 +186,27 @@ export default {
       return error;
     },
     async selectImage(image) {
-      const reader = new FileReader();
-      reader.onload=async(e)=> {
-        this.image=e.target.result;
-        this.imageName=image.name;
-        //await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:this.image});
-      };
-      if(image) {
-        await reader.readAsDataURL(image);
+      this.imageSizeError=false;
+      if(image.size>10000000){
+        this.imageSizeError=true;
+      }
+      else {
+        const reader = new FileReader();
+        reader.onload=async(e)=> {
+          this.image=e.target.result;
+          this.imageName=image.name;
+          //await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:this.image});
+        };
+        if(image) {
+          await reader.readAsDataURL(image);
+        }
       }
     },
     submit() {
       if(!this.validateLinkUrl()) {
         this.imageName = (this.image!=='')?this.imageName:'';
         this.moreHelpInfoLink= !this.isLinkEnabled?'':this.moreHelpInfoLink;
-        this.addFCProactiveHelp({componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,version:this.currentVersion,
+        this.addFCProactiveHelp({componentId:this.componentId,componentName:this.componentName_,image:this.image,externalLink:this.moreHelpInfoLink,
           groupName:this.groupName,description:this.description,status:this.component&&this.component.status?this.component.status:false,
           isLinkEnabled:this.isLinkEnabled, imageName:this.imageName});
         this.onCloseDialog();
@@ -255,14 +236,6 @@ export default {
   },
   computed: {
     ...mapGetters('admin',['fcHelpInfoImageUpload','fcProactiveHelpVersion']),
-    currentVersion() {
-      if(this.component) return  parseInt(this.component.version)+1;
-      return 1;
-    },
-    previousVersion() {
-      if(this.component && this.component.version>0) return parseInt(this.component.version);
-      return 0;
-    },
   }
 };
 </script>
@@ -315,12 +288,6 @@ export default {
     color: #313132 !important;
   }
 
-  .versionLabel {
-    font-style: normal !important;
-    font-family: BCSans !important;
-    font-weight: normal !important;
-    font-size: 16px !important;
-  }
   .v-text-field input {
     font-style: normal !important;
     font-family: BCSans !important;

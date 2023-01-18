@@ -430,6 +430,7 @@ export default {
 
                     child.setAttribute('class','fa fa-info-circle info-helper');
                     child.style.float='right';
+                    child.style.fontSize='14px';
                     child.addEventListener('click', this.showHelperClicked);
                     containerEl.children[i].appendChild(child);
                   }
