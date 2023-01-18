@@ -2,6 +2,7 @@ const Problem = require('api-problem');
 
 const service = require('./service');
 const formService = require('../form/service');
+const fileService = require('./fileService');
 const rbacService = require('../rbac/service');
 
 module.exports = {
@@ -84,6 +85,45 @@ module.exports = {
       const response = await service.getFormUserRoles(req.params.formId);
       res.status(200).json(response);
     } catch (error) {
+      next(error);
+    }
+  },
+
+  //
+  // Form Components Help Information
+  //
+  createFormComponentsProactiveHelp:async(req,res,next)=>{
+    try{
+      const response = await service.createFormComponentsProactiveHelp(req.body);
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
+  },
+
+  updateFormComponentsProactiveHelp:async(req,res,next)=> {
+    try{
+      const response = await service.updateFormComponentsProactiveHelp(req.params);
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
+  },
+
+  uploadImage: async(req,res,next)=> {
+    try{
+      const response = await fileService.create(req.body);
+      res.status(200).json({'key':response.key});
+    } catch(error){
+      next(error);
+    }
+  },
+
+  getSignedImageUrl:async(req, res, next)=> {
+    try{
+      const response = await fileService.signedUrl(req.params);
+      res.status(200).json(response);
+    } catch(error){
       next(error);
     }
   },

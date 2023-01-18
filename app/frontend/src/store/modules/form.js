@@ -18,7 +18,7 @@ const genInitialForm = () => ({
   snake: '',
   submissionReceivedEmails: [],
   userType: IdentityMode.TEAM,
-  versions: []
+  versions: [],
 });
 
 /**
@@ -42,7 +42,8 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    version: {}
+    fcProactiveHelpGroupObject:{}, // Form Components Proactive Help Group Object
+    version: {},
   },
   getters: {
     getField, // vuex-map-fields
@@ -56,7 +57,9 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
+    fcProactiveHelpGroupObject: state => state.fcProactiveHelpGroupObject, // Form Components Proactive Help Group Object
     version: state => state.version,
+    builder: state => state.builder,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -99,7 +102,13 @@ export default {
     SET_VERSION(state, version) {
       state.version = version;
     },
-
+    SET_BUILDER(state, builder) {
+      state.builder = builder;
+    },
+    //Form Component Proactive Help Group Object
+    SET_FCPROACTIVEHELPGROUPOBJECT(state,fcProactiveHelpGroupObject){
+      state.fcProactiveHelpGroupObject = fcProactiveHelpGroupObject;
+    },
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
     },
@@ -107,6 +116,7 @@ export default {
   actions: {
     //
     // Current User
+    //
     //
     async getFormsForCurrentUser({ commit, dispatch }) {
       try {
@@ -433,6 +443,22 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while trying to fetch the API Key.',
           consoleError: `Error getting API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp({ commit, dispatch }) {
+      try {
+        // Get Form Components Proactive Help Group Object
+        commit('SET_FCPROACTIVEHELPGROUPOBJECT',{});
+        const response = await formService.listFCProactiveHelp();
+        commit('SET_FCPROACTIVEHELPGROUPOBJECT',response.data);
+      } catch(error) {
+
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
         }, { root: true });
       }
     },
