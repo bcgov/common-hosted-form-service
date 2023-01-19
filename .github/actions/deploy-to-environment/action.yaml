@@ -75,7 +75,7 @@ runs:
     - name: Deploy app ConfigMaps
       shell: bash
       run: |
-        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.cm.yaml -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p SERVER_HOST=${{ inputs.server_host }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.cm.yaml -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }}  -p JOB_NAME=${{ inputs.job_name }} -p SERVER_HOST=${{ inputs.server_host }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
 
     - name: Deploy App
       shell: bash

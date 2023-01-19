@@ -60,6 +60,7 @@ jobs:
           namespace_environment: dev
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          server_host: ${{ vars.SERVER_HOST }}
           route_path: /pr-${{ github.event.number }}
       - name: Release Comment on PR
         uses: marocchino/sticky-pull-request-comment@v2
