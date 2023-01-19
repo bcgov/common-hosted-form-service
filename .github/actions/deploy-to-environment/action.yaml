@@ -1,7 +1,5 @@
 name: Deploy to Environment
 description: Deploys an image to the defined environment
-env:
-  SERVER_HOST: ${{ secrets.SERVER_HOST }}
 inputs:
   app_name:
     description: Application general Name
@@ -31,6 +29,9 @@ inputs:
     description: Route Subpath Mount point
     required: true
     default: "/app"
+  server_host:
+    description: Hostname the end users supose to use to access the app
+    required: true
 
 runs:
   using: composite
@@ -74,7 +75,7 @@ runs:
     - name: Deploy app ConfigMaps
       shell: bash
       run: |
-        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.cm.yaml -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p SERVER_HOST=${{ env.SERVER_HOST }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.cm.yaml -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p SERVER_HOST=${{ inputs.server_host }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
 
     - name: Deploy App
       shell: bash
