@@ -1,6 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
+const myCache = require('../auth/middleware/memoryCache');
 
 const {
   FileStorage,
@@ -575,10 +576,15 @@ const service = {
    * @returns {Promise} An objection query promise
    */
   listFormComponentsProactiveHelp: async () => {
-
-    let result = await FormComponentsProactiveHelp.query()
-      .modify('distinctOnComponentNameAndGroupName');
-
+    let result;
+    if(myCache.has('proactiveHelp')){
+        result = myCache.get('proactiveHelp');
+        console.log('-------->>>> ', result);
+    }
+    else {
+      result = await FormComponentsProactiveHelp.query()
+        .modify('distinctOnComponentNameAndGroupName');
+    }
     if(result.length===0) {
       return result;
     }
