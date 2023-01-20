@@ -141,7 +141,7 @@ const service = {
 
     const fieldNames = flattenComponents(latestFormDesign.components);
 
-    //const fieldNamesA = await service._readSchemaFields(latestFormDesign);
+    //const fieldNames = await service._readSchemaFields(latestFormDesign);
 
     let filteredFieldName;
 
