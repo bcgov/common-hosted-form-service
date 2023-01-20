@@ -49,7 +49,7 @@ const flattenComponents = (components, includeAll) => {
   eachComponent(components, (component, path) => {
     flattened.push(path);
   }, includeAll);
-  return flattened;
+  return flattened.flatMap(path => path);
 };
 
 const eachComponent = (components, fn, includeAll, path, parent, inRecursion) => {
@@ -66,6 +66,7 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
     if (!component) {
       return;
     }
+
     const hasColumns = component.columns && Array.isArray(component.columns);
     const hasRows = component.rows && Array.isArray(component.rows);
     const hasComps = component.components && Array.isArray(component.components);
@@ -82,12 +83,32 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
       delete component.parent.rows;
     }
 
-    // there's no need to add other layout components here because we expect that those would either have columns, rows or components
-    const layoutTypes = ['htmlelement', 'content','simplecontent','button'];
-    const isLayoutComponent = hasColumns || hasRows || (hasComps && !component.input) || layoutTypes.indexOf(component.type) > -1;
 
+    // there's no need to add other layout components here because we expect that those would either have columns, rows or components
+    const layoutTypes = ['htmlelement', 'content','simplecontent','button',];
+    const isLayoutComponent = hasColumns || hasRows || (hasComps && !component.input) || layoutTypes.indexOf(component.type) > -1;
     if (includeAll || component.tree || !isLayoutComponent) {
-      noRecurse = fn(component, newPath, components);
+      let keyPath = [];
+      const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'address'];
+      if (component.type && componentsWithSubValues.includes(component.type)) {
+
+        // for survey component, get field name from obj.questions.value
+        if (component.type === 'survey') {
+          component.questions.forEach(e => keyPath.push(`${component.key}.${e.value}`));
+        }
+        // for checkboxes and selectboxes, get field name from obj.values.value
+        else if (component.values) component.values.forEach(e => keyPath.push(`${component.key}.${e.value}`));
+        // else push the parent field
+        else {
+          keyPath.push(component.key);
+        }
+
+        noRecurse = fn(component, keyPath, components);
+      }
+      else{
+        noRecurse = fn(component, newPath, components);
+      }
+
     }
 
     const subPath = () => {
