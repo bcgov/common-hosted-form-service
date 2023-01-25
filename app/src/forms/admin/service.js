@@ -1,7 +1,7 @@
 const { Form, FormVersion, User, UserFormAccess,FormComponentsProactiveHelp } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
-const myCache = require('../auth/middleware/memoryCache');
+const myCache = require('../common/middleware/memoryCache');
 
 const service = {
 
@@ -205,7 +205,7 @@ const service = {
 
   readAllFormComponentsProactiveHelp: async()=> {
     const result = await FormComponentsProactiveHelp.query()
-    .modify('distinctOnComponentNameAndGroupName');
+      .modify('distinctOnComponentNameAndGroupName');
     if(result) {
       myCache.set('proactiveHelp', result);
     }
