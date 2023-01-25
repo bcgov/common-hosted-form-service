@@ -68,11 +68,12 @@
 
       <!-- custom header markup - add tooltip to heading that are roles -->
       <template v-for="(h, index) in headers" v-slot:[`header.${h.value}`]="{ headers }">
-        <v-checkbox style="display:block; height:30px; width:140px; padding:0px; margin-bottom:0px"
-                    v-if="h.value==='form_checkbox'"
+        <v-checkbox v-model="selectAllCheckBox"
                     :key="index"
-                    v-model="selectAllCheckBox"
+                    v-if="h.value==='form_checkbox'"
+                    class="d-inline-flex"
                     @click="selectAllUsersToDelete()"/>
+
         <v-tooltip v-else :key="h.value" bottom>
           <template v-slot:activator="{ on }">
             <span v-on="on">{{ h.text }}</span>
@@ -91,9 +92,9 @@
           >
             <div class="v-data-table__mobile-row__header">
               <!-- if header is a role with description, add tooltip -->
-              <v-checkbox style="display:block; height:35px; width:140px; padding:0px; margin-bottom:0px"
-                          v-if="header.value==='form_checkbox'"
+              <v-checkbox v-if="header.value==='form_checkbox'"
                           :key="index"
+                          class="d-inline-flex"
                           v-model="selectAllCheckBox"
                           @click="selectAllUsersToDelete()"/>
 
@@ -155,6 +156,7 @@
             <div v-if="typeof item[header.value] === 'boolean'">
               <v-checkbox
                 v-if="header.text===''"
+                class="d-inline-flex"
                 v-model="selectedItemToDelete[tableData.indexOf(item)]"
                 @click="selectEachUserToDelete(item,tableData.indexOf(item))"
               />
@@ -196,7 +198,7 @@
     >
       <template #title>Confirm Removal</template>
       <template #text>
-        Are you sure you want to remove this team member?
+        {{deleteConfirmationMsg}}
       </template>
       <template #button-text-continue>
         <span>Remove</span>
@@ -487,7 +489,7 @@ export default {
         this.userId = '';
       }
       else {
-
+        this.selectAllCheckBox = false;
         for (const userId of this.itemToDelete) {
           const index = this.tableData.findIndex((u) => u.userId === userId);
           this.roleList.forEach(
@@ -507,6 +509,7 @@ export default {
         }
         this.userId = '';
         await this.removeMultiUsers();
+        this.itemToDelete.clear();
       }
     },
 
