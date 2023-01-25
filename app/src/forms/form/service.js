@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const myCache = require('../auth/middleware/memoryCache');
+const myCache = require('../common/middleware/memoryCache');
 
 const {
   FileStorage,
@@ -578,7 +578,7 @@ const service = {
   listFormComponentsProactiveHelp: async () => {
     let result;
     if(myCache.has('proactiveHelp')){
-        result = myCache.get('proactiveHelp');
+      result = myCache.get('proactiveHelp');
     }
     else {
       result = await FormComponentsProactiveHelp.query()
