@@ -579,7 +579,6 @@ const service = {
     let result;
     if(myCache.has('proactiveHelp')){
         result = myCache.get('proactiveHelp');
-        console.log('-------->>>> ', result);
     }
     else {
       result = await FormComponentsProactiveHelp.query()
