@@ -1,7 +1,6 @@
 const config = require('config');
 const Keycloak = require('keycloak-connect');
 
-
 module.exports = new Keycloak({}, {
   bearerOnly: true,
   'confidential-port': 0,

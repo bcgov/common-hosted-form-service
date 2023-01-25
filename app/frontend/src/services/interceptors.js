@@ -29,4 +29,3 @@ export function appAxios(timeout = 10000) {
 
   return instance;
 }
-
