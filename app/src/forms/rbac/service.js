@@ -224,7 +224,28 @@ const service = {
       throw err;
     }
   },
+  removeMultiUsers: async(formId, data) => {
 
+    // create the batch and insert...
+    if (Array.isArray(data) && data.length!==0 && formId) {
+      let trx;
+      try {
+        trx = await FormRoleUser.startTransaction();
+        // remove existing mappings...
+        await FormRoleUser.query(trx)
+          .delete()
+          .where('formId', formId)
+          .whereIn('userId', data);
+
+        await trx.commit();
+        return;
+
+      } catch (err) {
+        if (trx) await trx.rollback();
+        throw err;
+      }
+    }
+  },
   setUserForms: async (userId, formId, data, currentUser) => {
     // check this in middleware? 422 in valid params
     if (!userId || 0 === userId.length) {
