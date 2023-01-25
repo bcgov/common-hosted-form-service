@@ -35,12 +35,13 @@
                     <span class="radioboxLabelStyle">All data/fields</span>
                   </template>
                 </v-radio>
-                <v-radio label="Select Date Range" :value="true">
+                <!--<v-radio label="Select Date Range" :value="true">
                   <template v-slot:label>
                     <span class="radioboxLabelStyle">Selected data/fields</span>
                     <v-icon class="ml-3" color="#003366"> view_week</v-icon>
                   </template>
                 </v-radio>
+                -->
               </v-radio-group>
             </v-col>
           </v-row>
