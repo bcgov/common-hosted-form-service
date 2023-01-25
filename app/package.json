@@ -45,7 +45,7 @@
     "dev:reset-db": "npm run migrate:rollback:all && npm run migrate"
   },
   "dependencies": {
-    "@bc_gov_forminators/json_to_csv_export": "^1.0.7",
+    "@bc_gov_forminators/json_to_csv_export": "^1.0.10",
     "api-problem": "^7.0.3",
     "aws-sdk": "^2.1167.0",
     "axios": "^0.27.2",
@@ -67,6 +67,7 @@
     "jsonwebtoken": "^8.5.1",
     "keycloak-connect": "^15.0.2",
     "knex": "^0.95.14",
+    "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
     "moment": "^2.29.3",
     "multer": "^1.4.4",
