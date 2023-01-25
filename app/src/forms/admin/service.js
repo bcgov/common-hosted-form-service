@@ -1,6 +1,7 @@
 const { Form, FormVersion, User, UserFormAccess,FormComponentsProactiveHelp } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
+const myCache = require('../common/middleware/memoryCache');
 
 const service = {
 
@@ -172,6 +173,7 @@ const service = {
         await FormComponentsProactiveHelp.query(trx).insert(obj);
       }
       await trx.commit();
+      await service.readAllFormComponentsProactiveHelp();
       return service.readFormComponentsProactiveHelp(id);
     } catch(err) {
       if (trx) await trx.rollback();
@@ -194,6 +196,21 @@ const service = {
       .where('id', formComponentsProactiveHelpId);
   },
 
+
+  /**
+   * @function readAllFormComponentsProactiveHelp
+   * fetch all Components proactive/Help Info
+   * @returns {Promise} An objection query promise
+   */
+
+  readAllFormComponentsProactiveHelp: async()=> {
+    const result = await FormComponentsProactiveHelp.query()
+      .modify('distinctOnComponentNameAndGroupName');
+    if(result) {
+      myCache.set('proactiveHelp', result);
+    }
+  },
+
   /**
    * @function updateFormComponentsProactiveHelp
    * update the publish status of each form component information help information
@@ -209,6 +226,7 @@ const service = {
         updatedBy: 'ADMIN'
       });
       await trx.commit();
+      await service.readAllFormComponentsProactiveHelp();
       return await service.readFormComponentsProactiveHelp(param.componentId);
     } catch (err) {
       if (trx) await trx.rollback();

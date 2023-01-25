@@ -187,7 +187,7 @@ export default {
     },
     async selectImage(image) {
       this.imageSizeError=false;
-      if(image.size>10000000){
+      if(image.size>5000000){
         this.imageSizeError=true;
       }
       else {
