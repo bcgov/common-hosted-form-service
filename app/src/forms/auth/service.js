@@ -78,7 +78,7 @@ const service = {
     try {
       // identity_provider_* will be undefined if user login is to local keycloak (userid/password)
       const {
-        sid: idpUserId,
+        idp_userid: idpUserId,
         idp_username: identity,
         identity_provider: idp,
         preferred_username: username,

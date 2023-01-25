@@ -6,7 +6,7 @@
         <p>You do not have permission to access this page.</p>
       </div>
       <div v-else-if="idp && identityProvider !== idp" class="text-center">
-        <h1 class="my-8">403: Forbiddennnnnn. :(</h1>
+        <h1 class="my-8">403: Forbidden. :(</h1>
         <p>This page requires {{ idp.toUpperCase() }} authentication.</p>
       </div>
       <slot v-else />
@@ -55,7 +55,6 @@ export default {
       default: undefined
     }
   },
-
   computed: {
     ...mapGetters('auth', [
       'authenticated',
