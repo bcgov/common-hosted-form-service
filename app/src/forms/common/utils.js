@@ -156,11 +156,63 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
   }
 };
 
+const reArrangeFormSubmissionJSon = (schema) => {
+  let objectMap = [];
+  for(let obj of schema ) {
+    const findField = (obj, keyPath) => {
+      Object.keys(obj).forEach((key)=>{
+        let track = (keyPath!==undefined)?keyPath+'.'+key:key
+        if(Array.isArray(obj[key])) {
+          objectMap.push(track);
+          for (let value of obj[key]) {
+            findField(value, track);
+          }
+        }
+        if(obj[key] instanceof Object){
+          findField(obj[key], track);
+        }
+      });
+  };
+    findField(obj, undefined);
+  }
+  return objectMap;
+};
+
+
+const reArrangeFormSubmissionJSon1 = (schema) => {
+  let objectMap = [];
+  for(let obj of schema ) {
+    const findField = (obj, keyPath) => {
+      Object.keys(obj).forEach((key)=>{
+        let track = (keyPath!==undefined)?keyPath+'.'+key:key
+        if(Array.isArray(obj[key])) {
+
+          for (let value of obj[key]) {
+            findField(value, track);
+          }
+        }
+        if(obj[key] instanceof Object){
+          findField(obj[key], track);
+        }
+        else if (typeof obj[key] === 'string' || typeof obj[key] ==='number' || typeof obj[key] ==='boolean' || obj[key] instanceof Date) {
+          if(key!=='submit') {
+            objectMap.push(track);
+          }
+        }
+      });
+  };
+    findField(obj, undefined);
+  }
+  return objectMap;
+};
+
+
 
 module.exports = {
   falsey,
   setupMount,
   queryUtils,
   typeUtils,
-  flattenComponents
+  flattenComponents,
+  reArrangeFormSubmissionJSon
 };
