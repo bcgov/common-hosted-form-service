@@ -1,9 +1,10 @@
 const jsonexport = require('@bc_gov_forminators/json_to_csv_export');
 const { Model } = require('objection');
 const Problem = require('api-problem');
-const {flattenComponents} = require('../common/utils');
+const {flattenComponents,reArrangeFormSubmissionJSon} = require('../common/utils');
 const { Parser } = require('@json2csv/plainjs');
 const {  unwind, flatten } = require('@json2csv/transforms');
+const jsoncsv = require('json-csv')
 
 const { Form, FormVersion } = require('../common/models');
 
@@ -289,167 +290,17 @@ const service = {
         headers: await service._buildCsvHeaders(form, data,columns)
       };
 
+      let toUnWind = reArrangeFormSubmissionJSon(data);
       const opts = {
         transforms: [
-          unwind({ paths: ['lakes2', 'lakes2.fishType', 'lakes2.fishType1'], blankOut: true }),
+          unwind({ paths: toUnWind, blankOut: true }),
           flatten({ object: true, array: true, separator: '.'})
           //addCounter()
         ]
       };
       const parser = new Parser(opts);
-      const dat = [
-        {
-          item: "form.confirmationId",
-          value: "216BD9AD",
-          parent: undefined,
-        },
-        {
-          item: "form.formName",
-          value: "testd",
-          parent: undefined,
-        },
-        {
-          item: "form.version",
-          value: 1,
-          parent: undefined,
-        },
-        {
-          item: "form.createdAt",
-          value: "2023-01-20T23:06:49.599Z",
-          parent: undefined,
-        },
-        {
-          item: "form.fullName",
-          value: "Ayobamii Idowu",
-          parent: undefined,
-        },
-        {
-          item: "form.username",
-          value: "AIDOWU",
-          parent: undefined,
-        },
-        {
-          item: "form.email",
-          value: "ayobamii.idowu@gov.bc.ca",
-          parent: undefined,
-        },
-        {
-          item: "email",
-          value: "ayobami.o.idowu@gmail.com",
-        },
-        {
-          item: "region",
-          value: "lowerMainland",
-        },
-        {
-          item: "lastName",
-          value: "Idowu",
-        },
-        {
-          item: "firstName",
-          value: "Ayobami",
-        },
-        {
-          item: "lakeVisits.lakeName",
-          value: "Ruddy",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.numOfDays",
-          value: "1",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.closestTown",
-          value: "Rudian",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.numKept",
-          value: 2,
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.fishType",
-          value: "dollyVardon",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.numCaught",
-          value: 2,
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.numKept",
-          value: 3,
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.fishType",
-          value: "cutthroat",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.numCaught",
-          value: 3,
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.numKept",
-          value: 1,
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.fishType",
-          value: "smallmouthBass",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.numCaught",
-          value: 1,
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.lakeName",
-          value: "Goldy",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.numOfDays",
-          value: "2",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.closestTown",
-          value: "Goldian",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.numKept",
-          value: 1,
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.fishType",
-          value: "cutthroat",
-          parent: "lakeVisits",
-        },
-        {
-          item: "lakeVisits.fishCaughtOrKeptAtLakes.numCaught",
-          value: 1,
-          parent: "lakeVisits",
-        },
-        {
-          item: "didYouFishAnyBcLakesThisYear",
-          value: "yes",
-        },
-        {
-          item: "commentsOnFreshwaterFishingInBc",
-          value: "fdgdgdf",
-        },
-      ]
      const csv = parser.parse(data);
-      console.log(csv);
+      //const csv = await jsoncsv.buffered(data, {})
       //const csv = await jsonexport(data, options);
       return {
         data: csv,
