@@ -81,7 +81,8 @@ routes.get('/formcomponents/proactivehelp/signedUrl/:imageName', async (req, res
   await controller.getSignedImageUrl(req, res, next);
 });
 
-
-
+routes.get('/formcomponents/proactivehelp/list', async(req,res,next) => {
+  await controller.listFormComponentsProactiveHelp(req, res, next);
+});
 
 module.exports = routes;

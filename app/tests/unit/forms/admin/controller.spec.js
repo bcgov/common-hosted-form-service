@@ -30,6 +30,7 @@ describe('form controller', () => {
     expect(service.createFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
   });
 
+
   it('should update proactive help component publish status', async () => {
     req.params['publishStatus'] = true;
     req.params['componentId'] = '5b97417a-252c-46c2-b132-85adac5ab3bc';
@@ -48,5 +49,14 @@ describe('form controller', () => {
 
     await controller.updateFormComponentsProactiveHelp(req, {}, jest.fn());
     expect(service.updateFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
+  });
+
+  it('should get list of all proactive help components', async () => {
+
+
+    service.listFormComponentsProactiveHelp = jest.fn().mockReturnValue({});
+
+    await controller.listFormComponentsProactiveHelp(req, {}, jest.fn());
+    expect(service.listFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
   });
 });

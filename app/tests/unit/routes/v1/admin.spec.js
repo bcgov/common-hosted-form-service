@@ -316,7 +316,6 @@ describe(`POST ${basePath}/formcomponents/proactivehelp/object`, () => {
     expect(response.body).toBeTruthy();
   });
 
-
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
     service.createFormComponentsProactiveHelp = jest.fn(() => { throw new Problem(401); });
@@ -337,8 +336,6 @@ describe(`POST ${basePath}/formcomponents/proactivehelp/object`, () => {
     expect(response.body).toBeTruthy();
   });
 });
-
-
 
 describe(`PUT ${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`, () => {
 
@@ -379,6 +376,42 @@ describe(`PUT ${basePath}/formcomponents/proactivehelp/:publishStatus/:component
     service.updateFormComponentsProactiveHelp = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).put(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
+describe(`PUT ${basePath}/formcomponents/proactivehelp/list`, () => {
+
+  it('should return 200', async () => {
+
+
+    // mock a success return value...
+    service.listFormComponentsProactiveHelp = jest.fn().mockReturnValue({});
+
+    const response = await request(app).get(`${basePath}/formcomponents/proactivehelp/list`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.listFormComponentsProactiveHelp = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).get(`${basePath}/formcomponents/proactivehelp/list`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.listFormComponentsProactiveHelp = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).get(`${basePath}/formcomponents/proactivehelp/list`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();

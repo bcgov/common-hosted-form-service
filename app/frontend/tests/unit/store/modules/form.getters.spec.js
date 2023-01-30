@@ -83,6 +83,10 @@ describe('form getters', () => {
   });
 
   it('fcProactiveHelpGroupObject should return the state fcProactiveHelpGroupObject', () => {
-    expect(store.getters.fcProactiveHelpGroupObject).toEqual(sampleState.fcProactiveHelpGroupObject);
+    expect(store.getters.fCHelpInfoObject).toEqual(sampleState.fCHelpInfoObject);
+  });
+
+  it('fcNamesProactiveHelpList should return the state fcNamesProactiveHelpList', () => {
+    expect(store.getters.fcNamesProactiveHelpList).toEqual(sampleState.fcNamesProactiveHelpList);
   });
 });
