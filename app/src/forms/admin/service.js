@@ -195,16 +195,9 @@ const service = {
           imageName:item.componentimagename });
       });
 
-      await myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
-      await myCache.set('proactiveHelpList', filterResult);
-    }
-    for(const item of result) {
-      if(item.id===id) {
-        let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
-        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
-          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-          imageName:item.componentimagename });
-      }
+      myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
+      myCache.set('proactiveHelpList', filterResult);
+      return filterResult.find(item=>item.id===id);
     }
     return {};
   },
@@ -261,7 +254,7 @@ const service = {
   listFormComponentsProactiveHelp: async () => {
     let result=[];
     let filterResult=undefined;
-    let cache = await myCache.get('proactiveHelpList');
+    let cache = myCache.get('proactiveHelpList');
 
     if(cache) {
       filterResult = cache;
@@ -281,8 +274,8 @@ const service = {
       return [];
     }
 
-    await myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
-    await myCache.set('proactiveHelpList', filterResult);
+    myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
+    myCache.set('proactiveHelpList', filterResult);
 
     return filterResult.reduce(function (r, a) {
       r[a.groupName] = r[a.groupName] || [];
