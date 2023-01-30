@@ -7,7 +7,6 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
   static get tableName() {
     return 'form_components_proactive_help';
   }
-
   static get modifiers() {
     return {
       findByComponentName(query, value) {

@@ -8,32 +8,23 @@ const req = {
   headers: {},
 };
 
+
 describe('form controller', () => {
-  it('should get proactive help list', async () => {
+  it('should get proactive help object', async () => {
 
-    const formComponentsProactiveHelp = [{
-      componentname:'Content',
-      externallink:'https://helplink.com',
-      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
-      version:1,
-      groupname:'Basic Layout',
-      description:'gughuhiuhuih',
-      publishstatus:false
-    },
+    service.readFormComponentsProactiveHelp = jest.fn().mockReturnValue({});
 
-    {
-      componentname:'Text Field',
-      externallink:'https://helplink.com',
-      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
-      version:1,
-      groupname:'Basic Layout',
-      description:'gughuhiuhuih',
-      publishstatus:false
-    }];
-
-    service.listFormComponentsProactiveHelp = jest.fn().mockReturnValue(formComponentsProactiveHelp);
-
-    await controller.listFormComponentsProactiveHelp(req, {}, jest.fn());
-    expect(service.listFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
+    await controller.readFormComponentsProactiveHelp(req, {}, jest.fn());
+    expect(service.readFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
   });
+
+  it('should get form component names for proactive help', async () => {
+
+    service.listFormComponentsnamesProactiveHelp= jest.fn().mockReturnValue({});
+
+    await controller.listFormComponentsnamesProactiveHelp(req, {}, jest.fn());
+    expect(service.listFormComponentsnamesProactiveHelp).toHaveBeenCalledTimes(1);
+  });
+
+
 });

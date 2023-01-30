@@ -117,7 +117,15 @@ describe('form mutations', () => {
 
   it('SET_FCPROACTIVEHELPGROUPOBJECT update form state', () => {
     const obj = {};
-    store.mutations.SET_FCPROACTIVEHELPGROUPOBJECT(state, obj);
+    store.mutations.SET_FCHLEPINFOOBJECT(state, obj);
+
+    expect(state.version).toBeTruthy();
+    expect(state.version).toEqual(obj);
+  });
+
+  it('SET_FCNAMESPROACTIVEHELPLIST get form state', () => {
+    const obj = {};
+    store.mutations.SET_FCNAMESPROACTIVEHELPLIST(state, obj);
 
     expect(state.version).toBeTruthy();
     expect(state.version).toEqual(obj);

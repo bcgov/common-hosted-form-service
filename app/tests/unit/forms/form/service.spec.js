@@ -320,35 +320,5 @@ describe('readVersionFields', () => {
     expect(fields.length).toEqual(2);
   });
 
-
-  it('listFormComponentsProactiveHelp()',  async () => {
-
-    const formComponentsHelpInfo = [{
-      componentname:'Content',
-      externallink:'https://helplink.com',
-      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
-      version:1,
-      groupname:'Basic Layout',
-      description:'gughuhiuhuih',
-      publishstatus:false
-    },
-    {
-      componentname:'Text Field',
-      externallink:'https://helplink.com',
-      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
-      version:1,
-      groupname:'Basic Layout',
-      description:'gughuhiuhuih',
-      publishstatus:false
-    }];
-
-    // mock readVersion function
-    service.listFormComponentsProactiveHelp = jest.fn().mockReturnValue( formComponentsHelpInfo  );
-    // get fields
-    const fields = await service.listFormComponentsProactiveHelp();
-    // test cases
-    expect(fields.length).toEqual(2);
-  });
-
 });
 

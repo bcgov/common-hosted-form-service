@@ -258,12 +258,22 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
 
-    it('listFCProactiveHelp should commit to SET_FCPROACTIVEHELPGROUPOBJECT', async () => {
-      formService.readVersion.mockRejectedValue('');
-      await store.actions.listFCProactiveHelp(mockStore,{});
+    it('getFCHelpInfoObject should commit to SET_FCHLEPINFOOBJECT', async () => {
+      formService.getFCHelpInfoObject.mockRejectedValue('');
+      await store.actions.fetchFCHelpInfoObject(mockStore,{});
 
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPOBJECT', expect.any(Object));
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCHLEPINFOOBJECT', expect.any(Object));
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('listFCNamesProactiveHelp should commit to SET_FCNAMESPROACTIVEHELPLIST', async () => {
+      formService.listFCNamesProactiveHelp.mockRejectedValue('');
+      await store.actions.listFCNamesProactiveHelp(mockStore,{});
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCNAMESPROACTIVEHELPLIST', expect.any(Object));
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });

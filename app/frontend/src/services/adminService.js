@@ -165,6 +165,16 @@ export default {
 
     //return await axios.get('http://localhost:3000/api/v1/object/signedUrl/1d295570-2ad7-491e-a23b-c7eac158fe72',
     //  { params: { imageName: imageName,folder:'commoncomponenthelplink'  } });
-  }
+  },
+
+  /**
+   * listFormComponentsProactiveHelp
+   * @function listFCProactiveHelp
+   * Reads all form components help information
+   * @returns {Promise} An axios response
+  */
+  async listFCProactiveHelp() {
+    return await appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`);
+  },
 };
 

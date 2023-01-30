@@ -13,7 +13,8 @@
         <v-expansion-panel-content>
           <GeneralLayout :groupName="groupName"
                          :layoutList="groupComponentsList"
-                         :componentsList="fcProactiveHelpGroupObject&&fcProactiveHelpGroupObject[groupName]?fcProactiveHelpGroupObject[groupName]:[]"/>
+                         :componentsList="fcProactiveHelpGroupList&&
+                           fcProactiveHelpGroupList[groupName] ? fcProactiveHelpGroupList[groupName] : []"/>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -45,8 +46,8 @@ export default {
       panelHeadStyle:new Map(),
     };
   },
-  methods:{
-    ...mapActions('form',['listFCProactiveHelp']),
+  methods: {
+    ...mapActions('admin',['listFCProactiveHelp']),
 
     onExpansionPanelClick(groupName) {
       if(this.isPanelOpened.get(groupName)===undefined || !this.isPanelOpened.get(groupName)) {
@@ -90,8 +91,7 @@ export default {
     }
   },
   computed:{
-    ...mapGetters('form', ['fcProactiveHelpGroupObject']),
-    ...mapGetters('admin',['fcProactiveHelp']),
+    ...mapGetters('admin',['fcProactiveHelp', 'fcProactiveHelpGroupList']),
     groupList() {
       return this.extractGroups();
     },
