@@ -609,34 +609,17 @@ const service = {
    * @returns {Promise} An objection query promise
    */
   readFormComponentsProactiveHelp: async (componentId) => {
-    let cache = await myCache.get('proactiveHelpList');
-    if(cache) {
-      let proactiveHelpList  = await cache;
-      for(const item of proactiveHelpList) {
-        if(item.id===componentId) {
-          return item;
-        }
-      }
-    }
-    else {
-      const result = await FormComponentsProactiveHelp.query()
-        .modify('distinctOnComponentNameAndGroupName');
-      if(result) {
-
-        let filterResult= result.map(item=> {
-          let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
-          return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
-            version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-            imageName:item.componentimagename });
-        });
-
-        myCache.set('proactiveHelpList', filterResult);
-        return filterResult.find(item=>item.id===componentId);
-      }
+    const result = await FormComponentsProactiveHelp.query()
+      .modify('findByComponentId',componentId);
+    if(result.length===1) {
+      const item = result[0];
+      let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+      return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+        version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+        imageName:item.componentimagename });
     }
     return {};
   },
-
 };
 
 module.exports = service;

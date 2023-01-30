@@ -23,6 +23,11 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
       distinctOnComponentNameAndGroupName(builder) {
         builder.distinctOn(['componentname', 'groupname']);
       },
+      findByComponentId(query, value) {
+        if (value !== undefined) {
+          query.where('id', value);
+        }
+      }
     };
   }
 

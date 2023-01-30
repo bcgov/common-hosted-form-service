@@ -195,8 +195,15 @@ const service = {
           imageName:item.componentimagename });
       });
 
+      let sortedResult = filterResult.reduce(function (r, a) {
+        r[a.groupName] = r[a.groupName] || [];
+        r[a.groupName].push(a);
+        return r;
+      }, Object.create(null));
+
       myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
-      myCache.set('proactiveHelpList', filterResult);
+      myCache.set('proactiveHelpList', sortedResult);
+
       return filterResult.find(item=>item.id===id);
     }
     return {};
@@ -257,32 +264,32 @@ const service = {
     let cache = myCache.get('proactiveHelpList');
 
     if(cache) {
-      filterResult = cache;
+      return cache;
     }
     else {
       result = await FormComponentsProactiveHelp.query()
         .modify('distinctOnComponentNameAndGroupName');
+      if(result) {
+        filterResult= result.map(item=> {
+          let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+          return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+            version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+            imageName:item.componentimagename });
+        });
 
-      filterResult= result.map(item=> {
-        let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
-        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
-          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-          imageName:item.componentimagename });
-      });
+        let sortedResult = filterResult.reduce(function (r, a) {
+          r[a.groupName] = r[a.groupName] || [];
+          r[a.groupName].push(a);
+          return r;
+        }, Object.create(null));
+
+        await myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
+        await myCache.set('proactiveHelpList', sortedResult);
+
+        return sortedResult;
+      }
     }
-    if(filterResult===undefined) {
-      return [];
-    }
-
-    myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
-    myCache.set('proactiveHelpList', filterResult);
-
-    return filterResult.reduce(function (r, a) {
-      r[a.groupName] = r[a.groupName] || [];
-      r[a.groupName].push(a);
-      return r;
-    }, Object.create(null));
-
+    return [];
   },
 
 };
