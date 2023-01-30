@@ -16,7 +16,8 @@ const {
   FormSubmissionStatus,
   FormSubmissionUser,
   IdentityProvider,
-  SubmissionMetadata
+  SubmissionMetadata,
+  FormComponentsProactiveHelp
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -576,8 +577,30 @@ const service = {
    */
   listFormComponentsnamesProactiveHelp: async () => {
 
-    let cache = await myCache.get('proactiveHelpComponentsNames');
-    return cache?cache:[];
+    let cache = myCache.get('proactiveHelpComponentsNames');
+    if(cache) {
+      return cache;
+    }
+    else {
+      const result = await FormComponentsProactiveHelp.query()
+        .modify('distinctOnComponentNameAndGroupName');
+      if(result) {
+
+        let filterResult= result.map(item=> {
+          return ({id:item.id, componentName:item.componentname, groupName:item.groupname, status:item.publishstatus });
+        });
+
+        let sortedResult = await filterResult.reduce(function (r, a) {
+          r[a.groupName] = r[a.groupName] || [];
+          r[a.groupName].push(a);
+          return r;
+        }, Object.create(null));
+
+        myCache.set('proactiveHelpComponentsNames', sortedResult);
+        return sortedResult;
+      }
+    }
+    return {};
   },
 
   /**
@@ -593,6 +616,22 @@ const service = {
         if(item.id===componentId) {
           return item;
         }
+      }
+    }
+    else {
+      const result = await FormComponentsProactiveHelp.query()
+        .modify('distinctOnComponentNameAndGroupName');
+      if(result) {
+
+        let filterResult= result.map(item=> {
+          let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+          return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+            version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+            imageName:item.componentimagename });
+        });
+
+        myCache.set('proactiveHelpList', filterResult);
+        return filterResult.find(item=>item.id===componentId);
       }
     }
     return {};
