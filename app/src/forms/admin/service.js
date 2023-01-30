@@ -1,7 +1,7 @@
 const { Form, FormVersion, User, UserFormAccess,FormComponentsProactiveHelp } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
-const myCache = require('../common/middleware/memoryCache');
+const myCache = require('../common/cache/memoryCache');
 
 const service = {
 
@@ -119,9 +119,6 @@ const service = {
         roles: fa.roles
       }));
   },
-  /**
-
-
 
   /**
    * @function createFormComponentsProactiveHelp
@@ -173,7 +170,6 @@ const service = {
         await FormComponentsProactiveHelp.query(trx).insert(obj);
       }
       await trx.commit();
-      await service.readAllFormComponentsProactiveHelp();
       return service.readFormComponentsProactiveHelp(id);
     } catch(err) {
       if (trx) await trx.rollback();
@@ -181,33 +177,57 @@ const service = {
     }
   },
 
-
-
   /**
    * @function readFormComponentsProactiveHelp
-   * fetch Form Component Help Info by formComponentHelpInfoId
-   * @param {String} formComponentsProactiveHelpId Form Component Help Info Id
-   * @returns {Promise} An objection query promise
-   */
-
-  readFormComponentsProactiveHelp: async(formComponentsProactiveHelpId)=> {
-
-    return await FormComponentsProactiveHelp.query()
-      .where('id', formComponentsProactiveHelpId);
-  },
-
-
-  /**
-   * @function readAllFormComponentsProactiveHelp
    * fetch all Components proactive/Help Info
    * @returns {Promise} An objection query promise
    */
 
-  readAllFormComponentsProactiveHelp: async()=> {
+  readFormComponentsProactiveHelp: async(id)=> {
     const result = await FormComponentsProactiveHelp.query()
       .modify('distinctOnComponentNameAndGroupName');
     if(result) {
-      myCache.set('proactiveHelp', result);
+
+      let filterResult= result.map(item=> {
+        let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+          imageName:item.componentimagename });
+      });
+
+      await myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
+      await myCache.set('proactiveHelpList', filterResult);
+    }
+    for(const item of result) {
+      if(item.id===id) {
+        let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+          imageName:item.componentimagename });
+      }
+    }
+    return {};
+  },
+
+  /**
+   * @function readProactiveHelpComponentsNames
+   * update the publish status of each form component information help information
+   * @param {Object} param consist of publishStatus and componentId.
+   * @returns {Promise} An objection query promise
+  */
+  readProactiveHelpComponentsNames: async(result)=> {
+    let filterResult =[];
+
+    if(result!==undefined) {
+      filterResult= result.map(item=> {
+        return ({id:item.id, componentName:item.componentName, groupName:item.groupName, status:item.status });
+      });
+
+      return filterResult.reduce(function (r, a) {
+        r[a.groupName] = r[a.groupName] || [];
+        r[a.groupName].push(a);
+        return r;
+      }, Object.create(null));
     }
   },
 
@@ -226,13 +246,51 @@ const service = {
         updatedBy: 'ADMIN'
       });
       await trx.commit();
-      await service.readAllFormComponentsProactiveHelp();
       return await service.readFormComponentsProactiveHelp(param.componentId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
     }
-  }
+  },
+
+  /**
+   * @function listFormComponentsProactiveHelp
+   * Search for all form components help information
+   * @returns {Promise} An objection query promise
+   */
+  listFormComponentsProactiveHelp: async () => {
+    let result=[];
+    let filterResult=undefined;
+    let cache = await myCache.get('proactiveHelpList');
+
+    if(cache) {
+      filterResult = cache;
+    }
+    else {
+      result = await FormComponentsProactiveHelp.query()
+        .modify('distinctOnComponentNameAndGroupName');
+
+      filterResult= result.map(item=> {
+        let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+          imageName:item.componentimagename });
+      });
+    }
+    if(filterResult===undefined) {
+      return [];
+    }
+
+    await myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
+    await myCache.set('proactiveHelpList', filterResult);
+
+    return filterResult.reduce(function (r, a) {
+      r[a.groupName] = r[a.groupName] || [];
+      r[a.groupName].push(a);
+      return r;
+    }, Object.create(null));
+
+  },
 
 };
 

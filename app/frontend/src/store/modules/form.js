@@ -42,8 +42,9 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    fcProactiveHelpGroupObject:{}, // Form Components Proactive Help Group Object
+    fcNamesProactiveHelpList:[], // Form Components Proactive Help Group Object
     version: {},
+    fCHelpInfoObject:{}
   },
   getters: {
     getField, // vuex-map-fields
@@ -57,9 +58,10 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
-    fcProactiveHelpGroupObject: state => state.fcProactiveHelpGroupObject, // Form Components Proactive Help Group Object
+    fcNamesProactiveHelpList: state => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
     version: state => state.version,
     builder: state => state.builder,
+    fCHelpInfoObject: state => state.fCHelpInfoObject
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -106,11 +108,14 @@ export default {
       state.builder = builder;
     },
     //Form Component Proactive Help Group Object
-    SET_FCPROACTIVEHELPGROUPOBJECT(state,fcProactiveHelpGroupObject){
-      state.fcProactiveHelpGroupObject = fcProactiveHelpGroupObject;
+    SET_FCNAMESPROACTIVEHELPLIST(state,fcNamesProactiveHelpList){
+      state.fcNamesProactiveHelpList = fcNamesProactiveHelpList;
     },
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
+    },
+    SET_FCHLEPINFOOBJECT(state, fCHelpInfoObject) {
+      state.fCHelpInfoObject = fCHelpInfoObject;
     },
   },
   actions: {
@@ -223,6 +228,7 @@ export default {
     },
     async fetchForm({ commit, dispatch }, formId) {
       try {
+
         commit('SET_API_KEY', null);
         // Get the form definition from the api
         const { data } = await formService.readForm(formId);
@@ -448,12 +454,27 @@ export default {
     },
 
     //listFormComponentsProactiveHelp
-    async listFCProactiveHelp({ commit, dispatch }) {
+    async listFCNamesProactiveHelp({ commit, dispatch }) {
       try {
         // Get Form Components Proactive Help Group Object
-        commit('SET_FCPROACTIVEHELPGROUPOBJECT',{});
-        const response = await formService.listFCProactiveHelp();
-        commit('SET_FCPROACTIVEHELPGROUPOBJECT',response.data);
+        commit('SET_FCNAMESPROACTIVEHELPLIST',[]);
+        const response = await formService.listFCNamesProactiveHelp();
+        commit('SET_FCNAMESPROACTIVEHELPLIST',response.data);
+      } catch(error) {
+
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
+        }, { root: true });
+      }
+    },
+
+    async fetchFCHelpInfoObject({ commit, dispatch }, componentId) {
+      try {
+        // Get Form Components Proactive Help Group Object
+        commit('SET_FCHLEPINFOOBJECT',{});
+        const response = await formService.getFCHelpInfoObject(componentId);
+        commit('SET_FCHLEPINFOOBJECT',response.data);
       } catch(error) {
 
         dispatch('notifications/addNotification', {
