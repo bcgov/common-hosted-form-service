@@ -16,7 +16,8 @@ export default {
     fcProactiveHelpVersion:{},
     fcProactiveHelp:{}, // Form Component Proactive Help
     fcProactiveHelpImageUpload:'', // Form Component Proactive Help image upload
-    fcPresignedUrl:''
+    fcPresignedUrl:'',
+    fcProactiveHelpGroupList:[]
   },
   getters: {
     apiKey: state => state.apiKey,
@@ -28,7 +29,8 @@ export default {
     fcProactiveHelpVersion: state => state.fcProactiveHelpVersion,
     fcProactiveHelp: state => state.fcProactiveHelp, //Form Component Proactive Help
     fcProactiveHelpImageUpload: state=> state.fcProactiveHelpImageUpload, //Form Component Proactive Help Image Upload
-    fcPresignedUrl: state=> state.fcPresignedUrl
+    fcPresignedUrl: state=> state.fcPresignedUrl,
+    fcProactiveHelpGroupList: state => state.fcProactiveHelpGroupList, // Form Components Proactive Help Group Object
   },
   mutations: {
     SET_API_KEY(state, apiKey) {
@@ -64,6 +66,10 @@ export default {
     SET_FCPRESIGNEDURL(state,fcPresignedUrl)
     {
       state.fcPresignedUrl = fcPresignedUrl;
+    },
+    //Form Component Proactive Help Group Object
+    SET_FCPROACTIVEHELPGROUPLIST(state,fcProactiveHelpGroupList){
+      state.fcProactiveHelpGroupList = fcProactiveHelpGroupList;
     },
   },
   actions: {
@@ -254,7 +260,21 @@ export default {
           consoleError: 'Error getting uploading image',
         }, { root: true });
       }
-    }
-  },
+    },
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp({ commit, dispatch }) {
+      try {
+        // Get Form Components Proactive Help Group Object
+        commit('SET_FCPROACTIVEHELPGROUPLIST',{});
+        const response = await adminService.listFCProactiveHelp();
+        commit('SET_FCPROACTIVEHELPGROUPLIST',response.data);
+      } catch(error) {
 
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
+        }, { root: true });
+      }
+    },
+  },
 };

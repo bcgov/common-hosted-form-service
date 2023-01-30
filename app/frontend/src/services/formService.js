@@ -402,11 +402,23 @@ export default {
 
   /**
    * listFormComponentsProactiveHelp
-   * @function listFCProactiveHelp
+   * @function listFCNamesProactiveHelp
    * Reads all form components help information
    * @returns {Promise} An axios response
    */
-  async listFCProactiveHelp() {
-    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/list`);
+  async listFCNamesProactiveHelp() {
+    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponentsnames/proactivehelp/list`);
+  },
+
+
+  /**
+   * listFormComponentsProactiveHelp
+   * @function getFCHelpInfoObject
+   * Reads  form components help information object
+   * * @param {string} componentId The form component id
+   * @returns {Promise} An axios response
+   */
+  async getFCHelpInfoObject(componentId) {
+    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/${componentId}`);
   },
 };

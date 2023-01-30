@@ -22,6 +22,7 @@ describe('Admin service', () => {
     expect(result).toEqual(formComponentsHelpInfo);
   });
 
+
   it('updateFormComponentsProactiveHelp()',  async () => {
 
     const formComponentsHelpInfo = {
@@ -40,5 +41,117 @@ describe('Admin service', () => {
     const result = await service.updateFormComponentsProactiveHelp();
     // test cases
     expect(result).toEqual(formComponentsHelpInfo);
+  });
+
+  it('listFormComponentsProactiveHelp()',  async () => {
+
+    const formComponentsHelpInfo = [{
+      componentname:'Content',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      publishstatus:false
+    },
+    {
+      componentname:'Text Field',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      publishstatus:false
+    }];
+
+    formComponentsHelpInfo.reduce(function (r, a) {
+      r[a.groupName] = r[a.groupName] || [];
+      r[a.groupName].push(a);
+      return r;
+    }, Object.create(null));
+
+    // mock readVersion function
+    service.listFormComponentsProactiveHelp = jest.fn().mockReturnValue( formComponentsHelpInfo  );
+    // get fields
+    const fields = await service.listFormComponentsProactiveHelp();
+    // test cases
+    expect(Object.keys(fields).length).toEqual(2);
+  });
+
+  it('readFormComponentsProactiveHelp()',  async () => {
+
+    const returnValue = {
+      componentname:'Text Field',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      publishstatus:false,
+      id:1
+    };
+
+    const formComponentsHelpInfo = [{
+      componentname:'Content',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      publishstatus:false
+    },
+    {
+      componentname:'Text Field',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      publishstatus:false,
+      id:1
+    }];
+
+
+    // mock readVersion function
+    service.readFormComponentsProactiveHelp = jest.fn().mockReturnValue( returnValue  );
+    // get fields
+    const fields = await service.readFormComponentsProactiveHelp();
+    // test cases
+    expect(fields).toEqual(formComponentsHelpInfo[1]);
+  });
+
+  it('readProactiveHelpComponentsNames()',  async () => {
+
+    const formComponentsHelpInfo = [{
+      componentname:'Content',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      publishstatus:false
+    },
+    {
+      componentname:'Text Field',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      publishstatus:false
+    }];
+
+    formComponentsHelpInfo.reduce(function (r, a) {
+      r[a.groupName] = r[a.groupName] || [];
+      r[a.groupName].push(a);
+      return r;
+    }, Object.create(null));
+
+    // mock readVersion function
+    service.readProactiveHelpComponentsNames = jest.fn().mockReturnValue( formComponentsHelpInfo  );
+    // get fields
+    const fields = await service.readProactiveHelpComponentsNames();
+    // test cases
+    expect(Object.keys(fields).length).toEqual(2);
   });
 });

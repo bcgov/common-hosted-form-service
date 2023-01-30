@@ -190,7 +190,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('form', ['fcProactiveHelpGroupObject']),
+    ...mapGetters('form', ['fcNamesProactiveHelpList', 'fCHelpInfoObject']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapGetters('form', ['builder']),
     ...mapFields('form', [
@@ -305,7 +305,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setDirtyFlag']),
+    ...mapActions('form', ['fetchForm','setDirtyFlag','fetchFCHelpInfoObject']),
     ...mapActions('notifications', ['addNotification']),
 
 
@@ -411,11 +411,12 @@ export default {
       // Component remove start
       this.patch.componentRemovedStart = true;
     },
+
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
-      if(this.fcProactiveHelpGroupObject){
-        for (const  [title,elements] of Object.entries(this.fcProactiveHelpGroupObject)) {
+      if(this.fcNamesProactiveHelpList) {
+        for (const  [title,elements] of Object.entries(this.fcNamesProactiveHelpList)) {
           let extractedElementsNames = this.extractPublishedElement(elements);
           for (const [key,builderElements] of Object.entries(builder)) {
             if(title===builderElements.title){
@@ -423,7 +424,9 @@ export default {
               let containerEl = document.getElementById(containerId);
               if(containerEl){
                 for(var i=0; i<containerEl.children.length; i++){
-                  if(extractedElementsNames.includes(containerEl.children[i].textContent.trim()))
+                  const self = this;
+                  let elementName = containerEl.children[i].textContent.trim();
+                  if(extractedElementsNames.includes(elementName))
                   {
                     // Append the info el
                     let child = document.createElement('i');
@@ -431,7 +434,9 @@ export default {
                     child.setAttribute('class','fa fa-info-circle info-helper');
                     child.style.float='right';
                     child.style.fontSize='14px';
-                    child.addEventListener('click', this.showHelperClicked);
+                    child.addEventListener('click', function() {
+                      self.showHelperClicked(self.findPublishedElement(elements, elementName, title));
+                    });
                     containerEl.children[i].appendChild(child);
                   }
                 }
@@ -440,7 +445,6 @@ export default {
           }
         }
       }
-
     },
     extractPublishedElement(elements){
       let publishedComponentsNames=[];
@@ -452,18 +456,13 @@ export default {
       }
       return  publishedComponentsNames;
     },
-    showHelperClicked(evt) {
-      let target = evt.target;
-      let parent = target.parentNode;
-      let type = parent.textContent.trim();
-      for (const [, elements] of Object.entries(this.fcProactiveHelpGroupObject))
-      {
-        for(let element of elements ) {
-          if(type===element.componentName) {
-            this.component=element;
-          }
-        }
-      }
+
+    findPublishedElement(elements,componentName, groupName) {
+      return elements.find(element=>element.componentName===componentName && element.groupName===groupName);
+    },
+    async showHelperClicked(element) {
+      await this.fetchFCHelpInfoObject(element.id);
+      this.component=this.fCHelpInfoObject;
       this.onShowClosePreveiwDialog();
     },
     onShowClosePreveiwDialog(){

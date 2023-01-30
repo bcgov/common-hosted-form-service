@@ -172,6 +172,7 @@ describe('admin actions', () => {
     });
 
 
+
     it('addFCProactiveHelp should commit to SET_FCPROACTIVEHELP', async () => {
       adminService.addFCProactiveHelp.mockResolvedValue({});
       await store.actions.addFCProactiveHelp(mockStore,{});
@@ -179,6 +180,16 @@ describe('admin actions', () => {
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELP', expect.any(Object));
     });
+
+    it('addFCProactiveHelp should commit to SET_FCPROACTIVEHELPGROUPLIST', async () => {
+      adminService.listFCProactiveHelp.mockResolvedValue({});
+      await store.actions.listFCProactiveHelp(mockStore,{});
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPLIST', expect.any(Object));
+    });
+
+
 
     it('updateFCProactiveHelpStatus should update publish status and commit to SET_FCPROACTIVEHELP', async () => {
       adminService.updateFCProactiveHelpStatus.mockRejectedValue('');
