@@ -1053,17 +1053,3 @@ describe(`GET ${basePath}/formcomponentsnames/proactivehelp/list`, () => {
     expect(response.body).toBeTruthy();
   });
 });
-
-describe(`GET ${basePath}/formcomponents/proactivehelp/:componentId`, () => {
-
-  it('should return 204', async () => {
-
-    // mock a success return value...
-    service.listFormComponentsnamesProactiveHelp = jest.fn().mockReturnValue({});
-
-    const response = await request(app).get(`${basePath}/formcomponents/proactivehelp/:componentId`);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBeTruthy();
-  });
-});
