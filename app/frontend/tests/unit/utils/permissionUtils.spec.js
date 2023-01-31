@@ -199,7 +199,7 @@ describe('preFlightAuth', () => {
 
     expect(mockNext).toHaveBeenCalledTimes(0);
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith('auth/login', 'idir');
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/login');
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
