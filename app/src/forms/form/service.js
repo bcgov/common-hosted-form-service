@@ -609,14 +609,26 @@ const service = {
    * @returns {Promise} An objection query promise
    */
   readFormComponentsProactiveHelp: async (componentId) => {
-    const result = await FormComponentsProactiveHelp.query()
-      .modify('findByComponentId',componentId);
-    if(result.length===1) {
-      const item = result[0];
-      let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
-      return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
-        version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-        imageName:item.componentimagename });
+    let cache = myCache.get('proactiveHelpList');
+    if(cache){
+      for (const  [,elements] of Object.entries(this.fcNamesProactiveHelpList)) {
+        for(const element of elements) {
+          if(element.id===componentId) {
+            return element;
+          }
+        }
+      }
+    }
+    else {
+      const result = await FormComponentsProactiveHelp.query()
+        .modify('findByComponentId',componentId);
+      if(result.length===1) {
+        const item = result[0];
+        let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+          imageName:item.componentimagename });
+      }
     }
     return {};
   },
