@@ -246,7 +246,7 @@ module.exports = {
 
   readFormComponentsProactiveHelp:async(req,res,next)=> {
     try{
-      const response = await service.readFormComponentsProactiveHelp(req.params.componentId);
+      const response = await service.readFormComponentsProactiveHelp(req.params.componentId, req.params.groupName);
       res.status(200).json(response);
     } catch(error){
       next(error);

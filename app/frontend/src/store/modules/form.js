@@ -469,11 +469,11 @@ export default {
       }
     },
 
-    async fetchFCHelpInfoObject({ commit, dispatch }, componentId) {
+    async fetchFCHelpInfoObject({ commit, dispatch }, {componentId, groupName}) {
       try {
         // Get Form Components Proactive Help Group Object
         commit('SET_FCHLEPINFOOBJECT',{});
-        const response = await formService.getFCHelpInfoObject(componentId);
+        const response = await formService.getFCHelpInfoObject(componentId, groupName);
         commit('SET_FCHLEPINFOOBJECT',response.data);
       } catch(error) {
 
