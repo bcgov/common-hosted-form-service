@@ -338,6 +338,7 @@ export default {
     selectAllUsersToDelete() {
       this.selectedItemToDelete.fill(this.selectAllCheckBox);
       let isOwnerFound = this.tableData.find( user  => user.username === this.userName)['owner'];
+
       for (const user of this.tableData) {
         if( user.username===this.userName) {
           continue;
@@ -446,19 +447,18 @@ export default {
       }
     },
     onMultiUsersDelete() {
-      if(this.itemToDelete.size === this.tableData.length) {
-        this.showDeleteDialog = true;
-        this.deleteConfirmationMsg='Are you sure you wish to delete selected members?';
 
+      let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
+      console.log(difference);
+
+      if(!difference.some((user) => user.owner)) {
+        this.ownerError();
+      }else if(this.selectAllCheckBox){
+        this.ownerError();
       }
       else {
-        let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
-        if(!difference.some((user) => user.owner)) {
-          this.ownerError();
-        }else {
-          this.showDeleteDialog = true;
-          this.deleteConfirmationMsg='Are you sure you wish to delete selected members?';
-        }
+        this.showDeleteDialog = true;
+        this.deleteConfirmationMsg='Are you sure you wish to delete selected members?';
       }
     },
     ownerError() {
@@ -527,6 +527,7 @@ export default {
         });
       }
       this.updating = false;
+      this.selectAllCheckBox=false;
     },
     /**
      * @function setFormUsers
