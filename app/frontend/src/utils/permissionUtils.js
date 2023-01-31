@@ -84,12 +84,8 @@ export async function preFlightAuth(options = {}, next) {
   if (store.getters['auth/authenticated']) {
     const userIdp = store.getters['auth/identityProvider'];
 
-    if (idpHint === IdentityMode.PUBLIC) {
-      next(); // Permit navigation if public
-    } else if (!idpHint && userIdp === IdentityProviders.IDIR) {
-      // Team form should redirect to IDIR login
-      idpHint = IdentityProviders.IDIR;
-      next();
+    if (idpHint === IdentityMode.PUBLIC || !idpHint) {
+      next(); // Permit navigation if public or team form
     } else if (isValidIdp(idpHint) && userIdp === idpHint) {
       next(); // Permit navigation if idps match
     } else {
@@ -106,7 +102,7 @@ export async function preFlightAuth(options = {}, next) {
     } else if (isValidIdp(idpHint)) {
       store.dispatch('auth/login', idpHint); // Force login flow with specified idpHint
     } else {
-      store.dispatch('auth/login', IdentityProviders.IDIR); // Force login with IDIR
+      store.dispatch('auth/login'); // Force login flow with user choice
     }
   }
 }
