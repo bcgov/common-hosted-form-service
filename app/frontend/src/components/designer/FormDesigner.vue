@@ -461,7 +461,8 @@ export default {
       return elements.find(element=>element.componentName===componentName && element.groupName===groupName);
     },
     async showHelperClicked(element) {
-      await this.fetchFCHelpInfoObject(element.id);
+
+      await this.fetchFCHelpInfoObject({componentId:element.id, groupName:element.groupName});
       this.component=this.fCHelpInfoObject;
       this.onShowClosePreveiwDialog();
     },

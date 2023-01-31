@@ -608,10 +608,11 @@ const service = {
    * Search for form components help information
    * @returns {Promise} An objection query promise
    */
-  readFormComponentsProactiveHelp: async (componentId) => {
+  readFormComponentsProactiveHelp: async (componentId, groupName) => {
     let cache = myCache.get('proactiveHelpList');
-    if(cache){
-      for (const  [,elements] of Object.entries(this.fcNamesProactiveHelpList)) {
+    if(cache) {
+      let elements = cache[groupName];
+      if(elements&&elements.length>0) {
         for(const element of elements) {
           if(element.id===componentId) {
             return element;
