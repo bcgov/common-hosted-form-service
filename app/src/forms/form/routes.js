@@ -138,7 +138,7 @@ routes.get('/formcomponentsnames/proactivehelp/list', async(req,res,next) => {
   await controller.listFormComponentsnamesProactiveHelp(req, res, next);
 });
 
-routes.get('/formcomponents/proactivehelp/:componentId', async(req,res,next) => {
+routes.get('/formcomponents/proactivehelp/:componentId/:groupName', async(req,res,next) => {
   await controller.readFormComponentsProactiveHelp(req, res, next);
 });
 

@@ -418,7 +418,7 @@ export default {
    * * @param {string} componentId The form component id
    * @returns {Promise} An axios response
    */
-  async getFCHelpInfoObject(componentId) {
-    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/${componentId}`);
+  async getFCHelpInfoObject(componentId, groupName) {
+    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/${componentId}/${groupName}`);
   },
 };
