@@ -449,7 +449,6 @@ export default {
     onMultiUsersDelete() {
 
       let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
-      console.log(difference);
 
       if(!difference.some((user) => user.owner)) {
         this.ownerError();
