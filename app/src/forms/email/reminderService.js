@@ -262,10 +262,13 @@ const service = {
     return statement;
   },
   _getReferer : () => {
+
     try {
+
+      const protocol = 'https://';
       const basePath = config.get('frontend.basePath');
       const host = process.env.SERVER_HOST;
-      return`${host}${basePath}`;
+      return`${protocol}${host}${basePath}`;
     } catch (error) {
       log.error(error.message, {
         function: '_getReferer'
