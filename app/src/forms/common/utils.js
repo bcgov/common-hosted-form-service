@@ -156,25 +156,177 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
   }
 };
 
-const reArrangeFormSubmissionJSon = (schema) => {
+const flattenedSubmissionData = (schema) => {
   let objectMap = [];
+  let arrayValue=[];
   for(let obj of schema ) {
     const findField = (obj, keyPath) => {
+      let keys = keyPath;
       Object.keys(obj).forEach((key)=>{
-        let track = (keyPath!==undefined)?keyPath+'.'+key:key
+
         if(Array.isArray(obj[key])) {
-          objectMap.push(track);
-          for (let value of obj[key]) {
-            findField(value, track);
+          arrayValue.push(keys!== undefined ? keys+'.'+key:key);
+          for (let [index,value] of (obj[key]).entries()) {
+            findField(value,  keys!== undefined ? keys+'.'+key:key);
           }
         }
-        if(obj[key] instanceof Object){
-          findField(obj[key], track);
+        else if(obj[key] instanceof Object){
+          findField(obj[key], keys!== undefined ? keys+'.'+key:key);
+        }
+        else if (typeof obj[key] === 'string' || typeof obj[key] ==='number' || typeof obj[key] ==='boolean' || obj[key] instanceof Date) {
+          if(key!=='submit') {
+            objectMap.push({item:keys!== undefined?keys+'.'+key:key, value:obj[key]});
+          }
         }
       });
   };
     findField(obj, undefined);
   }
+
+  return {extractedData:objectMap, arrayFields:arrayValue};
+};
+
+const extractJSONToCSV = async (flattenedSubmission, arrayFields, headers)=> {
+
+  let rows = [];
+  const finalRow=[];
+  let newRow = new Array(headers.length).fill('');
+  let seen = new Array(headers.length).fill(false);
+  let lastFillIndex = 0;
+
+  let getHeaderIndex = function(header) {
+    return headers.indexOf(header);
+  }
+
+  let isBelowThreshold = (currentValue) => currentValue ==='';
+
+  let fillRow = ()=>{
+    //let aRows = rows;
+    for(let m=lastFillIndex; m<rows.length; m++ ) {
+
+    let row = rows[m];
+    for (let i in rows) {
+      for (let j in rows[i]) {
+        rows[i][j] = (rows[i][j]!=='')?rows[i][j]:row[j];
+      }
+    }
+  }
+  finalRow.push(rows);
+  rows=[];
+  };
+
+  let lastFillRow = ()=>{
+    //let aRows = rows
+    for(let row of rows ) {
+    for (let i in rows){
+      for (let j in rows[i]) {
+        rows[i][j] = (rows[i][j]!=='')?rows[i][j]:row[j];
+      }
+    }
+  }
+
+  };
+
+
+  let insertAndFillRow  = (index, value)=>{
+    rows[0][index]=value;
+    fillRow();
+  };
+  let isFieldPush = (index)=> {
+    for(let row of rows) {
+      if(row[index]!==''){
+        return true;
+      }
+    }
+    return false;
+  }
+  for (let data of flattenedSubmission) {
+
+    let index = getHeaderIndex(data.item);
+
+    if(!data.item.includes('.')){
+      newRow[index] = data.value;
+
+    }
+    else {
+
+    if(seen[index]) {
+      if(newRow[index]!=='') {
+        rows.push(newRow);
+        newRow = new Array(headers.length).fill('');
+      }
+      newRow[index]=data.value;
+    }
+    else {
+      let t = data.item.includes('.')?data.item.match(/[.]/g).length:0;
+      if(t===1) {
+
+        let path = data.item.substring(0,data.item.lastIndexOf('.'));
+        if(arrayFields.includes(path)) {
+          if(isFieldPush(index)) {
+             fillRow();
+            if(newRow[index]==='') {
+              newRow[index]=data.value;
+            }
+            else {
+              rows.push(newRow);
+              newRow = new Array(headers.length).fill('');
+            }
+          }
+          else {
+            if(!newRow.every(isBelowThreshold)) {
+              rows.push(newRow);
+              newRow = new Array(headers.length).fill('');
+            }
+
+            insertAndFillRow(index, data.value)
+          }
+        }
+        //newRow[index]=data.value;
+
+      }
+      else {
+        newRow[index]=data.value;
+      }
+  }
+
+}
+seen[index]=true;
+  }
+ fillRow();
+ console.log(rows)
+ console.log(finalRows)
+ lastFillRow();
+  console.log(rows)
+}
+
+
+const reArrangeFormSubmissionJSon2 = (schema) => {
+  let objectMap = [];
+  let arrayTrack =[]
+  for(let obj of schema ) {
+    const findField = (obj, keyPath) => {
+      let keys = keyPath;
+      Object.keys(obj).forEach((key)=>{
+
+        if(Array.isArray(obj[key])) {
+          for (let [index,value] of (obj[key]).entries()) {
+            findField(value,  keys!== undefined ? keys+'.'+key+'.'+index :key );
+          }
+        }
+        else if(obj[key] instanceof Object){
+          findField(obj[key], keys!== undefined ? keys+'.'+key:key);
+        }
+        else if (typeof obj[key] === 'string' || typeof obj[key] ==='number' || typeof obj[key] ==='boolean' || obj[key] instanceof Date) {
+          if(key!=='submit') {
+            objectMap.push({item:keys!== undefined?keys+'.'+key:key, value:obj[key]});
+          }
+        }
+      });
+  };
+    findField(obj, undefined);
+  }
+  console.log(arrayTrack)
   return objectMap;
 };
 
@@ -214,5 +366,6 @@ module.exports = {
   queryUtils,
   typeUtils,
   flattenComponents,
-  reArrangeFormSubmissionJSon
+  flattenedSubmissionData,
+  extractJSONToCSV
 };
