@@ -1,7 +1,7 @@
 const jsonexport = require('@bc_gov_forminators/json_to_csv_export');
 const { Model } = require('objection');
 const Problem = require('api-problem');
-const {flattenComponents,reArrangeFormSubmissionJSon} = require('../common/utils');
+const {flattenComponents,flattenedSubmissionData, extractJSONToCSV} = require('../common/utils');
 const { Parser } = require('@json2csv/plainjs');
 const {  unwind, flatten } = require('@json2csv/transforms');
 const jsoncsv = require('json-csv')
@@ -290,7 +290,10 @@ const service = {
         headers: await service._buildCsvHeaders(form, data,columns)
       };
 
-      let toUnWind = reArrangeFormSubmissionJSon(data);
+      let submissionData = await flattenedSubmissionData(data);
+      extractJSONToCSV(submissionData.extractedData,submissionData.arrayFields,options.headers);
+
+      //let toUnWind = reArrangeFormSubmissionJSon(data);
       const opts = {
         transforms: [
           unwind({ paths: toUnWind, blankOut: true }),
