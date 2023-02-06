@@ -11,7 +11,6 @@ const req = {
 
 describe('form controller', () => {
 
-
   it('should create proactive help for content form.io component', async () => {
 
     const formComponentsProactiveHelp = {

@@ -13,10 +13,9 @@ export default {
     roles: [],
     user: {},
     userList: [],
-    fcProactiveHelpVersion:{},
+    imageList:new Map(),
     fcProactiveHelp:{}, // Form Component Proactive Help
-    fcProactiveHelpImageUpload:'', // Form Component Proactive Help image upload
-    fcPresignedUrl:'',
+    fcProactiveHelpImageUrl:'',
     fcProactiveHelpGroupList:[]
   },
   getters: {
@@ -26,10 +25,8 @@ export default {
     roles: state => state.roles,
     user: state => state.user,
     userList: state => state.userList,
-    fcProactiveHelpVersion: state => state.fcProactiveHelpVersion,
     fcProactiveHelp: state => state.fcProactiveHelp, //Form Component Proactive Help
-    fcProactiveHelpImageUpload: state=> state.fcProactiveHelpImageUpload, //Form Component Proactive Help Image Upload
-    fcPresignedUrl: state=> state.fcPresignedUrl,
+    fcProactiveHelpImageUrl: state=> state.fcProactiveHelpImageUrl,
     fcProactiveHelpGroupList: state => state.fcProactiveHelpGroupList, // Form Components Proactive Help Group Object
   },
   mutations: {
@@ -55,17 +52,10 @@ export default {
     {
       state.fcProactiveHelp = fcProactiveHelp;
     },
-    SET_FCPROACTIVeHELPIMAGEUPLOAD(state,fcProactiveHelpImageUpload) //Form Component Proactive Help IMAGE UPLOAD
+
+    SET_FCPROACTIVEHELPIMAGEURL(state,fcProactiveHelpImageUrl)
     {
-      state.fcProactiveHelpImageUpload = fcProactiveHelpImageUpload;
-    },
-    SET_FCPROACTIVEHELPVERSION(state, fcProactiveHelpVersion )
-    {
-      state.fcProactiveHelpVersion = fcProactiveHelpVersion;
-    },
-    SET_FCPRESIGNEDURL(state,fcPresignedUrl)
-    {
-      state.fcPresignedUrl = fcPresignedUrl;
+      state.fcProactiveHelpImageUrl = fcProactiveHelpImageUrl;
     },
     //Form Component Proactive Help Group Object
     SET_FCPROACTIVEHELPGROUPLIST(state,fcProactiveHelpGroupList){
@@ -217,16 +207,24 @@ export default {
       }
     },
 
-    async getPresignedUrl({ commit, dispatch },imageName) {
+    async getFCProactiveHelpImageUrl({ commit, dispatch, state },componentId) {
       try {
         // Get Common Components Help Information
-        commit('SET_FCPRESIGNEDURL',{});
-        const response = await adminService.getPresignedUrl(imageName);
-        commit('SET_FCPRESIGNEDURL',response.data);
+        commit('SET_FCPROACTIVEHELPIMAGEURL',{});
+        const response = state.imageList.get(componentId);
+        if(response) {
+
+          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+        }
+        else {
+          const response = await adminService.getFCProactiveHelpImageUrl(componentId);
+          state.imageList.set(componentId, response);
+          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+        }
       } catch(error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while getting presigned url',
-          consoleError: 'Error getting presigned url',
+          message: 'An error occurred while getting image url',
+          consoleError: 'Error getting image url',
         }, { root: true });
       }
     },
@@ -245,22 +243,7 @@ export default {
       }
     },
 
-    //uploadFormComponentsProactiveHelpImage
-    async uploadFCProactiveHelpImage({ commit,dispatch },imageData) {
-      try {
 
-        commit('SET_FCPROACTIVEHELPIMAGEUPLOAD','');
-        const res = await adminService.uploadImage(imageData);
-        if(res){
-          commit('SET_FCPROACTIVEHELPIMAGEUPLOAD',res.data.key);
-        }
-      } catch(error) {
-        dispatch('notifications/addNotification', {
-          message: 'An error occurred while uploading image.',
-          consoleError: 'Error getting uploading image',
-        }, { root: true });
-      }
-    },
     //listFormComponentsProactiveHelp
     async listFCProactiveHelp({ commit, dispatch }) {
       try {
