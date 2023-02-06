@@ -1018,38 +1018,3 @@ describe(`DELETE ${basePath}/formId/apiKey`, () => {
     expect(response.body).toBeTruthy();
   });
 });
-
-describe(`GET ${basePath}/formcomponentsnames/proactivehelp/list`, () => {
-
-  it('should return 204', async () => {
-
-    // mock a success return value...
-    service.listFormComponentsnamesProactiveHelp = jest.fn().mockReturnValue({});
-
-    const response = await request(app).get(`${basePath}/formcomponentsnames/proactivehelp/list`);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBeTruthy();
-  });
-
-
-  it('should handle 401', async () => {
-    // mock an authentication/permission issue...
-    service.listFormComponentsnamesProactiveHelp = jest.fn(() => { throw new Problem(401); });
-
-    const response = await request(app).get(`${basePath}/formcomponentsnames/proactivehelp/list`);
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toBeTruthy();
-  });
-
-  it('should handle 500', async () => {
-    // mock an unexpected error...
-    service.listFormComponentsnamesProactiveHelp = jest.fn(() => { throw new Error(); });
-
-    const response = await request(app).get(`${basePath}/formcomponentsnames/proactivehelp/list`);
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toBeTruthy();
-  });
-});

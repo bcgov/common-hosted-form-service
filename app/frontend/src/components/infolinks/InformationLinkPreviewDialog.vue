@@ -2,7 +2,7 @@
   <v-row justify="center" class="mb-5">
     <v-dialog
       v-model="dialog"
-      :width="component.image?'70%':'40%'"
+      :width="fcProactiveHelpImageUrl?'70%':'40%'"
       @click:outside="onCloseDialog"
     >
       <v-card >
@@ -13,7 +13,7 @@
               <div class="align-self-center cursor"><font-awesome-icon icon="fa-solid fa-xmark" :size="'1x'" inverse @click="onCloseDialog"/></div>
             </v-col>
           </v-row>
-          <v-row class="mt-6" v-if="component&&component.image">
+          <v-row class="mt-6" v-if="fcProactiveHelpImageUrl">
             <v-col md="6" >
               <div class="text" data-cy="preview_text_field" ref="preview_text_field">
                 {{component&&component.description}}
@@ -22,7 +22,7 @@
             <v-col md="6" >
               <v-img
                 data-cy="preview_image_field"
-                :src="component.image"
+                :src="fcProactiveHelpImageUrl"
               ></v-img>
             </v-col>
           </v-row>
@@ -50,8 +50,6 @@ import { faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark,faSquareArrowUpRight);
 
-import { mapActions,mapGetters } from 'vuex';
-
 export default {
   name:'InformationLinkPreviewDialog',
 
@@ -62,16 +60,13 @@ export default {
   },
   props: {
     showDialog:{ type: Boolean, required: true },
-    component:{ type: Object }
+    component:{ type: Object },
+    fcProactiveHelpImageUrl:undefined
   },
   methods:{
-    ...mapActions('admin', ['getPresignedUrl']),
     onCloseDialog() {
       this.$emit('close-dialog');
     }
-  },
-  computed: {
-    ...mapGetters('admin',['fcPresignedUrl']),
   },
   watch: {
 
