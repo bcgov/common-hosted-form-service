@@ -3,7 +3,7 @@
     <v-btn v-if="authenticated" dark outlined @click="logout">
       <span>Logout</span>
     </v-btn>
-    <v-btn v-else-if="hasLogin" dark outlined @click="login">
+    <v-btn v-else-if="hasLogin" dark outlined @click="login('idir')">
       <span>Login</span>
     </v-btn>
   </div>
