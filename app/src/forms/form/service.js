@@ -1,7 +1,6 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const myCache = require('../common/cache/memoryCache');
 
 const {
   FileStorage,
@@ -17,7 +16,6 @@ const {
   FormSubmissionUser,
   IdentityProvider,
   SubmissionMetadata,
-  FormComponentsProactiveHelp
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -568,71 +566,7 @@ const service = {
       .deleteById(currentKey.id)
       .throwIfNotFound();
   },
-  // ----------------------------------------------------------------------Api Key
 
-  /**
-   * @function listFormComponentsnamesProactiveHelp
-   * Search for all form components help information
-   * @returns {Promise} An objection query promise
-   */
-  listFormComponentsnamesProactiveHelp: async () => {
-
-    let cache = myCache.get('proactiveHelpComponentsNames');
-    if(cache) {
-      return cache;
-    }
-    else {
-      const result = await FormComponentsProactiveHelp.query()
-        .modify('distinctOnComponentNameAndGroupName');
-      if(result) {
-
-        let filterResult= result.map(item=> {
-          return ({id:item.id, componentName:item.componentname, groupName:item.groupname, status:item.publishstatus });
-        });
-
-        let sortedResult = await filterResult.reduce(function (r, a) {
-          r[a.groupName] = r[a.groupName] || [];
-          r[a.groupName].push(a);
-          return r;
-        }, Object.create(null));
-
-        myCache.set('proactiveHelpComponentsNames', sortedResult);
-        return sortedResult;
-      }
-    }
-    return {};
-  },
-
-  /**
-   * @function readFormComponentsProactiveHelp
-   * Search for form components help information
-   * @returns {Promise} An objection query promise
-   */
-  readFormComponentsProactiveHelp: async (componentId, groupName) => {
-    let cache = myCache.get('proactiveHelpList');
-    if(cache) {
-      let elements = cache[groupName];
-      if(elements&&elements.length>0) {
-        for(const element of elements) {
-          if(element.id===componentId) {
-            return element;
-          }
-        }
-      }
-    }
-    else {
-      const result = await FormComponentsProactiveHelp.query()
-        .modify('findByComponentId',componentId);
-      if(result.length===1) {
-        const item = result[0];
-        let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
-        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
-          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-          imageName:item.componentimagename });
-      }
-    }
-    return {};
-  },
 };
 
 module.exports = service;

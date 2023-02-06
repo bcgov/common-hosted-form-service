@@ -234,23 +234,5 @@ module.exports = {
       next(error);
     }
   },
-  listFormComponentsnamesProactiveHelp:async(req,res,next)=> {
-    try{
-      const response = await service.listFormComponentsnamesProactiveHelp();
-      res.status(200).json(response);
-    } catch(error){
-      next(error);
-    }
-  },
-
-
-  readFormComponentsProactiveHelp:async(req,res,next)=> {
-    try{
-      const response = await service.readFormComponentsProactiveHelp(req.params.componentId, req.params.groupName);
-      res.status(200).json(response);
-    } catch(error){
-      next(error);
-    }
-  },
 
 };

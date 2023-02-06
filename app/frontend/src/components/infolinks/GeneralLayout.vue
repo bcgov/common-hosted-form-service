@@ -53,13 +53,14 @@
     <InformationLinkPreviewDialog :showDialog="showPreviewDialog"
                                   v-if="showPreviewDialog"
                                   @close-dialog="onPreviewDialog"
+                                  :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"
                                   :component="component"/>
   </div>
 </template>
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { faPenToSquare,faEye } from '@fortawesome/free-solid-svg-icons';
 import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
 import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
@@ -93,7 +94,9 @@ export default{
       ],
     };
   },
-
+  computed: {
+    ...mapGetters('admin',['fcProactiveHelpImageUrl']),
+  },
   props: {
     layoutList: {
       type:Array,
@@ -106,7 +109,7 @@ export default{
     groupName:String
   },
   methods: {
-    ...mapActions('admin', ['updateFCProactiveHelpStatus']),
+    ...mapActions('admin', ['updateFCProactiveHelpStatus', 'getFCProactiveHelpImageUrl']),
 
     //used to open form component help information dialog
     onDialog() {
@@ -132,8 +135,10 @@ export default{
       this.getComponent(componentName);
       this.onDialog();
     },
-    onOpenPreviewDialog(componentName) {
-      this.getComponent(componentName);
+    async onOpenPreviewDialog(componentName) {
+      const item = this.componentsList.find(item => item.componentName===componentName);
+      await this.getFCProactiveHelpImageUrl(item.id);
+      this.getComponent(item.componentName);
       this.onPreviewDialog();
     },
     getComponent(componentName) {

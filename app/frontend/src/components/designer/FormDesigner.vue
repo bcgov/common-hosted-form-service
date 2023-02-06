@@ -82,7 +82,8 @@
     />
     <InformationLinkPreviewDialog :showDialog="showHelpLinkDialog"
                                   @close-dialog="onShowClosePreveiwDialog"
-                                  :component="component"/>
+                                  :component="component"
+                                  :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"/>
 
     <FloatButton
       placement="bottom-right"
@@ -190,7 +191,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('form', ['fcNamesProactiveHelpList', 'fCHelpInfoObject']),
+    ...mapGetters('form', ['fcProactiveHelpGroupList','fcProactiveHelpImageUrl']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapGetters('form', ['builder']),
     ...mapFields('form', [
@@ -305,7 +306,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setDirtyFlag','fetchFCHelpInfoObject']),
+    ...mapActions('form', ['fetchForm','setDirtyFlag','getFCProactiveHelpImageUrl']),
     ...mapActions('notifications', ['addNotification']),
 
 
@@ -415,11 +416,11 @@ export default {
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
-      if(this.fcNamesProactiveHelpList) {
-        for (const  [title,elements] of Object.entries(this.fcNamesProactiveHelpList)) {
+      if(this.fcProactiveHelpGroupList) {
+        for (const  [groupName,elements] of Object.entries(this.fcProactiveHelpGroupList)) {
           let extractedElementsNames = this.extractPublishedElement(elements);
           for (const [key,builderElements] of Object.entries(builder)) {
-            if(title===builderElements.title){
+            if(groupName===builderElements.title){
               let containerId = `group-container-${key}`;
               let containerEl = document.getElementById(containerId);
               if(containerEl){
@@ -435,7 +436,7 @@ export default {
                     child.style.float='right';
                     child.style.fontSize='14px';
                     child.addEventListener('click', function() {
-                      self.showHelperClicked(self.findPublishedElement(elements, elementName, title));
+                      self.showHelperClicked(elementName, groupName);
                     });
                     containerEl.children[i].appendChild(child);
                   }
@@ -457,13 +458,10 @@ export default {
       return  publishedComponentsNames;
     },
 
-    findPublishedElement(elements,componentName, groupName) {
-      return elements.find(element=>element.componentName===componentName && element.groupName===groupName);
-    },
-    async showHelperClicked(element) {
-
-      await this.fetchFCHelpInfoObject({componentId:element.id, groupName:element.groupName});
-      this.component=this.fCHelpInfoObject;
+    async showHelperClicked(elementName, groupName) {
+      const elements = this.fcProactiveHelpGroupList[groupName];
+      this.component = elements.find(element=>element.componentName===elementName);
+      await this.getFCProactiveHelpImageUrl(this.component.id);
       this.onShowClosePreveiwDialog();
     },
     onShowClosePreveiwDialog(){

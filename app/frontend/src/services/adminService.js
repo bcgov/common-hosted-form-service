@@ -141,18 +141,6 @@ export default {
     return appAxios().put(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`);
   },
 
-  /**
-   * @function uploadImage
-   * upload image to storage facility (e.g. s3)
-   * @param {Object} imageData component name and component image encoded into base64
-   * @returns {Promise} An axios response
-   */
-  async uploadImage(imageData) {
-    return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/upload`,imageData);
-
-    //return await axios.post('http://localhost:3000/api/v1/object/singleUpload/1d295570-2ad7-491e-a23b-c7eac158fe72',
-    //  {'folder':'commoncomponenthelplink',imageData:{...imageData}});
-  },
 
   /**
    * @function getPresignedUrl
@@ -160,11 +148,8 @@ export default {
    * @param {Object} imageName component name and component image encoded into base64
    * @returns {Promise} An axios response
   */
-  async getPresignedUrl(imageName) {
-    return appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/signedUrl/${imageName}`);
-
-    //return await axios.get('http://localhost:3000/api/v1/object/signedUrl/1d295570-2ad7-491e-a23b-c7eac158fe72',
-    //  { params: { imageName: imageName,folder:'commoncomponenthelplink'  } });
+  async getFCProactiveHelpImageUrl(componentId) {
+    return appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/imageUrl/${componentId}`);
   },
 
   /**

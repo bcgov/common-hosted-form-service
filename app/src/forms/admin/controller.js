@@ -1,8 +1,6 @@
 const Problem = require('api-problem');
-
 const service = require('./service');
 const formService = require('../form/service');
-const fileService = require('./fileService');
 const rbacService = require('../rbac/service');
 
 module.exports = {
@@ -110,19 +108,10 @@ module.exports = {
     }
   },
 
-  uploadImage: async(req,res,next)=> {
+  getFCProactiveHelpImageUrl:async(req, res, next)=> {
     try{
-      const response = await fileService.create(req.body);
-      res.status(200).json({'key':response.key});
-    } catch(error){
-      next(error);
-    }
-  },
-
-  getSignedImageUrl:async(req, res, next)=> {
-    try{
-      const response = await fileService.signedUrl(req.params);
-      res.status(200).json(response);
+      const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
+      res.status(200).send(response);
     } catch(error){
       next(error);
     }
