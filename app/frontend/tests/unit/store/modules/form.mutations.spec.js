@@ -115,19 +115,19 @@ describe('form mutations', () => {
     expect(state.version).toEqual(obj);
   });
 
-  it('SET_FCPROACTIVEHELPGROUPOBJECT update form state', () => {
+  it('SET_FCPROACTIVEHELPGROUPLIST get form state', () => {
     const obj = {};
-    store.mutations.SET_FCHLEPINFOOBJECT(state, obj);
+    store.mutations.SET_FCPROACTIVEHELPGROUPLIST(state, obj);
 
-    expect(state.version).toBeTruthy();
-    expect(state.version).toEqual(obj);
+    expect(state.fcProactiveHelpGroupList).toBeTruthy();
+    expect(state.fcProactiveHelpGroupList).toEqual(obj);
   });
 
-  it('SET_FCNAMESPROACTIVEHELPLIST get form state', () => {
-    const obj = {};
-    store.mutations.SET_FCNAMESPROACTIVEHELPLIST(state, obj);
+  it('SET_FCPROACTIVEHELPIMAGEURL get form state', () => {
+    const obj = '';
+    store.mutations.SET_FCPROACTIVEHELPIMAGEURL(state, obj);
 
-    expect(state.version).toBeTruthy();
-    expect(state.version).toEqual(obj);
+    expect(state.fcProactiveHelpImageUrl).toEqual('');
+    expect(state.fcProactiveHelpImageUrl).toEqual(obj);
   });
 });

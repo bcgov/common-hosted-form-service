@@ -120,38 +120,5 @@ describe('Admin service', () => {
     expect(fields).toEqual(formComponentsHelpInfo[1]);
   });
 
-  it('readProactiveHelpComponentsNames()',  async () => {
 
-    const formComponentsHelpInfo = [{
-      componentname:'Content',
-      externallink:'https://helplink.com',
-      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
-      version:1,
-      groupname:'Basic Layout',
-      description:'gughuhiuhuih',
-      publishstatus:false
-    },
-    {
-      componentname:'Text Field',
-      externallink:'https://helplink.com',
-      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
-      version:1,
-      groupname:'Basic Layout',
-      description:'gughuhiuhuih',
-      publishstatus:false
-    }];
-
-    formComponentsHelpInfo.reduce(function (r, a) {
-      r[a.groupName] = r[a.groupName] || [];
-      r[a.groupName].push(a);
-      return r;
-    }, Object.create(null));
-
-    // mock readVersion function
-    service.readProactiveHelpComponentsNames = jest.fn().mockReturnValue( formComponentsHelpInfo  );
-    // get fields
-    const fields = await service.readProactiveHelpComponentsNames();
-    // test cases
-    expect(Object.keys(fields).length).toEqual(2);
-  });
 });

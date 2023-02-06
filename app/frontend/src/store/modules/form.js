@@ -1,7 +1,7 @@
 import { getField, updateField } from 'vuex-map-fields';
 
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { apiKeyService, formService, rbacService, userService } from '@/services';
+import { apiKeyService, formService, rbacService, userService, adminService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 
@@ -42,9 +42,10 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    fcNamesProactiveHelpList:[], // Form Components Proactive Help Group Object
     version: {},
-    fCHelpInfoObject:{}
+    fcProactiveHelpGroupList:{},
+    imageList:new Map(),
+    fcProactiveHelpImageUrl:'',
   },
   getters: {
     getField, // vuex-map-fields
@@ -61,7 +62,8 @@ export default {
     fcNamesProactiveHelpList: state => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
     version: state => state.version,
     builder: state => state.builder,
-    fCHelpInfoObject: state => state.fCHelpInfoObject
+    fcProactiveHelpGroupList:state=>state.fcProactiveHelpGroupList,
+    fcProactiveHelpImageUrl:state=>state.fcProactiveHelpImageUrl,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -107,15 +109,17 @@ export default {
     SET_BUILDER(state, builder) {
       state.builder = builder;
     },
-    //Form Component Proactive Help Group Object
-    SET_FCNAMESPROACTIVEHELPLIST(state,fcNamesProactiveHelpList){
-      state.fcNamesProactiveHelpList = fcNamesProactiveHelpList;
-    },
+
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
     },
-    SET_FCHLEPINFOOBJECT(state, fCHelpInfoObject) {
-      state.fCHelpInfoObject = fCHelpInfoObject;
+    //Form Component Proactive Help Group Object
+    SET_FCPROACTIVEHELPGROUPLIST(state,fcProactiveHelpGroupList){
+      state.fcProactiveHelpGroupList = fcProactiveHelpGroupList;
+    },
+    SET_FCPROACTIVEHELPIMAGEURL(state,fcProactiveHelpImageUrl)
+    {
+      state.fcProactiveHelpImageUrl = fcProactiveHelpImageUrl;
     },
   },
   actions: {
@@ -453,28 +457,35 @@ export default {
       }
     },
 
-    //listFormComponentsProactiveHelp
-    async listFCNamesProactiveHelp({ commit, dispatch }) {
+    async getFCProactiveHelpImageUrl({ commit, dispatch, state },componentId) {
       try {
-        // Get Form Components Proactive Help Group Object
-        commit('SET_FCNAMESPROACTIVEHELPLIST',[]);
-        const response = await formService.listFCNamesProactiveHelp();
-        commit('SET_FCNAMESPROACTIVEHELPLIST',response.data);
-      } catch(error) {
+        // Get Common Components Help Information
+        commit('SET_FCPROACTIVEHELPIMAGEURL',{});
+        const response = state.imageList.get(componentId);
+        if(response) {
 
+          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+        }
+        else {
+          const response = await adminService.getFCProactiveHelpImageUrl(componentId);
+          state.imageList.set(componentId, response);
+          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+        }
+      } catch(error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching form builder components',
-          consoleError: 'Error getting form builder components',
+          message: 'An error occurred while getting image url',
+          consoleError: 'Error getting image url',
         }, { root: true });
       }
     },
 
-    async fetchFCHelpInfoObject({ commit, dispatch }, {componentId, groupName}) {
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp({ commit, dispatch }) {
       try {
         // Get Form Components Proactive Help Group Object
-        commit('SET_FCHLEPINFOOBJECT',{});
-        const response = await formService.getFCHelpInfoObject(componentId, groupName);
-        commit('SET_FCHLEPINFOOBJECT',response.data);
+        commit('SET_FCPROACTIVEHELPGROUPLIST',{});
+        const response = await adminService.listFCProactiveHelp();
+        commit('SET_FCPROACTIVEHELPGROUPLIST',response.data);
       } catch(error) {
 
         dispatch('notifications/addNotification', {

@@ -41,7 +41,7 @@ export default {
   },
 
   methods:{
-    ...mapActions('form', ['listFCNamesProactiveHelp','deleteCurrentForm']),
+    ...mapActions('form', ['listFCProactiveHelp','deleteCurrentForm']),
   },
   computed: {
     ...mapGetters('form', ['form']),
@@ -57,7 +57,7 @@ export default {
       : next();
   },
   beforeMount() {
-    this.listFCNamesProactiveHelp();
+    this.listFCProactiveHelp();
   },
 };
 </script>

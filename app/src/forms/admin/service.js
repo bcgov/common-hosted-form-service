@@ -1,7 +1,6 @@
 const { Form, FormVersion, User, UserFormAccess,FormComponentsProactiveHelp } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
-const myCache = require('../common/cache/memoryCache');
 
 const service = {
 
@@ -183,44 +182,15 @@ const service = {
    * @returns {Promise} An objection query promise
    */
 
-  readFormComponentsProactiveHelp: async(id)=> {
+  readFormComponentsProactiveHelp: async()=> {
     const result = await FormComponentsProactiveHelp.query()
       .modify('distinctOnComponentNameAndGroupName');
     if(result) {
 
       let filterResult= result.map(item=> {
-        let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
-        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
+        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,
           version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
           imageName:item.componentimagename });
-      });
-
-      let sortedResult = filterResult.reduce(function (r, a) {
-        r[a.groupName] = r[a.groupName] || [];
-        r[a.groupName].push(a);
-        return r;
-      }, Object.create(null));
-
-      myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
-      myCache.set('proactiveHelpList', sortedResult);
-
-      return filterResult.find(item=>item.id===id);
-    }
-    return {};
-  },
-
-  /**
-   * @function readProactiveHelpComponentsNames
-   * update the publish status of each form component information help information
-   * @param {Object} param consist of publishStatus and componentId.
-   * @returns {Promise} An objection query promise
-  */
-  readProactiveHelpComponentsNames: async(result)=> {
-    let filterResult =[];
-
-    if(result!==undefined) {
-      filterResult= result.map(item=> {
-        return ({id:item.id, componentName:item.componentName, groupName:item.groupName, status:item.status });
       });
 
       return filterResult.reduce(function (r, a) {
@@ -228,7 +198,25 @@ const service = {
         r[a.groupName].push(a);
         return r;
       }, Object.create(null));
+
     }
+    return {};
+  },
+
+  /**
+  * @function getFCProactiveHelpImageUrl
+  * get form component proactive help image
+  * @param {Object} param consist of publishStatus and componentId.
+  * @returns {Promise} An objection query promise
+  */
+  getFCProactiveHelpImageUrl: async(componentId) =>{
+
+    let result=[];
+    result = await FormComponentsProactiveHelp.query()
+      .modify('findByComponentId',componentId);
+    let item = result.length>0?result[0]:null;
+    let imageUrl = item!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+    return {url: imageUrl} ;
   },
 
   /**
@@ -253,6 +241,7 @@ const service = {
     }
   },
 
+
   /**
    * @function listFormComponentsProactiveHelp
    * Search for all form components help information
@@ -260,38 +249,23 @@ const service = {
    */
   listFormComponentsProactiveHelp: async () => {
     let result=[];
-    let filterResult=undefined;
-    let cache = myCache.get('proactiveHelpList');
+    result = await FormComponentsProactiveHelp.query()
+      .modify('selectWithoutImages');
+    if(result) {
+      let filterResult= result.map(item=> {
+        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,
+          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
+          imageName:item.componentimagename });
+      });
+      return await filterResult.reduce(function (r, a) {
+        r[a.groupName] = r[a.groupName] || [];
+        r[a.groupName].push(a);
+        return r;
+      }, Object.create(null));
 
-    if(cache) {
-      return cache;
-    }
-    else {
-      result = await FormComponentsProactiveHelp.query()
-        .modify('distinctOnComponentNameAndGroupName');
-      if(result) {
-        filterResult= result.map(item=> {
-          let uri = item.image!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
-          return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,image:uri,
-            version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-            imageName:item.componentimagename });
-        });
-
-        let sortedResult = filterResult.reduce(function (r, a) {
-          r[a.groupName] = r[a.groupName] || [];
-          r[a.groupName].push(a);
-          return r;
-        }, Object.create(null));
-
-        await myCache.set('proactiveHelpComponentsNames', await service.readProactiveHelpComponentsNames(filterResult));
-        await myCache.set('proactiveHelpList', sortedResult);
-
-        return sortedResult;
-      }
     }
     return [];
   },
-
 };
 
 module.exports = service;

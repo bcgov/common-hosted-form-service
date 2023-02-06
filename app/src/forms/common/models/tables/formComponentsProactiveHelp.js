@@ -23,6 +23,12 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
       distinctOnComponentNameAndGroupName(builder) {
         builder.distinctOn(['componentname', 'groupname']);
       },
+      selectWithoutImages(query) {
+        query.select('id', 'componentname', 'externallink', 'imagetype', 'groupname', 'publishstatus', 'islinkenabled', 'description','componentimagename');
+      },
+      selectImageUrl(query, id) {
+        query.select('image').where('id', id);
+      },
       findByComponentId(query, value) {
         if (value !== undefined) {
           query.where('id', value);
