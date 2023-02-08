@@ -100,8 +100,6 @@ objects:
                       name: "patroni-${JOB_NAME}-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
-                - name: SERVER_HOST
-                  value: "${SERVER_HOST}"
       template:
         metadata:
           labels:
@@ -245,6 +243,8 @@ objects:
                     name: "${APP_NAME}-sc-config"
                 - configMapRef:
                     name: "${APP_NAME}-server-config"
+                - configMapRef:
+                    name: "${APP_NAME}-service-config"
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
                 - configMapRef:

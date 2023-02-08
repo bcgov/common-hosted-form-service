@@ -2794,6 +2794,9 @@ components:
             enableSubmitterDraft:
               type: boolean
               example: true
+            schedule:
+              type: Object
+              example: {}
     FormCore:
       type: object
       properties:

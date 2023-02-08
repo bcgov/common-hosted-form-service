@@ -12,10 +12,30 @@ labels:
 metadata:
   name: "chefs-app-cronjob"
 objects:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: "allow-${APP_NAME}-cronjob-${JOB_NAME}-to-${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      # Allow cronjob to talk to chefs add via service
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  type: trigger
+                  workload: mailcronjob
+          ports:
+            - port: 8080
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: "${APP_NAME}-${JOB_NAME}"
+          deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+          role: app
   - apiVersion: batch/v1
     kind: CronJob
     metadata:
-      name: cronjobs
+      name: "${APP_NAME}-cronjob-${JOB_NAME}"
     spec:
       schedule: "0 8 * * *"
       concurrencyPolicy: "Replace"
@@ -29,6 +49,8 @@ objects:
             metadata:
               labels:
                 parent: "cronjobpi"
+                workload: mailcronjob
+                type: trigger
             spec:
               containers:
               - name: my-container
@@ -36,9 +58,9 @@ objects:
                 env:
                 - name: APITOKEN
                   valueFrom:
-                  secretKeyRef:
-                    name: "${NAME}-${INSTANCE}-secret"
-                    key: mailapitoken
+                    secretKeyRef:
+                      name: "chefs-${JOB_NAME}-secret"
+                      key: mailapitoken
                 command:
                   - /bin/sh
                   - -ec
