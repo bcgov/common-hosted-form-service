@@ -42,7 +42,8 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    version: {}
+    version: {},
+    versions:[]
   },
   getters: {
     getField, // vuex-map-fields
@@ -57,6 +58,7 @@ export default {
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
     version: state => state.version,
+    versions: state => state.versions
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -99,7 +101,9 @@ export default {
     SET_VERSION(state, version) {
       state.version = version;
     },
-
+    SET_FORM_VERSIONS (state, versions) {
+      state.versions = versions;
+    },
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
     },
@@ -444,5 +448,19 @@ export default {
       window.onbeforeunload = isDirty ? () => true : null;
       commit('SET_FORM_DIRTY', isDirty);
     },
+
+    async listVersions({ commit, dispatch },formId) {
+      try {
+        const { data } = await formService.listVersions(formId);
+        let converted = data.map((data)=>{return {id:data.version, version:data.version};});
+        commit('SET_FORM_VERSIONS', converted);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while trying to fetch the form versions.',
+          consoleError: `Error getting version list for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+
+    }
   },
 };
