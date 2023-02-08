@@ -1,6 +1,6 @@
 <template>
   <v-tabs>
-    <v-tab >Formss</v-tab>
+    <v-tab >Forms</v-tab>
     <v-tab>Users</v-tab>
     <v-tab>Developer</v-tab>
     <v-tab data-cy="infoLinks">Info Links</v-tab>
