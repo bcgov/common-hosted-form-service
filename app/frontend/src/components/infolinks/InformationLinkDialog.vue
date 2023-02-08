@@ -195,7 +195,6 @@ export default {
         reader.onload=async(e)=> {
           this.image=e.target.result;
           this.imageName=image.name;
-          //await this.uploadFormComponentsHelpInfoImage({componentName:this.componentName_,image:this.image});
         };
         if(image) {
           await reader.readAsDataURL(image);

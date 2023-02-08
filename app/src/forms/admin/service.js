@@ -141,14 +141,15 @@ const service = {
 
       if(id) {
         await FormComponentsProactiveHelp.query(trx).patchAndFetchById(data.componentId, {
-          componentname : data&&data.componentName,
-          externallink : data&&data.externalLink,
+          componentName : data&&data.componentName,
+          externalLink : data&&data.externalLink,
           image : buf,
-          componentimagename : data&&data.imageName,
-          groupname : data&&data.groupName,
-          islinkenabled : data&&data.isLinkEnabled,
+          imageType : imageType,
+          componentImageName : data&&data.imageName,
+          groupName : data&&data.groupName,
+          isLinkEnabled : data&&data.isLinkEnabled,
           description : data&&data.description,
-          publishstatus : data&&data.status,
+          publishStatus : data&&data.status,
           createdBy : 'ADMIN'
         });
       }
@@ -156,15 +157,15 @@ const service = {
         const obj = {};
         id = uuidv4();
         obj.id = id;
-        obj.componentname = data&&data.componentName;
-        obj.externallink = data&&data.externalLink;
+        obj.componentName = data&&data.componentName;
+        obj.externalLink = data&&data.externalLink;
         obj.image = buf;
-        obj.componentimagename = data&&data.imageName;
-        obj.imagetype = imageType,
-        obj.groupname = data&&data.groupName;
-        obj.islinkenabled = data&&data.isLinkEnabled;
+        obj.componentImageName = data&&data.imageName;
+        obj.imageType = imageType,
+        obj.groupName = data&&data.groupName;
+        obj.isLinkEnabled = data&&data.isLinkEnabled;
         obj.description = data&&data.description;
-        obj.publishstatus = data&&data.status;
+        obj.publishStatus = data&&data.status;
         obj.createdBy = 'ADMIN';
         await FormComponentsProactiveHelp.query(trx).insert(obj);
       }
@@ -188,9 +189,9 @@ const service = {
     if(result) {
 
       let filterResult= result.map(item=> {
-        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,
-          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-          imageName:item.componentimagename });
+        return ({id:item.id,status:item.publishStatus,componentName:item.componentName,externalLink:item.externalLink,
+          version:item.version,groupName:item.groupName,description:item.description, isLinkEnabled:item.isLinkEnabled,
+          imageName:item.componentImageName });
       });
 
       return filterResult.reduce(function (r, a) {
@@ -215,7 +216,7 @@ const service = {
     result = await FormComponentsProactiveHelp.query()
       .modify('findByComponentId',componentId);
     let item = result.length>0?result[0]:null;
-    let imageUrl = item!==null?'data:' + item.imagetype + ';' + 'base64' + ',' + item.image:'';
+    let imageUrl = item!==null?'data:' + item.imageType + ';' + 'base64' + ',' + item.image:'';
     return {url: imageUrl} ;
   },
 
@@ -230,7 +231,7 @@ const service = {
     try {
       trx = await FormComponentsProactiveHelp.startTransaction();
       await FormComponentsProactiveHelp.query(trx).patchAndFetchById(param.componentId, {
-        publishstatus: JSON.parse(param.publishStatus),
+        publishStatus: JSON.parse(param.publishStatus),
         updatedBy: 'ADMIN'
       });
       await trx.commit();
@@ -253,9 +254,9 @@ const service = {
       .modify('selectWithoutImages');
     if(result) {
       let filterResult= result.map(item=> {
-        return ({id:item.id,status:item.publishstatus,componentName:item.componentname,externalLink:item.externallink,
-          version:item.version,groupName:item.groupname,description:item.description, isLinkEnabled:item.islinkenabled,
-          imageName:item.componentimagename });
+        return ({id:item.id,status:item.publishStatus,componentName:item.componentName,externalLink:item.externalLink,
+          version:item.version,groupName:item.groupName,description:item.description, isLinkEnabled:item.isLinkEnabled,
+          imageName:item.componentImageName });
       });
       return await filterResult.reduce(function (r, a) {
         r[a.groupName] = r[a.groupName] || [];
