@@ -156,11 +156,35 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
   }
 };
 
+const unwindPath = (schema) => {
+  let path = [];
+  for(let obj of schema ) {
+    const findField = (obj, keyPath) => {
+      let keys = keyPath;
+      Object.keys(obj).forEach((key)=>{
+        if(Array.isArray(obj[key])) {
+          path.push(keys!== undefined ? keys+'.'+key:key);
+          for (let value of obj[key]) {
+            findField(value,  keys!== undefined ? keys+'.'+key:key );
+          }
+        }
+        if(obj[key] instanceof Object){
+          findField(obj[key], keys!== undefined ? keys+'.'+key:key);
+        }
+      });
+    };
+    findField(obj, undefined);
+  }
+  return path;
+};
+
+
 
 module.exports = {
   falsey,
   setupMount,
   queryUtils,
   typeUtils,
-  flattenComponents
+  flattenComponents,
+  unwindPath
 };
