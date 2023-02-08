@@ -330,7 +330,7 @@ const service = {
     // what output format?
     const exportType = service._exportType(params);
     const exportFormat = service._exportFormat(params);
-    const exportTemplate = params.template?params.template:'templateA';
+    const exportTemplate = params.template?params.template:'flattenedWithFilled';
     const columns = params.columns?params.columns:undefined;
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, params.version?parseInt(params.version):1, form, params);
@@ -342,6 +342,3 @@ const service = {
 };
 
 module.exports = service;
-
-
-//"\"form.confirmationId\",\"form.formName\",\"form.version\",\"form.createdAt\",\"form.fullName\",\"form.username\",\"form.email\",\"heading\",\"AssetTag\",\"siteContactName\",\"siteContactIdir\",\"siteContactPhone\",\"ExecPosition\",\"selectAddressAndCity\",\"Suite\",\"Floor\",\"postalCode\",\"refreshOrCancel\",\"newWorkstationSelection\",\"ministry1\",\"recipientIDIR\",\"recipientFirstName\",\"recipientLastName\",\"supervisorName\",\"supervisorIDIR\",\"supervisorEmail\",\"accountCoding\",\"expenseAuthority\",\"businessJustification\",\"additionalHardware\",\"additionalCommentsQuestions\"\n\"059AB931\",\"Fisheries\",1,\"2023-02-07T16:41:46.284Z\",\"Ayobamii Idowu\",\"AIDOWU\",\"ayobamii.idowu@gov.bc.ca\",,,\"dfgdfdf\",\"dfsdfsd\",\"234-234-2343\",true,,\"4325234\",\"23\",\"T8H-0T7\",\"refresh\",\"15HPL\",\"EMLI\",\"fdf\",\"ffdgdf\",\"fgfdg\",\"fdgf\",\"fdgf\",\"t@gmail.com\",\"GGE-GEERR-ERERE-6301-REREGRE\",\"Ayobami\",\"fdfdfdgffdgd\",\"dfgdfgffd\",\"dfgfgdfgdfg\""
