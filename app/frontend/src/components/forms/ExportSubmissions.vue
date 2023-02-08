@@ -26,6 +26,7 @@
         <v-card-title class="text-h5 pb-0 titleObjectStyle">Export Submissions to File</v-card-title>
         <v-card-text>
           <hr style="height: 2px; border: none;background-color:#707070C1;margin-top:5px;"/>
+
           <v-row>
             <v-col>
               <p class="subTitleObjectStyle">Select the submission date</p>
@@ -133,18 +134,53 @@
 
           <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-8' : ''">Select your export options</p>
           <v-radio-group v-model="exportFormat" hide-details="auto">
-            <v-radio label="CSV" value="csv">
-              <template v-slot:label>
-                <span class="radioboxLabelStyle">CSV</span>
-              </template>
-            </v-radio>
             <v-radio label="JSON" value="json">
               <template v-slot:label>
                 <span class="radioboxLabelStyle">JSON</span>
               </template>
             </v-radio>
+            <v-radio label="CSV" value="csv">
+              <template v-slot:label>
+                <span class="radioboxLabelStyle">CSV</span>
+              </template>
+            </v-radio>
           </v-radio-group>
-
+          <v-row v-if="exportFormat==='csv'" class="mt-5">
+            <v-col>
+              <p class="subTitleObjectStyle">Select the submission template</p>
+              <v-radio-group v-model="csvTemplates" hide-details="auto">
+                <v-radio label="A" value="flattenedWithBlankOut">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 1</span>
+                  </template>
+                </v-radio>
+                <v-radio label="B" value="flattenedWithFilled">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 2</span>
+                  </template>
+                </v-radio>
+                <v-radio label="C" value="unflattened">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 3</span>
+                  </template>
+                </v-radio>
+              </v-radio-group>
+            </v-col>
+          </v-row>
+          <v-row v-if="exportFormat==='csv'" class="mt-5">
+            <v-col
+              cols="6" >
+              <div class="subTitleObjectStyle">Select the submission version</div>
+              <v-select
+                item-text="id"
+                item-value="version"
+                :items="versions"
+                v-model="versionSelected"
+                class="mt-0"
+                style="width:25%; margin-top:0px;"
+              ></v-select>
+            </v-col>
+          </v-row>
           <div class="mt-6 mb-3 fileLabelStyle">
             File Name and Type: <strong>{{ fileName }}</strong>
           </div>
@@ -176,6 +212,7 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
+
 export default {
   data() {
     return {
@@ -184,9 +221,11 @@ export default {
       endDate: moment(Date()).format('YYYY-MM-DD'),
       endDateMenu: false,
       dataFields:false,
-      exportFormat: 'csv',
+      exportFormat: 'json',
       startDate: moment(Date()).format('YYYY-MM-DD'),
       startDateMenu: false,
+      versionSelected:1,
+      csvTemplates:'flattenedWithBlankOut'
 
     };
   },
@@ -196,13 +235,14 @@ export default {
       let  momentString = momentObj.format('YYYY-MM-DD');
       return momentString;
     },
-    ...mapGetters('form', ['form', 'userFormPreferences']),
+    ...mapGetters('form', ['form', 'userFormPreferences','versions']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('form', ['listVersions']),
     async callExport() {
       try {
         // UTC start of selected start date...
@@ -217,9 +257,12 @@ export default {
               .utc()
               .format()
             : undefined;
+
         const response = await formService.exportSubmissions(
           this.form.id,
           this.exportFormat,
+          this.csvTemplates,
+          this.versionSelected,
           {
             minDate: from,
             maxDate: to,
@@ -228,6 +271,7 @@ export default {
           },
           this.dataFields?this.userFormPreferences.preferences:undefined
         );
+
         if (response && response.data) {
           const blob = new Blob([response.data], {
             type: response.headers['content-type'],
@@ -245,6 +289,7 @@ export default {
         } else {
           throw new Error('No data in response from exportSubmissions call');
         }
+
       } catch (error) {
         this.addNotification({
           message:
@@ -258,13 +303,20 @@ export default {
     startDate() {
       this.endDate= moment(Date()).format('YYYY-MM-DD');
     },
+    async exportFormat(value) {
+      if(value==='csv') {
+        if(this.form.id) {
+          await this.listVersions(this.form.id);
+        }
+      }
+    },
     dateRange(value) {
       if(!value) {
         this.endDate= moment(Date()).format('YYYY-MM-DD');
         this.startDate= moment(Date()).format('YYYY-MM-DD');
       }
     }
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>
