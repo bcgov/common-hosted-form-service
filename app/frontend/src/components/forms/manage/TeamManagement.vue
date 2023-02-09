@@ -229,7 +229,7 @@ export default {
   computed: {
     ...mapFields('form', ['form.userType']),
     ...mapGetters('form', ['permissions']),
-    ...mapGetters('auth', ['userName']),
+    ...mapGetters('auth', ['user']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
@@ -356,11 +356,11 @@ export default {
     removeUserWithOwnerPermission() {
       if(this.itemToDelete.size===this.tableData.length) {
         for (let user of this.tableData) {
-          if (user.username===this.userName && user['owner']) {
+          if (user.username===this.user.username && user['owner']) {
             this.itemToDelete.delete(user.userId);
             break;
           }
-          else if (user.username===this.userName && !user['owner']) {
+          else if (user.username===this.user.username && !user['owner']) {
             this.itemToDelete.delete(user.userId);
             continue;
           }
