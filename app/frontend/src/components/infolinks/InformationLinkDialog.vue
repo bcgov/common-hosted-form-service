@@ -19,7 +19,7 @@
           </v-row>
           <v-row v-if="imageSizeError">
             <v-col>
-              <div style="margin:0px; padding:0px" v-text="'Large image. Image size cannot be large than 10mb'" class="red--text"/>
+              <div style="margin:0px; padding:0px" v-text="'Large image. Image size cannot be large than .5mb'" class="red--text"/>
             </v-col>
           </v-row>
 
