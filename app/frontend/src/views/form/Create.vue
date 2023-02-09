@@ -1,4 +1,5 @@
 <template>
+
   <BaseSecure :idp="IDP.IDIR">
     <h1 class="my-6 text-center">Create New Form</h1>
     <v-stepper v-model="creatorStep" class="elevation-0">
@@ -33,13 +34,13 @@
             class="py-4"
             color="primary"
             :disabled="!settingsFormValid"
-            @click="creatorStep = 2"
+            @click="reRenderFormDesigner"
           >
             <span>Continue</span>
           </v-btn>
         </v-stepper-content>
         <v-stepper-content step="2" class="pa-1">
-          <FormDesigner @create-stepper="creatorStep = 1"/>
+          <FormDesigner ref="formDesigner"/>
           <v-btn class="my-4" outlined @click="creatorStep = 1">
             <span>Back</span>
           </v-btn>
@@ -79,10 +80,20 @@ export default {
     };
   },
   methods: {
-    ...mapActions('form', ['resetForm']),
+    ...mapActions('form', ['listFCProactiveHelp','resetForm']),
+    reRenderFormDesigner() {
+      this.creatorStep = 2;
+      this.$refs.formDesigner.onFormLoad();
+    }
   },
   created() {
     this.resetForm();
+  },
+  mounted() {
+    this.listFCProactiveHelp();
+    this.$nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
   },
   watch: {
     idps() {
