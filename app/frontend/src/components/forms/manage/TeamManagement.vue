@@ -355,7 +355,7 @@ export default {
     },
     removeUserWithOwnerPermission() {
       if(this.itemToDelete.size===this.tableData.length) {
-
+        let isOwnerFound = false;
         for (let user of this.tableData) {
           if (user.username===this.user.username && user['owner']) {
             this.itemToDelete.delete(user.userId);
@@ -365,9 +365,10 @@ export default {
             this.itemToDelete.delete(user.userId);
             continue;
           }
-          else if(user.owner) {
+          else if(user.owner && !isOwnerFound) {
             this.itemToDelete.delete(user.userId);
-            break;
+            isOwnerFound=true;
+            continue;
           }
         }
       }
