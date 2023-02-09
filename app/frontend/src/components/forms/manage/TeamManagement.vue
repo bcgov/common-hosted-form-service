@@ -132,9 +132,9 @@
               </div>
               <v-btn
                 v-else-if="header.value === 'actions'"
-                @click="onRemoveClick(item.userId)"
+                @click="onRemoveClick()"
                 color="red"
-                :disabled="updating"
+                :disabled="!selectedItemToDelete[tableData.indexOf(item)]"
                 icon
               >
                 <v-icon>remove_circle</v-icon>
@@ -174,9 +174,9 @@
             </div>
             <v-btn
               v-else-if="header.value === 'actions'"
-              @click="onRemoveClick(item.userId)"
+              @click="onRemoveClick()"
               color="red"
-              :disabled="updating"
+              :disabled="!selectedItemToDelete[tableData.indexOf(item)]"
               icon
             >
               <v-icon>remove_circle</v-icon>
@@ -337,17 +337,10 @@ export default {
     },
     selectAllUsersToDelete() {
       this.selectedItemToDelete.fill(this.selectAllCheckBox);
-      let isOwnerFound = this.tableData.find( user  => user.username === this.userName)['owner'];
-
-      for (const user of this.tableData) {
-        if( user.username===this.userName) {
-          continue;
-        }
-        if(!isOwnerFound && user.owner) {
-          isOwnerFound=true;
-          continue;
-        }
-        this.itemToDelete.add(user.userId);
+      this.itemToDelete.clear();
+      if(this.selectAllCheckBox) {
+        this.tableData.forEach(item => this.itemToDelete.add(item.userId));
+        this.removeUserWithOwnerPermission();
       }
     },
     selectEachUserToDelete(user, index) {
@@ -357,6 +350,25 @@ export default {
       }
       else {
         this.itemToDelete.delete(user.userId);
+      }
+      this.removeUserWithOwnerPermission();
+    },
+    removeUserWithOwnerPermission() {
+      if(this.itemToDelete.size===this.tableData.length) {
+        for (let user of this.tableData) {
+          if (user.username===this.userName && user['owner']) {
+            this.itemToDelete.delete(user.userId);
+            break;
+          }
+          else if (user.username===this.userName && !user['owner']) {
+            this.itemToDelete.delete(user.userId);
+            continue;
+          }
+          else if(user.owner) {
+            this.itemToDelete.delete(user.userId);
+            break;
+          }
+        }
       }
     },
     isAllUsersSelected() {
@@ -426,38 +438,17 @@ export default {
       }
       this.edited = true;
       this.setUserForms(userId);
+      this.selectAllCheckBox=false;
+      this.itemToDelete.clear();
     },
-    onRemoveClick(userId) {
-
-      (this.itemToDelete.size===0)?this.onSingleUserDelete(userId):this.onMultiUsersDelete();
-    },
-    onSingleUserDelete(userId) {
-      const ownerCount = this.tableData.reduce(
-        (acc, user) => (user.owner ? acc + 1 : acc),
-        0
-      );
-      const index = this.tableData.findIndex((u) => u.userId === userId);
-
-      if (this.tableData[index].owner && ownerCount === 1) {
-        this.ownerError(userId);
-      } else {
-        this.userId = userId;
-        this.showDeleteDialog = true;
-        this.deleteConfirmationMsg='Are you sure you want to remove this team member?';
-      }
-    },
-    onMultiUsersDelete() {
-
+    onRemoveClick() {
       let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
-
       if(!difference.some((user) => user.owner)) {
-        this.ownerError();
-      }else if(this.selectAllCheckBox){
         this.ownerError();
       }
       else {
+        this.deleteConfirmationMsg='Are you sure you wish to delete the selected member(s)?';
         this.showDeleteDialog = true;
-        this.deleteConfirmationMsg='Are you sure you wish to delete selected members?';
       }
     },
     ownerError() {
