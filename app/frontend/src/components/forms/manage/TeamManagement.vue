@@ -446,7 +446,7 @@ export default {
     onMultiUsersDelete() {
       if(this.itemToDelete.size === this.tableData.length) {
         this.showDeleteDialog = true;
-        this.deleteConfirmationMsg='Are you sure you wish to delete selected members?';
+        this.deleteConfirmationMsg='Are you sure you wish to delete the selected team members?';
 
       }
       else {
@@ -455,7 +455,7 @@ export default {
           this.ownerError();
         }else {
           this.showDeleteDialog = true;
-          this.deleteConfirmationMsg='Are you sure you wish to delete selected members?';
+          this.deleteConfirmationMsg='Are you sure you wish to delete the selected team members?';
         }
       }
     },

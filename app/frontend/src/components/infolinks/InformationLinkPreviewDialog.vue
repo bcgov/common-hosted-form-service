@@ -69,12 +69,8 @@ export default {
     }
   },
   watch: {
-
     showDialog() {
       this.dialog = this.showDialog;
-      //if(this.dialog){
-      //  this.getPresignedUrl(this.component.imageUrl);
-      //}
     },
   },
 };

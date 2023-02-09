@@ -424,7 +424,7 @@ export default {
               let containerId = `group-container-${key}`;
               let containerEl = document.getElementById(containerId);
               if(containerEl){
-                for(var i=0; i<containerEl.children.length; i++){
+                for(let i=0; i<containerEl.children.length; i++){
                   const self = this;
                   let elementName = containerEl.children[i].textContent.trim();
                   if(extractedElementsNames.includes(elementName))

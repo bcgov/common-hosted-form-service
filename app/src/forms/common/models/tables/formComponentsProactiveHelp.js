@@ -11,24 +11,25 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
     return {
       findByComponentName(query, value) {
         if (value !== undefined) {
-          query.where('componentname', value);
+          query.where('componentName', value);
         }
       },
-      findByComponentNameAndGroup(query, componentname, groupname) {
-        if (componentname !== undefined && groupname!==undefined) {
-          query.where('componentname', componentname)
-            .where('groupname', groupname);
+      findByComponentNameAndGroup(query, componentName, groupName) {
+        if (componentName !== undefined && groupName!==undefined) {
+          query.where('componentName', componentName)
+            .where('groupName', groupName);
         }
       },
       distinctOnComponentNameAndGroupName(builder) {
-        builder.distinctOn(['componentname', 'groupname']);
+        builder.distinctOn(['componentName', 'groupName']);
       },
       selectWithoutImages(query) {
-        query.select('id', 'componentname', 'externallink', 'imagetype', 'groupname', 'publishstatus', 'islinkenabled', 'description','componentimagename');
+        query.select('id', 'componentName', 'externalLink', 'imageType', 'groupName', 'publishStatus', 'isLinkEnabled', 'description','componentImageName');
       },
       selectImageUrl(query, id) {
         query.select('image').where('id', id);
       },
+      
       findByComponentId(query, value) {
         if (value !== undefined) {
           query.where('id', value);
@@ -40,17 +41,17 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['id','componentname','groupname'],
+      required: ['id','componentName','groupName'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
-        componentname: { type: 'string', minLength: 1, maxLength: 255 },
-        externallink: { type: 'string' },
+        componentName: { type: 'string', minLength: 1, maxLength: 255 },
+        externalLink: { type: 'string' },
         image: { type: 'string' },
-        componentimagename: { type: 'string' },
-        imagetype: { type: 'string' },
-        groupname: { type: 'string', minLength: 1, maxLength: 255 },
-        publishstatus:{type:'boolean'},
-        islinkenabled: {type:'boolean'},
+        componentImageName: { type: 'string' },
+        imageType: { type: 'string' },
+        groupName: { type: 'string', minLength: 1, maxLength: 255 },
+        publishStatus:{type:'boolean'},
+        isLinkEnabled: {type:'boolean'},
         description: { type: 'string'},
         ...stamps
       },
