@@ -29,12 +29,7 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
       selectImageUrl(query, id) {
         query.select('image').where('id', id);
       },
-      selectWithoutImages(query) {
-        query.select('id', 'componentname', 'externallink', 'imagetype', 'groupname', 'publishstatus', 'islinkenabled', 'description','componentimagename');
-      },
-      selectImageUrl(query, id) {
-        query.select('image').where('id', id);
-      },
+      
       findByComponentId(query, value) {
         if (value !== undefined) {
           query.where('id', value);
