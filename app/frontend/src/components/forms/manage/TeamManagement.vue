@@ -210,11 +210,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-
 import { rbacService, roleService } from '@/services';
 import { IdentityMode, FormPermissions, FormRoleCodes } from '@/utils/constants';
 import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
-
 export default {
   name: 'TeamManagement',
   components: {
@@ -331,7 +329,6 @@ export default {
           .forEach((role) => (row[role] = user.roles.includes(role)));
         return row;
       });
-
       this.edited = false;
       this.selectedItemToDelete = new Array(this.tableData.length).fill(false);
     },
@@ -465,7 +462,6 @@ export default {
         consoleError: 'Cannot remove as they are the only remaining owner of this form.',
       });
     },
-
     async removeUser() {
       this.showDeleteDialog = false;
       this.edited = true;
@@ -481,7 +477,6 @@ export default {
           }
         );
       }
-
       for (const userId of this.itemToDelete) {
         this.tableData = this.tableData.filter((u) => {
           u.userId !== userId;
