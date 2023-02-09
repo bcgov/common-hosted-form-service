@@ -185,7 +185,7 @@ const service = {
 
   readFormComponentsProactiveHelp: async()=> {
     const result = await FormComponentsProactiveHelp.query()
-      .modify('distinctOnComponentNameAndGroupName');
+      .modify('selectWithoutImages');
     if(result) {
 
       let filterResult= result.map(item=> {
