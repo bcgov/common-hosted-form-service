@@ -355,6 +355,7 @@ export default {
     },
     removeUserWithOwnerPermission() {
       if(this.itemToDelete.size===this.tableData.length) {
+
         for (let user of this.tableData) {
           if (user.username===this.user.username && user['owner']) {
             this.itemToDelete.delete(user.userId);
@@ -467,42 +468,28 @@ export default {
     async removeUser() {
       this.showDeleteDialog = false;
       this.edited = true;
-
-      if(this.itemToDelete.size===0) {
-        // Set all of userId's roles to false
-        const index = this.tableData.findIndex((u) => u.userId === this.userId);
+      this.selectAllCheckBox = false;
+      for (const userId of this.itemToDelete) {
+        const index = this.tableData.findIndex((u) => u.userId === userId);
         this.roleList.forEach(
-          (role) => (this.tableData[index][role.code] = false)
-        );
-        this.setUserForms(this.userId);
-        this.tableData = this.tableData.filter((u) => u.userId !== this.userId);
-        this.userId = '';
-      }
-      else {
-        this.selectAllCheckBox = false;
-        for (const userId of this.itemToDelete) {
-          const index = this.tableData.findIndex((u) => u.userId === userId);
-          this.roleList.forEach(
-            (role) => {
-              if(this.tableData[index][role.code])
-              {
-                this.tableData[index][role.code] = false;
-              }
+          (role) => {
+            if(this.tableData[index][role.code])
+            {
+              this.tableData[index][role.code] = false;
             }
-          );
-        }
-
-        for (const userId of this.itemToDelete) {
-          this.tableData = this.tableData.filter((u) => {
-            u.userId !== userId;
-          });
-        }
-        this.userId = '';
-        await this.removeMultiUsers();
-        this.itemToDelete.clear();
+          }
+        );
       }
-    },
 
+      for (const userId of this.itemToDelete) {
+        this.tableData = this.tableData.filter((u) => {
+          u.userId !== userId;
+        });
+      }
+      this.userId = '';
+      await this.removeMultiUsers();
+      this.itemToDelete.clear();
+    },
     async removeMultiUsers() {
       try {
         await rbacService.removeMultiUsers(Array.from(this.itemToDelete), {
