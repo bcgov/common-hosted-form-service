@@ -70,6 +70,7 @@
       <template v-for="(h, index) in headers" v-slot:[`header.${h.value}`]="{ headers }">
         <v-checkbox v-model="selectAllCheckBox"
                     :key="index"
+                    sortable: false
                     v-if="h.value==='form_checkbox'"
                     class="d-inline-flex"
                     @click="selectAllUsersToDelete()"/>
@@ -293,7 +294,7 @@ export default {
     },
     createHeaders() {
       const headers = [
-        { text: '', value: 'form_checkbox' },
+        { text: '', value: 'form_checkbox'  },
         { text: 'Full Name', value: 'fullName' },
         { text: 'Username', value: 'username' },
       ];
@@ -352,7 +353,9 @@ export default {
     },
     removeUserWithOwnerPermission() {
       if(this.itemToDelete.size===this.tableData.length) {
-        let isOwnerFound = false;
+        let foundUser = this.tableData.find(user => user.username===this.user.username);
+        let isOwnerFound =  foundUser?foundUser['owner']:false;
+
         for (let user of this.tableData) {
           if (user.username===this.user.username && user['owner']) {
             this.itemToDelete.delete(user.userId);
@@ -441,13 +444,19 @@ export default {
       this.itemToDelete.clear();
     },
     onRemoveClick() {
-      let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
-      if(!difference.some((user) => user.owner)) {
+
+      if(this.tableData.length===1) {
         this.ownerError();
       }
       else {
-        this.deleteConfirmationMsg='Are you sure you wish to delete the selected member(s)?';
-        this.showDeleteDialog = true;
+        let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
+        if(!difference.some((user) => user.owner)) {
+          this.ownerError();
+        }
+        else {
+          this.deleteConfirmationMsg='Are you sure you wish to delete the selected member(s)?';
+          this.showDeleteDialog = true;
+        }
       }
     },
     ownerError() {
