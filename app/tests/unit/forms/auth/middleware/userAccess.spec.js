@@ -1,4 +1,5 @@
-const { currentUser, hasFormPermissions, hasSubmissionPermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
+const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles } = require('../../../../../src/forms/auth/middleware/userAccess');
+
 const keycloak = require('../../../../../src/components/keycloak');
 const Problem = require('api-problem');
 const service = require('../../../../../src/forms/auth/service');
@@ -7,6 +8,14 @@ const kauth = {
   grant: {
     access_token: 'fsdfhsd08f0283hr'
   }
+};
+
+const Roles = {
+  OWNER: 'owner',
+  TEAM_MANAGER: 'team_manager',
+  FORM_DESIGNER: 'form_designer',
+  SUBMISSION_REVIEWER: 'submission_reviewer',
+  FORM_SUBMITTER: 'form_submitter'
 };
 
 // Mock the token validation in the KC lib
@@ -24,7 +33,6 @@ const testRes = {
 afterEach(() => {
   jest.clearAllMocks();
 });
-
 
 describe('currentUser', () => {
   it('gets the current user with valid request', async () => {
@@ -658,4 +666,116 @@ describe('hasSubmissionPermissions', () => {
   });
 
 
+});
+
+describe('hasFormRoles', () => {
+  it ('falls through if the current user does not have any forms', async () => {
+    const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER]);
+    const nxt = jest.fn();
+    const cu = {
+      forms: []
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+
+      }
+    };
+
+    await hfr(req, testRes, nxt);
+
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have any forms.' }));
+  });
+
+  it ('falls through if the current user does not have at least one of the required form roles', async () => {
+    const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER]);
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        roles: []
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+
+      }
+    };
+
+    await hfr(req, testRes, nxt);
+
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have permission to update this role.' }));
+  });
+
+  it ('falls through if the current user does not have all of the required form roles', async () => {
+    const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER], true);
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        roles: [
+          Roles.TEAM_MANAGER
+        ]
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+
+      }
+    };
+
+    await hfr(req, testRes, nxt);
+
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have permission to update this role.' }));
+  });
+
+  it ('moves on if the user has at least one of the required form roles', async () => {
+    const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER]);
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        roles: [
+          Roles.TEAM_MANAGER
+        ]
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+
+      }
+    };
+
+    await hfr(req, testRes, nxt);
+
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
+
+  it ('moves on if the user has all of the required form roles', async () => {
+    const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER], true);
+    const nxt = jest.fn();
+    const cu = {
+      forms: [{
+        roles: [
+          Roles.OWNER,
+          Roles.TEAM_MANAGER
+        ]
+      }]
+    };
+    const req = {
+      currentUser: cu,
+      params: {
+
+      }
+    };
+
+    await hfr(req, testRes, nxt);
+
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+  });
 });

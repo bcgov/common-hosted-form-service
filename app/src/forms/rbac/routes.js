@@ -4,7 +4,8 @@ const routes = require('express').Router();
 const controller = require('./controller');
 const keycloak = require('../../components/keycloak');
 const P = require('../common/constants').Permissions;
-const { currentUser, hasFormPermissions, hasSubmissionPermissions } = require('../auth/middleware/userAccess');
+const R = require('../common/constants').Roles;
+const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles } = require('../auth/middleware/userAccess');
 
 routes.use(currentUser);
 
@@ -40,7 +41,7 @@ routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}
   await controller.getUserForms(req, res, next);
 });
 
-routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) => {
+routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), async (req, res, next) => {
   await controller.setUserForms(req, res, next);
 });
 
