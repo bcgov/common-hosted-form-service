@@ -134,6 +134,48 @@ const hasSubmissionPermissions = (permissions) => {
   };
 };
 
+const hasFormRole = (user, role) => {
+  let hasRole = false;
+  form_loop:
+  for (let i = 0; i < user.forms.length; i++) {
+    for (let j = 0; j < user.forms[i].roles.length; j++) {
+      if (user.forms[i].roles[j] === role) {
+        hasRole = true;
+        break form_loop;
+      }
+    }
+  }
+
+  return hasRole;
+};
+
+const hasFormRoles = (formRoles, hasAll = false) => {
+  return async (req, _res, next) => {
+    form_loop:
+    for (let formIndex = 0; formIndex < req.currentUser.forms.length; formIndex++) {
+      for (let roleIndex = 0; roleIndex < req.currentUser.forms[formIndex].roles.length; roleIndex++) {
+        let index = formRoles.indexOf(req.currentUser.forms[formIndex].roles[roleIndex]);
+        if (index > -1) {
+          if (hasAll)
+            formRoles.splice(index, 1);
+          else
+            return next();
+        }
+
+        if (formRoles.length == 0) break form_loop;
+      }
+    }
+
+    if (hasAll) {
+      if (formRoles.length > 0)
+        return next(new Problem(401, { detail: 'You do not have permission to update this role.' }));
+      else
+        return next();
+    }
+    return next(new Problem(401, { detail: 'You do not have permission to update this role.' }));
+  };
+};
+
 module.exports = {
-  currentUser, hasFormPermissions, hasSubmissionPermissions
+  currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasFormRole
 };

@@ -11,6 +11,8 @@ const {
 } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
+const { hasFormRole } = require('../auth/middleware/userAccess');
+const { Roles } = require('../common/constants');
 
 const service = {
 
@@ -225,10 +227,49 @@ const service = {
     }
   },
 
+  /*
+  *
+  * @param data An array of roles being applied to a user id for a form id
+  * @param currentUser A user that contains an array of form objects and the roles
+  *                     that user has for that form.
+  */
   setUserForms: async (userId, formId, data, currentUser) => {
     // check this in middleware? 422 in valid params
     if (!userId || 0 === userId.length) {
       throw new Error();
+    }
+
+    // The function route should be protected by checking if the
+    // user is an owner or a team manager
+    const isOwner = hasFormRole(currentUser, Roles.OWNER);
+
+    if (!isOwner) {
+      // They are just a team manager
+
+      const userRoles = await FormRoleUser.query()
+        .modify('filterUserId', userId);
+
+      // If the user is trying to remove the team manager role for their own userid
+      if (userRoles.some(fru => fru.role === Roles.TEAM_MANAGER) &&
+        !data.some(role => role.role === Roles.TEAM_MANAGER) &&
+        userId == currentUser.id) {
+        throw new Error('You can\'t remove your own team manager role.');
+      }
+
+      // Can't update another user's roles if they are an owner
+      if (userRoles.some(fru => fru.role === Roles.OWNER) && userId !== currentUser.id) {
+        throw new Error('You can\'t update an owner\'s roles.');
+      }
+
+      // If the user is trying to remove the designer role for another userid
+      if (userRoles.some(fru => fru.role === Roles.FORM_DESIGNER) &&
+        !data.some(role => role.role === Roles.FORM_DESIGNER)) {
+        throw new Error('You can\'t remove a form designer role.');
+      }
+      if (!userRoles.some(fru => fru.role === Roles.FORM_DESIGNER) &&
+        data.some(role => role.role === Roles.FORM_DESIGNER)) {
+        throw new Error('You can\'t add a form designer role.');
+      }
     }
 
     let trx;
