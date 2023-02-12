@@ -89,15 +89,15 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
     const isLayoutComponent = hasColumns || hasRows || (hasComps && !component.input) || layoutTypes.indexOf(component.type) > -1;
     if (includeAll || component.tree || !isLayoutComponent) {
       let keyPath = [];
-      const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'address'];
+      const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'tree'];
       if (component.type && componentsWithSubValues.includes(component.type)) {
 
         // for survey component, get field name from obj.questions.value
         if (component.type === 'survey') {
-          component.questions.forEach(e => keyPath.push(`${component.key}.${e.value}`));
+          component.questions.forEach(e => keyPath.push(`${path}.${component.key}.${e.value}`));
         }
         // for checkboxes and selectboxes, get field name from obj.values.value
-        else if (component.values) component.values.forEach(e => keyPath.push(`${component.key}.${e.value}`));
+        else if (component.values) component.values.forEach(e => keyPath.push(`${path}.${component.key}.${e.value}`));
         // else push the parent field
         else {
           keyPath.push(component.key);
