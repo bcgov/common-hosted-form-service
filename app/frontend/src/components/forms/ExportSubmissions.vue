@@ -151,19 +151,28 @@
               <v-radio-group v-model="csvTemplates" hide-details="auto">
                 <v-radio label="A" value="flattenedWithBlankOut">
                   <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 1</span>
+                    <span class="radioboxLabelStyle">Template 1 (filled multi rows export) <sup>Legacy</sup></span>
                   </template>
+                  <sup>Beta</sup>
                 </v-radio>
                 <v-radio label="B" value="flattenedWithFilled">
                   <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 2</span>
+                    <span class="radioboxLabelStyle">Template 2 (blankout multi rows export) <sup>Beta</sup></span>
                   </template>
+                  <sup>Beta</sup>
                 </v-radio>
                 <v-radio label="C" value="unflattened">
                   <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 3</span>
+                    <span class="radioboxLabelStyle">Template 3  (single row export) <sup>Beta</sup></span>
                   </template>
                 </v-radio>
+                <v-radio label="C" value="flattenedWithSubmissionHeaders">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 4  (flattend template) <sup>Beta</sup> <strong>Note</strong></span>
+                  </template>
+
+                </v-radio>
+
               </v-radio-group>
             </v-col>
           </v-row>
