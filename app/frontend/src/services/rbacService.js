@@ -71,6 +71,16 @@ export default {
     return appAxios().put(`${ApiRoutes.RBAC}/users`, requestBody, { params });
   },
 
+  /**
+   * @function removeMultiUsers
+   * removes selected users from the from
+   * @param {Object} requestBody The request body for the relationships
+   * @returns {Promise} An axios response
+   */
+  removeMultiUsers(requestBody , params = {}) {
+    return appAxios().delete(`${ApiRoutes.RBAC}/users?formId=${params.formId}`,{ data:requestBody}, { params });
+  },
+
   //
   // Submission Management calls
   //
