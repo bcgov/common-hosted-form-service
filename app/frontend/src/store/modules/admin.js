@@ -13,7 +13,6 @@ export default {
     roles: [],
     user: {},
     userList: [],
-    imageList:new Map(),
     fcProactiveHelp:{}, // Form Component Proactive Help
     fcProactiveHelpImageUrl:'',
     fcProactiveHelpGroupList:[]
@@ -207,20 +206,12 @@ export default {
       }
     },
 
-    async getFCProactiveHelpImageUrl({ commit, dispatch, state },componentId) {
+    async getFCProactiveHelpImageUrl({ commit, dispatch }, componentId) {
       try {
         // Get Common Components Help Information
         commit('SET_FCPROACTIVEHELPIMAGEURL',{});
-        const response = state.imageList.get(componentId);
-        if(response) {
-
-          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
-        }
-        else {
-          const response = await adminService.getFCProactiveHelpImageUrl(componentId);
-          state.imageList.set(componentId, response);
-          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
-        }
+        const response = await adminService.getFCProactiveHelpImageUrl(componentId);
+        commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
       } catch(error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while getting image url',

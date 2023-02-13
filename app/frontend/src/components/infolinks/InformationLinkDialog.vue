@@ -2,6 +2,7 @@
   <v-row justify="center" class="mb-5" >
     <v-dialog
       v-model="dialog"
+      scrollable
       width="70%"
       @click:outside="onCloseDialog"
     >

@@ -294,7 +294,7 @@ export default {
     },
     createHeaders() {
       const headers = [
-        { text: '', value: 'form_checkbox', width:'80px', maxWidth:'85px'  },
+        { text: '', value: 'form_checkbox', width:'80px', maxWidth:'85px', align:'left'  },
         { text: 'Full Name', value: 'fullName' },
         { text: 'Username', value: 'username' },
       ];
