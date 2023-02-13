@@ -13,7 +13,7 @@
         <v-expansion-panel-content>
           <GeneralLayout :groupName="groupName"
                          :layoutList="groupComponentsList"
-                         :componentsList="fcProactiveHelpGroupList&&
+                         :componentsList=" fcProactiveHelpGroupList &&
                            fcProactiveHelpGroupList[groupName] ? fcProactiveHelpGroupList[groupName] : []"/>
         </v-expansion-panel-content>
       </v-expansion-panel>
