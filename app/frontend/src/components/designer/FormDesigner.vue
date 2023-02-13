@@ -416,7 +416,7 @@ export default {
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
-      if(this.fcProactiveHelpGroupList) {
+      if(Object.keys(this.fcProactiveHelpGroupList).length > 0) {
         for (const  [groupName,elements] of Object.entries(this.fcProactiveHelpGroupList)) {
           let extractedElementsNames = this.extractPublishedElement(elements);
           for (const [key,builderElements] of Object.entries(builder)) {
@@ -447,7 +447,7 @@ export default {
         }
       }
     },
-    extractPublishedElement(elements){
+    extractPublishedElement(elements) {
       let publishedComponentsNames=[];
       for(let element of elements) {
         if(element.status)
