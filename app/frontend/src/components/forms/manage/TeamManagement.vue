@@ -55,6 +55,8 @@
     <!-- team table -->
     <v-data-table
       class="team-table"
+      show-select
+      :single-select="true"
       :headers="headers"
       :items="tableData"
       :key="updateTableKey"
@@ -63,9 +65,17 @@
       no-data-text="Failed to load team role data"
       :search="search"
     >
+
       <!-- custom header markup - add tooltip to heading that are roles -->
-      <template v-for="h in headers.slice(2)" v-slot:[`header.${h.value}`]="{ headers }">
-        <v-tooltip :key="h.value" bottom>
+      <template v-for="(h, index) in headers" v-slot:[`header.${h.value}`]="{ headers }">
+        <v-checkbox v-model="selectAllCheckBox"
+                    :key="index"
+                    sortable: false
+                    v-if="h.value==='form_checkbox'"
+                    class="d-inline-flex"
+                    @click="selectAllUsersToDelete()"/>
+
+        <v-tooltip v-else :key="h.value" bottom>
           <template v-slot:activator="{ on }">
             <span v-on="on">{{ h.text }}</span>
           </template>
@@ -75,13 +85,20 @@
       <template #item="{ item, isMobile, headers }">
         <!-- if showing in mobile view -->
         <tr v-if="isMobile" class="v-data-table__mobile-table-row">
+
           <td
-            v-for="header in headers"
+            v-for="(header, index) in headers"
             :key="header.value"
             class="v-data-table__mobile-row"
           >
             <div class="v-data-table__mobile-row__header">
               <!-- if header is a role with description, add tooltip -->
+              <v-checkbox v-if="header.value==='form_checkbox'"
+                          :key="index"
+                          class="d-inline-flex"
+                          v-model="selectAllCheckBox"
+                          @click="selectAllUsersToDelete()"/>
+
               <v-tooltip v-if="header.description" bottom>
                 <template v-slot:activator="{ on }">
                   <span
@@ -97,23 +114,28 @@
             </div>
             <div class="v-data-table__mobile-row__cell">
               <div v-if="typeof item[header.value] === 'boolean'">
-                <v-checkbox
-                  v-if="disableSubmitter(header.value, userType)"
-                  v-model="item[header.value]"
-                  disabled
-                />
-                <v-checkbox
-                  v-else
-                  v-model="item[header.value]"
-                  @click="onCheckboxToggle(item.userId, header.value)"
-                  :disabled="updating"
-                />
+                <v-checkbox v-if="header.text===''"
+                            v-model="selectedItemToDelete[tableData.indexOf(item)]"
+                            @click="selectEachUserToDelete(item,tableData.indexOf(item))"/>
+                <div v-else>
+                  <v-checkbox
+                    v-if="disableSubmitter(header.value, userType)"
+                    v-model="item[header.value]"
+                    disabled
+                  />
+                  <v-checkbox
+                    v-else
+                    v-model="item[header.value]"
+                    @click="onCheckboxToggle(item.userId, header.value)"
+                    :disabled="updating"
+                  />
+                </div>
               </div>
               <v-btn
                 v-else-if="header.value === 'actions'"
-                @click="onRemoveClick(item.userId)"
+                @click="onRemoveClick()"
                 color="red"
-                :disabled="updating"
+                :disabled="!selectedItemToDelete[tableData.indexOf(item)]"
                 icon
               >
                 <v-icon>remove_circle</v-icon>
@@ -124,14 +146,23 @@
         </tr>
         <!-- else display data-table in desktop view -->
         <tr v-else>
+
           <td
             v-for="header in headers"
+
             :key="header.value"
             :class="{ 'role-col': typeof item[header.value] === 'boolean' }"
           >
+
             <div v-if="typeof item[header.value] === 'boolean'">
               <v-checkbox
-                v-if="disableSubmitter(header.value, userType)"
+                v-if="header.text===''"
+                class="d-inline-flex"
+                v-model="selectedItemToDelete[tableData.indexOf(item)]"
+                @click="selectEachUserToDelete(item,tableData.indexOf(item))"
+              />
+              <v-checkbox
+                v-else-if="disableSubmitter(header.value, userType)"
                 v-model="item[header.value]"
                 disabled
               />
@@ -144,9 +175,9 @@
             </div>
             <v-btn
               v-else-if="header.value === 'actions'"
-              @click="onRemoveClick(item.userId)"
+              @click="onRemoveClick()"
               color="red"
-              :disabled="updating"
+              :disabled="!selectedItemToDelete[tableData.indexOf(item)]"
               icon
             >
               <v-icon>remove_circle</v-icon>
@@ -168,7 +199,7 @@
     >
       <template #title>Confirm Removal</template>
       <template #text>
-        Are you sure you want to remove this team member?
+        {{deleteConfirmationMsg}}
       </template>
       <template #button-text-continue>
         <span>Remove</span>
@@ -180,11 +211,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-
 import { rbacService, roleService } from '@/services';
 import { IdentityMode, FormPermissions, FormRoleCodes } from '@/utils/constants';
 import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
-
 export default {
   name: 'TeamManagement',
   components: {
@@ -199,6 +228,7 @@ export default {
   computed: {
     ...mapFields('form', ['form.userType']),
     ...mapGetters('form', ['permissions']),
+    ...mapGetters('auth', ['user']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
@@ -211,8 +241,12 @@ export default {
       formUsers: [],
       isAddingUsers: false,
       loading: true,
+      selectAllCheckBox:false,
       roleList: [],
+      selectedItemToDelete:[],
+      itemToDelete: new Set(),
       search: '',
+      deleteConfirmationMsg:'Are you sure you want to remove this team member?',
       showDeleteDialog: false,
       tableData: [],
       userId: '',
@@ -233,6 +267,7 @@ export default {
           if (!this.tableData.some((obj) => obj.userId === user.id)) {
             // create new object for table row
             this.tableData.push({
+              form_checkbox:true,
               formId: this.formId,
               userId: user.id,
               form_submitter: false,
@@ -259,6 +294,7 @@ export default {
     },
     createHeaders() {
       const headers = [
+        { text: '', value: 'form_checkbox', width:'80px', maxWidth:'85px', align:'left'  },
         { text: 'Full Name', value: 'fullName' },
         { text: 'Username', value: 'username' },
       ];
@@ -283,6 +319,7 @@ export default {
     createTableData() {
       this.tableData = this.formUsers.map((user) => {
         const row = {
+          form_checkbox:true,
           formId: this.formId,
           fullName: user.fullName,
           userId: user.userId,
@@ -293,7 +330,53 @@ export default {
           .forEach((role) => (row[role] = user.roles.includes(role)));
         return row;
       });
+
       this.edited = false;
+      this.selectedItemToDelete = new Array(this.tableData.length).fill(false);
+    },
+    selectAllUsersToDelete() {
+      this.selectedItemToDelete.fill(this.selectAllCheckBox);
+      this.itemToDelete.clear();
+      if(this.selectAllCheckBox) {
+        this.tableData.forEach(item => this.itemToDelete.add(item.userId));
+        this.removeUserWithOwnerPermission();
+      }
+    },
+    selectEachUserToDelete(user, index) {
+      (!this.isAllUsersSelected())?this.selectAllCheckBox=false:this.selectAllCheckBox=true;
+      if(this.selectedItemToDelete[index]) {
+        this.itemToDelete.add(user.userId);
+      }
+      else {
+        this.itemToDelete.delete(user.userId);
+      }
+      this.removeUserWithOwnerPermission();
+    },
+    removeUserWithOwnerPermission() {
+      if(this.itemToDelete.size===this.tableData.length) {
+        let foundUser = this.tableData.find(user => user.username===this.user.username);
+        let isOwnerFound =  foundUser?foundUser['owner']:false;
+
+        for (let user of this.tableData) {
+          if (user.username===this.user.username && user['owner']) {
+            this.itemToDelete.delete(user.userId);
+            break;
+          }
+          else if (user.username===this.user.username && !user['owner']) {
+            this.itemToDelete.delete(user.userId);
+            continue;
+          }
+          else if(user.owner && !isOwnerFound) {
+            this.itemToDelete.delete(user.userId);
+            isOwnerFound=true;
+            continue;
+          }
+        }
+      }
+    },
+    isAllUsersSelected() {
+      const allSelected = (currentValue) => currentValue ===true;
+      return this.selectedItemToDelete.every(allSelected);
     },
     // Is this the submitter column, and does this form have login type other than TEAM
     disableSubmitter: (header, userType) =>
@@ -358,40 +441,76 @@ export default {
       }
       this.edited = true;
       this.setUserForms(userId);
+      this.selectAllCheckBox=false;
+      this.itemToDelete.clear();
     },
-    onRemoveClick(userId) {
-      const ownerCount = this.tableData.reduce(
-        (acc, user) => (user.owner ? acc + 1 : acc),
-        0
-      );
-      const index = this.tableData.findIndex((u) => u.userId === userId);
+    onRemoveClick() {
 
-      if (this.tableData[index].owner && ownerCount === 1) {
-        this.ownerError(userId);
-      } else {
-        this.userId = userId;
-        this.showDeleteDialog = true;
+      if(this.tableData.length===1) {
+        this.ownerError();
+      }
+      else {
+        let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
+        if(!difference.some((user) => user.owner)) {
+          this.ownerError();
+        }
+        else {
+          this.deleteConfirmationMsg='Are you sure you wish to delete the selected member(s)?';
+          this.showDeleteDialog = true;
+        }
       }
     },
-    ownerError(userId) {
+    ownerError() {
       this.addNotification({
         message: 'There must always be at least one form owner',
-        consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+        consoleError: 'Cannot remove as they are the only remaining owner of this form.',
       });
     },
-    removeUser() {
+    userError() {
+      this.addNotification({
+        message: '',
+        consoleError: 'Cannot remove as they are the only remaining owner of this form.',
+      });
+    },
+    async removeUser() {
       this.showDeleteDialog = false;
       this.edited = true;
-
-      // Set all of userId's roles to false
-      const index = this.tableData.findIndex((u) => u.userId === this.userId);
-      this.roleList.forEach(
-        (role) => (this.tableData[index][role.code] = false)
-      );
-
-      this.setUserForms(this.userId);
-      this.tableData = this.tableData.filter((u) => u.userId !== this.userId);
+      this.selectAllCheckBox = false;
+      for (const userId of this.itemToDelete) {
+        const index = this.tableData.findIndex((u) => u.userId === userId);
+        this.roleList.forEach(
+          (role) => {
+            if(this.tableData[index][role.code])
+            {
+              this.tableData[index][role.code] = false;
+            }
+          }
+        );
+      }
+      for (const userId of this.itemToDelete) {
+        this.tableData = this.tableData.filter((u) => {
+          u.userId !== userId;
+        });
+      }
       this.userId = '';
+      await this.removeMultiUsers();
+      this.itemToDelete.clear();
+    },
+    async removeMultiUsers() {
+      try {
+        await rbacService.removeMultiUsers(Array.from(this.itemToDelete), {
+          formId: this.formId,
+        });
+        await this.getFormPermissionsForUser(this.formId);
+        await this.getFormUsers();
+      } catch (error) {
+        this.addNotification({
+          message: 'An error occurred while attempting to delete the selected users',
+          consoleError: `Error deleting users from form ${this.formId}: ${error}`,
+        });
+      }
+      this.updating = false;
+      this.selectAllCheckBox=false;
     },
     /**
      * @function setFormUsers
