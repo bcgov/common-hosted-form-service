@@ -187,7 +187,6 @@ const service = {
     const result = await FormComponentsProactiveHelp.query()
       .modify('distinctOnComponentNameAndGroupName');
     if(result.length>0) {
-
       let filterResult= result.map(item=> {
         return ({id:item.id,status:item.publishStatus,componentName:item.componentName,externalLink:item.externalLink,
           version:item.version,groupName:item.groupName,description:item.description, isLinkEnabled:item.isLinkEnabled,
