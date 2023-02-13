@@ -485,7 +485,6 @@ export default {
         // Get Form Components Proactive Help Group Object
         commit('SET_FCPROACTIVEHELPGROUPLIST',{});
         const response = await adminService.listFCProactiveHelp();
-        console.log('----->>> ', response.data);
         commit('SET_FCPROACTIVEHELPGROUPLIST',response.data);
       } catch(error) {
 
