@@ -1,4 +1,4 @@
-const { Form, FormVersion, User, UserFormAccess,FormComponentsProactiveHelp } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
 
@@ -186,7 +186,7 @@ const service = {
   readFormComponentsProactiveHelp: async()=> {
     const result = await FormComponentsProactiveHelp.query()
       .modify('distinctOnComponentNameAndGroupName');
-    if(result) {
+    if(result.length>0) {
 
       let filterResult= result.map(item=> {
         return ({id:item.id,status:item.publishStatus,componentName:item.componentName,externalLink:item.externalLink,
@@ -252,7 +252,7 @@ const service = {
     let result=[];
     result = await FormComponentsProactiveHelp.query()
       .modify('selectWithoutImages');
-    if(result) {
+    if(result.length>0) {
       let filterResult= result.map(item=> {
         return ({id:item.id,status:item.publishStatus,componentName:item.componentName,externalLink:item.externalLink,
           version:item.version,groupName:item.groupName,description:item.description, isLinkEnabled:item.isLinkEnabled,
@@ -265,7 +265,7 @@ const service = {
       }, Object.create(null));
 
     }
-    return [];
+    return {};
   },
 };
 
