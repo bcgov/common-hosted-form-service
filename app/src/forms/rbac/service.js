@@ -226,7 +226,27 @@ const service = {
       throw err;
     }
   },
+  removeMultiUsers: async(userId, formId, data, currentUser) => {
+    // create the batch and insert...
+    if (Array.isArray(data) && data.length!==0 && formId) {
+      let trx;
+      try {
+        trx = await FormRoleUser.startTransaction();
+        // remove existing mappings...
+        await FormRoleUser.query(trx)
+          .delete()
+          .where('formId', formId)
+          .whereIn('userId', data);
 
+        await trx.commit();
+        return;
+
+      } catch (err) {
+        if (trx) await trx.rollback();
+        throw err;
+      }
+    }
+  },
   /*
   *
   * @param data An array of roles being applied to a user id for a form id
