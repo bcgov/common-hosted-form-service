@@ -68,11 +68,13 @@
 
       <!-- custom header markup - add tooltip to heading that are roles -->
       <template v-for="(h, index) in headers" v-slot:[`header.${h.value}`]="{ headers }">
-        <v-checkbox style="display:block; height:30px; width:140px; padding:0px; margin-bottom:0px"
-                    v-if="h.value==='form_checkbox'"
+        <v-checkbox v-model="selectAllCheckBox"
                     :key="index"
-                    v-model="selectAllCheckBox"
+                    sortable: false
+                    v-if="h.value==='form_checkbox'"
+                    class="d-inline-flex"
                     @click="selectAllUsersToDelete()"/>
+
         <v-tooltip v-else :key="h.value" bottom>
           <template v-slot:activator="{ on }">
             <span v-on="on">{{ h.text }}</span>
@@ -91,9 +93,9 @@
           >
             <div class="v-data-table__mobile-row__header">
               <!-- if header is a role with description, add tooltip -->
-              <v-checkbox style="display:block; height:35px; width:140px; padding:0px; margin-bottom:0px"
-                          v-if="header.value==='form_checkbox'"
+              <v-checkbox v-if="header.value==='form_checkbox'"
                           :key="index"
+                          class="d-inline-flex"
                           v-model="selectAllCheckBox"
                           @click="selectAllUsersToDelete()"/>
 
@@ -131,9 +133,9 @@
               </div>
               <v-btn
                 v-else-if="header.value === 'actions'"
-                @click="onRemoveClick(item.userId)"
+                @click="onRemoveClick()"
                 color="red"
-                :disabled="updating"
+                :disabled="!selectedItemToDelete[tableData.indexOf(item)]"
                 icon
               >
                 <v-icon>remove_circle</v-icon>
@@ -155,6 +157,7 @@
             <div v-if="typeof item[header.value] === 'boolean'">
               <v-checkbox
                 v-if="header.text===''"
+                class="d-inline-flex"
                 v-model="selectedItemToDelete[tableData.indexOf(item)]"
                 @click="selectEachUserToDelete(item,tableData.indexOf(item))"
               />
@@ -172,9 +175,9 @@
             </div>
             <v-btn
               v-else-if="header.value === 'actions'"
-              @click="onRemoveClick(item.userId)"
+              @click="onRemoveClick()"
               color="red"
-              :disabled="updating"
+              :disabled="!selectedItemToDelete[tableData.indexOf(item)]"
               icon
             >
               <v-icon>remove_circle</v-icon>
@@ -196,7 +199,7 @@
     >
       <template #title>Confirm Removal</template>
       <template #text>
-        Are you sure you want to remove this team member?
+        {{deleteConfirmationMsg}}
       </template>
       <template #button-text-continue>
         <span>Remove</span>
@@ -208,11 +211,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-
 import { rbacService, roleService } from '@/services';
 import { IdentityMode, FormPermissions, FormRoleCodes } from '@/utils/constants';
 import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
-
 export default {
   name: 'TeamManagement',
   components: {
@@ -227,7 +228,7 @@ export default {
   computed: {
     ...mapFields('form', ['form.userType']),
     ...mapGetters('form', ['permissions']),
-    ...mapGetters('auth', ['userName']),
+    ...mapGetters('auth', ['user']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
@@ -293,7 +294,7 @@ export default {
     },
     createHeaders() {
       const headers = [
-        { text: '', value: 'form_checkbox' },
+        { text: '', value: 'form_checkbox', width:'80px', maxWidth:'85px'  },
         { text: 'Full Name', value: 'fullName' },
         { text: 'Username', value: 'username' },
       ];
@@ -335,16 +336,10 @@ export default {
     },
     selectAllUsersToDelete() {
       this.selectedItemToDelete.fill(this.selectAllCheckBox);
-      let isOwnerFound = this.tableData.find( user  => user.username === this.userName)['owner'];
-      for (const user of this.tableData) {
-        if( user.username===this.userName) {
-          continue;
-        }
-        if(!isOwnerFound && user.owner) {
-          isOwnerFound=true;
-          continue;
-        }
-        this.itemToDelete.add(user.userId);
+      this.itemToDelete.clear();
+      if(this.selectAllCheckBox) {
+        this.tableData.forEach(item => this.itemToDelete.add(item.userId));
+        this.removeUserWithOwnerPermission();
       }
     },
     selectEachUserToDelete(user, index) {
@@ -354,6 +349,29 @@ export default {
       }
       else {
         this.itemToDelete.delete(user.userId);
+      }
+      this.removeUserWithOwnerPermission();
+    },
+    removeUserWithOwnerPermission() {
+      if(this.itemToDelete.size===this.tableData.length) {
+        let foundUser = this.tableData.find(user => user.username===this.user.username);
+        let isOwnerFound =  foundUser?foundUser['owner']:false;
+
+        for (let user of this.tableData) {
+          if (user.username===this.user.username && user['owner']) {
+            this.itemToDelete.delete(user.userId);
+            break;
+          }
+          else if (user.username===this.user.username && !user['owner']) {
+            this.itemToDelete.delete(user.userId);
+            continue;
+          }
+          else if(user.owner && !isOwnerFound) {
+            this.itemToDelete.delete(user.userId);
+            isOwnerFound=true;
+            continue;
+          }
+        }
       }
     },
     isAllUsersSelected() {
@@ -423,39 +441,22 @@ export default {
       }
       this.edited = true;
       this.setUserForms(userId);
+      this.selectAllCheckBox=false;
+      this.itemToDelete.clear();
     },
-    onRemoveClick(userId) {
+    onRemoveClick() {
 
-      (this.itemToDelete.size===0)?this.onSingleUserDelete(userId):this.onMultiUsersDelete();
-    },
-    onSingleUserDelete(userId) {
-      const ownerCount = this.tableData.reduce(
-        (acc, user) => (user.owner ? acc + 1 : acc),
-        0
-      );
-      const index = this.tableData.findIndex((u) => u.userId === userId);
-
-      if (this.tableData[index].owner && ownerCount === 1) {
-        this.ownerError(userId);
-      } else {
-        this.userId = userId;
-        this.showDeleteDialog = true;
-        this.deleteConfirmationMsg='Are you sure you want to remove this team member?';
-      }
-    },
-    onMultiUsersDelete() {
-      if(this.itemToDelete.size === this.tableData.length) {
-        this.showDeleteDialog = true;
-        this.deleteConfirmationMsg='Are you sure you wish to delete the selected team members?';
-
+      if(this.tableData.length===1) {
+        this.ownerError();
       }
       else {
         let difference = this.tableData.filter(user => !this.itemToDelete.has(user.userId));
         if(!difference.some((user) => user.owner)) {
           this.ownerError();
-        }else {
+        }
+        else {
+          this.deleteConfirmationMsg='Are you sure you wish to delete the selected member(s)?';
           this.showDeleteDialog = true;
-          this.deleteConfirmationMsg='Are you sure you wish to delete the selected team members?';
         }
       }
     },
@@ -471,45 +472,30 @@ export default {
         consoleError: 'Cannot remove as they are the only remaining owner of this form.',
       });
     },
-
     async removeUser() {
       this.showDeleteDialog = false;
       this.edited = true;
-
-      if(this.itemToDelete.size===0) {
-        // Set all of userId's roles to false
-        const index = this.tableData.findIndex((u) => u.userId === this.userId);
+      this.selectAllCheckBox = false;
+      for (const userId of this.itemToDelete) {
+        const index = this.tableData.findIndex((u) => u.userId === userId);
         this.roleList.forEach(
-          (role) => (this.tableData[index][role.code] = false)
-        );
-        this.setUserForms(this.userId);
-        this.tableData = this.tableData.filter((u) => u.userId !== this.userId);
-        this.userId = '';
-      }
-      else {
-
-        for (const userId of this.itemToDelete) {
-          const index = this.tableData.findIndex((u) => u.userId === userId);
-          this.roleList.forEach(
-            (role) => {
-              if(this.tableData[index][role.code])
-              {
-                this.tableData[index][role.code] = false;
-              }
+          (role) => {
+            if(this.tableData[index][role.code])
+            {
+              this.tableData[index][role.code] = false;
             }
-          );
-        }
-
-        for (const userId of this.itemToDelete) {
-          this.tableData = this.tableData.filter((u) => {
-            u.userId !== userId;
-          });
-        }
-        this.userId = '';
-        await this.removeMultiUsers();
+          }
+        );
       }
+      for (const userId of this.itemToDelete) {
+        this.tableData = this.tableData.filter((u) => {
+          u.userId !== userId;
+        });
+      }
+      this.userId = '';
+      await this.removeMultiUsers();
+      this.itemToDelete.clear();
     },
-
     async removeMultiUsers() {
       try {
         await rbacService.removeMultiUsers(Array.from(this.itemToDelete), {
@@ -524,6 +510,7 @@ export default {
         });
       }
       this.updating = false;
+      this.selectAllCheckBox=false;
     },
     /**
      * @function setFormUsers
