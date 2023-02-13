@@ -1,5 +1,6 @@
 const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 
+
 jest.mock('../../../../src/forms/common/models/tables/formSubmissionStatus', () => MockModel);
 
 const service = require('../../../../src/forms/submission/service');
