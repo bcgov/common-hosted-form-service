@@ -1,5 +1,6 @@
 import { appAxios } from '@/services/interceptors';
 import { ApiRoutes } from '@/utils/constants';
+//import axios from 'axios';
 
 export default {
   //
@@ -31,6 +32,7 @@ export default {
   deleteApiKey(formId) {
     return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
+
 
   /**
    * @function listForms
@@ -114,4 +116,50 @@ export default {
   readUser(userId) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`);
   },
+
+  /**
+   * addFormComponentsProactiveHelp
+   * @function addFCProactiveHelp
+   * Create a new Form
+   * @param {Object} data An Object containing each form component help information
+   * @returns {Promise} An axios response
+   */
+  addFCProactiveHelp(data) {
+    return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/object`, data);
+  },
+
+
+  /**
+   * updateFormComponentsProactiveHelpStatus
+   * @function updateFCProactiveHelpStatus
+   * Update publish status of each Form Components Help Link Information
+   * @param {boolean} publishStatus This is used to determine if the help link information is published or not
+   * @param {string} componentId component id
+   * @returns {Promise} An axios response
+   */
+  updateFCProactiveHelpStatus(componentId, publishStatus) {
+    return appAxios().put(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`);
+  },
+
+
+  /**
+   * @function getPresignedUrl
+   * get signed image upload url
+   * @param {Object} imageName component name and component image encoded into base64
+   * @returns {Promise} An axios response
+  */
+  async getFCProactiveHelpImageUrl(componentId) {
+    return appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/imageUrl/${componentId}`);
+  },
+
+  /**
+   * listFormComponentsProactiveHelp
+   * @function listFCProactiveHelp
+   * Reads all form components help information
+   * @returns {Promise} An axios response
+  */
+  async listFCProactiveHelp() {
+    return await appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`);
+  },
 };
+

@@ -15,6 +15,13 @@ module.exports = (on, config) => {
   //  watchOptions: {}
   // }))
 
+  on('task', {
+    log(message) {
+      console.log(message)
+  
+      return null
+    },
+  });
   return Object.assign({}, config, {
     fixturesFolder: 'fixtures',
     integrationFolder: 'specs',
