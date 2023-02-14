@@ -81,4 +81,12 @@ describe('form getters', () => {
   it('version should return the state version', () => {
     expect(store.getters.version).toEqual(sampleState.version);
   });
+
+  it('fcNamesProactiveHelpList should return the state fcNamesProactiveHelpList', () => {
+    expect(store.getters.fcNamesProactiveHelpList).toEqual(sampleState.fcNamesProactiveHelpList);
+  });
+
+  it('fcProactiveHelpImageUrl should return the state fcProactiveHelpImageUrl', () => {
+    expect(store.getters.fcProactiveHelpImageUrl).toEqual(sampleState.fcProactiveHelpImageUrl);
+  });
 });
