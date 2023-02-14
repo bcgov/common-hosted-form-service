@@ -1,8 +1,9 @@
-const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles } = require('../../../../../src/forms/auth/middleware/userAccess');
+const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
 
 const keycloak = require('../../../../../src/components/keycloak');
 const Problem = require('api-problem');
 const service = require('../../../../../src/forms/auth/service');
+const rbacService = require('../../../../../src/forms/rbac/service');
 
 const kauth = {
   grant: {
@@ -10,7 +11,9 @@ const kauth = {
   }
 };
 
-const formId = 'c6455376-382c-439d-a811-0381a012d696';
+const userId = 'c6455376-382c-439d-a811-0381a012d695';
+const userId2 = 'c6455376-382c-439d-a811-0381a012d696';
+const formId = 'c6455376-382c-439d-a811-0381a012d697';
 
 const Roles = {
   OWNER: 'owner',
@@ -747,7 +750,7 @@ describe('hasFormRoles', () => {
     const nxt = jest.fn();
     const cu = {
       forms: [{
-        id: formId,
+        formId: formId,
         roles: [
           Roles.TEAM_MANAGER
         ]
@@ -773,7 +776,7 @@ describe('hasFormRoles', () => {
     const nxt = jest.fn();
     const cu = {
       forms: [{
-        id: formId,
+        formId: formId,
         roles: [
           Roles.OWNER,
           Roles.TEAM_MANAGER
@@ -793,5 +796,84 @@ describe('hasFormRoles', () => {
 
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith();
+  });
+});
+
+describe('hasRolePermissions', () => {
+  let currentUser = {
+    id: '',
+    forms: []
+  };
+  let req = {};
+
+  beforeEach(() => {
+    currentUser = {};
+    currentUser.id = userId;
+    currentUser.forms = [];
+    req.currentUser = currentUser;
+    req = {};
+    req.params = {};
+    req.query = {
+      formId: formId
+    };
+  });
+
+  describe('when removing users from a team', () => {
+    describe('as an owner', () => {
+      it ('should succeed with valid data', async () => {
+        rbacService.readUserRole = jest.fn().mockReturnValue([
+          {
+            userId: userId2,
+            formId: formId,
+            role: Roles.OWNER
+          }
+        ]);
+        const hrp = hasRolePermissions(true);
+        const nxt = jest.fn();
+
+        currentUser.forms = [{
+          formId: formId,
+          roles: [
+            Roles.OWNER,
+            Roles.TEAM_MANAGER
+          ]
+        }];
+        req.currentUser = currentUser;
+        req.body = [ userId2 ];
+
+        await hrp(req, testRes, nxt);
+
+        expect(nxt).toHaveBeenCalledTimes(1);
+        expect(nxt).toHaveBeenCalledWith();
+      });
+    });
+
+    describe('as a team manager', () => {
+      it ('should succeed with valid data', async () => {
+        rbacService.readUserRole = jest.fn().mockReturnValue([
+          {
+            userId: userId2,
+            formId: formId,
+            role: Roles.FORM_SUBMITTER
+          }
+        ]);
+        const hrp = hasRolePermissions(true);
+        const nxt = jest.fn();
+
+        currentUser.forms = [{
+          formId: formId,
+          roles: [
+            Roles.TEAM_MANAGER
+          ]
+        }];
+        req.currentUser = currentUser;
+        req.body = [ userId2 ];
+
+        await hrp(req, testRes, nxt);
+
+        expect(nxt).toHaveBeenCalledTimes(1);
+        expect(nxt).toHaveBeenCalledWith();
+      });
+    });
   });
 });

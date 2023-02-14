@@ -35,6 +35,11 @@ userAccess.hasFormRoles = jest.fn(() => {
     next();
   });
 });
+userAccess.hasRolePermissions = jest.fn(() => {
+  return jest.fn((req, res, next) => {
+    next();
+  });
+});
 
 const emailService = require('../../../../../app/src/forms/email/emailService');
 const formService = require('../../../../../app/src/forms/submission/service');
