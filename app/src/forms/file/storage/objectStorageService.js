@@ -29,7 +29,6 @@ class ObjectStorageService {
       endpoint: this._endpoint,
       accessKeyId: this._accessKeyId,
       secretAccessKey: this._secretAccessKey,
-      signatureVersion:'v2',
       s3ForcePathStyle: true,
       params: {
         Bucket: this._bucket
