@@ -10,6 +10,8 @@ const kauth = {
   }
 };
 
+const formId = 'c6455376-382c-439d-a811-0381a012d696';
+
 const Roles = {
   OWNER: 'owner',
   TEAM_MANAGER: 'team_manager',
@@ -678,7 +680,9 @@ describe('hasFormRoles', () => {
     const req = {
       currentUser: cu,
       params: {
-
+      },
+      query: {
+        formId: formId
       }
     };
 
@@ -693,13 +697,16 @@ describe('hasFormRoles', () => {
     const nxt = jest.fn();
     const cu = {
       forms: [{
+        id: formId,
         roles: []
       }]
     };
     const req = {
       currentUser: cu,
       params: {
-
+      },
+      query: {
+        formId: formId
       }
     };
 
@@ -714,6 +721,7 @@ describe('hasFormRoles', () => {
     const nxt = jest.fn();
     const cu = {
       forms: [{
+        id: formId,
         roles: [
           Roles.TEAM_MANAGER
         ]
@@ -722,7 +730,9 @@ describe('hasFormRoles', () => {
     const req = {
       currentUser: cu,
       params: {
-
+      },
+      query: {
+        formId: formId
       }
     };
 
@@ -737,6 +747,7 @@ describe('hasFormRoles', () => {
     const nxt = jest.fn();
     const cu = {
       forms: [{
+        id: formId,
         roles: [
           Roles.TEAM_MANAGER
         ]
@@ -745,7 +756,9 @@ describe('hasFormRoles', () => {
     const req = {
       currentUser: cu,
       params: {
-
+      },
+      query: {
+        formId: formId
       }
     };
 
@@ -760,6 +773,7 @@ describe('hasFormRoles', () => {
     const nxt = jest.fn();
     const cu = {
       forms: [{
+        id: formId,
         roles: [
           Roles.OWNER,
           Roles.TEAM_MANAGER
@@ -769,7 +783,9 @@ describe('hasFormRoles', () => {
     const req = {
       currentUser: cu,
       params: {
-
+      },
+      query: {
+        formId: formId
       }
     };
 
