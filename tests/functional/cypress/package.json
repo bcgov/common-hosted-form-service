@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf **/screenshots **/videos",
     "purge": "rm -rf node_modules",
-    "test": "cypress run --headless",
+    "test": "cypress run",
     "test:allbrowsers": "npm run test:chrome && npm run test:edge && npm run test:firefox",
     "test:chrome": "npm run test -- --browser chrome",
     "test:dev": "cypress open",

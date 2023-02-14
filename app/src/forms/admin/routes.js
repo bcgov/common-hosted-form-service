@@ -61,4 +61,24 @@ routes.get('/users/:userId', async (req, res, next) => {
   await userController.read(req, res, next);
 });
 
+//
+//Form componets help info
+//
+
+routes.post('/formcomponents/proactivehelp/object', async(req,res,next) => {
+  await controller.createFormComponentsProactiveHelp(req, res, next);
+});
+
+routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (req, res, next) => {
+  await controller.updateFormComponentsProactiveHelp(req, res, next);
+});
+
+routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
+  await controller.getFCProactiveHelpImageUrl(req, res, next);
+});
+
+routes.get('/formcomponents/proactivehelp/list', async(req,res,next) => {
+  await controller.listFormComponentsProactiveHelp(req, res, next);
+});
+
 module.exports = routes;
