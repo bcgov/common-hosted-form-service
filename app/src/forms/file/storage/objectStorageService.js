@@ -20,7 +20,7 @@ class ObjectStorageService {
       log.error('Invalid configuration.', { function: 'constructor' });
       throw new Error('ObjectStorageService is not configured. Check configuration.');
     }
-    //this._endpoint = endpoint;
+    this._endpoint = endpoint;
     this._bucket = bucket;
     this._key = this._delimit(key);
     this._accessKeyId = accessKeyId;
@@ -29,7 +29,6 @@ class ObjectStorageService {
       endpoint: this._endpoint,
       accessKeyId: this._accessKeyId,
       secretAccessKey: this._secretAccessKey,
-      signatureVersion:'v2',
       s3ForcePathStyle: true,
       params: {
         Bucket: this._bucket
