@@ -147,28 +147,41 @@
           </v-radio-group>
           <v-row v-if="exportFormat==='csv'" class="mt-5">
             <v-col>
-              <p class="subTitleObjectStyle">Select the submission template</p>
+              <p class="subTitleObjectStyle" v-bind="props">Select the export template
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <font-awesome-icon icon="fa-solid fa-circle-info" color='#1A5A96'
+                                       class="fa-xs ml-1" v-bind="attrs" v-on="on"/>
+                  </template>
+                  <span>Tooltip</span>
+                </v-tooltip>
+              </p>
               <v-radio-group v-model="csvTemplates" hide-details="auto">
                 <v-radio label="A" value="flattenedWithBlankOut">
                   <template v-slot:label>
                     <span class="radioboxLabelStyle">Template 1 (filled multi rows export) <sup>Legacy</sup></span>
                   </template>
-                  <sup>Beta</sup>
+
+                  <sup>Betas
+                    <font-awesome-icon icon="fa-solid fa-circle-info" size="xl" color='#1A5A96'/>
+                    <font-awesome-icon icon="fa-solid fa-info" size="xl" color='#1A5A96'/>
+                  </sup>
                 </v-radio>
                 <v-radio label="B" value="flattenedWithFilled">
                   <template v-slot:label>
                     <span class="radioboxLabelStyle">Template 2 (blankout multi rows export) <sup>Beta</sup></span>
                   </template>
-                  <sup>Beta</sup>
+                  <sup>Betas</sup>
                 </v-radio>
                 <v-radio label="C" value="unflattened">
                   <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 3  (single row export) <sup>Beta</sup></span>
+                    <span class="radioboxLabelStyle">Template 3  (single row export) <sup>Betas
+                    </sup></span>
                   </template>
                 </v-radio>
                 <v-radio label="C" value="flattenedWithSubmissionHeaders">
                   <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 4  (flattend template) <sup>Beta</sup> <strong>Note</strong></span>
+                    <span class="radioboxLabelStyle">Template 4  (flattend template) <sup>Beta</sup> <strong>Notes</strong></span>
                   </template>
 
                 </v-radio>
@@ -221,6 +234,9 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
+import { faInfo } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+library.add(faInfo);
 
 export default {
   data() {
