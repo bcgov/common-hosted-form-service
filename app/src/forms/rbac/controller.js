@@ -76,6 +76,14 @@ module.exports = {
       next(error);
     }
   },
+  removeMultiUsers: async (req, res, next) => {
+    try {
+      const response = await service.removeMultiUsers(req.query.formId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   getSubmissionUsers:  async (req, res, next) => {
     try {
       const response = await service.getSubmissionUsers(req.query);
@@ -117,6 +125,7 @@ module.exports = {
       next(error);
     }
   },
+
   getIdentityProviders:  async (req, res, next) => {
     try {
       const response = await service.getIdentityProviders(req.query);

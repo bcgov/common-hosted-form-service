@@ -15,7 +15,7 @@ const {
   FormSubmissionStatus,
   FormSubmissionUser,
   IdentityProvider,
-  SubmissionMetadata
+  SubmissionMetadata,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -572,7 +572,7 @@ const service = {
       .deleteById(currentKey.id)
       .throwIfNotFound();
   },
-  // ----------------------------------------------------------------------Api Key
+
 };
 
 module.exports = service;

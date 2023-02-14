@@ -12,7 +12,10 @@ export default {
     formList: [],
     roles: [],
     user: {},
-    userList: []
+    userList: [],
+    fcProactiveHelp:{}, // Form Component Proactive Help
+    fcProactiveHelpImageUrl:'',
+    fcProactiveHelpGroupList:[]
   },
   getters: {
     apiKey: state => state.apiKey,
@@ -20,7 +23,10 @@ export default {
     formList: state => state.formList,
     roles: state => state.roles,
     user: state => state.user,
-    userList: state => state.userList
+    userList: state => state.userList,
+    fcProactiveHelp: state => state.fcProactiveHelp, //Form Component Proactive Help
+    fcProactiveHelpImageUrl: state=> state.fcProactiveHelpImageUrl,
+    fcProactiveHelpGroupList: state => state.fcProactiveHelpGroupList, // Form Components Proactive Help Group Object
   },
   mutations: {
     SET_API_KEY(state, apiKey) {
@@ -40,7 +46,20 @@ export default {
     },
     SET_USERLIST(state, users) {
       state.userList = users;
-    }
+    },
+    SET_FCPROACTIVEHELP(state,fcProactiveHelp) //Form Component Proactive Help
+    {
+      state.fcProactiveHelp = fcProactiveHelp;
+    },
+
+    SET_FCPROACTIVEHELPIMAGEURL(state,fcProactiveHelpImageUrl)
+    {
+      state.fcProactiveHelpImageUrl = fcProactiveHelpImageUrl;
+    },
+    //Form Component Proactive Help Group Object
+    SET_FCPROACTIVEHELPGROUPLIST(state,fcProactiveHelpGroupList){
+      state.fcProactiveHelpGroupList = fcProactiveHelpGroupList;
+    },
   },
   actions: {
     //
@@ -168,6 +187,66 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching this user.',
           consoleError: `Error getting admin user ${userId} data: ${error}`,
+        }, { root: true });
+      }
+    },
+
+    //addFormComponentsProactiveHelp
+    async addFCProactiveHelp({ commit, dispatch },data) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCPROACTIVEHELP',{});
+        const response = await adminService.addFCProactiveHelp(data);
+        commit('SET_FCPROACTIVEHELP',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while storing form component help information.',
+          consoleError: 'Error getting storing form component help information',
+        }, { root: true });
+      }
+    },
+
+    async getFCProactiveHelpImageUrl({ commit, dispatch }, componentId) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCPROACTIVEHELPIMAGEURL',{});
+        const response = await adminService.getFCProactiveHelpImageUrl(componentId);
+        commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while getting image url',
+          consoleError: 'Error getting image url',
+        }, { root: true });
+      }
+    },
+
+    //updateFormComponentsProactiveHelpStatus
+    async updateFCProactiveHelpStatus({ commit, dispatch },{componentId, publishStatus}) {
+      try {
+        // Get Common Components Help Information
+        const response = await adminService.updateFCProactiveHelpStatus(componentId, publishStatus);
+        commit('SET_FCPROACTIVEHELP',response.data);
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while updating publish status',
+          consoleError: 'Error updating publish status',
+        }, { root: true });
+      }
+    },
+
+
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp({ commit, dispatch }) {
+      try {
+        // Get Form Components Proactive Help Group Object
+        commit('SET_FCPROACTIVEHELPGROUPLIST',{});
+        const response = await adminService.listFCProactiveHelp();
+        commit('SET_FCPROACTIVEHELPGROUPLIST',response.data);
+      } catch(error) {
+
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
         }, { root: true });
       }
     },
