@@ -5,7 +5,7 @@ const controller = require('./controller');
 const keycloak = require('../../components/keycloak');
 const P = require('../common/constants').Permissions;
 const R = require('../common/constants').Roles;
-const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles } = require('../auth/middleware/userAccess');
+const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../auth/middleware/userAccess');
 
 routes.use(currentUser);
 
@@ -41,11 +41,11 @@ routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}
   await controller.getUserForms(req, res, next);
 });
 
-routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), async (req, res, next) => {
+routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), hasRolePermissions(false), async (req, res, next) => {
   await controller.setUserForms(req, res, next);
 });
 
-routes.delete('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), async (req, res, next) => {
+routes.delete('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), hasRolePermissions(true), async (req, res, next) => {
   await controller.removeMultiUsers(req, res, next);
 });
 

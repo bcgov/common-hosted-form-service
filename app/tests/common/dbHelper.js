@@ -57,6 +57,7 @@ MockModel.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
 MockModel.then = jest.fn((done) => { done(returnValue); });
 MockModel.throwIfNotFound = jest.fn().mockReturnThis();
 MockModel.where = jest.fn().mockReturnThis();
+MockModel.whereIn = jest.fn().mockReturnThis();
 MockModel.withGraphFetched = jest.fn().mockReturnThis();
 
 // Utility Functions

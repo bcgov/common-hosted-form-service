@@ -2,7 +2,9 @@ const Problem = require('api-problem');
 
 const keycloak = require('../../../components/keycloak');
 const Permissions = require('../../common/constants').Permissions;
+const Roles = require('../../common/constants').Roles;
 const service = require('../service');
+const rbacService = require('../../rbac/service');
 
 const getToken = req => {
   try {
@@ -138,7 +140,7 @@ const hasFormRole = (formId, user, role) => {
   let hasRole = false;
   form_loop:
   for (let i = 0; i < user.forms.length; i++) {
-    if (user.forms[i].id === formId) {
+    if (user.forms[i].formId === formId) {
       for (let j = 0; j < user.forms[i].roles.length; j++) {
         if (user.forms[i].roles[j] === role) {
           hasRole = true;
@@ -164,7 +166,7 @@ const hasFormRoles = (formRoles, hasAll = false) => {
     // Iterate all the forms the current user has access to
     for (let formIndex = 0; formIndex < req.currentUser.forms.length; formIndex++) {
       // If the indexed form is the form we're checking role access
-      if (req.query.formId === req.currentUser.forms[formIndex].id) {
+      if (req.query.formId === req.currentUser.forms[formIndex].formId) {
         // Iterate all the roles for this form
         for (let roleIndex = 0; roleIndex < req.currentUser.forms[formIndex].roles.length; roleIndex++) {
           let index = formRoles.indexOf(req.currentUser.forms[formIndex].roles[roleIndex]);
@@ -195,6 +197,85 @@ const hasFormRoles = (formRoles, hasAll = false) => {
   };
 };
 
+const hasRolePermissions = (removingUsers = false) => {
+  return async (req, res, next) => {
+    // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
+    const formId = req.params.formId || req.query.formId;
+    if (!formId) {
+      // No form provided to this route that secures based on form... that's a problem!
+      return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
+    }
+
+    const currentUser = req.currentUser;
+    const data = req.body;
+
+    if (!Array.isArray(data) || data.length < 1) {
+      return new Problem(401, { detail: 'No data sent.' }).send(res);
+    }
+
+    const isOwner = hasFormRole(formId, currentUser, Roles.OWNER);
+
+    if (removingUsers) {
+      if (data.includes(currentUser.id)) return next(new Problem(401, { detail: 'You can\'t remove yourself from this form.' }));
+
+      if (!isOwner) {
+        for (let i = 0; data.length; i++) {
+          let userId = data[i];
+
+          const userRoles = await rbacService.readUserRole(userId, formId);
+
+          // Can't update another user's roles if they are an owner
+          if (userRoles.some(fru => fru.role === Roles.OWNER) && userId !== currentUser.id) {
+            return next(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+          }
+
+          // If the user is trying to remove the designer role
+          if (userRoles.some(fru => fru.role === Roles.FORM_DESIGNER)) {
+            return next(new Problem(401, { detail: 'You can\'t remove a form designer role.' }));
+          }
+        }
+      }
+    } else {
+      const userId = req.params.userId || req.query.userId;
+      if (!userId || (userId && userId.length === 0)) {
+        return new Problem(401, { detail: 'User Id not found on request.' });
+      }
+
+      if (!isOwner) {
+        if (data.some(role => role.role === Roles.OWNER)) {
+          return next(new Problem(401, { detail: 'You can\'t give anyone the owner role.' }));
+        }
+
+        const userRoles = await rbacService.readUserRole(userId, formId);
+
+        // If the user is trying to remove the team manager role for their own userid
+        if (userRoles.some(fru => fru.role === Roles.TEAM_MANAGER) &&
+          !data.some(role => role.role === Roles.TEAM_MANAGER) &&
+          userId == currentUser.id) {
+          return next(new Problem(401, { detail: 'You can\'t remove your own team manager role.' }));
+        }
+
+        // Can't update another user's roles if they are an owner
+        if (userRoles.some(fru => fru.role === Roles.OWNER) && userId !== currentUser.id) {
+          return next(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+        }
+
+        // If the user is trying to remove the designer role for another userid
+        if (userRoles.some(fru => fru.role === Roles.FORM_DESIGNER) &&
+          !data.some(role => role.role === Roles.FORM_DESIGNER)) {
+          return next(new Problem(401, { detail: 'You can\'t remove a form designer role.' }));
+        }
+        if (!userRoles.some(fru => fru.role === Roles.FORM_DESIGNER) &&
+          data.some(role => role.role === Roles.FORM_DESIGNER)) {
+          return next(new Problem(401, { detail: 'You can\'t add a form designer role.' }));
+        }
+      }
+    }
+
+    return next();
+  };
+};
+
 module.exports = {
-  currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasFormRole
+  currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasFormRole, hasRolePermissions,
 };
