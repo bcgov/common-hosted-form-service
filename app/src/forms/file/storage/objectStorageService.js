@@ -29,7 +29,6 @@ class ObjectStorageService {
       endpoint: this._endpoint,
       accessKeyId: this._accessKeyId,
       secretAccessKey: this._secretAccessKey,
-      signatureVersion:'v2',
       s3ForcePathStyle: true,
       params: {
         Bucket: this._bucket
@@ -176,30 +175,6 @@ class ObjectStorageService {
     }
   }
 
-  async uploadImage(imageData) {
-    try {
-      const image = Buffer.from(imageData.image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-      const params = ({
-        Key:imageData.componentName+'.jpeg',
-        Body:image,
-        ContentEncoding:'base64',
-        ContentType:'image/jpeg',
-      });
-
-      return new Promise((resolve, reject) => {
-        this._s3.upload(params, async(err, data) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(data);
-          }
-        });
-      });
-    } catch (e) {
-      errorToProblem(SERVICE, e);
-    }
-  }
-
   async copyFile(fileStorage, ...subdirs) {
     try {
       const destPath = this._join(...subdirs);
@@ -225,21 +200,6 @@ class ObjectStorageService {
     }
   }
 
-  async getSignedImageUrl(imageName) {
-    try {
-      const params = {
-        Bucket: this._bucket,
-        Key: this._key+''+imageName,
-        Expires: 3600
-      };
-
-      return await this._s3.getSignedUrl('getObject', params);
-
-    } catch (e) {
-      errorToProblem(SERVICE, e);
-    }
-  }
-
 }
 
 const endpoint = config.get('files.objectStorage.endpoint');
@@ -247,7 +207,6 @@ const bucket = config.get('files.objectStorage.bucket');
 const key = config.get('files.objectStorage.key');
 const accessKeyId = config.get('files.objectStorage.accessKeyId');
 const secretAccessKey = config.get('files.objectStorage.secretAccessKey');
-
 
 let objectStorageService = new ObjectStorageService({accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, endpoint: endpoint, bucket: bucket, key: key});
 module.exports = objectStorageService;
