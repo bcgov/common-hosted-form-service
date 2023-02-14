@@ -1017,5 +1017,4 @@ describe(`DELETE ${basePath}/formId/apiKey`, () => {
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
