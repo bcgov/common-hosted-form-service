@@ -6,6 +6,7 @@
       :formId="f"
       :saved="JSON.parse(sv)"
       :versionId="v"
+      ref="formDesigner"
       :isSavedStatus="svs"
       :newVersion="nv"
     />
@@ -33,13 +34,18 @@ export default {
       default:false
     }
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
+  },
 
+  methods:{
+    ...mapActions('form', ['listFCProactiveHelp','deleteCurrentForm']),
+  },
   computed: {
     ...mapGetters('form', ['form']),
     IDP: () => IdentityProviders,
-  },
-  methods:{
-    ...mapActions('form', ['deleteCurrentForm']),
   },
   beforeRouteLeave(_to, _from,next) {
     this.form.isDirty
@@ -49,6 +55,9 @@ export default {
         )
       )
       : next();
+  },
+  beforeMount() {
+    this.listFCProactiveHelp();
   },
 };
 </script>
