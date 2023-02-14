@@ -147,13 +147,14 @@
           </v-radio-group>
           <v-row v-if="exportFormat==='csv'" class="mt-5">
             <v-col>
-              <p class="subTitleObjectStyle" v-bind="props">Select the export template
+              <p class="subTitleObjectStyle" >Select the export template
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon icon="fa-solid fa-circle-info" color='#1A5A96'
                                        class="fa-xs ml-1" v-bind="attrs" v-on="on"/>
                   </template>
-                  <span>Tooltip</span>
+                  <span>If you export fields dynamically appear based on what option the user selects,
+                    use templates 1, 2, 3. When exporting BC Address, Address, Data Map, and Tree Compone</span>
                 </v-tooltip>
               </p>
               <v-radio-group v-model="csvTemplates" hide-details="auto">
@@ -181,7 +182,7 @@
                 </v-radio>
                 <v-radio label="C" value="flattenedWithSubmissionHeaders">
                   <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 4  (flattend template) <sup>Beta</sup> <strong>Notes</strong></span>
+                    <span class="radioboxLabelStyle">Template 4  (flattend template) <sup>Beta</sup></span>
                   </template>
 
                 </v-radio>
@@ -196,7 +197,7 @@
               <v-select
                 item-text="id"
                 item-value="version"
-                :items="versions"
+                :items="versions&&versions"
                 v-model="versionSelected"
                 class="mt-0"
                 style="width:25%; margin-top:0px;"
