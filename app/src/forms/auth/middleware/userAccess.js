@@ -134,14 +134,16 @@ const hasSubmissionPermissions = (permissions) => {
   };
 };
 
-const hasFormRole = (user, role) => {
+const hasFormRole = (formId, user, role) => {
   let hasRole = false;
   form_loop:
   for (let i = 0; i < user.forms.length; i++) {
-    for (let j = 0; j < user.forms[i].roles.length; j++) {
-      if (user.forms[i].roles[j] === role) {
-        hasRole = true;
-        break form_loop;
+    if (user.forms[i].id === formId) {
+      for (let j = 0; j < user.forms[i].roles.length; j++) {
+        if (user.forms[i].roles[j] === role) {
+          hasRole = true;
+          break form_loop;
+        }
       }
     }
   }
@@ -150,19 +152,36 @@ const hasFormRole = (user, role) => {
 };
 
 const hasFormRoles = (formRoles, hasAll = false) => {
-  return async (req, _res, next) => {
-    form_loop:
-    for (let formIndex = 0; formIndex < req.currentUser.forms.length; formIndex++) {
-      for (let roleIndex = 0; roleIndex < req.currentUser.forms[formIndex].roles.length; roleIndex++) {
-        let index = formRoles.indexOf(req.currentUser.forms[formIndex].roles[roleIndex]);
-        if (index > -1) {
-          if (hasAll)
-            formRoles.splice(index, 1);
-          else
-            return next();
-        }
+  return async (req, res, next) => {
+    // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
+    const formId = req.params.formId || req.query.formId;
+    if (!formId) {
+      // No form provided to this route that secures based on form... that's a problem!
+      return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
+    }
 
-        if (formRoles.length == 0) break form_loop;
+    form_loop:
+    // Iterate all the forms the current user has access to
+    for (let formIndex = 0; formIndex < req.currentUser.forms.length; formIndex++) {
+      // If the indexed form is the form we're checking role access
+      if (req.query.formId === req.currentUser.forms[formIndex].id) {
+        // Iterate all the roles for this form
+        for (let roleIndex = 0; roleIndex < req.currentUser.forms[formIndex].roles.length; roleIndex++) {
+          let index = formRoles.indexOf(req.currentUser.forms[formIndex].roles[roleIndex]);
+          // If the user has the indexed role requested by the route
+          if (index > -1) {
+            // If the route specifies all roles must exist for the form
+            if (hasAll)
+              // Remove that role from the search
+              formRoles.splice(index, 1);
+            else
+              // The user has at least one of the roles
+              return next();
+          }
+
+          // The user has all of the required roles
+          if (formRoles.length == 0) break form_loop;
+        }
       }
     }
 

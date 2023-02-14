@@ -45,7 +45,7 @@ routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R
   await controller.setUserForms(req, res, next);
 });
 
-routes.delete('/users', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) => {
+routes.delete('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), async (req, res, next) => {
   await controller.removeMultiUsers(req, res, next);
 });
 
