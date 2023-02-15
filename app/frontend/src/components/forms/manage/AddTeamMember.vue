@@ -9,111 +9,109 @@
           Add Team Member
         </template>
         <template #text>
-          <p>Identity Provider</p>
-          <v-radio-group
-            class="my-0"
-            v-model="selectedIdp"
+          <v-container
+            fluid
+            class="px-0"
           >
-            <v-radio class="mx-2" label="IDIR" :value="ID_PROVIDERS.IDIR" default/>
-            <v-radio class="mx-2" label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC"/>
-            <v-radio class="mx-2" label="Business BCeID" :value="ID_PROVIDERS.BCEIDBUSINESS"/>
-          </v-radio-group>
-          <div>
-            <p>Default Roles</p>
-            <v-checkbox
-              v-model="selectedRoles"
-              label="Owner"
-              :value="FORM_ROLE_CODES.OWNER"
-            ></v-checkbox>
-            <v-checkbox
-              v-model="selectedRoles"
-              label="Team Manager"
-              :value="FORM_ROLE_CODES.TEAM_MANAGER"
-            ></v-checkbox>
-            <v-checkbox
-              v-model="selectedRoles"
-              label="Form Designer"
-              :value="FORM_ROLE_CODES.FORM_DESIGNER"
-            ></v-checkbox>
-            <v-checkbox
-              v-model="selectedRoles"
-              label="Reviewer"
-              :value="FORM_ROLE_CODES.SUBMISSION_REVIEWER"
-            ></v-checkbox>
-            <v-checkbox
-              v-model="selectedRoles"
-              label="Submitter"
-              :value="FORM_ROLE_CODES.FORM_SUBMITTER"
-            ></v-checkbox>
-          </div>
-          <v-container>
             <v-row>
-              <v-autocomplete
-                autocomplete="autocomplete_off"
-                v-model="model"
-                clearable
-                dense
-                :filter="filterObject"
-                hide-details
-                :items="items"
-                label="Enter a name, email, or IDIR"
-                :loading="isLoading"
-                return-object
-                :search-input.sync="searchUsers"
-              >
-                <!-- no data -->
-                <template #no-data>
-                  <div class="px-2">
-                    Can't find someone? They may not have joined the site.<br />
-                    Kindly send them a link to the site and ask them to log in.
-                  </div>
-                </template>
-                <!-- selected user -->
-                <template #selection="data">
-                  <span
-                    v-bind="data.attrs"
-                    :input-value="data.selected"
-                    close
-                    @click="data.select"
-                  >
-                    {{ data.item.fullName }}
-                  </span>
-                </template>
-                <!-- users found in dropdown -->
-                <template #item="data">
-                  <template v-if="typeof data.item !== 'object'">
-                    <v-list-item-content v-text="data.item" />
+              <v-col cols="12">
+                <p>Identity Provider</p>
+                <v-radio-group
+                  class="my-0"
+                  v-model="selectedIdp"
+                  row
+                >
+                  <v-radio class="mx-2" label="IDIR" :value="ID_PROVIDERS.IDIR" default/>
+                  <v-radio class="mx-2" label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC"/>
+                  <v-radio class="mx-2" label="Business BCeID" :value="ID_PROVIDERS.BCEIDBUSINESS"/>
+                </v-radio-group>
+              </v-col>
+              <v-col cols="12">
+                <v-combobox
+                  v-model="selectedRoles"
+                  :items="FORM_ROLES"
+                  label="Select default roles to give to this user"
+                  multiple>
+                  <template v-slot:selection="data">
+                    <v-chip
+                      v-bind="data.attrs"
+                      :model-value="data.selected"
+                      size="small"
+                      @click:close="data.parent.selectItem(data.item)"
+                    >
+                      {{ data.item }}
+                    </v-chip>
                   </template>
-                  <template v-else>
-                    <v-list-item-content>
-                      <v-list-item-title>
-                        {{ data.item.fullName }}
-                      </v-list-item-title>
-                      <v-list-item-subtitle>
-                        {{ data.item.username }} ({{ data.item.idpCode }})
-                      </v-list-item-subtitle>
-                      <v-list-item-subtitle>
-                        {{ data.item.email }}
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
+                </v-combobox>
+              </v-col>
+              <v-col cols="12">
+                <v-autocomplete
+                  autocomplete="autocomplete_off"
+                  v-model="model"
+                  clearable
+                  dense
+                  :filter="filterObject"
+                  hide-details
+                  :items="items"
+                  :label="autocompleteLabel"
+                  :loading="isLoading"
+                  return-object
+                  :search-input.sync="searchUsers"
+                >
+                  <!-- no data -->
+                  <template #no-data>
+                    <div class="px-2">
+                      Can't find someone? They may not have joined the site.<br />
+                      Kindly send them a link to the site and ask them to log in.
+                    </div>
                   </template>
-                </template>
-              </v-autocomplete>
-            </v-row>
-            <v-row>
-              <!-- buttons -->
-              <v-btn
-                color="primary"
-                class="ml-2"
-                :disabled="!model"
-                :loading="isLoading"
-                @click="save"
-              >
-                <span>Add</span>
-              </v-btn>
-              <v-btn outlined class="ml-2" @click="addingUsers = false">
-                <span>Cancel</span>
-              </v-btn>
+                  <!-- selected user -->
+                  <template #selection="data">
+                    <span
+                      v-bind="data.attrs"
+                      :input-value="data.selected"
+                      close
+                      @click="data.select"
+                    >
+                      {{ data.item.fullName }}
+                    </span>
+                  </template>
+                  <!-- users found in dropdown -->
+                  <template #item="data">
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-item-content v-text="data.item" />
+                    </template>
+                    <template v-else>
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          {{ data.item.fullName }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                          {{ data.item.username }} ({{ data.item.idpCode }})
+                        </v-list-item-subtitle>
+                        <v-list-item-subtitle>
+                          {{ data.item.email }}
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+                    </template>
+                  </template>
+                </v-autocomplete>
+              </v-col>
+              <v-col cols="12">
+                <!-- buttons -->
+                <v-btn
+                  color="primary"
+                  class="ml-2"
+                  :disabled="!model"
+                  :loading="isLoading"
+                  @click="save"
+                >
+                  <span>Add</span>
+                </v-btn>
+                <v-btn outlined class="ml-2" @click="addingUsers = false">
+                  <span>Cancel</span>
+                </v-btn>
+              </v-col>
             </v-row>
           </v-container>
         </template>
@@ -188,8 +186,11 @@ export default {
     ID_PROVIDERS() {
       return IdentityProviders;
     },
-    FORM_ROLE_CODES() {
-      return FormRoleCodes;
+    FORM_ROLES() {
+      return Object.values(FormRoleCodes);
+    },
+    autocompleteLabel() {
+      return this.selectedIdp == IdentityProviders.IDIR ? 'Enter a name, e-mail, or username' : 'Enter an exact e-mail or username';
     }
   },
   watch: {
