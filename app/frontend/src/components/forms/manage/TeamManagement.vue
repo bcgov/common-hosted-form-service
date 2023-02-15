@@ -279,7 +279,8 @@ export default {
               username: user.username,
             });
 
-            this.setUserForms(user.id);
+            if (Array.isArray(roles) && roles.length)
+              this.setUserForms(user.id);
           }
         });
       }
