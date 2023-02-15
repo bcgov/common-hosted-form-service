@@ -209,17 +209,13 @@ const hasRolePermissions = (removingUsers = false) => {
     const currentUser = req.currentUser;
     const data = req.body;
 
-    if (!Array.isArray(data) || data.length < 1) {
-      return new Problem(401, { detail: 'No data sent.' }).send(res);
-    }
-
     const isOwner = hasFormRole(formId, currentUser, Roles.OWNER);
 
     if (removingUsers) {
       if (data.includes(currentUser.id)) return next(new Problem(401, { detail: 'You can\'t remove yourself from this form.' }));
 
       if (!isOwner) {
-        for (let i = 0; data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           let userId = data[i];
 
           const userRoles = await rbacService.readUserRole(userId, formId);

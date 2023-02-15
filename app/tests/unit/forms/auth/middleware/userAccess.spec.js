@@ -800,24 +800,6 @@ describe('hasFormRoles', () => {
 });
 
 describe('hasRolePermissions', () => {
-  let currentUser = {
-    id: '',
-    forms: []
-  };
-  let req = {};
-
-  beforeEach(() => {
-    currentUser = {};
-    currentUser.id = userId;
-    currentUser.forms = [];
-    req.currentUser = currentUser;
-    req = {};
-    req.params = {};
-    req.query = {
-      formId: formId
-    };
-  });
-
   describe('when removing users from a team', () => {
     describe('as an owner', () => {
       it ('should succeed with valid data', async () => {
@@ -831,15 +813,24 @@ describe('hasRolePermissions', () => {
         const hrp = hasRolePermissions(true);
         const nxt = jest.fn();
 
-        currentUser.forms = [{
-          formId: formId,
-          roles: [
-            Roles.OWNER,
-            Roles.TEAM_MANAGER
-          ]
-        }];
-        req.currentUser = currentUser;
-        req.body = [ userId2 ];
+        const cu = {
+          id: userId,
+          forms: [{
+            formId: formId,
+            roles: [
+              Roles.OWNER,
+              Roles.TEAM_MANAGER
+            ]
+          }]
+        };
+        const req = {
+          currentUser: cu,
+          params: {},
+          query: {
+            formId: formId
+          },
+          body: [ userId2 ]
+        };
 
         await hrp(req, testRes, nxt);
 
@@ -857,22 +848,681 @@ describe('hasRolePermissions', () => {
             role: Roles.FORM_SUBMITTER
           }
         ]);
+
         const hrp = hasRolePermissions(true);
+
         const nxt = jest.fn();
 
-        currentUser.forms = [{
-          formId: formId,
-          roles: [
-            Roles.TEAM_MANAGER
-          ]
-        }];
-        req.currentUser = currentUser;
-        req.body = [ userId2 ];
+        const cu = {
+          id: userId,
+          forms: [{
+            formId: formId,
+            roles: [
+              Roles.TEAM_MANAGER
+            ]
+          }]
+        };
+        const req = {
+          currentUser: cu,
+          params: {},
+          query: {
+            formId: formId
+          },
+          body: [ userId2 ]
+        };
 
         await hrp(req, testRes, nxt);
 
         expect(nxt).toHaveBeenCalledTimes(1);
         expect(nxt).toHaveBeenCalledWith();
+      });
+
+      it ('falls through if you\'re trying to remvoe your own team manager role', async () => {
+        rbacService.readUserRole = jest.fn().mockReturnValue([
+          {
+            userId: userId2,
+            formId: formId,
+            role: Roles.TEAM_MANAGER
+          }
+        ]);
+
+        const hrp = hasRolePermissions(true);
+
+        const nxt = jest.fn();
+
+        const cu = {
+          id: userId,
+          forms: [{
+            formId: formId,
+            roles: [
+              Roles.TEAM_MANAGER
+            ]
+          }]
+        };
+        const req = {
+          currentUser: cu,
+          params: {},
+          query: {
+            formId: formId
+          },
+          body: [ userId2 ]
+        };
+
+        await hrp(req, testRes, nxt);
+
+        expect(nxt).toHaveBeenCalledTimes(1);
+        expect(nxt).toHaveBeenCalledWith();
+      });
+    });
+  });
+
+  describe('when updating user roles on a team', () => {
+    describe('as an owner', () => {
+
+    });
+
+    describe('as a team manager', () => {
+      describe('the user being updated is your own', () => {
+        it('falls through if you\'re trying to remove your own team manager role', async () => {
+          rbacService.readUserRole = jest.fn().mockReturnValue([
+            {
+              id: '1',
+              role: Roles.TEAM_MANAGER,
+              formId: formId,
+              userId: userId,
+              createdBy: '',
+              createdAt: '',
+              updatedBy: '',
+              updatedAt: '',
+            },
+            {
+              id: '2',
+              role: Roles.FORM_DESIGNER,
+              formId: formId,
+              userId: userId,
+              createdBy: '',
+              createdAt: '',
+              updatedBy: '',
+              updatedAt: '',
+            }
+          ]);
+
+          const hrp = hasRolePermissions(false);
+
+          const nxt = jest.fn();
+
+          const cu = {
+            id: userId,
+            forms: [{
+              formId: formId,
+              roles: [
+                Roles.TEAM_MANAGER,
+                Roles.FORM_DESIGNER,
+              ]
+            }]
+          };
+          const req = {
+            currentUser: cu,
+            params: {
+              userId: cu.id
+            },
+            query: {
+              formId: formId
+            },
+            body: [{
+              userId: cu.id,
+              formId: formId,
+              role: Roles.FORM_DESIGNER
+            }]
+          };
+
+          await hrp(req, testRes, nxt);
+
+          expect(nxt).toHaveBeenCalledTimes(1);
+          expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t remove your own team manager role.' }));
+        });
+      });
+
+      describe('the user being updated is not your own', () => {
+        describe('is an owner', () => {
+          it('falls through if trying to make any role changes', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.OWNER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '2',
+                role: Roles.FORM_DESIGNER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.SUBMISSION_REVIEWER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_SUBMITTER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+          });
+        });
+
+        describe('is not an owner', () => {
+          it('falls through if trying to add a designer role', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.FORM_SUBMITTER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_DESIGNER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_SUBMITTER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+          });
+
+          it('falls through if trying to remove a designer role', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.FORM_SUBMITTER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '2',
+                role: Roles.FORM_DESIGNER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.SUBMISSION_REVIEWER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_SUBMITTER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+          });
+
+          it('should succeed when adding a manager/reviewer/submitter roles', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.TEAM_MANAGER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.SUBMISSION_REVIEWER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_SUBMITTER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith();
+          });
+
+          it('should succeed when removing a manager roles', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.FORM_SUBMITTER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '2',
+                role: Roles.TEAM_MANAGER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2,
+                formId: formId
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.SUBMISSION_REVIEWER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_SUBMITTER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith();
+          });
+
+          it('should succeed when removing a reviewer roles', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.FORM_SUBMITTER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '2',
+                role: Roles.TEAM_MANAGER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2,
+                formId: formId
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.TEAM_MANAGER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_SUBMITTER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith();
+          });
+
+          it('should succeed when removing a submitter roles', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.FORM_SUBMITTER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '2',
+                role: Roles.TEAM_MANAGER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2,
+                formId: formId
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.TEAM_MANAGER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.SUBMISSION_REVIEWER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith();
+          });
+
+          it('should succeed when removing a manager/reviewer/submitter roles', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.FORM_SUBMITTER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '2',
+                role: Roles.TEAM_MANAGER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2,
+                formId: formId
+              },
+              query: {
+                formId: formId
+              },
+              body: []
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith();
+          });
+        });
       });
     });
   });
