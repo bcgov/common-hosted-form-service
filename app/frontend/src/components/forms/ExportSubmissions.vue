@@ -146,51 +146,6 @@
             </v-radio>
           </v-radio-group>
           <v-row v-if="exportFormat==='csv'" class="mt-5">
-            <v-col>
-              <p class="subTitleObjectStyle" >Select the export template
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <font-awesome-icon icon="fa-solid fa-circle-info" color='#1A5A96'
-                                       class="fa-xs ml-1" v-bind="attrs" v-on="on"/>
-                  </template>
-                  <span>If you export fields dynamically appear based on what option the user selects,
-                    use templates 1, 2, 3. When exporting BC Address, Address, Data Map, and Tree Compone</span>
-                </v-tooltip>
-              </p>
-              <v-radio-group v-model="csvTemplates" hide-details="auto">
-                <v-radio label="A" value="flattenedWithBlankOut">
-                  <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 1 (filled multi rows export) <sup>Legacy</sup></span>
-                  </template>
-
-                  <sup>Betas
-                    <font-awesome-icon icon="fa-solid fa-circle-info" size="xl" color='#1A5A96'/>
-                    <font-awesome-icon icon="fa-solid fa-info" size="xl" color='#1A5A96'/>
-                  </sup>
-                </v-radio>
-                <v-radio label="B" value="flattenedWithFilled">
-                  <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 2 (blankout multi rows export) <sup>Beta</sup></span>
-                  </template>
-                  <sup>Betas</sup>
-                </v-radio>
-                <v-radio label="C" value="unflattened">
-                  <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 3  (single row export) <sup>Betas
-                    </sup></span>
-                  </template>
-                </v-radio>
-                <v-radio label="C" value="flattenedWithSubmissionHeaders">
-                  <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 4  (flattend template) <sup>Beta</sup></span>
-                  </template>
-
-                </v-radio>
-
-              </v-radio-group>
-            </v-col>
-          </v-row>
-          <v-row v-if="exportFormat==='csv'" class="mt-5">
             <v-col
               cols="6" >
               <div class="subTitleObjectStyle">Select the submission version</div>
@@ -202,6 +157,48 @@
                 class="mt-0"
                 style="width:25%; margin-top:0px;"
               ></v-select>
+            </v-col>
+          </v-row>
+          <v-row v-if="exportFormat==='csv'" class="mt-0">
+            <v-col>
+              <div style="display:flex; align-content: flex-start">
+                <div class="subTitleObjectStyle mr-1" >Select the export template </div> (<a :href="githubLink" class="preview_info_link_field" :target="'_blank'"> Learn more
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a>)
+
+              </div>
+
+              <v-radio-group v-model="csvTemplates" hide-details="auto">
+                <v-radio label="A" value="flattenedWithBlankOut">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle " style="display:flex; align-content: flex-start">Template 1 <div class="blueColorWrapper ml-1"> (Recommended) </div></span>
+                  </template>
+
+                  <sup>Betas
+                    <font-awesome-icon icon="fa-solid fa-circle-info" size="xl" color='#1A5A96'/>
+                    <font-awesome-icon icon="fa-solid fa-info" size="xl" color='#1A5A96'/>
+                  </sup>
+                </v-radio>
+                <v-radio label="B" value="flattenedWithFilled">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 2 </span>
+                  </template>
+                  <sup>Betas</sup>
+                </v-radio>
+                <v-radio label="C" value="unflattened">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 3 </span>
+                  </template>
+                </v-radio>
+
+                <p class="innerTitleObjectStyle">If you are exporting BC Address, Address, Data Map or Tree component, use template 4 </p>
+                <v-radio label="C" value="flattenedWithSubmissionHeaders">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 4 </span>
+                  </template>
+
+                </v-radio>
+
+              </v-radio-group>
             </v-col>
           </v-row>
           <div class="mt-6 mb-3 fileLabelStyle">
@@ -235,13 +232,15 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
-import { faInfo } from '@fortawesome/free-solid-svg-icons';
+
+import { faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faInfo);
+library.add(faXmark,faSquareArrowUpRight);
 
 export default {
   data() {
     return {
+      githubLink:'https://github.com/bcgov/common-hosted-form-service/wiki/Submission-to-CSV-Export',
       dateRange: false,
       dialog: false,
       endDate: moment(Date()).format('YYYY-MM-DD'),
@@ -357,6 +356,17 @@ export default {
     letter-spacing: 0px !important;
     color: #000000 !important;
   };
+  .innerTitleObjectStyle {
+    text-align: left !important;
+    text-decoration: underline !important;
+    font-style: normal !important;
+    font-size: 14px !important;
+    font-variant: normal !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
+    letter-spacing: 0px !important;
+    color: #000000 !important;
+  };
   .subTitleObjectStyle {
     text-align: left !important;
     text-decoration: underline !important;
@@ -418,5 +428,17 @@ export default {
     letter-spacing: 0px !important;
     color: #38598A !important;
     text-transform:capitalize !important;
+  }
+
+  .blueColorWrapper {
+    text-align: left !important;
+    font-style: normal !important;
+    font-size: 10px !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
+    letter-spacing: 0px !important;
+    color: #1A5A96 !important;
+    cursor:pointer;
+    text-transform: capitalize !important;
   }
 </style>
