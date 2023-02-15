@@ -1,7 +1,7 @@
 import { getField, updateField } from 'vuex-map-fields';
 
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { apiKeyService, formService, rbacService, userService, adminService } from '@/services';
+import { apiKeyService, formService, rbacService, userService} from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 
@@ -467,7 +467,7 @@ export default {
           commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
         }
         else {
-          const response = await adminService.getFCProactiveHelpImageUrl(componentId);
+          const response = await formService.getFCProactiveHelpImageUrl(componentId);
           state.imageList.set(componentId, response);
           commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
         }
@@ -484,8 +484,7 @@ export default {
       try {
         // Get Form Components Proactive Help Group Object
         commit('SET_FCPROACTIVEHELPGROUPLIST',{});
-        const response = await adminService.listFCProactiveHelp();
-        console.log('----->>> ', response.data);
+        const response = await formService.listFCProactiveHelp();
         commit('SET_FCPROACTIVEHELPGROUPLIST',response.data);
       } catch(error) {
 
