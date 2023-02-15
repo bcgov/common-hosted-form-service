@@ -260,7 +260,7 @@ export default {
     addingUsers(adding) {
       this.isAddingUsers = adding;
     },
-    addNewUsers(users) {
+    addNewUsers(users, roles) {
       if (Array.isArray(users) && users.length) {
         users.forEach((user) => {
           // if user isnt already in the table
@@ -270,14 +270,16 @@ export default {
               form_checkbox:true,
               formId: this.formId,
               userId: user.id,
-              form_submitter: false,
-              form_designer: false,
-              submission_reviewer: false,
-              team_manager: false,
-              owner: false,
+              form_submitter: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.FORM_SUBMITTER) : false,
+              form_designer: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.FORM_DESIGNER) : false,
+              submission_reviewer: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.SUBMISSION_REVIEWER) : false,
+              team_manager: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.TEAM_MANAGER) : false,
+              owner: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.OWNER) : false,
               fullName: user.fullName,
               username: user.username,
             });
+
+            this.setUserForms(user.id);
           }
         });
       }
