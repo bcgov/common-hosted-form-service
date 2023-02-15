@@ -398,4 +398,25 @@ export default {
   requestReceiptEmail(submissionId, requestBody) {
     return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/email`, requestBody);
   },
+
+  /**
+   * listFormComponentsProactiveHelp
+   * @function listFCProactiveHelp
+   * Reads all form components help information
+   * @returns {Promise} An axios response
+  */
+  async listFCProactiveHelp() {
+    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/list`);
+  },
+
+
+  /**
+   * @function getPresignedUrl
+   * get signed image upload url
+   * @param {Object} imageName component name and component image encoded into base64
+   * @returns {Promise} An axios response
+  */
+  async getFCProactiveHelpImageUrl(componentId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`);
+  },
 };
