@@ -43,10 +43,13 @@ class User extends Timestamps(Model) {
       filterRestricted(query) {
         query.whereNotIn('idpCode', Object.values(Restricted.IDP));
       },
-      filterUsername(query, value) {
+      filterUsername(query, value, exact = false) {
         if (value) {
-          // ilike is postgres case insensitive like
-          query.where('username', 'ilike', `%${value}%`);
+          if (exact)
+            query.where('username', value);
+          else
+            // ilike is postgres case insensitive like
+            query.where('username', 'ilike', `%${value}%`);
         }
       },
       filterFirstName(query, value) {
@@ -67,10 +70,13 @@ class User extends Timestamps(Model) {
           query.where('fullName', 'ilike', `%${value}%`);
         }
       },
-      filterEmail(query, value) {
+      filterEmail(query, value, exact = false) {
         if (value) {
-          // ilike is postgres case insensitive like
-          query.where('email', 'ilike', `%${value}%`);
+          if (exact)
+            query.where('email', value);
+          else
+            // ilike is postgres case insensitive like
+            query.where('email', 'ilike', `%${value}%`);
         }
       },
       filterSearch(query, value) {

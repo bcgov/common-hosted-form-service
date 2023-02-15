@@ -45,14 +45,19 @@
 
       <BaseDialog
         v-model="showSubmitConfirmDialog"
-        type="CONTINUE"
+        type="CUSTOM"
+        :enableCustomButton="canSaveDraft"
         @close-dialog="showSubmitConfirmDialog = false"
         @continue-dialog="continueSubmit"
+        @custom-dialog="saveDraft"
       >
         <template #title>Please Confirm</template>
         <template #text>Are you sure you wish to submit your form?</template>
         <template #button-text-continue>
           <span>Submit</span>
+        </template>
+        <template #button-text-custom>
+          <span>Save Draft</span>
         </template>
       </BaseDialog>
 
@@ -81,7 +86,7 @@ import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
-import { NotificationTypes } from '@/utils/constants';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
 
 export default {
   name: 'FormViewer',
@@ -161,6 +166,12 @@ export default {
         },
       };
     },
+    canSaveDraft() {
+      return (
+        !this.readOnly &&
+        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
+      );
+    }
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -268,6 +279,7 @@ export default {
             },
           });
         }
+        this.showSubmitConfirmDialog = false;
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while saving a draft',
