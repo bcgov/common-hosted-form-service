@@ -263,7 +263,7 @@ describe('form actions', () => {
       adminService.listFCProactiveHelp.mockResolvedValue({ data: [] });
       await store.actions.listFCProactiveHelp(mockStore);
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPLIST', expect.any(Object));
     });
 
@@ -280,7 +280,7 @@ describe('form actions', () => {
     it('getFCProactiveHelpImageUrl should commit to SET_FCPROACTIVEHELPIMAGEURL', async () => {
       adminService.getFCProactiveHelpImageUrl.mockResolvedValue({ data: {} });
       await store.actions.getFCProactiveHelpImageUrl(mockStore);
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPIMAGEURL', expect.any(Object));
     });
 
