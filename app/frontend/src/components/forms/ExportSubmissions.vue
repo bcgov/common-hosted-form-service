@@ -189,15 +189,6 @@
                     <span class="radioboxLabelStyle">Template 3 </span>
                   </template>
                 </v-radio>
-
-                <p class="innerTitleObjectStyle">If you are exporting BC Address, Address, Data Map or Tree component, use template 4 </p>
-                <v-radio label="C" value="flattenedWithSubmissionHeaders">
-                  <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 4 </span>
-                  </template>
-
-                </v-radio>
-
               </v-radio-group>
             </v-col>
           </v-row>
@@ -353,17 +344,6 @@ export default {
     font-weight: bold !important;
     font-variant: normal !important;
     font-family: BCSans !important;
-    letter-spacing: 0px !important;
-    color: #000000 !important;
-  };
-  .innerTitleObjectStyle {
-    text-align: left !important;
-    text-decoration: underline !important;
-    font-style: normal !important;
-    font-size: 14px !important;
-    font-variant: normal !important;
-    font-family: BCSans !important;
-    font-weight: normal !important;
     letter-spacing: 0px !important;
     color: #000000 !important;
   };

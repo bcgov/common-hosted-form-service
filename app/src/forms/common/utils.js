@@ -1,6 +1,6 @@
 const falsey = require('falsey');
 const clone = require('lodash/clone');
-
+const _ = require('lodash');
 
 const setupMount = (type, app, routes, dataErrors) => {
   const p = `/${type}`;
@@ -95,10 +95,10 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
         // for survey component, get field name from obj.questions.value
         if (component.type === 'survey') {
 
-          component.questions.forEach(e => keyPath.push(`${newPath}.${component.key}.${e.value}`));
+          component.questions.forEach(e => keyPath.push(path?`${path}.${component.key}.${e.value}`:`${component.key}.${e.value}`));
         }
         // for checkboxes and selectboxes, get field name from obj.values.value
-        else if (component.values) component.values.forEach(e => keyPath.push(`${newPath}.${component.key}.${e.value}`));
+        else if (component.values) component.values.forEach(e => keyPath.push(path?`${path}.${component.key}.${e.value}`:`${component.key}.${e.value}`));
         // else push the parent field
         else {
           keyPath.push(component.key);
@@ -180,27 +180,31 @@ const unwindPath = (schema) => {
 };
 
 const submissionHeaders = (obj) => {
-  let path = [];
-  const flatten = (json) =>{
-    var flattened = {};
-    for (var key in json) {
-      if (json.hasOwnProperty(key)) {
-        if (typeof json[key] === 'object') {
-          var flatObject = flatten(json[key]);
-          for (var flatKey in flatObject) {
-            if (flatObject.hasOwnProperty(flatKey)) {
-              flattened[key + '.' + flatKey] = flatObject[flatKey];
-            }
-          }
-        } else {
-          flattened[key] = json[key];
+  let objectMap = new Set();
+  const findField = (obj, keyPath) => {
+    Object.keys(obj).forEach((key)=>{
+      if(Array.isArray(obj[key])) {
+        for (let value of obj[key]) {
+          findField(value, keyPath?keyPath+'.'+key:key);
         }
       }
-    }
-    return flattened;
-  }
-  path = flatten(obj);
-  return path;
+
+      else if(_.isPlainObject(obj[key])) {
+
+        findField(obj[key], keyPath?keyPath+'.'+key:key);
+      }
+
+      else if (_.isString(obj[key]) || _.isNumber(obj[key]) || _.isPlainObject(obj[key])  || _.isDate(obj[key])) {
+        if(key!=='submit') {
+          objectMap.add(keyPath?keyPath+'.'+key:key);
+        }
+      }
+    });
+  };
+
+  findField(obj, undefined);
+
+  return objectMap;
 };
 
 
