@@ -58,8 +58,7 @@ const service = {
    * @returns {String[]} An array of strings
    */
   _readSchemaFields: async (schema) => {
-
-    return await flattenComponents(schema.components);
+    return  await flattenComponents(schema.components);
   },
 
   _buildCsvHeaders: async (form,  data, version) => {
@@ -72,7 +71,7 @@ const service = {
     // get correctly ordered field names (keys) from latest form version
     const latestFormDesign = await service._readLatestFormSchema(form.id, version);
 
-    const fieldNames = await service._readSchemaFields(latestFormDesign);
+    const fieldNames = await service._readSchemaFields(latestFormDesign, data);
 
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data.length>0&&data[0].form);
@@ -82,7 +81,10 @@ const service = {
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    return metaHeaders.concat(fieldNames);
+    let formSchemaheaders = metaHeaders.concat(fieldNames);
+    let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+    let t = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
+    return t;
   },
 
   _exportType: (params = {}) => {
@@ -199,8 +201,6 @@ const service = {
           return service. _flattenSubmissionsCSVExport(form, data, columns, true, version);
         case 'unflattened':
           return service. _unFlattenSubmissionsCSVExport(form, data, columns, version);
-        case 'flattenedWithSubmissionHeaders':
-          return service._flattenSubmissionsCSVExportWithSubmissionHeaders(form, data, false);
         default:
           // code block
       }
@@ -212,31 +212,13 @@ const service = {
   _flattenSubmissionsCSVExport: async(form, data, columns, blankout, version) => {
     let pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, columns);
-    let b = submissionHeaders(data[0])
+
     const opts = {
       transforms: [
         transforms.unwind({ paths: pathToUnwind, blankOut: blankout }),
         transforms.flatten({ object: true, array: true, separator: '.'}),
       ],
       fields: headers
-    };
-    const parser = new Parser(opts);
-    const csv = parser.parse(data);
-    return {
-      data: csv,
-      headers: {
-        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-        'content-type': 'text/csv'
-      }
-    };
-  },
-  _flattenSubmissionsCSVExportWithSubmissionHeaders: async(form, data, blankout) => {
-    let pathToUnwind = await unwindPath(data);
-    const opts = {
-      transforms: [
-        transforms.unwind({ paths: pathToUnwind, blankOut: blankout }),
-        transforms.flatten({ object: true, array: true, separator: '.'}),
-      ],
     };
     const parser = new Parser(opts);
     const csv = parser.parse(data);

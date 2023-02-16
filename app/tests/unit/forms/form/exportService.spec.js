@@ -128,6 +128,88 @@ describe('_readSchemaFields', () => {
     expect(result).toEqual(expectedFieldNames);
   });
 
+
+  it('should get form fields in the order they appear in the kitchen sink form for multiple components', async () => {
+
+    // form schema from db
+    const formSchema = require('../../../fixtures/form/kitchen_sink_form_schema_multiple_component_test.json');
+
+    // expected field names in correct order returned from Kitchen Sink form schema
+    const expectedFieldNames = [
+      'firstName',
+      'lastName',
+      'schoolName',
+      'departmentName',
+      'courseName',
+      'name',
+      'testname1',
+      'testname2',
+      'testname3',
+      'simplenumber',
+      'simpleemail',
+      'simpledatetime',
+      'simpleday',
+      'yes',
+      'radioGroup',
+      'checkboxGroup.1',
+      'checkboxGroup.2',
+      'survey1.early',
+      'survey1.late',
+      'currency',
+      'password',
+      'url',
+      'textArea',
+      'number',
+      'number1',
+      'day',
+      'selectBoxes1.a',
+      'selectBoxes1.b',
+      'selectBoxes1.c',
+      'select1',
+      'radio1',
+      'dataMap',
+      'simplefile',
+      'orgbook',
+    ];
+
+    const result = await exportService._readSchemaFields(formSchema);
+    expect(result).toHaveLength(34);
+    expect(result).toEqual(expectedFieldNames);
+  });
+
+});
+
+
+describe('_buildCsvHeaders', () => {
+  it('should build correct csv headers', async () => {
+    //
+
+    // form schema from db
+    const formSchema = require('../../../fixtures/form/kitchen_sink_schema.json');
+
+    // form object from db
+    const form = { id: 123 };
+
+
+    // mock latestFormSchema
+    exportService._readLatestFormSchema = jest.fn(() => { return formSchema; });
+
+    // submissions export (matchces the format that is downloaded in UI)
+    const submissionsExport = require('../../../fixtures/submission/kitchen_sink_submissions_export.json');
+
+    // build csv headers
+    // gets a a list of form meta fieldfs followed by submission fields
+    const result = await exportService._buildCsvHeaders(form, submissionsExport,null);
+
+    expect(result).toHaveLength(44);
+    expect(result).toEqual(expect.arrayContaining(['form.confirmationId', 'textFieldNested1', 'textFieldNested2']));
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
+    // expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123);
+
+    // restore mocked function to it's original implementation
+    exportService._readLatestFormSchema.mockRestore();
+  });
+
 });
 
 
@@ -163,3 +245,34 @@ describe('_buildCsvHeaders', () => {
 
 });
 
+
+describe('_buildCsvHeaders', () => {
+  it('should build correct csv headers multiple components', async () => {
+    //
+
+    // form schema from db
+    const formSchema = require('../../../fixtures/form/kitchen_sink_form_schema_multiple_component_test.json');
+
+    // form object from db
+    const form = { id: 123 };
+
+
+    // mock latestFormSchema
+    exportService._readLatestFormSchema = jest.fn(() => { return formSchema; });
+
+    // submissions export (matchces the format that is downloaded in UI)
+    const submissionsExport = require('../../../fixtures/submission/kitchen_sink_submission_data_multiple_component_test.json');
+
+    // build csv headers
+    // gets a a list of form meta fieldfs followed by submission fields
+    const result = await exportService._buildCsvHeaders(form, submissionsExport,1);
+
+    expect(result).toHaveLength(42);
+    expect(result).toEqual(expect.arrayContaining(['number1','selectBoxes1.a', 'number']));
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
+
+    // restore mocked function to it's original implementation
+    exportService._readLatestFormSchema.mockRestore();
+  });
+});
