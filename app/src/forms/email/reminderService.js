@@ -264,7 +264,6 @@ const service = {
   _getReferer : () => {
 
     try {
-
       const protocol = 'https://';
       const basePath = config.get('frontend.basePath');
       const host = process.env.SERVER_HOST;
