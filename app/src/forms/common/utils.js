@@ -94,10 +94,11 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
 
         // for survey component, get field name from obj.questions.value
         if (component.type === 'survey') {
-          component.questions.forEach(e => keyPath.push(`${path}.${component.key}.${e.value}`));
+
+          component.questions.forEach(e => keyPath.push(`${newPath}.${component.key}.${e.value}`));
         }
         // for checkboxes and selectboxes, get field name from obj.values.value
-        else if (component.values) component.values.forEach(e => keyPath.push(`${path}.${component.key}.${e.value}`));
+        else if (component.values) component.values.forEach(e => keyPath.push(`${newPath}.${component.key}.${e.value}`));
         // else push the parent field
         else {
           keyPath.push(component.key);
@@ -178,6 +179,30 @@ const unwindPath = (schema) => {
   return path;
 };
 
+const submissionHeaders = (obj) => {
+  let path = [];
+  const flatten = (json) =>{
+    var flattened = {};
+    for (var key in json) {
+      if (json.hasOwnProperty(key)) {
+        if (typeof json[key] === 'object') {
+          var flatObject = flatten(json[key]);
+          for (var flatKey in flatObject) {
+            if (flatObject.hasOwnProperty(flatKey)) {
+              flattened[key + '.' + flatKey] = flatObject[flatKey];
+            }
+          }
+        } else {
+          flattened[key] = json[key];
+        }
+      }
+    }
+    return flattened;
+  }
+  path = flatten(obj);
+  return path;
+};
+
 
 
 module.exports = {
@@ -186,5 +211,6 @@ module.exports = {
   queryUtils,
   typeUtils,
   flattenComponents,
-  unwindPath
+  unwindPath,
+  submissionHeaders
 };
