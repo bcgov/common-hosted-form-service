@@ -35,11 +35,11 @@ describe('list', () => {
     expect(MockModel.modify).toHaveBeenCalledTimes(9);
     expect(MockModel.modify).toHaveBeenCalledWith('filterIdpUserId', params.idpUserId);
     expect(MockModel.modify).toHaveBeenCalledWith('filterIdpCode', params.idpCode);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterUsername', params.username);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterUsername', params.username, false);
     expect(MockModel.modify).toHaveBeenCalledWith('filterFullName', params.fullName);
     expect(MockModel.modify).toHaveBeenCalledWith('filterFirstName', params.firstName);
     expect(MockModel.modify).toHaveBeenCalledWith('filterLastName', params.lastName);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterEmail', params.email);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterEmail', params.email, false);
     expect(MockModel.modify).toHaveBeenCalledWith('filterSearch', params.search);
     expect(MockModel.modify).toHaveBeenCalledWith('orderLastFirstAscending');
   });
