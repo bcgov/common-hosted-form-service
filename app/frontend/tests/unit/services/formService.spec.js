@@ -209,18 +209,6 @@ describe('Form Service', () => {
     });
   });
 
-  describe('Forms/{formId}/versions', () => {
-    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/versions`;
-
-    it('calls list endpoint', async () => {
-      mockAxios.onGet(endpoint).reply(200);
-
-      const result = await formService.listVersions(zeroUuid);
-      expect(result).toBeTruthy();
-      expect(mockAxios.history.get).toHaveLength(1);
-    });
-  });
-
   describe('Forms/{formId}/version', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/version`;
 

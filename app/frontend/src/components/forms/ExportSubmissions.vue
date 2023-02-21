@@ -241,7 +241,8 @@ export default {
       startDate: moment(Date()).format('YYYY-MM-DD'),
       startDateMenu: false,
       versionSelected:1,
-      csvTemplates:'flattenedWithBlankOut'
+      csvTemplates:'flattenedWithBlankOut',
+      versions:[]
 
     };
   },
@@ -251,14 +252,14 @@ export default {
       let  momentString = momentObj.format('YYYY-MM-DD');
       return momentString;
     },
-    ...mapGetters('form', ['form', 'userFormPreferences','versions']),
+    ...mapGetters('form', ['form', 'userFormPreferences']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['listVersions']),
+    ...mapActions('form'),
     async callExport() {
       try {
         // UTC start of selected start date...
@@ -321,8 +322,8 @@ export default {
     },
     async exportFormat(value) {
       if(value==='csv') {
-        if(this.form.id) {
-          await this.listVersions(this.form.id);
+        if(this.form) {
+          this.versions.push(...(this.form.versions.map(version=>version.version)));
         }
       }
     },
