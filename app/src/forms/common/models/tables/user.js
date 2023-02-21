@@ -84,6 +84,9 @@ class User extends Timestamps(Model) {
           });
         }
       },
+      safeSelect(query) {
+        query.select('id', 'idpUserId', 'keycloakId', 'idpCode');
+      },
       orderLastFirstAscending(builder) {
         builder.orderByRaw('lower("lastName"), lower("firstName")');
       }
