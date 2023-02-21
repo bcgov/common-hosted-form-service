@@ -1,27 +1,45 @@
 const Problem = require('api-problem');
 
 const { User, UserFormPreferences } = require('../common/models');
+const { IdentityProviders } = require('../common/constants');
 
 const service = {
   //
   // User
   //
   list: (params) => {
+    let exact = false;
+    if (params.idpCode && (params.idpCode === IdentityProviders.BCEIDBASIC || params.idpCode === IdentityProviders.BCEIDBUSINESS)) {
+      if (!params.email && !params.username) {
+        throw new Problem(422, {
+          detail: 'Could not retrieve BCeID users. Invalid options provided.'
+        });
+      }
+      exact = true;
+    }
+
     return User.query()
-      .modify('filterRestricted')
       .modify('filterIdpUserId', params.idpUserId)
       .modify('filterIdpCode', params.idpCode)
-      .modify('filterUsername', params.username)
+      .modify('filterUsername', params.username, exact)
       .modify('filterFullName', params.fullName)
       .modify('filterFirstName', params.firstName)
       .modify('filterLastName', params.lastName)
-      .modify('filterEmail', params.email)
+      .modify('filterEmail', params.email, exact)
       .modify('filterSearch', params.search)
       .modify('orderLastFirstAscending');
   },
 
   read: (userId) => {
     return User.query()
+      .findById(userId)
+      .throwIfNotFound();
+  },
+
+
+  readSafe: (userId) => {
+    return User.query()
+      .modify('safeSelect')
       .findById(userId)
       .throwIfNotFound();
   },
