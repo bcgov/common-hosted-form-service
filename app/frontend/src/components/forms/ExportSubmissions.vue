@@ -132,7 +132,7 @@
             </v-row>
           </div>
 
-          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-8' : ''">Select your export options</p>
+          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-5' : ''">Select your export options</p>
           <v-radio-group v-model="exportFormat" hide-details="auto">
             <v-radio label="JSON" value="json">
               <template v-slot:label>
@@ -189,19 +189,10 @@
                     <span class="radioboxLabelStyle">Template 3 </span>
                   </template>
                 </v-radio>
-
-                <p class="innerTitleObjectStyle">If you are exporting BC Address, Address, Data Map or Tree component, use template 4 </p>
-                <v-radio label="C" value="flattenedWithSubmissionHeaders">
-                  <template v-slot:label>
-                    <span class="radioboxLabelStyle">Template 4 </span>
-                  </template>
-
-                </v-radio>
-
               </v-radio-group>
             </v-col>
           </v-row>
-          <div class="mt-6 mb-3 fileLabelStyle">
+          <div class="mt-6 mb-0 fileLabelStyle">
             File Name and Type: <strong>{{ fileName }}</strong>
           </div>
           <div class="fileLabelStyle" :style="{'color': '#70707063'}">
@@ -353,17 +344,6 @@ export default {
     font-weight: bold !important;
     font-variant: normal !important;
     font-family: BCSans !important;
-    letter-spacing: 0px !important;
-    color: #000000 !important;
-  };
-  .innerTitleObjectStyle {
-    text-align: left !important;
-    text-decoration: underline !important;
-    font-style: normal !important;
-    font-size: 14px !important;
-    font-variant: normal !important;
-    font-family: BCSans !important;
-    font-weight: normal !important;
     letter-spacing: 0px !important;
     color: #000000 !important;
   };

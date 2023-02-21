@@ -1,6 +1,6 @@
 const { Model } = require('objection');
 const Problem = require('api-problem');
-const {flattenComponents, unwindPath} = require('../common/utils');
+const {flattenComponents, unwindPath, submissionHeaders} = require('../common/utils');
 const { Form, FormVersion } = require('../common/models');
 const {  transforms } = require('json2csv');
 const { Parser } = require('json2csv');
@@ -57,78 +57,8 @@ const service = {
    * @param {Object} schema A form.io schema
    * @returns {String[]} An array of strings
    */
-  _readSchemaFields: (schema) => {
-    /**
-     * @function findFields
-     * Recursively traverses the form.io schema to extract all relevant content field names
-     * @param {Object} obj A form.io schema or subset of it
-     * @returns {String[]} An array of strings
-     */
-
-    const findFields = (obj) => {
-      const fields = [];
-      const fieldsDefinedInSubmission = ['datamap', 'tree'];
-
-      // if an input component (not hidden or a button)
-      if (obj.key && obj.input && !obj.hidden && obj.type !== 'button') {
-
-        // if the fieldname we want is defined in component's sub-values
-        const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'address',];
-        if (obj.type && componentsWithSubValues.includes(obj.type)) {
-          // for survey component, get field name from obj.questions.value
-          if (obj.type === 'survey') {
-            obj.questions.forEach(e => fields.push(`${obj.key}.${e.value}`));
-          }
-          // for checkboxes and selectboxes, get field name from obj.values.value
-          else if (obj.values) obj.values.forEach(e => fields.push(`${obj.key}.${e.value}`));
-          // else push the parent field
-          else {
-            fields.push(obj.key);
-          }
-        }
-
-        // get these sub-vales so they appear in ordered columns
-        else if (obj.type === 'simplefile') {
-          fields.push(`${obj.key}.url`, `${obj.key}.url`, `${obj.key}.data.id`, `${obj.key}.size`, `${obj.key}.storage`, `${obj.key}.originalName`);
-        }
-
-        /**
-         * component's 'tree' property is true for input components with child inputs,
-         * which we get recursively.
-         * also exclude fieldnames defined in submission
-         * eg datagrid, container, tree
-         */
-
-        else if (!obj.tree && !fieldsDefinedInSubmission.includes(obj.type)) {
-          // Add current field key
-          fields.push(obj.key);
-        }
-      }
-
-
-      // Recursively traverse children array levels
-      Object.entries(obj).forEach(([k, v]) => {
-        if (Array.isArray(v) && v.length) {
-          // Enumerate children fields
-          const children = obj[k].flatMap(e => {
-            const cFields = findFields(e);
-            // Prepend current key to field name if component's 'tree' property is true
-            // eg: datagrid1.textFieldInDataGrid1
-            // TODO: find fields in 'table' component
-            return ((obj.tree) && !fieldsDefinedInSubmission.includes(obj.type)) ?
-              cFields.flatMap(c => `${obj.key}.${c}`) : cFields;
-          });
-          if (children.length) {
-            Array.prototype.push.apply(fields, children); // concat into first argument
-          }
-        }
-      });
-
-      return fields;
-    };
-
-
-    return findFields(schema);
+  _readSchemaFields: async (schema) => {
+    return  await flattenComponents(schema.components);
   },
 
   _buildCsvHeaders: async (form,  data, version) => {
@@ -141,9 +71,7 @@ const service = {
     // get correctly ordered field names (keys) from latest form version
     const latestFormDesign = await service._readLatestFormSchema(form.id, version);
 
-    const fieldNames = flattenComponents(latestFormDesign.components);
-
-    //const fieldNames = await service._readSchemaFields(latestFormDesign);
+    const fieldNames = await service._readSchemaFields(latestFormDesign, data);
 
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data.length>0&&data[0].form);
@@ -153,7 +81,10 @@ const service = {
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    return metaHeaders.concat(fieldNames);
+    let formSchemaheaders = metaHeaders.concat(fieldNames);
+    let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+    let t = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
+    return t;
   },
 
   _exportType: (params = {}) => {
@@ -270,8 +201,6 @@ const service = {
           return service. _flattenSubmissionsCSVExport(form, data, columns, true, version);
         case 'unflattened':
           return service. _unFlattenSubmissionsCSVExport(form, data, columns, version);
-        case 'flattenedWithSubmissionHeaders':
-          return service._flattenSubmissionsCSVExportWithSubmissionHeaders(form, data, false);
         default:
           // code block
       }
@@ -283,30 +212,13 @@ const service = {
   _flattenSubmissionsCSVExport: async(form, data, columns, blankout, version) => {
     let pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, columns);
+
     const opts = {
       transforms: [
         transforms.unwind({ paths: pathToUnwind, blankOut: blankout }),
         transforms.flatten({ object: true, array: true, separator: '.'}),
       ],
       fields: headers
-    };
-    const parser = new Parser(opts);
-    const csv = parser.parse(data);
-    return {
-      data: csv,
-      headers: {
-        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-        'content-type': 'text/csv'
-      }
-    };
-  },
-  _flattenSubmissionsCSVExportWithSubmissionHeaders: async(form, data, blankout) => {
-    let pathToUnwind = await unwindPath(data);
-    const opts = {
-      transforms: [
-        transforms.unwind({ paths: pathToUnwind, blankOut: blankout }),
-        transforms.flatten({ object: true, array: true, separator: '.'}),
-      ],
     };
     const parser = new Parser(opts);
     const csv = parser.parse(data);
