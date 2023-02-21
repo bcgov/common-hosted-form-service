@@ -248,10 +248,13 @@ const hasRolePermissions = (removingUsers = false) => {
         }
 
         // Can't update another user's roles if they are an owner
-        if (data.some(role => role.role === Roles.OWNER) ||
-          (userRoles.some(fru => fru.role === Roles.OWNER) &&
+        if ((userRoles.some(fru => fru.role === Roles.OWNER) &&
           userId !== currentUser.id)) {
           return next(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+        }
+        if ((!userRoles.some(fru => fru.role === Roles.OWNER) &&
+        data.some(role => role.role === Roles.OWNER))) {
+          return next(new Problem(401, { detail: 'You can\'t add an owner role.' }));
         }
 
         // If the user is trying to remove the designer role for another userid
