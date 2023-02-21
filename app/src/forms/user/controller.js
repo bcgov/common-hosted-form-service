@@ -15,7 +15,7 @@ module.exports = {
 
   read: async (req, res, next) => {
     try {
-      const response = await service.read(req.params.userId);
+      const response = await service.readSafe(req.params.userId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
