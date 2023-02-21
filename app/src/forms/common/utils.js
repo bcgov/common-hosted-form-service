@@ -1,6 +1,6 @@
 const falsey = require('falsey');
 const clone = require('lodash/clone');
-
+const _ = require('lodash');
 
 const setupMount = (type, app, routes, dataErrors) => {
   const p = `/${type}`;
@@ -94,10 +94,11 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
 
         // for survey component, get field name from obj.questions.value
         if (component.type === 'survey') {
-          component.questions.forEach(e => keyPath.push(`${path}.${component.key}.${e.value}`));
+
+          component.questions.forEach(e => keyPath.push(path?`${path}.${component.key}.${e.value}`:`${component.key}.${e.value}`));
         }
         // for checkboxes and selectboxes, get field name from obj.values.value
-        else if (component.values) component.values.forEach(e => keyPath.push(`${path}.${component.key}.${e.value}`));
+        else if (component.values) component.values.forEach(e => keyPath.push(path?`${path}.${component.key}.${e.value}`:`${component.key}.${e.value}`));
         // else push the parent field
         else {
           keyPath.push(component.key);
@@ -162,13 +163,13 @@ const unwindPath = (schema) => {
     const findField = (obj, keyPath) => {
       let keys = keyPath;
       Object.keys(obj).forEach((key)=>{
-        if(Array.isArray(obj[key])) {
+        if(Array.isArray(obj[key]) && !key.includes('address')) {
           path.push(keys!== undefined ? keys+'.'+key:key);
           for (let value of obj[key]) {
             findField(value,  keys!== undefined ? keys+'.'+key:key );
           }
         }
-        if(obj[key] instanceof Object){
+        if(obj[key] instanceof Object  && !key.includes('address')){
           findField(obj[key], keys!== undefined ? keys+'.'+key:key);
         }
       });
@@ -176,6 +177,34 @@ const unwindPath = (schema) => {
     findField(obj, undefined);
   }
   return path;
+};
+
+const submissionHeaders = (obj) => {
+  let objectMap = new Set();
+  const findField = (obj, keyPath) => {
+    Object.keys(obj).forEach((key)=>{
+      if(Array.isArray(obj[key])) {
+        for (let value of obj[key]) {
+          findField(value, keyPath?keyPath+'.'+key:key);
+        }
+      }
+
+      else if(_.isPlainObject(obj[key])) {
+
+        findField(obj[key], keyPath?keyPath+'.'+key:key);
+      }
+
+      else if (_.isString(obj[key]) || _.isNumber(obj[key]) || _.isPlainObject(obj[key])  || _.isDate(obj[key])) {
+        if(key!=='submit') {
+          objectMap.add(keyPath?keyPath+'.'+key:key);
+        }
+      }
+    });
+  };
+
+  findField(obj, undefined);
+
+  return objectMap;
 };
 
 
@@ -186,5 +215,6 @@ module.exports = {
   queryUtils,
   typeUtils,
   flattenComponents,
-  unwindPath
+  unwindPath,
+  submissionHeaders
 };
