@@ -1216,6 +1216,140 @@ describe('hasRolePermissions', () => {
         });
 
         describe('is not an owner', () => {
+          it('falls through if trying to add an owner role', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.FORM_SUBMITTER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.OWNER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_SUBMITTER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t add an owner role.' }));
+          });
+
+          it('falls through if trying to remove an owner role', async () => {
+            rbacService.readUserRole = jest.fn().mockReturnValue([
+              {
+                id: '1',
+                role: Roles.OWNER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '2',
+                role: Roles.FORM_DESIGNER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '3',
+                role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              }
+            ]);
+
+            const hrp = hasRolePermissions(false);
+
+            const nxt = jest.fn();
+
+            const cu = {
+              id: userId,
+              forms: [{
+                formId: formId,
+                roles: [
+                  Roles.TEAM_MANAGER
+                ]
+              }]
+            };
+            const req = {
+              currentUser: cu,
+              params: {
+                userId: userId2
+              },
+              query: {
+                formId: formId
+              },
+              body: [{
+                userId: userId2,
+                formId: formId,
+                role: Roles.SUBMISSION_REVIEWER
+              }, {
+                userId: userId2,
+                formId: formId,
+                role: Roles.FORM_SUBMITTER
+              }]
+            };
+
+            await hrp(req, testRes, nxt);
+
+            expect(nxt).toHaveBeenCalledTimes(1);
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+          });
+
           it('falls through if trying to add a designer role', async () => {
             rbacService.readUserRole = jest.fn().mockReturnValue([
               {
@@ -1275,7 +1409,7 @@ describe('hasRolePermissions', () => {
             await hrp(req, testRes, nxt);
 
             expect(nxt).toHaveBeenCalledTimes(1);
-            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t add a form designer role.' }));
           });
 
           it('falls through if trying to remove a designer role', async () => {
@@ -1347,7 +1481,7 @@ describe('hasRolePermissions', () => {
             await hrp(req, testRes, nxt);
 
             expect(nxt).toHaveBeenCalledTimes(1);
-            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You can\'t remove a form designer role.' }));
           });
 
           it('should succeed when adding a manager/reviewer/submitter roles', async () => {
