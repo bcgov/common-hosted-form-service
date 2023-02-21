@@ -339,7 +339,6 @@ export default {
           params.search = input;
         }
         const response = await userService.getUsers(params);
-        console.log(response);
         this.userSearchResults = response.data;
       } catch (error) {
         // this.userSearchResults = [];
