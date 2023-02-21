@@ -238,10 +238,6 @@ const hasRolePermissions = (removingUsers = false) => {
       }
 
       if (!isOwner) {
-        if (data.some(role => role.role === Roles.OWNER)) {
-          return next(new Problem(401, { detail: 'You can\'t give anyone the owner role.' }));
-        }
-
         const userRoles = await rbacService.readUserRole(userId, formId);
 
         // If the user is trying to remove the team manager role for their own userid
@@ -252,7 +248,9 @@ const hasRolePermissions = (removingUsers = false) => {
         }
 
         // Can't update another user's roles if they are an owner
-        if (userRoles.some(fru => fru.role === Roles.OWNER) && userId !== currentUser.id) {
+        if (data.some(role => role.role === Roles.OWNER) ||
+          (userRoles.some(fru => fru.role === Roles.OWNER) &&
+          userId !== currentUser.id)) {
           return next(new Problem(401, { detail: 'You can\'t update an owner\'s roles.' }));
         }
 

@@ -31,7 +31,7 @@ routes.get('/', async (req, res, next) => {
 });
 
 routes.get('/:userId', async (req, res, next) => {
-  await controller.read(req, res, next);
+  await controller.readSafe(req, res, next);
 });
 
 //
