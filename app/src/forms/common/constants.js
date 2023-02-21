@@ -61,4 +61,11 @@ module.exports = Object.freeze({
       BCEID_BUSINESS: 'bceid-business',
     }
   },
+  IdentityProviders: {
+    BCEIDBASIC: 'bceid-basic', // Basic BCeID
+    BCEIDBUSINESS: 'bceid-business', // Business BCeID
+    BCSC: 'bcsc', // Services Card
+    GITHUB: 'github', // Github
+    IDIR: 'idir' // IDIR
+  }
 });

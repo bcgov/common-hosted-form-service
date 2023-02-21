@@ -69,6 +69,12 @@ const service = {
       .throwIfNotFound();
   },
 
+  readUserRole: async (userId, formId) => {
+    return FormRoleUser.query()
+      .modify('filterUserId', userId)
+      .modify('filterFormId', formId);
+  },
+
   delete: async (id) => {
     return FormRoleUser.query()
       .deleteById(id)
@@ -225,9 +231,8 @@ const service = {
     }
   },
   removeMultiUsers: async(formId, data) => {
-
     // create the batch and insert...
-    if (Array.isArray(data) && data.length!==0 && formId) {
+    if (formId) {
       let trx;
       try {
         trx = await FormRoleUser.startTransaction();
@@ -246,12 +251,13 @@ const service = {
       }
     }
   },
+  /*
+  *
+  * @param data An array of roles being applied to a user id for a form id
+  * @param currentUser A user that contains an array of form objects and the roles
+  *                     that user has for that form.
+  */
   setUserForms: async (userId, formId, data, currentUser) => {
-    // check this in middleware? 422 in valid params
-    if (!userId || 0 === userId.length) {
-      throw new Error();
-    }
-
     let trx;
     try {
       trx = await FormRoleUser.startTransaction();
