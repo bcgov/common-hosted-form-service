@@ -43,7 +43,6 @@ export default {
     submissionUsers: [],
     userFormPreferences: {},
     version: {},
-    versions: [],
     fcProactiveHelpGroupList:{},
     imageList:new Map(),
     fcProactiveHelpImageUrl:'',
@@ -62,7 +61,6 @@ export default {
     userFormPreferences: state => state.userFormPreferences,
     fcNamesProactiveHelpList: state => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
     version: state => state.version,
-    versions:state => state.versions,
     builder: state => state.builder,
     fcProactiveHelpGroupList:state=>state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl:state=>state.fcProactiveHelpImageUrl,
@@ -107,9 +105,6 @@ export default {
     },
     SET_VERSION(state, version) {
       state.version = version;
-    },
-    SET_FORM_VERSIONS (state, versions) {
-      state.versions = versions;
     },
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
@@ -503,19 +498,5 @@ export default {
       window.onbeforeunload = isDirty ? () => true : null;
       commit('SET_FORM_DIRTY', isDirty);
     },
-
-    async listVersions({ commit, dispatch },formId) {
-      try {
-        const { data } = await formService.listVersions(formId);
-        let converted = data.map((data)=>{return {id:data.version, version:data.version};});
-        commit('SET_FORM_VERSIONS', converted);
-      } catch (error) {
-        dispatch('notifications/addNotification', {
-          message: 'An error occurred while trying to fetch the form versions.',
-          consoleError: `Error getting version list for form ${formId}: ${error}`,
-        }, { root: true });
-      }
-
-    }
   },
 };
