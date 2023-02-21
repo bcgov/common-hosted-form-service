@@ -163,13 +163,13 @@ const unwindPath = (schema) => {
     const findField = (obj, keyPath) => {
       let keys = keyPath;
       Object.keys(obj).forEach((key)=>{
-        if(Array.isArray(obj[key])) {
+        if(Array.isArray(obj[key]) && !key.includes('address')) {
           path.push(keys!== undefined ? keys+'.'+key:key);
           for (let value of obj[key]) {
             findField(value,  keys!== undefined ? keys+'.'+key:key );
           }
         }
-        if(obj[key] instanceof Object){
+        if(obj[key] instanceof Object  && !key.includes('address')){
           findField(obj[key], keys!== undefined ? keys+'.'+key:key);
         }
       });

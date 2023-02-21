@@ -132,7 +132,7 @@
             </v-row>
           </div>
 
-          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-8' : ''">Select your export options</p>
+          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-5' : ''">Select your export options</p>
           <v-radio-group v-model="exportFormat" hide-details="auto">
             <v-radio label="JSON" value="json">
               <template v-slot:label>
@@ -192,7 +192,7 @@
               </v-radio-group>
             </v-col>
           </v-row>
-          <div class="mt-6 mb-3 fileLabelStyle">
+          <div class="mt-6 mb-0 fileLabelStyle">
             File Name and Type: <strong>{{ fileName }}</strong>
           </div>
           <div class="fileLabelStyle" :style="{'color': '#70707063'}">
