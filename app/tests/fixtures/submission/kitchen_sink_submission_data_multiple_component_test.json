@@ -1,0 +1,56 @@
+[
+  {
+    "form": {
+      "confirmationId": "046A6534",
+      "formName": "formschematest",
+      "version": 1,
+      "createdAt": "2023-02-16T05:52:04.798Z",
+      "fullName": "Ayobamii Idowu",
+      "username": "AIDOWU",
+      "email": "ayobamii.idowu@gov.bc.ca"
+    },
+    "day": "01/01/1900",
+    "url": "https://google.com",
+    "yes": true,
+    "name": "Geirge",
+    "number": 34,
+    "radio1": "yes",
+    "dataMap": {
+      "yellow": "red"
+    },
+    "number1": 50,
+    "orgbook": "FFG HOLDINGS",
+    "select1": "c",
+    "survey1": {
+      "late": "very",
+      "early": "noteVery"
+    },
+    "currency": 443443434,
+    "lastName": "Idowu",
+    "password": "sdfsdf",
+    "textArea": "dfsdfsd,sdfsdfsdf,sdfsdfsd,sdfsdf",
+    "firstName": "Ayobami",
+    "simpleday": "01/01/1900",
+    "testname1": "Horse",
+    "testname2": "Burna",
+    "testname3": "Huth",
+    "courseName": "Sociology",
+    "radioGroup": "male",
+    "schoolName": "University of Manitoba",
+    "simplefile": [
+    ],
+    "simpleemail": "timi@gmail.com",
+    "selectBoxes1": {
+      "a": true,
+      "b": true,
+      "c": false
+    },
+    "simplenumber": 344,
+    "checkboxGroup": {
+      "1": true,
+      "2": true
+    },
+    "departmentName": "Sociology",
+    "simpledatetime": "2023-02-15T00:00:00-07:00"
+  }
+]
