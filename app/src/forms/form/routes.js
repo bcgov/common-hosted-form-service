@@ -46,10 +46,6 @@ routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P
   await controller.listFormSubmissions(req, res, next);
 });
 
-routes.get('/:formId/versions', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
-  await controller.listVersions(req, res, next);
-});
-
 // routes.post('/:formId/versions', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
 //   next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to create form versions.' }));
 // });

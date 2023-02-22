@@ -173,15 +173,6 @@ export default {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/fields`);
   },
 
-  /**
-   * @function listVersions
-   * Get the versions for a form
-   * @param {string} formId The form uuid
-   * @returns {Promise} An axios response
-   */
-  listVersions(formId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions`);
-  },
 
   /**
    * @function publishVersion
@@ -309,11 +300,13 @@ export default {
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, format, preference, options = {}) {
+  exportSubmissions(formId, format,template,versionSelected, preference, options = {}) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
       {
         params: {
           format: format,
+          template:template,
+          version:versionSelected,
           type: 'submissions',
           preference:preference,
           ...options

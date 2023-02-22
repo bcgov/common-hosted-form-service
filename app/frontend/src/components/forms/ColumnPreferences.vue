@@ -23,9 +23,8 @@
       <v-card>
         <v-card-title class="text-h5 pb-0 titleWrapper" >Search and select fields to show under your dashboard</v-card-title>
         <v-card-subtitle class="mt-1 d-flex subTitleWrapper">
-          <font-awesome-icon icon="fa-solid fa-circle-info" class="mt-1" color="#003366A1" />
-          <!-- <span>To export selected data go to: <v-icon>get_app</v-icon>export submissions</span>-->
-
+          <!--<font-awesome-icon icon="fa-solid fa-circle-info" class="mt-1" color="#003366A1" />
+            <span>To export selected data go to: <v-icon>get_app</v-icon>export submissions</span>-->
         </v-card-subtitle>
         <v-card-text style="padding-top:0px;margin-top:0px;">
           <hr style="height: 1px; border: none;background-color:#707070C1;margin-bottom:0px">
