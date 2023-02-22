@@ -13,7 +13,7 @@
     <h3>{{form.name}}</h3>
     <div v-if="!file" class="drop-zone" @click="handleFile" v-cloak @drop.prevent="addFile($event,0)" @dragover.prevent>
       <v-icon class="mr-1 " color="#003366">upload</v-icon>
-      <h1>Select CSV file to upload </h1>
+      <h1>Select JSON file to upload </h1>
       <p>or drag and drop it here</p>
       <input class="drop-zone__input" ref="file" accept=".csv" type="file" @change="addFile($event,1)" name="file" />
     </div>
