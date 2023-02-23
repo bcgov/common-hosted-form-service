@@ -280,6 +280,7 @@ const service = {
     if (
       userRoles.length === 1 &&
       userRoles.some(ur => ur.role === Roles.OWNER) &&
+      userRoles.some(ur => ur.userId === userId) &&
       !data.some(d => d.role === Roles.OWNER)){
       throw new Problem(400, { detail: 'Can\'t remove the only owner.' });
     }
