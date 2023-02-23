@@ -45,10 +45,10 @@ class User extends Timestamps(Model) {
       },
       filterUsername(query, value, exact = false) {
         if (value) {
-          // ilike is postgres case insensitive like
           if (exact)
             query.where('username', value);
           else
+            // ilike is postgres case insensitive like
             query.where('username', 'ilike', `%${value}%`);
         }
       },
