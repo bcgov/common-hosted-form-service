@@ -89,6 +89,7 @@
       <template
         v-for="(role) in roleList" v-slot:[`item.${role.code}`]="{ item }">
         <v-checkbox
+          v-if="!disableRole(role.code, item, userType)"
           v-model="item[role.code]"
           v-ripple
           :disabled="updating"
