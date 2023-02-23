@@ -3,9 +3,11 @@
     <v-sheet
       v-if="addingUsers"
       elevation="1"
+      class="float-right"
+      style="position: absolute;"
     >
       <v-sheet
-        color="primary"
+        style="background-color: #38598a"
       >
         <v-row justify="center" align="center">
           <v-col cols="12" sm="12">
@@ -120,10 +122,15 @@
           </v-btn>
           <v-btn
             outlined class="ml-2"
-            @click="addingUsers = false"
+            @click="addingUsers = false; showError = false;"
           >
             <span>Cancel</span>
           </v-btn>
+        </v-col>
+      </v-row>
+      <v-row v-if="showError" class="px-4 my-0 py-0">
+        <v-col class="text-left">
+          <span class="red--text">You must select at least one role to add this user.</span>
         </v-col>
       </v-row>
     </v-sheet>
@@ -169,6 +176,7 @@ export default {
       searchUsers: null,
       selectedIdp: IdentityProviders.IDIR,
       selectedRoles: [],
+      showError: false,
     };
   },
   methods: {
@@ -181,6 +189,11 @@ export default {
         );
     },
     save() {
+      if (this.selectedRoles.length === 0) {
+        this.showError = true;
+        return;
+      }
+      this.showError = false;
       // emit user (object) to the parent component
       this.$emit('new-users', [this.model], this.selectedRoles);
       // reset search field
@@ -206,6 +219,13 @@ export default {
     selectedIdp(newIdp, oldIdp) {
       if (newIdp !== oldIdp) {
         this.items = [];
+        this.model = null;
+        this.showError = false;
+      }
+    },
+    selectedRoles(newRoles, oldRoles) {
+      if (oldRoles.length === 0 && newRoles.length > 0) {
+        this.showError = false;
       }
     },
     addingUsers() {

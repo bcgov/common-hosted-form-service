@@ -6,7 +6,7 @@
         <h1>Team Management</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <v-col class="text-right" style="z-index: 100" cols="12" sm="6" order="1" order-sm="2">
         <span>
           <AddTeamMember
             :disabled="!canManageTeam"
