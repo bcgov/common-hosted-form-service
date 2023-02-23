@@ -127,8 +127,8 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { rbacService, roleService } from '@/services';
-import { IdentityMode, FormPermissions, FormRoleCodes } from '@/utils/constants';
+import { rbacService, roleService, userService } from '@/services';
+import { IdentityMode, FormPermissions, FormRoleCodes, IdentityProviders } from '@/utils/constants';
 import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
 export default {
   name: 'TeamManagement',
@@ -214,6 +214,7 @@ export default {
       const headers = [
         { text: 'Full Name', value: 'fullName' },
         { text: 'Username', value: 'username' },
+        { text: 'Identity Provider', value: 'identityProvider' }
       ];
       this.headers = headers
         .concat(
@@ -241,6 +242,7 @@ export default {
           fullName: user.fullName,
           userId: user.userId,
           username: user.username,
+          identityProvider: user.idp,
         };
         this.roleList
           .map((role) => role.code)
@@ -253,6 +255,12 @@ export default {
     // Is this the submitter column, and does this form have login type other than TEAM
     disableSubmitter: (header, userType) =>
       header === FormRoleCodes.FORM_SUBMITTER && userType !== IdentityMode.TEAM,
+    disableRole(header, user, userType) {
+      if (header === FormRoleCodes.FORM_SUBMITTER && userType !== IdentityMode.TEAM) return true;
+      if (user.identityProvider === IdentityProviders.BCEIDBUSINESS && (header === FormRoleCodes.OWNER || header === FormRoleCodes.FORM_DESIGNER)) return true;
+      if (user.identityProvider === IdentityProviders.BCEIDBASIC && (header === FormRoleCodes.OWNER || header === FormRoleCodes.FORM_DESIGNER || header === FormRoleCodes.TEAM_MANAGER || header === FormRoleCodes.SUBMISSION_REVIEWER)) return true;
+      return false;
+    },
     generateFormRoleUsers(user) {
       return Object.keys(user)
         .filter((role) => this.roleOrder.includes(role) && user[role])
@@ -267,11 +275,16 @@ export default {
         if (!this.canManageTeam) {
           throw new Error('Insufficient permissions to manage team');
         }
-        const response = await rbacService.getFormUsers({
+        const formUsersResponse = await rbacService.getFormUsers({
           formId: this.formId,
           roles: '*',
         });
-        this.formUsers = response.data;
+        this.formUsers = await Promise.all(formUsersResponse.data.map(async (user) => {
+          const userId = user.userId;
+          const response = await userService.getUser(userId);
+          user.idp = response.data.idpCode;
+          return user;
+        }));
       } catch (error) {
         this.addNotification({
           message: error.message,
@@ -322,11 +335,9 @@ export default {
         await rbacService.removeMultiUsers(ids, {
           formId: this.formId,
         });
-        await this.getFormPermissionsForUser(this.formId);
-        await this.getFormUsers();
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while attempting to delete the selected users',
+          message: (error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to delete the selected users',
           consoleError: `Error deleting users from form ${this.formId}: ${error}`,
         });
       } finally {
@@ -372,14 +383,14 @@ export default {
           formId: this.formId,
           userId: userId,
         });
-        await this.getFormPermissionsForUser(this.formId);
-        await this.getFormUsers();
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while attempting to update roles for a user',
+          message: (error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to update roles for a user.',
           consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
         });
       }
+      await this.getFormPermissionsForUser(this.formId);
+      await this.getFormUsers();
       this.updating = false;
     },
   },

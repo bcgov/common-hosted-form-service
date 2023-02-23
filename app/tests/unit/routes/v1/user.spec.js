@@ -78,7 +78,7 @@ describe(`GET ${basePath}/userId`, () => {
 
   it('should return 200', async () => {
     // mock a success return value...
-    service.read = jest.fn().mockReturnValue([]);
+    service.readSafe = jest.fn().mockReturnValue([]);
 
     const response = await request(app).get(`${basePath}/userId`);
 
@@ -88,7 +88,7 @@ describe(`GET ${basePath}/userId`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.read = jest.fn(() => { throw new Problem(401); });
+    service.readSafe = jest.fn(() => { throw new Problem(401); });
 
     const response = await request(app).get(`${basePath}/userId`);
 
@@ -98,7 +98,7 @@ describe(`GET ${basePath}/userId`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.read = jest.fn(() => { throw new Error(); });
+    service.readSafe = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).get(`${basePath}/userId`);
 

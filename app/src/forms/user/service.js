@@ -36,6 +36,14 @@ const service = {
       .throwIfNotFound();
   },
 
+
+  readSafe: (userId) => {
+    return User.query()
+      .modify('safeSelect')
+      .findById(userId)
+      .throwIfNotFound();
+  },
+
   //
   // User Preferences
   //
