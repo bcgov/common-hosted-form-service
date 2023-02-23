@@ -193,7 +193,7 @@ const service = {
 
     if(report.dates.closeDate==null || days_diff<=3 ) return  state;
 
-    if(service.getNumberDayFromIntervalType(reminder.intervalType, now, start_date, days_diff ) && days_diff > 5 ){
+    if(service.getNumberDayFromIntervalType(reminder.intervalType, now, start_date, days_diff )){
       return EmailTypes.REMINDER_FORM_NOT_FILL;
     }
 
@@ -206,6 +206,8 @@ const service = {
     return state;
   },
   getNumberDayFromIntervalType : (type, now, start_date,  days_diff )=>{
+    if (days_diff < 6 ) return false;
+
     if(type!=null && type) {
       for (const key in periodType) {
         const interval = moment(now).diff(start_date, periodType[key].regex);
@@ -214,8 +216,7 @@ const service = {
         }
       }
     } else {
-      days_diff = ((days_diff%2)==0) ? days_diff - 1 : days_diff;
-      let interval = Math.ceil(days_diff/2);
+      let interval = Math.floor(days_diff/2);
       // eslint-disable-next-line no-console
       let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
       return moment(now).isSame(mail_date);

@@ -211,9 +211,10 @@
                                   v-on:click:append="openSubmissionDateDraw = true" readonly label="Open submissions" v-on="on"
                                   dense outlined :rules="scheduleOpenDate"></v-text-field>
                   </template>
-                  <v-date-picker v-model="schedule.openSubmissionDateTime"
+                  <v-date-picker @change="openDateTypeChanged" v-model="schedule.openSubmissionDateTime"
                                  data-test="picker-form-openSubmissionDateDraw" @input="openSubmissionDateDraw = false">
                   </v-date-picker>
+
                 </v-menu>
               </v-col>
 
@@ -445,17 +446,17 @@
 
             <v-row class="p-0 m-0">
               <v-col cols="12" md="12" class="p-0">
-                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null" >
+                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null && enableReminderDraw" >
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
-                      <template #title>sEND Reminder email</template>
+                      <template #title>SEND Reminder email</template>
                       <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
                         <template #label>
                           Enable automatic reminder notification
                           <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                               <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                                help_outline
+                                flask
                               </v-icon>
                             </template>
                             <span>
@@ -482,7 +483,7 @@
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import { IdentityMode, IdentityProviders, Regex, ScheduleType } from '@/utils/constants';
-import { getAvailableDates, calculateCloseDate } from '@/utils/transformUtils';
+import { getAvailableDates, calculateCloseDate, isDateValidForMailNotification } from '@/utils/transformUtils';
 import moment from 'moment';
 
 export default {
@@ -496,6 +497,7 @@ export default {
       repeatUntil: false,
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
+      enableReminderDraw: true,
       valid: false,
       // Validation
       loginRequiredRules: [
@@ -703,7 +705,15 @@ export default {
       if (this.userType !== 'team') {
         this.reminder = {};
       }
+    },
+    openDateTypeChanged() {
 
+      if(isDateValidForMailNotification(this.schedule.openSubmissionDateTime)){
+        this.enableReminderDraw=false;
+        this.reminder.enabled = false;
+      } else {
+        this.enableReminderDraw = true;
+      }
     },
     repeatSubmissionChanged (){
       if(!this.schedule.repeatSubmission.enabled){
