@@ -336,7 +336,7 @@ export default {
         await this.getFormUsers();
       } catch (error) {
         this.addNotification({
-          message: (error && error.response && error.response.data && error.response.data.title) ? error.response.data.title : 'An error occurred while attempting to delete the selected users',
+          message: (error && error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to delete the selected users',
           consoleError: `Error deleting users from form ${this.formId}: ${error}`,
         });
       } finally {
@@ -384,7 +384,7 @@ export default {
         });
       } catch (error) {
         this.addNotification({
-          message: (error && error.response && error.response.data && error.response.data.title) ? error.response.data.title : 'An error occurred while attempting to update roles for a user',
+          message: (error && error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to update roles for a user',
           consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
         });
       } finally {

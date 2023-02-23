@@ -234,7 +234,7 @@ const service = {
         .where('formId', formId)
         .where('role', Roles.OWNER);
       if (userRoles.every((ur) => data.includes(ur.userId))) {
-        throw new Problem(400, 'Can\'t remove all the owners.');
+        throw new Problem(400, { detail: 'Can\'t remove all the owners.' });
       }
 
       let trx;
@@ -281,7 +281,7 @@ const service = {
       userRoles.length === 1 &&
       userRoles.some(ur => ur.role === Roles.OWNER) &&
       !data.some(d => d.role === Roles.OWNER)){
-      throw new Problem(400, 'Can\'t remove the only owner.');
+      throw new Problem(400, { detail: 'Can\'t remove the only owner.' });
     }
 
     let trx;
