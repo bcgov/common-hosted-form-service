@@ -9,6 +9,7 @@ const {
   UserFormAccess,
   UserSubmissions
 } = require('../common/models');
+const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
 
@@ -232,7 +233,14 @@ const service = {
   },
   removeMultiUsers: async(formId, data) => {
     // create the batch and insert...
-    if (formId) {
+    if (Array.isArray(data) && data.length!==0 && formId) {
+      // check if they're deleting the only owner
+      const userRoles = await FormRoleUser.query()
+        .where('formId', formId)
+        .where('role', Roles.OWNER);
+      if (userRoles.every((ur) => data.includes(ur.userId))) {
+        throw new Problem(400, { detail: 'Can\'t remove all the owners.' });
+      }
       let trx;
       try {
         trx = await FormRoleUser.startTransaction();
@@ -258,6 +266,35 @@ const service = {
   *                     that user has for that form.
   */
   setUserForms: async (userId, formId, data, currentUser) => {
+    // check this in middleware? 422 in valid params
+    if (!userId || 0 === userId.length) {
+      throw new Error();
+    }
+
+    // check if they're deleting the only owner
+    const userRoles = await FormRoleUser.query()
+      .where('formId', formId)
+      .where('role', Roles.OWNER);
+
+    // create the batch...
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
+    // remove any data that isn't for this userId...
+    data = data.filter(d => d.userId === userId);
+    if (formId && formId.length) {
+      data = data.filter(d => d.formId === formId);
+    }
+
+    // If trying to remove the only owner
+    if (
+      userRoles.length === 1 &&
+      userRoles.some(ur => ur.role === Roles.OWNER) &&
+      userRoles.some(ur => ur.userId === userId) &&
+      !data.some(d => d.role === Roles.OWNER)){
+      throw new Problem(400, { detail: 'Can\'t remove the only owner.' });
+    }
+
     let trx;
     try {
       trx = await FormRoleUser.startTransaction();
@@ -267,15 +304,6 @@ const service = {
         .where('userId', userId)
         .where('formId', formId);
 
-      // create the batch and insert...
-      if (!Array.isArray(data)) {
-        data = [data];
-      }
-      // remove any data that isn't for this userId...
-      data = data.filter(d => d.userId === userId);
-      if (formId && formId.length) {
-        data = data.filter(d => d.formId === formId);
-      }
       // add an id and save them
       const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d }; });
       if(items && items.length) await FormRoleUser.query(trx).insert(items);

@@ -93,6 +93,7 @@
           v-ripple
           :disabled="updating"
           :key="role.code"
+          @click="onCheckboxToggle(item.userId)"
         ></v-checkbox>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -309,7 +310,16 @@ export default {
         this.createHeaders();
       }
     },
+    onCheckboxToggle(userId) {
+      this.setUserForms(userId);
+      this.selectedUsers = [];
+      this.itemsToDelete = [];
+    },
     onRemoveClick(item = null) {
+      if (this.tableData.length === 1) {
+        this.userError();
+        return;
+      }
       if (item) {
         this.itemsToDelete = Array.isArray(item) ? item : [item];
       }
@@ -337,7 +347,7 @@ export default {
         });
       } catch (error) {
         this.addNotification({
-          message: (error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to delete the selected users',
+          message: (error && error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to delete the selected users',
           consoleError: `Error deleting users from form ${this.formId}: ${error}`,
         });
       } finally {
@@ -375,8 +385,8 @@ export default {
      * @param {String} userId The userId to be updated
      */
     async setUserForms(userId) {
-      this.updating = true;
       try {
+        this.updating = true;
         const user = this.tableData.filter((u) => u.userId === userId)[0];
         const userRoles = this.generateFormRoleUsers(user);
         await rbacService.setUserForms(userRoles, {
@@ -385,13 +395,14 @@ export default {
         });
       } catch (error) {
         this.addNotification({
-          message: (error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to update roles for a user.',
+          message: (error && error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to update roles for a user',
           consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
         });
+      } finally {
+        await this.getFormPermissionsForUser(this.formId);
+        await this.getFormUsers();
+        this.updating = false;
       }
-      await this.getFormPermissionsForUser(this.formId);
-      await this.getFormUsers();
-      this.updating = false;
     },
   },
   async mounted() {
