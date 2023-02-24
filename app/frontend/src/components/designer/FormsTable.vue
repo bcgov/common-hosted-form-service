@@ -163,7 +163,7 @@ export default {
         (f) => checkFormManage(f) || checkSubmissionView(f)
       );
     },
-    ID_PROVIDERS: () => Object.values(IdentityProviders),
+    ID_PROVIDERS: () => IdentityProviders,
   },
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),
