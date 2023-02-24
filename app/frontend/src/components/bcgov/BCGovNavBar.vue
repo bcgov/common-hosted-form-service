@@ -8,13 +8,13 @@
         <li>
           <router-link data-cy=userFormsLinks :to="{ name: 'UserForms' }">My Forms</router-link>
         </li>
-        <li>
+        <li v-if="hasPrivileges">
           <router-link :to="{ name: 'FormCreate' }">Create a New Form</router-link>
         </li>
-        <li>
+        <li v-if="hasPrivileges">
           <a href="https://github.com/bcgov/common-hosted-form-service/wiki" target="_blank">Help</a>
         </li>
-        <li>
+        <li v-if="hasPrivileges">
           <a href="https://chefs-fider.apps.silver.devops.gov.bc.ca/" target="_blank">Feedback</a>
         </li>
         <!-- <li>
@@ -31,13 +31,18 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import { IdentityProviders } from '../../utils/constants';
+
 export default {
   name: 'BCGovNavBar',
   computed: {
-    ...mapGetters('auth', ['isAdmin']),
+    ...mapGetters('auth', ['isAdmin', 'identityProvider']),
     hideNavBar() {
       // hide nav bar if user is on form submitter page
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
+    },
+    hasPrivileges() {
+      return this.identityProvider === IdentityProviders.IDIR;
     }
   }
 };

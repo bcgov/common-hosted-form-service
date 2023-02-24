@@ -13,6 +13,16 @@ export default {
   },
 
   /**
+  * @function getUser
+  * Get user information
+  * @param {String} userId The user id to read
+  * @returns {Promise} An axios response
+  */
+  getUser(userId) {
+    return appAxios().get(`${ApiRoutes.USERS}/${userId}`);
+  },
+
+  /**
    * @function getUserFormPreferences
    * Get the preferences for a the current user for a specific form
    * @param {String} formId The form

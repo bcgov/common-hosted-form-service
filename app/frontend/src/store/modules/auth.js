@@ -116,7 +116,7 @@ export default {
         } else {
           // Navigate to internal login page if no idpHint specified
           const router = getRouter(Vue.prototype.$config.basePath);
-          router.replace({ name: 'Login' });
+          router.replace({ name: 'Login', params: { idpHint: [ 'idir', 'bceid-business' ] } });
         }
       }
     },
