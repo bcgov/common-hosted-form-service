@@ -6,7 +6,10 @@
         <h1>My Forms</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <v-col
+        v-if="user.idp === ID_PROVIDERS.IDIR"
+        class="text-right" cols="12" sm="6" order="1" order-sm="2"
+      >
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <router-link :to="{ name: 'FormCreate' }">
@@ -119,6 +122,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { IdentityProviders } from '@/utils/constants';
 import {
   checkFormManage,
   checkFormSubmit,
@@ -151,6 +155,7 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['formList']),
+    ...mapGetters('auth', ['user']),
     filteredFormList() {
       // At this point, we're only showing forms you can manage or view submissions of here
       // This may get reconceptualized in the future to different pages or something
@@ -158,6 +163,7 @@ export default {
         (f) => checkFormManage(f) || checkSubmissionView(f)
       );
     },
+    ID_PROVIDERS: () => Object.values(IdentityProviders),
   },
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),
