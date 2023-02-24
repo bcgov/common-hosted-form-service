@@ -346,6 +346,8 @@ export default {
         await rbacService.removeMultiUsers(ids, {
           formId: this.formId,
         });
+        await this.getFormPermissionsForUser(this.formId);
+        await this.getFormUsers();
       } catch (error) {
         this.addNotification({
           message: (error && error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to delete the selected users',
