@@ -301,6 +301,12 @@ export default {
    * @returns {Promise} An axios response
    */
   exportSubmissions(formId, format,template,versionSelected, preference, options = {}) {
+    let abortController = new AbortController();
+    //const abortSignal = abortController.signal;
+    setTimeout(()=>{
+      abortController.abort();
+    },500);
+
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
       {
         params: {
@@ -311,11 +317,22 @@ export default {
           preference:preference,
           ...options
         },
-        responseType: 'blob'
+        responseType: 'blob',
+        //signal: abortController.signal
       }
     );
   },
 
+  async submissionExportaStatus (formId, version) {
+    console.log('+++++++++++++++++++++++++++');
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/${version}/export/status`);
+  },
+  async submissionExport (formId, version) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/${version}/submission/export`,
+      {
+        responseType: 'blob'
+      });
+  },
 
   //
   // Notes and Status

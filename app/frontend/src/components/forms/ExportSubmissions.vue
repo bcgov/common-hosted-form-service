@@ -16,6 +16,7 @@
       <span>Export Submissions to File</span>
     </v-tooltip>
 
+
     <v-dialog
       v-if="dialog"
       v-model="dialog"
@@ -25,6 +26,7 @@
       <v-card>
         <v-card-title class="text-h5 pb-0 titleObjectStyle">Export Submissions to File</v-card-title>
         <v-card-text>
+
           <hr style="height: 2px; border: none;background-color:#707070C1;margin-top:5px;"/>
 
           <v-row>
@@ -216,16 +218,34 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-overlay v-model="progressOverlay"
+               activator="parent"
+               location-strategy="connected"
+               scroll-strategy="none">
+
+      <v-card class="pa-2 text-center cardColor">
+        <p class="mb-5"> Please wait!</p>
+        <v-progress-circular
+          indeterminate
+          color="primary"
+          bg-color="white"
+          :size="80"
+        ></v-progress-circular>
+        <p class="mt-5 mb-0"> Your export is being processed and this may take some time</p>
+      </v-card>
+    </v-overlay>
+
   </span>
 </template>
 
 <script>
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
-import formService from '@/services/formService.js';
 
 import { faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import {formService} from '@/services';
 library.add(faXmark,faSquareArrowUpRight);
 
 export default {
@@ -242,7 +262,8 @@ export default {
       startDateMenu: false,
       versionSelected:1,
       csvTemplates:'flattenedWithBlankOut',
-      versions:[]
+      versions:[],
+      progressOverlay:false
 
     };
   },
@@ -261,8 +282,16 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('form'),
     async callExport() {
+
       try {
+
+        //let status = await formService.submissionExportaStatus(this.form.id, this.versionSelected);
+        //console.log('++++++++++----------->>> ', status);
+        //this.progressOverlay=true;
+        //this.dialog=false;
+
         // UTC start of selected start date...
+
         const from =
           this.dateRange && this.startDate
             ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format()
@@ -288,33 +317,55 @@ export default {
           },
           this.dataFields?this.userFormPreferences.preferences:undefined
         );
-
-        if (response && response.data) {
-          const blob = new Blob([response.data], {
-            type: response.headers['content-type'],
+        this.processExportResponse(response);
+      } catch (error) {
+        if(error.name&&error.name=== 'CanceledError') {
+          console.log('Thus us the error---->>', error);
+          await setInterval(async()=>{
+            console.log('I am in the setinteval');
+            let response = await formService.submissionExportaStatus(this.form.id, this.versionSelected);
+            console.log('Thus is response---->>', response);
+            if (response && response.data && response.data.ready) {
+              console.log('I am am ma am amherrrrrrr', response.data.ready);
+              const response = await formService.submissionExport(this.form.id, this.versionSelected);
+              this.processExportResponse(response);
+              this.progressOverlay=true;
+            }
+          }, 8000);
+        }
+        else {
+          this.addNotification({
+            message:
+              'An error occurred while attempting to export submissions for this form.',
+            consoleError: `Error export submissions for ${this.form.id}: ${error}`,
           });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = this.fileName;
-          a.style.display = 'none';
-          a.classList.add('hiddenDownloadTextElement');
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          this.dialog = false;
-        } else {
-          throw new Error('No data in response from exportSubmissions call');
         }
 
-      } catch (error) {
-        this.addNotification({
-          message:
-            'An error occurred while attempting to export submissions for this form.',
-          consoleError: `Error export submissions for ${this.form.id}: ${error}`,
-        });
       }
+
     },
+
+    processExportResponse(response) {
+      if (response && response.data)
+      {
+        const blob = new Blob([response.data], {
+          type: response.headers['content-type'],
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = this.fileName;
+        a.style.display = 'none';
+        a.classList.add('hiddenDownloadTextElement');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        this.dialog = false;
+        this.progressOverlay=false;
+      } else {
+        throw new Error('No data in response from exportSubmissions call');
+      }
+    }
   },
   watch:{
     startDate() {
@@ -421,5 +472,33 @@ export default {
     color: #1A5A96 !important;
     cursor:pointer;
     text-transform: capitalize !important;
+  }
+
+  .cardColor {
+    background-color: white!important;
+    color:red !important;
+    size:40px !important;
+    width:440px !important;
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+    height:220px !important;
+    padding:0px !important;
+    margin:0px !important;
+    border-radius: 5px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    align-content: flex-start !important;
+  }
+
+
+  .cardColor p {
+    font-style: normal !important;
+    font-size: 18px !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
   }
 </style>
