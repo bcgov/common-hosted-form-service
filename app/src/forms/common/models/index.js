@@ -20,6 +20,7 @@ module.exports = {
   User: require('./tables/user'),
   UserFormPreferences: require('./tables/userFormPreferences'),
   FormComponentsProactiveHelp: require('./tables/formComponentsProactiveHelp'),
+  SubmissionToCSVStorage: require('./tables/submissionToCSVStorage'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
