@@ -127,6 +127,22 @@ const service = {
     }
   },
 
+  deleteMutipleSubmissions:async (submissionIds, currentUser) => {
+    let trx;
+    try {
+      trx = await FormSubmission.startTransaction();
+      await  FormSubmission.query(trx)
+        .patch({deleted: true,
+          updatedBy: currentUser.usernameIdp })
+        .whereIn('id', submissionIds);
+      await trx.commit();
+      return await service.read(submissionIds[0]);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
   restore: async (formSubmissionId, data, currentUser) => {
     let trx;
     try {

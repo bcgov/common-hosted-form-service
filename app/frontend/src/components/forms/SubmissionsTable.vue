@@ -79,6 +79,10 @@
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
+      <template #[`item.check`]="{ item }">
+        <v-checkbox sortable: false class="d-inline-flex" v-model="submissionsCheckboxes[submissionTable.indexOf(item)]"
+                    @click="()=>{selectSubmissionToDelete(item, submissionTable.indexOf(item))}" />
+      </template>
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
@@ -104,6 +108,21 @@
             </template>
             <span>View Submission</span>
           </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="()=>{showDeleteSubmissionDialog=true;}"
+                color="red"
+                icon
+                :disabled="!submissionsCheckboxes[submissionTable.indexOf(item)]"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>remove_circle</v-icon>
+              </v-btn>
+            </template>
+            <span>Delete Submission</span>
+          </v-tooltip>
         </span>
         <span v-if="item.deleted">
           <v-tooltip bottom>
@@ -123,7 +142,20 @@
       </template>
     </v-data-table>
 
-
+    <BaseDialog
+      v-model="showDeleteSubmissionDialog"
+      type="CONTINUE"
+      @close-dialog="showDeleteSubmissionDialog = false"
+      @continue-dialog="deleteMultiSubs"
+    >
+      <template #title>Confirm Deletion</template>
+      <template #text>
+        Are you sure you wish to delete this/these submission(s)
+      </template>
+      <template #button-text-continue>
+        <span>Delete</span>
+      </template>
+    </BaseDialog>
     <BaseDialog
       v-model="showRestoreDialog"
       type="CONTINUE"
@@ -169,6 +201,9 @@ export default {
       search: '',
       showRestoreDialog: false,
       submissionTable: [],
+      selectedSubmissionToDelete:new Set(),
+      submissionsCheckboxes:[],
+      showDeleteSubmissionDialog:false
     };
   },
   computed: {
@@ -189,6 +224,7 @@ export default {
 
     calcHeaders() {
       let headers = [
+        { text: '', align: 'start', value: 'check' },
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
@@ -255,7 +291,24 @@ export default {
       'restoreSubmission',
       'getFormPermissionsForUser',
       'getFormPreferencesForCurrentUser',
+      'deleteMultiSubmissions'
     ]),
+
+    async selectSubmissionToDelete(item, index) {
+      if(this.submissionsCheckboxes[index]) {
+        this.selectedSubmissionToDelete.add(item.submissionId);
+      }
+      else {
+        this.selectedSubmissionToDelete.delete(item.submissionId);
+      }
+
+    },
+
+    async deleteMultiSubs() {
+      this.showDeleteSubmissionDialog = false;
+      await this.deleteMultiSubmissions(Array.from(this.selectedSubmissionToDelete));
+      this.populateSubmissionsTable();
+    },
 
     async populateSubmissionsTable() {
       try {
@@ -287,6 +340,7 @@ export default {
               return fields;
             });
           this.submissionTable = tableRows;
+          this.submissionsCheckboxes= new Array(this.submissionTable.length).fill(false);
         }
       } catch (error) {
         // Handled in state fetchSubmissions
