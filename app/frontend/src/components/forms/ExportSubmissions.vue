@@ -286,7 +286,6 @@ export default {
       try {
 
         //let status = await formService.submissionExportaStatus(this.form.id, this.versionSelected);
-        //console.log('++++++++++----------->>> ', status);
         //this.progressOverlay=true;
         //this.dialog=false;
 
@@ -320,18 +319,18 @@ export default {
         this.processExportResponse(response);
       } catch (error) {
         if(error.name&&error.name=== 'CanceledError') {
-          console.log('Thus us the error---->>', error);
-          await setInterval(async()=>{
-            console.log('I am in the setinteval');
+          /*
+           await setInterval(async()=>{
             let response = await formService.submissionExportaStatus(this.form.id, this.versionSelected);
-            console.log('Thus is response---->>', response);
             if (response && response.data && response.data.ready) {
-              console.log('I am am ma am amherrrrrrr', response.data.ready);
+
               const response = await formService.submissionExport(this.form.id, this.versionSelected);
               this.processExportResponse(response);
               this.progressOverlay=true;
             }
+
           }, 8000);
+          */
         }
         else {
           this.addNotification({

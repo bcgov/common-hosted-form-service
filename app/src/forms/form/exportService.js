@@ -4,6 +4,7 @@ const {flattenComponents, unwindPath, submissionHeaders} = require('../common/ut
 const { Form, FormVersion,SubmissionToCSVStorage } = require('../common/models');
 const {  transforms } = require('json2csv');
 const { Parser } = require('json2csv');
+const log = require('../../components/log')(module.filename);
 //const { v4: uuidv4 } = require('uuid');
 
 
@@ -216,7 +217,7 @@ const service = {
 
     try {
       let startTime = performance.now();
-      console.log('Submission Export Performance Start ---------->>> ', startTime);
+      log.debug(`Submission Export Performance Start ---------->>> ', ${startTime}`, { function: '_flattenSubmissionsCSVExport' });
 
       let pathToUnwind = (data.length>0)?await unwindPath(data):[];
       let headers =await service._buildCsvHeaders(form, data, version, columns);
@@ -234,8 +235,9 @@ const service = {
       trx = await SubmissionToCSVStorage.startTransaction();
 
       let endTime = performance.now();
-      console.log('Submission Export Performance End ---------->>> ', endTime);
-      console.log(`Submission Export Performance End-Start ${endTime - startTime} milliseconds`);
+      log.debug(`Submission Export Performance End ---------->>> ', ${endTime}`, { function: '_flattenSubmissionsCSVExport' });
+      log.debug(`Submission Export Performance End-Start ${endTime - startTime} milliseconds`, { function: '_flattenSubmissionsCSVExport' });
+
       return {
         data: csv,
         headers: {
@@ -257,7 +259,6 @@ const service = {
 
     try {
       let startTime = performance.now();
-      console.log('Start ---------->>> ', startTime);
       trx = await SubmissionToCSVStorage.startTransaction();
       let id = uuidv4();
       let obj = { id: id,
@@ -293,8 +294,6 @@ const service = {
       await trx.commit();
 
       let endTime = performance.now();
-      console.log('End ---------->>> ', endTime);
-      console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
       return {
         data: joinedResult,
         headers: {
@@ -408,15 +407,12 @@ const service = {
   },
 
   exportSubmissions: async (userId, formId, formVersion) => {
-    console.log('-------------------->>> ', userId, formId, formVersion);
     let result = await SubmissionToCSVStorage.query()
       .where('formId', formId)
       .where('version', formVersion)
       .where('userId', userId)
       .modify('orderDescending')
       .first();
-
-    console.log('-------------------->>> ', result);
     return result;
   },
 
