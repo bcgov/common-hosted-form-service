@@ -4,7 +4,7 @@ const {flattenComponents, unwindPath, submissionHeaders} = require('../common/ut
 const { Form, FormVersion,SubmissionToCSVStorage } = require('../common/models');
 const {  transforms } = require('json2csv');
 const { Parser } = require('json2csv');
-const { v4: uuidv4 } = require('uuid');
+//const { v4: uuidv4 } = require('uuid');
 
 
 class SubmissionData extends Model {
@@ -161,26 +161,26 @@ const service = {
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault');
-      if(params.columns){
-        for(let index in submissionData) {
-          let keys = Object.keys(submissionData[index].submission);
-          for(let key of keys) {
-            if(Array.isArray(params.columns) && !params.columns.includes(key)) {
-              delete submissionData[index].submission[key];
-            }
-          }
-        }
-      } else {
-        for(let index in submissionData) {
-          let keys = Object.keys(submissionData[index].submission);
-          for(let key of keys) {
-            if(key==='submit') {
-              delete submissionData[index].submission[key];
-            }
+    if(params.columns){
+      for(let index in submissionData) {
+        let keys = Object.keys(submissionData[index].submission);
+        for(let key of keys) {
+          if(Array.isArray(params.columns) && !params.columns.includes(key)) {
+            delete submissionData[index].submission[key];
           }
         }
       }
-      return submissionData;
+    } else {
+      for(let index in submissionData) {
+        let keys = Object.keys(submissionData[index].submission);
+        for(let key of keys) {
+          if(key==='submit') {
+            delete submissionData[index].submission[key];
+          }
+        }
+      }
+    }
+    return submissionData;
   },
 
   _formatSubmissionsJson: (form,data) => {
@@ -235,7 +235,7 @@ const service = {
 
       let endTime = performance.now();
       console.log('Submission Export Performance End ---------->>> ', endTime);
-      console.log(`Submission Export Performance End-Start ${endTime - startTime} milliseconds`)
+      console.log(`Submission Export Performance End-Start ${endTime - startTime} milliseconds`);
       return {
         data: csv,
         headers: {
@@ -340,25 +340,25 @@ const service = {
     };
     const parser = new Parser(opts);
     var promises = [];
-    const allResult=[]
-    let length = Math.ceil(data.length/300)
+    const allResult=[];
+    let length = Math.ceil(data.length/300);
     for(let index=0; index<length; index++ ) {
       promises.push(new Promise(resolve =>{
         let csv = parser.parse(data.slice(data*300, (300*(index+1)-1)));
         resolve(csv);
       })
-      )
+      );
     }
 
-   let result = await Promise.all(promises);
+    let result = await Promise.all(promises);
 
-   for(row of result) {
+    for(let row of result) {
       let splitted = row.split('\r\n');
       splitted.shift();
       allResult.push(splitted.join('\r\n'));
-   }
-   let concat = [headers.toString()].concat(allResult);
-   let joinedResult = concat.join('\r\n');
+    }
+    let concat = [headers.toString()].concat(allResult);
+    let joinedResult = concat.join('\r\n');
 
     return {
       data: joinedResult,
@@ -397,24 +397,24 @@ const service = {
   exportSubmissionsStatus: async (userId, formId, formVersion) => {
 
     let ready = await SubmissionToCSVStorage.query()
-    .select('ready')
-    .where('formId', formId)
-    .where('version', formVersion)
-    .where('userId', userId)
-    .modify('orderDescending')
-    .first()
+      .select('ready')
+      .where('formId', formId)
+      .where('version', formVersion)
+      .where('userId', userId)
+      .modify('orderDescending')
+      .first();
 
-    return ready
+    return ready;
   },
 
   exportSubmissions: async (userId, formId, formVersion) => {
     console.log('-------------------->>> ', userId, formId, formVersion);
     let result = await SubmissionToCSVStorage.query()
-    .where('formId', formId)
-    .where('version', formVersion)
-    .where('userId', userId)
-    .modify('orderDescending')
-    .first()
+      .where('formId', formId)
+      .where('version', formVersion)
+      .where('userId', userId)
+      .modify('orderDescending')
+      .first();
 
     console.log('-------------------->>> ', result);
     return result;
