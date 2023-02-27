@@ -229,6 +229,17 @@ export default {
   },
 
   /**
+   * @function deleteMultipleSubmissions
+   * Soft delete a specific submission
+   * @param {array} submissionIds The form submission identifier
+   * @returns {Promise} An axios response
+   */
+  deleteMultipleSubmissions(submissionIds) {
+    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionIds[0]}/submissions`, { data: {submissionIds:submissionIds} });
+  },
+
+
+  /**
    * @function restoreSubmission
    * Restores an existing submission
    * @param {string} submissionId The form uuid

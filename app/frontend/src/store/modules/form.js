@@ -325,6 +325,23 @@ export default {
         }, { root: true });
       }
     },
+
+    async deleteMultiSubmissions ({ dispatch }, submissionIds) {
+      try {
+        // Get this submission
+        await formService.deleteMultipleSubmissions(submissionIds);
+        dispatch('notifications/addNotification', {
+          message: 'Submissions deleted successfully.',
+          ...NotificationTypes.SUCCESS,
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while deleting these submissions.',
+          consoleError: `Error deleting submission ${submissionIds}: ${error}`,
+        }, { root: true });
+      }
+    },
+
     async restoreSubmission({ dispatch }, { submissionId, deleted }) {
       try {
         // Get this submission
