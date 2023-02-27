@@ -324,7 +324,6 @@ export default {
   },
 
   async submissionExportaStatus (formId, version) {
-    console.log('+++++++++++++++++++++++++++');
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/${version}/export/status`);
   },
   async submissionExport (formId, version) {
