@@ -305,9 +305,11 @@ export default {
     },
 
     async deleteMultiSubs() {
-      this.showDeleteSubmissionDialog = false;
+      /*this.showDeleteSubmissionDialog = false;
       await this.deleteMultiSubmissions(Array.from(this.selectedSubmissionToDelete));
       this.populateSubmissionsTable();
+      */
+      console.log('----------->>> ', this.permissions);
     },
 
     async populateSubmissionsTable() {
