@@ -23,15 +23,14 @@ routes.get('/:formId', apiAccess, hasFormPermissions(P.FORM_READ), async (req, r
 });
 
 
-routes.get('/:formId/:version/export/status', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
-  console.log('I am hereeeeeee');
-  await controller.exportSubmissionsStatus(req, res, next);
-});
-
 routes.get('/:formId/export',currentUser, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.export(req, res, next);
 });
 
+routes.get('/:formId/:version/export/status', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  console.log('I am hereeeeeee');
+  await controller.exportSubmissionsStatus(req, res, next);
+});
 
 
 routes.get('/:formId/:version/submission/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {

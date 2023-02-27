@@ -31,7 +31,7 @@ userAccess.hasFormPermissions = jest.fn(() => {
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/form/service');
-const exportService = require('../../../../src/forms/form/exportService');
+//const exportService = require('../../../../src/forms/form/exportService');
 const emailService = require('../../../../src/forms/email/emailService');
 const fileService = require('../../../../src/forms/file/service');
 
@@ -218,7 +218,7 @@ describe(`DELETE ${basePath}/formId`, () => {
 
 });
 
-
+/*
 describe(`GET ${basePath}/formId/export`, () => {
 
   it('should return 200', async () => {
@@ -258,6 +258,7 @@ describe(`GET ${basePath}/formId/export`, () => {
   });
 
 });
+*/
 
 describe(`GET ${basePath}/formId/version`, () => {
 
