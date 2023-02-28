@@ -5,7 +5,7 @@ describe('Router', () => {
   const routes = router.options.routes;
 
   it('has the correct number of routes', () => {
-    expect(routes).toHaveLength(8);
+    expect(routes).toHaveLength(9);
   });
 
   it('has the expected routes', () => {

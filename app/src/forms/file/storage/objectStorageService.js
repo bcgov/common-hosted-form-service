@@ -10,7 +10,8 @@ const errorToProblem = require('../../../components/errorToProblem');
 const log = require('../../../components/log')(module.filename);
 
 const SERVICE = 'ObjectStorage';
-const TEMP_DIR = 'uploads';
+const UPLOAD_DIR = 'uploads';
+const TEMP_DIR = 'temp';
 const Delimiter = '/';
 
 class ObjectStorageService {
@@ -60,16 +61,31 @@ class ObjectStorageService {
 
   async uploadFile(fileStorage) {
     try {
-
       const fileContent = fs.readFileSync(fileStorage.path);
 
+      return await this.upload(fileStorage, UPLOAD_DIR, fileContent);
+    } catch (e) {
+      errorToProblem(SERVICE, e);
+    }
+  }
+
+  async uploadData(fileStorage, data) {
+    try {
+      return await this.upload(fileStorage, TEMP_DIR, data);
+    } catch (e) {
+      errorToProblem(SERVICE, e);
+    }
+  }
+
+  async upload(fileStorage, dir, data) {
+    try {
       // uploads can go to a 'holding' area, we can shuffle it later if we want to.
-      const key = this._join(this._key, TEMP_DIR, fileStorage.id);
+      const key = this._join(this._key, dir, fileStorage.id);
 
       const params = {
         Bucket: this._bucket,
         Key: key,
-        Body: fileContent,
+        Body: data,
         Metadata: {
           'name': fileStorage.originalName,
           'id': fileStorage.id

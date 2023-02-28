@@ -412,4 +412,17 @@ export default {
   async getFCProactiveHelpImageUrl(componentId) {
     return appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`);
   },
+
+  async createReservation(formId, format, template, versionSelected, preference, options = {}) {
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/reservation`, {}, {
+      params: {
+        format: format,
+        template:template,
+        version: versionSelected,
+        type: 'submissions',
+        preference:preference,
+        ...options
+      }
+    });
+  },
 };

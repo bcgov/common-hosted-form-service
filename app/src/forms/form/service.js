@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const {
   FileStorage,
+  FileStorageReservation,
   Form,
   FormApiKey,
   FormIdentityProvider,
@@ -601,6 +602,26 @@ const service = {
     return {};
   },
 
+  createReservation: async (currentUser) => {
+    let trx;
+    try {
+      let obj = { id: uuidv4() };
+      trx = await FileStorageReservation.startTransaction();
+      await FileStorageReservation.query(trx).insert({ id: obj.id, createdBy: currentUser.usernameIdp });
+      await trx.commit();
+
+      return await service.readReservation(obj.id);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  readReservation: async (id) => {
+    return FileStorageReservation.query()
+      .findById(id)
+      .throwIfNotFound();
+  }
 };
 
 module.exports = service;

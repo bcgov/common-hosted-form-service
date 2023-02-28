@@ -1,9 +1,14 @@
-const { Model } = require('objection');
 const Problem = require('api-problem');
+const { Model } = require('objection');
+const { Parser, transforms } = require('json2csv');
+
 const {flattenComponents, unwindPath, submissionHeaders} = require('../common/utils');
-const { Form, FormVersion } = require('../common/models');
-const {  transforms } = require('json2csv');
-const { Parser } = require('json2csv');
+const {
+  Form,
+  FormVersion,
+} = require('../common/models');
+const formService = require('../form/service');
+const fileService = require('../file/service');
 
 
 class SubmissionData extends Model {
@@ -82,9 +87,11 @@ const service = {
      * see: https://github.com/kaue/jsonexport
      */
     let formSchemaheaders = metaHeaders.concat(fieldNames);
-    let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
-    let t = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
-    return t;
+    if (Array.isArray(data) && data.length > 0) {
+      let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
+    }
+    return formSchemaheaders;
   },
 
   _exportType: (params = {}) => {
@@ -272,8 +279,28 @@ const service = {
     const result = await service._formatData(exportFormat, exportType,exportTemplate, form, data, columns, version);
 
     return { data: result.data, headers: result.headers };
-  }
+  },
 
+  exportWithReservation: async (formId, currentUser, referer, params = {}) => {
+    const reservation = await formService.createReservation(currentUser);
+    service.exportToStorage(reservation.id, formId, currentUser, referer, params);
+    return reservation;
+  },
+
+  exportToStorage: async (reservationId, formId, currentUser, referer, params = {}) => {
+    const data = await service.export(formId, params);
+    let originalName = `${formId}.csv`;
+    if (data.headers && data.headers['content-disposition'] && data.headers['content-disposition'].split('; ').length > 1) {
+      originalName = data.headers['content-disposition'].split('; ').filter((str) => str.indexOf('filename=') !== -1)[0].split('filename=')[1];
+      originalName = originalName.substring(1, originalName.length - 1);
+    }
+    const metadata = {
+      originalName: originalName,
+      mimetype: data.headers['content-type'],
+      size: Buffer.byteLength(data.data, 'utf8'),
+    };
+    await fileService.createData(formId, reservationId, metadata, data.data, currentUser, referer);
+  },
 };
 
 module.exports = service;

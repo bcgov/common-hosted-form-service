@@ -2,10 +2,12 @@ const config = require('config');
 const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
+const { StorageTypes } = require('../../common/constants');
 
 const _remLastSep = (x) => x && x.endsWith(path.sep) ? x.slice(0, -1) : x;
 
 const _path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fs.realpathSync(os.tmpdir());
+const TEMP_DIR = 'temp';
 const BASE_PATH = _remLastSep(_path);
 
 try {
@@ -63,7 +65,24 @@ const service = {
       path: fileStorage.path,
       storage: fileStorage.storage
     };
-  }
+  },
+
+  uploadData: async (fileStorage, data) => {
+    const fileDir = path.join(BASE_PATH, TEMP_DIR);
+    const filePath = path.join(fileDir, `${fileStorage.id}.csv`);
+    fs.mkdirSync(fileDir, { recursive: true });
+    fileStorage.path = filePath;
+
+    return new Promise((resolve, reject) => {
+      fs.writeFile(filePath, data, (err) => {
+        if (err) reject(err);
+        resolve({
+          path: filePath,
+          storage: StorageTypes.LOCAL_STORAGE,
+        });
+      });
+    });
+  },
 
 };
 
