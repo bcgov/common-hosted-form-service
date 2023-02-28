@@ -365,6 +365,43 @@ const service = {
       throw e;
     }
   },
+
+  submissionsExportReady: async(formId, reservation, body, referer) => {
+    try {
+      const form = await formService.readForm(formId);
+      const contextToVal = [body.to];
+      const userTypePath = 'file/download';
+      const bodyTemplate = 'file-download-ready.html';
+      const configData = {
+        bodyTemplate: bodyTemplate,
+        title: `${form.name} submissions export`,
+        subject: `${form.name} submissions export`,
+        priority: 'normal',
+        messageLinkText: 'You can download your submissions exports by visiting the following links:',
+        form,
+      };
+      const contexts = [{
+        context: {
+          form: configData.form,
+          messageLinkText: configData.messageLinkText,
+          messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?id=${reservation.fileId}`,
+          title: configData.title
+        },
+        to: contextToVal
+      }];
+
+      return service._sendEmailTemplate(configData, contexts);
+    } catch (e) {
+      log.error(e.message, {
+        function: EmailTypes.SUBMISSIONS_EXPORT_READY,
+        formId: formId,
+        reservation: reservation,
+        body: body,
+        referer: referer
+      });
+      throw e;
+    }
+  }
 };
 
 module.exports = service;

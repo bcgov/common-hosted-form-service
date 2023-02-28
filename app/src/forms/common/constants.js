@@ -8,7 +8,8 @@ module.exports = Object.freeze({
     STATUS_ASSIGNED: 'statusAssigned',
     STATUS_REVISING: 'statusRevising',
     SUBMISSION_RECEIVED: 'submissionReceived',
-    SUBMISSION_CONFIRMATION: 'submissionConfirmation'
+    SUBMISSION_CONFIRMATION: 'submissionConfirmation',
+    SUBMISSIONS_EXPORT_READY: 'submissionsExportReady'
   },
   Permissions: {
     FORM_API_CREATE: 'form_api_create',

@@ -42,6 +42,14 @@ const service = {
     }
   },
 
+  _uploadData: async (fileStorage, data) => {
+    if (PERMANENT_STORAGE === StorageTypes.LOCAL_STORAGE) {
+      return localStorageService.uploadData(fileStorage, data);
+    } else if (PERMANENT_STORAGE === StorageTypes.OBJECT_STORAGE) {
+      return objectStorageService.uploadData(fileStorage, data);
+    }
+  },
+
   delete: async (fileStorage) => {
     return service._deleteFile(fileStorage);
   },
@@ -56,6 +64,10 @@ const service = {
 
   upload: async (fileStorage) => {
     return service._uploadFile(fileStorage);
+  },
+
+  uploadData: async (fileStorage, data) => {
+    return service._uploadData(fileStorage ,data);
   }
 };
 

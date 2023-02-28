@@ -1,7 +1,8 @@
 const config = require('config');
 const { v4: uuidv4 } = require('uuid');
 
-const { FileStorage } = require('../common/models');
+const { FileStorage, FileStorageReservation } = require('../common/models');
+const emailService = require('../email/emailService');
 const storageService = require('./storage/storageService');
 
 const PERMANENT_STORAGE = config.get('files.permanent');
@@ -29,6 +30,42 @@ const service = {
       await FileStorage.query(trx).insert(obj);
 
       await trx.commit();
+      const result = await service.read(obj.id);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  createData: async (formId, reservationId, metadata, data, currentUser, referer) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      const obj = {};
+      obj.id = uuidv4();
+      obj.storage = 'temp';
+      obj.originalName = metadata.originalName;
+      obj.mimeType = metadata.mimetype;
+      obj.size = metadata.size;
+      obj.createdBy = currentUser.usernameIdp;
+      const uploadResult = await storageService.uploadData(obj, data);
+      obj.path = uploadResult.path;
+      obj.storage = uploadResult.storage;
+
+      await FileStorage.query(trx).insert(obj);
+
+      const reservation = await FileStorageReservation.query(trx)
+        .patchAndFetchById(reservationId, {
+          fileId: obj.id,
+          ready: true,
+        });
+
+      await trx.commit();
+
+      await emailService.submissionsExportReady(formId, reservation, { to: currentUser.email }, referer);
+
       const result = await service.read(obj.id);
       return result;
     } catch (err) {

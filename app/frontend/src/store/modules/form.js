@@ -1,7 +1,7 @@
 import { getField, updateField } from 'vuex-map-fields';
 
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { apiKeyService, formService, rbacService, userService} from '@/services';
+import { apiKeyService, fileService, formService, rbacService, userService} from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 
@@ -28,6 +28,10 @@ export default {
   namespaced: true,
   state: {
     apiKey: undefined,
+    downloadedFile: {
+      data: null,
+      headers: null,
+    },
     drafts: [],
     form: genInitialForm(),
     formFields: [],
@@ -50,6 +54,7 @@ export default {
   getters: {
     getField, // vuex-map-fields
     apiKey: state => state.apiKey,
+    downloadedFile: state => state.downloadedFile,
     drafts: state => state.drafts,
     form: state => state.form,
     formFields: state => state.formFields,
@@ -96,6 +101,12 @@ export default {
     },
     SET_SUBMISSIONLIST(state, submissions) {
       state.submissionList = submissions;
+    },
+    SET_DOWNLOADEDFILE_DATA(state, downloadedFile) {
+      state.downloadedFile.data = downloadedFile;
+    },
+    SET_DOWNLOADEDFILE_HEADERS(state, headers) {
+      state.downloadedFile.headers = headers;
     },
     SET_SUBMISSIONUSERS(state, users) {
       state.submissionUsers = users;
@@ -497,6 +508,21 @@ export default {
       if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       window.onbeforeunload = isDirty ? () => true : null;
       commit('SET_FORM_DIRTY', isDirty);
+    },
+    async downloadFile({ commit, dispatch }, fileId) {
+      try {
+        commit('SET_DOWNLOADEDFILE_DATA', null);
+        commit('SET_DOWNLOADEDFILE_HEADERS', null);
+        const response = await fileService.getFile(fileId);
+        commit('SET_DOWNLOADEDFILE_DATA', response.data);
+        commit('SET_DOWNLOADEDFILE_HEADERS', response.headers);
+      } catch(error) {
+
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching file link',
+          consoleError: 'Error getting file link',
+        }, { root: true });
+      }
     },
   },
 };

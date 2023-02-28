@@ -223,6 +223,7 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
+import { NotificationTypes } from '@/utils/constants.js';
 
 import { faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -259,7 +260,6 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form'),
     async callExport() {
       try {
         // UTC start of selected start date...
@@ -275,7 +275,8 @@ export default {
               .format()
             : undefined;
 
-        const response = await formService.exportSubmissions(
+
+        const reservation = await formService.createReservation(
           this.form.id,
           this.exportFormat,
           this.csvTemplates,
@@ -288,25 +289,12 @@ export default {
           },
           this.dataFields?this.userFormPreferences.preferences:undefined
         );
-
-        if (response && response.data) {
-          const blob = new Blob([response.data], {
-            type: response.headers['content-type'],
+        if (reservation && reservation.data && reservation.data.id) {
+          this.addNotification({
+            message: 'Your submissions request is being processed. Upon completion, an e-mail containing a download link to your submissions will be sent to you.',
+            ...NotificationTypes.SUCCESS
           });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = this.fileName;
-          a.style.display = 'none';
-          a.classList.add('hiddenDownloadTextElement');
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          this.dialog = false;
-        } else {
-          throw new Error('No data in response from exportSubmissions call');
         }
-
       } catch (error) {
         this.addNotification({
           message:
