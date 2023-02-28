@@ -409,7 +409,7 @@
 
 
 
-            <hr v-if="schedule.scheduleType !== null" />
+            <hr v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType) || (this.userType ==='team' && schedule.scheduleType !== null && enableReminderDraw && schedule.openSubmissionDateTime)" />
 
             <v-row class="p-0 m-0" v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)">
               <v-col cols="12" md="12" class="p-0">
@@ -446,7 +446,7 @@
 
             <v-row class="p-0 m-0">
               <v-col cols="12" md="12" class="p-0">
-                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null && enableReminderDraw" >
+                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null && enableReminderDraw && schedule.openSubmissionDateTime" >
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
                       <template #title>SEND Reminder email</template>
@@ -456,11 +456,11 @@
                           <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                               <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                                flask
+                                help_outline
                               </v-icon>
                             </template>
                             <span>
-                              Send automated reminder emails with the form link before and after the publishing date and prior to the closing date.
+                              Send reminder email/s with the form link during the submission period. (Learn more)
                             </span>
                           </v-tooltip>
                         </template>

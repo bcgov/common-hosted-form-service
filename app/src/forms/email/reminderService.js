@@ -193,7 +193,7 @@ const service = {
 
     if(report.dates.closeDate==null || days_diff<=3 ) return  state;
 
-    if(service.getNumberDayFromIntervalType(reminder.intervalType, now, start_date, days_diff )){
+    if(service.checkIfInMiddleOfThePeriod(reminder.intervalType, now, start_date, days_diff )){
       return EmailTypes.REMINDER_FORM_NOT_FILL;
     }
 
@@ -205,7 +205,7 @@ const service = {
 
     return state;
   },
-  getNumberDayFromIntervalType : (type, now, start_date,  days_diff )=>{
+  checkIfInMiddleOfThePeriod : (type, now, start_date,  days_diff )=>{
     if (days_diff < 6 ) return false;
 
     if(type!=null && type) {
