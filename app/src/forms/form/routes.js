@@ -1,12 +1,21 @@
 const config = require('config');
 const routes = require('express').Router();
-
+const rateLimit = require('express-rate-limit');
 const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 
 const keycloak = require('../../components/keycloak');
 const controller = require('./controller');
+
+const createAccountLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 300, // Limit each IP to 5 create account requests per `window` (here, per hour)
+  message:
+		'Too many accounts created from this IP, please try again after an hour',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
 
 routes.use(currentUser);
 
@@ -28,7 +37,7 @@ routes.get('/:formId/export',currentUser, apiAccess, hasFormPermissions([P.FORM_
 });
 
 
-routes.get('/:formId/:reservationId/export/status', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+routes.get('/:formId/:reservationId/export/status', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), createAccountLimiter, async (req, res, next) => {
 
   await controller.exportSubmissionsStatus(req, res, next);
 });
