@@ -33,6 +33,7 @@
       </v-col>
     </v-row>
 
+
     <v-row no-gutters>
       <v-spacer />
       <v-col cols="4" sm="4">
@@ -111,7 +112,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="()=>{showDeleteSubmissionDialog=true;}"
+                @click="canUserMultiDeleteSubmissions"
                 color="red"
                 icon
                 :disabled="!submissionsCheckboxes[submissionTable.indexOf(item)]"
@@ -150,7 +151,7 @@
     >
       <template #title>Confirm Deletion</template>
       <template #text>
-        Are you sure you wish to delete this/these submission(s)
+        Are you sure you wish to delete selected submissions
       </template>
       <template #button-text-continue>
         <span>Delete</span>
@@ -213,6 +214,7 @@ export default {
       'permissions',
       'submissionList',
       'userFormPreferences',
+      'roles'
     ]),
     ...mapGetters('auth', [
       'user'
@@ -290,9 +292,11 @@ export default {
       'fetchSubmissions',
       'restoreSubmission',
       'getFormPermissionsForUser',
+      'getFormRolesForUser',
       'getFormPreferencesForCurrentUser',
       'deleteMultiSubmissions'
     ]),
+    ...mapActions('notifications', ['addNotification']),
 
     async selectSubmissionToDelete(item, index) {
       if(this.submissionsCheckboxes[index]) {
@@ -304,12 +308,23 @@ export default {
 
     },
 
+    canUserMultiDeleteSubmissions() {
+      const found = this.roles.some(r=> ['team_manager','owner'].includes(r));
+      if(found) {
+        this.showDeleteSubmissionDialog = true;
+      }
+      else {
+        this.addNotification({
+          message: 'You must have the form owner or team manage permission to delete selected submissions',
+          consoleError: 'Cannot delete selected because you don\'t have the necessary permissions',
+        });
+      }
+    },
+
     async deleteMultiSubs() {
-      /*this.showDeleteSubmissionDialog = false;
+      this.showDeleteSubmissionDialog = false;
       await this.deleteMultiSubmissions(Array.from(this.selectedSubmissionToDelete));
       this.populateSubmissionsTable();
-      */
-      console.log('----------->>> ', this.permissions);
     },
 
     async populateSubmissionsTable() {
@@ -354,6 +369,7 @@ export default {
     async refreshSubmissions() {
       this.loading = true;
       Promise.all([
+        this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
         this.fetchForm(this.formId).then(() => {
           this.fetchFormFields({

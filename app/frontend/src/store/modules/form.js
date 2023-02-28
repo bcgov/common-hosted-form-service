@@ -39,6 +39,7 @@ export default {
       }
     },
     permissions: [],
+    roles:[],
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
@@ -56,6 +57,7 @@ export default {
     formList: state => state.formList,
     formSubmission: state => state.formSubmission,
     permissions: state => state.permissions,
+    roles: state => state.roles,
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
@@ -87,6 +89,9 @@ export default {
     },
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
+    },
+    SET_FORM_ROLES(state, roles) {
+      state.roles = roles;
     },
     SET_FORMLIST(state, forms) {
       state.formList = forms;
@@ -154,6 +159,25 @@ export default {
         const data = response.data;
         if (data.forms[0]) {
           commit('SET_FORM_PERMISSIONS', data.forms[0].permissions);
+        } else {
+          throw new Error('No form found');
+        }
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching your user data for this form.',
+          consoleError: `Error getting user data using formID ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async getFormRolesForUser({ commit, dispatch }, formId) {
+      try {
+        commit('SET_FORM_ROLES', []);
+        // Get the forms based on the user's permissions
+        const response = await rbacService.getCurrentUser({ formId: formId });
+        const data = response.data;
+        if (data.forms[0]) {
+          console.log( data.forms[0]);
+          commit('SET_FORM_ROLES', data.forms[0].roles);
         } else {
           throw new Error('No form found');
         }
