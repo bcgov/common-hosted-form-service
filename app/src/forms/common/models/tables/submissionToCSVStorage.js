@@ -3,18 +3,9 @@ const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-class SubmissionToCSVStorage extends Timestamps(Model) {
+class FileStorageReservation extends Timestamps(Model) {
   static get tableName() {
-    return 'submission_to_csv_storage';
-  }
-
-
-  static get modifiers() {
-    return {
-      orderDescending(builder) {
-        builder.orderBy('createdAt', 'desc');
-      },
-    };
+    return 'file_storage_reservation';
   }
 
   static get jsonSchema() {
@@ -23,10 +14,7 @@ class SubmissionToCSVStorage extends Timestamps(Model) {
       required: ['id'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
-        userId:{ type: 'string', pattern: Regex.UUID },
-        version: { type: 'integer' },
-        formId: { type: 'string', pattern: Regex.UUID },
-        file: { type: 'object' },
+        fileId: { type: 'string', pattern: Regex.UUID },
         ready: { type: 'boolean' },
         ...stamps
       },
@@ -35,4 +23,4 @@ class SubmissionToCSVStorage extends Timestamps(Model) {
   }
 }
 
-module.exports = SubmissionToCSVStorage;
+module.exports = FileStorageReservation;

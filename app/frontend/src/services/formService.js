@@ -300,16 +300,12 @@ export default {
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, format,template,versionSelected, preference, options = {}) {
-    let abortController = new AbortController();
-    //const abortSignal = abortController.signal;
-    setTimeout(()=>{
-      abortController.abort();
-    },500);
+  exportSubmissions(formId,appcall, format,template,versionSelected, preference, options = {}) {
 
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
       {
         params: {
+          appcall:appcall, //this will be used to differetiate call from the frontend and direct API Call (e.g. postman)
           format: format,
           template:template,
           version:versionSelected,
@@ -317,20 +313,17 @@ export default {
           preference:preference,
           ...options
         },
-        responseType: 'blob',
-        //signal: abortController.signal
+        responseType: appcall?'':'blob'
       }
     );
   },
 
-  async submissionExportaStatus (formId, version) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/${version}/export/status`);
+  async submissionExportStatus (formId, reservationId) {
+
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/${reservationId}/export/status`);
   },
-  async submissionExport (formId, version) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/${version}/submission/export`,
-      {
-        responseType: 'blob'
-      });
+  async submissionExport (id) {
+    return appAxios().get(`${ApiRoutes.FILE}/${id}`);
   },
 
   //

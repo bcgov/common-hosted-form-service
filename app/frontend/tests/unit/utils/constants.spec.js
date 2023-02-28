@@ -5,6 +5,7 @@ describe('Constants', () => {
     expect(constants.ApiRoutes).toEqual({
       ADMIN: '/admin',
       APIKEY: '/apiKey',
+      FILE: '/files',
       FORMS: '/forms',
       RBAC: '/rbac',
       ROLES: '/roles',

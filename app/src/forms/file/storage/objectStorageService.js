@@ -10,7 +10,8 @@ const errorToProblem = require('../../../components/errorToProblem');
 const log = require('../../../components/log')(module.filename);
 
 const SERVICE = 'ObjectStorage';
-const TEMP_DIR = 'uploads';
+const UPLOAD_DIR = 'uploads';
+const TEMP_DIR = 'temp';
 const Delimiter = '/';
 
 class ObjectStorageService {
@@ -64,12 +65,50 @@ class ObjectStorageService {
       const fileContent = fs.readFileSync(fileStorage.path);
 
       // uploads can go to a 'holding' area, we can shuffle it later if we want to.
-      const key = this._join(this._key, TEMP_DIR, fileStorage.id);
+      const key = this._join(this._key, UPLOAD_DIR, fileStorage.id);
 
       const params = {
         Bucket: this._bucket,
         Key: key,
         Body: fileContent,
+        Metadata: {
+          'name': fileStorage.originalName,
+          'id': fileStorage.id
+        }
+      };
+
+      if (mime.contentType(path.extname(fileStorage.originalName))) {
+        params.ContentType = mime.contentType(path.extname(fileStorage.originalName));
+      }
+
+      return new Promise((resolve, reject) => {
+        // eslint-disable-next-line no-unused-vars
+        this._s3.upload(params, (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              path: data.Key,
+              storage: StorageTypes.OBJECT_STORAGE
+            });
+          }
+        });
+      });
+    } catch (e) {
+      errorToProblem(SERVICE, e);
+    }
+  }
+
+  async uploadData(fileStorage, data) {
+    try {
+
+      // uploads can go to a 'holding' area, we can shuffle it later if we want to.
+      const key = this._join(this._key, TEMP_DIR, fileStorage.id);
+
+      const params = {
+        Bucket: this._bucket,
+        Key: key,
+        Body: data,
         Metadata: {
           'name': fileStorage.originalName,
           'id': fileStorage.id

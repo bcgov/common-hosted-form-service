@@ -1,8 +1,10 @@
 module.exports = {
   // Tables
   FileStorage: require('./tables/fileStorage'),
+  FileStorageReservation: require('./tables/submissionToCSVStorage'),
   Form: require('./tables/form'),
   FormApiKey: require('./tables/formApiKey'),
+  FormComponentsProactiveHelp: require('./tables/formComponentsProactiveHelp'),
   FormIdentityProvider: require('./tables/formIdentityProvider'),
   FormSubmission: require('./tables/formSubmission'),
   FormStatusCode: require('./tables/formStatusCode'),
@@ -19,8 +21,7 @@ module.exports = {
   SubmissionAudit: require('./tables/submissionAudit'),
   User: require('./tables/user'),
   UserFormPreferences: require('./tables/userFormPreferences'),
-  FormComponentsProactiveHelp: require('./tables/formComponentsProactiveHelp'),
-  SubmissionToCSVStorage: require('./tables/submissionToCSVStorage'),
+
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),

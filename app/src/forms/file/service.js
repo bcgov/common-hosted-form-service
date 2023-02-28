@@ -37,6 +37,35 @@ const service = {
     }
   },
 
+  createData : async (metadata, data, currentUser) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      const obj = {};
+      obj.id = uuidv4();
+      obj.storage = 'uploads';
+      obj.originalName = metadata.originalName;
+      obj.mimeType = metadata.mimeType;
+      obj.size = metadata.size;
+      obj.path = metadata.path;
+      obj.createdBy = currentUser.usernameIdp;
+
+      const uploadResult = await storageService.uploadData(obj, data);
+      obj.path = uploadResult.path;
+      obj.storage = uploadResult.storage;
+
+      await FileStorage.query(trx).insert(obj);
+
+      await trx.commit();
+      const result = await service.read(obj.id);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
   read: async (id) => {
     return FileStorage.query()
       .findById(id)

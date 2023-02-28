@@ -6,13 +6,18 @@ const fileService = require('../file/service');
 module.exports = {
   export: async (req, res, next) => {
     try {
-      const result = await  exportService.export(req.currentUser.id, req.params.formId, req.query);
-      if(result ) {
+      if(req.query.appcall){
+        const result = await  exportService.export(req.params.formId,  req.currentUser, req.query);
+        return res.send(result.data);
+      }
+      else{
+        const result = await exportService.export(req.params.formId, req.currentUser, req.query);
         ['Content-Disposition', 'Content-Type'].forEach(h => {
           res.setHeader(h, result.headers[h.toLowerCase()]);
         });
+        return res.send(result.data);
       }
-      return res.send(result.data);
+
     } catch (error) {
       next(error);
     }
@@ -33,7 +38,7 @@ module.exports = {
 
   exportSubmissionsStatus:async (req, res, next) => {
     try {
-      const result = await  exportService.exportSubmissionsStatus(req.currentUser.id, req.params.formId, req.params.version);
+      const result = await  exportService.readReservation(req.params.reservationId);
       return res.send(result);
     } catch (error) {
       next(error);

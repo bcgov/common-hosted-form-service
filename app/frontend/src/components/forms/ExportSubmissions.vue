@@ -174,11 +174,6 @@
                   <template v-slot:label>
                     <span class="radioboxLabelStyle " style="display:flex; align-content: flex-start">Template 1 <div class="blueColorWrapper ml-1"> (Recommended) </div></span>
                   </template>
-
-                  <sup>Betas
-                    <font-awesome-icon icon="fa-solid fa-circle-info" size="xl" color='#1A5A96'/>
-                    <font-awesome-icon icon="fa-solid fa-info" size="xl" color='#1A5A96'/>
-                  </sup>
                 </v-radio>
                 <v-radio label="B" value="flattenedWithFilled">
                   <template v-slot:label>
@@ -242,7 +237,6 @@
 <script>
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
-
 import { faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {formService} from '@/services';
@@ -286,8 +280,8 @@ export default {
       try {
 
         //let status = await formService.submissionExportaStatus(this.form.id, this.versionSelected);
-        //this.progressOverlay=true;
-        //this.dialog=false;
+        this.progressOverlay=true;
+        this.dialog=false;
 
         // UTC start of selected start date...
 
@@ -303,8 +297,9 @@ export default {
               .format()
             : undefined;
 
-        const response = await formService.exportSubmissions(
+        let reservation = await formService.exportSubmissions(
           this.form.id,
+          this.exportFormat==='json'?undefined:'appcall',
           this.exportFormat,
           this.csvTemplates,
           this.versionSelected,
@@ -316,35 +311,40 @@ export default {
           },
           this.dataFields?this.userFormPreferences.preferences:undefined
         );
-        this.processExportResponse(response);
-      } catch (error) {
-        if(error.name&&error.name=== 'CanceledError') {
-          /*
-           await setInterval(async()=>{
-            let response = await formService.submissionExportaStatus(this.form.id, this.versionSelected);
-            if (response && response.data && response.data.ready) {
-
-              const response = await formService.submissionExport(this.form.id, this.versionSelected);
-              this.processExportResponse(response);
-              this.progressOverlay=true;
-            }
-
-          }, 8000);
-          */
+        if(this.exportFormat==='json') {
+          this.processExportResponse(reservation);
         }
         else {
-          this.addNotification({
-            message:
-              'An error occurred while attempting to export submissions for this form.',
-            consoleError: `Error export submissions for ${this.form.id}: ${error}`,
-          });
+          let interval = await setInterval(async()=>{
+            try {
+              let status = await formService.submissionExportStatus(this.form.id, reservation.data.id);
+              if(status && status.data && status.data.ready) {
+                const response = await formService.submissionExport(status.data.fileId);
+                this.processExportResponse(response);
+                clearInterval(interval);
+
+              }
+            }
+            catch (error) {
+              this.addNotification({
+                message:
+                'An error occurred while attempting to export submissions for this form.',
+                consoleError: `Error export submissions for ${this.form.id}: ${error}`,
+              });
+            }
+          }, 8000);
         }
-
+      } catch (error) {
+        this.addNotification({
+          message:
+            'An error occurred while attempting to export submissions for this form.',
+          consoleError: `Error export submissions for ${this.form.id}: ${error}`,
+        });
       }
-
     },
 
     processExportResponse(response) {
+      this.progressOverlay=false;
       if (response && response.data)
       {
         const blob = new Blob([response.data], {
@@ -373,6 +373,7 @@ export default {
     async exportFormat(value) {
       if(value==='csv') {
         if(this.form) {
+          this.versionSelected = this.form.versions[0].version;
           this.versions.push(...(this.form.versions.map(version=>version.version)));
         }
       }
@@ -477,15 +478,10 @@ export default {
     background-color: white!important;
     color:red !important;
     size:40px !important;
-    width:440px !important;
-    padding-top: 20px !important;
-    padding-bottom: 20px !important;
-    padding-left: 40px !important;
-    padding-right: 40px !important;
+    width:95% !important;
+    padding: 20px !important;
     height:220px !important;
-    padding:0px !important;
-    margin:0px !important;
-    border-radius: 5px !important;
+    border-radius: 10px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;

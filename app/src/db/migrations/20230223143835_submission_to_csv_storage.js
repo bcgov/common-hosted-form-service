@@ -2,12 +2,9 @@ const stamps = require('../stamps');
 
 exports.up = function(knex) {
   return Promise.resolve()
-    .then(() => knex.schema.createTable('submission_to_csv_storage',table=>{
+    .then(() => knex.schema.createTable('file_storage_reservation',table=>{
       table.uuid('id').primary();
-      table.uuid('userId');
-      table.integer('version');
-      table.uuid('formId');
-      table.jsonb('file');
+      table.string('fileId');
       table.boolean('ready').defaultTo(false);
       stamps(knex, table);
     }));
@@ -16,5 +13,5 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   return Promise.resolve()
-    .then(() => knex.schema.dropTableIfExists('submission_to_csv_storage'));
+    .then(() => knex.schema.dropTableIfExists('file_storage_reservation'));
 };
