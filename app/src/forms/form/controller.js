@@ -6,15 +6,45 @@ const fileService = require('../file/service');
 module.exports = {
   export: async (req, res, next) => {
     try {
-      const result = await exportService.export(req.params.formId, req.query);
-      ['Content-Disposition', 'Content-Type'].forEach(h => {
-        res.setHeader(h, result.headers[h.toLowerCase()]);
-      });
-      return res.send(result.data);
+      if(req.query.appcall){
+        const result = await  exportService.export(req.params.formId,  req.currentUser, req.query);
+        return res.send(result.data);
+      }
+      else{
+        const result = await exportService.export(req.params.formId, req.currentUser, req.query);
+        ['Content-Disposition', 'Content-Type'].forEach(h => {
+          res.setHeader(h, result.headers[h.toLowerCase()]);
+        });
+        return res.send(result.data);
+      }
+
     } catch (error) {
       next(error);
     }
   },
+  exportSubmissions:async (req, res, next) => {
+    try {
+      const result = await  exportService.exportSubmissions(req.currentUser.id, req.params.formId, req.params.version);
+      if(result ) {
+        ['Content-Disposition', 'Content-Type'].forEach(h => {
+          res.setHeader(h, result.headers[h.toLowerCase()]);
+        });
+      }
+      return res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  exportSubmissionsStatus:async (req, res, next) => {
+    try {
+      const result = await  exportService.readReservation(req.params.reservationId);
+      return res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   listForms: async (req, res, next) => {
     try {
       const response = await service.listForms(req.query);

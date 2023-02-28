@@ -22,9 +22,22 @@ routes.get('/:formId', apiAccess, hasFormPermissions(P.FORM_READ), async (req, r
   await controller.readForm(req, res, next);
 });
 
-routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+
+routes.get('/:formId/export',currentUser, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.export(req, res, next);
 });
+
+
+routes.get('/:formId/:reservationId/export/status', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+
+  await controller.exportSubmissionsStatus(req, res, next);
+});
+
+
+routes.get('/:formId/:version/submission/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.exportSubmissions(req, res, next);
+});
+
 
 routes.get('/:formId/options', async (req, res, next) => {
   await controller.readFormOptions(req, res, next);

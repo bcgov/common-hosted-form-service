@@ -56,6 +56,10 @@ const service = {
 
   upload: async (fileStorage) => {
     return service._uploadFile(fileStorage);
+  },
+
+  uploadData: async (fileStorage, data) => {
+    return objectStorageService.uploadData(fileStorage, data);
   }
 };
 

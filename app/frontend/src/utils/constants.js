@@ -10,7 +10,8 @@ export const ApiRoutes = Object.freeze({
   RBAC: '/rbac',
   ROLES: '/roles',
   SUBMISSION: '/submissions',
-  USERS: '/users'
+  USERS: '/users',
+  FILE: '/files',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */
