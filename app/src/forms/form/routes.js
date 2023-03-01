@@ -126,8 +126,6 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
   await controller.deleteApiKey(req, res, next);
 });
 
-<<<<<<< HEAD
-=======
 routes.get('/formcomponents/proactivehelp/list', async(req,res,next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
@@ -135,6 +133,5 @@ routes.get('/formcomponents/proactivehelp/list', async(req,res,next) => {
 routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
   await controller.getFCProactiveHelpImageUrl(req, res, next);
 });
->>>>>>> 67b46a4ef701e42eec66788322f9aa3434734045
 
 module.exports = routes;
