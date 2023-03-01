@@ -18,6 +18,7 @@ module.exports = {
   Role: require('./tables/role'),
   StatusCode: require('./tables/statusCode'),
   SubmissionAudit: require('./tables/submissionAudit'),
+  SubmissionsExport: require('./tables/submissionsExport'),
   User: require('./tables/user'),
   UserFormPreferences: require('./tables/userFormPreferences'),
   FormComponentsProactiveHelp: require('./tables/formComponentsProactiveHelp'),
@@ -25,6 +26,7 @@ module.exports = {
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
   PublicFormAccess: require('./views/publicFormAccess'),
+  SubmissionsData: require('./views/submissionsData'),
   SubmissionMetadata: require('./views/submissionMetadata'),
   UserFormAccess: require('./views/userFormAccess'),
   UserSubmissions: require('./views/userSubmissions')

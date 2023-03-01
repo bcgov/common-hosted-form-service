@@ -517,10 +517,9 @@ export default {
         commit('SET_DOWNLOADEDFILE_DATA', response.data);
         commit('SET_DOWNLOADEDFILE_HEADERS', response.headers);
       } catch(error) {
-
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching file link',
-          consoleError: 'Error getting file link',
+          message: 'An error occurred while downloading file',
+          consoleError: 'Error downloading file',
         }, { root: true });
       }
     },

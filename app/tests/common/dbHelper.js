@@ -36,6 +36,7 @@ class MockModel {}
 // Mocked Objection Functions
 MockModel.findById = jest.fn().mockReturnThis();
 MockModel.first = jest.fn().mockReturnThis();
+MockModel.column = jest.fn().mockReturnThis();
 MockModel.delete = jest.fn().mockReturnThis();
 MockModel.deleteById = jest.fn().mockReturnThis();
 MockModel.insert = jest.fn().mockReturnThis();
@@ -57,6 +58,8 @@ MockModel.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
 MockModel.then = jest.fn((done) => { done(returnValue); });
 MockModel.throwIfNotFound = jest.fn().mockReturnThis();
 MockModel.where = jest.fn().mockReturnThis();
+MockModel.whereIn = jest.fn().mockReturnThis();
+MockModel.allowGraph = jest.fn().mockReturnThis();
 MockModel.withGraphFetched = jest.fn().mockReturnThis();
 
 // Utility Functions

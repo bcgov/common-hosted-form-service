@@ -8,6 +8,31 @@ class FileStorageReservation extends Timestamps(Model) {
     return 'file_storage_reservation';
   }
 
+  static get modifiers() {
+    return {
+      filterFileId(query, value) {
+        if (value) {
+          query.where('fileId', value);
+        }
+      },
+      filterReady(query, value) {
+        if (value) {
+          query.where('ready', value);
+        }
+      },
+      filterCreatedBy(query, value) {
+        if (value) {
+          query.where('createdBy', value);
+        }
+      },
+      filterOlder(query, value) {
+        if (value) {
+          query.where('createdAt', '<', value);
+        }
+      }
+    };
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',

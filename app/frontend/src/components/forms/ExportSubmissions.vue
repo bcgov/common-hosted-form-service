@@ -298,7 +298,7 @@ export default {
       } catch (error) {
         this.addNotification({
           message:
-            'An error occurred while attempting to export submissions for this form.',
+            (error && error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to export submissions for this form.',
           consoleError: `Error export submissions for ${this.form.id}: ${error}`,
         });
       }

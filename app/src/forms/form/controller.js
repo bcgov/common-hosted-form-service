@@ -246,7 +246,7 @@ module.exports = {
 
   exportWithReservation: async (req, res, next) => {
     try {
-      const response = await exportService.exportWithReservation(req.params.formId, req.currentUser, req.headers.referer, req.query);
+      const response = await exportService.exportWithReservation(req.params.formId, req.query.formVersion, req.currentUser, req.headers.referer, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
