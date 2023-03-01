@@ -16,12 +16,16 @@ const {
   FormSubmissionStatus,
   FormSubmissionUser,
   IdentityProvider,
+  SubmissionsExport,
   SubmissionMetadata,
   FormComponentsProactiveHelp
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
+
+const exportService = require('./exportService');
+const fileService = require('../file/service');
 
 const service = {
 
@@ -602,12 +606,15 @@ const service = {
     return {};
   },
 
-  createReservation: async (currentUser) => {
+  createReservation: async (currentUser, params = {}) => {
     let trx;
     try {
-      let obj = { id: uuidv4() };
+      let obj = {
+        id: ((params && params.id) ? params.id : uuidv4()),
+        createdBy: currentUser.usernameIdp,
+      };
       trx = await FileStorageReservation.startTransaction();
-      await FileStorageReservation.query(trx).insert({ id: obj.id, createdBy: currentUser.usernameIdp });
+      await FileStorageReservation.query(trx).insert(obj);
       await trx.commit();
 
       return await service.readReservation(obj.id);
@@ -617,10 +624,45 @@ const service = {
     }
   },
 
+  listReservation: async (params = {}) => {
+    return FileStorageReservation.query()
+      .modify('filterFileId', params.fileId)
+      .modify('filterReady', params.ready)
+      .modify('filterCreatedBy', params.createdBy)
+      .modify('filterOlder', params.older);
+  },
+
   readReservation: async (id) => {
     return FileStorageReservation.query()
       .findById(id)
       .throwIfNotFound();
+  },
+
+  deleteReservation: async (id) => {
+    let trx;
+
+    try {
+      trx = await FileStorageReservation.startTransaction();
+
+      const reservation = await service.readReservation(id);
+
+      const subsexp = await exportService.listSubmissionsExports({ reservationId: id });
+      if (subsexp && subsexp.length > 0) {
+        await SubmissionsExport.query(trx)
+          .whereIn(subsexp.map((sub) => sub.id))
+          .delete();
+      }
+
+      await fileService.delete(reservation.fileId);
+      await FileStorageReservation.query(trx)
+        .deleteById(id)
+        .throwIfNotFound();
+
+      await trx.commit();
+    } catch (error) {
+      if (trx) trx.rollback();
+      throw error;
+    }
   }
 };
 

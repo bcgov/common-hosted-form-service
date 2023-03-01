@@ -1,48 +1,19 @@
 const Problem = require('api-problem');
-const { Model } = require('objection');
+const moment = require('moment');
 const { Parser, transforms } = require('json2csv');
+const { v4:uuidv4 } = require('uuid');
 
 const {flattenComponents, unwindPath, submissionHeaders} = require('../common/utils');
 const {
   Form,
   FormVersion,
+  SubmissionsData,
+  SubmissionsExport,
 } = require('../common/models');
 const formService = require('../form/service');
 const fileService = require('../file/service');
 
 
-class SubmissionData extends Model {
-  static get tableName() {
-    return 'submissions_data_vw';
-  }
-
-  static get modifiers() {
-    return {
-      filterCreatedAt(query, minDate, maxDate) {
-        if (minDate && maxDate) {
-          query.whereBetween('createdAt', [minDate, maxDate]);
-        } else if (minDate) {
-          query.where('createdAt', '>=', minDate);
-        } else if (maxDate) {
-          query.where('createdAt', '<=', maxDate);
-        }
-      },
-      filterDeleted(query, value) {
-        if (!value) {
-          query.where('deleted', false);
-        }
-      },
-      filterDrafts(query, value) {
-        if (!value) {
-          query.where('draft', false);
-        }
-      },
-      orderDefault(builder) {
-        builder.orderBy('createdAt', 'DESC');
-      }
-    };
-  }
-}
 
 const EXPORT_TYPES = Object.freeze({
   submissions: 'submissions',
@@ -159,7 +130,7 @@ const service = {
   _getSubmissions: async (form, params, version) => {
     let preference = params.preference?JSON.parse(params.preference):undefined;
     // params for this export include minDate and maxDate (full timestamp dates).
-    let submissionData = await SubmissionData.query()
+    let submissionData = await SubmissionsData.query()
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .where('version', version)
@@ -281,10 +252,66 @@ const service = {
     return { data: result.data, headers: result.headers };
   },
 
-  exportWithReservation: async (formId, currentUser, referer, params = {}) => {
-    const reservation = await formService.createReservation(currentUser);
-    service.exportToStorage(reservation.id, formId, currentUser, referer, params);
-    return reservation;
+  exportWithReservation: async (formId, formVersion, currentUser, referer, params = {}) => {
+    let trx;
+    let reservation;
+    try {
+      // prune users old submissions
+      trx = await SubmissionsData.startTransaction();
+
+      let oldExports = await formService.listReservation({ createdBy: currentUser.usernameIdp, older: moment().subtract(7, 'd').format('YYYY-MM-DD') });
+
+      if (oldExports) {
+        for (let i = 0; i < oldExports.length; i++) {
+          await formService.deleteReservation(oldExports[i].id);
+        }
+      }
+
+      // get the form version id of the form
+      let submissionData = await SubmissionsData.query(trx)
+        .where('formId', formId)
+        .where('version', formVersion)
+        .first();
+      if (submissionData && submissionData.formVersionId) {
+        // get the submissions exports for this form version
+        const submissionsExports = await service.listSubmissionsExports({
+          formId: formId,
+          formVersionId: submissionData.formVersionId,
+          userId: currentUser.id,
+        });
+        if (submissionsExports && submissionsExports.length > 0) {
+          // delete all submissions exports for this form version that were ready and created
+          // by this user
+          oldExports = submissionsExports.filter((subs) => subs.reservation.ready);
+
+          for (let i = 0; i < oldExports.length; i++) {
+            await formService.deleteReservation(oldExports[i].reservation.id);
+          }
+
+          // If the user is creating a submission for this export already
+          for (let i = 0; i < submissionsExports.length; i++) {
+            if (!submissionsExports[i].reservation.ready) {
+              throw new Problem(400, { detail: 'Currently processing your previous submissions export.' });
+            }
+          }
+        }
+
+        // create the reservation
+        reservation = await formService.createReservation(currentUser);
+        // create the submissions export
+        await service.createSubmissionsExport(formId, submissionData.formVersionId, reservation.id, currentUser);
+
+        // export the submissions
+        { service.exportToStorage(reservation.id, formId, currentUser, referer, params); }
+      }
+
+      await trx.commit();
+
+      return reservation;
+    } catch (error) {
+      if (trx) trx.rollback();
+      throw error;
+    }
   },
 
   exportToStorage: async (reservationId, formId, currentUser, referer, params = {}) => {
@@ -299,8 +326,54 @@ const service = {
       mimetype: data.headers['content-type'],
       size: Buffer.byteLength(data.data, 'utf8'),
     };
-    await fileService.createData(formId, reservationId, metadata, data.data, currentUser, referer);
+    return await fileService.createData(formId, reservationId, metadata, data.data, currentUser, referer);
   },
+
+  listSubmissionsExports: async (params = {}) => {
+    return SubmissionsExport.query()
+      .modify('filterFormId', params.formId)
+      .modify('filterFormVersionId', params.formVersionId)
+      .modify('filterReservationId', params.reservationId)
+      .modify('filterUserId', params.userId)
+      .allowGraph('[form, formVersion, reservation, user]')
+      .withGraphFetched('form')
+      .withGraphFetched('formVersion')
+      .withGraphFetched('reservation')
+      .withGraphFetched('user')
+      .modify('orderDescending');
+  },
+
+  createSubmissionsExport: async (formId, formVersionId, reservationId, currentUser) => {
+    let trx;
+    try {
+      trx = await SubmissionsExport.startTransaction();
+      await SubmissionsExport.query(trx)
+        .insert({
+          id: uuidv4(),
+          formId: formId,
+          formVersionId: formVersionId,
+          reservationId: reservationId,
+          userId: currentUser.id,
+          createdBy: currentUser.usernameIdp
+        });
+      await trx.commit();
+    } catch (error) {
+      if (trx) trx.rollback();
+      throw error;
+    }
+  },
+
+  readSubmissionsExport: async (submissionsExportId) => {
+    return SubmissionsExport.query()
+      .findById(submissionsExportId)
+      .throwIfNotFound();
+  },
+
+  deleteSubmissionsExport: async (submissionsExportId) => {
+    return SubmissionsExport.query()
+      .deleteById(submissionsExportId)
+      .throwIfNotFound();
+  }
 };
 
 module.exports = service;
