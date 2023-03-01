@@ -208,7 +208,7 @@
                         min-width="290px">
                   <template v-slot:activator="{ on }">
                     <v-text-field v-model="schedule.openSubmissionDateTime" placeholder="yyyy-mm-dd" append-icon="event"
-                                  v-on:click:append="openSubmissionDateDraw = true" readonly label="Open submissions" v-on="on"
+                                  v-on:click:append="openSubmissionDateDraw = true" label="Open submissions" v-on="on"
                                   dense outlined :rules="scheduleOpenDate"></v-text-field>
                   </template>
                   <v-date-picker @change="openDateTypeChanged" v-model="schedule.openSubmissionDateTime"
@@ -240,7 +240,7 @@
                         min-width="290px">
                   <template v-slot:activator="{ on }">
                     <v-text-field v-model="schedule.closeSubmissionDateTime" placeholder="yyyy-mm-dd"
-                                  append-icon="event" v-on:click:append="closeSubmissionDateDraw = true" readonly
+                                  append-icon="event" v-on:click:append="closeSubmissionDateDraw = true"
                                   label="Close submissions" v-on="on" dense outlined :rules="scheduleCloseDate"></v-text-field>
                   </template>
                   <v-date-picker v-model="schedule.closeSubmissionDateTime"
@@ -535,11 +535,11 @@ export default {
         (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Close Submission date should be greater then open submission date.',
       ],
       roundNumber: [
-        (v) => !!v || 'This field is required & should be an integer.',
+        (v) => !!v || 'This field is required & should be a number.',
         (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
       ],
       repeatTerm: [
-        (v) => !!v || 'This field is required & should be an integer.',
+        (v) => !!v || 'This field is required & should be an number.',
         (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
       ],
       scheduleTypedRules: [
@@ -549,10 +549,10 @@ export default {
         // (v) => !!v || 'This field is required'
       ],
       intervalType: [
-        (v) => !!v || 'This field is required & should be an interval.',
+        (v) => !!v || 'This field is required, please select one period.',
       ],
       repeatIntervalType: [
-        (v) => !! v || 'This field is required & should be an interval.',
+        (v) => !! v || 'This field is required, please select one period.',
         (v) => this.AVAILABLE_PERIOD_OPTIONS.includes(v) || 'This field is required & should be a valid interval.',
       ],
       repeatIntervalTypeReminder: [
