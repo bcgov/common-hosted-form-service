@@ -79,14 +79,7 @@ module.exports = {
       next(error);
     }
   },
-  listVersions: async (req, res, next) => {
-    try {
-      const response = await service.listVersions(req.params.formId, req.query);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
+
   readVersion: async (req, res, next) => {
     try {
       const response = await service.readVersion(req.params.formVersionId);

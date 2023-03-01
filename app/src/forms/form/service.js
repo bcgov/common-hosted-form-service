@@ -247,14 +247,6 @@ const service = {
     return query;
   },
 
-  listVersions: async (formId, params) => {
-    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
-    return FormVersion.query()
-      .where('formId', formId)
-      .modify('filterPublished', params.published)
-      .modify('orderVersionDescending')
-      .modify('selectWithoutSchema');
-  },
 
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
     let trx;

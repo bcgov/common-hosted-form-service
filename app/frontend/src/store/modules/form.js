@@ -49,7 +49,7 @@ const genInitialForm = () => ({
   reminder: genInitialReminder(),
   schedule: genInitialSchedule(),
   userType: IdentityMode.TEAM,
-  versions: [],
+  versions: []
 });
 
 /**
@@ -137,10 +137,6 @@ export default {
     SET_VERSION(state, version) {
       state.version = version;
     },
-    SET_BUILDER(state, builder) {
-      state.builder = builder;
-    },
-
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
     },
