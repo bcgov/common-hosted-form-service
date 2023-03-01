@@ -1,4 +1,25 @@
+// const { NotFoundError } = require('objection');
+
+const { MockModel, MockTransaction } = require('../../../common/dbHelper');
+
+jest.mock('../../../../src/forms/common/models/tables/fileStorageReservation', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/submissionsExport', () => MockModel);
+jest.mock('../../../../src/forms/common/models/views/submissionsData', () => MockModel);
+
 const exportService = require('../../../../src/forms/form/exportService');
+const fileService = require('../../../../src/forms/file/service');
+const formService = require('../../../../src/forms/form/service');
+
+beforeEach(() => {
+  MockModel.mockReset();
+  MockTransaction.mockReset();
+});
+
+const CURRENT_USER = {
+  id: '0',
+  usernameIdp: 'test',
+};
+
 
 describe('_readSchemaFields', () => {
 
@@ -274,5 +295,247 @@ describe('_buildCsvHeaders', () => {
 
     // restore mocked function to it's original implementation
     exportService._readLatestFormSchema.mockRestore();
+  });
+});
+
+describe('submissions exports', () => {
+  describe('list', () => {
+    it('should succeed', async () => {
+      const params = {
+        formId: null,
+        formVersionId: null,
+        reservationId: null,
+        userId: null,
+      };
+
+      await exportService.listSubmissionsExports(params);
+
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.query).toHaveBeenCalledWith();
+      expect(MockModel.modify).toHaveBeenCalledTimes(5);
+      expect(MockModel.modify).toHaveBeenCalledWith('filterFormId', null);
+      expect(MockModel.modify).toHaveBeenCalledWith('filterFormVersionId', null);
+      expect(MockModel.modify).toHaveBeenCalledWith('filterReservationId', null);
+      expect(MockModel.modify).toHaveBeenCalledWith('filterUserId', null);
+      expect(MockModel.modify).toHaveBeenCalledWith('orderDescending');
+    });
+  });
+
+  describe('create', () => {
+    it ('should succeed', async () => {
+      const data = {
+        id: '0',
+        formId: '0',
+        formVersionId: '0',
+        reservationId: '0',
+        userId: CURRENT_USER.id,
+        createdBy: CURRENT_USER.usernameIdp,
+      };
+
+      await exportService.createSubmissionsExport(data.formId, data.formVersionId, data.reservationId, CURRENT_USER);
+
+      expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
+      expect(MockModel.insert).toHaveBeenCalledTimes(1);
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('read', () => {
+    it ('should succeed', async () => {
+      const data = {
+        id: '0'
+      };
+
+      const fn = () => exportService.readSubmissionsExport(data.id);
+
+      await expect(fn()).resolves.not.toThrow();
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.findById).toHaveBeenCalledTimes(1);
+    });
+
+    it ('should throw when not found', async () => {
+      const data = {
+        id: '0'
+      };
+      MockModel.findById = jest.fn().mockReturnValue(undefined);
+
+      const fn = () => exportService.readSubmissionsExport(data.id);
+
+      await expect(fn()).rejects.toThrow();
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.findById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('delete', () => {
+    it ('should succeed', async () => {
+      const data = {
+        id: '0'
+      };
+
+      const fn = () => exportService.deleteSubmissionsExport(data.id);
+
+      await expect(fn()).resolves.not.toThrow();
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.deleteById).toHaveBeenCalledTimes(1);
+    });
+
+    it ('should throw when not found', async () => {
+      const data = {
+        id: '0'
+      };
+      MockModel.deleteById = jest.fn().mockReturnValue(undefined);
+
+      const fn = () => exportService.deleteSubmissionsExport(data.id);
+
+      await expect(fn()).rejects.toThrow();
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.deleteById).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+describe('exportWithReservation', () => {
+  it ('should prune old submissions', async () => {
+    const formId = '0';
+    const referer = 'http://localhost:8081/app/blahblah';
+
+    const oldExports = [
+      {
+        id: '0'
+      },
+      {
+        id: '1'
+      }
+    ];
+
+    const reservation = {
+      id: '0',
+    };
+
+
+    let mockListReservation = jest.spyOn(formService, 'listReservation');
+    let mockCreateReservation = jest.spyOn(formService, 'createReservation');
+    let mockDeleteReservation = jest.spyOn(formService, 'deleteReservation');
+    let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
+    let mockCreateSubmissionsExport = jest.spyOn(exportService, 'createSubmissionsExport');
+    let mockExportToStorage = jest.spyOn(exportService, 'exportToStorage');
+
+    mockListReservation.mockImplementation(() => oldExports);
+    mockCreateReservation.mockImplementation(() => reservation);
+    mockDeleteReservation.mockImplementation(() => undefined);
+    mockListSubmissionsExports.mockImplementation(() => []);
+    mockCreateSubmissionsExport.mockImplementation(() => undefined);
+    mockExportToStorage.mockImplementation(() => {});
+
+    await exportService.exportWithReservation(formId, formId, CURRENT_USER, referer);
+
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(mockDeleteReservation).toHaveBeenCalledTimes(2);
+
+    mockListReservation.mockRestore();
+    mockCreateReservation.mockRestore();
+    mockDeleteReservation.mockRestore();
+    mockListSubmissionsExports.mockRestore();
+    mockCreateSubmissionsExport.mockRestore();
+    mockExportToStorage.mockRestore();
+  });
+
+  it ('should succeed', async () => {
+    const formId = '0';
+    const referer = 'http://localhost:8081/app/blahblah';
+
+    const oldExports = [
+      {
+        id: '0'
+      },
+      {
+        id: '1'
+      }
+    ];
+
+    const reservation = {
+      id: '0',
+    };
+
+    MockModel.first = jest.fn(() => {
+      return {
+        formVersionId: '0',
+      };
+    });
+
+    let mockListReservation = jest.spyOn(formService, 'listReservation');
+    let mockCreateReservation = jest.spyOn(formService, 'createReservation');
+    let mockDeleteReservation = jest.spyOn(formService, 'deleteReservation');
+    let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
+    let mockCreateSubmissionsExport = jest.spyOn(exportService, 'createSubmissionsExport');
+    let mockExportToStorage = jest.spyOn(exportService, 'exportToStorage');
+
+    mockListReservation.mockImplementation(() => oldExports);
+    mockCreateReservation.mockImplementation(() => reservation);
+    mockDeleteReservation.mockImplementation(() => undefined);
+    mockListSubmissionsExports.mockImplementation(() => []);
+    mockCreateSubmissionsExport.mockImplementation(() => undefined);
+    mockExportToStorage.mockImplementation(() => {});
+
+    await exportService.exportWithReservation(formId, formId, CURRENT_USER, referer);
+
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(mockDeleteReservation).toHaveBeenCalledTimes(2);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.where).toHaveBeenCalledTimes(2);
+    expect(MockModel.first).toHaveBeenCalledTimes(1);
+    expect(mockCreateReservation).toHaveBeenCalledTimes(1);
+    expect(mockCreateSubmissionsExport).toHaveBeenCalledTimes(1);
+    expect(mockExportToStorage).toHaveBeenCalledTimes(1);
+
+    mockListReservation.mockRestore();
+    mockCreateReservation.mockRestore();
+    mockDeleteReservation.mockRestore();
+    mockListSubmissionsExports.mockRestore();
+    mockCreateSubmissionsExport.mockRestore();
+    mockExportToStorage.mockRestore();
+  });
+});
+
+describe('exportToStorage', () => {
+  it ('succeeds', async () => {
+    const data = {
+      reservationId: '0',
+      formId: '0',
+      currentUser: CURRENT_USER,
+      referer: 'http://localhost:8081/app/blahblah',
+    };
+
+    const exportData = {
+      data: 'hello world',
+      headers: {
+        'content-disposition': 'something; filename="filename.txt"; something=somethingelse',
+        'content-type': 'text/plain',
+      }
+    };
+
+    const metadata = {
+      originalName: 'filename.txt',
+      mimetype: 'text/plain',
+      size: Buffer.byteLength(exportData.data, 'utf8')
+    };
+
+    let mockExport = jest.spyOn(exportService, 'export');
+    let mockCreateData = jest.spyOn(fileService, 'createData');
+
+    mockCreateData.mockImplementation(() => {});
+    mockExport.mockImplementation(() => exportData);
+
+    await exportService.exportToStorage(data.reservationId, data.formId, CURRENT_USER, data.referer);
+    expect(mockExport).toHaveBeenCalledTimes(1);
+    expect(mockExport).toHaveBeenCalledWith(data.formId, {});
+    expect(mockCreateData).toHaveBeenCalledTimes(1);
+    expect(mockCreateData).toHaveBeenCalledWith(data.formId, data.reservationId, metadata, exportData.data, CURRENT_USER, data.referer);
+
+    mockExport.mockRestore();
+    mockCreateData.mockRestore();
   });
 });

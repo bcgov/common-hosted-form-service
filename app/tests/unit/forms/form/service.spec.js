@@ -1,4 +1,23 @@
+const { NotFoundError } = require('objection');
+
+const { MockModel, MockTransaction } = require('../../../common/dbHelper');
+
+jest.mock('../../../../src/forms/common/models/tables/fileStorageReservation', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/submissionsExport', () => MockModel);
+
 const service = require('../../../../src/forms/form/service');
+const exportService = require('../../../../src/forms/form/exportService');
+const fileService = require('../../../../src/forms/file/service');
+
+beforeEach(() => {
+  MockModel.mockReset();
+  MockTransaction.mockReset();
+});
+
+const CURRENT_USER = {
+  id: '0',
+  usernameIdp: 'test',
+};
 
 
 describe('_findFileIds', () => {
@@ -322,3 +341,214 @@ describe('readVersionFields', () => {
 
 });
 
+describe('file_storage_reservation', () => {
+  describe('list', () => {
+    it('should succeed', async () => {
+      const params = {
+        fileId: null,
+        ready: null,
+        createdBy: null,
+        older: null,
+      };
+
+      await service.listReservation(params);
+
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.query).toHaveBeenCalledWith();
+      expect(MockModel.modify).toHaveBeenCalledTimes(4);
+      expect(MockModel.modify).toHaveBeenCalledWith('filterFileId', null);
+      expect(MockModel.modify).toHaveBeenCalledWith('filterReady', null);
+      expect(MockModel.modify).toHaveBeenCalledWith('filterCreatedBy', null);
+      expect(MockModel.modify).toHaveBeenCalledWith('filterOlder', null);
+    });
+  });
+
+  describe('read', () => {
+    it('should succeed', async () => {
+      await service.readReservation('');
+
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.query).toHaveBeenCalledWith();
+      expect(MockModel.findById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('create', () => {
+    it('should succeed', async () => {
+      const data = {
+        id: '0',
+        createdBy: CURRENT_USER.usernameIdp,
+      };
+
+      let mockReadReservation = jest.spyOn(service, 'readReservation');
+
+      mockReadReservation.mockImplementation(() => { return { ...data }; });
+
+      await service.createReservation(CURRENT_USER, data);
+
+      expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+      expect(MockModel.query).toHaveBeenCalledTimes(1);
+      expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
+      expect(MockModel.insert).toHaveBeenCalledTimes(1);
+      expect(MockModel.insert).toHaveBeenCalledWith(data);
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+
+      mockReadReservation.mockRestore();
+    });
+  });
+
+  describe('delete', () => {
+    it('should succeed', async () => {
+      const data = {
+        id: '0',
+        fileId: '1',
+        createdBy: CURRENT_USER.usernameIdp,
+      };
+      const subsexp = [
+        {
+          id: '0'
+        }
+      ];
+
+      let mockReadReservation = jest.spyOn(service, 'readReservation');
+      let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
+      let mockDelete = jest.spyOn(fileService, 'delete');
+
+      mockReadReservation.mockImplementation(() => data);
+      mockListSubmissionsExports.mockImplementation(() => subsexp);
+      mockDelete.mockImplementation(() => {});
+
+      await service.deleteReservation(data.id);
+
+      expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+      expect(service.readReservation).toHaveBeenCalledTimes(1);
+      expect(exportService.listSubmissionsExports).toHaveBeenCalledTimes(1);
+      expect(exportService.listSubmissionsExports).toHaveBeenCalledWith({ reservationId: data.id });
+      expect(MockModel.query).toHaveBeenCalledTimes(subsexp.length + 1);
+      expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
+      expect(MockModel.whereIn).toHaveBeenCalledTimes(subsexp.length);
+      if (subsexp.length > 0) {
+        expect(MockModel.whereIn).toHaveBeenCalledWith(subsexp.map((sub) => sub.id));
+        expect(MockModel.delete).toHaveBeenCalledTimes(subsexp.length);
+      }
+      expect(MockModel.deleteById).toHaveBeenCalledTimes(1);
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+
+      mockReadReservation.mockRestore();
+      mockListSubmissionsExports.mockRestore();
+      mockDelete.mockRestore();
+    });
+
+    it('should succeed with no submissionexports', async () => {
+      const data = {
+        id: '0',
+        fileId: '1',
+        createdBy: CURRENT_USER.usernameIdp,
+      };
+      const subsexp = [];
+
+      let mockReadReservation = jest.spyOn(service, 'readReservation');
+      let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
+      let mockDelete = jest.spyOn(fileService, 'delete');
+
+      mockReadReservation.mockImplementation(() => data);
+      mockListSubmissionsExports.mockImplementation(() => subsexp);
+      mockDelete.mockImplementation(() => {});
+
+      await service.deleteReservation(data.id);
+
+      expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+      expect(service.readReservation).toHaveBeenCalledTimes(1);
+      expect(exportService.listSubmissionsExports).toHaveBeenCalledTimes(1);
+      expect(exportService.listSubmissionsExports).toHaveBeenCalledWith({ reservationId: data.id });
+      expect(MockModel.query).toHaveBeenCalledTimes(subsexp.length + 1);
+      expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
+      expect(MockModel.whereIn).toHaveBeenCalledTimes(subsexp.length);
+      if (subsexp.length > 0) {
+        expect(MockModel.whereIn).toHaveBeenCalledWith(subsexp.map((sub) => sub.id));
+        expect(MockModel.delete).toHaveBeenCalledTimes(subsexp.length);
+      }
+      expect(MockModel.deleteById).toHaveBeenCalledTimes(1);
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+
+      mockReadReservation.mockRestore();
+      mockListSubmissionsExports.mockRestore();
+      mockDelete.mockRestore();
+    });
+
+    it('should fail with no existing reservation', async () => {
+      const data = {
+        id: '0',
+        fileId: '1',
+        createdBy: CURRENT_USER.usernameIdp,
+      };
+      const subsexp = [
+        {
+          id: '0'
+        }
+      ];
+
+      let mockReadReservation = jest.spyOn(service, 'readReservation');
+      let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
+      let mockDelete = jest.spyOn(fileService, 'delete');
+
+      mockReadReservation.mockImplementation(() => { throw new NotFoundError(); });
+      mockListSubmissionsExports.mockImplementation(() => subsexp);
+      mockDelete.mockImplementation(() => {});
+
+      const fn = () => service.deleteReservation(data.id);
+
+      await expect(fn()).rejects.toThrow();
+      expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+      expect(service.readReservation).toHaveBeenCalledTimes(1);
+      expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
+
+      mockReadReservation.mockRestore();
+      mockListSubmissionsExports.mockRestore();
+      mockDelete.mockRestore();
+    });
+
+
+    it('should fail with no existing file', async () => {
+      const data = {
+        id: '0',
+        fileId: '1',
+        createdBy: CURRENT_USER.usernameIdp,
+      };
+      const subsexp = [
+        {
+          id: '0'
+        }
+      ];
+
+      let mockReadReservation = jest.spyOn(service, 'readReservation');
+      let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
+      let mockDelete = jest.spyOn(fileService, 'delete');
+
+      mockReadReservation.mockImplementation(() => data);
+      mockListSubmissionsExports.mockImplementation(() => subsexp);
+      mockDelete.mockImplementation(() => { throw new NotFoundError(); });
+
+      const fn = () => service.deleteReservation(data.id);
+
+      await expect(fn()).rejects.toThrow();
+      expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+      expect(service.readReservation).toHaveBeenCalledTimes(1);
+      expect(exportService.listSubmissionsExports).toHaveBeenCalledTimes(1);
+      expect(exportService.listSubmissionsExports).toHaveBeenCalledWith({ reservationId: data.id });
+      expect(MockModel.query).toHaveBeenCalledTimes(subsexp.length);
+      expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
+      expect(MockModel.whereIn).toHaveBeenCalledTimes(subsexp.length);
+      if (subsexp.length > 0) {
+        expect(MockModel.whereIn).toHaveBeenCalledWith(subsexp.map((sub) => sub.id));
+        expect(MockModel.delete).toHaveBeenCalledTimes(subsexp.length);
+      }
+      expect(MockModel.deleteById).toHaveBeenCalledTimes(0);
+      expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
+
+      mockReadReservation.mockRestore();
+      mockListSubmissionsExports.mockRestore();
+      mockDelete.mockRestore();
+    });
+  });
+});
