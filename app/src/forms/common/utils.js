@@ -207,6 +207,13 @@ const submissionHeaders = (obj) => {
   return objectMap;
 };
 
+const escapeSpecialCharacters =(unsafe)=> {
+  let textDelimiter ='_';
+  let textDelimiterRegex = new RegExp('\\' + ',', 'g');
+  return unsafe
+    .replace(textDelimiterRegex, textDelimiter);
+};
+
 
 module.exports = {
   falsey,
@@ -216,4 +223,5 @@ module.exports = {
   flattenComponents,
   unwindPath,
   submissionHeaders,
+  escapeSpecialCharacters
 };
