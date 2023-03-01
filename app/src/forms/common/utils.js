@@ -208,7 +208,6 @@ const submissionHeaders = (obj) => {
 };
 
 
-
 module.exports = {
   falsey,
   setupMount,
@@ -216,5 +215,5 @@ module.exports = {
   typeUtils,
   flattenComponents,
   unwindPath,
-  submissionHeaders
+  submissionHeaders,
 };
