@@ -1,11 +1,7 @@
 const falsey = require('falsey');
 const moment = require('moment');
 const clone = require('lodash/clone');
-<<<<<<< HEAD
-=======
 const _ = require('lodash');
-
->>>>>>> 67b46a4ef701e42eec66788322f9aa3434734045
 const setupMount = (type, app, routes, dataErrors) => {
   const p = `/${type}`;
   app.use(p, routes);
@@ -571,17 +567,13 @@ module.exports = {
   setupMount,
   queryUtils,
   typeUtils,
-<<<<<<< HEAD
   isFormExpired,
   getCalculatedCloseSubmissionDate,
   getAvailableDates,
   isEligibleLateSubmission,
   periodType,
   checkIsFormExpired,
-  flattenComponents
-=======
   flattenComponents,
   unwindPath,
   submissionHeaders
->>>>>>> 67b46a4ef701e42eec66788322f9aa3434734045
 };

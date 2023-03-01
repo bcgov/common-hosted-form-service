@@ -2,14 +2,11 @@ const { Model } = require('objection');
 const Problem = require('api-problem');
 const {flattenComponents, unwindPath, submissionHeaders} = require('../common/utils');
 const { Form, FormVersion } = require('../common/models');
-<<<<<<< HEAD
 const moment = require('moment');
 const { Roles } = require('../common/constants');
-=======
 const {  transforms } = require('json2csv');
 const { Parser } = require('json2csv');
 
->>>>>>> 67b46a4ef701e42eec66788322f9aa3434734045
 
 const {
   UserFormAccess
