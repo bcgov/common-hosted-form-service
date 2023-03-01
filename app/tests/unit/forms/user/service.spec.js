@@ -14,6 +14,7 @@ beforeEach(() => {
   MockTransaction.mockReset();
 });
 
+
 describe('list', () => {
   it('should query user table by id', async () => {
     const params = {

@@ -26,6 +26,7 @@
         <v-card-title class="text-h5 pb-0 titleObjectStyle">Export Submissions to File</v-card-title>
         <v-card-text>
           <hr style="height: 2px; border: none;background-color:#707070C1;margin-top:5px;"/>
+
           <v-row>
             <v-col>
               <p class="subTitleObjectStyle">Select the submission date</p>
@@ -131,21 +132,67 @@
             </v-row>
           </div>
 
-          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-8' : ''">Select your export options</p>
+          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-5' : ''">Select your export options</p>
           <v-radio-group v-model="exportFormat" hide-details="auto">
-            <v-radio label="CSV" value="csv">
-              <template v-slot:label>
-                <span class="radioboxLabelStyle">CSV</span>
-              </template>
-            </v-radio>
             <v-radio label="JSON" value="json">
               <template v-slot:label>
                 <span class="radioboxLabelStyle">JSON</span>
               </template>
             </v-radio>
+            <v-radio label="CSV" value="csv">
+              <template v-slot:label>
+                <span class="radioboxLabelStyle">CSV</span>
+              </template>
+            </v-radio>
           </v-radio-group>
+          <v-row v-if="exportFormat==='csv'" class="mt-5">
+            <v-col
+              cols="6" >
+              <div class="subTitleObjectStyle">Select the submission version</div>
+              <v-select
+                item-text="id"
+                item-value="version"
+                :items="versions&&versions"
+                v-model="versionSelected"
+                class="mt-0"
+                style="width:25%; margin-top:0px;"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <v-row v-if="exportFormat==='csv'" class="mt-0">
+            <v-col>
+              <div style="display:flex; align-content: flex-start">
+                <div class="subTitleObjectStyle mr-1" >Select the export template </div> (<a :href="githubLink" class="preview_info_link_field" :target="'_blank'"> Learn more
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a>)
 
-          <div class="mt-6 mb-3 fileLabelStyle">
+              </div>
+
+              <v-radio-group v-model="csvTemplates" hide-details="auto">
+                <v-radio label="A" value="flattenedWithBlankOut">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle " style="display:flex; align-content: flex-start">Template 1 <div class="blueColorWrapper ml-1"> (Recommended) </div></span>
+                  </template>
+
+                  <sup>Betas
+                    <font-awesome-icon icon="fa-solid fa-circle-info" size="xl" color='#1A5A96'/>
+                    <font-awesome-icon icon="fa-solid fa-info" size="xl" color='#1A5A96'/>
+                  </sup>
+                </v-radio>
+                <v-radio label="B" value="flattenedWithFilled">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 2 </span>
+                  </template>
+                  <sup>Betas</sup>
+                </v-radio>
+                <v-radio label="C" value="unflattened">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 3 </span>
+                  </template>
+                </v-radio>
+              </v-radio-group>
+            </v-col>
+          </v-row>
+          <div class="mt-6 mb-0 fileLabelStyle">
             File Name and Type: <strong>{{ fileName }}</strong>
           </div>
           <div class="fileLabelStyle" :style="{'color': '#70707063'}">
@@ -176,17 +223,26 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
+
+import { faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+library.add(faXmark,faSquareArrowUpRight);
+
 export default {
   data() {
     return {
+      githubLink:'https://github.com/bcgov/common-hosted-form-service/wiki/Submission-to-CSV-Export',
       dateRange: false,
       dialog: false,
       endDate: moment(Date()).format('YYYY-MM-DD'),
       endDateMenu: false,
       dataFields:false,
-      exportFormat: 'csv',
+      exportFormat: 'json',
       startDate: moment(Date()).format('YYYY-MM-DD'),
       startDateMenu: false,
+      versionSelected:1,
+      csvTemplates:'flattenedWithBlankOut',
+      versions:[]
 
     };
   },
@@ -203,6 +259,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('form'),
     async callExport() {
       try {
         // UTC start of selected start date...
@@ -217,9 +274,12 @@ export default {
               .utc()
               .format()
             : undefined;
+
         const response = await formService.exportSubmissions(
           this.form.id,
           this.exportFormat,
+          this.csvTemplates,
+          this.versionSelected,
           {
             minDate: from,
             maxDate: to,
@@ -228,6 +288,7 @@ export default {
           },
           this.dataFields?this.userFormPreferences.preferences:undefined
         );
+
         if (response && response.data) {
           const blob = new Blob([response.data], {
             type: response.headers['content-type'],
@@ -245,6 +306,7 @@ export default {
         } else {
           throw new Error('No data in response from exportSubmissions call');
         }
+
       } catch (error) {
         this.addNotification({
           message:
@@ -258,13 +320,20 @@ export default {
     startDate() {
       this.endDate= moment(Date()).format('YYYY-MM-DD');
     },
+    async exportFormat(value) {
+      if(value==='csv') {
+        if(this.form) {
+          this.versions.push(...(this.form.versions.map(version=>version.version)));
+        }
+      }
+    },
     dateRange(value) {
       if(!value) {
         this.endDate= moment(Date()).format('YYYY-MM-DD');
         this.startDate= moment(Date()).format('YYYY-MM-DD');
       }
     }
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -340,5 +409,17 @@ export default {
     letter-spacing: 0px !important;
     color: #38598A !important;
     text-transform:capitalize !important;
+  }
+
+  .blueColorWrapper {
+    text-align: left !important;
+    font-style: normal !important;
+    font-size: 10px !important;
+    font-family: BCSans !important;
+    font-weight: normal !important;
+    letter-spacing: 0px !important;
+    color: #1A5A96 !important;
+    cursor:pointer;
+    text-transform: capitalize !important;
   }
 </style>

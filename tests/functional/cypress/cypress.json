@@ -11,6 +11,7 @@
     "keycloakUsername": "test",
     "keycloakPassword": "test"
   },
+  "chromeWebSecurity": false,
   "pluginsFile": "plugins/index.js",
   "video": false
 }

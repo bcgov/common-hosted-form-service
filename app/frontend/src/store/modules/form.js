@@ -1,6 +1,6 @@
 import { getField, updateField } from 'vuex-map-fields';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { apiKeyService, formService, rbacService, userService } from '@/services';
+import { apiKeyService, formService, rbacService, userService} from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 const genInitialSchedule = () => ({
@@ -73,7 +73,10 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    version: {}
+    version: {},
+    fcProactiveHelpGroupList:{},
+    imageList:new Map(),
+    fcProactiveHelpImageUrl:'',
   },
   getters: {
     getField, // vuex-map-fields
@@ -87,7 +90,11 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
+    fcNamesProactiveHelpList: state => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
     version: state => state.version,
+    builder: state => state.builder,
+    fcProactiveHelpGroupList:state=>state.fcProactiveHelpGroupList,
+    fcProactiveHelpImageUrl:state=>state.fcProactiveHelpImageUrl,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -130,14 +137,22 @@ export default {
     SET_VERSION(state, version) {
       state.version = version;
     },
-
     SET_FORM_DIRTY(state, isDirty) {
       state.form.isDirty = isDirty;
+    },
+    //Form Component Proactive Help Group Object
+    SET_FCPROACTIVEHELPGROUPLIST(state,fcProactiveHelpGroupList){
+      state.fcProactiveHelpGroupList = fcProactiveHelpGroupList;
+    },
+    SET_FCPROACTIVEHELPIMAGEURL(state,fcProactiveHelpImageUrl)
+    {
+      state.fcProactiveHelpImageUrl = fcProactiveHelpImageUrl;
     },
   },
   actions: {
     //
     // Current User
+    //
     //
     async getFormsForCurrentUser({ commit, dispatch }) {
       try {
@@ -244,6 +259,7 @@ export default {
     },
     async fetchForm({ commit, dispatch }, formId) {
       try {
+
         commit('SET_API_KEY', null);
         // Get the form definition from the api
         const { data } = await formService.readForm(formId);
@@ -484,6 +500,44 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while trying to fetch the API Key.',
           consoleError: `Error getting API Key for form ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+
+    async getFCProactiveHelpImageUrl({ commit, dispatch, state },componentId) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCPROACTIVEHELPIMAGEURL',{});
+        const response = state.imageList.get(componentId);
+        if(response) {
+
+          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+        }
+        else {
+          const response = await formService.getFCProactiveHelpImageUrl(componentId);
+          state.imageList.set(componentId, response);
+          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+        }
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while getting image url',
+          consoleError: 'Error getting image url',
+        }, { root: true });
+      }
+    },
+
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp({ commit, dispatch }) {
+      try {
+        // Get Form Components Proactive Help Group Object
+        commit('SET_FCPROACTIVEHELPGROUPLIST',{});
+        const response = await formService.listFCProactiveHelp();
+        commit('SET_FCPROACTIVEHELPGROUPLIST',response.data);
+      } catch(error) {
+
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
         }, { root: true });
       }
     },
