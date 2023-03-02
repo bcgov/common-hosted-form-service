@@ -7,7 +7,6 @@ const S3 = require('aws-sdk/clients/s3');
 
 const StorageTypes = require('../../common/constants').StorageTypes;
 const errorToProblem = require('../../../components/errorToProblem');
-const { param } = require('../../submission/routes');
 const log = require('../../../components/log')(module.filename);
 
 const SERVICE = 'ObjectStorage';

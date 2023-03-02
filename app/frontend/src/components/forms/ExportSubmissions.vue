@@ -145,14 +145,14 @@
               </template>
             </v-radio>
           </v-radio-group>
-          <v-row v-if="exportFormat==='csv'" class="mt-5">
+          <v-row class="mt-5">
             <v-col
               cols="6" >
               <div class="subTitleObjectStyle">Select the submission version</div>
               <v-select
-                item-text="id"
+                item-text="version"
                 item-value="version"
-                :items="versions&&versions"
+                :items="versions"
                 v-model="versionSelected"
                 class="mt-0"
                 style="width:25%; margin-top:0px;"
@@ -275,7 +275,6 @@ export default {
               .format()
             : undefined;
 
-
         const reservation = await formService.createReservation(
           this.form.id,
           this.exportFormat,
@@ -304,16 +303,15 @@ export default {
       }
     },
   },
+  mounted() {
+    if (this.form && this.form.versions) {
+      this.versions = this.form.versions.sort((a, b) => a.version < b.version);
+      this.versionSelected = this.versions[0].version;
+    }
+  },
   watch:{
     startDate() {
       this.endDate= moment(Date()).format('YYYY-MM-DD');
-    },
-    async exportFormat(value) {
-      if(value==='csv') {
-        if(this.form) {
-          this.versions.push(...(this.form.versions.map(version=>version.version)));
-        }
-      }
     },
     dateRange(value) {
       if(!value) {

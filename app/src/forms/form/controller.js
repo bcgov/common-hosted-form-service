@@ -244,9 +244,18 @@ module.exports = {
     }
   },
 
+  readReservation: async (req, res, next) => {
+    try {
+      const response = await service.readReservation(req.params.reservationId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   exportWithReservation: async (req, res, next) => {
     try {
-      const response = await exportService.exportWithReservation(req.params.formId, req.query.formVersion, req.currentUser, req.headers.referer, req.query);
+      const response = await exportService.exportWithReservation(req.params.formId, req.query.version, req.currentUser, req.headers.referer, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);

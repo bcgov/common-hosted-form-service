@@ -11,28 +11,11 @@ const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
 
-// code duplication but currently used to get around circular dependency
-const readForm = (formId, params = {}) => {
-  params = queryUtils.defaultActiveOnly(params);
-  return Form.query()
-    .findById(formId)
-    .modify('filterActive', params.active)
-    .allowGraph('[identityProviders,versions]')
-    .withGraphFetched('identityProviders(orderDefault)')
-    .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
-    .throwIfNotFound();
-};
-
-const readSubmission = (formSubmissionId) => {
-  return FormSubmission.query()
-    .findById(formSubmissionId)
-    .throwIfNotFound();
-};
 
 /** Helper function used to build the email template based on email type and contents */
 const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
-  const form = await readForm(formId);
-  const submission = await readSubmission(formSubmissionId);
+  const form = await service.readForm(formId);
+  const submission = await service.readSubmission(formSubmissionId);
   let configData = {};
   let contextToVal = [];
   let userTypePath = '';
@@ -136,6 +119,25 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
 };
 
 const service = {
+
+  // code duplication but currently used to get around circular dependency
+  readForm: (formId, params = {}) => {
+    params = queryUtils.defaultActiveOnly(params);
+    return Form.query()
+      .findById(formId)
+      .modify('filterActive', params.active)
+      .allowGraph('[identityProviders,versions]')
+      .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
+      .throwIfNotFound();
+  },
+
+  readSubmission: (formSubmissionId) => {
+    return FormSubmission.query()
+      .findById(formSubmissionId)
+      .throwIfNotFound();
+  },
+
   /**
    * @function _appUrl
    * Attempts to parse out the base application url
@@ -391,7 +393,7 @@ const service = {
 
   submissionsExportReady: async(formId, reservation, body, referer) => {
     try {
-      const form = await readForm(formId);
+      const form = await service.readForm(formId);
       const contextToVal = [body.to];
       const userTypePath = 'file/download';
       const bodyTemplate = 'file-download-ready.html';
