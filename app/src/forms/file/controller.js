@@ -1,6 +1,8 @@
 const service = require('./service');
 const storageService = require('./storage/storageService');
-const {escapeSpecialCharacters} = require('../common/utils');
+
+const {encodeURI} = require('../common/utils');
+
 const _trim = (r) => {
   if (r) {
     // don't want storage information going over the wire...
@@ -37,7 +39,8 @@ module.exports = {
       stream.on('error', function error(err) {
         throw (err);
       });
-      res.setHeader('Content-Disposition', `attachment; filename=${escapeSpecialCharacters(fileStorage.originalName)}`);
+
+      res.setHeader('Content-Disposition', `attachment; filename=${encodeURI(fileStorage.originalName)}`);
       res.set('Content-Type', fileStorage.mimeType);
       res.set('Content-Length', fileStorage.size);
       res.set('Last-Modified', fileStorage.updatedAt);
