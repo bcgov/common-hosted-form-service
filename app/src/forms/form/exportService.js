@@ -166,7 +166,7 @@ const service = {
       data: data,
       headers: {
         'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.json)}"`,
-        'content-type': 'text/json'
+        'content-type': 'application/json'
       }
     };
   },
@@ -322,12 +322,13 @@ const service = {
       originalName = data.headers['content-disposition'].split('; ').filter((str) => str.indexOf('filename=') !== -1)[0].split('filename=')[1];
       originalName = originalName.substring(1, originalName.length - 1);
     }
+    const uploadData = format === 'json' ? JSON.stringify(data.data) : data.data;
     const metadata = {
       originalName: originalName,
       mimetype: data.headers['content-type'],
-      size: Buffer.byteLength((data.headers['content-type'] === 'text/json' ? JSON.stringify(data.data) : data.data)),
+      size: Buffer.byteLength(uploadData),
     };
-    return await fileService.createData(formId, reservationId, metadata, data.data, currentUser, referer);
+    return await fileService.createData(formId, reservationId, metadata, uploadData, currentUser, referer);
   },
 
   listSubmissionsExports: async (params = {}) => {

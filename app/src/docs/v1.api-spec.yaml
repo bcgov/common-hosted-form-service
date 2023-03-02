@@ -303,6 +303,110 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/{formId}/reservation:
+    post:
+      summary: Create export reservation
+      operationId: createReservation
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - in: query
+          name: format
+          schema:
+            type: string
+          description: chosen format for the submission data exported
+          example: csv
+          required: true
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: the category of data exported
+          example: submissions
+          required: true
+        - in: query
+          name: version
+          schema:
+            type: string
+          description: the form version number
+          example: 1
+          required: true
+        - in: query
+          name: minDate
+          schema:
+            type: string
+          example: '2020-12-17T08:00:00Z'
+          description: Start date of period included in the export
+        - in: query
+          name: maxDate
+          schema:
+            type: string
+          example: '2020-12-17T08:00:00Z'
+          description: End date of period included in the export
+      responses:
+        '200':
+          description: Reservation created
+          headers:
+            content-type:
+              description: Response header
+              schema:
+                type: object
+              example: application/json; charset=utf-8
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/reservation/{reservationId}:
+    get:
+      summary: Get a submissions export reservation
+      operationId: getReservation
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/reservationIdParam'
+      responses:
+        '200':
+          description: Reservation found
+          headers:
+            content-type:
+              description: Response header
+              schema:
+                type: object
+              example: application/json; charset=utf-8
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /forms/{formId}/export:
     get:
       summary: Export submissions for a form
@@ -330,6 +434,13 @@ paths:
           example: submissions
           required: true
         - in: query
+          name: version
+          schema:
+            type: string
+          description: the form version number
+          example: 1
+          required: true
+        - in: query
           name: minDate
           schema:
             type: string
@@ -349,7 +460,7 @@ paths:
               description: Response header
               schema:
                 type: object
-              example: text/json; charset=utf-8
+              example: application/json; charset=utf-8
           content:
             text/csv:
               schema:
@@ -2615,6 +2726,15 @@ components:
       example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
       required: true
       description: ID of the Submission
+    reservationIdParam:
+      in: path
+      name: reservationId
+      schema:
+        type: string
+        format: uuid
+      description: ID of the reservation
+      required: true
+      example: 05de9f31-35cc-429a-9c6e-3f4b660c76cb
   schemas:
     BadRequest:
       allOf:
@@ -3153,6 +3273,18 @@ components:
         detail:
           type: string
           description: short description of why this problem was raised.
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 05de9f31-35cc-429a-9c6e-3f4b660c76cb
+        fileId:
+          type: string
+          example: null
+        ready:
+          type: boolean
+          example: false
     Role:
       allOf:
         - $ref: '#/components/schemas/RoleBasic'

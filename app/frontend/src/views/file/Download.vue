@@ -51,7 +51,8 @@ export default {
       await this.downloadFile(fileId);
       if (this.downloadedFile && this.downloadedFile.data && this.downloadedFile.headers) {
         this.showDownloadLink = true;
-        const blob = new Blob([this.downloadedFile.data], {
+        const data = (this.downloadedFile.headers['content-type'].includes('application/json')? JSON.stringify(this.downloadedFile.data) : this.downloadedFile.data);
+        const blob = new Blob([data], {
           type: this.downloadedFile.headers['content-type'],
         });
         const url = window.URL.createObjectURL(blob);

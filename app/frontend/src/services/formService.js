@@ -419,7 +419,7 @@ export default {
         format: format,
         template:template,
         formId: formId,
-        formVersion: versionSelected,
+        version: versionSelected,
         type: 'submissions',
         preference:preference,
         ...options

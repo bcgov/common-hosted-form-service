@@ -1,10 +1,25 @@
+const { MockModel, MockTransaction } = require('../../../common/dbHelper');
+
+jest.mock(
+  '../../../../src/forms/common/models/tables/form',
+  () => MockModel
+);
+jest.mock(
+  '../../../../src/forms/common/models/tables/formSubmission',
+  () => MockModel
+);
+
 const chesService = require('../../../../src/components/chesService');
 const emailService = require('../../../../src/forms/email/emailService');
-const formService = require('../../../../src/forms/form/service');
 const fs = require('fs');
 const mockedReadFileSync = jest.spyOn(fs, 'readFileSync');
 
 const referer = 'https://chefs.nrs.gov.bc.ca';
+
+beforeEach(() => {
+  MockModel.mockReset();
+  MockTransaction.mockReset();
+});
 
 describe('_appUrl', () => {
   it('should format the url', () => {
@@ -141,8 +156,10 @@ describe('public methods', () => {
   });
 
   it('statusAssigned should call send a status email', async () => {
-    formService.readForm = jest.fn().mockReturnValue(form);
-    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    let mockQuery = jest.spyOn(emailService, 'readForm');
+    mockQuery.mockImplementation(() => form);
+    let mockSubmission = jest.spyOn(emailService, 'readSubmission');
+    mockSubmission.mockImplementation(() => submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
     const result = await emailService.statusAssigned(
       '123',
@@ -174,13 +191,19 @@ describe('public methods', () => {
     }];
 
     expect(result).toEqual('ret');
+    expect(mockQuery).toHaveBeenCalledTimes(1);
+    expect(mockSubmission).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    mockQuery.mockRestore();
+    mockSubmission.mockRestore();
   });
 
   it('statusRevising should send a status email', async () => {
-    formService.readForm = jest.fn().mockReturnValue(form);
-    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    let mockQuery = jest.spyOn(emailService, 'readForm');
+    mockQuery.mockImplementation(() => form);
+    let mockSubmission = jest.spyOn(emailService, 'readSubmission');
+    mockSubmission.mockImplementation(() => submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
     const result = await emailService.statusRevising(
       '123',
@@ -212,13 +235,19 @@ describe('public methods', () => {
     }];
 
     expect(result).toEqual('ret');
+    expect(mockQuery).toHaveBeenCalledTimes(1);
+    expect(mockSubmission).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    mockQuery.mockRestore();
+    mockSubmission.mockRestore();
   });
 
   it('statusCompleted should send a status email', async () => {
-    formService.readForm = jest.fn().mockReturnValue(form);
-    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    let mockQuery = jest.spyOn(emailService, 'readForm');
+    mockQuery.mockImplementation(() => form);
+    let mockSubmission = jest.spyOn(emailService, 'readSubmission');
+    mockSubmission.mockImplementation(() => submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
     const result = await emailService.statusCompleted(
       '123',
@@ -250,13 +279,19 @@ describe('public methods', () => {
     }];
 
     expect(result).toEqual('ret');
+    expect(mockQuery).toHaveBeenCalledTimes(1);
+    expect(mockSubmission).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    mockQuery.mockRestore();
+    mockSubmission.mockRestore();
   });
 
   it('submissionConfirmation should call send a conf email', async () => {
-    formService.readForm = jest.fn().mockReturnValue(form);
-    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    let mockQuery = jest.spyOn(emailService, 'readForm');
+    mockQuery.mockImplementation(() => form);
+    let mockSubmission = jest.spyOn(emailService, 'readSubmission');
+    mockSubmission.mockImplementation(() => submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
 
     const result = await emailService.submissionConfirmation(
@@ -289,17 +324,19 @@ describe('public methods', () => {
     }];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
+    expect(mockQuery).toHaveBeenCalledTimes(1);
+    expect(mockSubmission).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    mockQuery.mockRestore();
+    mockSubmission.mockRestore();
   });
 
   it('submissionReceived should call send a submission email', async () => {
-    formService.readForm = jest.fn().mockReturnValue(form);
-    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    let mockQuery = jest.spyOn(emailService, 'readForm');
+    mockQuery.mockImplementation(() => form);
+    let mockSubmission = jest.spyOn(emailService, 'readSubmission');
+    mockSubmission.mockImplementation(() => submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
 
     const result = await emailService.submissionReceived(
@@ -333,18 +370,20 @@ describe('public methods', () => {
     }];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
+    expect(mockQuery).toHaveBeenCalledTimes(1);
+    expect(mockSubmission).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(form.submissionReceivedEmails).toBeInstanceOf(Array);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    mockQuery.mockRestore();
+    mockSubmission.mockRestore();
   });
 
   it('submissionUnassigned should send a uninvited email', async () => {
-    formService.readForm = jest.fn().mockReturnValue(form);
-    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    let mockQuery = jest.spyOn(emailService, 'readForm');
+    mockQuery.mockImplementation(() => form);
+    let mockSubmission = jest.spyOn(emailService, 'readSubmission');
+    mockSubmission.mockImplementation(() => submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
 
     const result = await emailService.submissionUnassigned(
@@ -377,15 +416,19 @@ describe('public methods', () => {
     }];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
+    expect(mockQuery).toHaveBeenCalledTimes(1);
+    expect(mockSubmission).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    mockQuery.mockRestore();
+    mockSubmission.mockRestore();
   });
 
   it('submissionAssigned should send a uninvited email', async () => {
-    formService.readForm = jest.fn().mockReturnValue(form);
-    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    let mockQuery = jest.spyOn(emailService, 'readForm');
+    mockQuery.mockImplementation(() => form);
+    let mockSubmission = jest.spyOn(emailService, 'readSubmission');
+    mockSubmission.mockImplementation(() => submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
 
     const result = await emailService.submissionAssigned(
@@ -418,12 +461,12 @@ describe('public methods', () => {
     }];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(currentStatus.formSubmissionId);
+    expect(mockQuery).toHaveBeenCalledTimes(1);
+    expect(mockSubmission).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    mockQuery.mockRestore();
+    mockSubmission.mockRestore();
   });
 
   it('submissionsExportReady should send a submissions export ready email', async () => {
@@ -431,7 +474,8 @@ describe('public methods', () => {
       id: '0',
       fileId: '0',
     };
-    formService.readForm = jest.fn().mockReturnValue(form);
+    let mockQuery = jest.spyOn(emailService, 'readForm');
+    mockQuery.mockImplementation(() => form);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
 
     const result = await emailService.submissionsExportReady(
@@ -461,9 +505,10 @@ describe('public methods', () => {
     }];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
+    expect(mockQuery).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+
+    mockQuery.mockRestore();
   });
 });

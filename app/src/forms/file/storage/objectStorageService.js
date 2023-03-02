@@ -77,24 +77,30 @@ class ObjectStorageService {
     }
   }
 
+  createParams(fileStorage, dir, data) {
+    const key = this._join(this._key, dir, fileStorage.id);
+
+    const params = {
+      Bucket: this._bucket,
+      Key: key,
+      Body: data,
+      Metadata: {
+        'name': fileStorage.originalName,
+        'id': fileStorage.id
+      }
+    };
+
+    if (mime.contentType(path.extname(fileStorage.originalName))) {
+      params.ContentType = mime.contentType(path.extname(fileStorage.originalName));
+    }
+
+    return params;
+  }
+
   async upload(fileStorage, dir, data) {
     try {
       // uploads can go to a 'holding' area, we can shuffle it later if we want to.
-      const key = this._join(this._key, dir, fileStorage.id);
-
-      const params = {
-        Bucket: this._bucket,
-        Key: key,
-        Body: data,
-        Metadata: {
-          'name': fileStorage.originalName,
-          'id': fileStorage.id
-        }
-      };
-
-      if (mime.contentType(path.extname(fileStorage.originalName))) {
-        params.ContentType = mime.contentType(path.extname(fileStorage.originalName));
-      }
+      const params = this.createParams(fileStorage, dir, data);
 
       return new Promise((resolve, reject) => {
         // eslint-disable-next-line no-unused-vars
