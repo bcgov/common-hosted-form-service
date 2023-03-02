@@ -1,5 +1,4 @@
 const Problem = require('api-problem');
-
 const service = require('./service');
 const formService = require('../form/service');
 const rbacService = require('../rbac/service');
@@ -87,6 +86,36 @@ module.exports = {
       next(error);
     }
   },
+
+  //
+  // Form Components Help Information
+  //
+  createFormComponentsProactiveHelp:async(req,res,next)=>{
+    try{
+      const response = await service.createFormComponentsProactiveHelp(req.body);
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
+  },
+
+  updateFormComponentsProactiveHelp:async(req,res,next)=> {
+    try{
+      const response = await service.updateFormComponentsProactiveHelp(req.params);
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
+  },
+
+  getFCProactiveHelpImageUrl:async(req, res, next)=> {
+    try{
+      const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
+      res.status(200).send(response);
+    } catch(error){
+      next(error);
+    }
+  },
   setFormUserRoles: async (req, res, next) => {
     try {
       // Safety guard that this admin call isn't ever used without a form or user id
@@ -100,5 +129,15 @@ module.exports = {
     } catch (error) {
       next(error);
     }
-  }
+  },
+
+  listFormComponentsProactiveHelp:async(req,res,next)=> {
+    try{
+      const response = await service.listFormComponentsProactiveHelp();
+      res.status(200).json(response);
+    } catch(error){
+      next(error);
+    }
+  },
+
 };

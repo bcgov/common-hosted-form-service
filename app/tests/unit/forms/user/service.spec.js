@@ -7,12 +7,13 @@ const service = require('../../../../src/forms/user/service');
 
 const formId = '4d33f4cb-0b72-4c3d-9e41-f2651805fee1';
 const userId = 'cc8c64b7-a457-456e-ade0-09ff7ee75a2b';
-const preferences = { columnList: [] };
+const preferences = { columns: [] };
 
 beforeEach(() => {
   MockModel.mockReset();
   MockTransaction.mockReset();
 });
+
 
 describe('list', () => {
   it('should query user table by id', async () => {

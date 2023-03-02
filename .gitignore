@@ -10,8 +10,11 @@ dist
 **/cypress/**/screenshots
 **/cypress/**/videos
 node_modules
+
 # Ignore only top-level package-lock.json
 /package-lock.json
+
+
 
 
 # local env files

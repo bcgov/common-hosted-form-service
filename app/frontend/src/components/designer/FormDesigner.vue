@@ -71,20 +71,26 @@
       :form="formSchema"
       :key="reRenderFormIo"
       :options="designerOptions"
+      ref="formioForm"
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
       class="form-designer"
+      @formLoad="onFormLoad"
     />
+    <InformationLinkPreviewDialog :showDialog="showHelpLinkDialog"
+                                  @close-dialog="onShowClosePreveiwDialog"
+                                  :component="component"
+                                  :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"/>
 
     <FloatButton
       placement="bottom-right"
       :baseFABItemsBGColor="'#ffffff'"
       :baseFABIconColor="'#1976D2'"
       :baseFABBorderColor="'#C0C0C0'"
-      :fabZIndex=1000
+      :fabZIndex=1
       :size="'small'"
       fabItemsGap="7px"
       @undo="onUndoClick"
@@ -96,8 +102,8 @@
       :isFormSaved="isFormSaved"
       :formId="formId"
       :draftId="draftId"
-      :undoEnabled="undoEnabled()===0?false:undoEnabled()"
-      :redoEnabled="redoEnabled()===0?false:redoEnabled()"
+      :undoEnabled="undoEnabled()===0?false : undoEnabled()"
+      :redoEnabled="redoEnabled()===0?false : redoEnabled()"
     />
   </div>
 </template>
@@ -111,15 +117,18 @@ import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
+import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
+
 
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
-    FloatButton
+    FloatButton,
+    InformationLinkPreviewDialog
   },
   props: {
     draftId: String,
@@ -174,12 +183,17 @@ export default {
         redoClicked: false,
         undoClicked: false,
       },
+      showHelpLinkDialog:false,
+      component:{},
       isComponentRemoved:false,
     };
+
   },
 
   computed: {
+    ...mapGetters('form', ['fcProactiveHelpGroupList','fcProactiveHelpImageUrl']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
+    ...mapGetters('form', ['builder']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
@@ -292,7 +306,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setDirtyFlag']),
+    ...mapActions('form', ['fetchForm','setDirtyFlag','getFCProactiveHelpImageUrl']),
     ...mapActions('notifications', ['addNotification']),
 
 
@@ -370,6 +384,7 @@ export default {
     init() {
       this.setDirtyFlag(false);
       // Since change is triggered during loading
+      this.onFormLoad();
     },
     onChangeMethod(changed, flags, modified) {
 
@@ -398,6 +413,60 @@ export default {
       this.patch.componentRemovedStart = true;
     },
 
+    onFormLoad() {
+      // Contains the names of every category of components
+      let builder = this.$refs.formioForm.builder.instance.builder;
+      if(Object.keys(this.fcProactiveHelpGroupList).length > 0) {
+        for (const  [groupName,elements] of Object.entries(this.fcProactiveHelpGroupList)) {
+          let extractedElementsNames = this.extractPublishedElement(elements);
+          for (const [key,builderElements] of Object.entries(builder)) {
+            if(groupName===builderElements.title){
+              let containerId = `group-container-${key}`;
+              let containerEl = document.getElementById(containerId);
+              if(containerEl){
+                for(let i=0; i<containerEl.children.length; i++){
+                  const self = this;
+                  let elementName = containerEl.children[i].textContent.trim();
+                  if(extractedElementsNames.includes(elementName))
+                  {
+                    // Append the info el
+                    let child = document.createElement('i');
+
+                    child.setAttribute('class','fa fa-info-circle info-helper');
+                    child.style.float='right';
+                    child.style.fontSize='14px';
+                    child.addEventListener('click', function() {
+                      self.showHelperClicked(elementName, groupName);
+                    });
+                    containerEl.children[i].appendChild(child);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    extractPublishedElement(elements) {
+      let publishedComponentsNames=[];
+      for(let element of elements) {
+        if(element.status)
+        {
+          publishedComponentsNames.push(element.componentName);
+        }
+      }
+      return  publishedComponentsNames;
+    },
+
+    async showHelperClicked(elementName, groupName) {
+      const elements = this.fcProactiveHelpGroupList[groupName];
+      this.component = elements.find(element=>element.componentName===elementName);
+      await this.getFCProactiveHelpImageUrl(this.component.id);
+      this.onShowClosePreveiwDialog();
+    },
+    onShowClosePreveiwDialog(){
+      this.showHelpLinkDialog=!this.showHelpLinkDialog;
+    },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
     // ---------------------------------------------------------------------------------------------------
@@ -646,19 +715,20 @@ export default {
       this.getFormSchema();
       this.fetchForm(this.formId);
     }
+
   },
+
   mounted() {
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
     }
-
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
-    }
+    },
   },
 
 };

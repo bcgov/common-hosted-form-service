@@ -15,7 +15,8 @@ const {
   FormSubmissionStatus,
   FormSubmissionUser,
   IdentityProvider,
-  SubmissionMetadata
+  SubmissionMetadata,
+  FormComponentsProactiveHelp
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -240,14 +241,6 @@ const service = {
     return query;
   },
 
-  listVersions: async (formId, params) => {
-    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
-    return FormVersion.query()
-      .where('formId', formId)
-      .modify('filterPublished', params.published)
-      .modify('orderVersionDescending')
-      .modify('selectWithoutSchema');
-  },
 
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
     let trx;
@@ -566,7 +559,48 @@ const service = {
       .deleteById(currentKey.id)
       .throwIfNotFound();
   },
-  // ----------------------------------------------------------------------Api Key
+
+  /**
+  * @function getFCProactiveHelpImageUrl
+  * get form component proactive help image
+  * @param {Object} param consist of publishStatus and componentId.
+  * @returns {Promise} An objection query promise
+  */
+  getFCProactiveHelpImageUrl: async(componentId) =>{
+
+    let result=[];
+    result = await FormComponentsProactiveHelp.query()
+      .modify('findByComponentId',componentId);
+    let item = result.length>0?result[0]:null;
+    let imageUrl = item!==null?'data:' + item.imageType + ';' + 'base64' + ',' + item.image:'';
+    return {url: imageUrl} ;
+  },
+
+  /**
+   * @function listFormComponentsProactiveHelp
+   * Search for all form components help information
+   * @returns {Promise} An objection query promise
+  */
+  listFormComponentsProactiveHelp: async () => {
+    let result=[];
+    result = await FormComponentsProactiveHelp.query()
+      .modify('selectWithoutImages');
+    if(result.length>0) {
+      let filterResult= result.map(item=> {
+        return ({id:item.id,status:item.publishStatus,componentName:item.componentName,externalLink:item.externalLink,
+          version:item.version,groupName:item.groupName,description:item.description, isLinkEnabled:item.isLinkEnabled,
+          imageName:item.componentImageName });
+      });
+      return await filterResult.reduce(function (r, a) {
+        r[a.groupName] = r[a.groupName] || [];
+        r[a.groupName].push(a);
+        return r;
+      }, Object.create(null));
+
+    }
+    return {};
+  },
+
 };
 
 module.exports = service;
