@@ -2,7 +2,6 @@ const falsey = require('falsey');
 const moment = require('moment');
 const clone = require('lodash/clone');
 const _ = require('lodash');
-
 const setupMount = (type, app, routes, dataErrors) => {
   const p = `/${type}`;
   app.use(p, routes);

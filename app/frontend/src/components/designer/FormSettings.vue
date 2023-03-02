@@ -103,12 +103,12 @@
             </template>
           </v-checkbox>
 
-          <v-checkbox v-if="!isFormPublished" disabled class="my-0">
+          <!-- <v-checkbox v-if="!isFormPublished" disabled class="my-0">
             <template #label>
               Schedule form submission will be available in the Form settings after the
               form published.
             </template>
-          </v-checkbox>
+          </v-checkbox> -->
 
           <v-checkbox v-if="isFormPublished" class="my-0" v-model="schedule.enabled">
             <template #label>
@@ -116,10 +116,11 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                    help_outline
+                    science
                   </v-icon>
                 </template>
-                <span>
+                <span>Experimental</span>
+                <!-- <span>
                   Selecting this option controls this form to be open or close
                   for a given period.<br />
                   If checked, it will display form schedule section where you can
@@ -127,7 +128,7 @@
                     <li>Set form submissions open and close date</li>
                     <li>Set form recurrence settings</li>
                   </ul>
-                </span>
+                </span> -->
               </v-tooltip>
             </template>
           </v-checkbox>
@@ -208,12 +209,13 @@
                         min-width="290px">
                   <template v-slot:activator="{ on }">
                     <v-text-field v-model="schedule.openSubmissionDateTime" placeholder="yyyy-mm-dd" append-icon="event"
-                                  v-on:click:append="openSubmissionDateDraw = true" readonly label="Open submissions" v-on="on"
+                                  v-on:click:append="openSubmissionDateDraw = true" label="Open submissions" v-on="on"
                                   dense outlined :rules="scheduleOpenDate"></v-text-field>
                   </template>
-                  <v-date-picker v-model="schedule.openSubmissionDateTime"
+                  <v-date-picker @change="openDateTypeChanged" v-model="schedule.openSubmissionDateTime"
                                  data-test="picker-form-openSubmissionDateDraw" @input="openSubmissionDateDraw = false">
                   </v-date-picker>
+
                 </v-menu>
               </v-col>
 
@@ -239,7 +241,7 @@
                         min-width="290px">
                   <template v-slot:activator="{ on }">
                     <v-text-field v-model="schedule.closeSubmissionDateTime" placeholder="yyyy-mm-dd"
-                                  append-icon="event" v-on:click:append="closeSubmissionDateDraw = true" readonly
+                                  append-icon="event" v-on:click:append="closeSubmissionDateDraw = true"
                                   label="Close submissions" v-on="on" dense outlined :rules="scheduleCloseDate"></v-text-field>
                   </template>
                   <v-date-picker v-model="schedule.closeSubmissionDateTime"
@@ -284,7 +286,7 @@
                           :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
                     <template v-slot:activator="{ on }">
                       <v-text-field v-model="schedule.repeatSubmission.repeatUntil" placeholder="yyyy-mm-dd"
-                                    append-icon="event" v-on:click:append="repeatUntil = true" readonly label="Repeat until"
+                                    append-icon="event" v-on:click:append="repeatUntil = true" label="Repeat until"
                                     v-on="on" dense outlined :rules="repeatUntilDate"></v-text-field>
                     </template>
                     <v-date-picker v-model="schedule.repeatSubmission.repeatUntil" data-test="picker-form-repeatUntil"
@@ -408,7 +410,7 @@
 
 
 
-            <hr v-if="schedule.scheduleType !== null" />
+            <hr v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType) || (this.userType ==='team' && schedule.scheduleType !== null && enableReminderDraw && schedule.openSubmissionDateTime)" />
 
             <v-row class="p-0 m-0" v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)">
               <v-col cols="12" md="12" class="p-0">
@@ -445,10 +447,10 @@
 
             <v-row class="p-0 m-0">
               <v-col cols="12" md="12" class="p-0">
-                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null" >
+                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null && enableReminderDraw && schedule.openSubmissionDateTime" >
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
-                      <template #title>sEND Reminder email</template>
+                      <template #title>SEND Reminder email</template>
                       <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
                         <template #label>
                           Enable automatic reminder notification
@@ -459,7 +461,7 @@
                               </v-icon>
                             </template>
                             <span>
-                              Send automated reminder emails with the form link before and after the publishing date and prior to the closing date.
+                              Send reminder email/s with the form link during the submission period. (Learn more)
                             </span>
                           </v-tooltip>
                         </template>
@@ -482,7 +484,7 @@
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import { IdentityMode, IdentityProviders, Regex, ScheduleType } from '@/utils/constants';
-import { getAvailableDates, calculateCloseDate } from '@/utils/transformUtils';
+import { getAvailableDates, calculateCloseDate, isDateValidForMailNotification } from '@/utils/transformUtils';
 import moment from 'moment';
 
 export default {
@@ -496,6 +498,7 @@ export default {
       repeatUntil: false,
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
+      enableReminderDraw: true,
       valid: false,
       // Validation
       loginRequiredRules: [
@@ -526,19 +529,21 @@ export default {
           'Please enter all valid email addresses',
       ],
       scheduleOpenDate: [
-        (v) => !!v || 'This field is required & should be valid date.',
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g).test(v)) || 'Date must be in correct format. ie. 2022-12-28'
       ],
       scheduleCloseDate: [
-        (v) => !!v || 'This field is required & should be valid date.',
-        (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Close Submission date should be greater then open submission date.',
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g).test(v)) || 'Date must be in correct format. ie. 2022-12-28',
+        (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Close Submission date should be greater then open submission date.'
       ],
       roundNumber: [
-        (v) => !!v || 'This field is required & should be an integer.',
-        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) || 'Value must be a number. ie. 1,2,3,5,99'
       ],
       repeatTerm: [
-        (v) => !!v || 'This field is required & should be an integer.',
-        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) || 'Value must be an number. ie. 1,2,3,5,99'
       ],
       scheduleTypedRules: [
         (v) => !!v || 'Please select atleast 1 option'
@@ -547,11 +552,11 @@ export default {
         // (v) => !!v || 'This field is required'
       ],
       intervalType: [
-        (v) => !!v || 'This field is required & should be an interval.',
+        (v) => !!v || 'This field is required.',
       ],
       repeatIntervalType: [
-        (v) => !! v || 'This field is required & should be an interval.',
-        (v) => this.AVAILABLE_PERIOD_OPTIONS.includes(v) || 'This field is required & should be a valid interval.',
+        (v) => !! v || 'This field is required.',
+        (v) => this.AVAILABLE_PERIOD_OPTIONS.includes(v) || 'This should be a valid interval.',
       ],
       repeatIntervalTypeReminder: [
         (v) => !! v || 'This field is required & should be an interval.',
@@ -561,7 +566,9 @@ export default {
         (v) => !!v || 'This field is required.',
       ],
       repeatUntilDate: [
-        (v) => !!v || 'This field is required & should be valid date.',
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g).test(v)) || 'Date must be in correct format. ie. 2022-12-28',
+        (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Repeat untill date should be greater then open submission date.'
       ]
     };
   },
@@ -703,7 +710,15 @@ export default {
       if (this.userType !== 'team') {
         this.reminder = {};
       }
+    },
+    openDateTypeChanged() {
 
+      if(isDateValidForMailNotification(this.schedule.openSubmissionDateTime)){
+        this.enableReminderDraw=false;
+        this.reminder.enabled = false;
+      } else {
+        this.enableReminderDraw = true;
+      }
     },
     repeatSubmissionChanged (){
       if(!this.schedule.repeatSubmission.enabled){
