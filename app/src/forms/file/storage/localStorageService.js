@@ -69,12 +69,12 @@ const service = {
 
   uploadData: async (fileStorage, data) => {
     const fileDir = path.join(BASE_PATH, TEMP_DIR);
-    const filePath = path.join(fileDir, `${fileStorage.id}.csv`);
+    const filePath = path.join(fileDir, fileStorage.originalName);
     fs.mkdirSync(fileDir, { recursive: true });
     fileStorage.path = filePath;
 
     return new Promise((resolve, reject) => {
-      fs.writeFile(filePath, data, (err) => {
+      fs.writeFile(filePath, (fileStorage.mimeType === 'text/json') ? JSON.stringify(data) : data, (err) => {
         if (err) reject(err);
         resolve({
           path: filePath,
