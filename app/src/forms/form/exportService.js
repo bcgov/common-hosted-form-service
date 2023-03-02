@@ -10,7 +10,8 @@ const {
   SubmissionsData,
   SubmissionsExport,
 } = require('../common/models');
-const formService = require('../form/service');
+
+const formService = require('./service');
 const fileService = require('../file/service');
 
 
@@ -300,9 +301,8 @@ const service = {
         reservation = await formService.createReservation(currentUser);
         // create the submissions export
         await service.createSubmissionsExport(formId, submissionData.formVersionId, reservation.id, currentUser);
-
         // export the submissions
-        { service.exportToStorage(reservation.id, formId, currentUser, referer, params); }
+        service.exportToStorage(reservation.id, formId, currentUser, referer, params);
       }
 
       await trx.commit();
@@ -316,7 +316,8 @@ const service = {
 
   exportToStorage: async (reservationId, formId, currentUser, referer, params = {}) => {
     const data = await service.export(formId, params);
-    let originalName = `${formId}.csv`;
+    const format = service._exportFormat(params);
+    let originalName = `${formId}.${format}`;
     if (data.headers && data.headers['content-disposition'] && data.headers['content-disposition'].split('; ').length > 1) {
       originalName = data.headers['content-disposition'].split('; ').filter((str) => str.indexOf('filename=') !== -1)[0].split('filename=')[1];
       originalName = originalName.substring(1, originalName.length - 1);
@@ -324,7 +325,7 @@ const service = {
     const metadata = {
       originalName: originalName,
       mimetype: data.headers['content-type'],
-      size: Buffer.byteLength(data.data, 'utf8'),
+      size: Buffer.byteLength((data.headers['content-type'] === 'text/json' ? JSON.stringify(data.data) : data.data)),
     };
     return await fileService.createData(formId, reservationId, metadata, data.data, currentUser, referer);
   },

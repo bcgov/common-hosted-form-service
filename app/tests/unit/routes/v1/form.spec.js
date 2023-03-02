@@ -259,6 +259,44 @@ describe(`GET ${basePath}/formId/export`, () => {
 
 });
 
+describe(`POST ${basePath}/formId/reservation`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    exportService.exportWithReservation = jest.fn().mockReturnValue({
+      id: '0',
+      fileId: null,
+      ready: false,
+    });
+
+    const response = await request(app).post(`${basePath}/formId/reservation`, {}, {});
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    exportService.exportWithReservation = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).post(`${basePath}/formId/reservation`, {}, {});
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    exportService.exportWithReservation = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).post(`${basePath}/formId/reservation`, {}, {});
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+
+});
+
 describe(`GET ${basePath}/formId/version`, () => {
 
   it('should return 200', async () => {

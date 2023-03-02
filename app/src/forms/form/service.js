@@ -24,8 +24,7 @@ const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
-const exportService = require('./exportService');
-const fileService = require('../file/service');
+const storageService = require('../file/storage/storageService');
 
 const service = {
 
@@ -606,11 +605,11 @@ const service = {
     return {};
   },
 
-  createReservation: async (currentUser, params = {}) => {
+  createReservation: async (currentUser) => {
     let trx;
     try {
       let obj = {
-        id: ((params && params.id) ? params.id : uuidv4()),
+        id: uuidv4(),
         createdBy: currentUser.usernameIdp,
       };
       trx = await FileStorageReservation.startTransaction();
@@ -646,14 +645,30 @@ const service = {
 
       const reservation = await service.readReservation(id);
 
-      const subsexp = await exportService.listSubmissionsExports({ reservationId: id });
+      const subsexp = await SubmissionsExport.query()
+        .modify('filterReservationId', id)
+        .modify('orderDescending');
+
       if (subsexp && subsexp.length > 0) {
         await SubmissionsExport.query(trx)
-          .whereIn(subsexp.map((sub) => sub.id))
+          .whereIn('id', subsexp.map((sub) => sub.id))
           .delete();
       }
 
-      await fileService.delete(reservation.fileId);
+      const obj = await FileStorage.query(trx)
+        .findById(reservation.fileId);
+
+      if (obj) {
+        const result = await storageService.delete(obj);
+        if (!result) {
+          // error?
+        }
+
+        await FileStorage.query(trx)
+          .deleteById(reservation.fileId)
+          .throwIfNotFound();
+      }
+
       await FileStorageReservation.query(trx)
         .deleteById(id)
         .throwIfNotFound();
@@ -663,7 +678,8 @@ const service = {
       if (trx) trx.rollback();
       throw error;
     }
-  }
+  },
+
 };
 
 module.exports = service;

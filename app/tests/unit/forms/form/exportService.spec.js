@@ -512,15 +512,15 @@ describe('exportToStorage', () => {
     const exportData = {
       data: 'hello world',
       headers: {
-        'content-disposition': 'something; filename="filename.txt"; something=somethingelse',
-        'content-type': 'text/plain',
+        'content-disposition': 'something; filename="filename.csv"; something=somethingelse',
+        'content-type': 'text/csv',
       }
     };
 
     const metadata = {
-      originalName: 'filename.txt',
-      mimetype: 'text/plain',
-      size: Buffer.byteLength(exportData.data, 'utf8')
+      originalName: 'filename.csv',
+      mimetype: 'text/csv',
+      size: Buffer.byteLength((exportData.headers['content-type'] === 'text/json' ? JSON.stringify(exportData.data) : exportData.data))
     };
 
     let mockExport = jest.spyOn(exportService, 'export');

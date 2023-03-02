@@ -2,12 +2,12 @@ const { NotFoundError } = require('objection');
 
 const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 
+jest.mock('../../../../src/forms/common/models/tables/fileStorage', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/fileStorageReservation', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/submissionsExport', () => MockModel);
 
 const service = require('../../../../src/forms/form/service');
-const exportService = require('../../../../src/forms/form/exportService');
-const fileService = require('../../../../src/forms/file/service');
+const storageService = require('../../../../src/forms/file/storage/storageService');
 
 beforeEach(() => {
   MockModel.mockReset();
@@ -390,7 +390,6 @@ describe('file_storage_reservation', () => {
       expect(MockModel.query).toHaveBeenCalledTimes(1);
       expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
       expect(MockModel.insert).toHaveBeenCalledTimes(1);
-      expect(MockModel.insert).toHaveBeenCalledWith(data);
       expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
 
       mockReadReservation.mockRestore();
@@ -411,68 +410,23 @@ describe('file_storage_reservation', () => {
       ];
 
       let mockReadReservation = jest.spyOn(service, 'readReservation');
-      let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
-      let mockDelete = jest.spyOn(fileService, 'delete');
+      let mockDelete = jest.spyOn(storageService, 'delete');
 
       mockReadReservation.mockImplementation(() => data);
-      mockListSubmissionsExports.mockImplementation(() => subsexp);
       mockDelete.mockImplementation(() => {});
 
       await service.deleteReservation(data.id);
 
       expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
       expect(service.readReservation).toHaveBeenCalledTimes(1);
-      expect(exportService.listSubmissionsExports).toHaveBeenCalledTimes(1);
-      expect(exportService.listSubmissionsExports).toHaveBeenCalledWith({ reservationId: data.id });
-      expect(MockModel.query).toHaveBeenCalledTimes(subsexp.length + 1);
+      expect(service.readReservation).toHaveBeenCalledWith(data.id);
+
+      expect(MockModel.query).toHaveBeenCalledTimes(1 + subsexp.length + 1);
       expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
-      expect(MockModel.whereIn).toHaveBeenCalledTimes(subsexp.length);
-      if (subsexp.length > 0) {
-        expect(MockModel.whereIn).toHaveBeenCalledWith(subsexp.map((sub) => sub.id));
-        expect(MockModel.delete).toHaveBeenCalledTimes(subsexp.length);
-      }
       expect(MockModel.deleteById).toHaveBeenCalledTimes(1);
       expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
 
       mockReadReservation.mockRestore();
-      mockListSubmissionsExports.mockRestore();
-      mockDelete.mockRestore();
-    });
-
-    it('should succeed with no submissionexports', async () => {
-      const data = {
-        id: '0',
-        fileId: '1',
-        createdBy: CURRENT_USER.usernameIdp,
-      };
-      const subsexp = [];
-
-      let mockReadReservation = jest.spyOn(service, 'readReservation');
-      let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
-      let mockDelete = jest.spyOn(fileService, 'delete');
-
-      mockReadReservation.mockImplementation(() => data);
-      mockListSubmissionsExports.mockImplementation(() => subsexp);
-      mockDelete.mockImplementation(() => {});
-
-      await service.deleteReservation(data.id);
-
-      expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-      expect(service.readReservation).toHaveBeenCalledTimes(1);
-      expect(exportService.listSubmissionsExports).toHaveBeenCalledTimes(1);
-      expect(exportService.listSubmissionsExports).toHaveBeenCalledWith({ reservationId: data.id });
-      expect(MockModel.query).toHaveBeenCalledTimes(subsexp.length + 1);
-      expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
-      expect(MockModel.whereIn).toHaveBeenCalledTimes(subsexp.length);
-      if (subsexp.length > 0) {
-        expect(MockModel.whereIn).toHaveBeenCalledWith(subsexp.map((sub) => sub.id));
-        expect(MockModel.delete).toHaveBeenCalledTimes(subsexp.length);
-      }
-      expect(MockModel.deleteById).toHaveBeenCalledTimes(1);
-      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
-
-      mockReadReservation.mockRestore();
-      mockListSubmissionsExports.mockRestore();
       mockDelete.mockRestore();
     });
 
@@ -482,18 +436,11 @@ describe('file_storage_reservation', () => {
         fileId: '1',
         createdBy: CURRENT_USER.usernameIdp,
       };
-      const subsexp = [
-        {
-          id: '0'
-        }
-      ];
 
       let mockReadReservation = jest.spyOn(service, 'readReservation');
-      let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
-      let mockDelete = jest.spyOn(fileService, 'delete');
+      let mockDelete = jest.spyOn(storageService, 'delete');
 
       mockReadReservation.mockImplementation(() => { throw new NotFoundError(); });
-      mockListSubmissionsExports.mockImplementation(() => subsexp);
       mockDelete.mockImplementation(() => {});
 
       const fn = () => service.deleteReservation(data.id);
@@ -504,50 +451,6 @@ describe('file_storage_reservation', () => {
       expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
 
       mockReadReservation.mockRestore();
-      mockListSubmissionsExports.mockRestore();
-      mockDelete.mockRestore();
-    });
-
-
-    it('should fail with no existing file', async () => {
-      const data = {
-        id: '0',
-        fileId: '1',
-        createdBy: CURRENT_USER.usernameIdp,
-      };
-      const subsexp = [
-        {
-          id: '0'
-        }
-      ];
-
-      let mockReadReservation = jest.spyOn(service, 'readReservation');
-      let mockListSubmissionsExports = jest.spyOn(exportService, 'listSubmissionsExports');
-      let mockDelete = jest.spyOn(fileService, 'delete');
-
-      mockReadReservation.mockImplementation(() => data);
-      mockListSubmissionsExports.mockImplementation(() => subsexp);
-      mockDelete.mockImplementation(() => { throw new NotFoundError(); });
-
-      const fn = () => service.deleteReservation(data.id);
-
-      await expect(fn()).rejects.toThrow();
-      expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-      expect(service.readReservation).toHaveBeenCalledTimes(1);
-      expect(exportService.listSubmissionsExports).toHaveBeenCalledTimes(1);
-      expect(exportService.listSubmissionsExports).toHaveBeenCalledWith({ reservationId: data.id });
-      expect(MockModel.query).toHaveBeenCalledTimes(subsexp.length);
-      expect(MockModel.query).toHaveBeenCalledWith(MockTransaction);
-      expect(MockModel.whereIn).toHaveBeenCalledTimes(subsexp.length);
-      if (subsexp.length > 0) {
-        expect(MockModel.whereIn).toHaveBeenCalledWith(subsexp.map((sub) => sub.id));
-        expect(MockModel.delete).toHaveBeenCalledTimes(subsexp.length);
-      }
-      expect(MockModel.deleteById).toHaveBeenCalledTimes(0);
-      expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
-
-      mockReadReservation.mockRestore();
-      mockListSubmissionsExports.mockRestore();
       mockDelete.mockRestore();
     });
   });

@@ -4,6 +4,7 @@
     "frontend/src",
     "frontend/tests",
     "node_modules/**/node_modules",
-    "tests"
+    "tests",
+    "myfiles/**"
   ]
 }

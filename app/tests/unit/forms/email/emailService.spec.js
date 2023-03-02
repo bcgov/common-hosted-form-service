@@ -425,4 +425,45 @@ describe('public methods', () => {
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
+
+  it('submissionsExportReady should send a submissions export ready email', async () => {
+    const reservation = {
+      id: '0',
+      fileId: '0',
+    };
+    formService.readForm = jest.fn().mockReturnValue(form);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+
+    const result = await emailService.submissionsExportReady(
+      form.id,
+      reservation,
+      body,
+      referer
+    );
+
+    const configData = {
+      bodyTemplate: 'file-download-ready.html',
+      title: `${form.name} submissions export`,
+      subject: `${form.name} submissions export`,
+      priority: 'normal',
+      messageLinkText: 'You can download your submissions exports by visiting the following links:',
+      form,
+    };
+
+    const contexts = [{
+      context: {
+        form: configData.form,
+        messageLinkText: configData.messageLinkText,
+        messageLinkUrl: `https://file/download?id=${reservation.fileId}`,
+        title: configData.title
+      },
+      to: ['a@b.com']
+    }];
+
+    expect(result).toEqual('ret');
+    expect(formService.readForm).toHaveBeenCalledTimes(1);
+    expect(formService.readForm).toHaveBeenCalledWith(form.id);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+  });
 });
