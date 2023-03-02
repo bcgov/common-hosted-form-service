@@ -7,6 +7,7 @@ const S3 = require('aws-sdk/clients/s3');
 
 const StorageTypes = require('../../common/constants').StorageTypes;
 const errorToProblem = require('../../../components/errorToProblem');
+const { param } = require('../../submission/routes');
 const log = require('../../../components/log')(module.filename);
 
 const SERVICE = 'ObjectStorage';
@@ -77,24 +78,30 @@ class ObjectStorageService {
     }
   }
 
+  createParams(fileStorage, dir, data) {
+    const key = this._join(this._key, dir, fileStorage.id);
+
+    const params = {
+      Bucket: this._bucket,
+      Key: key,
+      Body: data,
+      Metadata: {
+        'name': fileStorage.originalName,
+        'id': fileStorage.id
+      }
+    };
+
+    if (mime.contentType(path.extname(fileStorage.originalName))) {
+      params.ContentType = mime.contentType(path.extname(fileStorage.originalName));
+    }
+
+    return params;
+  }
+
   async upload(fileStorage, dir, data) {
     try {
       // uploads can go to a 'holding' area, we can shuffle it later if we want to.
-      const key = this._join(this._key, dir, fileStorage.id);
-
-      const params = {
-        Bucket: this._bucket,
-        Key: key,
-        Body: data,
-        Metadata: {
-          'name': fileStorage.originalName,
-          'id': fileStorage.id
-        }
-      };
-
-      if (mime.contentType(path.extname(fileStorage.originalName))) {
-        params.ContentType = mime.contentType(path.extname(fileStorage.originalName));
-      }
+      const params = this.createParams(fileStorage, dir, data);
 
       return new Promise((resolve, reject) => {
         // eslint-disable-next-line no-unused-vars

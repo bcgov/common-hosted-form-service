@@ -349,7 +349,7 @@ paths:
               description: Response header
               schema:
                 type: object
-              example: text/json; charset=utf-8
+              example: application/json; charset=utf-8
           content:
             text/csv:
               schema:

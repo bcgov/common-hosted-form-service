@@ -74,7 +74,7 @@ const service = {
     fileStorage.path = filePath;
 
     return new Promise((resolve, reject) => {
-      fs.writeFile(filePath, (fileStorage.mimeType === 'text/json') ? JSON.stringify(data) : data, (err) => {
+      fs.writeFile(filePath, (fileStorage.mimeType === 'application/json') ? JSON.stringify(data) : data, (err) => {
         if (err) reject(err);
         resolve({
           path: filePath,

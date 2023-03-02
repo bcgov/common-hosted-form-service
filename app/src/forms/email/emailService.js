@@ -1,15 +1,38 @@
 const fs = require('fs');
 const path = require('path');
 
+const {
+  Form,
+  FormSubmission,
+} = require('../common/models');
+const { queryUtils } = require('../common/utils');
+
 const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
-const formService = require('../form/service');
+
+// code duplication but currently used to get around circular dependency
+const readForm = (formId, params = {}) => {
+  params = queryUtils.defaultActiveOnly(params);
+  return Form.query()
+    .findById(formId)
+    .modify('filterActive', params.active)
+    .allowGraph('[identityProviders,versions]')
+    .withGraphFetched('identityProviders(orderDefault)')
+    .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
+    .throwIfNotFound();
+};
+
+const readSubmission = (formSubmissionId) => {
+  return FormSubmission.query()
+    .findById(formSubmissionId)
+    .throwIfNotFound();
+};
 
 /** Helper function used to build the email template based on email type and contents */
 const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
-  const form = await formService.readForm(formId);
-  const submission = await formService.readSubmission(formSubmissionId);
+  const form = await readForm(formId);
+  const submission = await readSubmission(formSubmissionId);
   let configData = {};
   let contextToVal = [];
   let userTypePath = '';
@@ -368,7 +391,7 @@ const service = {
 
   submissionsExportReady: async(formId, reservation, body, referer) => {
     try {
-      const form = await formService.readForm(formId);
+      const form = await readForm(formId);
       const contextToVal = [body.to];
       const userTypePath = 'file/download';
       const bodyTemplate = 'file-download-ready.html';
