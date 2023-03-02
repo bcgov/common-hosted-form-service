@@ -40,6 +40,7 @@ const service = {
 
   createData: async (formId, reservationId, metadata, data, currentUser, referer) => {
     let trx;
+    let uploadResult;
     try {
       trx = await FileStorage.startTransaction();
 
@@ -50,7 +51,7 @@ const service = {
       obj.mimeType = metadata.mimetype;
       obj.size = metadata.size;
       obj.createdBy = currentUser.usernameIdp;
-      const uploadResult = await storageService.uploadData(obj, data);
+      uploadResult = await storageService.uploadData(obj, data);
       obj.path = uploadResult.path;
       obj.storage = uploadResult.storage;
 
@@ -70,6 +71,7 @@ const service = {
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
+      if (uploadResult && uploadResult.path) await storageService.delete({ path: uploadResult.path });
       throw err;
     }
   },
