@@ -16,7 +16,7 @@
     },
     "permanent": "objectStorage",
     "localStorage" : {
-      "path": "myfiles"
+      "path": ""
     },
     "objectStorage": {
       "accessKeyId": "bcgov-citz-ccft",
