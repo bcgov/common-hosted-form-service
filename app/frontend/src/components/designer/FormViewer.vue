@@ -8,7 +8,7 @@
           prominent
           type="error"
         >
-          {{formScheduleExpireMessage}}
+          {{isLateSubmissionAllowed ? "The form submission period has expired! You can still create a late submission by clicking the button below." : formScheduleExpireMessage}}
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
