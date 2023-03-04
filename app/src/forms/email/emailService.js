@@ -118,7 +118,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
   let configData = {};
   const closeDate = moment(report.dates.closeDate).format('MMM. D, YYYY');
   const subject = 'CHEFS Submission Reminder';
-  const message = (report.dates.closeDate) ? `This email is to inform you that the ${form.name} form is now open for submissions and will stay open until ${closeDate}.Please ensure to complete your submission before the period is closed.
+  const message = (report.dates.closeDate) ? `This email is to inform you that the ${form.name} form is now open for submissions and will stay open until ${closeDate}. Please ensure to complete your submission before the period is closed.
   Thank you.` : `This email is to inform you that the ${form.name} form is now open for submissions.
   Thank you. `;
   const contextToVal = [user.email];
@@ -138,8 +138,8 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
       bodyTemplate: 'reminder-form-not-fill.html',
       title: `Submission Reminder for ${form.name}`,
       subject: subject,
-      messageLinkText: `Hi ${names},
-      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }.Please ensure to complete your submission before the period is closed.
+      messageLinkText: `Hi ${names},\n
+      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }. Please ensure to complete your submission before the period is closed.
       Thank you.
       `,
       priority: 'normal',
@@ -150,8 +150,8 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
       bodyTemplate: 'reminder-form-will-close.html',
       title: `Submission Closing for ${form.name}`,
       subject: subject,
-      messageLinkText: `Hi ${names},
-      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }.Please ensure to complete your submission before the period is closed.
+      messageLinkText: `Hi ${names},\n
+      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }. Please ensure to complete your submission before the period is closed.
       Thank you. `,
       priority: 'normal',
       form,

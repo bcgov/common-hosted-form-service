@@ -2,7 +2,6 @@ const falsey = require('falsey');
 const moment = require('moment');
 const clone = require('lodash/clone');
 const _ = require('lodash');
-
 const setupMount = (type, app, routes, dataErrors) => {
   const p = `/${type}`;
   app.use(p, routes);
@@ -561,6 +560,12 @@ const submissionHeaders = (obj) => {
   return objectMap;
 };
 
+const encodeURI =(unsafe)=> {
+  let textDelimiter ='_';
+  let textDelimiterRegex = new RegExp('\\' + ',', 'g');
+  return unsafe
+    .replace(textDelimiterRegex, textDelimiter);
+};
 
 
 module.exports = {
@@ -576,5 +581,6 @@ module.exports = {
   checkIsFormExpired,
   flattenComponents,
   unwindPath,
-  submissionHeaders
+  submissionHeaders,
+  encodeURI
 };

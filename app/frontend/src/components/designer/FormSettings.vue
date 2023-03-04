@@ -208,12 +208,13 @@
                         min-width="290px">
                   <template v-slot:activator="{ on }">
                     <v-text-field v-model="schedule.openSubmissionDateTime" placeholder="yyyy-mm-dd" append-icon="event"
-                                  v-on:click:append="openSubmissionDateDraw = true" readonly label="Open submissions" v-on="on"
+                                  v-on:click:append="openSubmissionDateDraw = true" label="Open submissions" v-on="on"
                                   dense outlined :rules="scheduleOpenDate"></v-text-field>
                   </template>
-                  <v-date-picker v-model="schedule.openSubmissionDateTime"
+                  <v-date-picker @change="openDateTypeChanged" v-model="schedule.openSubmissionDateTime"
                                  data-test="picker-form-openSubmissionDateDraw" @input="openSubmissionDateDraw = false">
                   </v-date-picker>
+
                 </v-menu>
               </v-col>
 
@@ -239,7 +240,7 @@
                         min-width="290px">
                   <template v-slot:activator="{ on }">
                     <v-text-field v-model="schedule.closeSubmissionDateTime" placeholder="yyyy-mm-dd"
-                                  append-icon="event" v-on:click:append="closeSubmissionDateDraw = true" readonly
+                                  append-icon="event" v-on:click:append="closeSubmissionDateDraw = true"
                                   label="Close submissions" v-on="on" dense outlined :rules="scheduleCloseDate"></v-text-field>
                   </template>
                   <v-date-picker v-model="schedule.closeSubmissionDateTime"
@@ -408,7 +409,7 @@
 
 
 
-            <hr v-if="schedule.scheduleType !== null" />
+            <hr v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType) || (this.userType ==='team' && schedule.scheduleType !== null && enableReminderDraw && schedule.openSubmissionDateTime)" />
 
             <v-row class="p-0 m-0" v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)">
               <v-col cols="12" md="12" class="p-0">
@@ -445,10 +446,10 @@
 
             <v-row class="p-0 m-0">
               <v-col cols="12" md="12" class="p-0">
-                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null" >
+                <v-expand-transition v-if="this.userType ==='team' && schedule.scheduleType !== null && enableReminderDraw && schedule.openSubmissionDateTime" >
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
-                      <template #title>sEND Reminder email</template>
+                      <template #title>SEND Reminder email</template>
                       <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
                         <template #label>
                           Enable automatic reminder notification
@@ -459,7 +460,7 @@
                               </v-icon>
                             </template>
                             <span>
-                              Send automated reminder emails with the form link before and after the publishing date and prior to the closing date.
+                              Send reminder email/s with the form link during the submission period. (Learn more)
                             </span>
                           </v-tooltip>
                         </template>
@@ -482,7 +483,7 @@
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import { IdentityMode, IdentityProviders, Regex, ScheduleType } from '@/utils/constants';
-import { getAvailableDates, calculateCloseDate } from '@/utils/transformUtils';
+import { getAvailableDates, calculateCloseDate, isDateValidForMailNotification } from '@/utils/transformUtils';
 import moment from 'moment';
 
 export default {
@@ -496,6 +497,7 @@ export default {
       repeatUntil: false,
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
+      enableReminderDraw: true,
       valid: false,
       // Validation
       loginRequiredRules: [
@@ -533,11 +535,11 @@ export default {
         (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Close Submission date should be greater then open submission date.',
       ],
       roundNumber: [
-        (v) => !!v || 'This field is required & should be an integer.',
+        (v) => !!v || 'This field is required & should be a number.',
         (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
       ],
       repeatTerm: [
-        (v) => !!v || 'This field is required & should be an integer.',
+        (v) => !!v || 'This field is required & should be an number.',
         (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
       ],
       scheduleTypedRules: [
@@ -547,10 +549,10 @@ export default {
         // (v) => !!v || 'This field is required'
       ],
       intervalType: [
-        (v) => !!v || 'This field is required & should be an interval.',
+        (v) => !!v || 'This field is required, please select one period.',
       ],
       repeatIntervalType: [
-        (v) => !! v || 'This field is required & should be an interval.',
+        (v) => !! v || 'This field is required, please select one period.',
         (v) => this.AVAILABLE_PERIOD_OPTIONS.includes(v) || 'This field is required & should be a valid interval.',
       ],
       repeatIntervalTypeReminder: [
@@ -703,7 +705,15 @@ export default {
       if (this.userType !== 'team') {
         this.reminder = {};
       }
+    },
+    openDateTypeChanged() {
 
+      if(isDateValidForMailNotification(this.schedule.openSubmissionDateTime)){
+        this.enableReminderDraw=false;
+        this.reminder.enabled = false;
+      } else {
+        this.enableReminderDraw = true;
+      }
     },
     repeatSubmissionChanged (){
       if(!this.schedule.repeatSubmission.enabled){

@@ -2,34 +2,6 @@
 
 const reminderService = require('../../../../src/forms/email/reminderService');
 const moment = require('moment');
-//const formService = require('../../../../src/forms/form/service');
-//const fs = require('fs');
-
-// const schedule  = {
-//   "enabled": true,
-//   "scheduleType": "period",
-//   "closingMessage": null,
-//   "keepOpenForTerm": null,
-//   "repeatSubmission": {
-//     "enabled": null,
-//     "everyTerm": null,
-//     "repeatUntil": "2023-08-10",
-//     "keepAliveFor": null,
-//     "onSpecificDay": null,
-//     "everyIntervalType": null
-//   },
-//   "keepOpenForInterval": null,
-//   "allowLateSubmissions": {
-//     "enabled": null,
-//     "forNext": {
-//       "term": null,
-//       "intervalType": null
-//     }
-//   },
-//   "closingMessageEnabled": null,
-//   "openSubmissionDateTime": "2022-07-10",
-//   "closeSubmissionDateTime": null
-// };
 
 const schedule  = {
   "enabled": true,
@@ -120,6 +92,29 @@ describe('getCurrentPeriod', () => {
     expect(periode.state).toEqual(-1);
     expect(periode.index).toEqual(-1);
   });
+});
+
+describe('checkIfInMiddleOfThePeriod', () => {
+
+  it('should return the false', () => {
+    const now = moment('2023-02-03');
+    const days_diff = 5;
+    const start_date = moment('2023-02-01');
+    const result = reminderService.checkIfInMiddleOfThePeriod(null, now, start_date,  days_diff );
+    expect(result).toEqual(false);
+  });
+
+  it('should return the true', () => {
+    const now = moment('2023-02-06');
+    const days_diff = 10;
+    const start_date = moment('2023-02-01');
+    const result = reminderService.checkIfInMiddleOfThePeriod(null, now, start_date,  days_diff );
+    expect(result).toEqual(true);
+  });
+
+
+
+
 });
 
 
