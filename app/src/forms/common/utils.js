@@ -560,6 +560,12 @@ const submissionHeaders = (obj) => {
   return objectMap;
 };
 
+const encodeURI =(unsafe)=> {
+  let textDelimiter ='_';
+  let textDelimiterRegex = new RegExp('\\' + ',', 'g');
+  return unsafe
+    .replace(textDelimiterRegex, textDelimiter);
+};
 
 
 module.exports = {
@@ -575,5 +581,6 @@ module.exports = {
   checkIsFormExpired,
   flattenComponents,
   unwindPath,
-  submissionHeaders
+  submissionHeaders,
+  encodeURI
 };
