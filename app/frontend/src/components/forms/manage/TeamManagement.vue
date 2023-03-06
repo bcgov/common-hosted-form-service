@@ -76,10 +76,20 @@
         <v-btn
           @click="onRemoveClick(selectedUsers)"
           color="red"
-          :disabled="selectedUsers.length < 1"
+          :disabled="updating || selectedUsers.length < 1"
           icon
         >
-          <v-icon>remove_circle</v-icon>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                color="red"
+                dark
+                v-bind="attrs"
+                v-on="on"
+              >remove_circle</v-icon>
+            </template>
+            <span>Remove selected users</span>
+          </v-tooltip>
         </v-btn>
       </template>
       <template
@@ -97,9 +107,19 @@
         <v-btn @click="onRemoveClick(item)"
                color="red"
                icon
-               :disabled="showDeleteButton(item)"
+               :disabled="updating"
         >
-          <v-icon>remove_circle</v-icon>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                color="red"
+                dark
+                v-bind="attrs"
+                v-on="on"
+              >remove_circle</v-icon>
+            </template>
+            <span>Remove this user</span>
+          </v-tooltip>
         </v-btn>
       </template>
     </v-data-table>
@@ -436,10 +456,6 @@ export default {
   .team-table >>> th {
     vertical-align: top;
   }
-}
-/* Want to use scss but the world hates me */
-.team-table >>> tbody tr:nth-of-type(odd) {
-  background-color: #f5f5f5;
 }
 .team-table >>> thead tr th {
   font-weight: normal;
