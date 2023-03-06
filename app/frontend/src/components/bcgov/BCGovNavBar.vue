@@ -5,7 +5,7 @@
         <li>
           <router-link data-cy=aboutLinks :to="{ name: 'About' }">About</router-link>
         </li>
-        <li>
+        <li v-if="authenticated">
           <router-link data-cy=userFormsLinks :to="{ name: 'UserForms' }">My Forms</router-link>
         </li>
         <li v-if="hasPrivileges">
@@ -36,7 +36,7 @@ import { IdentityProviders } from '../../utils/constants';
 export default {
   name: 'BCGovNavBar',
   computed: {
-    ...mapGetters('auth', ['isAdmin', 'identityProvider']),
+    ...mapGetters('auth', ['authenticated', 'isAdmin', 'identityProvider']),
     hideNavBar() {
       // hide nav bar if user is on form submitter page
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
