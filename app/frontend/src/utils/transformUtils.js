@@ -194,3 +194,18 @@ export function calculateCloseDate(
   const closeDateRet = closeDate.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
   return closeDateRet;
 }
+
+/**
+ * @function isDateValidForMailNotification
+ * Check if date is equal or less than today
+ *
+ * @param {String} parseDate A string of start date period
+ */
+export function isDateValidForMailNotification(parseDate) {
+  const formDate = moment(parseDate, 'YYYY-MM-DD');
+  const now = moment();
+  if(now.isSameOrAfter(formDate, 'day')){
+    return true;
+  }
+  return false;
+}

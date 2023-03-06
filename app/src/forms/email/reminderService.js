@@ -185,25 +185,29 @@ const service = {
     const now = moment().format('YYYY-MM-DD');
     const start_date = moment(report.dates.startDate).format('YYYY-MM-DD');
     const end_date = (late) ? moment(report.dates.graceDate).format('YYYY-MM-DD') : moment(report.dates.closeDate).format('YYYY-MM-DD');
+    const days_diff = moment(end_date).diff(start_date,'days');
 
     if(moment(now).isSame(start_date)) {
       return EmailTypes.REMINDER_FORM_OPEN;
     }
 
-    if(report.dates.closeDate==null) return  state;
+    if(report.dates.closeDate==null || days_diff<=3 ) return  state;
 
-    if(service.getNumberDayFromIntervalType(reminder.intervalType, now, start_date, end_date) ){
+    if(service.checkIfInMiddleOfThePeriod(reminder.intervalType, now, start_date, days_diff )){
       return EmailTypes.REMINDER_FORM_NOT_FILL;
     }
 
     const yend_date = moment(end_date).subtract(1, 'day');
+
     if(moment(now).isSame(yend_date)){
       return EmailTypes.REMINDER_FORM_WILL_CLOSE;
     }
 
     return state;
   },
-  getNumberDayFromIntervalType : (type, now, start_date, end_date )=>{
+  checkIfInMiddleOfThePeriod : (type, now, start_date,  days_diff )=>{
+    if (days_diff < 6 ) return false;
+
     if(type!=null && type) {
       for (const key in periodType) {
         const interval = moment(now).diff(start_date, periodType[key].regex);
@@ -212,12 +216,12 @@ const service = {
         }
       }
     } else {
-      const days_diff = moment(end_date).diff(start_date,'days');
-      let interval = Math.ceil(days_diff/2);
+      let interval = Math.floor(days_diff/2);
       // eslint-disable-next-line no-console
       let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
       return moment(now).isSame(mail_date);
     }
+
     return false;
   },
   _runQueries : async (queries) => {
@@ -263,8 +267,8 @@ const service = {
   },
   _getReferer : () => {
 
-    try {
 
+    try {
       const protocol = 'https://';
       const basePath = config.get('frontend.basePath');
       const host = process.env.SERVER_HOST;
