@@ -4,7 +4,7 @@
       <v-sheet
         elevation="1"
         class="float-right"
-        style="position: absolute; order: 2"
+        style="position: absolute; width: 669px;"
       >
         <v-sheet
           style="background-color: #38598a"
@@ -158,6 +158,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import { FormRoleCodes, IdentityProviders, Regex } from '@/utils/constants';
 import { userService } from '@/services';
@@ -205,10 +206,14 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.idps']),
+    ...mapGetters('auth', ['identityProvider']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
     FORM_ROLES() {
+      if (this.identityProvider && (this.identityProvider === IdentityProviders.BCEIDBUSINESS || this.identityProvider === IdentityProviders.BCEIDBASIC)) {
+        return Object.values(FormRoleCodes).filter((frc) => frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER).sort();
+      }
       return Object.values(FormRoleCodes).sort();
     },
     autocompleteLabel() {
