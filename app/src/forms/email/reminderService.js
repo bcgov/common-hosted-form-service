@@ -273,7 +273,6 @@ const service = {
       const basePath = config.get('frontend.basePath');
       const host = process.env.SERVER_HOST;
       return`${protocol}${host}${basePath}`;
-      return`${protocol}${host}${basePath}`;
     } catch (error) {
       log.error(error.message, {
         function: '_getReferer'
