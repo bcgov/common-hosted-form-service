@@ -1,12 +1,8 @@
 <template>
   <div>
-    <v-row class="mt-6" no-gutters>
-      <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>Team Management</h1>
-      </v-col>
-      <!-- buttons -->
-      <v-col class="text-right" style="z-index: 100" cols="12" sm="6" order="1" order-sm="2">
+    <v-container fluid class="d-flex">
+      <h1 class="mr-auto">Team Management</h1>
+      <div style="z-index: 1;">
         <span>
           <AddTeamMember
             :disabled="!canManageTeam"
@@ -33,8 +29,8 @@
             <span>Manage Form</span>
           </v-tooltip>
         </span>
-      </v-col>
-    </v-row>
+      </div>
+    </v-container>
 
     <v-row no-gutters>
       <v-spacer />
