@@ -194,6 +194,10 @@ export default {
 
             if (Array.isArray(roles) && roles.length)
               this.setUserForms(user.id);
+          } else {
+            this.addNotification({
+              message: `${user.username}@${user.idpCode} is already in the team.`,
+            });
           }
         });
       }
