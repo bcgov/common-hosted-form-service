@@ -45,19 +45,15 @@
 
       <BaseDialog
         v-model="showSubmitConfirmDialog"
-        type="CUSTOM"
+        type="CONTINUE"
         :enableCustomButton="canSaveDraft"
         @close-dialog="showSubmitConfirmDialog = false"
         @continue-dialog="continueSubmit"
-        @custom-dialog="saveDraft"
       >
         <template #title>Please Confirm</template>
         <template #text>Are you sure you wish to submit your form?</template>
         <template #button-text-continue>
           <span>Submit</span>
-        </template>
-        <template #button-text-custom>
-          <span>Save Draft</span>
         </template>
       </BaseDialog>
 
