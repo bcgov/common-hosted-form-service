@@ -269,7 +269,6 @@ const service = {
 
 
     try {
-
       const protocol = 'https://';
       const basePath = config.get('frontend.basePath');
       const host = process.env.SERVER_HOST;
