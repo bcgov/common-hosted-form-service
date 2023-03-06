@@ -224,7 +224,7 @@
                 <v-expand-transition>
                   <v-row>
                     <v-radio-group class="my-0" v-model="schedule.scheduleType" :rules="scheduleTypedRules" @change="scheduleTypeChanged">
-                      <v-radio class="mx-2" label="Keep open until manually unpubished" :value="SCHEDULE_TYPE.MANUAL" />
+                      <v-radio class="mx-2" label="Keep open until manually unpublished" :value="SCHEDULE_TYPE.MANUAL" />
                       <v-radio class="mx-2" label="Schedule a closing date" :value="SCHEDULE_TYPE.CLOSINGDATE" />
                       <v-radio class="mx-2" label="Set up submission period" :value="SCHEDULE_TYPE.PERIOD" />
                     </v-radio-group>
