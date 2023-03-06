@@ -97,6 +97,7 @@
         <v-btn @click="onRemoveClick(item)"
                color="red"
                icon
+               :disabled="showDeleteButton(item)"
         >
           <v-icon>remove_circle</v-icon>
         </v-btn>
@@ -406,6 +407,9 @@ export default {
         await this.getFormUsers();
         this.updating = false;
       }
+    },
+    showDeleteButton(item) {
+      return this.updating || this.selectedUsers.some((user) => user.username === item.username && user.identityProvider === item.identityProvider);
     },
   },
   async mounted() {
