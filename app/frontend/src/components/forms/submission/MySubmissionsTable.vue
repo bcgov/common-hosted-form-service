@@ -114,6 +114,7 @@ export default {
     headers() {
       let headers = [
         { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
+        { text: 'Username', align: 'start', value: 'username' },
         { text: 'Status', align: 'start', value: 'status' },
         {
           text: 'Submission Date',
@@ -130,7 +131,7 @@ export default {
         },
       ];
       if (this.showDraftLastEdited || !this.formId) {
-        headers.splice(2, 0, {
+        headers.splice(3, 0, {
           text: 'Draft Last Edited',
           align: 'start',
           value: 'lastEdited',
@@ -193,7 +194,8 @@ export default {
             permissions: s.permissions,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
-            submittedDate: this.getStatusDate(s, 'SUBMITTED')
+            submittedDate: this.getStatusDate(s, 'SUBMITTED'),
+            username: (s.submissionStatus && s.submissionStatus.length > 0) ? s.submissionStatus[0].createdBy : '',
           };
         });
         this.submissionTable = tableRows;
