@@ -47,8 +47,8 @@
               <!-- no data -->
               <template #no-data>
                 <div class="px-2">
-                  Can't find someone? They may not have joined the site.<br />
-                  Kindly send them a link to the site and ask them to log in.
+                  Can't find someone? They may not have logged into CHEFS.<br />
+                  Kindly send them a link to CHEFS and ask them to log in.
                 </div>
               </template>
               <!-- selected user -->
