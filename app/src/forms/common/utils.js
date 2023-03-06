@@ -188,7 +188,7 @@ const checkIsFormExpired = (formSchedule = {}) => {
               result = {...result,message:'Something went wrong.'};
             }
           }else{
-            result = {...result,message:'This form is expired for the period.'};
+            result = {...result,message:'The form submission period has expired.'};
           }
 
           var closeDate = formSchedule.scheduleType === 'period' ? getCalculatedCloseSubmissionDate(

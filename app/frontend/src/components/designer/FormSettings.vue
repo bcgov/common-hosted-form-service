@@ -105,21 +105,20 @@
 
           <v-checkbox v-if="!isFormPublished" disabled class="my-0">
             <template #label>
-              Schedule form submission will be available in the Form settings after the
-              form published.
+              The Form Submissions Schedule will be available in the Form Settings after the form is published.
             </template>
           </v-checkbox>
 
           <v-checkbox v-if="isFormPublished" class="my-0" v-model="schedule.enabled">
             <template #label>
-              Enable this form for schedule settings.
+              Form Submissions Schedule
               <v-tooltip bottom>
+                
                 <template v-slot:activator="{ on, attrs }">
-                  <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                    help_outline
-                  </v-icon>
+                  <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
                 </template>
-                <span>
+                <span>Experimental</span>
+                <!-- <span>
                   Selecting this option controls this form to be open or close
                   for a given period.<br />
                   If checked, it will display form schedule section where you can
@@ -127,7 +126,7 @@
                     <li>Set form submissions open and close date</li>
                     <li>Set form recurrence settings</li>
                   </ul>
-                </span>
+                </span> -->
               </v-tooltip>
             </template>
           </v-checkbox>
@@ -260,44 +259,7 @@
               </v-col>
             </v-row>
 
-            <v-checkbox class="my-0 pt-0" @change="repeatSubmissionChanged" v-model="schedule.repeatSubmission.enabled" v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
-              <template #label>
-                Repeat period
-              </template>
-            </v-checkbox>
-
-            <v-expand-transition
-              v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD && schedule.repeatSubmission.enabled">
-              <v-row class="m-0">
-
-                <v-col cols="4" class="m-0 p-0">
-                  <v-text-field label="Every" value="0" type="number" dense flat solid outlined
-                                v-model="schedule.repeatSubmission.everyTerm" class="m-0 p-0" :rules="repeatTerm"></v-text-field>
-                </v-col>
-
-                <v-col cols="4" class="m-0 p-0">
-                  <v-select :items="AVAILABLE_PERIOD_OPTIONS" label="Period" dense flat solid outlined class="mr-2 pl-2"
-                            v-model="schedule.repeatSubmission.everyIntervalType" :rules="repeatIntervalType"></v-select>
-                </v-col>
-
-                <v-col cols="4" class="m-0 p-0">
-                  <v-menu v-model="repeatUntil" data-test="menu-form-repeatUntil" :close-on-content-click="false"
-                          :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
-                    <template v-slot:activator="{ on }">
-                      <v-text-field v-model="schedule.repeatSubmission.repeatUntil" placeholder="yyyy-mm-dd"
-                                    append-icon="event" v-on:click:append="repeatUntil = true" readonly label="Repeat until"
-                                    v-on="on" dense outlined :rules="repeatUntilDate"></v-text-field>
-                    </template>
-                    <v-date-picker v-model="schedule.repeatSubmission.repeatUntil" data-test="picker-form-repeatUntil"
-                                   @input="repeatUntil = false"></v-date-picker>
-                  </v-menu>
-
-                </v-col>
-
-              </v-row>
-            </v-expand-transition>
-
-
+          
 
             <v-checkbox class="my-0 m-0 p-0" v-model="schedule.allowLateSubmissions.enabled"
                         v-if="[SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(schedule.scheduleType)" :rules="allowLateSubmissionRule" >
@@ -334,6 +296,43 @@
             </v-expand-transition>
 
 
+            <v-checkbox class="my-0 pt-0" @change="repeatSubmissionChanged" v-model="schedule.repeatSubmission.enabled" v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD">
+              <template #label>
+                Repeat period
+              </template>
+            </v-checkbox>
+
+            <v-expand-transition
+              v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD && schedule.repeatSubmission.enabled">
+              <v-row class="m-0">
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-text-field label="Every" value="0" type="number" dense flat solid outlined
+                                v-model="schedule.repeatSubmission.everyTerm" class="m-0 p-0" :rules="repeatTerm"></v-text-field>
+                </v-col>
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-select :items="AVAILABLE_PERIOD_OPTIONS" label="Period" dense flat solid outlined class="mr-2 pl-2"
+                            v-model="schedule.repeatSubmission.everyIntervalType" :rules="repeatIntervalType"></v-select>
+                </v-col>
+
+                <v-col cols="4" class="m-0 p-0">
+                  <v-menu v-model="repeatUntil" data-test="menu-form-repeatUntil" :close-on-content-click="false"
+                          :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                    <template v-slot:activator="{ on }">
+                      <v-text-field v-model="schedule.repeatSubmission.repeatUntil" placeholder="yyyy-mm-dd"
+                                    append-icon="event" v-on:click:append="repeatUntil = true" label="Repeat until"
+                                    v-on="on" dense outlined :rules="repeatUntilDate"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="schedule.repeatSubmission.repeatUntil" data-test="picker-form-repeatUntil"
+                                   @input="repeatUntil = false"></v-date-picker>
+                  </v-menu>
+
+                </v-col>
+
+              </v-row>
+            </v-expand-transition>
+
 
 
             <v-row class="p-0 m-0"
@@ -341,50 +340,29 @@
               <v-col class="p-0 m-0" cols="12" md="12"><template>
                 <p class="font-weight-black m-0">Summary</p>
               </template></v-col>
-
+             
               <v-col class="p-0 m-0" cols="12" md="12"
-                     v-if="schedule.openSubmissionDateTime && schedule.openSubmissionDateTime.length">Your form will first be published from
-                <b>{{ schedule.openSubmissionDateTime }}</b> to <b>
-                  <!-- close date according to Schedule type 'CLOSINGDATE' OR 'PERIOD' -->
+                     v-if="schedule.openSubmissionDateTime && schedule.openSubmissionDateTime.length">This form will be open for submissions from
+                <b>{{ schedule.openSubmissionDateTime }}</b> to 
+                <b>
                   {{
-                    schedule.scheduleType === SCHEDULE_TYPE.PERIOD &&
-                      (
-                        schedule.keepOpenForTerm &&
-                        schedule.keepOpenForInterval &&
-                        schedule.openSubmissionDateTime
-                      ) ? (
-                      schedule.allowLateSubmissions.enabled &&
-                      schedule.allowLateSubmissions.forNext.intervalType &&
-                      schedule.allowLateSubmissions.forNext.term
-                    )
-                      ? AVAILABLE_DATES && AVAILABLE_DATES[0] && AVAILABLE_DATES[0]['graceDate'] && AVAILABLE_DATES[0]['graceDate'].split(" ")[0]
-                      : AVAILABLE_DATES && AVAILABLE_DATES[0] && AVAILABLE_DATES[0]['closeDate'] && AVAILABLE_DATES[0]['closeDate'].split(" ")[0]
-                    : ''
+                    schedule.scheduleType === SCHEDULE_TYPE.PERIOD ? AVAILABLE_DATES && AVAILABLE_DATES[0] && AVAILABLE_DATES[0]['closeDate'] && AVAILABLE_DATES[0]['closeDate'].split(" ")[0] : ''
                   }}
+                
 
-                  {{ schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE ? schedule.allowLateSubmissions.enabled &&
-                    schedule.allowLateSubmissions.forNext.intervalType && schedule.allowLateSubmissions.forNext.term &&
-                    schedule.closeSubmissionDateTime.length ? CALCULATE_CLOSE_DATE.split(" ")[0] :
-                      schedule.closeSubmissionDateTime : ''
+                  {{
+                    schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE ? schedule.closeSubmissionDateTime : ''
                   }}
                 </b>
 
-                <!-- REPEAT SUBMISSION SENTENCE -->
+                <span>{{
+                  schedule.allowLateSubmissions.enabled && schedule.allowLateSubmissions.forNext.intervalType && schedule.allowLateSubmissions.forNext.term ? ', allowing late submissions for '+schedule.allowLateSubmissions.forNext.term+' '+schedule.allowLateSubmissions.forNext.intervalType+'.' : '. '
+                }}</span>
+                  
                 <span
-                  v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD && schedule.repeatSubmission.enabled === true && schedule.repeatSubmission.everyTerm && schedule.repeatSubmission.repeatUntil && schedule.repeatSubmission.everyIntervalType && AVAILABLE_DATES[1]">It
-                  will then become published from <b>{{ AVAILABLE_DATES[1]['startDate'].split(" ")[0] }}</b> to
-                  <b>{{ schedule.allowLateSubmissions.enabled ? AVAILABLE_DATES[1]['graceDate'].split(" ")[0] :
-                    AVAILABLE_DATES[1]['closeDate'].split(" ")[0]
-                  }}</b></span>
-
-
-
-                <!-- REPEAT SUBMISSION SENTENCE -->
-                <span
-                  v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD && schedule.repeatSubmission.enabled && schedule.repeatSubmission.everyTerm && schedule.repeatSubmission.repeatUntil && schedule.repeatSubmission.everyIntervalType">
-                  and repeat being published for <b>{{ schedule.keepOpenForTerm }} {{ schedule.keepOpenForInterval }}</b>
-                  every {{ schedule.repeatSubmission.everyTerm }} {{ schedule.repeatSubmission.everyIntervalType }} untill
-                  <b>{{ schedule.repeatSubmission.repeatUntil }}</b>.<v-tooltip bottom>
+                  v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD && schedule.repeatSubmission.enabled === true && schedule.repeatSubmission.everyTerm && schedule.repeatSubmission.repeatUntil && schedule.repeatSubmission.everyIntervalType && AVAILABLE_DATES[1]">The schedule will repeat every <b>{{ schedule.repeatSubmission.everyTerm }} </b>
+                  <b>{{ schedule.repeatSubmission.everyIntervalType }}</b> until <b>{{ schedule.repeatSubmission.repeatUntil }}</b>.
+                  <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
                         help_outline
@@ -394,15 +372,15 @@
                       <!-- MORE FUTURE OCCURENCES -->
                       As per the settings these are the available dates of submissions:
                       <ul>
-                        <li :key="date.startDate + Math.random()" v-for="date in AVAILABLE_DATES">From {{
+                        <li :key="date.startDate + Math.random()" v-for="date in AVAILABLE_DATES">This form will be open for submissions from {{
                           date.startDate.split(" ")[0]
                         }} <span v-if="schedule.enabled"> to {{ date.closeDate.split(" ")[0] }} <span
                           v-if="schedule.allowLateSubmissions.enabled && date.closeDate !== date.graceDate">with
-                          late submission untill {{ date.graceDate.split(" ")[0] }}</span></span></li>
+                          allowing late submission until {{ date.graceDate.split(" ")[0] }}</span></span></li>
                       </ul>
                     </span>
-                  </v-tooltip></span>
-
+                  </v-tooltip>
+                </span>
 
               </v-col>
             </v-row>
@@ -485,6 +463,9 @@ import { mapFields } from 'vuex-map-fields';
 import { IdentityMode, IdentityProviders, Regex, ScheduleType } from '@/utils/constants';
 import { getAvailableDates, calculateCloseDate, isDateValidForMailNotification } from '@/utils/transformUtils';
 import moment from 'moment';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faFlask } from '@fortawesome/free-solid-svg-icons';
+library.add(faFlask);
 
 export default {
   name: 'FormSettings',
@@ -528,19 +509,21 @@ export default {
           'Please enter all valid email addresses',
       ],
       scheduleOpenDate: [
-        (v) => !!v || 'This field is required & should be valid date.',
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g).test(v)) || 'Date must be in correct format. ie. yyyy-mm-dd'
       ],
       scheduleCloseDate: [
-        (v) => !!v || 'This field is required & should be valid date.',
-        (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Close Submission date should be greater then open submission date.',
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g).test(v)) || 'Date must be in correct format. ie. yyyy-mm-dd',
+        (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Close Submission date should be greater then open submission date.'
       ],
       roundNumber: [
-        (v) => !!v || 'This field is required & should be a number.',
-        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) || 'Value must be a number. ie. 1,2,3,5,99'
       ],
       repeatTerm: [
-        (v) => !!v || 'This field is required & should be an number.',
-        (v) => (v && new RegExp(/^[+]?\d+(\d+)?$/g).test(v)) || 'Value must be an integer. ie. 1,2,3,5,99'
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) || 'Value must be an number. ie. 1,2,3,5,99'
       ],
       scheduleTypedRules: [
         (v) => !!v || 'Please select atleast 1 option'
@@ -549,11 +532,11 @@ export default {
         // (v) => !!v || 'This field is required'
       ],
       intervalType: [
-        (v) => !!v || 'This field is required, please select one period.',
+        (v) => !!v || 'This field is required.',
       ],
       repeatIntervalType: [
-        (v) => !! v || 'This field is required, please select one period.',
-        (v) => this.AVAILABLE_PERIOD_OPTIONS.includes(v) || 'This field is required & should be a valid interval.',
+        (v) => !! v || 'This field is required.',
+        (v) => this.AVAILABLE_PERIOD_OPTIONS.includes(v) || 'This should be a valid interval.',
       ],
       repeatIntervalTypeReminder: [
         (v) => !! v || 'This field is required & should be an interval.',
@@ -563,7 +546,9 @@ export default {
         (v) => !!v || 'This field is required.',
       ],
       repeatUntilDate: [
-        (v) => !!v || 'This field is required & should be valid date.',
+        (v) => !!v || 'This field is required.',
+        (v) => (v && new RegExp(/^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g).test(v)) || 'Date must be in correct format. ie. yyyy-mm-dd',
+        (v) => moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') || 'Repeat untill date should be greater then open submission date.'
       ]
     };
   },
