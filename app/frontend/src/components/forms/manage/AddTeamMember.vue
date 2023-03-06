@@ -1,139 +1,141 @@
 <template>
   <span>
-    <v-sheet
-      v-if="addingUsers"
-      elevation="1"
-      class="float-right"
-      style="position: absolute;"
-    >
+    <span v-if="addingUsers" style="margin-right: 656px;" elevation="1">
       <v-sheet
-        style="background-color: #38598a"
+        elevation="1"
+        class="float-right"
+        style="position: absolute; order: 2"
       >
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="12">
-            <v-radio-group
-              class="ml-3 my-0"
-              v-model="selectedIdp"
-              row
+        <v-sheet
+          style="background-color: #38598a"
+          elevation="1"
+        >
+          <v-row justify="center" align="center">
+            <v-col cols="12" sm="12">
+              <v-radio-group
+                class="ml-3 my-0"
+                v-model="selectedIdp"
+                row
+                dense
+                fluid
+                hide-details
+              >
+                <v-radio class="my-0" label="IDIR" :value="ID_PROVIDERS.IDIR" />
+                <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
+                <v-radio label="Business BCeID" :value="ID_PROVIDERS.BCEIDBUSINESS" />
+              </v-radio-group>
+            </v-col>
+          </v-row>
+        </v-sheet>
+        <v-row
+          class="p-3"
+        >
+          <v-col cols="12">
+            <v-autocomplete
+              autocomplete="autocomplete_off"
+              v-model="model"
+              clearable
               dense
-              fluid
+              :filter="filterObject"
               hide-details
+              :items="items"
+              :label="autocompleteLabel"
+              :loading="isLoading"
+              return-object
+              :search-input.sync="searchUsers"
             >
-              <v-radio class="my-0" label="IDIR" :value="ID_PROVIDERS.IDIR" />
-              <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
-              <v-radio label="Business BCeID" :value="ID_PROVIDERS.BCEIDBUSINESS" />
-            </v-radio-group>
+              <!-- no data -->
+              <template #no-data>
+                <div class="px-2">
+                  Can't find someone? They may not have joined the site.<br />
+                  Kindly send them a link to the site and ask them to log in.
+                </div>
+              </template>
+              <!-- selected user -->
+              <template #selection="data">
+                <span
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  close
+                  @click="data.select"
+                >
+                  {{ data.item.fullName }}
+                </span>
+              </template>
+              <!-- users found in dropdown -->
+              <template #item="data">
+                <template v-if="typeof data.item !== 'object'">
+                  <v-list-item-content v-text="data.item" />
+                </template>
+                <template v-else>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ data.item.fullName }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ data.item.username }} ({{ data.item.idpCode }})
+                    </v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{ data.item.email }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </template>
+              </template>
+            </v-autocomplete>
+          </v-col>
+        </v-row>
+        <v-row class="my-0">
+          <v-col cols="12" class="py-0">
+            <v-chip-group
+              v-model="selectedRoles"
+              multiple
+              active-class="primary--text"
+              fluid
+              column
+              class="py-0 mx-3"
+              return-object
+            >
+              <v-chip
+                v-for="role in FORM_ROLES"
+                :key="role"
+                :value="role"
+                filter
+                outlined
+              >
+                {{ role }}
+              </v-chip>
+            </v-chip-group>
+          </v-col>
+        </v-row>
+        <v-row
+          class="pl-1 my-0"
+        >
+          <v-col cols="auto">
+            <!-- buttons -->
+            <v-btn
+              color="primary"
+              class="ml-2"
+              :disabled="!model"
+              :loading="isLoading"
+              @click="save"
+            >
+              <span>Add</span>
+            </v-btn>
+            <v-btn
+              outlined class="ml-2"
+              @click="addingUsers = false; showError = false;"
+            >
+              <span>Cancel</span>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row v-if="showError" class="px-4 my-0 py-0">
+          <v-col class="text-left">
+            <span class="red--text">You must select at least one role to add this user.</span>
           </v-col>
         </v-row>
       </v-sheet>
-      <v-row
-        class="p-3"
-      >
-        <v-col cols="12">
-          <v-autocomplete
-            autocomplete="autocomplete_off"
-            v-model="model"
-            clearable
-            dense
-            :filter="filterObject"
-            hide-details
-            :items="items"
-            :label="autocompleteLabel"
-            :loading="isLoading"
-            return-object
-            :search-input.sync="searchUsers"
-          >
-            <!-- no data -->
-            <template #no-data>
-              <div class="px-2">
-                Can't find someone? They may not have joined the site.<br />
-                Kindly send them a link to the site and ask them to log in.
-              </div>
-            </template>
-            <!-- selected user -->
-            <template #selection="data">
-              <span
-                v-bind="data.attrs"
-                :input-value="data.selected"
-                close
-                @click="data.select"
-              >
-                {{ data.item.fullName }}
-              </span>
-            </template>
-            <!-- users found in dropdown -->
-            <template #item="data">
-              <template v-if="typeof data.item !== 'object'">
-                <v-list-item-content v-text="data.item" />
-              </template>
-              <template v-else>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ data.item.fullName }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ data.item.username }} ({{ data.item.idpCode }})
-                  </v-list-item-subtitle>
-                  <v-list-item-subtitle>
-                    {{ data.item.email }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </template>
-            </template>
-          </v-autocomplete>
-        </v-col>
-      </v-row>
-      <v-row class="my-0">
-        <v-col cols="12" class="py-0">
-          <v-chip-group
-            v-model="selectedRoles"
-            multiple
-            active-class="primary--text"
-            fluid
-            column
-            class="py-0 mx-3"
-            return-object
-          >
-            <v-chip
-              v-for="role in FORM_ROLES"
-              :key="role"
-              :value="role"
-              filter
-              outlined
-            >
-              {{ role }}
-            </v-chip>
-          </v-chip-group>
-        </v-col>
-      </v-row>
-      <v-row
-        class="pl-1 my-0"
-      >
-        <v-col cols="auto">
-          <!-- buttons -->
-          <v-btn
-            color="primary"
-            class="ml-2"
-            :disabled="!model"
-            :loading="isLoading"
-            @click="save"
-          >
-            <span>Add</span>
-          </v-btn>
-          <v-btn
-            outlined class="ml-2"
-            @click="addingUsers = false; showError = false;"
-          >
-            <span>Cancel</span>
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-row v-if="showError" class="px-4 my-0 py-0">
-        <v-col class="text-left">
-          <span class="red--text">You must select at least one role to add this user.</span>
-        </v-col>
-      </v-row>
-    </v-sheet>
+    </span>
     <span v-else>
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
