@@ -212,7 +212,10 @@ export default {
     },
     FORM_ROLES() {
       if (this.identityProvider && (this.identityProvider === IdentityProviders.BCEIDBUSINESS || this.identityProvider === IdentityProviders.BCEIDBASIC)) {
-        return Object.values(FormRoleCodes).filter((frc) => frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER).sort();
+        if (this.selectedIdp === IdentityProviders.BCEIDBASIC)
+          return Object.values(FormRoleCodes).filter((frc) => frc === FormRoleCodes.FORM_SUBMITTER);
+        else
+          return Object.values(FormRoleCodes).filter((frc) => frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER).sort();
       }
       return Object.values(FormRoleCodes).sort();
     },
