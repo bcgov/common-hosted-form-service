@@ -229,8 +229,6 @@ export default {
   },
 
   /**
-<<<<<<< HEAD
-=======
    * @function restoreSubmission
    * Restores an existing submission
    * @param {string} submissionId The form uuid
@@ -242,7 +240,6 @@ export default {
   },
 
   /**
->>>>>>> 619bacfa47115c0ae48671a1c121f352e95df302
    * @function updateSubmission
    * Update an existing submission
    * @param {string} submissionId The form uuid
