@@ -47,6 +47,7 @@ export default {
     fcProactiveHelpGroupList:{},
     imageList:new Map(),
     fcProactiveHelpImageUrl:'',
+    deletedSubmissions: {},
   },
   getters: {
     getField, // vuex-map-fields
@@ -64,8 +65,9 @@ export default {
     fcNamesProactiveHelpList: state => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
     version: state => state.version,
     builder: state => state.builder,
-    fcProactiveHelpGroupList:state=>state.fcProactiveHelpGroupList,
-    fcProactiveHelpImageUrl:state=>state.fcProactiveHelpImageUrl,
+    fcProactiveHelpGroupList: state => state.fcProactiveHelpGroupList,
+    fcProactiveHelpImageUrl: state => state.fcProactiveHelpImageUrl,
+    deletedSubmissions: state => state.deletedSubmissions,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -104,6 +106,9 @@ export default {
     },
     SET_SUBMISSIONUSERS(state, users) {
       state.submissionUsers = users;
+    },
+    SET_DELETE_MULTIPLE_SUBMISSIONS (state, deletedSubmissions) {
+      state.deletedSubmissions = deletedSubmissions;
     },
     SET_USER_FORM_PREFERENCES(state, userFormPreferences) {
       state.userFormPreferences = userFormPreferences;
@@ -176,7 +181,6 @@ export default {
         const response = await rbacService.getCurrentUser({ formId: formId });
         const data = response.data;
         if (data.forms[0]) {
-          console.log( data.forms[0]);
           commit('SET_FORM_ROLES', data.forms[0].roles);
         } else {
           throw new Error('No form found');
@@ -350,18 +354,15 @@ export default {
       }
     },
 
-    async deleteMultiSubmissions ({ dispatch }, submissionIds) {
+    async deleteMultiSubmissions ({ commit, dispatch }, submissionIds) {
       try {
-        // Get this submission
-        await formService.deleteMultipleSubmissions(submissionIds);
-        dispatch('notifications/addNotification', {
-          message: 'Submissions deleted successfully.',
-          ...NotificationTypes.SUCCESS,
-        }, { root: true });
+        commit('SET_DELETE_MULTIPLE_SUBMISSIONS', []);
+        const { data:{submission}, } = await formService.deleteMultipleSubmissions(submissionIds);
+        commit('SET_DELETE_MULTIPLE_SUBMISSIONS', submission);
       } catch (error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while deleting these submissions.',
-          consoleError: `Error deleting submission ${submissionIds}: ${error}`,
+          message: 'An error occurred while deleting the selected submissions.',
+          consoleError: `Error deleteing submissions with submissions ids ${submissionIds}: ${error}`,
         }, { root: true });
       }
     },

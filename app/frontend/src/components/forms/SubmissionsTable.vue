@@ -176,10 +176,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FormManagePermissions } from '@/utils/constants';
+import { FormManagePermissions, NotificationTypes } from '@/utils/constants';
 
 import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
+
 
 export default {
   name: 'SubmissionsTable',
@@ -214,7 +215,8 @@ export default {
       'permissions',
       'submissionList',
       'userFormPreferences',
-      'roles'
+      'roles',
+      'deletedSubmissions'
     ]),
     ...mapGetters('auth', [
       'user'
@@ -309,7 +311,7 @@ export default {
     },
 
     canUserMultiDeleteSubmissions() {
-      const found = this.roles.some(r=> ['team_manager','owner'].includes(r));
+      const found = this.roles.some(r=> ['submission_reviewer','owner'].includes(r));
       if(found) {
         this.showDeleteSubmissionDialog = true;
       }
@@ -324,7 +326,25 @@ export default {
     async deleteMultiSubs() {
       this.showDeleteSubmissionDialog = false;
       await this.deleteMultiSubmissions(Array.from(this.selectedSubmissionToDelete));
-      this.populateSubmissionsTable();
+      let notDeletedSubmissionIds = this.deletedSubmissions&&this.deletedSubmissions.filter(submission=>{
+        if(!submission.deleted) return submission.id;
+      });
+
+      if (notDeletedSubmissionIds.length>0){
+        this.addNotification({
+          message: `These submissions with submission Ids ${notDeletedSubmissionIds} were not deleted`,
+          consoleError: `Cannot delete selected submissions with submission ids ${notDeletedSubmissionIds}`,
+        });
+      }
+      else {
+
+        await this.populateSubmissionsTable();
+        this.addNotification({
+          message: 'Submission(s) deleted successfully',
+          ...NotificationTypes.SUCCESS,
+        });
+      }
+      this.selectedSubmissionToDelete.clear();
     },
 
     async populateSubmissionsTable() {
