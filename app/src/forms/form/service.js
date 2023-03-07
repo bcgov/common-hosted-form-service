@@ -15,11 +15,11 @@ const {
   FormSubmissionStatus,
   FormSubmissionUser,
   IdentityProvider,
-  SubmissionMetadata
+  SubmissionMetadata,
+  FormComponentsProactiveHelp
 } = require('../common/models');
 const { falsey, queryUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
-
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const service = {
@@ -48,7 +48,6 @@ const service = {
 
   createForm: async (data, currentUser) => {
     let trx;
-    // console.log(data);
     try {
       trx = await Form.startTransaction();
       const obj = {};
@@ -228,7 +227,7 @@ const service = {
       .modify('filterVersion', params.version)
       .modify('orderDefault');
 
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'createdBy', 'formVersionId', 'idBulkFile', 'originalName' ];
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId','deleted', 'createdBy', 'formVersionId', 'idBulkFile', 'originalName' ];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
@@ -245,14 +244,6 @@ const service = {
     return query;
   },
 
-  listVersions: async (formId, params) => {
-    await service.readForm(formId, queryUtils.defaultActiveOnly(params));
-    return FormVersion.query()
-      .where('formId', formId)
-      .modify('filterPublished', params.published)
-      .modify('orderVersionDescending')
-      .modify('selectWithoutSchema');
-  },
 
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
     let trx;
@@ -317,7 +308,6 @@ const service = {
     const { schema } = await service.readVersion(formVersionId);
     return schema.components.flatMap(c => findFields(c));
   },
-
   readVersionFieldsObject: async (formVersionId) => {
     // Recursively find all field key names
     // TODO: Consider if this should be a form utils function instead?
@@ -453,9 +443,11 @@ const service = {
     findFields(schema, '', fields);
     return fields;
   },
-  listSubmissions: async (formVersionId) => {
+
+  listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query()
       .where('formVersionId', formVersionId)
+      .modify('filterCreatedBy', params.createdBy)
       .modify('orderDescending');
   },
 
@@ -576,9 +568,11 @@ const service = {
       throw err;
     }
   },
+
   updateDraft: async (formVersionDraftId, data, currentUser) => {
     let trx;
     try {
+
       const obj = await service.readDraft(formVersionDraftId);
       trx = await FormVersionDraft.startTransaction();
       await FormVersionDraft.query(trx).patchAndFetchById(formVersionDraftId, {
@@ -697,7 +691,48 @@ const service = {
       .deleteById(currentKey.id)
       .throwIfNotFound();
   },
-  // ----------------------------------------------------------------------Api Key
+
+  /**
+  * @function getFCProactiveHelpImageUrl
+  * get form component proactive help image
+  * @param {Object} param consist of publishStatus and componentId.
+  * @returns {Promise} An objection query promise
+  */
+  getFCProactiveHelpImageUrl: async(componentId) =>{
+
+    let result=[];
+    result = await FormComponentsProactiveHelp.query()
+      .modify('findByComponentId',componentId);
+    let item = result.length>0?result[0]:null;
+    let imageUrl = item!==null?'data:' + item.imageType + ';' + 'base64' + ',' + item.image:'';
+    return {url: imageUrl} ;
+  },
+
+  /**
+   * @function listFormComponentsProactiveHelp
+   * Search for all form components help information
+   * @returns {Promise} An objection query promise
+  */
+  listFormComponentsProactiveHelp: async () => {
+    let result=[];
+    result = await FormComponentsProactiveHelp.query()
+      .modify('selectWithoutImages');
+    if(result.length>0) {
+      let filterResult= result.map(item=> {
+        return ({id:item.id,status:item.publishStatus,componentName:item.componentName,externalLink:item.externalLink,
+          version:item.version,groupName:item.groupName,description:item.description, isLinkEnabled:item.isLinkEnabled,
+          imageName:item.componentImageName });
+      });
+      return await filterResult.reduce(function (r, a) {
+        r[a.groupName] = r[a.groupName] || [];
+        r[a.groupName].push(a);
+        return r;
+      }, Object.create(null));
+
+    }
+    return {};
+  },
+
 };
 
 module.exports = service;

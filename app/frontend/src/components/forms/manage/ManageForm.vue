@@ -39,7 +39,6 @@
             lazy-validation
           >
             <FormSettings :disabled="formSettingsDisabled" />
-
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
@@ -50,7 +49,6 @@
               <span>Cancel</span>
             </v-btn>
           </div>
-
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>

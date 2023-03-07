@@ -7,7 +7,7 @@ const service = require('../../../../src/forms/user/service');
 
 const formId = '4d33f4cb-0b72-4c3d-9e41-f2651805fee1';
 const userId = 'cc8c64b7-a457-456e-ade0-09ff7ee75a2b';
-const preferences = { columnList: [] };
+const preferences = { columns: [] };
 
 beforeEach(() => {
   MockModel.mockReset();
@@ -20,7 +20,7 @@ describe('list', () => {
       email: 'email',
       firstName: 'firstName',
       fullName: 'fullName',
-      keycloakId: 'keycloakId',
+      idpUserId: 'idpUserId',
       lastName: 'lastName',
       search: 'search',
       username: 'username',
@@ -31,9 +31,10 @@ describe('list', () => {
 
     expect(MockModel.query).toHaveBeenCalledTimes(1);
     expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.modify).toHaveBeenCalledTimes(9);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterKeycloakId', params.keycloakId);
+    expect(MockModel.modify).toHaveBeenCalledTimes(10);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterIdpUserId', params.idpUserId);
     expect(MockModel.modify).toHaveBeenCalledWith('filterIdpCode', params.idpCode);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterRestricted');
     expect(MockModel.modify).toHaveBeenCalledWith('filterUsername', params.username);
     expect(MockModel.modify).toHaveBeenCalledWith('filterFullName', params.fullName);
     expect(MockModel.modify).toHaveBeenCalledWith('filterFirstName', params.firstName);

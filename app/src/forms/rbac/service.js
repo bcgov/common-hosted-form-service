@@ -75,54 +75,10 @@ const service = {
       .throwIfNotFound();
   },
 
-  createUser: async (data) => {
-    let trx;
-    try {
-      trx = await User.startTransaction();
-
-      const obj = {
-        id: uuidv4(),
-        ...data
-      };
-
-      await User.query(trx).insert(obj);
-      await trx.commit();
-      return await service.read(obj.id);
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
-  },
-
   readUser: async (id) => {
     return User.query()
       .findById(id)
       .throwIfNotFound();
-  },
-
-  updateUser: async (id, data) => {
-    let trx;
-    try {
-      const obj = await service.readUser(id);
-      trx = await User.startTransaction();
-
-      const update = {
-        keycloakId: data.keycloakId,
-        username: data.username,
-        fullName: data.fullName,
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName
-      };
-
-      await User.query(trx).patchAndFetchById(obj.id, update);
-      await trx.commit();
-      const result = await service.readUser(id);
-      return result;
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
   },
 
   getCurrentUser: async (currentUser, params) => {
@@ -156,7 +112,7 @@ const service = {
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserFormAccess.query()
       .modify('filterUserId', params.userId)
-      .modify('filterKeycloakId', params.keycloakId)
+      .modify('filterIdpUserId', params.idpUserId)
       .modify('filterUsername', params.username)
       .modify('filterFullName', params.fullName)
       .modify('filterFirstName', params.firstName)
@@ -185,7 +141,7 @@ const service = {
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserFormAccess.query()
       .modify('filterUserId', params.userId)
-      .modify('filterKeycloakId', params.keycloakId)
+      .modify('filterIdpUserId', params.idpUserId)
       .modify('filterUsername', params.username)
       .modify('filterFullName', params.fullName)
       .modify('filterFirstName', params.firstName)
@@ -268,7 +224,28 @@ const service = {
       throw err;
     }
   },
+  removeMultiUsers: async(formId, data) => {
 
+    // create the batch and insert...
+    if (Array.isArray(data) && data.length!==0 && formId) {
+      let trx;
+      try {
+        trx = await FormRoleUser.startTransaction();
+        // remove existing mappings...
+        await FormRoleUser.query(trx)
+          .delete()
+          .where('formId', formId)
+          .whereIn('userId', data);
+
+        await trx.commit();
+        return;
+
+      } catch (err) {
+        if (trx) await trx.rollback();
+        throw err;
+      }
+    }
+  },
   setUserForms: async (userId, formId, data, currentUser) => {
     // check this in middleware? 422 in valid params
     if (!userId || 0 === userId.length) {

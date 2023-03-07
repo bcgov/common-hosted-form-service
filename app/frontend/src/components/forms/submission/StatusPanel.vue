@@ -165,6 +165,7 @@
 </template>
 
 <script>
+
 import { mapActions, mapGetters } from 'vuex';
 import { FormPermissions } from '@/utils/constants';
 import { formService, rbacService } from '@/services';
@@ -207,7 +208,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['keycloakSubject']),
+    ...mapGetters('auth', ['identityProviderIdentity']),
     ...mapGetters('form', ['form', 'formSubmission', 'submissionUsers']),
     // State Machine
     showActionDate() {
@@ -261,7 +262,7 @@ export default {
     },
     assignToCurrentUser() {
       this.assignee = this.formReviewers.find(
-        (f) => f.keycloakId === this.keycloakSubject
+        (f) => f.idpUserId === this.identityProviderIdentity
       );
     },
     autoCompleteFilter(item, queryText) {

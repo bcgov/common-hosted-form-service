@@ -1,8 +1,9 @@
 import { getField, updateField } from 'vuex-map-fields';
 
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { apiKeyService, formService, rbacService, userService } from '@/services';
+import { apiKeyService, formService, rbacService, userService} from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
+
 
 const genInitialForm = () => ({
   description: '',
@@ -43,7 +44,10 @@ export default {
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
-    version: {}
+    version: {},
+    fcProactiveHelpGroupList:{},
+    imageList:new Map(),
+    fcProactiveHelpImageUrl:'',
   },
   getters: {
     getField, // vuex-map-fields
@@ -57,7 +61,11 @@ export default {
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
-    version: state => state.version
+    fcNamesProactiveHelpList: state => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
+    version: state => state.version,
+    builder: state => state.builder,
+    fcProactiveHelpGroupList:state=>state.fcProactiveHelpGroupList,
+    fcProactiveHelpImageUrl:state=>state.fcProactiveHelpImageUrl,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -78,9 +86,6 @@ export default {
     },
     SET_FORM_FIELDS(state, formFields) {
       state.formFields = formFields;
-    },
-    SET_FORM_DIRTY(state, isDirty) {
-      state.form.isDirty = isDirty;
     },
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
@@ -103,10 +108,22 @@ export default {
     SET_VERSION(state, version) {
       state.version = version;
     },
+    SET_FORM_DIRTY(state, isDirty) {
+      state.form.isDirty = isDirty;
+    },
+    //Form Component Proactive Help Group Object
+    SET_FCPROACTIVEHELPGROUPLIST(state,fcProactiveHelpGroupList){
+      state.fcProactiveHelpGroupList = fcProactiveHelpGroupList;
+    },
+    SET_FCPROACTIVEHELPIMAGEURL(state,fcProactiveHelpImageUrl)
+    {
+      state.fcProactiveHelpImageUrl = fcProactiveHelpImageUrl;
+    },
   },
   actions: {
     //
     // Current User
+    //
     //
     async getFormsForCurrentUser({ commit, dispatch }) {
       try {
@@ -120,7 +137,8 @@ export default {
           idps: f.idps,
           name: f.formName,
           description: f.formDescription,
-          permissions: f.permissions
+          permissions: f.permissions,
+          published: f.published
         }));
         commit('SET_FORMLIST', forms);
       } catch (error) {
@@ -262,14 +280,6 @@ export default {
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
     },
-    async setDirtyFlag({ commit, state }, isDirty) {
-      // When the form is detected to be dirty set the browser guards for closing the tab etc
-      // There are also Vue route-specific guards so that we can ask before navigating away with the links
-      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
-      if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
-      window.onbeforeunload = isDirty ? () => true : null;
-      commit('SET_FORM_DIRTY', isDirty);
-    },
     async updateForm({ state, dispatch }) {
       try {
         const emailList =
@@ -288,8 +298,7 @@ export default {
             userType: state.form.userType,
           }),
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
-          submissionReceivedEmails: emailList,
-          allowSubmitterToUploadFile: state.form.allowSubmitterToUploadFile
+          submissionReceivedEmails: emailList
         });
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -314,6 +323,21 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while deleting this submission.',
           consoleError: `Error deleting submission ${submissionId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async restoreSubmission({ dispatch }, { submissionId, deleted }) {
+      try {
+        // Get this submission
+        await formService.restoreSubmission(submissionId, { deleted });
+        dispatch('notifications/addNotification', {
+          message: 'Submission restored successfully.',
+          ...NotificationTypes.SUCCESS,
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while restoring this submission.',
+          consoleError: `Error restoring submission ${submissionId}: ${error}`,
         }, { root: true });
       }
     },
@@ -344,15 +368,15 @@ export default {
         }, { root: true });
       }
     },
-    async fetchSubmissions({ commit, dispatch, state }, { formId, userView }) {
+    async fetchSubmissions({ commit, dispatch, state }, { formId, userView, deletedOnly = false, createdBy = '' }) {
       try {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of active submissions for this form (for either all submissions, or just single user)
         const fields = state.userFormPreferences &&
-          state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columnList : undefined;
+          state.userFormPreferences.preferences ? state.userFormPreferences.preferences.columns : undefined;
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
-          : await formService.listSubmissions(formId, { deleted: false, fields: fields });
+          : await formService.listSubmissions(formId, { deleted: deletedOnly, fields: fields, createdBy: createdBy  });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -428,6 +452,52 @@ export default {
           consoleError: `Error getting API Key for form ${formId}: ${error}`,
         }, { root: true });
       }
+    },
+
+    async getFCProactiveHelpImageUrl({ commit, dispatch, state },componentId) {
+      try {
+        // Get Common Components Help Information
+        commit('SET_FCPROACTIVEHELPIMAGEURL',{});
+        const response = state.imageList.get(componentId);
+        if(response) {
+
+          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+        }
+        else {
+          const response = await formService.getFCProactiveHelpImageUrl(componentId);
+          state.imageList.set(componentId, response);
+          commit('SET_FCPROACTIVEHELPIMAGEURL',response.data.url);
+        }
+      } catch(error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while getting image url',
+          consoleError: 'Error getting image url',
+        }, { root: true });
+      }
+    },
+
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp({ commit, dispatch }) {
+      try {
+        // Get Form Components Proactive Help Group Object
+        commit('SET_FCPROACTIVEHELPGROUPLIST',{});
+        const response = await formService.listFCProactiveHelp();
+        commit('SET_FCPROACTIVEHELPGROUPLIST',response.data);
+      } catch(error) {
+
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching form builder components',
+          consoleError: 'Error getting form builder components',
+        }, { root: true });
+      }
+    },
+    async setDirtyFlag({ commit, state }, isDirty) {
+      // When the form is detected to be dirty set the browser guards for closing the tab etc
+      // There are also Vue route-specific guards so that we can ask before navigating away with the links
+      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
+      if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
+      window.onbeforeunload = isDirty ? () => true : null;
+      commit('SET_FORM_DIRTY', isDirty);
     },
   },
 };

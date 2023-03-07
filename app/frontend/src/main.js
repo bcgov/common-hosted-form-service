@@ -5,8 +5,6 @@ import '@/assets/scss/style.scss';
 import axios from 'axios';
 import NProgress from 'nprogress';
 import Vue from 'vue';
-// import JsonCSV from 'vue-json-csv';
-// Vue.component('downloadCsv', JsonCSV);
 import App from '@/App.vue';
 import '@/filters';
 import auth from '@/store/modules/auth.js';
@@ -21,12 +19,20 @@ import BcGovFormioComponents from '@/formio/lib';
 import { Formio } from 'vue-formio';
 Formio.use(BcGovFormioComponents);
 
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+/* add font awesome icon component */
+Vue.component('font-awesome-icon', FontAwesomeIcon);
+
+
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
 Vue.config.productionTip = false;
 
 NProgress.configure({ showSpinner: false });
 NProgress.start();
+
+
 
 // Globally register all components with base in the name
 const requireComponent = require.context('@/components', true, /Base[A-Z]\w+\.(vue|js)$/);
@@ -72,9 +78,8 @@ function initializeApp(kcSuccess = false, basePath = '/') {
  */
 async function loadConfig() {
   // App publicPath is ./ - so use relative path here, will hit the backend server using relative path to root.
-  const configUrl = process.env.NODE_ENV === 'production' ? 'config' : '/app/config';
+  const configUrl = process.env.NODE_ENV === 'production' ? 'config' : `${process.env.BASE_URL}/config`;
   const storageKey = 'config';
-
   try {
     // Get configuration if it isn't already in session storage
     if (sessionStorage.getItem(storageKey) === null) {

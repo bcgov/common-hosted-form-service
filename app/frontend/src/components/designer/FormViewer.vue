@@ -466,7 +466,6 @@ export default {
     },
   },
   created() {
-
     if (this.submissionId) {
       this.getFormData();
     } else {
@@ -476,7 +475,6 @@ export default {
     if (!this.preview && !this.readOnly) {
       window.onbeforeunload = () => true;
     }
-
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change

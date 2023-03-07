@@ -147,7 +147,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should return 200', async () => {
     // mock a success return value...
-    userService.list = jest.fn().mockReturnValue([]);
+    service.getUsers = jest.fn().mockReturnValue([]);
 
     const response = await request(app).get(`${basePath}/users`);
 
@@ -157,7 +157,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    userService.list = jest.fn(() => { throw new Problem(401); });
+    service.getUsers = jest.fn(() => { throw new Problem(401); });
 
     const response = await request(app).get(`${basePath}/users`);
 
@@ -167,7 +167,7 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    userService.list = jest.fn(() => { throw new Error(); });
+    service.getUsers = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).get(`${basePath}/users`);
 
@@ -246,6 +246,8 @@ describe(`GET ${basePath}/forms/formId/formUsers`, () => {
 
 });
 
+
+
 describe(`PUT ${basePath}/forms/formId/addUser`, () => {
 
   it('should return 200', async () => {
@@ -285,6 +287,131 @@ describe(`PUT ${basePath}/forms/formId/addUser`, () => {
     rbacService.setFormUsers = jest.fn(() => { throw new Error(); });
 
     const response = await request(app).put(`${basePath}/forms/formId/addUser`).query({ userId: '123' }).send({ userId: '123' });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
+describe(`POST ${basePath}/formcomponents/proactivehelp/object`, () => {
+
+  it('should return 200', async () => {
+
+    const formComponentsHelpInfo = {
+      componentname:'Content',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      status:false
+    };
+
+    // mock a success return value...
+    service.createFormComponentsProactiveHelp = jest.fn().mockReturnValue(formComponentsHelpInfo);
+
+    const response = await request(app).post(`${basePath}/formcomponents/proactivehelp/object`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.createFormComponentsProactiveHelp = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).post(`${basePath}/formcomponents/proactivehelp/object`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.createFormComponentsProactiveHelp = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).post(`${basePath}/formcomponents/proactivehelp/object`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
+describe(`PUT ${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`, () => {
+
+  it('should return 200', async () => {
+
+    const formComponentsHelpInfo = {
+      componentname:'Content',
+      externallink:'https://helplink.com',
+      image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB3g',
+      version:1,
+      groupname:'Basic Layout',
+      description:'gughuhiuhuih',
+      status:false
+    };
+
+    // mock a success return value...
+    service.updateFormComponentsProactiveHelp = jest.fn().mockReturnValue(formComponentsHelpInfo);
+
+    const response = await request(app).put(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.updateFormComponentsProactiveHelp = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).put(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.updateFormComponentsProactiveHelp = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).put(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
+describe(`PUT ${basePath}/formcomponents/proactivehelp/list`, () => {
+
+  it('should return 200', async () => {
+
+
+    // mock a success return value...
+    service.listFormComponentsProactiveHelp = jest.fn().mockReturnValue({});
+
+    const response = await request(app).get(`${basePath}/formcomponents/proactivehelp/list`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.listFormComponentsProactiveHelp = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).get(`${basePath}/formcomponents/proactivehelp/list`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.listFormComponentsProactiveHelp = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).get(`${basePath}/formcomponents/proactivehelp/list`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();

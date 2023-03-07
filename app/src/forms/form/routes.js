@@ -2,7 +2,6 @@ const config = require('config');
 const routes = require('express').Router();
 
 const apiAccess = require('../auth/middleware/apiAccess');
-
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 
@@ -12,7 +11,6 @@ const controller = require('./controller');
 routes.use(currentUser);
 
 routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
-  // console.log("IN GET");
   await controller.listForms(req, res, next);
 });
 
@@ -46,10 +44,6 @@ routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DEL
 
 routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.listFormSubmissions(req, res, next);
-});
-
-routes.get('/:formId/versions', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
-  await controller.listVersions(req, res, next);
 });
 
 // routes.post('/:formId/versions', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
@@ -134,6 +128,14 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
 
 routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (req, res, next) => {
   await controller.deleteApiKey(req, res, next);
+});
+
+routes.get('/formcomponents/proactivehelp/list', async(req,res,next) => {
+  await controller.listFormComponentsProactiveHelp(req, res, next);
+});
+
+routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
+  await controller.getFCProactiveHelpImageUrl(req, res, next);
 });
 
 module.exports = routes;

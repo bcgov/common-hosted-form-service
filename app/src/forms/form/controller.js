@@ -79,14 +79,6 @@ module.exports = {
       next(error);
     }
   },
-  listVersions: async (req, res, next) => {
-    try {
-      const response = await service.listVersions(req.params.formId, req.query);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
   readVersion: async (req, res, next) => {
     try {
       const response = await service.readVersion(req.params.formVersionId);
@@ -103,14 +95,6 @@ module.exports = {
       next(error);
     }
   },
-  readVersionFieldsObject: async (req, res, next) => {
-    try {
-      const response = await service.readVersionFieldsObject(req.params.formVersionId);
-      res.status(200).json(response.filter(f => f !== 'submit'));
-    } catch (error) {
-      next(error);
-    }
-  },
   publishVersion: async (req, res, next) => {
     try {
       const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.query, req.currentUser);
@@ -121,7 +105,7 @@ module.exports = {
   },
   listSubmissions: async (req, res, next) => {
     try {
-      const response = await service.listSubmissions(req.params.formVersionId);
+      const response = await service.listSubmissions(req.params.formVersionId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -239,6 +223,22 @@ module.exports = {
       const response = await service.deleteApiKey(req.params.formId);
       res.status(204).json(response);
     } catch (error) {
+      next(error);
+    }
+  },
+  getFCProactiveHelpImageUrl:async(req, res, next)=> {
+    try{
+      const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
+      res.status(200).send(response);
+    } catch(error){
+      next(error);
+    }
+  },
+  listFormComponentsProactiveHelp:async(req,res,next)=> {
+    try{
+      const response = await service.listFormComponentsProactiveHelp();
+      res.status(200).json(response);
+    } catch(error){
       next(error);
     }
   },

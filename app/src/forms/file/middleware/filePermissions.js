@@ -37,7 +37,7 @@ const currentFileRecord = async (req, res, next) => {
 const hasFileCreate = (req, res, next) => {
   // You can't do this if you are not authenticated as a USER (not a public user)
   // Can expand on this for API key access if ever needed
-  if (!req.currentUser || !req.currentUser.keycloakId) {
+  if (!req.currentUser || !req.currentUser.idpUserId) {
     return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
   }
   next();
@@ -54,7 +54,7 @@ const hasFileCreate = (req, res, next) => {
 const hasFilePermissions = (permissions) => {
   return (req, res, next) => {
     // Guard against unauthed (or public) users
-    if (!req.currentUser || !req.currentUser.keycloakId) {
+    if (!req.currentUser || !req.currentUser.idpUserId) {
       return next(new Problem(403, { detail: 'Unauthorized to read file' }));
     }
 

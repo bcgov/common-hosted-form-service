@@ -35,6 +35,22 @@
 
     <v-row no-gutters>
       <v-spacer />
+      <v-col cols="4" sm="4">
+        <v-checkbox
+          class="pl-3"
+          v-model="deletedOnly"
+          label="Show deleted submissions"
+          @click="refreshSubmissions"
+        />
+      </v-col>
+      <v-col cols="4" sm="4">
+        <v-checkbox
+          class="pl-3"
+          v-model="currentUserOnly"
+          label="Show my submissions"
+          @click="refreshSubmissions"
+        />
+      </v-col>
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
@@ -49,11 +65,13 @@
         </div>
       </v-col>
     </v-row>
+    <v-row no-gutters>
+    </v-row>
 
     <!-- table header -->
     <v-data-table
       class="submissions-table"
-      :headers="headers"
+      :headers="calcHeaders"
       item-key="title"
       :items="submissionTable"
       :search="search"
@@ -93,9 +111,39 @@
             <span>View Submission</span>
           </v-tooltip>
         </span>
+        <span v-if="item.deleted">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="restoreItem=item; showRestoreDialog = true"
+                color="red"
+                icon
+                v-bind="attrs"
+                v-on="on">
+                <v-icon>restore_from_trash</v-icon>
+              </v-btn>
+            </template>
+            <span>Restore</span>
+          </v-tooltip>
+        </span>
       </template>
-
     </v-data-table>
+
+
+    <BaseDialog
+      v-model="showRestoreDialog"
+      type="CONTINUE"
+      @close-dialog="showRestoreDialog = false"
+      @continue-dialog="restoreSub"
+    >
+      <template #title>Confirm Restoration</template>
+      <template #text>
+        Are you sure you wish to restore this submission?
+      </template>
+      <template #button-text-continue>
+        <span>Restore</span>
+      </template>
+    </BaseDialog>
   </div>
 </template>
 
@@ -120,9 +168,13 @@ export default {
   },
   data() {
     return {
-      submissionTable: [],
+      deletedOnly: false,
+      currentUserOnly: false,
       loading: true,
+      restoreItem: {},
       search: '',
+      showRestoreDialog: false,
+      submissionTable: [],
     };
   },
   computed: {
@@ -133,12 +185,15 @@ export default {
       'submissionList',
       'userFormPreferences',
     ]),
+    ...mapGetters('auth', [
+      'user'
+    ]),
 
     checkFormManage() {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
 
-    headers() {
+    calcHeaders() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Type', align: 'start', value: 'submissionType' },
@@ -158,7 +213,7 @@ export default {
 
       // Add any custom columns if the user has them
       const maxHeaderLength = 25;
-      this.userColumnList.forEach((col) => {
+      this.userColumns.forEach((col) => {
         headers.push({
           text:
             col.length > maxHeaderLength
@@ -177,19 +232,22 @@ export default {
         filterable: false,
         sortable: false,
       });
-      return headers;
+
+      return headers.filter(
+        (x) => x.value !== 'updatedAt' || this.deletedOnly
+      );
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
     },
-    userColumnList() {
+    userColumns() {
       if (
         this.userFormPreferences &&
         this.userFormPreferences.preferences &&
-        this.userFormPreferences.preferences.columnList
+        this.userFormPreferences.preferences.columns
       ) {
         // Compare saved user prefs against the current form versions component names and remove any discrepancies
-        return this.userFormPreferences.preferences.columnList.filter(
+        return this.userFormPreferences.preferences.columns.filter(
           (x) => this.formFields.indexOf(x) !== -1
         );
       } else {
@@ -202,6 +260,7 @@ export default {
       'fetchForm',
       'fetchFormFields',
       'fetchSubmissions',
+      'restoreSubmission',
       'getFormPermissionsForUser',
       'getFormPreferencesForCurrentUser',
     ]),
@@ -212,7 +271,7 @@ export default {
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        await this.fetchSubmissions({ formId: this.formId });
+        await this.fetchSubmissions({ formId: this.formId, deletedOnly: this.deletedOnly, createdBy: (this.currentUserOnly) ? `${this.user.username}@${this.user.idp}` : '' });
         // Build up the list of forms for the table
         if (this.submissionList) {
           const tableRows = this.submissionList
@@ -228,35 +287,49 @@ export default {
                 submissionId: s.submissionId,
                 submitter: s.createdBy,
                 versionId: s.formVersionId,
+
                 submissionType: (s.originalName) ? 'Bulk Submission' : 'Single Submission' ,
+                deleted: s.deleted,
               };
               // Add any custom columns
-              this.userColumnList.forEach((col) => {
+              this.userColumns.forEach((col) => {
                 fields[col] = s[col];
               });
               return fields;
             });
-          this.submissionTable = tableRows;        }
+          this.submissionTable = tableRows;
+        }
       } catch (error) {
         // Handled in state fetchSubmissions
       } finally {
         this.loading = false;
       }
     },
+
+    async refreshSubmissions() {
+      this.loading = true;
+      Promise.all([
+        this.getFormPermissionsForUser(this.formId),
+        this.fetchForm(this.formId).then(() => {
+          this.fetchFormFields({
+            formId: this.formId,
+            formVersionId: this.form.versions[0].id,
+          });
+        }),
+      ]).then(() => {
+        this.populateSubmissionsTable();
+      });
+    },
+
+    async restoreSub() {
+      await this.restoreSubmission({ submissionId: this.restoreItem.submissionId, deleted: false });
+      this.showRestoreDialog = false;
+      this.refreshSubmissions();
+    },
   },
 
   mounted() {
-    Promise.all([
-      this.getFormPermissionsForUser(this.formId),
-      this.fetchForm(this.formId).then(() => {
-        this.fetchFormFields({
-          formId: this.formId,
-          formVersionId: this.form.versions[0].id,
-        });
-      }),
-    ]).then(() => {
-      this.populateSubmissionsTable();
-    });
+    this.refreshSubmissions();
   },
 };
 </script>

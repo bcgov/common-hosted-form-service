@@ -4,15 +4,17 @@
       class="mt-6"
       :draftId="d"
       :formId="f"
-      :saved="sv"
+      :saved="JSON.parse(sv)"
       :versionId="v"
+      ref="formDesigner"
+      :isSavedStatus="svs"
+      :newVersion="nv"
     />
   </BaseSecure>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
+import { mapGetters, mapActions } from 'vuex';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import { IdentityProviders } from '@/utils/constants';
 
@@ -26,12 +28,26 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
+    svs:String,
+    nv:{
+      type:Boolean,
+      default:false
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
+  },
+
+  methods:{
+    ...mapActions('form', ['listFCProactiveHelp','deleteCurrentForm']),
   },
   computed: {
     ...mapGetters('form', ['form']),
     IDP: () => IdentityProviders,
   },
-  beforeRouteLeave(_to, _from, next) {
+  beforeRouteLeave(_to, _from,next) {
     this.form.isDirty
       ? next(
         window.confirm(
@@ -39,6 +55,9 @@ export default {
         )
       )
       : next();
+  },
+  beforeMount() {
+    this.listFCProactiveHelp();
   },
 };
 </script>

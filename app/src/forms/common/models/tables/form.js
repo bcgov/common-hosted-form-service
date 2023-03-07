@@ -4,7 +4,6 @@ const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
 class Form extends Timestamps(Model) {
-
   static get tableName() {
     return 'form';
   }

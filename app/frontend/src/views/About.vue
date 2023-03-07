@@ -24,7 +24,7 @@
           <div class="video-wrapper">
             <iframe width="100%"
                     height="100%"
-                    src="https://www.youtube.com/embed/YweTJMEpzO8"
+                    :src="chefsTourVideoUrl"
                     title="Introduction to the Common Hosted Forms Service (CHEFS)"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -39,7 +39,7 @@
       <v-col cols="12" lg="4">
         <h2>CHEFS How-to Videos</h2>
         <p>
-          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a href="https://trainingmodules.nrs.gov.bc.ca/Provincial/IIT/CHEFSquickstart">Get started!</a>
+          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a :href="howToVideoUrl" target="_blank">Get started!</a>
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -113,8 +113,18 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'About',
-  computed: mapGetters('auth', ['authenticated']),
+  computed:{
+    ...mapGetters('auth', ['authenticated']),
+    howToVideoUrl() {
+      return process.env.VUE_APP_HOWTOURL;
+    },
+    chefsTourVideoUrl() {
+      return process.env.VUE_APP_CHEFSTOURURL;
+    }
+  }
+
 };
+//
 </script>
 
 <style lang="scss" scoped>

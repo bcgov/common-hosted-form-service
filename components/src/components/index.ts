@@ -1,5 +1,4 @@
 import orgbook from './OrgBook/Component';
-
 import simplebtnreset from './SimpleButtonReset/Component';
 import simplebtnsubmit from './SimpleButtonSubmit/Component';
 import simplecheckbox from './SimpleCheckbox/Component';
@@ -24,6 +23,7 @@ import simpletabs from './SimpleTabs/Component';
 import simpletextarea from './SimpleTextArea/Component';
 import simpletextfield from './SimpleTextField/Component';
 import simpletime from './SimpleTime/Component';
+import bcaddress from './BCAddress/Component';
 
 export default {
   orgbook,
@@ -50,5 +50,6 @@ export default {
   simpletabs,
   simpletextarea,
   simpletextfield,
-  simpletime
+  simpletime,
+  bcaddress
 };
