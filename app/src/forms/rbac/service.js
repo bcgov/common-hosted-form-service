@@ -107,6 +107,7 @@ const service = {
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserSubmissions.query()
       .withGraphFetched('submissionStatus(orderDescending)')
+      .withGraphFetched('submission')
       .modify('filterFormId', params.formId)
       .modify('filterFormSubmissionId', params.formSubmissionId)
       .modify('filterUserId', currentUser.id)

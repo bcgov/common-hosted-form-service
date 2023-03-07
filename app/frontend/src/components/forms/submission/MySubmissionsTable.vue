@@ -65,13 +65,13 @@
       no-data-text="You have no submissions"
     >
       <template #[`item.lastEdited`]="{ item }">
-        {{ item.lastEdited | formatDateLong }}
+        {{ item.lastEdited | formatDateLong(false) }}
       </template>
       <template #[`item.submittedDate`]="{ item }">
-        {{ item.submittedDate | formatDateLong }}
+        {{ item.submittedDate | formatDateLong(false) }}
       </template>
       <template #[`item.completedDate`]="{ item }">
-        {{ item.completedDate | formatDateLong }}
+        {{ item.completedDate | formatDateLong(false) }}
       </template>
       <template #[`item.actions`]="{ item }">
         <MySubmissionsActions
@@ -113,14 +113,15 @@ export default {
     ]),
     headers() {
       let headers = [
-        { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
-        { text: 'Username', align: 'start', value: 'username' },
-        { text: 'Status', align: 'start', value: 'status' },
+        { text: 'Confirmation Id', align: 'start', value: 'confirmationId', sortable: true, width: `${(50/3).toString()}%` },
+        { text: 'Created By', value: 'createdBy', sortable: true, width: `${(50/3).toString()}%` },
+        { text: 'Status Updated By', value: 'username', sortable: true, width: `${(50/3).toString()}%` },
+        { text: 'Status', value: 'status', sortable: true, width: `${(50/3).toString()}%` },
         {
           text: 'Submission Date',
-          align: 'start',
           value: 'submittedDate',
           sortable: true,
+          width: `${(50/3).toString()}%`,
         },
         {
           text: 'Actions',
@@ -128,21 +129,22 @@ export default {
           value: 'actions',
           filterable: false,
           sortable: false,
-        },
+          width: `${(50/3).toString()}%`,
+        }
       ];
       if (this.showDraftLastEdited || !this.formId) {
-        headers.splice(3, 0, {
+        headers = headers.map((h) => {
+          if (['status', 'submittedDate', 'actions'].includes(h.value)) {
+            h.width = `${(50/4).toString()}%`;
+          }
+          return h;
+        });
+        headers.splice(4, 0, {
           text: 'Draft Last Edited',
           align: 'start',
           value: 'lastEdited',
           sortable: true,
-        });
-      }
-      if (!this.formId) {
-        headers.splice(0, 0, {
-          text: 'Form Title',
-          align: 'start',
-          value: 'name',
+          width: `${(50/4).toString()}%`,
         });
       }
       return headers;
@@ -183,7 +185,7 @@ export default {
     async populateSubmissionsTable() {
       this.loading = true;
       // Get the submissions for this form
-      await this.fetchSubmissions({ formId: this.formId, userView: true, createdBy: `${this.user.username}@${this.user.idp}` });
+      await this.fetchSubmissions({ formId: this.formId, userView: true });
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
@@ -195,6 +197,7 @@ export default {
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
             submittedDate: this.getStatusDate(s, 'SUBMITTED'),
+            createdBy: s.submission.createdBy,
             username: (s.submissionStatus && s.submissionStatus.length > 0) ? s.submissionStatus[0].createdBy : '',
           };
         });
