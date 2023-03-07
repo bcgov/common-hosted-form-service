@@ -441,42 +441,6 @@ export default {
       }
       this.edited = true;
       this.setUserForms(userId);
-<<<<<<< HEAD
-    },
-    onRemoveClick(userId) {
-      const ownerCount = this.tableData.reduce(
-        (acc, user) => (user.owner ? acc + 1 : acc),
-        0
-      );
-      const index = this.tableData.findIndex((u) => u.userId === userId);
-
-      if (this.tableData[index].owner && ownerCount === 1) {
-        this.ownerError(userId);
-      } else {
-        this.userId = userId;
-        this.showDeleteDialog = true;
-      }
-    },
-    ownerError(userId) {
-      this.addNotification({
-        message: 'There must always be at least one form owner',
-        consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
-      });
-    },
-    removeUser() {
-      this.showDeleteDialog = false;
-      this.edited = true;
-
-      // Set all of userId's roles to false
-      const index = this.tableData.findIndex((u) => u.userId === this.userId);
-      this.roleList.forEach(
-        (role) => (this.tableData[index][role.code] = false)
-      );
-
-      this.setUserForms(this.userId);
-      this.tableData = this.tableData.filter((u) => u.userId !== this.userId);
-      this.userId = '';
-=======
       this.selectAllCheckBox=false;
       this.itemToDelete.clear();
     },
@@ -547,7 +511,6 @@ export default {
       }
       this.updating = false;
       this.selectAllCheckBox=false;
->>>>>>> 619bacfa47115c0ae48671a1c121f352e95df302
     },
     /**
      * @function setFormUsers
