@@ -3,6 +3,21 @@
     <v-container fluid class="d-flex">
       <h1 class="mr-auto">Team Management</h1>
       <div style="z-index: 1;">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="showColumnsDialog = true"
+              class="mx-1"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>view_column</v-icon>
+            </v-btn>
+          </template>
+          <span>Select Columns</span>
+        </v-tooltip>
         <span>
           <AddTeamMember
             :disabled="!canManageTeam"
@@ -53,7 +68,7 @@
       show-select
       v-model="selectedUsers"
       :single-select="false"
-      :headers="headers"
+      :headers="HEADERS"
       :items="tableData"
       item-key="id"
       :loading="loading || updating"
@@ -140,6 +155,19 @@
         <span>Remove</span>
       </template>
     </BaseDialog>
+
+    <v-dialog v-model="showColumnsDialog" width="700">
+      <BaseFilter
+        inputFilterPlaceholder="Search team management fields"
+        inputItemKey="value"
+        inputSaveButtonText="Save"
+        :inputData="DEFAULT_HEADERS.filter((h) => !filterIgnore.some((fd) => fd.value === h.value))"
+        @saving-filter-data="updateFilter"
+        @cancel-filter-data="showColumnsDialog = false"
+      >
+        <template #filter-title>Search and select columns to show under your dashboard</template>
+      </BaseFilter>
+    </v-dialog>
   </div>
 </template>
 
@@ -172,12 +200,44 @@ export default {
       return (this.itemsToDelete.length > 1) ?
         'Are you sure you want to remove the selected members?' :
         'Are you sure you want to remove the selected member?';
-    }
+    },
+    DEFAULT_HEADERS() {
+      const headers = [
+        { text: 'Full Name', value: 'fullName' },
+        { text: 'Username', value: 'username' },
+        { text: 'Identity Provider', value: 'identityProvider' }
+      ];
+      return headers
+        .concat(
+          this.roleList
+            .filter((role) => this.userType === IdentityMode.TEAM || role.code !== FormRoleCodes.FORM_SUBMITTER)
+            .map((role) => ({
+              filterable: false,
+              text: role.display,
+              value: role.code,
+              description: role.description
+            }))
+            .sort((a, b) =>
+              this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
+                ? 1
+                : -1
+            )
+        )
+        .concat({ text: '', value: 'actions', width: '1rem', sortable: false });
+    },
+    HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+      if (this.filterData.length > 0) headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
+      return headers;
+    },
   },
   data() {
     return {
-      headers: [],
       formUsers: [],
+      filterData: [],
+      filterIgnore: [{
+        value: 'actions'
+      }],
       isAddingUsers: false,
       loading: true,
       roleList: [],
@@ -185,6 +245,7 @@ export default {
       itemsToDelete: [],
       search: '',
       showDeleteDialog: false,
+      showColumnsDialog: false,
       tableData: [],
       updating: false,
     };
@@ -232,30 +293,6 @@ export default {
         return false;
       }
       return true;
-    },
-    createHeaders() {
-      const headers = [
-        { text: 'Full Name', value: 'fullName' },
-        { text: 'Username', value: 'username' },
-        { text: 'Identity Provider', value: 'identityProvider' }
-      ];
-      this.headers = headers
-        .concat(
-          this.roleList
-            .filter((role) => this.userType === IdentityMode.TEAM || role.code !== FormRoleCodes.FORM_SUBMITTER)
-            .map((role) => ({
-              filterable: false,
-              text: role.display,
-              value: role.code,
-              description: role.description
-            }))
-            .sort((a, b) =>
-              this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
-                ? 1
-                : -1
-            )
-        )
-        .concat({ text: '', value: 'actions', width: '1rem', sortable: false });
     },
     createTableData() {
       this.tableData = this.formUsers.map((user) => {
@@ -328,8 +365,6 @@ export default {
           consoleError: `Error getting list of roles: ${error}`,
         });
         this.roleList = [];
-      } finally {
-        this.createHeaders();
       }
     },
     onCheckboxToggle(userId) {
@@ -430,6 +465,10 @@ export default {
     },
     showDeleteButton(item) {
       return this.updating || this.selectedUsers.some((user) => user.username === item.username && user.identityProvider === item.identityProvider);
+    },
+    async updateFilter(data) {
+      this.filterData = data;
+      this.showColumnsDialog = false;
     },
   },
   async mounted() {
