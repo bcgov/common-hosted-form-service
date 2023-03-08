@@ -355,3 +355,37 @@ describe(`GET ${basePath}/ID/edits`, () => {
     expect(response.body).toBeTruthy();
   });
 });
+
+
+describe(`DELETE ${basePath}/ID/submissions`, () => {
+
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.deleteMutipleSubmissions = jest.fn().mockReturnValue({});
+
+    const response = await request(app).delete(`${basePath}/:formSubmissionId/submissions`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.deleteMutipleSubmissions = jest.fn(() => { throw new Problem(401); });
+
+    const response = await request(app).delete(`${basePath}/:formSubmissionId/submissions`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.deleteMutipleSubmissions = jest.fn(() => { throw new Error(); });
+
+    const response = await request(app).delete(`${basePath}/:formSubmissionId/submissions`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});

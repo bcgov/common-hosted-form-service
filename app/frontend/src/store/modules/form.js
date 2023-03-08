@@ -354,6 +354,7 @@ export default {
       }
     },
 
+
     async deleteMultiSubmissions ({ commit, dispatch }, submissionIds) {
       try {
         commit('SET_DELETE_MULTIPLE_SUBMISSIONS', []);
