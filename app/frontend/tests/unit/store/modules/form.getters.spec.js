@@ -89,4 +89,8 @@ describe('form getters', () => {
   it('fcProactiveHelpImageUrl should return the state fcProactiveHelpImageUrl', () => {
     expect(store.getters.fcProactiveHelpImageUrl).toEqual(sampleState.fcProactiveHelpImageUrl);
   });
+
+  it('deletedSubmissions should return the state deletedSubmissions', () => {
+    expect(store.getters.deletedSubmissions).toEqual(sampleState.deletedSubmissions);
+  });
 });

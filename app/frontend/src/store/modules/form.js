@@ -39,6 +39,7 @@ export default {
       }
     },
     permissions: [],
+    roles:[],
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
@@ -46,6 +47,7 @@ export default {
     fcProactiveHelpGroupList:{},
     imageList:new Map(),
     fcProactiveHelpImageUrl:'',
+    deletedSubmissions: {},
   },
   getters: {
     getField, // vuex-map-fields
@@ -56,14 +58,16 @@ export default {
     formList: state => state.formList,
     formSubmission: state => state.formSubmission,
     permissions: state => state.permissions,
+    roles: state => state.roles,
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
     fcNamesProactiveHelpList: state => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
     version: state => state.version,
     builder: state => state.builder,
-    fcProactiveHelpGroupList:state=>state.fcProactiveHelpGroupList,
-    fcProactiveHelpImageUrl:state=>state.fcProactiveHelpImageUrl,
+    fcProactiveHelpGroupList: state => state.fcProactiveHelpGroupList,
+    fcProactiveHelpImageUrl: state => state.fcProactiveHelpImageUrl,
+    deletedSubmissions: state => state.deletedSubmissions,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -88,6 +92,9 @@ export default {
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
     },
+    SET_FORM_ROLES(state, roles) {
+      state.roles = roles;
+    },
     SET_FORMLIST(state, forms) {
       state.formList = forms;
     },
@@ -99,6 +106,9 @@ export default {
     },
     SET_SUBMISSIONUSERS(state, users) {
       state.submissionUsers = users;
+    },
+    SET_DELETE_MULTIPLE_SUBMISSIONS (state, deletedSubmissions) {
+      state.deletedSubmissions = deletedSubmissions;
     },
     SET_USER_FORM_PREFERENCES(state, userFormPreferences) {
       state.userFormPreferences = userFormPreferences;
@@ -154,6 +164,24 @@ export default {
         const data = response.data;
         if (data.forms[0]) {
           commit('SET_FORM_PERMISSIONS', data.forms[0].permissions);
+        } else {
+          throw new Error('No form found');
+        }
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching your user data for this form.',
+          consoleError: `Error getting user data using formID ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async getFormRolesForUser({ commit, dispatch }, formId) {
+      try {
+        commit('SET_FORM_ROLES', []);
+        // Get the forms based on the user's permissions
+        const response = await rbacService.getCurrentUser({ formId: formId });
+        const data = response.data;
+        if (data.forms[0]) {
+          commit('SET_FORM_ROLES', data.forms[0].roles);
         } else {
           throw new Error('No form found');
         }
@@ -325,6 +353,21 @@ export default {
         }, { root: true });
       }
     },
+
+
+    async deleteMultiSubmissions ({ commit, dispatch }, submissionIds) {
+      try {
+        commit('SET_DELETE_MULTIPLE_SUBMISSIONS', []);
+        const { data:{submission}, } = await formService.deleteMultipleSubmissions(submissionIds);
+        commit('SET_DELETE_MULTIPLE_SUBMISSIONS', submission);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while deleting the selected submissions.',
+          consoleError: `Error deleteing submissions with submissions ids ${submissionIds}: ${error}`,
+        }, { root: true });
+      }
+    },
+
     async restoreSubmission({ dispatch }, { submissionId, deleted }) {
       try {
         // Get this submission

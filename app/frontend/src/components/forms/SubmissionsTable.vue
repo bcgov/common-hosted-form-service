@@ -33,6 +33,7 @@
       </v-col>
     </v-row>
 
+
     <v-row no-gutters>
       <v-spacer />
       <v-col cols="4" sm="4">
@@ -79,6 +80,10 @@
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
+      <template #[`item.check`]="{ item }">
+        <v-checkbox sortable: false class="d-inline-flex" v-model="submissionsCheckboxes[submissionTable.indexOf(item)]"
+                    @click="()=>{selectSubmissionToDelete(item, submissionTable.indexOf(item))}" />
+      </template>
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
@@ -104,6 +109,21 @@
             </template>
             <span>View Submission</span>
           </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="canUserMultiDeleteSubmissions"
+                color="red"
+                icon
+                :disabled="!submissionsCheckboxes[submissionTable.indexOf(item)]"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>remove_circle</v-icon>
+              </v-btn>
+            </template>
+            <span>Delete Submission</span>
+          </v-tooltip>
         </span>
         <span v-if="item.deleted">
           <v-tooltip bottom>
@@ -123,6 +143,20 @@
       </template>
     </v-data-table>
 
+    <BaseDialog
+      v-model="showDeleteSubmissionDialog"
+      type="CONTINUE"
+      @close-dialog="showDeleteSubmissionDialog = false"
+      @continue-dialog="deleteMultiSubs"
+    >
+      <template #title>Confirm Deletion</template>
+      <template #text>
+        Are you sure you wish to delete selected submissions
+      </template>
+      <template #button-text-continue>
+        <span>Delete</span>
+      </template>
+    </BaseDialog>
 
     <BaseDialog
       v-model="showRestoreDialog"
@@ -143,10 +177,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FormManagePermissions } from '@/utils/constants';
+import { FormManagePermissions, NotificationTypes } from '@/utils/constants';
 
 import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
+
 
 export default {
   name: 'SubmissionsTable',
@@ -169,6 +204,9 @@ export default {
       search: '',
       showRestoreDialog: false,
       submissionTable: [],
+      selectedSubmissionToDelete:new Set(),
+      submissionsCheckboxes:[],
+      showDeleteSubmissionDialog:false
     };
   },
   computed: {
@@ -178,6 +216,8 @@ export default {
       'permissions',
       'submissionList',
       'userFormPreferences',
+      'roles',
+      'deletedSubmissions'
     ]),
     ...mapGetters('auth', [
       'user'
@@ -189,6 +229,7 @@ export default {
 
     calcHeaders() {
       let headers = [
+        { text: '', align: 'start', value: 'check' },
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
@@ -254,8 +295,58 @@ export default {
       'fetchSubmissions',
       'restoreSubmission',
       'getFormPermissionsForUser',
+      'getFormRolesForUser',
       'getFormPreferencesForCurrentUser',
+      'deleteMultiSubmissions'
     ]),
+    ...mapActions('notifications', ['addNotification']),
+
+    async selectSubmissionToDelete(item, index) {
+      if(this.submissionsCheckboxes[index]) {
+        this.selectedSubmissionToDelete.add(item.submissionId);
+      }
+      else {
+        this.selectedSubmissionToDelete.delete(item.submissionId);
+      }
+
+    },
+
+    canUserMultiDeleteSubmissions() {
+      const found = this.roles.some(r=> ['submission_reviewer','owner'].includes(r));
+      if(found) {
+        this.showDeleteSubmissionDialog = true;
+      }
+      else {
+        this.addNotification({
+          message: 'You must have the form owner or team manage permission to delete selected submissions',
+          consoleError: 'Cannot delete selected submissions because you don\'t have the necessary permissions',
+        });
+      }
+    },
+
+    async deleteMultiSubs() {
+      this.showDeleteSubmissionDialog = false;
+      await this.deleteMultiSubmissions(Array.from(this.selectedSubmissionToDelete));
+      let notDeletedSubmissionIds = this.deletedSubmissions&&this.deletedSubmissions.filter(submission=>{
+        if(!submission.deleted) return submission.id;
+      });
+
+      if (notDeletedSubmissionIds.length>0){
+        this.addNotification({
+          message: `These submissions with submission Ids ${notDeletedSubmissionIds} were not deleted`,
+          consoleError: `Cannot delete selected submissions with submission ids ${notDeletedSubmissionIds}`,
+        });
+      }
+      else {
+
+        await this.populateSubmissionsTable();
+        this.addNotification({
+          message: 'Submission(s) deleted successfully',
+          ...NotificationTypes.SUCCESS,
+        });
+      }
+      this.selectedSubmissionToDelete.clear();
+    },
 
     async populateSubmissionsTable() {
       try {
@@ -287,6 +378,7 @@ export default {
               return fields;
             });
           this.submissionTable = tableRows;
+          this.submissionsCheckboxes= new Array(this.submissionTable.length).fill(false);
         }
       } catch (error) {
         // Handled in state fetchSubmissions
@@ -298,6 +390,7 @@ export default {
     async refreshSubmissions() {
       this.loading = true;
       Promise.all([
+        this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
         this.fetchForm(this.formId).then(() => {
           this.fetchFormFields({
