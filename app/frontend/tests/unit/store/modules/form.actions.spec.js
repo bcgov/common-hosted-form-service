@@ -176,6 +176,30 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
 
+
+    it('deleteMultiSubmissions should commit to SET_DELETE_MULTIPLE_SUBMISSIONS', async () => {
+
+      let submissionIds = [
+        'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
+        '0715b1ac-4069-4778-a868-b4f71fdea18d'
+      ];
+
+      let returnValue = {submission: [{id: 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: 'AC4EF441', draft: false, deleted: true},
+      {id: '0715b1ac-4069-4778-a868-b4f71fdea18d', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0',
+        confirmationId: '0715B1AC', draft: false, deleted: true}],
+        version: [{id: '8d8e24ce-326f-4536-9100-a0844c27d5a0', formId: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca',
+        version: 1, schema: {}, createdBy: 'testa@idir'}],
+        form: [{id: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca', name: 'FisheriesAA', description: '', active: true, labels: null}]};
+
+      let result = {data:returnValue};
+
+      formService.deleteMultipleSubmissions.mockResolvedValue(result);
+      await store.actions.deleteMultiSubmissions(mockStore, submissionIds);
+
+      expect(formService.deleteMultipleSubmissions).toHaveBeenCalledTimes(1);
+      expect(formService.deleteMultipleSubmissions).toHaveBeenCalledWith(submissionIds);
+    });
+
     it('fetchSubmission should commit to SET_FORMSUBMISSION', async () => {
       formService.getSubmission.mockResolvedValue({ data: { submission: {}, form: {} } });
       await store.actions.fetchSubmission(mockStore, { submissionId: 'sId' });

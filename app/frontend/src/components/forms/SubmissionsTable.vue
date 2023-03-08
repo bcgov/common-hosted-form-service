@@ -157,6 +157,7 @@
         <span>Delete</span>
       </template>
     </BaseDialog>
+
     <BaseDialog
       v-model="showRestoreDialog"
       type="CONTINUE"
@@ -318,7 +319,7 @@ export default {
       else {
         this.addNotification({
           message: 'You must have the form owner or team manage permission to delete selected submissions',
-          consoleError: 'Cannot delete selected because you don\'t have the necessary permissions',
+          consoleError: 'Cannot delete selected submissions because you don\'t have the necessary permissions',
         });
       }
     },
