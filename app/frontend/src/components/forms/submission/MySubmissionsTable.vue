@@ -10,6 +10,21 @@
         <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
+              <v-btn
+                @click="showColumnsDialog = true"
+                class="mx-1"
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>view_column</v-icon>
+              </v-btn>
+            </template>
+            <span>Select Columns</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
               <router-link
                 :to="{
                   name: 'FormSubmit',
@@ -56,7 +71,7 @@
     <!-- table header -->
     <v-data-table
       class="submissions-table"
-      :headers="headers"
+      :headers="HEADERS"
       item-key="title"
       :items="submissionTable"
       :search="search"
@@ -80,6 +95,18 @@
         />
       </template>
     </v-data-table>
+    <v-dialog v-model="showColumnsDialog" width="700">
+      <BaseFilter
+        inputFilterPlaceholder="Search submission fields"
+        inputItemKey="value"
+        inputSaveButtonText="Save"
+        :inputData="DEFAULT_HEADERS.filter((h) => !filterIgnore.some((fd) => fd.value === h.value))"
+        @saving-filter-data="updateFilter"
+        @cancel-filter-data="showColumnsDialog = false"
+      >
+        <template #filter-title>Search and select columns to show under your dashboard</template>
+      </BaseFilter>
+    </v-dialog>
   </div>
 </template>
 
@@ -101,6 +128,27 @@ export default {
   },
   data() {
     return {
+      headers: [],
+      filterData: [],
+      filterHeaders: [
+        {
+          text: 'Column Name',
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+          width: '140px',
+        }
+      ],
+      filterIgnore: [
+        {
+          value: 'confirmationId'
+        },
+        {
+          value: 'actions'
+        }
+      ],
+      showColumnsDialog: false,
       submissionTable: [],
       loading: true,
       search: '',
@@ -108,20 +156,34 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['form', 'submissionList', 'permissions']),
-    ...mapGetters('auth', [
-      'user'
-    ]),
-    headers() {
+    ...mapGetters('auth', ['user']),
+    DEFAULT_HEADERS() {
       let headers = [
-        { text: 'Confirmation Id', align: 'start', value: 'confirmationId', sortable: true, width: `${(50/3).toString()}%` },
-        { text: 'Created By', value: 'createdBy', sortable: true, width: `${(50/3).toString()}%` },
-        { text: 'Status Updated By', value: 'username', sortable: true, width: `${(50/3).toString()}%` },
-        { text: 'Status', value: 'status', sortable: true, width: `${(50/3).toString()}%` },
+        {
+          text: 'Confirmation Id',
+          align: 'start',
+          value: 'confirmationId',
+          sortable: true,
+        },
+        {
+          text: 'Created By',
+          value: 'createdBy',
+          sortable: true,
+        },
+        {
+          text: 'Status Updated By',
+          value: 'username',
+          sortable: true,
+        },
+        {
+          text: 'Status',
+          value: 'status',
+          sortable: true,
+        },
         {
           text: 'Submission Date',
           value: 'submittedDate',
           sortable: true,
-          width: `${(50/3).toString()}%`,
         },
         {
           text: 'Actions',
@@ -129,24 +191,22 @@ export default {
           value: 'actions',
           filterable: false,
           sortable: false,
-          width: `${(50/3).toString()}%`,
-        }
+          width: '140px',
+        },
       ];
       if (this.showDraftLastEdited || !this.formId) {
-        headers = headers.map((h) => {
-          if (['status', 'submittedDate', 'actions'].includes(h.value)) {
-            h.width = `${(50/4).toString()}%`;
-          }
-          return h;
-        });
-        headers.splice(4, 0, {
+        headers.splice(headers.length - 1, 0, {
           text: 'Draft Last Edited',
           align: 'start',
           value: 'lastEdited',
           sortable: true,
-          width: `${(50/4).toString()}%`,
         });
       }
+      return headers;
+    },
+    HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+      if (this.filterData.length > 0) headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
       return headers;
     },
     showStatus() {
@@ -205,11 +265,16 @@ export default {
       }
       this.loading = false;
     },
+
+    async updateFilter(data) {
+      this.filterData = data;
+      this.showColumnsDialog = false;
+    },
   },
 
-  mounted() {
-    this.fetchForm(this.formId);
-    this.populateSubmissionsTable();
+  async mounted() {
+    await this.fetchForm(this.formId);
+    await this.populateSubmissionsTable();
   },
 };
 </script>
