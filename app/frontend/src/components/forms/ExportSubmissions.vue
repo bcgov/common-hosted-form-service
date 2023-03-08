@@ -306,7 +306,6 @@ export default {
         } else {
           throw new Error('No data in response from exportSubmissions call');
         }
-
       } catch (error) {
         this.addNotification({
           message:

@@ -33,7 +33,6 @@ export default {
     return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
 
-
   /**
    * @function listForms
    * Read all the forms in the DB

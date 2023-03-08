@@ -48,8 +48,8 @@
                   <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
                 </h4>
                 <p class="mt-2 mb-0">
-                  If you will be using this form to gather information from the general 
-                  public on topics that are of general interest to the public, you are 
+                  If you will be using this form to gather information from the general
+                  public on topics that are of general interest to the public, you are
                   required to contact the GCPE so that your engagement can be listed on
                   <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
                     govTogetherBC. <v-icon small color="primary">open_in_new</v-icon>
@@ -124,6 +124,33 @@
               <span>
                 Reviewers can <strong>Update the Status</strong> of this form
                 (i.e. Submitted, Assigned, Completed)
+              </span>
+            </template>
+          </v-checkbox>
+
+          <v-checkbox :disabled="userType === ID_MODE.PUBLIC" class="my-0" v-model="allowSubmitterToUploadFile">
+            <template #label>
+              <span>
+                Allow <strong> bulk submission </strong> upload
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+                      help_outline
+                    </v-icon>
+                  </template>
+                  <span>
+                    Selecting this option controls what the submitting user of
+                    this form will see on successful submission. <br />
+                    If checked, it will display
+                    <ul>
+                      <li>the Confirmation ID</li>
+                      <li>
+                        the option for the user to email themselves a submission
+                        confirmation.
+                      </li>
+                    </ul>
+                  </span>
+                </v-tooltip>
               </span>
             </template>
           </v-checkbox>
@@ -258,6 +285,7 @@ export default {
       'form.description',
       'form.enableSubmitterDraft',
       'form.enableStatusUpdates',
+      'form.allowSubmitterToUploadFile',
       'form.id',
       'form.idps',
       'form.name',
@@ -279,6 +307,7 @@ export default {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
+        this.allowSubmitterToUploadFile = false;
       }
     },
   },

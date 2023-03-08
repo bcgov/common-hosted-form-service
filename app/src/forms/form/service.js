@@ -61,6 +61,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser.usernameIdp;
+      obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -123,7 +124,8 @@ const service = {
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
+        allowSubmitterToUploadFile : data.allowSubmitterToUploadFile
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
@@ -216,6 +218,7 @@ const service = {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
+      .modify('filterIdBulkFile', params.idBulkFile)
       .modify('filterConfirmationId', params.confirmationId)
       .modify('filterDraft', params.draft)
       .modify('filterDeleted', params.deleted)
@@ -224,7 +227,7 @@ const service = {
       .modify('filterVersion', params.version)
       .modify('orderDefault');
 
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId','deleted', 'createdBy', 'formVersionId', 'idBulkFile', 'originalName' ];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
@@ -304,6 +307,141 @@ const service = {
 
     const { schema } = await service.readVersion(formVersionId);
     return schema.components.flatMap(c => findFields(c));
+  },
+  readVersionFieldsObject: async (formVersionId) => {
+    // Recursively find all field key names
+    // TODO: Consider if this should be a form utils function instead?
+    let fields = [];
+
+    const getParent = (obj) => {
+      let key = (obj.key)? obj.key : '';
+      let type = (obj.type) ? obj.type : '';
+      let label = (obj.label) ? obj.label : '';
+      let pt =  key+ '_'+type+ '_' + label ;
+      return pt;
+    };
+
+    const getFieldsObject = (obj, parent)=> {
+      return { id: obj.id, key: obj.key, type: obj.type, label: obj.label, value:obj.values, unique: obj.unique, format: obj.format, parent: parent };
+    };
+
+    const addDynamicFields= (dyn_fields, parent, pt, type) =>{
+      const  f = [];
+      let key = type+'_'+pt+'-';
+      for (let i = 0; i < 10; i++){
+        const end = '-'+i;
+        for (let j = 0; j < dyn_fields.length; j++) {
+          const new_obj = {...dyn_fields[j] };
+          new_obj.key = key + new_obj.key + end;
+          f.push(getFieldsObject(new_obj,parent));
+        }
+      }
+      return f;
+    };
+
+    const findSubFields = (o, p) => {
+      let flds = [];
+      const findSubField = (obj, parent) => {
+        if (!obj.hidden) {
+          let data = fieldsManager(obj, parent, []);
+          for(let i=0; i<data.length; i++){
+            if(data[i].keepOn){
+              findSubField(data[i].component, data[i].parent);
+            } else {
+              flds = flds.concat(data[i].fields);
+            }
+          }
+        }
+      };
+      findSubField(o, p);
+      return flds;
+    };
+    const  fieldsManager = (obj, parent) => {
+      let pt = getParent(obj);
+      let results = [];
+      if (!obj.input && obj.type && obj.type=='form') {
+        for(let i = 0; i < obj.components.length ; i++ ){
+          results.push( { keepOn: true, component: obj.components[i] , parent: pt } );
+        }
+      }
+      else if (!obj.input && obj.type &&  obj.type.includes('cols')) {
+        for(let i = 0 ; i < obj.columns.length; i++ ){
+          for(let j = 0 ; j < obj.columns[i].components.length ; j++ ) {
+            results.push({ keepOn: true, component: obj.columns[i].components[j], parent: pt });
+          }
+        }
+      }
+      else if (!obj.input && obj.type && obj.type=='table') {
+        for(let i = 0 ; i < obj.rows.length ; i++ ){
+          for(let j = 0 ; j < obj.rows[i].length ; j++ ) {
+            for(let k = 0 ; k < obj.rows[i][j].components.length ; k++ ) {
+              results.push({ keepOn: true, component: obj.rows[i][j].components[k] , parent: pt });
+            }
+          }
+        }
+      }
+      else if(obj.input &&  (obj.type=='datagrid' || obj.type=='editgrid' || obj.type=='tree'  ) ) {
+        let dtFields = [];
+        for(let i=0; i < obj.components.length; i++){
+          dtFields.push(findSubFields(obj.components[i], pt));
+        }
+        dtFields = dtFields.flat();
+        let _sybs = getSymbs(obj.type);
+        let new_fields = addDynamicFields(dtFields, parent, pt, _sybs);
+        results.push({ keepOn: false, parent: pt, fields : new_fields });
+      }
+      else if(obj.input && obj.type=='datamap') {
+        let dtFields = [];
+        dtFields.push(findSubFields(obj.valueComponent, pt));
+        dtFields = dtFields.flat();
+        const key = { ...obj};
+        key.valueComponent = undefined;
+        dtFields.unshift(key);
+        let new_fields = addDynamicFields(dtFields, parent, pt, '#');
+        results.push({ keepOn: false, parent: pt, fields : new_fields });
+      }
+      else {
+        if(obj.components){
+          for(let i = 0; i < obj.components.length ; i++ ) {
+            results.push({ keepOn: true, component: obj.components[i] , parent: pt });
+          }
+        } else {
+          if (obj.input) {
+            if(obj.type != 'button'){
+              results.push({ keepOn: false,  fields : [getFieldsObject(obj,parent)] });
+            }
+          }
+        }
+      }
+      return results;
+    };
+    const getSymbs = (type) => {
+      switch (type) {
+        case 'datagrid' :
+          return '$';
+        case 'editgrid' :
+          return '@';
+        case 'datamap' :
+          return '#';
+        case 'tree' :
+          return '%';
+      }
+    };
+    const findFields = (obj, parent) => {
+      if (!obj.hidden) {
+        let data = fieldsManager(obj, parent, []);
+        for(let i=0; i<data.length; i++){
+          if(data[i].keepOn){
+            findFields(data[i].component, data[i].parent);
+          } else {
+            fields = fields.concat(data[i].fields);
+          }
+        }
+      }
+    };
+    const { schema } = await service.readVersion(formVersionId);
+    findFields(schema, '', fields);
+    return fields;
   },
 
   listSubmissions: async (formVersionId, params) => {
@@ -388,7 +526,6 @@ const service = {
       throw err;
     }
   },
-
   listSubmissionFields: (formVersionId, fields) => {
     return FormSubmission.query()
       .select('id', fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))))
@@ -410,7 +547,6 @@ const service = {
       .modify('filterFormVersionId', params.formVersionId)
       .modify('orderDescending');
   },
-
   createDraft: async (formId, data, currentUser) => {
     let trx;
     try {
@@ -451,19 +587,16 @@ const service = {
       throw err;
     }
   },
-
   readDraft: async (formVersionDraftId) => {
     return FormVersionDraft.query()
       .findById(formVersionDraftId)
       .throwIfNotFound();
   },
-
   deleteDraft: async (formVersionDraftId) => {
     return FormVersionDraft.query()
       .deleteById(formVersionDraftId)
       .throwIfNotFound();
   },
-
   publishDraft: async (formId, formVersionDraftId, currentUser) => {
     let trx;
     try {
@@ -500,7 +633,6 @@ const service = {
       throw err;
     }
   },
-
   getStatusCodes: async (formId) => {
     return FormStatusCode.query()
       .withGraphFetched('statusCode')

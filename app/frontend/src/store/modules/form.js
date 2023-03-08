@@ -9,6 +9,7 @@ const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
+  allowSubmitterToUploadFile: false,
   id: '',
   idps: [],
   isDirty: false,
@@ -34,6 +35,7 @@ export default {
     formList: [],
     formSubmission: {
       confirmationId: '',
+      originalName:'',
       submission: {
         data: {}
       }
@@ -228,7 +230,6 @@ export default {
     },
     async fetchForm({ commit, dispatch }, formId) {
       try {
-
         commit('SET_API_KEY', null);
         // Get the form definition from the api
         const { data } = await formService.readForm(formId);
