@@ -28,6 +28,15 @@ module.exports = {
       next(error);
     }
   },
+  deleteMutipleSubmissions: async (req, res, next) => {
+    try {
+      let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
+      const response = await service.deleteMutipleSubmissions(submissionIds, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   restore: async (req, res, next) => {
     try {
       const response = await service.restore(req.params.formSubmissionId, req.body, req.currentUser);
