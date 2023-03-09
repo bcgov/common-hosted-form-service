@@ -364,7 +364,7 @@ export default {
           ...this.form.versions.map((version) => version.version)
         );
         if (this.exportFormat === 'json') {
-          this.versions.push(0);
+          this.versions.push('All');
         } else {
           this.versionSelected = this.versions.sort((a, b) => a < b)[0];
         }
@@ -373,6 +373,9 @@ export default {
   },
   mounted() {
     this.updateVersions();
+    if (this.exportFormat === 'json') {
+      this.versionSelected = 'All';
+    }
   },
   watch: {
     startDate() {
