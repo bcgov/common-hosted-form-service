@@ -31,7 +31,7 @@
         :items="inputData"
         :item-key="inputItemKey"
         :search="inputFilter"
-        class="grey lighten-4"
+        class="grey lighten-5"
       >
       </v-data-table>
       <v-btn @click="savingFilterData" class="primary mt-3">{{inputSaveButtonText}}</v-btn>
@@ -78,6 +78,7 @@ export default {
   },
   methods: {
     savingFilterData() {
+      this.inputFilter = '';
       this.$emit('saving-filter-data', this.selectedData);
     },
     cancelFilterData() {
@@ -100,39 +101,6 @@ export default {
   padding-bottom: 0px !important;
   margin-bottom: 0px !important;
 }
-
-.cancelButtonWrapper {
-  width: 80px !important;
-  background: #ffffff 0% 0% no-repeat padding-box !important;
-  border: 1px solid #003366 !important;
-  border-radius: 3px !important;
-  text-align: left !important;
-  font-style: normal !important;
-  font-size: 18px !important;
-  font-variant: normal !important;
-  font-family: BCSans !important;
-  font-weight: normal !important;
-  letter-spacing: 0px !important;
-  color: #38598a !important;
-  text-transform: capitalize !important;
-}
-
-.saveButtonWrapper {
-  width: 80px !important;
-  border: 1px solid #707070 !important;
-  background: #003366 0% 0% no-repeat padding-box !important;
-  border-radius: 3px !important;
-  text-align: left !important;
-  font-style: normal !important;
-  font-size: 18px !important;
-  font-variant: normal !important;
-  font-family: BCSans !important;
-  font-weight: normal !important;
-  letter-spacing: 0px !important;
-  color: #ffffff !important;
-  text-transform: capitalize !important;
-}
-
 .titleWrapper {
   text-align: left !important;
   font-style: normal !important;
@@ -141,88 +109,6 @@ export default {
   font-variant: normal !important;
   font-family: BCSans !important;
   color: #000000 !important;
-}
-
-.checkboxLabel {
-  text-align: left !important;
-  font-style: normal !important;
-  font-size: 16px !important;
-  font-weight: normal !important;
-  font-variant: normal !important;
-  font-family: BCSans !important;
-  text-transform: capitalize !important;
-  letter-spacing: 0px !important;
-  color: #313132 !important;
-}
-
-.searchField {
-  background: #60606014 0% 0% no-repeat padding-box !important;
-  border-radius: 4px !important;
-  width: 50% !important;
-  height: 35px !important;
-  gap: 10px !important;
-  padding: 3px !important;
-  padding-left: 15px !important;
-  text-align: left !important;
-  font-style: normal !important;
-  font-size: 18px !important;
-  font-weight: 300 !important;
-  font-variant: normal !important;
-  font-family: BCSans !important;
-  letter-spacing: 0px !important;
-  color: #606060 !important;
-}
-.searchField input:focus {
-  outline: none !important;
-}
-
-.searchField input:focus::placeholder {
-  color: transparent;
-  outline: none !important;
-}
-
-/* Mozilla Firefox 4 to 18 */
-.searchField input:focus:-moz-placeholder {
-  color: transparent;
-  outline: none !important;
-}
-
-/* Mozilla Firefox 19+ */
-.searchField input:focus::-moz-placeholder {
-  color: transparent;
-  outline: none !important;
-}
-
-/* Internet Explorer 10+ */
-.searchField input:focus:-ms-input-placeholder {
-  color: transparent;
-  outline: none !important;
-}
-
-.searchField input::placeholder {
-  text-align: left !important;
-  font-size: 18px !important;
-  font-weight: normal !important;
-  font-style: normal !important;
-  font-variant: normal !important;
-  font-family: BCSans !important;
-  letter-spacing: 0px !important;
-  color: #606060 !important;
-  opacity: 1 !important;
-}
-.fieldCheckBoxeswrapper {
-  background: #60606005 0% 0% no-repeat padding-box !important;
-  border: 1px solid #7070703f !important;
-  border-radius: 4px !important;
-  opacity: 1 !important;
-  height: 300px !important;
-  max-height: 300px !important;
-  padding: 20px !important;
-  overflow-y: scroll !important;
-}
-.clearButton:hover {
-  cursor: pointer;
-  color: orange;
 }
 
 .hr {

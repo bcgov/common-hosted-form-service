@@ -3,21 +3,6 @@
     <v-container fluid class="d-flex">
       <h1 class="mr-auto">Team Management</h1>
       <div style="z-index: 1;">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              @click="showColumnsDialog = true"
-              class="mx-1"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>view_column</v-icon>
-            </v-btn>
-          </template>
-          <span>Select Columns</span>
-        </v-tooltip>
         <span>
           <AddTeamMember
             :disabled="!canManageTeam"
@@ -26,6 +11,21 @@
           />
         </span>
         <span v-if="!isAddingUsers">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="showColumnsDialog = true"
+                class="mx-1"
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>view_column</v-icon>
+              </v-btn>
+            </template>
+            <span>Select Columns</span>
+          </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
@@ -78,7 +78,7 @@
       dense
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
-      <template v-for="(h) in headers" v-slot:[`header.${h.value}`]="{ headers }">
+      <template v-for="(h) in HEADERS" v-slot:[`header.${h.value}`]="{ HEADERS }">
         <v-tooltip v-if="roleOrder.includes(h.value)" :key="h.value" bottom>
           <template v-slot:activator="{ on }">
             <span v-on="on">{{ h.text }}</span>
