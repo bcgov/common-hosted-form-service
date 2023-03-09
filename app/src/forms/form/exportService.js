@@ -39,9 +39,11 @@ const service = {
      * see: https://github.com/kaue/jsonexport
      */
     let formSchemaheaders = metaHeaders.concat(fieldNames);
-    let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
-    let t = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
-    return t;
+    if (Array.isArray(data) && data.length > 0) {
+      let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
+    }
+    return formSchemaheaders;
   },
 
   _exportType: (params = {}) => {
