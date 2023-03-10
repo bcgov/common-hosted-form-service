@@ -28,31 +28,46 @@
             <span>Manage Form</span>
           </v-tooltip>
         </span>
-
         <ExportSubmissions />
+        <span v-if="selectedSubmissionToDelete.length>0">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                class="mx-1"
+                color="red"
+                icon
+                @click="showDeleteSubmissionDialog=true, singleSubmissionDelete=false"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </template>
+            <span>delete selected submissions</span>
+          </v-tooltip>
+        </span>
       </v-col>
     </v-row>
 
 
-    <v-row no-gutters>
+    <v-row no-gutters class="mt-3 mb-4">
+
+      <!---->
       <v-spacer />
-      <v-col cols="4" sm="4">
-        <v-checkbox
-          class="pl-3"
-          v-model="deletedOnly"
-          label="Show deleted submissions"
-          @click="refreshSubmissions"
-        />
+      <v-col cols="6" sm="6" >
+        <v-switch
+          v-model="switchSubmissionView"
+          :label="switchSubmissionViewMessage"
+          :input-value="true"
+          @change="onSwitchSubmissionView"
+          small
+          color="primary"
+          hide-details
+          class="mt-5"
+        ></v-switch>
       </v-col>
-      <v-col cols="4" sm="4">
-        <v-checkbox
-          class="pl-3"
-          v-model="currentUserOnly"
-          label="Show my submissions"
-          @click="refreshSubmissions"
-        />
-      </v-col>
-      <v-col cols="12" sm="4">
+
+      <v-col cols="6" sm="6">
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
@@ -66,24 +81,21 @@
         </div>
       </v-col>
     </v-row>
-    <v-row no-gutters>
-    </v-row>
 
     <!-- table header -->
     <v-data-table
       class="submissions-table"
       :headers="calcHeaders"
-      item-key="title"
+      item-key="submissionId"
       :items="submissionTable"
       :search="search"
       :loading="loading"
+      :show-select="!switchSubmissionView"
+      v-model="selectedSubmissionToDelete"
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
-      <template #[`item.check`]="{ item }">
-        <v-checkbox sortable: false class="d-inline-flex" v-model="submissionsCheckboxes[submissionTable.indexOf(item)]"
-                    @click="()=>{selectSubmissionToDelete(item, submissionTable.indexOf(item))}" />
-      </template>
+
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
@@ -109,13 +121,13 @@
             </template>
             <span>View Submission</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <v-tooltip bottom v-if="!item.deleted">
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="canUserMultiDeleteSubmissions"
+                @click="showDeleteSubmissionDialog=true,
+                        selectedSubmissionIdToDelete=item.submissionId, singleSubmissionDelete=true"
                 color="red"
                 icon
-                :disabled="!submissionsCheckboxes[submissionTable.indexOf(item)]"
                 v-bind="attrs"
                 v-on="on"
               >
@@ -147,11 +159,11 @@
       v-model="showDeleteSubmissionDialog"
       type="CONTINUE"
       @close-dialog="showDeleteSubmissionDialog = false"
-      @continue-dialog="deleteMultiSubs"
+      @continue-dialog="delSub"
     >
       <template #title>Confirm Deletion</template>
       <template #text>
-        Are you sure you wish to delete selected submissions
+        {{singleSubmissionDelete?singleDeleteMessage:multiDeleteMessage}}
       </template>
       <template #button-text-continue>
         <span>Delete</span>
@@ -182,6 +194,10 @@ import { FormManagePermissions, NotificationTypes } from '@/utils/constants';
 import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+library.add(faTrash);
+
 
 export default {
   name: 'SubmissionsTable',
@@ -204,9 +220,15 @@ export default {
       search: '',
       showRestoreDialog: false,
       submissionTable: [],
-      selectedSubmissionToDelete:new Set(),
       submissionsCheckboxes:[],
-      showDeleteSubmissionDialog:false
+      showDeleteSubmissionDialog:false,
+      selectedSubmissionToDelete: [],
+      multiDeleteMessage:'Are you sure you wish to delete selected submissions',
+      singleDeleteMessage: 'Are you sure you wish to delete this submission',
+      singleSubmissionDelete:false,
+      selectedSubmissionIdToDelete:'',
+      switchSubmissionView:false,
+      switchSubmissionViewMessage: 'Show Deleted submissions'
     };
   },
   computed: {
@@ -217,7 +239,7 @@ export default {
       'submissionList',
       'userFormPreferences',
       'roles',
-      'deletedSubmissions'
+      'deletedSubmissions',
     ]),
     ...mapGetters('auth', [
       'user'
@@ -229,7 +251,6 @@ export default {
 
     calcHeaders() {
       let headers = [
-        { text: '', align: 'start', value: 'check' },
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
@@ -270,6 +291,7 @@ export default {
         (x) => x.value !== 'updatedAt' || this.deletedOnly
       );
     },
+
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
     },
@@ -297,36 +319,37 @@ export default {
       'getFormPermissionsForUser',
       'getFormRolesForUser',
       'getFormPreferencesForCurrentUser',
-      'deleteMultiSubmissions'
+      'deleteMultiSubmissions',
+      'deleteSubmission'
     ]),
     ...mapActions('notifications', ['addNotification']),
-
-    async selectSubmissionToDelete(item, index) {
-      if(this.submissionsCheckboxes[index]) {
-        this.selectedSubmissionToDelete.add(item.submissionId);
+    onSwitchSubmissionView() {
+      //this.switchSubmissionView = !this.switchSubmissionView;
+      if(this.switchSubmissionView) {
+        this.deletedOnly = true;
+        this.currentUserOnly =false;
+        this.switchSubmissionViewMessage= 'Show my submissions';
       }
       else {
-        this.selectedSubmissionToDelete.delete(item.submissionId);
+        this.deletedOnly = false;
+        this.currentUserOnly = true;
+        this.switchSubmissionViewMessage= 'Show Deleted submissions';
       }
-
+      this.refreshSubmissions();
     },
-
-    canUserMultiDeleteSubmissions() {
-      const found = this.roles.some(r=> ['submission_reviewer','owner'].includes(r));
-      if(found) {
-        this.showDeleteSubmissionDialog = true;
-      }
-      else {
-        this.addNotification({
-          message: 'You must have the form owner or team manage permission to delete selected submissions',
-          consoleError: 'Cannot delete selected submissions because you don\'t have the necessary permissions',
-        });
-      }
+    async delSub() {
+      this.singleSubmissionDelete?this.deleteSingleSubs():this.deleteMultiSubs();
     },
-
-    async deleteMultiSubs() {
+    async deleteSingleSubs() {
       this.showDeleteSubmissionDialog = false;
-      await this.deleteMultiSubmissions(Array.from(this.selectedSubmissionToDelete));
+      await this.deleteSubmission(this.selectedSubmissionIdToDelete);
+      await this.populateSubmissionsTable();
+      this.selectedSubmissionToDelete = [];
+    },
+    async deleteMultiSubs() {
+      let submissionsIdsToDelete = this.selectedSubmissionToDelete.map(submission=>submission.submissionId);
+      this.showDeleteSubmissionDialog = false;
+      await this.deleteMultiSubmissions(submissionsIdsToDelete);
       let notDeletedSubmissionIds = this.deletedSubmissions&&this.deletedSubmissions.filter(submission=>{
         if(!submission.deleted) return submission.id;
       });
@@ -338,14 +361,13 @@ export default {
         });
       }
       else {
-
         await this.populateSubmissionsTable();
         this.addNotification({
           message: 'Submission(s) deleted successfully',
           ...NotificationTypes.SUCCESS,
         });
       }
-      this.selectedSubmissionToDelete.clear();
+      this.selectedSubmissionToDelete = [];
     },
 
     async populateSubmissionsTable() {
