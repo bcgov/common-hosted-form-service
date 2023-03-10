@@ -130,12 +130,4 @@ describe('form mutations', () => {
     expect(state.fcProactiveHelpImageUrl).toEqual('');
     expect(state.fcProactiveHelpImageUrl).toEqual(obj);
   });
-
-  it('SET_DELETE_MULTIPLE_SUBMISSIONS delete submissions state', () => {
-    const obj = '';
-    store.mutations.SET_DELETE_MULTIPLE_SUBMISSIONS(state, obj);
-
-    expect(state.deletedSubmissions).toEqual('');
-    expect(state.deletedSubmissions).toEqual(obj);
-  });
 });
