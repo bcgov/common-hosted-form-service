@@ -7,15 +7,26 @@
       </p>
       <div class="alert-text">
         In order to successfully complete bulk submissions, please download the instructions and the template.
-        <span @click="downloadCsvFile()" class="link">Download <v-icon class="mr-1 " color="#003366">download</v-icon></span>
+        <span class="link">
+          <vue-blob-json-csv
+            tag-name="i"
+            file-type="json"
+            file-name="json_csv.file_name"
+            title="Download   "
+            :data="json_csv.data"
+            confirm="Do you want to download it?"
+          />
+          <v-icon class='mr-1' color='#003366'>download</v-icon>
+        </span>
       </div>
     </div>
     <h3>{{form.name}}</h3>
+
     <div v-if="!file" class="drop-zone" @click="handleFile" v-cloak @drop.prevent="addFile($event,0)" @dragover.prevent>
       <v-icon class="mr-1 " color="#003366">upload</v-icon>
       <h1>Select JSON file to upload </h1>
       <p>or drag and drop it here</p>
-      <input class="drop-zone__input" ref="file" accept=".csv" type="file" @change="addFile($event,1)" name="file" />
+      <input class="drop-zone__input" ref="file" accept=".json" type="file" @change="addFile($event,1)" name="file" />
     </div>
 
     <div v-if="file" class="worker-zone">
@@ -23,12 +34,15 @@
         <ProgressBar :value="value" :max="max" :error="error" />
       </div>
       <div class="wz-bottom">
-        <div class="message-block" >
+        <div class="message-block" v-if="!progress" >
           <span>Report: </span>
           <p :class="txt_color">
             <v-icon v-if="error" color="red">close</v-icon>
             <v-icon v-if="!error" color="green">check</v-icon>
             {{ message }}
+            <ul v-if="error && report.length>0" >
+              <li></li>
+            </ul>
           </p>
         </div>
         <hr v-if="error && report.length>0" />
@@ -39,39 +53,55 @@
           </span>
         </div>
       </div>
+      <v-row v-if="file && !progress">
+        <v-col cols="12" md="12">
+          <span class="m-2 pull-right ">
+            <v-btn @click="resetUpload" color="primary">
+              <span>Upload new file</span>
+            </v-btn>
+          </span>
+        </v-col>
+      </v-row>
     </div>
+   
   </div>
 </template>
 <script>
 import {  mapActions,mapGetters } from 'vuex';
 import exportFromJSON from 'export-from-json';
 import ProgressBar from '@/components/designer/ProgressBar.vue';
-import Papa from 'papaparse';
+// import { Formio } from 'formiojs';
 export default {
   name: 'FormViewerDownloadButton',
   components: {
     ProgressBar
   },
   props: {
+    formElement: undefined,
     form : {},
     formSchema: {},
     formFields: [],
+    message: undefined,
     json_csv : {
-      data: String,
+      data: [],
       file_name: String
     }
   },
   data() {
     return {
+      vForm:{},
       file: undefined,
+      Json: [],
       content: [],
       parsed: false,
       value:0,
       max: 100,
       upload_state : 0,
       error: false,
-      message: '',
-      report : ['test']
+      report : ['test'],
+      index:0,
+      globalError :[],
+      progress: false
     };
   },
   computed: {
@@ -117,56 +147,91 @@ export default {
       });
     },
     parseFile(){
-      Papa.parse( this.file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function( results ){
-          this.content = results;
-          this.parsed = true;
-          this.generateSubmission();
-        }.bind(this)
-      });
+      try{
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          this.Json = JSON.parse(e.target.result);
+        }.bind(this);
+        reader.onloadend = () =>{
+          this.preValidateSubmission();
+        };
+        reader.readAsText(this.file);
+      }catch(e){
+        this.addNotification({message:e,consoleError: e,});
+      }
     },
-    generateSubmission(){
-      // eslint-disable-next-line no-unused-vars
-      this.createSubmissions(this.content).then((data)=>{
-        //console.log(data);
-        this.value = 100;
-        this.error = false;
-        this.upload_state = 10;
-        this.message = data.message;
-      //eslint-disable-next-line no-unused-vars
-      }).catch((error)=>{
-        this.value = 100;
-        this.error = true;
-        this.message = error.message;
-        this.upload_state = 10;
-      });
-    },
-    createSubmissions(content){
-      return new Promise((resolve, reject) => {
-        if(content.data.length==0) reject({ message: 'Csv file is empty' });
-        let entries = Object.entries(content.data[0]);
-        if (entries.length != this.formFields.length) reject({ message: 'Header of this csv file is not compatible to this form.'});
-        for (let i = 0; i<content.data.length; i++) {
-          this.value = this.pourcentage((i+1));
-          let entries = Object.entries(this.content.data[i]);
-          for (let j = 0; j< entries.length; j++){
-            // eslint-disable-next-line no-unused-vars
-            let key = entries[j][0];
-            // eslint-disable-next-line no-unused-vars
-            let value = entries[j][1];
-          }
+    preValidateSubmission(){
+      try {
+        if(this.Json.length==0){ 
+          this.addNotification({message:'this file is empty.',consoleError: 'this file is empty.'});
+          return;
         }
-        resolve({ message: 'Your Bulk submission has been successful' });
-      });
+        this.globalError = [];
+        this.index = 0;
+        this.max=100;
+        this.progress = true;
+        this.validate(this.Json[this.index]);
+      } catch (error) {
+        this.file = undefined;
+        this.addNotification({message:'there is something wrong with this file',consoleError: error,});
+        return;
+      }
+    
+    },
+    validate(element){
+      
+      const timer = setTimeout(function(){
+        try {
+          let validationResult =  this.formElement.checkValidity(element);
+          console.log(validationResult);
+          //let isvalid =   validationResult.valid;
+          //const isVal = Formio.Utils.checkCondition(this.formElement.components, {}, element, true);
+          if(!validationResult){
+            this.globalError.push({
+              index: this.index,
+              errors:  validationResult.errors
+            });
+          }
+        } catch (error) {
+          this.addNotification({message:error,consoleError: error,});
+        }
+        this.index++;
+        this.value = this.pourcentage(this.index);
+        clearTimeout(timer);
+        if(this.index < this.Json.length){
+          this.validate(this.Json[this.index]);
+        } else {
+          this.endValidation();
+        }
+      }.bind(this), 500);
     },
     pourcentage(i){
-      let ndata = this.content.data.length;
-      return (i * this.max) / ndata;
+      let ndata = this.Json.length;
+      return Math.ceil((i * this.max) / ndata);
+    },
+    endValidation(){
+      this.progress = false;
+      console.log(this.globalError);
+      if(this.globalError.length==0){
+        this.report = this.globalError;
+        this.error = false;
+        this.$emit('save-bulk-data', this.Json );
+      }
+    },
+    resetUpload(){
+      this.globalError= [];
+      this.file = undefined;
+      this.Json = [];
+      this.value = 0;
+      this.upload_state = 0;
+      this.error = false;
+      this.report =  ['test'];
+      this.index=0;
+      this.globalError=[];
+      this.progress= false;
+      this.$emit('reset-message');
     }
   },
-
   created() {
   },
   beforeUpdate() {
@@ -206,7 +271,7 @@ export default {
         position:absolute;
         left:35px;
         text-align: left;
-        font-size:15px;
+        font-size:13px;
         font-weight: 100;
         color:#003366;
         display: inline-block;
@@ -226,9 +291,11 @@ export default {
       padding:0%;
       margin: 0%;
       font-weight: 300;
-      span{
+      span {
+        width:100%;
         font-size:14px;
         font-weight:bold;
+        display: inline;
       }
     }
 
@@ -285,7 +352,7 @@ export default {
         margin:0.5%;
         padding:none;
        }
-       p {
+        p {
          float: right;
          width: 84%;
          margin:0.5%;

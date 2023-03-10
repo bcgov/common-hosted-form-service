@@ -60,13 +60,18 @@
       </BaseDialog>
       <div v-if="allowSubmitterToUploadFile && bulkFile" >
         <FormViewerDownloadButton
+          :message="sbdMessage"
+          :formElement="formElement"
           :form="form"
           :formSchema="formSchema"
           :json_csv="json_csv"
+          @save-bulk-data="saveBulkData"
+          @reset-message="resetMessage"
           :formFields="formFields" />
       </div>
       <Form
         v-if="!bulkFile"
+        ref="chefForm"
         :form="formSchema"
         :key="reRenderFormIo"
         :submission="submission"
@@ -85,7 +90,6 @@
 import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
-
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
@@ -145,10 +149,12 @@ export default {
       allowSubmitterToUploadFile: false,
       formFields : [],
       json_csv : {
-        data: String,
+        data: [],
         file_name: String
       },
-      bulkFile: false
+      bulkFile: false,
+      formElement: undefined,
+      sbdMessage:''
     };
   },
   computed: {
@@ -249,21 +255,8 @@ export default {
             );
           }
 
-          if (response.data.allowSubmitterToUploadFile)
-            this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
-          this.form = response.data;
-          this.version = response.data.versions[0].version;
-          this.versionIdToSubmitTo = response.data.versions[0].id;
-          this.formSchema = response.data.versions[0].schema;
-          const { data } = await formService.readVersionFieldsObject(this.form.id, this.versionIdToSubmitTo);
-
-          this.formFields = data;
-          this.json_csv.file_name= 'template_'+this.form.name+'_'+Date.now();
-          var csv = {};
-          for (let i=0; i<this.formFields.length;i++) {
-            csv[this.formFields[i].key] = '';
-          }
-          this.json_csv.data = [csv];
+          if (response.data.allowSubmitterToUploadFile && !this.draftId)
+            this.jsonManager(response);
         }
       } catch (error) {
         if (this.authenticated) {
@@ -274,6 +267,39 @@ export default {
         }
       }
     },
+    jsonManager(response){
+
+      this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
+      this.form = response.data;
+      this.version = response.data.versions[0].version;
+      this.versionIdToSubmitTo = response.data.versions[0].id;
+      this.formSchema = response.data.versions[0].schema;
+      const form = this.$refs.chefForm.formio;
+      this.formElement = form;
+      this.json_csv.data = [form.data, form.data] ;
+      this.json_csv.file_name= 'template_'+this.form.name+'_'+Date.now();
+    },
+    resetMessage(){
+      this.sbdMessage = '';
+    },
+    async saveBulkData(data){
+      const body = {
+        draft: true,
+        submission: data,
+      };
+      this.sendMultisubmissionData(body);
+    },
+    async sendMultisubmissionData(body){
+      // let response = await formService.createSubmission(
+      //   this.formId,
+      //   this.versionIdToSubmitTo,
+      //   body
+      // );
+      console.log(body);
+      this.sbdMessage = 'The file was successfully uploaded';
+      //console.log(response);
+    },
+    // Custom Event triggered from buttons with Action type "Event"
     async saveDraft() {
       try {
         this.saving = true;
@@ -458,7 +484,7 @@ export default {
         });
       }
     },
-    // Custom Event triggered from buttons with Action type "Event"
+   
     onCustomEvent(event) {
       alert(
         `Custom button events not supported yet. Event Type: ${event.type}`
@@ -471,7 +497,6 @@ export default {
     } else {
       this.getFormSchema();
     }
-    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
     if (!this.preview && !this.readOnly) {
       window.onbeforeunload = () => true;
     }

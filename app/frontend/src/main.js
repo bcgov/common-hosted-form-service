@@ -23,7 +23,8 @@ Formio.use(BcGovFormioComponents);
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 /* add font awesome icon component */
 Vue.component('font-awesome-icon', FontAwesomeIcon);
-
+import VueBlobJsonCsv from 'vue-blob-json-csv';
+Vue.use(VueBlobJsonCsv);
 
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
