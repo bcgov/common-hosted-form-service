@@ -176,11 +176,15 @@ import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import { rbacService, roleService, userService } from '@/services';
 import { IdentityMode, FormPermissions, FormRoleCodes, IdentityProviders } from '@/utils/constants';
+
 import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
+import BaseFilter from '@/components/base/BaseFilter.vue';
+
 export default {
   name: 'TeamManagement',
   components: {
     AddTeamMember,
+    BaseFilter,
   },
   props: {
     formId: {

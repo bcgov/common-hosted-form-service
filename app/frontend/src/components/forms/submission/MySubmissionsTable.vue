@@ -113,11 +113,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
+import BaseFilter from '@/components/base/BaseFilter.vue';
 import MySubmissionsActions from '@/components/forms/submission/MySubmissionsActions.vue';
 
 export default {
   name: 'MySubmissionsTable',
   components: {
+    BaseFilter,
     MySubmissionsActions,
   },
   props: {
@@ -130,16 +132,6 @@ export default {
     return {
       headers: [],
       filterData: [],
-      filterHeaders: [
-        {
-          text: 'Column Name',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-          width: '140px',
-        }
-      ],
       filterIgnore: [
         {
           value: 'confirmationId'
