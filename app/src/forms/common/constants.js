@@ -61,4 +61,15 @@ module.exports = Object.freeze({
       BCEID_BUSINESS: 'bceid-business',
     }
   },
+
+  EXPORT_TYPES: {
+    submissions: 'submissions',
+    default: 'submissions'
+  },
+
+  EXPORT_FORMATS: {
+    csv: 'csv',
+    json: 'json',
+    default: 'csv'
+  },
 });
