@@ -29,14 +29,14 @@
           </v-tooltip>
         </span>
         <ExportSubmissions />
-        <span v-if="selectedSubmissionToDelete.length>0">
+        <span v-if="!deletedOnly&&selectedSubmissions.length>0">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
                 class="mx-1"
                 color="red"
                 icon
-                @click="showDeleteSubmissionDialog=true, singleSubmissionDelete=false"
+                @click="showDeleteDialog=true, singleSubmissionDelete=false"
                 v-bind="attrs"
                 v-on="on"
               >
@@ -46,28 +46,46 @@
             <span>delete selected submissions</span>
           </v-tooltip>
         </span>
+        <span v-if="deletedOnly&&selectedSubmissions.length>0">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                class="mx-1"
+                color="green"
+                icon
+                @click="showRestoreDialog=true, singleSubmissionRestore=false"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>restore_from_trash</v-icon>
+              </v-btn>
+            </template>
+            <span>restore deleted submissions</span>
+          </v-tooltip>
+        </span>
       </v-col>
     </v-row>
 
 
-    <v-row no-gutters class="mt-3 mb-4">
-
-      <!---->
+    <v-row no-gutters>
       <v-spacer />
-      <v-col cols="6" sm="6" >
-        <v-switch
-          v-model="switchSubmissionView"
-          :label="switchSubmissionViewMessage"
-          :input-value="true"
-          @change="onSwitchSubmissionView"
-          small
-          color="sucess"
-          hide-details
-          class="mt-5"
-        ></v-switch>
+      <v-col cols="4" sm="4">
+        <v-checkbox
+          class="pl-3"
+          v-model="deletedOnly"
+          label="Show deleted submissions"
+          @click="refreshSubmissions"
+        />
       </v-col>
-
-      <v-col cols="6" sm="6">
+      <v-col cols="4" sm="4">
+        <v-checkbox
+          class="pl-3"
+          v-model="currentUserOnly"
+          label="Show my submissions"
+          @click="refreshSubmissions"
+        />
+      </v-col>
+      <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
@@ -91,7 +109,7 @@
       :search="search"
       :loading="loading"
       :show-select="!switchSubmissionView"
-      v-model="selectedSubmissionToDelete"
+      v-model="selectedSubmissions"
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
@@ -124,8 +142,8 @@
           <v-tooltip bottom v-if="!item.deleted">
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showDeleteSubmissionDialog=true,
-                        selectedSubmissionIdToDelete=item.submissionId, singleSubmissionDelete=true"
+                @click="showDeleteDialog=true,
+                        deleteItem=item, singleSubmissionDelete=true"
                 color="red"
                 icon
                 v-bind="attrs"
@@ -141,24 +159,25 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="restoreItem=item; showRestoreDialog = true"
-                color="red"
+                @click="restoreItem=item; showRestoreDialog = true
+                        singleSubmissionRestore=true"
+                color="green"
                 icon
                 v-bind="attrs"
                 v-on="on">
                 <v-icon>restore_from_trash</v-icon>
               </v-btn>
             </template>
-            <span>Restore</span>
+            <span>Restores</span>
           </v-tooltip>
         </span>
       </template>
     </v-data-table>
 
     <BaseDialog
-      v-model="showDeleteSubmissionDialog"
+      v-model="showDeleteDialog"
       type="CONTINUE"
-      @close-dialog="showDeleteSubmissionDialog = false"
+      @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
       <template #title>Confirm Deletion</template>
@@ -169,7 +188,6 @@
         <span>Delete</span>
       </template>
     </BaseDialog>
-
     <BaseDialog
       v-model="showRestoreDialog"
       type="CONTINUE"
@@ -178,7 +196,7 @@
     >
       <template #title>Confirm Restoration</template>
       <template #text>
-        Are you sure you wish to restore this submission?
+        {{singleSubmissionRestore?singleRestoreMessage:multiRestoreMessage}}
       </template>
       <template #button-text-continue>
         <span>Restore</span>
@@ -189,7 +207,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FormManagePermissions, NotificationTypes } from '@/utils/constants';
+import { FormManagePermissions } from '@/utils/constants';
 
 import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
@@ -221,14 +239,17 @@ export default {
       showRestoreDialog: false,
       submissionTable: [],
       submissionsCheckboxes:[],
-      showDeleteSubmissionDialog:false,
-      selectedSubmissionToDelete: [],
-      multiDeleteMessage:'Are you sure you wish to delete selected submissions',
-      singleDeleteMessage: 'Are you sure you wish to delete this submission',
+      showDeleteDialog:false,
+      selectedSubmissions: [],
+      multiDeleteMessage:'Are you sure you wish to delete selected submissions?',
+      singleDeleteMessage: 'Are you sure you wish to delete this submission?',
+      multiRestoreMessage:'Are you sure you wish to restore this submissions?',
+      singleRestoreMessage: 'Are you sure you wish to restore this submission?',
       singleSubmissionDelete:false,
-      selectedSubmissionIdToDelete:'',
+      singleSubmissionRestore:false,
+      deleteItem:{},
       switchSubmissionView:false,
-      switchSubmissionViewMessage: 'Show Deleted submissions'
+      switchSubmissionViewMessage: 'Show Deleted submissions',
     };
   },
   computed: {
@@ -320,54 +341,28 @@ export default {
       'getFormRolesForUser',
       'getFormPreferencesForCurrentUser',
       'deleteMultiSubmissions',
+      'restoreMultiSubmissions',
       'deleteSubmission'
     ]),
     ...mapActions('notifications', ['addNotification']),
-    onSwitchSubmissionView() {
-      //this.switchSubmissionView = !this.switchSubmissionView;
-      if(this.switchSubmissionView) {
-        this.deletedOnly = true;
-        this.currentUserOnly =false;
-        this.switchSubmissionViewMessage= 'Show my submissions';
-      }
-      else {
-        this.deletedOnly = false;
-        this.currentUserOnly = true;
-        this.switchSubmissionViewMessage= 'Show Deleted submissions';
-      }
-      this.refreshSubmissions();
-    },
+
     async delSub() {
       this.singleSubmissionDelete?this.deleteSingleSubs():this.deleteMultiSubs();
     },
+
+    async restoreSub() {
+      this.singleSubmissionRestore?this.restoreSingleSub():this.restoreMultipleSubs();
+    },
     async deleteSingleSubs() {
-      this.showDeleteSubmissionDialog = false;
-      await this.deleteSubmission(this.selectedSubmissionIdToDelete);
-      await this.populateSubmissionsTable();
-      this.selectedSubmissionToDelete = [];
+      this.showDeleteDialog = false;
+      await this.deleteSubmission(this.deleteItem.submissionId);
+      this.refreshSubmissions();
     },
     async deleteMultiSubs() {
-      let submissionsIdsToDelete = this.selectedSubmissionToDelete.map(submission=>submission.submissionId);
-      this.showDeleteSubmissionDialog = false;
+      let submissionsIdsToDelete = this.selectedSubmissions.map(submission=>submission.submissionId);
+      this.showDeleteDialog = false;
       await this.deleteMultiSubmissions(submissionsIdsToDelete);
-      let notDeletedSubmissionIds = this.deletedSubmissions&&this.deletedSubmissions.filter(submission=>{
-        if(!submission.deleted) return submission.id;
-      });
-
-      if (notDeletedSubmissionIds.length>0){
-        this.addNotification({
-          message: `These submissions with submission Ids ${notDeletedSubmissionIds} were not deleted`,
-          consoleError: `Cannot delete selected submissions with submission ids ${notDeletedSubmissionIds}`,
-        });
-      }
-      else {
-        await this.populateSubmissionsTable();
-        this.addNotification({
-          message: 'Submission(s) deleted successfully',
-          ...NotificationTypes.SUCCESS,
-        });
-      }
-      this.selectedSubmissionToDelete = [];
+      this.refreshSubmissions();
     },
 
     async populateSubmissionsTable() {
@@ -423,12 +418,20 @@ export default {
       ]).then(() => {
         this.populateSubmissionsTable();
       });
+      this.selectedSubmissions = [];
     },
 
-    async restoreSub() {
+    async restoreSingleSub() {
       await this.restoreSubmission({ submissionId: this.restoreItem.submissionId, deleted: false });
       this.showRestoreDialog = false;
       this.refreshSubmissions();
+    },
+    async restoreMultipleSubs() {
+      let submissionsIdsToRestore = this.selectedSubmissions.map(submission=>submission.submissionId);
+      this.showRestoreDialog = false;
+      await this.restoreMultiSubmissions(submissionsIdsToRestore);
+      this.refreshSubmissions();
+      this.selectedSubmissions = [];
     },
   },
 

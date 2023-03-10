@@ -47,7 +47,6 @@ export default {
     fcProactiveHelpGroupList:{},
     imageList:new Map(),
     fcProactiveHelpImageUrl:'',
-    deletedSubmissions: {},
   },
   getters: {
     getField, // vuex-map-fields
@@ -67,7 +66,6 @@ export default {
     builder: state => state.builder,
     fcProactiveHelpGroupList: state => state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl: state => state.fcProactiveHelpImageUrl,
-    deletedSubmissions: state => state.deletedSubmissions,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -106,9 +104,6 @@ export default {
     },
     SET_SUBMISSIONUSERS(state, users) {
       state.submissionUsers = users;
-    },
-    SET_DELETE_MULTIPLE_SUBMISSIONS (state, deletedSubmissions) {
-      state.deletedSubmissions = deletedSubmissions;
     },
     SET_USER_FORM_PREFERENCES(state, userFormPreferences) {
       state.userFormPreferences = userFormPreferences;
@@ -355,15 +350,33 @@ export default {
     },
 
 
-    async deleteMultiSubmissions ({ commit, dispatch }, submissionIds) {
+    async deleteMultiSubmissions ({ dispatch }, submissionIds) {
       try {
-        commit('SET_DELETE_MULTIPLE_SUBMISSIONS', []);
-        const { data:{submission}, } = await formService.deleteMultipleSubmissions(submissionIds);
-        commit('SET_DELETE_MULTIPLE_SUBMISSIONS', submission);
+        await formService.deleteMultipleSubmissions(submissionIds[0], { data: {submissionIds:submissionIds} });
+        dispatch('notifications/addNotification', {
+          message: 'Submissions deleted successfully.',
+          ...NotificationTypes.SUCCESS,
+        }, { root: true });
       } catch (error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while deleting the selected submissions.',
-          consoleError: `Error deleteing submissions with submissions ids ${submissionIds}: ${error}`,
+          consoleError: `Error deleteing submissions: ${error}`,
+        }, { root: true });
+      }
+    },
+
+    async restoreMultiSubmissions({ dispatch }, submissionIds) {
+      try {
+        // Get this submission
+        await formService.restoreMutipleSubmissions(submissionIds[0],{ submissionIds:submissionIds});
+        dispatch('notifications/addNotification', {
+          message: 'Submissions restored successfully.',
+          ...NotificationTypes.SUCCESS,
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while restoring this submission.',
+          consoleError: `Error restoring submissions: ${error}`,
         }, { root: true });
       }
     },
