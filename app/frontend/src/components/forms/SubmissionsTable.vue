@@ -61,7 +61,7 @@
           :input-value="true"
           @change="onSwitchSubmissionView"
           small
-          color="primary"
+          color="sucess"
           hide-details
           class="mt-5"
         ></v-switch>
