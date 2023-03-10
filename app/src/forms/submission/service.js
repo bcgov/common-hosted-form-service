@@ -180,6 +180,24 @@ const service = {
     }
   },
 
+  restoreMutipleSubmissions: async (submissionIds, currentUser) => {
+    let trx;
+    try {
+      trx = await FormSubmission.startTransaction();
+      await FormSubmission.query(trx)
+        .patch({
+          deleted: false,
+          updatedBy: currentUser.usernameIdp
+        })
+        .whereIn('id', submissionIds);
+      await trx.commit();
+      return await service.readSubmissionData(submissionIds);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
   restore: async (formSubmissionId, data, currentUser) => {
     let trx;
     try {
