@@ -234,10 +234,9 @@ export default {
    * @param {array} submissionIds The form submission identifier
    * @returns {Promise} An axios response
    */
-  deleteMultipleSubmissions(submissionIds) {
-    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionIds[0]}/submissions`, { data: {submissionIds:submissionIds} });
+  deleteMultipleSubmissions(submissionId, requestBody) {
+    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionId}/submissions`,requestBody);
   },
-
 
   /**
    * @function restoreSubmission
@@ -248,6 +247,16 @@ export default {
    */
   restoreSubmission(submissionId, requestBody) {
     return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}/restore`, requestBody);
+  },
+
+  /**
+   * @function restoreMutipleSubmissions
+   * Restores an existing submission
+   * @param {string} submissionId The form uuid
+   * @returns {Promise} An axios response
+   */
+  restoreMutipleSubmissions(submissionId, requestBody) {
+    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}/submissions/restore`, requestBody);
   },
 
   /**

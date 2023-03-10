@@ -37,6 +37,15 @@ module.exports = {
       next(error);
     }
   },
+  restoreMutipleSubmissions: async (req, res, next) => {
+    try {
+      let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
+      const response = await service.restoreMutipleSubmissions(submissionIds, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   restore: async (req, res, next) => {
     try {
       const response = await service.restore(req.params.formSubmissionId, req.body, req.currentUser);
