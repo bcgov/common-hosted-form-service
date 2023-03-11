@@ -29,40 +29,6 @@
           </v-tooltip>
         </span>
         <ExportSubmissions />
-        <span v-if="!deletedOnly&&selectedSubmissions.length>0">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                class="mx-1"
-                color="red"
-                icon
-                @click="showDeleteDialog=true, singleSubmissionDelete=false"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>delete</v-icon>
-              </v-btn>
-            </template>
-            <span>delete selected submissions</span>
-          </v-tooltip>
-        </span>
-        <span v-if="deletedOnly&&selectedSubmissions.length>0">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                class="mx-1"
-                color="green"
-                icon
-                @click="showRestoreDialog=true, singleSubmissionRestore=false"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>restore_from_trash</v-icon>
-              </v-btn>
-            </template>
-            <span>restore deleted submissions</span>
-          </v-tooltip>
-        </span>
       </v-col>
     </v-row>
 
@@ -114,6 +80,49 @@
       no-data-text="There are no submissions for this form"
     >
 
+      <template v-slot:[`header.event`]>
+        <span v-if="!deletedOnly">
+          <v-btn
+            @click="showDeleteDialog=true, singleSubmissionDelete=false"
+            color="red"
+            :disabled="selectedSubmissions.length===0"
+            icon
+          >
+            <v-tooltip bottom >
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  color="red"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                >remove_circle</v-icon>
+              </template>
+              <span>delete selected submissions</span>
+            </v-tooltip >
+          </v-btn>
+        </span>
+        <span v-if="deletedOnly">
+          <v-btn
+            @click="showRestoreDialog=true, singleSubmissionRestore=false"
+            color="red"
+            :disabled="selectedSubmissions.length===0"
+            icon
+          >
+            <v-tooltip bottom >
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  color="green"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                >restore_from_trash</v-icon>
+              </template>
+              <span>restore selected submissions</span>
+            </v-tooltip>
+          </v-btn>
+        </span>
+      </template>
+
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
@@ -121,24 +130,27 @@
         {{ item.status }}
       </template>
       <template #[`item.actions`]="{ item }">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <router-link
+              :to="{
+                name: 'FormView',
+                query: {
+                  s: item.submissionId,
+                },
+              }"
+            >
+              <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                <v-icon>remove_red_eye</v-icon>
+              </v-btn>
+            </router-link>
+          </template>
+          <span>View Submission</span>
+        </v-tooltip>
+      </template>
+      <template #[`item.event`]="{ item }">
         <span>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <router-link
-                :to="{
-                  name: 'FormView',
-                  query: {
-                    s: item.submissionId,
-                  },
-                }"
-              >
-                <v-btn color="primary" icon v-bind="attrs" v-on="on">
-                  <v-icon>remove_red_eye</v-icon>
-                </v-btn>
-              </router-link>
-            </template>
-            <span>View Submission</span>
-          </v-tooltip>
+
           <v-tooltip bottom v-if="!item.deleted">
             <template #activator="{ on, attrs }">
               <v-btn
@@ -304,6 +316,15 @@ export default {
         text: 'Actions',
         align: 'end',
         value: 'actions',
+        filterable: false,
+        sortable: false,
+      });
+
+      // Actions column at the end
+      headers.push({
+        text: 'event',
+        align: 'end',
+        value: 'event',
         filterable: false,
         sortable: false,
       });
