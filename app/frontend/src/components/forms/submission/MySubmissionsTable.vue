@@ -113,13 +113,11 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import BaseFilter from '@/components/base/BaseFilter.vue';
 import MySubmissionsActions from '@/components/forms/submission/MySubmissionsActions.vue';
 
 export default {
   name: 'MySubmissionsTable',
   components: {
-    BaseFilter,
     MySubmissionsActions,
   },
   props: {
