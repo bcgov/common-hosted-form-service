@@ -171,13 +171,11 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 
-import BaseFilter from '@/components/base/BaseFilter.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
 export default {
   name: 'SubmissionsTable',
   components: {
-    BaseFilter,
     ExportSubmissions,
   },
   props: {
