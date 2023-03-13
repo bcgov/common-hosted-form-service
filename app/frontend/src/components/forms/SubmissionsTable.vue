@@ -97,7 +97,7 @@
                   v-on="on"
                 >remove_circle</v-icon>
               </template>
-              <span>delete selected submissions</span>
+              <span>Delete selected submissions</span>
             </v-tooltip >
           </v-btn>
         </span>
@@ -117,7 +117,7 @@
                   v-on="on"
                 >restore_from_trash</v-icon>
               </template>
-              <span>restore selected submissions</span>
+              <span>Restore selected submissions</span>
             </v-tooltip>
           </v-btn>
         </span>
@@ -180,7 +180,7 @@
                 <v-icon>restore_from_trash</v-icon>
               </v-btn>
             </template>
-            <span>Restores</span>
+            <span>Restore</span>
           </v-tooltip>
         </span>
       </template>
@@ -255,8 +255,8 @@ export default {
       selectedSubmissions: [],
       multiDeleteMessage:'Are you sure you wish to delete selected submissions?',
       singleDeleteMessage: 'Are you sure you wish to delete this submission?',
-      multiRestoreMessage:'Are you sure you wish to restore this submissions?',
-      singleRestoreMessage: 'Are you sure you wish to restore this submission?',
+      multiRestoreMessage:'Are you sure you wish to restore these submissions?',
+      singleRestoreMessage: 'Are you sure you wish to restore these submission?',
       singleSubmissionDelete:false,
       singleSubmissionRestore:false,
       deleteItem:{},
@@ -318,6 +318,7 @@ export default {
         value: 'actions',
         filterable: false,
         sortable: false,
+        width: 40
       });
 
       // Actions column at the end
@@ -327,6 +328,7 @@ export default {
         value: 'event',
         filterable: false,
         sortable: false,
+        width: 40
       });
 
       return headers.filter(
