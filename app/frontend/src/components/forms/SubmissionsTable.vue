@@ -318,7 +318,7 @@ export default {
         value: 'actions',
         filterable: false,
         sortable: false,
-        width: 40
+        width: '40px'
       });
 
       // Actions column at the end
@@ -328,7 +328,7 @@ export default {
         value: 'event',
         filterable: false,
         sortable: false,
-        width: 40
+        width: '40px'
       });
 
       return headers.filter(
