@@ -290,11 +290,11 @@ export default {
       this.sendMultisubmissionData(body);
     },
     async sendMultisubmissionData(body){
-      // let response = await formService.createSubmission(
-      //   this.formId,
-      //   this.versionIdToSubmitTo,
-      //   body
-      // );
+      let response = await formService.createBulkSubmission(
+        this.formId,
+        this.versionIdToSubmitTo,
+        body
+      );
       console.log(body);
       this.sbdMessage = 'The file was successfully uploaded';
       //console.log(response);
