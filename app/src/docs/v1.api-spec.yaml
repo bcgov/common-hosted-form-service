@@ -330,6 +330,13 @@ paths:
           example: submissions
           required: true
         - in: query
+          name: version
+          schema:
+            type: string
+          description: The form version number. If the export format is json and not csv, then setting this to 0 will export all versions.
+          example: 1
+          required: true
+        - in: query
           name: minDate
           schema:
             type: string

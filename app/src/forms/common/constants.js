@@ -67,5 +67,14 @@ module.exports = Object.freeze({
     BCSC: 'bcsc', // Services Card
     GITHUB: 'github', // Github
     IDIR: 'idir' // IDIR
-  }
+  },
+  EXPORT_TYPES: {
+    submissions: 'submissions',
+    default: 'submissions'
+  },
+  EXPORT_FORMATS: {
+    csv: 'csv',
+    json: 'json',
+    default: 'csv'
+  },
 });
