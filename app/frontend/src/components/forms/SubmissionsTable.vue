@@ -347,7 +347,7 @@ export default {
 
       // Actions column at the end
       headers.push({
-        text: 'Actions',
+        text: 'View',
         align: 'end',
         value: 'actions',
         filterable: false,
