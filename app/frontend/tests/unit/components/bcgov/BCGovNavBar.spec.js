@@ -19,6 +19,7 @@ describe('BCGovNavBar.vue', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
+        identityProvider: () => 'idir',
         authenticated: () => true,
         isAdmin: () => false,
         keycloakReady: () => true
@@ -45,6 +46,7 @@ describe('BCGovNavBar.vue', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
+        identityProvider: () => 'idir',
         authenticated: () => true,
         isAdmin: () => true,
         keycloakReady: () => true
