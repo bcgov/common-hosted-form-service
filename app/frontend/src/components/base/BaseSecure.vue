@@ -5,9 +5,9 @@
         <h1 class="my-8">401: Unauthorized. :(</h1>
         <p>You do not have permission to access this page.</p>
       </div>
-      <div v-else-if="idp && identityProvider !== idp" class="text-center">
+      <div v-else-if="idp && !idp.includes(identityProvider)" class="text-center">
         <h1 class="my-8">403: Forbidden. :(</h1>
-        <p>This page requires {{ idp.toUpperCase() }} authentication.</p>
+        <p>This page requires {{ idp }} authentication.</p>
       </div>
       <slot v-else />
     </div>
@@ -51,8 +51,8 @@ export default {
       default: false,
     },
     idp: {
-      type: String,
-      default: undefined
+      type: Array,
+      default: () => []
     }
   },
   computed: {

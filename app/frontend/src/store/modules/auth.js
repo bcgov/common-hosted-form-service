@@ -42,7 +42,7 @@ export default {
       return false; // There are roles to check, but nothing in token to check against
     },
     identityProvider: () =>
-      Vue.prototype.$keycloak.tokenParsed.identity_provider,
+      (Vue.prototype.$keycloak.tokenParsed) ? Vue.prototype.$keycloak.tokenParsed.identity_provider : null,
     isAdmin: (_state, getters) => getters.hasResourceRoles('chefs', ['admin']),
     isUser: (_state, getters) => getters.hasResourceRoles('chefs', ['user']),
     keycloakReady: () => Vue.prototype.$keycloak.ready,
@@ -116,7 +116,7 @@ export default {
         } else {
           // Navigate to internal login page if no idpHint specified
           const router = getRouter(Vue.prototype.$config.basePath);
-          router.replace({ name: 'Login' });
+          router.replace({ name: 'Login', params: { idpHint: [ 'idir', 'bceid-business', 'bceid-basic' ] } });
         }
       }
     },

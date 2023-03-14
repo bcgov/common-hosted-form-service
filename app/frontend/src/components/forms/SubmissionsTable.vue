@@ -7,9 +7,22 @@
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <ColumnPreferences @preferences-saved="populateSubmissionsTable" />
-
         <span v-if="checkFormManage">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="showColumnsDialog = true"
+                class="mx-1"
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>view_column</v-icon>
+              </v-btn>
+            </template>
+            <span>Select Columns</span>
+          </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
@@ -69,7 +82,7 @@
     <!-- table header -->
     <v-data-table
       class="submissions-table"
-      :headers="calcHeaders"
+      :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
       :search="search"
@@ -214,6 +227,19 @@
         <span>Restore</span>
       </template>
     </BaseDialog>
+
+    <v-dialog v-model="showColumnsDialog" width="700">
+      <BaseFilter
+        inputFilterPlaceholder="Search submission fields"
+        inputItemKey="value"
+        inputSaveButtonText="Save"
+        :inputData="FILTER_HEADERS"
+        @saving-filter-data="updateFilter"
+        @cancel-filter-data="showColumnsDialog = false"
+      >
+        <template #filter-title>Search and select columns to show under your dashboard</template>
+      </BaseFilter>
+    </v-dialog>
   </div>
 </template>
 
@@ -221,7 +247,6 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 
-import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -232,7 +257,6 @@ library.add(faTrash);
 export default {
   name: 'SubmissionsTable',
   components: {
-    ColumnPreferences,
     ExportSubmissions,
   },
   props: {
@@ -243,11 +267,21 @@ export default {
   },
   data() {
     return {
-      deletedOnly: false,
       currentUserOnly: false,
+      deletedOnly: false,
+      filterData: [],
+      filterIgnore: [
+        {
+          value: 'confirmationId'
+        },
+        {
+          value: 'actions'
+        }
+      ],
       loading: true,
       restoreItem: {},
       search: '',
+      showColumnsDialog: false,
       showRestoreDialog: false,
       submissionTable: [],
       submissionsCheckboxes:[],
@@ -282,7 +316,7 @@ export default {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
 
-    calcHeaders() {
+    DEFAULT_HEADERS() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
@@ -336,6 +370,14 @@ export default {
       );
     },
 
+    HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+      if (this.filterData.length > 0) headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
+      return headers;
+    },
+    FILTER_HEADERS() {
+      return this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value)).concat(this.formFields.map((ff) => { return { text: ff, value: ff }; }));
+    },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
     },
@@ -365,7 +407,8 @@ export default {
       'getFormPreferencesForCurrentUser',
       'deleteMultiSubmissions',
       'restoreMultiSubmissions',
-      'deleteSubmission'
+      'deleteSubmission',
+      'updateFormPreferencesForCurrentUser',
     ]),
     ...mapActions('notifications', ['addNotification']),
 
@@ -432,14 +475,14 @@ export default {
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
-        this.fetchForm(this.formId).then(() => {
-          this.fetchFormFields({
+        this.fetchForm(this.formId).then(async () => {
+          await this.fetchFormFields({
             formId: this.formId,
             formVersionId: this.form.versions[0].id,
           });
         }),
-      ]).then(() => {
-        this.populateSubmissionsTable();
+      ]).then(async () => {
+        await this.populateSubmissionsTable();
       });
       this.selectedSubmissions = [];
     },
@@ -455,6 +498,23 @@ export default {
       await this.restoreMultiSubmissions(submissionsIdsToRestore);
       this.refreshSubmissions();
       this.selectedSubmissions = [];
+    },
+    async updateFilter(data) {
+      this.filterData = data;
+      let preferences = {
+        columns: [],
+      };
+      data.forEach((d) => {
+        if (this.formFields.includes(d.value))
+          preferences.columns.push(d.value);
+      });
+
+      await this.updateFormPreferencesForCurrentUser({
+        formId: this.form.id,
+        preferences: preferences,
+      });
+      this.showColumnsDialog = false;
+      await this.populateSubmissionsTable();
     },
   },
 

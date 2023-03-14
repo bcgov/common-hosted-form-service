@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure admin :idp="IDP.IDIR">
+  <BaseSecure admin :idp="[IDP.IDIR]">
     <v-container>
       <transition name="component-fade" mode="out-in">
         <router-view />
