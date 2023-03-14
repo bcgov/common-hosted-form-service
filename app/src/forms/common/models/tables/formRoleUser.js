@@ -43,6 +43,21 @@ class FormRoleUser extends Timestamps(Model) {
 
   static get modifiers() {
     return {
+      filterUserId(query, value) {
+        if (value) {
+          query.where('userId', value);
+        }
+      },
+      filterFormId(query, value) {
+        if (value) {
+          query.where('formId', value);
+        }
+      },
+      filterRole(query, value) {
+        if (value) {
+          query.where('role', value);
+        }
+      },
       orderCreatedAtDescending(builder) {
         builder.orderBy('createdAt', 'desc');
       },
