@@ -1,54 +1,11 @@
-const { Model } = require('objection');
 const Problem = require('api-problem');
 const {flattenComponents, unwindPath, submissionHeaders} = require('../common/utils');
-const { Form, FormVersion } = require('../common/models');
+const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
+const { Form, FormVersion, SubmissionData } = require('../common/models');
 const {  transforms } = require('json2csv');
 const { Parser } = require('json2csv');
 
 
-class SubmissionData extends Model {
-  static get tableName() {
-    return 'submissions_data_vw';
-  }
-
-  static get modifiers() {
-    return {
-      filterCreatedAt(query, minDate, maxDate) {
-        if (minDate && maxDate) {
-          query.whereBetween('createdAt', [minDate, maxDate]);
-        } else if (minDate) {
-          query.where('createdAt', '>=', minDate);
-        } else if (maxDate) {
-          query.where('createdAt', '<=', maxDate);
-        }
-      },
-      filterDeleted(query, value) {
-        if (!value) {
-          query.where('deleted', false);
-        }
-      },
-      filterDrafts(query, value) {
-        if (!value) {
-          query.where('draft', false);
-        }
-      },
-      orderDefault(builder) {
-        builder.orderBy('createdAt', 'DESC');
-      }
-    };
-  }
-}
-
-const EXPORT_TYPES = Object.freeze({
-  submissions: 'submissions',
-  default: 'submissions'
-});
-
-const EXPORT_FORMATS = Object.freeze({
-  csv: 'csv',
-  json: 'json',
-  default: 'csv'
-});
 
 const service = {
   /**
@@ -82,9 +39,11 @@ const service = {
      * see: https://github.com/kaue/jsonexport
      */
     let formSchemaheaders = metaHeaders.concat(fieldNames);
-    let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
-    let t = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
-    return t;
+    if (Array.isArray(data) && data.length > 0) {
+      let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
+    }
+    return formSchemaheaders;
   },
 
   _exportType: (params = {}) => {
@@ -155,7 +114,7 @@ const service = {
     let submissionData = await SubmissionData.query()
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
-      .where('version', version)
+      .modify('filterVersion', version)
       .modify('filterCreatedAt', preference&&preference.minDate, preference&&preference.maxDate)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
