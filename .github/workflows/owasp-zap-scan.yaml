@@ -48,7 +48,7 @@ jobs:
 
       - name: Set up Cloud SDK
         if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ env.ZAP_GCP_PROJECT }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
