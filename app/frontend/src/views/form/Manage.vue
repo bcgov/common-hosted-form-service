@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR">
+  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
     <ManageLayout :f="f" />
   </BaseSecure>
 </template>
