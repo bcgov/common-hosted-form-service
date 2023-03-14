@@ -50,6 +50,7 @@ jobs:
         if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}
         uses: google-github-actions/setup-gcloud@v1
         with:
+          version: ">= 416.0.0"
           project_id: ${{ env.ZAP_GCP_PROJECT }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
