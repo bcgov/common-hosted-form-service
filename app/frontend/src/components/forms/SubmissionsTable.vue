@@ -290,7 +290,7 @@ export default {
       multiDeleteMessage:'Are you sure you wish to delete selected submissions?',
       singleDeleteMessage: 'Are you sure you wish to delete this submission?',
       multiRestoreMessage:'Are you sure you wish to restore these submissions?',
-      singleRestoreMessage: 'Are you sure you wish to restore these submission?',
+      singleRestoreMessage: 'Are you sure you wish to restore this submission?',
       singleSubmissionDelete:false,
       singleSubmissionRestore:false,
       deleteItem:{},
