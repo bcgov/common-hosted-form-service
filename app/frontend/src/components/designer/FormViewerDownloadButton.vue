@@ -11,7 +11,7 @@
           <vue-blob-json-csv
             tag-name="i"
             file-type="json"
-            file-name="json_csv.file_name"
+            :file-name="json_csv.file_name"
             title="Download   "
             :data="json_csv.data"
             confirm="Do you want to download it?"
@@ -31,16 +31,16 @@
 
     <div v-if="file" class="worker-zone">
       <div class="wz-top">
-        <ProgressBar :value="value" :max="max" :error="error" />
+        <ProgressBar :value="value" :max="max" :error="error" :file="file" />
       </div>
       <div class="wz-bottom">
         <div class="message-block" v-if="!progress" >
           <span>Report: </span>
           <p :class="txt_color">
-            <v-icon v-if="error" color="red">close</v-icon>
-            <v-icon v-if="!error" color="green">check</v-icon>
-            {{ message }}
-            <ul v-if="error && report.length>0" >
+            <v-icon v-if="response.error" color="red">close</v-icon>
+            <v-icon v-if="!response.error" color="green">check</v-icon>
+            {{ response.message }}
+            <ul v-if="response.error && report.length>0" >
               <li></li>
             </ul>
           </p>
@@ -81,7 +81,11 @@ export default {
     form : {},
     formSchema: {},
     formFields: [],
-    message: undefined,
+    block:Boolean,
+    response:{
+      message: String,
+      error: Boolean
+    },
     json_csv : {
       data: [],
       file_name: String
@@ -120,17 +124,23 @@ export default {
       if (data) exportFromJSON({ data, fileName, exportType });
     },
     addFile(e,type) {
+      if(this.block){ return;}
+
       if(this.file!=undefined) {
         this.addNotification({message:'Sorry, you can upload only one file.',consoleError: 'Only one file can be drag.',});
         return;
       }
       let droppedFiles = (type==0)?  e.dataTransfer.files : this.$refs.file.files;
 
-
       if(!droppedFiles) return;
 
       if(droppedFiles.length>1) {
         this.addNotification({message:'Sorry, you can drag only one file.',consoleError: 'Only one file can be drag.',});
+        return;
+      }
+      let size = (droppedFiles[0] / (1024 *1024));
+      if(size>5) {
+        this.addNotification({message:'Max file size allowed is 5MB.',consoleError: 'Max file size allowed is 5MB.',});
         return;
       }
       this.file = droppedFiles [0];
@@ -147,11 +157,13 @@ export default {
       });
     },
     parseFile(){
+
       try{
         let reader = new FileReader();
         reader.onload = function(e) {
           this.Json = JSON.parse(e.target.result);
         }.bind(this);
+
         reader.onloadend = () =>{
           this.preValidateSubmission();
         };
@@ -163,7 +175,7 @@ export default {
     preValidateSubmission(){
       try {
         if(this.Json.length==0){ 
-          this.addNotification({message:'this file is empty.',consoleError: 'this file is empty.'});
+          this.addNotification({message:'this json file is empty.',consoleError: 'this file is empty.'});
           return;
         }
         this.globalError = [];
@@ -173,6 +185,7 @@ export default {
         this.validate(this.Json[this.index]);
       } catch (error) {
         this.file = undefined;
+        this.$emit('set-error', {error:true, message:'there is something wrong with this file' } );
         this.addNotification({message:'there is something wrong with this file',consoleError: error,});
         return;
       }
@@ -203,7 +216,7 @@ export default {
         } else {
           this.endValidation();
         }
-      }.bind(this), 500);
+      }.bind(this), 50);
     },
     pourcentage(i){
       let ndata = this.Json.length;
@@ -211,7 +224,6 @@ export default {
     },
     endValidation(){
       this.progress = false;
-      console.log(this.globalError);
       if(this.globalError.length==0){
         this.report = this.globalError;
         this.error = false;

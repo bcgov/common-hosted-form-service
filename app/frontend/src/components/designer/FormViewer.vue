@@ -3,6 +3,7 @@
     <div v-if="displayTitle">
       <div v-if="!isFormPublic(form)">
         <FormViewerActions
+          :block="block"
           :draftEnabled="form.enableSubmitterDraft"
           :formId="form.id"
           :isDraft="submissionRecord.draft"
@@ -60,13 +61,14 @@
       </BaseDialog>
       <div v-if="allowSubmitterToUploadFile && bulkFile" >
         <FormViewerDownloadButton
-          :message="sbdMessage"
+          :response="sbdMessage"
           :formElement="formElement"
           :form="form"
           :formSchema="formSchema"
           :json_csv="json_csv"
           @save-bulk-data="saveBulkData"
           @reset-message="resetMessage"
+          @set-error="setError"
           :formFields="formFields" />
       </div>
       <Form
@@ -154,7 +156,11 @@ export default {
       },
       bulkFile: false,
       formElement: undefined,
-      sbdMessage:''
+      sbdMessage:{
+        message: String,
+        error: Boolean
+      },
+      block:false
     };
   },
   computed: {
@@ -280,24 +286,59 @@ export default {
       this.json_csv.file_name= 'template_'+this.form.name+'_'+Date.now();
     },
     resetMessage(){
-      this.sbdMessage = '';
+      this.sbdMessage.message = undefined;
+      this.sbdMessage.error = false;
+      this.block = false;
     },
-    async saveBulkData(data){
-      const body = {
+    async saveBulkData(submissions){
+      const payload = {
         draft: true,
-        submission: data,
+        submission: Object.freeze({ data : submissions }),
       };
-      this.sendMultisubmissionData(body);
+      this.block = true;
+      this.sendMultisubmissionData(payload);
     },
     async sendMultisubmissionData(body){
-      let response = await formService.createBulkSubmission(
-        this.formId,
-        this.versionIdToSubmitTo,
-        body
-      );
-      console.log(body);
-      this.sbdMessage = 'The file was successfully uploaded';
-      //console.log(response);
+
+      try {
+        let response = await formService.createBulkSubmission(
+          this.formId,
+          this.versionIdToSubmitTo,
+          body
+        );
+        
+        console.log(response);
+      
+        if ([200, 201].includes(response.status)) {
+          // all is good, flag no errors and carry on...
+          // store our submission result...
+          this.sbdMessage.message = 'The file was successfully uploaded';
+          this.sbdMessage.error = false;
+          this.block = false;
+          this.addNotification({
+            message: this.sbdMessage.message,
+            ...NotificationTypes.SUCCESS,
+          });
+          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
+        } else {
+          // console.error(response); // eslint-disable-line no-console
+          this.sbdMessage.message = `Failed response from submission endpoint. Response code: ${response.status}`;
+          this.sbdMessage.error = true;
+          this.block = false;
+          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
+        }
+      } catch (error) {
+        this.sbdMessage.message = 'An error occurred submitting this form';
+        this.sbdMessage.error = true;
+        this.block = false;
+        this.addNotification({
+          message: this.sbdMessage ,
+          consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
+        });
+      }
+    },
+    setError(data){
+      this.sbdMessage = data;
     },
     // Custom Event triggered from buttons with Action type "Event"
     async saveDraft() {

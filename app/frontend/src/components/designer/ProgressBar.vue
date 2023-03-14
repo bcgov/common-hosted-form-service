@@ -4,8 +4,20 @@
     <div class="meter">
       <span :style="'width:'+value+'%;'" :class="color" >
       </span>
+     
     </div>
+    
+    <v-row v-if="file" class="mt-4 fileinfo">
+      <v-col cols="12" md="6">
+        <label>{{ file.name }}</label>
+      </v-col>
+      <v-col cols="12" md="6">
+        <label>{{ fileSize }}</label>
+      </v-col>
+    </v-row>
+    
   </div>
+  
 </template>
 <script>
 
@@ -16,7 +28,8 @@ export default {
   props: {
     value:Number,
     max:Number,
-    error:Boolean
+    error:Boolean,
+    file: File
   },
   data() {
     return {
@@ -30,6 +43,11 @@ export default {
         if (this.error) return 'fail';
         else return 'success';
       }
+    },
+    fileSize(){
+      if(this.file.size< 1024) return this.file.size.toFixed(2)+' bytes';
+      if(this.file.size< 1024 * 1024) return (this.file.size / 1024).toFixed(2)+' KB';
+      return (this.file.size / (1024 *1024)).toFixed(2)+' MB';
     }
   },
   methods: {
@@ -102,6 +120,19 @@ export default {
     );
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
+}
+
+.fileinfo{
+  position: relative;
+  width:100%;
+  margin-top: 1%;
+  padding: 1px;
+  label {
+    font-size: 12px;
+    color: #38598a;
+    text-align:right;
+    float: right;
+  }
 }
 
 

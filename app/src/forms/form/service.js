@@ -526,6 +526,78 @@ const service = {
       throw err;
     }
   },
+  createBulkSubmission: async (formVersionId, data, currentUser) => {
+    let trx;
+    try {
+      const formVersion = await service.readVersion(formVersionId);
+      const { identityProviders } = await service.readForm(formVersion.formId);
+
+      trx = await FormSubmission.startTransaction();
+
+      // Ensure we only record the user if the form is not public facing
+      const isPublicForm = identityProviders.some(idp => idp.code === 'public');
+      const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
+
+      const submissionDataArray = data.submission.data;
+      const recordWithoutData = data;
+      delete recordWithoutData.submission.data;
+
+      let recordsToInsert = [];
+
+      // let's create multiple submissions with same metadata
+      submissionDataArray.map((singleData) => {
+        let submissionId = uuidv4();
+        recordsToInsert.push({
+          ...recordWithoutData,
+          id: submissionId,
+          formVersionId: formVersion.id,
+          confirmationId: submissionId.substring(0, 8).toUpperCase(),
+          createdBy: createdBy,
+          submission:{
+            ...recordWithoutData.submission,
+            data:singleData
+          }
+        });
+      });
+
+      const result = await FormSubmission.query(trx).insert(recordsToInsert);
+
+      if (!isPublicForm && !currentUser.public) {
+        // Provide the submission creator appropriate CRUD permissions if this is a non-public form
+        // we decided that subitter cannot delete or update their own submission unless it's a draft
+        // We know this is the submission creator when we see the SUBMISSION_CREATE permission
+        // These are adjusted at the update point if going from draft to submitted, or when adding
+        // team submitters to a draft
+        
+        const perms = [
+          Permissions.SUBMISSION_CREATE,
+          Permissions.SUBMISSION_READ
+        ];
+        if (data.draft) {
+          perms.push(Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE);
+        }
+        let itemsToInsert = [];
+        result.map((singleSubmission) => {
+          itemsToInsert.push(...perms.map(perm => ({
+            id: uuidv4(),
+            userId: currentUser.id,
+            formSubmissionId: singleSubmission.id,
+            permission: perm,
+            createdBy: createdBy
+          })));
+        });
+      
+
+        await FormSubmissionUser.query(trx).insert(itemsToInsert);
+      }
+
+      await trx.commit();
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
   listSubmissionFields: (formVersionId, fields) => {
     return FormSubmission.query()
       .select('id', fields.map(f => ref(`submission:data.${f}`).as(f.split('.').slice(-1))))
