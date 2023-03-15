@@ -164,7 +164,7 @@ export default {
       }
     },
     canManageAPI() {
-      return this.permissions.some(p => p.includes([FormPermissions.FORM_API_CREATE, FormPermissions.FORM_API_READ, FormPermissions.FORM_API_UPDATE, FormPermissions.FORM_API_DELETE]));
+      return this.permissions.some(p => [FormPermissions.FORM_API_CREATE, FormPermissions.FORM_API_READ, FormPermissions.FORM_API_UPDATE, FormPermissions.FORM_API_DELETE].includes(p));
     }
   },
   methods: {
