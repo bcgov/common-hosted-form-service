@@ -58,3 +58,4 @@ build
 
 !app/frontend/.env
 !local-infrastructure/.env
+.history
