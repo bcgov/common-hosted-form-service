@@ -306,9 +306,6 @@ export default {
           this.versionIdToSubmitTo,
           body
         );
-        
-        console.log(response);
-      
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...
@@ -332,7 +329,7 @@ export default {
         this.sbdMessage.error = true;
         this.block = false;
         this.addNotification({
-          message: this.sbdMessage ,
+          message: this.sbdMessage.message ,
           consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
         });
       }
@@ -501,7 +498,7 @@ export default {
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
-        console.error(error); // eslint-disable-line no-console
+
         errMsg = 'An error occurred submitting this form';
       }
       return errMsg;
@@ -525,7 +522,7 @@ export default {
         });
       }
     },
-   
+
     onCustomEvent(event) {
       alert(
         `Custom button events not supported yet. Event Type: ${event.type}`

@@ -1,12 +1,11 @@
 <template>
   <div class="box-progress">
-    <b>{{value}}%</b>
+    <b>{{(value)? value : "0"}}%</b>
     <div class="meter">
       <span :style="'width:'+value+'%;'" :class="color" >
       </span>
-     
     </div>
-    
+
     <v-row v-if="file" class="mt-4 fileinfo">
       <v-col cols="12" md="6">
         <label>{{ file.name }}</label>
@@ -15,9 +14,9 @@
         <label>{{ fileSize }}</label>
       </v-col>
     </v-row>
-    
+
   </div>
-  
+
 </template>
 <script>
 

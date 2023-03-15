@@ -63,7 +63,7 @@
         </v-col>
       </v-row>
     </div>
-   
+
   </div>
 </template>
 <script>
@@ -138,6 +138,10 @@ export default {
         this.addNotification({message:'Sorry, you can drag only one file.',consoleError: 'Only one file can be drag.',});
         return;
       }
+      if(droppedFiles[0]['type']!='application/json'){
+        this.addNotification({message:'Sorry, we only accept json files.',consoleError: 'Sorry, we only accept json files.',});
+        return;
+      }
       let size = (droppedFiles[0] / (1024 *1024));
       if(size>5) {
         this.addNotification({message:'Max file size allowed is 5MB.',consoleError: 'Max file size allowed is 5MB.',});
@@ -174,7 +178,12 @@ export default {
     },
     preValidateSubmission(){
       try {
-        if(this.Json.length==0){ 
+
+        if(!Array.isArray(this.Json)){
+          this.addNotification({message:'An unexpected error occurred.',consoleError: 'An unexpected error occurred.'});
+          return;
+        }
+        if(this.Json.length==0){
           this.addNotification({message:'this json file is empty.',consoleError: 'this file is empty.'});
           return;
         }
@@ -189,16 +198,13 @@ export default {
         this.addNotification({message:'there is something wrong with this file',consoleError: error,});
         return;
       }
-    
+
     },
     validate(element){
-      
+
       const timer = setTimeout(function(){
         try {
           let validationResult =  this.formElement.checkValidity(element);
-          console.log(validationResult);
-          //let isvalid =   validationResult.valid;
-          //const isVal = Formio.Utils.checkCondition(this.formElement.components, {}, element, true);
           if(!validationResult){
             this.globalError.push({
               index: this.index,
@@ -220,7 +226,10 @@ export default {
     },
     pourcentage(i){
       let ndata = this.Json.length;
-      return Math.ceil((i * this.max) / ndata);
+      if(ndata>0){
+        return Math.ceil((i * this.max) / ndata);
+      }
+      return 0;
     },
     endValidation(){
       this.progress = false;
@@ -401,9 +410,6 @@ export default {
     max-width: 38%;
     min-height: 200px;
     padding: 3%;
-    // display: flex;
-   // align-items: center;
-   // justify-content: center; -->
     text-align: center;
     font-family: "Quicksand", sans-serif;
     font-size: 17px;
