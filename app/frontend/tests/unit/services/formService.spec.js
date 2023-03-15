@@ -422,6 +422,40 @@ describe('Form Service', () => {
     });
   });
 
-});
+  describe('submissions/${submissionId}/submissions', () => {
+    let submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
+    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/submissions`;
 
+    it('calls delete endpoint', async () => {
+      mockAxios.onDelete(endpoint).reply(200);
+
+      let submissionIds = [
+        'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
+        '0715b1ac-4069-4778-a868-b4f71fdea18d'
+      ];
+
+      const result = await formService.deleteMultipleSubmissions(submissionId,{data:{submissionIds}});
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.delete).toHaveLength(1);
+    });
+  });
+
+
+  describe('submissions/${submissionId}/submissions/restore', () => {
+    let submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
+    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/submissions/restore`;
+
+    it('calls restore multiple submission endpoint', async () => {
+      mockAxios.onPut(endpoint).reply(200);
+      let submissionIds = [
+        'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
+        '0715b1ac-4069-4778-a868-b4f71fdea18d'
+      ];
+
+      const result = await formService.restoreMutipleSubmissions(submissionId,{submissionIds});
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.put).toHaveLength(1);
+    });
+  });
+});
 

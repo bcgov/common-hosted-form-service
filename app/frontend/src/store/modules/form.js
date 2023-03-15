@@ -39,6 +39,7 @@ export default {
       }
     },
     permissions: [],
+    roles:[],
     submissionList: [],
     submissionUsers: [],
     userFormPreferences: {},
@@ -56,14 +57,15 @@ export default {
     formList: state => state.formList,
     formSubmission: state => state.formSubmission,
     permissions: state => state.permissions,
+    roles: state => state.roles,
     submissionList: state => state.submissionList,
     submissionUsers: state => state.submissionUsers,
     userFormPreferences: state => state.userFormPreferences,
     fcNamesProactiveHelpList: state => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
     version: state => state.version,
     builder: state => state.builder,
-    fcProactiveHelpGroupList:state=>state.fcProactiveHelpGroupList,
-    fcProactiveHelpImageUrl:state=>state.fcProactiveHelpImageUrl,
+    fcProactiveHelpGroupList: state => state.fcProactiveHelpGroupList,
+    fcProactiveHelpImageUrl: state => state.fcProactiveHelpImageUrl,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -87,6 +89,9 @@ export default {
     },
     SET_FORM_PERMISSIONS(state, permissions) {
       state.permissions = permissions;
+    },
+    SET_FORM_ROLES(state, roles) {
+      state.roles = roles;
     },
     SET_FORMLIST(state, forms) {
       state.formList = forms;
@@ -154,6 +159,24 @@ export default {
         const data = response.data;
         if (data.forms[0]) {
           commit('SET_FORM_PERMISSIONS', data.forms[0].permissions);
+        } else {
+          throw new Error('No form found');
+        }
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching your user data for this form.',
+          consoleError: `Error getting user data using formID ${formId}: ${error}`,
+        }, { root: true });
+      }
+    },
+    async getFormRolesForUser({ commit, dispatch }, formId) {
+      try {
+        commit('SET_FORM_ROLES', []);
+        // Get the forms based on the user's permissions
+        const response = await rbacService.getCurrentUser({ formId: formId });
+        const data = response.data;
+        if (data.forms[0]) {
+          commit('SET_FORM_ROLES', data.forms[0].roles);
         } else {
           throw new Error('No form found');
         }
@@ -325,6 +348,39 @@ export default {
         }, { root: true });
       }
     },
+
+
+    async deleteMultiSubmissions ({ dispatch }, submissionIds) {
+      try {
+        await formService.deleteMultipleSubmissions(submissionIds[0], { data: {submissionIds:submissionIds} });
+        dispatch('notifications/addNotification', {
+          message: 'Submissions deleted successfully.',
+          ...NotificationTypes.SUCCESS,
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while deleting the selected submissions.',
+          consoleError: `Error deleteing submissions: ${error}`,
+        }, { root: true });
+      }
+    },
+
+    async restoreMultiSubmissions({ dispatch }, submissionIds) {
+      try {
+        // Get this submission
+        await formService.restoreMutipleSubmissions(submissionIds[0],{ submissionIds:submissionIds});
+        dispatch('notifications/addNotification', {
+          message: 'Submissions restored successfully.',
+          ...NotificationTypes.SUCCESS,
+        }, { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while restoring this submission.',
+          consoleError: `Error restoring submissions: ${error}`,
+        }, { root: true });
+      }
+    },
+
     async restoreSubmission({ dispatch }, { submissionId, deleted }) {
       try {
         // Get this submission
