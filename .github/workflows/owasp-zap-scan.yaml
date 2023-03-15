@@ -2,14 +2,20 @@ name: owasp-zap-scan
 env:
   ZAP_SCAN_TYPE: base
   # Check dev environment for now
-  ZAP_TARGET_URL: https://chefs-dev.apps.silver.devops.gov.bc.ca
+  ZAP_TARGET_URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}
   ZAP_DURATION: 2
   ZAP_MAX_DURATION: 10
   # PUBLISH RESULTS TO WEBPAGE
   ## Creates a pre-signed URL with the results...
   ZAP_GCP_PUBLISH: false
 on:
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - reopened
+      - synchronize
   workflow_call:
     inputs:
       ZAP_SCAN_TYPE:
@@ -36,8 +42,6 @@ on:
     secrets:
       GCP_SA_KEY:
         required: false
-  schedule:
-    - cron: "0 0 * * *"
 jobs:
   owasp-zap-scan:
     runs-on: ubuntu-latest
