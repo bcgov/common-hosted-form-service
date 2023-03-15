@@ -45,6 +45,7 @@ MockModel.findById = jest.fn().mockReturnThis();
 MockModel.modify = jest.fn().mockReturnThis();
 MockModel.modifiers = jest.fn().mockReturnThis();
 MockModel.orderBy = jest.fn().mockReturnThis();
+MockModel.patch = jest.fn().mockReturnThis();
 MockModel.patchAndFetchById = jest.fn().mockReturnThis();
 MockModel.query = jest.fn().mockReturnThis();
 MockModel.resolve = jest.fn().mockResolvedValue(returnValue);
@@ -56,6 +57,7 @@ MockModel.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
 MockModel.then = jest.fn((done) => { done(returnValue); });
 MockModel.throwIfNotFound = jest.fn().mockReturnThis();
 MockModel.where = jest.fn().mockReturnThis();
+MockModel.whereIn = jest.fn().mockReturnThis();
 MockModel.withGraphFetched = jest.fn().mockReturnThis();
 
 // Utility Functions

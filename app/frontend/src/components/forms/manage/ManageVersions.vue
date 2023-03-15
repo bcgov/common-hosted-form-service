@@ -64,6 +64,7 @@
           value
           :input-value="item.published"
           :label="item.published ? 'Published' : 'Unpublished'"
+          :disabled="!canPublish"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
         />
       </template>
@@ -290,6 +291,9 @@ export default {
       } else {
         return this.form ? this.form.versions : [];
       }
+    },
+    canPublish() {
+      return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
   },
   methods: {
