@@ -1,6 +1,5 @@
 const service = require('../../../../src/forms/form/service');
 
-
 describe('_findFileIds', () => {
   it('should handle a blank everything', () => {
     const schema = {

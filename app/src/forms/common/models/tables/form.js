@@ -32,7 +32,7 @@ class Form extends Timestamps(Model) {
     const FormVersion = require('./formVersion');
     const FormVersionDraft = require('./formVersionDraft');
     const IdentityProvider = require('./identityProvider');
-
+    const BulkFileStorage = require('./bulkFileStorage');
     return {
       drafts: {
         relation: Model.HasManyRelation,
@@ -69,6 +69,14 @@ class Form extends Timestamps(Model) {
         join: {
           from: 'form.id',
           to: 'form_version.formId'
+        }
+      },
+      bulkFileStorages: {
+        relation: Model.HasManyRelation,
+        modelClass: BulkFileStorage,
+        join: {
+          from: 'form.id',
+          to: 'bulk_file_storage.formId'
         }
       }
     };
@@ -107,7 +115,7 @@ class Form extends Timestamps(Model) {
   // exclude labels and submissionReceivedEmails arrays from explicit JSON conversion
   // encounter malformed array literal
   static get jsonAttributes() {
-    return ['id', 'name', 'description', 'active', 'showSubmissionConfirmation', 'enableStatusUpdates', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
+    return ['id', 'name', 'description', 'active','allowSubmitterToUploadFile', 'showSubmissionConfirmation', 'enableStatusUpdates', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
   }
 
   static get jsonSchema() {
@@ -119,6 +127,7 @@ class Form extends Timestamps(Model) {
         name: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: ['string', 'null'], maxLength: 255 },
         active: { type: 'boolean' },
+        allowSubmitterToUploadFile: { type: 'boolean' },
         labels: { type: ['array', 'null'], items: { type: 'string' } },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },

@@ -106,7 +106,6 @@
           </v-tooltip>
         </span>
 
-
         <!-- export -->
         <span>
           <v-tooltip bottom>
@@ -386,7 +385,6 @@ export default {
       this.fetchForm(this.form.id);
     },
     // ----------------------------------------------------------------------/ Publish/unpublish actions
-
 
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;

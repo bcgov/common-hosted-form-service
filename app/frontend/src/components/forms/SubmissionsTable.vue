@@ -92,6 +92,9 @@
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
+      <!-- <template #[`item.submissionType`]="{ item }">
+        {{ item.item.submissionType }}
+      </template> -->
 
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
@@ -139,6 +142,9 @@
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
+      <!-- <template #[`item.originalName`]="{ item }">
+        {{ item.originalName }}
+      </template> -->
       <template #[`item.status`]="{ item }">
         {{ item.status }}
       </template>
@@ -319,7 +325,9 @@ export default {
     DEFAULT_HEADERS() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
+        //{ text: 'Submission Type', align: 'start', value: 'submissionType' },
         { text: 'Submission Date', align: 'start', value: 'date' },
+        //{ text: 'File Name', align: 'start', value: 'originalName' },
         { text: 'Submitter', align: 'start', value: 'submitter' },
       ];
 
@@ -447,11 +455,13 @@ export default {
               const fields = {
                 confirmationId: s.confirmationId,
                 date: s.createdAt,
+                //originalName: s.originalName,
                 formId: s.formId,
                 status: s.formSubmissionStatusCode,
                 submissionId: s.submissionId,
                 submitter: s.createdBy,
                 versionId: s.formVersionId,
+                //submissionType: (s.originalName) ? 'Bulk Submission' : 'Single Submission' ,
                 deleted: s.deleted,
               };
               // Add any custom columns

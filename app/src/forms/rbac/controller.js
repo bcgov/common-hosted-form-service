@@ -125,7 +125,6 @@ module.exports = {
       next(error);
     }
   },
-
   getIdentityProviders:  async (req, res, next) => {
     try {
       const response = await service.getIdentityProviders(req.query);

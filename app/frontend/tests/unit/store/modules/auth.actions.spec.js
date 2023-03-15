@@ -138,6 +138,5 @@ describe('auth actions', () => {
       expect(window.location.replace).toHaveBeenCalledTimes(1);
       expect(mockStore.getters.createLogoutUrl).toHaveBeenCalledTimes(1);
     });
-
   });
 });

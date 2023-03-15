@@ -3,16 +3,20 @@
     <div v-if="displayTitle">
       <div v-if="!isFormPublic(form)">
         <FormViewerActions
+          :block="block"
           :draftEnabled="form.enableSubmitterDraft"
           :formId="form.id"
           :isDraft="submissionRecord.draft"
           :permissions="permissions"
           :readOnly="readOnly"
           :submissionId="submissionId"
+          :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+          :bulkFile="bulkFile"
           @save-draft="saveDraft"
+          @switchView="bulkFile=!bulkFile"
         />
       </div>
-      <h1 class="my-6 text-center">{{ form.name }}</h1>
+      <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }} </h1>
     </div>
     <div class="form-wrapper">
       <v-alert
@@ -56,8 +60,21 @@
           <span>Submit</span>
         </template>
       </BaseDialog>
-
+      <div v-if="allowSubmitterToUploadFile && bulkFile" >
+        <FormViewerDownloadButton
+          :response="sbdMessage"
+          :formElement="formElement"
+          :form="form"
+          :formSchema="formSchema"
+          :json_csv="json_csv"
+          @save-bulk-data="saveBulkData"
+          @reset-message="resetMessage"
+          @set-error="setError"
+          :formFields="formFields" />
+      </div>
       <Form
+        v-if="!bulkFile"
+        ref="chefForm"
         :form="formSchema"
         :key="reRenderFormIo"
         :submission="submission"
@@ -76,10 +93,10 @@
 import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
-
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
+import FormViewerDownloadButton from '@/components/designer/FormViewerDownloadButton.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
@@ -89,6 +106,7 @@ export default {
   components: {
     Form,
     FormViewerActions,
+    FormViewerDownloadButton
   },
   props: {
     displayTitle: {
@@ -131,6 +149,19 @@ export default {
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      allowSubmitterToUploadFile: false,
+      formFields : [],
+      json_csv : {
+        data: [],
+        file_name: String
+      },
+      bulkFile: false,
+      formElement: undefined,
+      sbdMessage:{
+        message: String,
+        error: Boolean
+      },
+      block:false
     };
   },
   computed: {
@@ -236,10 +267,9 @@ export default {
               `No published version found in response. FormID: ${this.formId}`
             );
           }
-          this.form = response.data;
-          this.version = response.data.versions[0].version;
-          this.versionIdToSubmitTo = response.data.versions[0].id;
-          this.formSchema = response.data.versions[0].schema;
+
+          if (response.data.allowSubmitterToUploadFile && !this.draftId)
+            this.jsonManager(response);
         }
       } catch (error) {
         if (this.authenticated) {
@@ -250,6 +280,71 @@ export default {
         }
       }
     },
+    jsonManager(response){
+
+      this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
+      this.form = response.data;
+      this.version = response.data.versions[0].version;
+      this.versionIdToSubmitTo = response.data.versions[0].id;
+      this.formSchema = response.data.versions[0].schema;
+      const form = this.$refs.chefForm.formio;
+      this.formElement = form;
+      this.json_csv.data = [form.data, form.data] ;
+      this.json_csv.file_name= 'template_'+this.form.name+'_'+Date.now();
+    },
+    resetMessage(){
+      this.sbdMessage.message = undefined;
+      this.sbdMessage.error = false;
+      this.block = false;
+    },
+    async saveBulkData(submissions){
+      const payload = {
+        draft: true,
+        submission: Object.freeze({ data : submissions }),
+      };
+      this.block = true;
+      this.sendMultisubmissionData(payload);
+    },
+    async sendMultisubmissionData(body){
+
+      try {
+        let response = await formService.createBulkSubmission(
+          this.formId,
+          this.versionIdToSubmitTo,
+          body
+        );
+        if ([200, 201].includes(response.status)) {
+          // all is good, flag no errors and carry on...
+          // store our submission result...
+          this.sbdMessage.message = 'The file was successfully uploaded';
+          this.sbdMessage.error = false;
+          this.block = false;
+          this.addNotification({
+            message: this.sbdMessage.message,
+            ...NotificationTypes.SUCCESS,
+          });
+          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
+        } else {
+          // console.error(response); // eslint-disable-line no-console
+          this.sbdMessage.message = `Failed response from submission endpoint. Response code: ${response.status}`;
+          this.sbdMessage.error = true;
+          this.block = false;
+          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
+        }
+      } catch (error) {
+        this.sbdMessage.message = 'An error occurred submitting this form';
+        this.sbdMessage.error = true;
+        this.block = false;
+        this.addNotification({
+          message: this.sbdMessage.message ,
+          consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
+        });
+      }
+    },
+    setError(data){
+      this.sbdMessage = data;
+    },
+    // Custom Event triggered from buttons with Action type "Event"
     async saveDraft() {
       try {
         this.saving = true;
@@ -411,7 +506,7 @@ export default {
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
-        console.error(error); // eslint-disable-line no-console
+
         errMsg = 'An error occurred submitting this form';
       }
       return errMsg;
@@ -435,7 +530,7 @@ export default {
         });
       }
     },
-    // Custom Event triggered from buttons with Action type "Event"
+
     onCustomEvent(event) {
       alert(
         `Custom button events not supported yet. Event Type: ${event.type}`
@@ -448,7 +543,6 @@ export default {
     } else {
       this.getFormSchema();
     }
-    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
     if (!this.preview && !this.readOnly) {
       window.onbeforeunload = () => true;
     }

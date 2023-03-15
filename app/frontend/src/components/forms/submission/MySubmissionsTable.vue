@@ -85,6 +85,9 @@
       <template #[`item.submittedDate`]="{ item }">
         {{ item.submittedDate | formatDateLong(false) }}
       </template>
+      <!-- <template #[`item.originalName`]="{ item }">
+        {{ item.originalName }}
+      </template> -->
       <template #[`item.completedDate`]="{ item }">
         {{ item.completedDate | formatDateLong(false) }}
       </template>
@@ -149,6 +152,7 @@ export default {
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
       let headers = [
+        // { text: 'Submission Type', align: 'start', value: 'submissionType',   sortable: true },
         {
           text: 'Confirmation Id',
           align: 'start',
@@ -175,6 +179,7 @@ export default {
           value: 'submittedDate',
           sortable: true,
         },
+        // { text: 'File Name', align: 'start', value: 'originalName',   sortable: true, },
         {
           text: 'Actions',
           align: 'end',
@@ -247,6 +252,8 @@ export default {
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
             submittedDate: this.getStatusDate(s, 'SUBMITTED'),
+            //originalName: s.originalName,
+            //submissionType: (s.originalName) ? 'Bulk Submission' : 'Single Submission'
             createdBy: s.submission.createdBy,
             username: (s.submissionStatus && s.submissionStatus.length > 0) ? s.submissionStatus[0].createdBy : '',
           };

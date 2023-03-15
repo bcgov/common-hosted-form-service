@@ -52,7 +52,6 @@ module.exports = {
       next(error);
     }
   },
-
   delete:  async (req, res, next) => {
     try {
       // Permissions checked on this at the route level with middleware

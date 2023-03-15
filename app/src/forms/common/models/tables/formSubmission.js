@@ -20,6 +20,11 @@ class FormSubmission extends Timestamps(Model) {
           query.where('formVersionId', value);
         }
       },
+      filterBulkFileId(query, value) {
+        if (value !== undefined) {
+          query.where('idBulkFile', value);
+        }
+      },
       orderDescending(builder) {
         builder.orderBy('createdAt', 'desc');
       }
@@ -33,6 +38,7 @@ class FormSubmission extends Timestamps(Model) {
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         formVersionId: { type: 'string', pattern: Regex.UUID },
+        idBulkFile: { type: 'string', pattern: Regex.UUID },
         confirmationId: { type: 'string', pattern: Regex.CONFIRMATION_ID },
         draft: { type: 'boolean' },
         deleted: { type: 'boolean' },

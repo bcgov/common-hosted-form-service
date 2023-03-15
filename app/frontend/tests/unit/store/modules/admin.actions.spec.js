@@ -74,7 +74,6 @@ describe('admin actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
-
     it('readRoles should commit to SET_ROLES', async () => {
       adminService.readRoles.mockResolvedValue({ data: { form: {} } });
       await store.actions.readRoles(mockStore, 'fId');
