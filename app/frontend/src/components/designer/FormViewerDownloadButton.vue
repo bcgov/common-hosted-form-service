@@ -222,7 +222,7 @@ export default {
         } else {
           this.endValidation();
         }
-      }.bind(this), 50);
+      }.bind(this), 25);
     },
     pourcentage(i){
       let ndata = this.Json.length;
