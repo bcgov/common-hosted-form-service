@@ -63,14 +63,13 @@ exports.up = function (knex) {
         s."formId",
         s."formVersionId",
         u.id as "userId",
-        u."keycloakId",
+        u."idpUserId",
         u."firstName",
         u."lastName",
         s."formSubmissionStatusCode" as "status",
         s."formSubmissionAssignedToFullName" as "assignee",
         s."formSubmissionAssignedToEmail" as "assigneeEmail",
         s."idBulkFile"
-
       from
         submissions_vw s
       inner join form_submission fs on
