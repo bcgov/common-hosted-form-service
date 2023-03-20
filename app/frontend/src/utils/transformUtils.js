@@ -68,41 +68,25 @@ export function attachAttributesToLinks(formSchemaComponents) {
 
 
 /**
- * This function could be removed from frontend in the next commits
- * @function isEligibleLateSubmission
- * Get All possible dates in given period with Term and Interval
- *
- * @param {Object[]} date An object of Moment JS date
- * @param {Integer} term An integer of number of Days/Weeks OR Years
- * @param {String} interval A string of days,Weeks,months
- * @returns {Boolean} Return true if form is available for late submission
- */
-export function isEligibleLateSubmission(date,term,interval){
-  var gracePeriodDate = moment(date,'YYYY-MM-DD HH:mm:ss').add(term,interval).format('YYYY-MM-DD HH:mm:ss');
-  var isBetweenClosrAndGraceDate = moment().isBetween(date, gracePeriodDate);
-  return isBetweenClosrAndGraceDate;
-}
-
-/**
  * @function getAvailableDates
  * Get All possible dates in given period with Term and Interval
  *
- * @param {Integer} keepAliveFor An integer for number of days
- * @param {String} keepAliveForInterval A string of days,Weeks,months
- * @param {Object[]} substartDate An object of Moment JS date
- * @param {Integer} term An integer of number of Days/Weeks OR Years
- * @param {String} interval A string of days,Weeks,months
- * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
- * @param {String} allowLateInterval A string of days,Weeks,months
- * @param {Object[]} repeatUntil An object of Moment JS date
+ * @param {Integer} keepAliveFor An integer for number of days, that tells form to be open for a particular period
+ * @param {String} keepAliveForInterval A string of days,Weeks,months, that tells form to be open for a particular period
+ * @param {Object[]} substartDate An object of Moment JS date, that tells form to be open on a particular day/date
+ * @param {Integer} term An integer of number of Days/Weeks OR Years, that tells form to be repeated on a particular period
+ * @param {String} interval A string of days,Weeks,months, that tells form to be repeated on a particular period
+ * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years, that tells form to be allowed for late submission for a particular period
+ * @param {String} allowLateInterval A string of days,Weeks,months, that tells form to be allowed for late submission for a particular period
+ * @param {Object[]} repeatUntil An object of Moment JS date, that tells form to be finally close after repetition on particular day date
  * @param {String} scheduleType A string one of Manual, ClosingDate OR Period
- * @param {Object[]} closeDate An object of Moment JS date
+ * @param {Object[]} closeDate An object of Moment JS date, Forms closing date
  * @returns {Object[]} An object array of Available dates in given period
  */
 export function getAvailableDates(
   keepAliveFor=0,
   keepAliveForInterval='days',
-  submstartDate,
+  formStartDate,
   term=null,
   interval=null,
   allowLateTerm=null,
@@ -112,13 +96,13 @@ export function getAvailableDates(
   closeDate=null
 ) {
 
-  let substartDate = moment(submstartDate);
+  let substartDate = moment(formStartDate);
   repeatUntil = moment(repeatUntil);
-  var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
-  var availableDates = [];
+  let calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
+  let availableDates = [];
   if(calculatedsubcloseDate && term && interval) {
     while (substartDate.isBefore(calculatedsubcloseDate)) {
-      var newDate = substartDate.clone();
+      let newDate = substartDate.clone();
       if(substartDate.isBefore(repeatUntil)){
         availableDates.push(Object({
           startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
@@ -131,7 +115,7 @@ export function getAvailableDates(
   }
 
   if((term == null && interval == null) && (keepAliveFor && keepAliveForInterval)){
-    var newDates = substartDate.clone();
+    let newDates = substartDate.clone();
     availableDates.push(Object({
       startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
       closeDate:newDates.add(keepAliveFor,keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
@@ -147,22 +131,21 @@ export function getAvailableDates(
  * @function getCalculatedCloseSubmissionDate
  * Get calculated Close date for a Form schedule setting with the given scenario
  *
- * @param {Object[]} openDate An object of Moment JS date
- * keepOpenForTerm
- * keepOpenForInterval
+ * @param {Object[]} openedDate An object of Moment JS date
+ * @param {Integer} keepOpenForTerm keepOpenForTerm An integer of number of Days/Weeks OR Years, that tells form to be open for a particular period
+ * @param {String} keepOpenForInterval keepOpenForInterval A string of days,Weeks,months, that tells form to be open for a particular period
  * @param {Integer} term An integer of number of Days/Weeks OR Years
  * @param {String} interval A string of days,Weeks,months
  * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
  * @param {String} allowLateInterval A string of days,Weeks,months
- * @param {Integer} repeatSubmissionTerm An integer of number of Days/Weeks OR Years
- * @param {String} repeatSubmissionInterval A string of days,Weeks,months
- * @param {Object[]} repeatUntil An object of Moment JS date
- * @param {Object[]} closeDate and object of moment JS date
+ * @param {Integer} repeatSubmissionTerm An integer of number of Days/Weeks OR Years, that tells form to be repeated for a particular period
+ * @param {String} repeatSubmissionInterval A string of days,Weeks,months, that tells form to be repeated for a particular period
+ * @param {Object[]} repeatSubmissionUntil An object of Moment JS date, that tells form to be finally close after repetition on particular day date
  * @returns {Object[]} An object of Moment JS date
  */
 export function getCalculatedCloseSubmissionDate(openedDate=moment(),keepOpenForTerm=0,keepOpenForInterval='days',allowLateTerm=0,allowLateInterval='days',repeatSubmissionTerm=0,repeatSubmissionInterval='days',repeatSubmissionUntil=moment()){
   const openDate = moment(openedDate).clone();
-  var calculatedCloseDate = moment(openDate);
+  let calculatedCloseDate = moment(openDate);
   repeatSubmissionUntil = moment(repeatSubmissionUntil);
   if(!allowLateTerm && !allowLateInterval && !repeatSubmissionTerm && !repeatSubmissionInterval){
     calculatedCloseDate = openDate.add(keepOpenForTerm,keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
@@ -181,16 +164,16 @@ export function getCalculatedCloseSubmissionDate(openedDate=moment(),keepOpenFor
 /**
  * @function calculateCloseDate
  * Get close date when provided a given period for late submission
- *
- * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
- * @param {String} allowLateInterval A string of days,Weeks,months
+ * @param {Integer} subCloseDate An object of Moment JS date, Forms closing date
+ * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years, that tells form to be allowed for late submission for a particular period
+ * @param {String} allowLateInterval A string of days,Weeks,months, that tells form to be allowed for late submission for a particular period
  */
 export function calculateCloseDate(
-  subcloseDate=moment(),
+  subCloseDate=moment(),
   allowLateTerm=null,
   allowLateInterval=null
 ) {
-  let closeDate = moment(subcloseDate);
+  let closeDate = moment(subCloseDate);
   const closeDateRet = closeDate.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
   return closeDateRet;
 }
