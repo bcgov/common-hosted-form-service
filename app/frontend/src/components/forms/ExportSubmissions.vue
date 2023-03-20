@@ -4,7 +4,7 @@
       <template #activator="{ on, attrs }">
         <v-btn
           class="mx-1"
-          @click="dialog = true"
+          @click="openExportDialog"
           color="primary"
           icon
           v-bind="attrs"
@@ -43,13 +43,12 @@
                     <span class="radioboxLabelStyle">All data/fields</span>
                   </template>
                 </v-radio>
-                <!--<v-radio label="Select Date Range" :value="true">
+                <v-radio label="Select Date Range" :value="true">
                   <template v-slot:label>
                     <span class="radioboxLabelStyle">Selected data/fields</span>
                     <v-icon class="ml-3" color="#003366"> view_week</v-icon>
                   </template>
                 </v-radio>
-                -->
               </v-radio-group>
             </v-col>
           </v-row>
@@ -154,7 +153,7 @@
               </template>
             </v-radio>
           </v-radio-group>
-          <v-row class="mt-5">
+          <v-row v-if="exportFormat === 'csv'" class="mt-5">
             <v-col cols="6">
               <div class="subTitleObjectStyle">
                 Select the submission version
@@ -217,11 +216,17 @@
                   </template>
                   <sup>Betas</sup>
                 </v-radio>
-                <v-radio label="C" value="unflattened">
+                <v-radio label="C" value="flattenedWithSingleRow">
                   <template v-slot:label>
                     <span class="radioboxLabelStyle">Template 3 </span>
                   </template>
                 </v-radio>
+                <v-radio label="C" value="unflattened">
+                  <template v-slot:label>
+                    <span class="radioboxLabelStyle">Template 4 </span>
+                  </template>
+                </v-radio>
+
               </v-radio-group>
             </v-col>
           </v-row>
@@ -303,6 +308,14 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    ...mapActions('form', [
+      'getFormPreferencesForCurrentUser',
+    ]),
+    openExportDialog() {
+      this.dialog = true;
+      this.updateVersions();
+      this.getFormPreferencesForCurrentUser(this.form.id);
+    },
     async callExport() {
       try {
         // UTC start of selected start date...
@@ -322,14 +335,14 @@ export default {
           this.form.id,
           this.exportFormat,
           this.csvTemplates,
-          this.versionSelected,
+          this.exportFormat==='json'?undefined:this.versionSelected,
           {
             minDate: from,
             maxDate: to,
             // deleted: true,
             // drafts: true
           },
-          this.dataFields ? this.userFormPreferences.preferences : undefined
+          this.dataFields ? this.userFormPreferences.preferences.columns : undefined
         );
 
         if (response && response.data) {
@@ -359,7 +372,7 @@ export default {
     },
     updateVersions() {
       this.versions = [];
-      if (this.form && this.form.versions) {
+      if (this.form&&this.form.versions) {
         this.versions.push(
           ...this.form.versions.map((version) => version.version)
         );
@@ -371,18 +384,16 @@ export default {
       }
     },
   },
-  mounted() {
-    this.updateVersions();
-    if (this.exportFormat === 'json') {
-      this.versionSelected = 'All';
-    }
-  },
+
   watch: {
     startDate() {
       this.endDate = moment(Date()).format('YYYY-MM-DD');
     },
     async exportFormat() {
-      this.updateVersions();
+      if(this.exportFormat==='csv') {
+        this.updateVersions();
+      }
+
     },
     dateRange(value) {
       if (!value) {

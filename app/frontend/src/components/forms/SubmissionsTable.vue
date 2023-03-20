@@ -272,10 +272,10 @@ export default {
       filterData: [],
       filterIgnore: [
         {
-          value: 'confirmationId'
+          value: 'actions'
         },
         {
-          value: 'actions'
+          value: 'event'
         }
       ],
       loading: true,
@@ -319,8 +319,8 @@ export default {
     DEFAULT_HEADERS() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
-        { text: 'Submission Date', align: 'start', value: 'date' },
-        { text: 'Submitter', align: 'start', value: 'submitter' },
+        { text: 'Submission Date', align: 'start', value: 'createdAt' },
+        { text: 'Submitter', align: 'start', value: 'createdBy' },
       ];
 
       // If status flow enabled add that column
@@ -328,7 +328,7 @@ export default {
         headers.splice(3, 0, {
           text: 'Status',
           align: 'start',
-          value: 'status',
+          value: 'formSubmissionStatusCodse',
         });
       }
 
@@ -376,7 +376,12 @@ export default {
       return headers;
     },
     FILTER_HEADERS() {
-      return this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value)).concat(this.formFields.map((ff) => { return { text: ff, value: ff }; }));
+      let filteredHeader = this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value))
+        .concat(this.formFields.map((ff) => { return { text: ff, value: ff, align: 'end' }; }));
+
+      return  filteredHeader.filter(function(item, index, inputArray) {
+        return inputArray.findIndex(arrayItem=>arrayItem.value===item.value) == index;
+      });
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
@@ -446,11 +451,11 @@ export default {
             .map((s) => {
               const fields = {
                 confirmationId: s.confirmationId,
-                date: s.createdAt,
+                createdAt: s.createdAt,
                 formId: s.formId,
-                status: s.formSubmissionStatusCode,
+                formSubmissionStatusCodse: s.formSubmissionStatusCodse,
                 submissionId: s.submissionId,
-                submitter: s.createdBy,
+                createdBy: s.createdBy,
                 versionId: s.formVersionId,
                 deleted: s.deleted,
               };
@@ -505,8 +510,7 @@ export default {
         columns: [],
       };
       data.forEach((d) => {
-        if (this.formFields.includes(d.value))
-          preferences.columns.push(d.value);
+        preferences.columns.push(d.value);
       });
 
       await this.updateFormPreferencesForCurrentUser({

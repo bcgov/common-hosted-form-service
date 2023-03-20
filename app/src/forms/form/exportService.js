@@ -18,7 +18,7 @@ const service = {
     return  await flattenComponents(schema.components);
   },
 
-  _buildCsvHeaders: async (form,  data, version) => {
+  _buildCsvHeaders: async (form,  data, version, fields) => {
 
     /**
      * get column order to match field order in form design
@@ -39,9 +39,19 @@ const service = {
      * see: https://github.com/kaue/jsonexport
      */
     let formSchemaheaders = metaHeaders.concat(fieldNames);
+
     if (Array.isArray(data) && data.length > 0) {
       let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
+    }
+    if(fields){
+      return formSchemaheaders.filter(field=>{
+        for(let item of fields) {
+          if(field.includes(item)){
+            return field;
+          }
+        }
+      });
     }
     return formSchemaheaders;
   },
@@ -83,14 +93,14 @@ const service = {
     return Form.query().findById(formId).throwIfNotFound();
   },
 
-  _getData: async(exportType,formVersion,form, params = {}) => {
+  _getData: async(exportType, formVersion, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return service._getSubmissions(form, params,formVersion);
+      return service._getSubmissions(form, params, formVersion);
     }
     return {};
   },
 
-  _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, columns, version) => {
+  _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, version, fields) => {
     // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map(obj => {
       const { submission, ...form } = obj;
@@ -99,7 +109,7 @@ const service = {
 
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
-        return await service._formatSubmissionsCsv(form, formatted,exportTemplate, columns, version);
+        return await service._formatSubmissionsCsv(form, formatted,exportTemplate,  version, fields);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
         return await service._formatSubmissionsJson(form, formatted);
@@ -111,7 +121,7 @@ const service = {
   _getSubmissions: async (form, params, version) => {
     let preference = params.preference?JSON.parse(params.preference):undefined;
     // params for this export include minDate and maxDate (full timestamp dates).
-    let submissionData = await SubmissionData.query()
+    return await SubmissionData.query()
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterVersion', version)
@@ -119,26 +129,6 @@ const service = {
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault');
-    if(params.columns){
-      for(let index in submissionData) {
-        let keys = Object.keys(submissionData[index].submission);
-        for(let key of keys) {
-          if(Array.isArray(params.columns) && !params.columns.includes(key)) {
-            delete submissionData[index].submission[key];
-          }
-        }
-      }
-    } else {
-      for(let index in submissionData) {
-        let keys = Object.keys(submissionData[index].submission);
-        for(let key of keys) {
-          if(key==='submit') {
-            delete submissionData[index].submission[key];
-          }
-        }
-      }
-    }
-    return submissionData;
   },
 
   _formatSubmissionsJson: (form,data) => {
@@ -150,16 +140,17 @@ const service = {
       }
     };
   },
-
-  _formatSubmissionsCsv: async (form, data, exportTemplate, columns, version) => {
+  _formatSubmissionsCsv: async (form, data, exportTemplate,  version, fields) => {
     try {
       switch(exportTemplate) {
         case 'flattenedWithBlankOut':
-          return service. _flattenSubmissionsCSVExport(form, data, columns, false, version);
+          return service._flattenedSubmissionsCSVExport(form, data, version, true, fields);
         case 'flattenedWithFilled':
-          return service. _flattenSubmissionsCSVExport(form, data, columns, true, version);
+          return service._flattenedSubmissionsCSVExport(form, data, version, false, fields);
+        case 'flattenedWithSingleRow':
+          return service._flattenedSingleRowSubmissionsCSVExport(form, data, version);
         case 'unflattened':
-          return service. _unFlattenSubmissionsCSVExport(form, data, columns, version);
+          return service._unFlattenSubmissionsCSVExport(form, data,  version, fields);
         default:
           // code block
       }
@@ -168,9 +159,10 @@ const service = {
       throw new Problem(500, { detail: `Could not make a csv export of submissions for this form. ${e.message}` });
     }
   },
-  _flattenSubmissionsCSVExport: async(form, data, columns, blankout, version) => {
+
+  _flattenedSubmissionsCSVExport: async(form, data, version,  blankout, fields) => {
     let pathToUnwind = await unwindPath(data);
-    let headers = await service._buildCsvHeaders(form, data, version, columns);
+    let headers = await service._buildCsvHeaders(form, data, version, fields);
 
     const opts = {
       transforms: [
@@ -189,8 +181,9 @@ const service = {
       }
     };
   },
-  _unFlattenSubmissionsCSVExport: async(form, data, columns, version) => {
-    let headers = await service._buildCsvHeaders(form, data, version, columns);
+
+  _unFlattenSubmissionsCSVExport: async(form, data, version, fields) => {
+    let headers = await service._buildCsvHeaders(form, data, version, fields);
     const opts = {
       transforms: [
         transforms.flatten({ object: true, array: true, separator: '.'}),
@@ -207,11 +200,29 @@ const service = {
       }
     };
   },
+
+  _flattenedSingleRowSubmissionsCSVExport: async(form, data) => {
+    const opts = {
+      transforms: [
+        transforms.flatten({ objects: true, arrays: true, separator: '.'}),
+      ],
+    };
+    const parser = new Parser(opts);
+    const csv = parser.parse(data);
+    return {
+      data: csv,
+      headers: {
+        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
+        'content-type': 'text/csv'
+      }
+    };
+  },
+
   _readLatestFormSchema: (formId, version) => {
     return FormVersion.query()
       .select('schema')
       .where('formId', formId)
-      .where('version', version)
+      .modify('filterVersion', version)
       .modify('orderVersionDescending')
       .first()
       .then((row) => row.schema);
@@ -224,11 +235,11 @@ const service = {
     const exportType = service._exportType(params);
     const exportFormat = service._exportFormat(params);
     const exportTemplate = params.template?params.template:'flattenedWithFilled';
-    const columns = params.columns?params.columns:undefined;
-    const version = params.version?parseInt(params.version):1;
+    const fields = params.fields;
+    const version = params.version;
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, version, form, params);
-    const result = await service._formatData(exportFormat, exportType,exportTemplate, form, data, columns, version);
+    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, version, fields);
 
     return { data: result.data, headers: result.headers };
   }
