@@ -283,7 +283,7 @@ export default {
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        var criteria = {
+        let criteria = {
           formId: this.formId,
           createdAt: Object.values({
             minDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ? moment(this.userFormPreferences.preferences.filter[0], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().subtract(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)

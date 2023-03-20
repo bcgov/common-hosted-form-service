@@ -282,7 +282,7 @@ const service = {
 
     return { data: result.data, headers: result.headers };
   },
-  _getListSubmitersByFormId :  (formId, obj ) => {
+  _getListSubmittersByFormId :  (formId, obj ) => {
 
     return [ UserFormAccess.query()
       .select('formVersionId','formName','userId','firstName','lastName', 'email')
