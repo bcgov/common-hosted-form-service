@@ -320,7 +320,7 @@ export default {
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, format,template,versionSelected, preference, options = {}) {
+  exportSubmissions(formId, format,template,versionSelected, preference, fields, options = {}) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
       {
         params: {
@@ -329,6 +329,7 @@ export default {
           version:versionSelected,
           type: 'submissions',
           preference:preference,
+          fields:fields,
           ...options
         },
         responseType: 'blob'
