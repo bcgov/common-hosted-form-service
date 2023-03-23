@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
 import { FormPermissions } from '@/utils/constants';
 
@@ -103,10 +104,12 @@ export default {
     formId: {
       type: String,
       required: true
-    },
-    isCopyFromExistingSubmissionEnabled: {
-      type: Boolean,
-      required: false
+    }
+  },
+  computed: {
+    ...mapGetters('form', ['form']),
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
     }
   },
   methods: {

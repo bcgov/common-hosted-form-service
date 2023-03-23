@@ -117,9 +117,8 @@
                 <template v-slot:activator="{ on, attrs }">
                   <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
                 </template>
-                <span>Experimental <a href="#" target="_blank">
-                  Learn more <v-icon small color="primary">open_in_new</v-icon>
-                </a></span>
+                <span>Experimental <a :href="githubLinkScheduleAndReminderFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a></span>
                 <!-- <span>
                   Selecting this option controls this form to be open or close
                   for a given period.<br />
@@ -141,9 +140,8 @@
                 <template v-slot:activator="{ on, attrs }">
                   <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
                 </template>
-                <span>Experimental <a href="#" target="_blank">
-                  Learn more <v-icon small color="primary">open_in_new</v-icon>
-                </a></span>
+                <span>Experimental <a :href="githubLinkCopyFromExistingFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a></span>
               </v-tooltip>
             </template>
           </v-checkbox>
@@ -481,8 +479,8 @@ import { IdentityMode, IdentityProviders, Regex, ScheduleType } from '@/utils/co
 import { getAvailableDates, calculateCloseDate, isDateValidForMailNotification } from '@/utils/transformUtils';
 import moment from 'moment';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faFlask } from '@fortawesome/free-solid-svg-icons';
-library.add(faFlask);
+import { faFlask,faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
+library.add(faFlask,faXmark,faSquareArrowUpRight);
 
 export default {
   name: 'FormSettings',
@@ -492,6 +490,8 @@ export default {
   data() {
     // debugger;
     return {
+      githubLinkCopyFromExistingFeature: 'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
+      githubLinkScheduleAndReminderFeature: 'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
       repeatUntil: false,
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
