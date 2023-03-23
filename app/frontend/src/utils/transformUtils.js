@@ -165,6 +165,9 @@ export function getCalculatedCloseSubmissionDate(openedDate=moment(),keepOpenFor
  * @param {Integer} subCloseDate An object of Moment JS date, Forms closing date
  * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years, that tells form to be allowed for late submission for a particular period
  * @param {String} allowLateInterval A string of days,Weeks,months, that tells form to be allowed for late submission for a particular period
+ * @param {Integer} subCloseDate An object of Moment JS date, Forms closing date
+ * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years, that tells form to be allowed for late submission for a particular period
+ * @param {String} allowLateInterval A string of days,Weeks,months, that tells form to be allowed for late submission for a particular period
  */
 export function calculateCloseDate(
   subCloseDate=moment(),
