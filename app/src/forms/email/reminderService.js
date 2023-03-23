@@ -285,7 +285,6 @@ const service = {
     const users = statement.submitters.map(user => user.email );
     const data = { form :statement.form, report : statement.report, users , state : statement.state, referer};
     chesResponse.push(emailService.initReminder(data));
-
     return chesResponse;
   }
 
