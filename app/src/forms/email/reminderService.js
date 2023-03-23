@@ -20,7 +20,7 @@ const service = {
         if(!q[i].error){
           const obj = await  service._runQueries(q[i].statement);
           let result = await service._initStatement(obj);
-          let chesResponses = service._initMaillSender(result, referer);
+          let chesResponses = service._initMailSender(result, referer);
           resolve.push({
             formId:result.form.id,
             formName :  result.form.name,
@@ -148,14 +148,14 @@ const service = {
     for (let i = 0; i< forms.length; i++) {
       let obj = {};
 
-      obj.avalaibleDate =  service._listDates(forms[i].schedule) ;
+      obj.availableDate =  service._listDates(forms[i].schedule) ;
 
-      if (obj.avalaibleDate.length == 0) {
-        reminder.push({ error:true, message : `Form ${forms[i].name } has no avalaible date.` });
+      if (obj.availableDate.length == 0) {
+        reminder.push({ error:true, message : `Form ${forms[i].name } has no available date.` });
         continue;
       }
 
-      obj.report = service.getCurrentPeriod(obj.avalaibleDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
+      obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
 
       obj.form   = forms[i];
 
@@ -197,9 +197,9 @@ const service = {
       return EmailTypes.REMINDER_FORM_NOT_FILL;
     }
 
-    const yend_date = moment(end_date).subtract(1, 'day');
+    const calculated_end_date = moment(end_date).subtract(1, 'day');
 
-    if(moment(now).isSame(yend_date)){
+    if(moment(now).isSame(calculated_end_date)){
       return EmailTypes.REMINDER_FORM_WILL_CLOSE;
     }
 
@@ -278,7 +278,7 @@ const service = {
       throw error;
     }
   },
-  _initMaillSender: (statement, referer) => {
+  _initMailSender: (statement, referer) => {
     const chesResponse = [];
     statement.submitters.forEach(user => {
       const data = { form :statement.form, report : statement.report, user , state : statement.state, referer};

@@ -26,7 +26,6 @@
 
     <span v-if="submission.status === 'SUBMITTED'">
       <router-link
-        v-if="submission.status === 'SUBMITTED'"
         :to="{
           name: 'UserFormDuplicate',
           query: {
@@ -54,7 +53,6 @@
 
     <span v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'">
       <router-link
-        v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
         :to="{
           name: 'UserFormDraftEdit',
           query: {

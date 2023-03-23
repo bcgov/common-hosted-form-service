@@ -109,11 +109,7 @@ const isFormExpired = (formSchedule = {}) => {
                   result = {...result,expire:true};
                   /** Check if form is alow late submition - start */
                   var isallowLateSubmissions = moment().isBetween(availableDates[i].startDate, availableDates[i].graceDate);
-                  // isEligibleLateSubmission(
-                  //   availableDates[i].closeDate, //closing date of given period of repeat submission
-                  //   formSchedule.allowLateSubmissions.forNext.term,
-                  //   formSchedule.allowLateSubmissions.forNext.intervalType
-                  // );
+                  
                   if(isallowLateSubmissions){ //If late submission is allowed for the given repeat submission period then stop checking for other dates
                     result = {
                       ...result,
@@ -281,9 +277,9 @@ const checkIsFormExpired = (formSchedule = {}) => {
  * @returns {Boolean} Return true if form is available for late submission
  */
 const isEligibleLateSubmission = (date,term,interval) => {
-  var gracePeriodDate = moment(date,'YYYY-MM-DD HH:mm:ss').add(term,interval).format('YYYY-MM-DD HH:mm:ss');
-  var isBetweenClosrAndGraceDate = moment().isBetween(date, gracePeriodDate);
-  return isBetweenClosrAndGraceDate;
+  let gracePeriodDate = moment(date,'YYYY-MM-DD HH:mm:ss').add(term,interval).format('YYYY-MM-DD HH:mm:ss');
+  let isBetweenCloseAndGraceDate = moment().isBetween(date, gracePeriodDate);
+  return isBetweenCloseAndGraceDate;
 };
 
 
@@ -293,7 +289,7 @@ const isEligibleLateSubmission = (date,term,interval) => {
  *
  * @param {Integer} keepAliveFor An integer for number of days
  * @param {String} keepAliveForInterval A string of days,Weeks,months
- * @param {Object[]} substartDate An object of Moment JS date
+ * @param {Object[]} subStartDate An object of Moment JS date
  * @param {Integer} term An integer of number of Days/Weeks OR Years
  * @param {String} interval A string of days,Weeks,months
  * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
@@ -306,7 +302,7 @@ const isEligibleLateSubmission = (date,term,interval) => {
 const  getAvailableDates = (
   keepAliveFor=0,
   keepAliveForInterval='days',
-  submstartDate,
+  subStartDate,
   term=null,
   interval=null,
   allowLateTerm=null,
@@ -316,7 +312,7 @@ const  getAvailableDates = (
   closeDate=null
 ) => {
 
-  let substartDate = moment(submstartDate);
+  let substartDate = moment(subStartDate);
   repeatUntil = moment(repeatUntil);
   var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
   var availableDates = [];
@@ -367,7 +363,7 @@ const  getAvailableDates = (
 const getCalculatedCloseSubmissionDate = (openedDate=moment(),keepOpenForTerm=0,keepOpenForInterval='days',allowLateTerm=0,allowLateInterval='days',repeatSubmissionTerm=0,repeatSubmissionInterval='days',repeatSubmissionUntil=moment()) => {
 
   const openDate = moment(openedDate).clone();
-  var calculatedCloseDate = moment(openDate);
+  let calculatedCloseDate = moment(openDate);
   repeatSubmissionUntil = moment(repeatSubmissionUntil);
 
   if(!allowLateTerm && !repeatSubmissionTerm){

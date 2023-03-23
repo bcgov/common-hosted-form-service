@@ -1,7 +1,7 @@
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
 
-    <div v-if="isformScheduleExpire">
+    <div v-if="isFormScheduleExpired">
       <template>
         <v-alert
           text
@@ -13,7 +13,7 @@
 
         <div v-if="isLateSubmissionAllowed">
           <v-col cols="3" md="2">
-            <v-btn color="primary" @click="isformScheduleExpire = false">
+            <v-btn color="primary" @click="isFormScheduleExpired = false">
               <span>Create late submission</span>
             </v-btn>
           </v-col>
@@ -158,8 +158,7 @@ export default {
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
-      isformScheduleExpire: false,
-      attemptLateSubmission: false,
+      isFormScheduleExpired: false,
       formScheduleExpireMessage: 'Form Submission is not available for this moment.',
       isLateSubmissionAllowed: false
     };
@@ -279,8 +278,8 @@ export default {
           this.formSchema = response.data.versions[0].schema;
 
           if(response.data.schedule && response.data.schedule.expire){
-            var formScheduleStatus = response.data.schedule;
-            this.isformScheduleExpire = formScheduleStatus.expire;
+            let formScheduleStatus = response.data.schedule;
+            this.isFormScheduleExpired = formScheduleStatus.expire;
             this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
             this.formScheduleExpireMessage = formScheduleStatus.message;
           }
@@ -288,7 +287,7 @@ export default {
         }
       } catch (error) {
         if (this.authenticated) {
-          this.isformScheduleExpire = true;
+          this.isFormScheduleExpired = true;
           this.isLateSubmissionAllowed = false;
           this.formScheduleExpireMessage = 'An error occurred fetching this form';
           this.addNotification({
@@ -335,8 +334,7 @@ export default {
       submission.data.lateEntry = formScheduleStatus.expire === true ? formScheduleStatus.allowLateSubmissions : false;
       const body = {
         draft: isDraft,
-        submission: submission,
-
+        submission: submission
       };
 
       let response;
@@ -460,9 +458,7 @@ export default {
                 ? response.data.submission
                 : response.data
           );
-          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
-          // console.error(response); // eslint-disable-line no-console
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
@@ -497,14 +493,14 @@ export default {
       );
     },
   },
-  created() {
+  async created() {
     if (this.submissionId && this.isDuplicate) { //Run when make new submission from existing one called.
-      this.getFormData();
-      this.getFormSchema(); //We need this to be called as well, because we need latest version of form
+      await this.getFormData();
+      await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
     } else if(this.submissionId && !this.isDuplicate) {
-      this.getFormData();
+      await this.getFormData();
     } else {
-      this.getFormSchema();
+      await this.getFormSchema();
     }
     // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
     if (!this.preview && !this.readOnly) {

@@ -59,23 +59,6 @@ describe('parseIdps', () => {
   });
 });
 
-
-//No more usage on frontend, Will be deleted in future commits
-// describe('isEligibleLateSubmission', () => {
-//   it('Returns True when supply Valid date(Moment OBJ),term(Int),interval(Str) as parameters.', () => {
-//     expect(transformUtils.isEligibleLateSubmission(moment(),2,'days')).toBeFalsy();
-//   });
-
-//   it('Returns False when supply Invalid date(Moment OBJ),term(Int),interval(Str) as parameters.', () => {
-//     expect(transformUtils.isEligibleLateSubmission(moment().add(3,'days'),2,'days')).toBeFalsy();
-//   });
-
-//   it('Returns False when supply Invalid date(Moment OBJ),term(Int),interval(Str) as parameters.', () => {
-//     expect(transformUtils.isEligibleLateSubmission(moment().subtract(3,'days'),2,'days')).toBeFalsy();
-//   });
-// });
-
-
 describe('calculateCloseDate', () => {
   it('Returns Moment Object when supply Valid date(Moment OBJ),term(Int),interval(Str) as parameters.', () => {
     expect(transformUtils.calculateCloseDate(moment(),2,'days')).toEqual(expect.any(String));
