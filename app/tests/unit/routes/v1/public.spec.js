@@ -82,6 +82,8 @@ describe(`GET ${basePath}/userId`, () => {
 
     const response = await request(app).get(`${basePath}/userId`);
 
+    console.log(response);
+
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
   });
