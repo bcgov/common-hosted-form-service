@@ -176,6 +176,20 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
 
+    it('deleteMultiSubmissions should dispatch to notifications/addNotification', async () => {
+      formService.deleteMultipleSubmissions.mockRejectedValue('');
+      await store.actions.deleteMultiSubmissions(mockStore, ['sId']);
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('restoreMultiSubmissions should dispatch to notifications/addNotification', async () => {
+      formService.restoreMutipleSubmissions.mockRejectedValue('');
+      await store.actions.restoreMultiSubmissions(mockStore, ['sId']);
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
     it('fetchSubmission should commit to SET_FORMSUBMISSION', async () => {
       formService.getSubmission.mockResolvedValue({ data: { submission: {}, form: {} } });
       await store.actions.fetchSubmission(mockStore, { submissionId: 'sId' });

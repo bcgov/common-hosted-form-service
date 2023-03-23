@@ -62,8 +62,20 @@
           </div>
           <div v-else>Draft Saved</div>
         </v-alert>
-
         <slot name="alert" v-bind:form="form" />
+        <BaseDialog
+          v-model="showSubmitConfirmDialog"
+          type="CONTINUE"
+          :enableCustomButton="canSaveDraft"
+          @close-dialog="showSubmitConfirmDialog = false"
+          @continue-dialog="continueSubmit"
+        >
+          <template #title>Please Confirm</template>
+          <template #text>Are you sure you wish to submit your form?</template>
+          <template #button-text-continue>
+            <span>Submit</span>
+          </template>
+        </BaseDialog>
 
         <BaseDialog
           v-model="showSubmitConfirmDialog"
@@ -105,7 +117,7 @@ import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
-import { NotificationTypes } from '@/utils/constants';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
 
 export default {
   name: 'FormViewer',
@@ -192,6 +204,12 @@ export default {
         },
       };
     },
+    canSaveDraft() {
+      return (
+        !this.readOnly &&
+        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
+      );
+    }
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -322,6 +340,7 @@ export default {
             },
           });
         }
+        this.showSubmitConfirmDialog = false;
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while saving a draft',
@@ -330,7 +349,7 @@ export default {
       }
     },
     async sendSubmission(isDraft, submission) {
-      const formScheduleStatus = this.form.schedule; 
+      const formScheduleStatus = this.form.schedule;
       submission.data.lateEntry = formScheduleStatus.expire === true ? formScheduleStatus.allowLateSubmissions : false;
       const body = {
         draft: isDraft,

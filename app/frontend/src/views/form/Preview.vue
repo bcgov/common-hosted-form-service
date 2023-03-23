@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR">
+  <BaseSecure :idp="[IDP.IDIR]">
     <h1>
       PREVIEW
       <v-tooltip bottom>

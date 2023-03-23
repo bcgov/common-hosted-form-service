@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR">
+  <BaseSecure :idp="[IDP.IDIR]">
     <FormDesigner
       class="mt-6"
       :draftId="d"
