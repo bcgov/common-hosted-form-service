@@ -2804,6 +2804,9 @@ components:
             schedule:
               type: Object
               example: {}
+            enableCopyExistingSubmission:
+              type: boolean
+              example: false
     FormCore:
       type: object
       properties:

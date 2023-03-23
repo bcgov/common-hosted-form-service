@@ -1,9 +1,9 @@
 const UseForCopy = {
     weight: 10,
     type: 'checkbox',
-    defaultValue: true,
+    defaultValue: false,
     label: 'Allow value propagation',
-    tooltip: 'When a submission is duplicated',
+    tooltip: 'Enabling this checkbox will allow this field to be duplicated in new submission.',
     key: 'validate.isUseForCopy',
     input: true
 };

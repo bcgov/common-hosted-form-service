@@ -112,12 +112,13 @@
           <v-checkbox v-if="isFormPublished" class="my-0" v-model="schedule.enabled">
             <template #label>
               Form Submissions Schedule
-              <v-tooltip bottom>
+              <v-tooltip bottom close-delay="2500">
                 
                 <template v-slot:activator="{ on, attrs }">
                   <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
                 </template>
-                <span>Experimental</span>
+                <span>Experimental <a :href="githubLinkScheduleAndReminderFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a></span>
                 <!-- <span>
                   Selecting this option controls this form to be open or close
                   for a given period.<br />
@@ -127,6 +128,20 @@
                     <li>Set form recurrence settings</li>
                   </ul>
                 </span> -->
+              </v-tooltip>
+            </template>
+          </v-checkbox>
+
+          <v-checkbox class="my-0" v-model="enableCopyExistingSubmission" :disabled="userType === ID_MODE.PUBLIC">
+            <template #label>
+              <span>Submitters can <strong>Copy an existing submission</strong></span>
+              <v-tooltip bottom close-delay="2500">
+                
+                <template v-slot:activator="{ on, attrs }">
+                  <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
+                </template>
+                <span>Experimental <a :href="githubLinkCopyFromExistingFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a></span>
               </v-tooltip>
             </template>
           </v-checkbox>
@@ -464,8 +479,8 @@ import { IdentityMode, IdentityProviders, Regex, ScheduleType } from '@/utils/co
 import { getAvailableDates, calculateCloseDate, isDateValidForMailNotification } from '@/utils/transformUtils';
 import moment from 'moment';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faFlask } from '@fortawesome/free-solid-svg-icons';
-library.add(faFlask);
+import { faFlask,faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
+library.add(faFlask,faXmark,faSquareArrowUpRight);
 
 export default {
   name: 'FormSettings',
@@ -475,6 +490,8 @@ export default {
   data() {
     // debugger;
     return {
+      githubLinkCopyFromExistingFeature: 'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
+      githubLinkScheduleAndReminderFeature: 'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
       repeatUntil: false,
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
@@ -556,6 +573,7 @@ export default {
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
+      'form.enableCopyExistingSubmission',
       'form.enableStatusUpdates',
       'form.id',
       'form.idps',
@@ -686,6 +704,7 @@ export default {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
+        this.enableCopyExistingSubmission = false;
       }
       if (this.userType !== 'team') {
         this.reminder = {};

@@ -166,10 +166,10 @@ const service = {
         continue;
       }
 
-      await reminder.push(
+      reminder.push(
         {
           error : false,
-          statement : exportService._getListSubmittersByFormId(forms[i].id, obj),
+          statement : await exportService._getListSubmittersByFormId(forms[i].id, obj),
           periodType : forms[i].schedule.scheduleType
         }
       );

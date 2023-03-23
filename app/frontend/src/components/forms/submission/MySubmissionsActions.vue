@@ -24,7 +24,7 @@
       </v-tooltip>
     </router-link>
 
-    <span v-if="submission.status === 'SUBMITTED'">
+    <span v-if="submission.status === 'SUBMITTED' && isCopyFromExistingSubmissionEnabled === true">
       <router-link
         :to="{
           name: 'UserFormDuplicate',
@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
 import { FormPermissions } from '@/utils/constants';
 
@@ -103,6 +104,12 @@ export default {
     formId: {
       type: String,
       required: true
+    }
+  },
+  computed: {
+    ...mapGetters('form', ['form']),
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
     }
   },
   methods: {

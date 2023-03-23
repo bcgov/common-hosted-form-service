@@ -93,6 +93,7 @@
           @draft-deleted="populateSubmissionsTable"
           :submission="item"
           :formId="formId"
+          :isCopyFromExistingSubmissionEnabled="isCopyFromExistingSubmissionEnabled"
         />
       </template>
     </v-data-table>
@@ -206,6 +207,9 @@ export default {
     showDraftLastEdited() {
       return this.form && this.form.enableSubmitterDraft;
     },
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
+    }
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),

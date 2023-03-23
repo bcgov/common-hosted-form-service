@@ -132,6 +132,7 @@ class Form extends Timestamps(Model) {
         enableSubmitterDraft: { type: 'boolean' },
         schedule: { type: 'object' },
         reminder: { type: 'object' },
+        enableCopyExistingSubmission: { type: 'boolean' },
         ...stamps
       },
       additionalProperties: false

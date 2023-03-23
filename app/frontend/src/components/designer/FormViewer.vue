@@ -26,6 +26,7 @@
         <div v-if="!isFormPublic(form)">
           <FormViewerActions
             :draftEnabled="form.enableSubmitterDraft"
+            :copyExistingSubmission="form.enableCopyExistingSubmission"
             :formId="form.id"
             :isDraft="submissionRecord.draft"
             :permissions="permissions"
