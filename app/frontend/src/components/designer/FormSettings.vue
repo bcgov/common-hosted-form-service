@@ -112,12 +112,14 @@
           <v-checkbox v-if="isFormPublished" class="my-0" v-model="schedule.enabled">
             <template #label>
               Form Submissions Schedule
-              <v-tooltip bottom>
+              <v-tooltip bottom close-delay="2500">
                 
                 <template v-slot:activator="{ on, attrs }">
                   <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
                 </template>
-                <span>Experimental</span>
+                <span>Experimental <a href="#" target="_blank">
+                  Learn more <v-icon small color="primary">open_in_new</v-icon>
+                </a></span>
                 <!-- <span>
                   Selecting this option controls this form to be open or close
                   for a given period.<br />
@@ -127,6 +129,21 @@
                     <li>Set form recurrence settings</li>
                   </ul>
                 </span> -->
+              </v-tooltip>
+            </template>
+          </v-checkbox>
+
+          <v-checkbox class="my-0" v-model="enableCopyExistingSubmission" :disabled="userType === ID_MODE.PUBLIC">
+            <template #label>
+              <span>Submitters can <strong>Copy an existing submission</strong></span>
+              <v-tooltip bottom close-delay="2500">
+                
+                <template v-slot:activator="{ on, attrs }">
+                  <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
+                </template>
+                <span>Experimental <a href="#" target="_blank">
+                  Learn more <v-icon small color="primary">open_in_new</v-icon>
+                </a></span>
               </v-tooltip>
             </template>
           </v-checkbox>
@@ -556,6 +573,7 @@ export default {
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
+      'form.enableCopyExistingSubmission',
       'form.enableStatusUpdates',
       'form.id',
       'form.idps',
@@ -686,6 +704,7 @@ export default {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
+        this.enableCopyExistingSubmission = false;
       }
       if (this.userType !== 'team') {
         this.reminder = {};

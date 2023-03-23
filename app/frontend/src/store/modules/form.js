@@ -49,7 +49,8 @@ const genInitialForm = () => ({
   reminder: genInitialReminder(),
   schedule: genInitialSchedule(),
   userType: IdentityMode.TEAM,
-  versions: []
+  versions: [],
+  enableCopyExistingSubmission:false
 });
 
 /**
@@ -348,7 +349,8 @@ export default {
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
-          reminder : reminder
+          reminder : reminder,
+          enableCopyExistingSubmission: state.form.enableCopyExistingSubmission
         });
       } catch (error) {
         dispatch('notifications/addNotification', {

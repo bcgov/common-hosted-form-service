@@ -282,15 +282,15 @@ const service = {
 
     return { data: result.data, headers: result.headers };
   },
-  _getListSubmittersByFormId :  (formId, obj ) => {
+  _getListSubmittersByFormId : async (formId, obj ) => {
 
-    return [ UserFormAccess.query()
+    return [ await UserFormAccess.query()
       .select('formVersionId','formName','userId','firstName','lastName', 'email')
       .where('formId',formId)
       .modify('filterActive', true)
       .modify('filterByAccess', undefined, Roles.FORM_SUBMITTER, undefined)
       .modify('orderDefault'),
-    SubmissionData.query()
+    await SubmissionData.query()
       .select('confirmationId', 'createdAt', 'submissionId', 'formVersionId','userId','firstName','lastName', 'email')
       .where('formId',formId)
       .modify('filterDrafts', false)

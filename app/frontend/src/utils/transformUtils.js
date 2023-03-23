@@ -73,7 +73,7 @@ export function attachAttributesToLinks(formSchemaComponents) {
  *
  * @param {Integer} keepAliveFor An integer for number of days, that tells form to be open for a particular period
  * @param {String} keepAliveForInterval A string of days,Weeks,months, that tells form to be open for a particular period
- * @param {Object[]} substartDate An object of Moment JS date, that tells form to be open on a particular day/date
+ * @param {Object[]} formStartDate An object of Moment JS date, that tells form to be open on a particular day/date
  * @param {Integer} term An integer of number of Days/Weeks OR Years, that tells form to be repeated on a particular period
  * @param {String} interval A string of days,Weeks,months, that tells form to be repeated on a particular period
  * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years, that tells form to be allowed for late submission for a particular period
@@ -134,10 +134,8 @@ export function getAvailableDates(
  * @param {Object[]} openedDate An object of Moment JS date
  * @param {Integer} keepOpenForTerm keepOpenForTerm An integer of number of Days/Weeks OR Years, that tells form to be open for a particular period
  * @param {String} keepOpenForInterval keepOpenForInterval A string of days,Weeks,months, that tells form to be open for a particular period
- * @param {Integer} term An integer of number of Days/Weeks OR Years
- * @param {String} interval A string of days,Weeks,months
- * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
- * @param {String} allowLateInterval A string of days,Weeks,months
+ * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years, that tells form to be allowed for late submission for a particular period
+ * @param {String} allowLateInterval A string of days,Weeks,months, that tells form to be allowed for late submission for a particular period
  * @param {Integer} repeatSubmissionTerm An integer of number of Days/Weeks OR Years, that tells form to be repeated for a particular period
  * @param {String} repeatSubmissionInterval A string of days,Weeks,months, that tells form to be repeated for a particular period
  * @param {Object[]} repeatSubmissionUntil An object of Moment JS date, that tells form to be finally close after repetition on particular day date

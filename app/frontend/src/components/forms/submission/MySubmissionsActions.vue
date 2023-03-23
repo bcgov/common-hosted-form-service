@@ -24,7 +24,7 @@
       </v-tooltip>
     </router-link>
 
-    <span v-if="submission.status === 'SUBMITTED'">
+    <span v-if="submission.status === 'SUBMITTED' && isCopyFromExistingSubmissionEnabled === true">
       <router-link
         :to="{
           name: 'UserFormDuplicate',
@@ -103,6 +103,10 @@ export default {
     formId: {
       type: String,
       required: true
+    },
+    isCopyFromExistingSubmissionEnabled: {
+      type: Boolean,
+      required: false
     }
   },
   methods: {

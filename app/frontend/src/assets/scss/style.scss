@@ -578,3 +578,6 @@ a,
   color: #01254a;
 }
 
+.v-tooltip__content {
+  pointer-events: auto !important; //Have to replace Tooltips default behaviour pointer-events: none as we have some tooltips with External Links.
+}

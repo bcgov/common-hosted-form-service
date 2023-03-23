@@ -197,6 +197,7 @@ export default {
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
+      'form.enableCopyExistingSubmission',
       'form.enableStatusUpdates',
       'form.idps',
       'form.name',
@@ -675,6 +676,7 @@ export default {
           userType: this.userType,
         }),
         enableSubmitterDraft: this.enableSubmitterDraft,
+        enableCopyExistingSubmission: this.enableCopyExistingSubmission,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
