@@ -20,7 +20,7 @@ const service = {
         if(!q[i].error){
           const obj = await  service._runQueries(q[i].statement);
           let result = await service._initStatement(obj);
-          let chesResponses = service._initMailSender(result, referer);
+          let chesResponses = service._initMaillSender(result, referer);
           resolve.push({
             formId:result.form.id,
             formName :  result.form.name,
@@ -148,14 +148,14 @@ const service = {
     for (let i = 0; i< forms.length; i++) {
       let obj = {};
 
-      obj.availableDate =  service._listDates(forms[i].schedule) ;
+      obj.avalaibleDate =  service._listDates(forms[i].schedule) ;
 
-      if (obj.availableDate.length == 0) {
-        reminder.push({ error:true, message : `Form ${forms[i].name } has no available date.` });
+      if (obj.avalaibleDate.length == 0) {
+        reminder.push({ error:true, message : `Form ${forms[i].name } has no avalaible date.` });
         continue;
       }
 
-      obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
+      obj.report = service.getCurrentPeriod(obj.avalaibleDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
 
       obj.form   = forms[i];
 
@@ -197,9 +197,9 @@ const service = {
       return EmailTypes.REMINDER_FORM_NOT_FILL;
     }
 
-    const calculated_end_date = moment(end_date).subtract(1, 'day');
+    const yend_date = moment(end_date).subtract(1, 'day');
 
-    if(moment(now).isSame(calculated_end_date)){
+    if(moment(now).isSame(yend_date)){
       return EmailTypes.REMINDER_FORM_WILL_CLOSE;
     }
 
@@ -266,6 +266,8 @@ const service = {
     return statement;
   },
   _getReferer : () => {
+    // We create this function because in the header we cant get the real referer but
+    // this function allow us to generate the referer dynamicly
     try {
       const protocol = 'https://';
       const basePath = config.get('frontend.basePath');
@@ -278,12 +280,12 @@ const service = {
       throw error;
     }
   },
-  _initMailSender: (statement, referer) => {
+  _initMaillSender: async (statement, referer) => {
     const chesResponse = [];
-    statement.submitters.forEach(user => {
-      const data = { form :statement.form, report : statement.report, user , state : statement.state, referer};
-      chesResponse.push(emailService.initReminder(data));
-    });
+    const users = statement.submitters.map(user => user.email );
+    const data = { form :statement.form, report : statement.report, users , state : statement.state, referer};
+    chesResponse.push(emailService.initReminder(data));
+
     return chesResponse;
   }
 
