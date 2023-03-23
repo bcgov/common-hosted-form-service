@@ -202,6 +202,16 @@ export default {
       return `Bearer ${this.token}`;
     },
     async getFormData() {
+      function deleteFieldData(fieldcomponent,submission) {
+        if(Object.prototype.hasOwnProperty.call(fieldcomponent,'components')){
+          fieldcomponent.components.map((subComponent) => { // Check if it's a Nested component
+            deleteFieldData(subComponent,submission);
+          });
+        }else if(!fieldcomponent?.validate?.isUseForCopy){
+          delete submission?.data[fieldcomponent.key]; //Delete fields date as it's not activated for Value propagation
+        }
+      }
+          
       try {
         this.loadingSubmission = true;
         const response = await formService.getSubmission(this.submissionId);
@@ -215,10 +225,9 @@ export default {
         }else{
           /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
           if(response.data?.version?.schema?.components && response.data?.version?.schema?.components.length){
+            // console.log('response.data.version.schema.components--',response.data.version.schema.components);
             response.data.version.schema.components.map((component) => {
-              if(!component?.validate?.isUseForCopy){
-                delete this.submission.data[component.key];
-              }
+              deleteFieldData(component,this.submission); //Delete all the fields data that are not enabled for duplication
             });
           }
         }
