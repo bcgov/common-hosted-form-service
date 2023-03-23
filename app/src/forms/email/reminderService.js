@@ -14,7 +14,7 @@ const service = {
     const referer = service._getReferer();
     const resolve = [];
     const errors = [];
-    var mail = 0;
+    let mail = 0;
     if(q.length!==0) {
       for(let i = 0 ; i < q.length ; i++) {
         if(!q[i].error){
@@ -25,12 +25,12 @@ const service = {
             formId:result.form.id,
             formName :  result.form.name,
             type_mail : result.state,
-            number_mail: result.submiters.length,
+            number_mail: result.submitters.length,
             period_type : q[i].periodType,
             chesResponses
           });
           // eslint-disable-next-line no-unused-vars
-          mail+= result.submiters.length;
+          mail+= result.submitters.length;
         } else{
           errors.push(q[i].message);
         }
@@ -69,8 +69,8 @@ const service = {
 
     // check for the current period
     for (let i = 0; i <dates.length; i++) {
-      var startDate = moment(dates[i].startDate).format('YYYY-MM-DD');
-      var graceDate = (late) ? moment(dates[i].graceDate).format('YYYY-MM-DD') : moment(dates[i].closeDate).format('YYYY-MM-DD') ;
+      let startDate = moment(dates[i].startDate).format('YYYY-MM-DD');
+      let graceDate = (late) ? moment(dates[i].graceDate).format('YYYY-MM-DD') : moment(dates[i].closeDate).format('YYYY-MM-DD') ;
       if(toDay.isBetween(startDate, graceDate)) {
         return Object({
           state : 1,
@@ -83,7 +83,7 @@ const service = {
       }
     }
 
-    var first = dates[0];
+    let first = dates[0];
     return Object({
       state: (toDay.isBefore(first.startDate)) ? -1 : 0,
       index: -1,
@@ -128,11 +128,11 @@ const service = {
   },
   _getGraceDate: (schedule)=>{
     let substartDate = moment(schedule.openSubmissionDateTime);
-    var newDate = substartDate.clone();
+    let newDate = substartDate.clone();
     return (schedule.allowLateSubmissions.enabled) ?   newDate.add(schedule.allowLateSubmissions.forNext.term , schedule.allowLateSubmissions.forNext.intervalType).format('YYYY-MM-DD HH:MM:SS') : null ;
   },
   _getForms: async ()=> {
-    var fs = [];
+    let fs = [];
     await Form.query()
       .modify('hasReminder')
       .modify('reminderEnabled')
@@ -143,10 +143,10 @@ const service = {
     return fs;
   },
   _getReminders : async (forms)=>{
-    var reminder = [];
-    var toDay = moment();
+    let reminder = [];
+    let toDay = moment();
     for (let i = 0; i< forms.length; i++) {
-      var obj = {};
+      let obj = {};
 
       obj.avalaibleDate =  service._listDates(forms[i].schedule) ;
 
@@ -169,7 +169,7 @@ const service = {
       await reminder.push(
         {
           error : false,
-          statement : exportService._getListSubmitersByFormId(forms[i].id, obj),
+          statement : exportService._getListSubmittersByFormId(forms[i].id, obj),
           periodType : forms[i].schedule.scheduleType
         }
       );
@@ -181,7 +181,7 @@ const service = {
 
     if(!reminder.enabled) return undefined;
 
-    var state = undefined;
+    let state = undefined;
     const now = moment().format('YYYY-MM-DD');
     const start_date = moment(report.dates.startDate).format('YYYY-MM-DD');
     const end_date = (late) ? moment(report.dates.graceDate).format('YYYY-MM-DD') : moment(report.dates.closeDate).format('YYYY-MM-DD');
@@ -225,12 +225,12 @@ const service = {
     return false;
   },
   _runQueries : async (queries) => {
-    var obj = queries[2];
+    let obj = queries[2];
     obj.fillers = [];
     await queries[0].then(function(data) {
-      obj.submiters = data;
+      obj.submitters = data;
     });
-    if(obj.submiters && obj.submiters.length>0){
+    if(obj.submitters && obj.submitters.length>0){
       await queries[1].then(function(data2) {
         obj.fillers = (data2) ? data2 : [];
       });
@@ -249,25 +249,23 @@ const service = {
     statement.form = obj.form;
     statement.report = obj.report;
     statement.state = obj.state;
-    statement.submiters = [];
+    statement.submitters = [];
 
-    if(!obj.submiters || obj.submiters.length == 0) return statement;
+    if(!obj.submitters || obj.submitters.length == 0) return statement;
 
     if(statement.state != EmailTypes.REMINDER_FORM_OPEN ){
       if(obj.fillers &&  obj.fillers.length != 0 ) {
-        statement.submiters = await service.getDifference(obj.submiters, obj.fillers);
+        statement.submitters = await service.getDifference(obj.submitters, obj.fillers);
       } else {
-        statement.submiters = obj.submiters;
+        statement.submitters = obj.submitters;
       }
 
     } else {
-      statement.submiters = obj.submiters;
+      statement.submitters = obj.submitters;
     }
     return statement;
   },
   _getReferer : () => {
-
-
     try {
       const protocol = 'https://';
       const basePath = config.get('frontend.basePath');
@@ -282,7 +280,7 @@ const service = {
   },
   _initMaillSender: (statement, referer) => {
     const chesResponse = [];
-    statement.submiters.forEach(user => {
+    statement.submitters.forEach(user => {
       const data = { form :statement.form, report : statement.report, user , state : statement.state, referer};
       chesResponse.push(emailService.initReminder(data));
     });
