@@ -136,6 +136,52 @@ const hasSubmissionPermissions = (permissions) => {
   };
 };
 
+const canDeleteAndRestoreMultiSubmissions = (permissions) => {
+  return async (req, _res, next) => {
+    if (!Array.isArray(permissions)) {
+      permissions = [permissions];
+    }
+
+    // Get the provided form ID whether in a param or query (precedence to param)
+    const formId = req.params.formId || req.query.formId;
+    if (!formId) {
+      return next(new Problem(401, { detail: 'FormId not found on request.' }));
+    }
+
+    // Get the provided list of submissions Id whether in a req body
+    const submissionIds = req.body&&req.body.submissionIds;
+    if (!Array.isArray(submissionIds)) {
+      // No submission provided to this route that secures based on form... that's a problem!
+      return next(new Problem(401, { detail: 'SubmissionIds not found on request.' }));
+    }
+
+    // Does the user have permissions for this submission due to their FORM permissions
+    if (req.currentUser) {
+      let formFromCurrentUser = req.currentUser.forms.find(f => f.formId === formId);
+      if (formFromCurrentUser) {
+        // Do they have the submission permissions being requested on this FORM
+        const intersection = permissions.filter(p => {
+          return formFromCurrentUser.permissions.includes(p);
+        });
+
+        if (intersection.length === permissions.length) {
+
+          // Get the submission results so we know what form this submission is for
+          const meta = await service.getMultipleSubmission(submissionIds);
+
+          let formIds =  [...new Set(meta&&meta.map(SubmissionMetadata=>SubmissionMetadata.formId))];
+          if (formIds&&formIds.length=== 1) {
+            return next();
+          }
+          else {
+            return next(new Problem(401, { detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.' }));
+          }
+        }
+      }
+    }
+  };
+};
+
 const hasFormRole = (formId, user, role) => {
   let hasRole = false;
   form_loop:
@@ -274,5 +320,5 @@ const hasRolePermissions = (removingUsers = false) => {
 };
 
 module.exports = {
-  currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasFormRole, hasRolePermissions,
+  currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasFormRole, hasRolePermissions, canDeleteAndRestoreMultiSubmissions,
 };
