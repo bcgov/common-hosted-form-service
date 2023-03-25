@@ -350,9 +350,9 @@ export default {
     },
 
 
-    async deleteMultiSubmissions ({ dispatch }, submissionIds) {
+    async deleteMultiSubmissions ({ dispatch },{formId, submissionIds}) {
       try {
-        await formService.deleteMultipleSubmissions(submissionIds[0], { data: {submissionIds:submissionIds} });
+        await formService.deleteMultipleSubmissions(submissionIds[0], formId, { data: {submissionIds:submissionIds} });
         dispatch('notifications/addNotification', {
           message: 'Submissions deleted successfully.',
           ...NotificationTypes.SUCCESS,
@@ -365,10 +365,10 @@ export default {
       }
     },
 
-    async restoreMultiSubmissions({ dispatch }, submissionIds) {
+    async restoreMultiSubmissions({ dispatch }, {formId, submissionIds}) {
       try {
         // Get this submission
-        await formService.restoreMutipleSubmissions(submissionIds[0],{ submissionIds:submissionIds});
+        await formService.restoreMutipleSubmissions(submissionIds[0], formId, { submissionIds:submissionIds});
         dispatch('notifications/addNotification', {
           message: 'Submissions restored successfully.',
           ...NotificationTypes.SUCCESS,
