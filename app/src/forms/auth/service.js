@@ -260,7 +260,14 @@ const service = {
       submission: meta,
       form: form
     };
+  },
+
+  getMultipleSubmission: async (submissionIds) => {
+    return await SubmissionMetadata.query()
+      .whereIn('submissionId', submissionIds);
   }
+
+
   // ---------------------------------------------------------------------------------------------/Submission Data
 
 };
