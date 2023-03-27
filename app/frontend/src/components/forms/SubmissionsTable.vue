@@ -427,7 +427,7 @@ export default {
     async deleteMultiSubs() {
       let submissionsIdsToDelete = this.selectedSubmissions.map(submission=>submission.submissionId);
       this.showDeleteDialog = false;
-      await this.deleteMultiSubmissions({submissionIds:submissionsIdsToDelete, formId:this.form.id});
+      await this.deleteMultiSubmissions({submissionIds:submissionsIdsToDelete});
       this.refreshSubmissions();
     },
 
@@ -495,7 +495,7 @@ export default {
     async restoreMultipleSubs() {
       let submissionsIdsToRestore = this.selectedSubmissions.map(submission=>submission.submissionId);
       this.showRestoreDialog = false;
-      await this.restoreMultiSubmissions({submissionIds:submissionsIdsToRestore, formId:this.form.id});
+      await this.restoreMultiSubmissions({submissionIds:submissionsIdsToRestore});
       this.refreshSubmissions();
       this.selectedSubmissions = [];
     },
