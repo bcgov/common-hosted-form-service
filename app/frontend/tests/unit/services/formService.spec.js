@@ -422,11 +422,11 @@ describe('Form Service', () => {
     });
   });
 
-  describe('submissions/${submissionId}/submissions', () => {
+  describe('submissions/${submissionId}/${formId}/submissions', () => {
     let submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
     let formId = 'd15a8c14-c78a-42fa-8afd-b3f1fed59159';
 
-    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/submissions`;
+    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions`;
 
     it('calls delete endpoint', async () => {
       mockAxios.onDelete(endpoint).reply(200);
@@ -443,10 +443,10 @@ describe('Form Service', () => {
   });
 
 
-  describe('submissions/${submissionId}/submissions/restore', () => {
+  describe('submissions/${submissionId}/${formId}/submissions/restore', () => {
     let submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
     let formId = 'd15a8c14-c78a-42fa-8afd-b3f1fed59159';
-    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/submissions/restore`;
+    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions/restore`;
 
     it('calls restore multiple submission endpoint', async () => {
       mockAxios.onPut(endpoint).reply(200);
