@@ -12,8 +12,6 @@ const schedule  = {
     "enabled": true,
     "everyTerm": "1",
     "repeatUntil": "2023-08-10",
-    "keepAliveFor": null,
-    "onSpecificDay": null,
     "everyIntervalType": "months"
   },
   "keepOpenForInterval": "days",
