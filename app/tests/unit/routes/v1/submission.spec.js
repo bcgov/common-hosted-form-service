@@ -15,7 +15,7 @@ userAccess.hasSubmissionPermissions = jest.fn(() => {
     next();
   });
 });
-userAccess.canDeleteAndRestoreMultiSubmissions = jest.fn(() => {
+userAccess.filterMultipleSubmissions = jest.fn(() => {
   return jest.fn((req, res, next) => {
     next();
   });
@@ -363,13 +363,13 @@ describe(`GET ${basePath}/ID/edits`, () => {
 });
 
 
-describe(`DELETE ${basePath}/ID/formId/submissions`, () => {
+describe(`DELETE ${basePath}/ID/submissions`, () => {
 
   it('should return 200', async () => {
     // mock a success return value...
     service.deleteMutipleSubmissions = jest.fn().mockReturnValue({});
 
-    const response = await request(app).delete(`${basePath}/formSubmissionId/formId/submissions`);
+    const response = await request(app).delete(`${basePath}/formSubmissionId/submissions`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -379,7 +379,7 @@ describe(`DELETE ${basePath}/ID/formId/submissions`, () => {
     // mock an authentication/permission issue...
     service.deleteMutipleSubmissions = jest.fn(() => { throw new Problem(401); });
 
-    const response = await request(app).delete(`${basePath}/formSubmissionId/formId/submissions`);
+    const response = await request(app).delete(`${basePath}/formSubmissionId/submissions`);
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -389,7 +389,7 @@ describe(`DELETE ${basePath}/ID/formId/submissions`, () => {
     // mock an unexpected error...
     service.deleteMutipleSubmissions = jest.fn(() => { throw new Error(); });
 
-    const response = await request(app).delete(`${basePath}/formSubmissionId/formId/submissions`);
+    const response = await request(app).delete(`${basePath}/formSubmissionId/submissions`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -397,13 +397,13 @@ describe(`DELETE ${basePath}/ID/formId/submissions`, () => {
 });
 
 
-describe(`PUT ${basePath}/ID/formId/submissions/restore`, () => {
+describe(`PUT ${basePath}/ID/submissions/restore`, () => {
 
   it('should return 200', async () => {
     // mock a success return value...
     service.restoreMutipleSubmissions = jest.fn().mockReturnValue({});
 
-    const response = await request(app).put(`${basePath}/formSubmissionId/formId/submissions/restore`);
+    const response = await request(app).put(`${basePath}/formSubmissionId/submissions/restore`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -413,7 +413,7 @@ describe(`PUT ${basePath}/ID/formId/submissions/restore`, () => {
     // mock an authentication/permission issue...
     service.restoreMutipleSubmissions = jest.fn(() => { throw new Problem(401); });
 
-    const response = await request(app).put(`${basePath}/:formSubmissionId/formId/submissions/restore`);
+    const response = await request(app).put(`${basePath}/:formSubmissionId/submissions/restore`);
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -423,7 +423,7 @@ describe(`PUT ${basePath}/ID/formId/submissions/restore`, () => {
     // mock an unexpected error...
     service.restoreMutipleSubmissions = jest.fn(() => { throw new Error(); });
 
-    const response = await request(app).put(`${basePath}/:formSubmissionId/formId/submissions/restore`);
+    const response = await request(app).put(`${basePath}/:formSubmissionId/submissions/restore`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
