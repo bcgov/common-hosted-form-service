@@ -112,12 +112,13 @@
           <v-checkbox v-if="isFormPublished" class="my-0" v-model="schedule.enabled">
             <template #label>
               Form Submissions Schedule
-              <v-tooltip bottom>
+              <v-tooltip bottom close-delay="2500">
                 
                 <template v-slot:activator="{ on, attrs }">
                   <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
                 </template>
-                <span>Experimental</span>
+                <span>Experimental <a :href="githubLinkScheduleAndReminderFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a></span>
                 <!-- <span>
                   Selecting this option controls this form to be open or close
                   for a given period.<br />
@@ -127,6 +128,20 @@
                     <li>Set form recurrence settings</li>
                   </ul>
                 </span> -->
+              </v-tooltip>
+            </template>
+          </v-checkbox>
+
+          <v-checkbox class="my-0" v-model="enableCopyExistingSubmission" :disabled="userType === ID_MODE.PUBLIC">
+            <template #label>
+              <span>Submitters can <strong>Copy an existing submission</strong></span>
+              <v-tooltip bottom close-delay="2500">
+                
+                <template v-slot:activator="{ on, attrs }">
+                  <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
+                </template>
+                <span>Experimental <a :href="githubLinkCopyFromExistingFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a></span>
               </v-tooltip>
             </template>
           </v-checkbox>
@@ -464,8 +479,8 @@ import { IdentityMode, IdentityProviders, Regex, ScheduleType } from '@/utils/co
 import { getAvailableDates, calculateCloseDate, isDateValidForMailNotification } from '@/utils/transformUtils';
 import moment from 'moment';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faFlask } from '@fortawesome/free-solid-svg-icons';
-library.add(faFlask);
+import { faFlask,faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
+library.add(faFlask,faXmark,faSquareArrowUpRight);
 
 export default {
   name: 'FormSettings',
@@ -475,6 +490,8 @@ export default {
   data() {
     // debugger;
     return {
+      githubLinkCopyFromExistingFeature: 'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
+      githubLinkScheduleAndReminderFeature: 'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
       repeatUntil: false,
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
@@ -556,6 +573,7 @@ export default {
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
+      'form.enableCopyExistingSubmission',
       'form.enableStatusUpdates',
       'form.id',
       'form.idps',
@@ -601,8 +619,8 @@ export default {
       return closeDateCalculated;
     },
     AVAILABLE_PERIOD_OPTIONS() {
-      var arrayOfption = ['weeks', 'months', 'quarters', 'years'];
-      var diffInDays = 0;
+      let arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
+      let diffInDays = 0;
       if(this.schedule.openSubmissionDateTime && this.schedule.keepOpenForInterval && this.schedule.keepOpenForTerm){
         diffInDays = moment.duration({[this.schedule.keepOpenForInterval]: this.schedule.keepOpenForTerm}).asDays();// moment.duration(this.schedule.keepOpenForTerm, this.schedule.keepOpenForInterval).days();
 
@@ -620,53 +638,53 @@ export default {
 
       switch (true) {
         case (diffInDays > 7 && diffInDays <= 30):
-          arrayOfption = ['months', 'quarters', 'years'];
+          arrayOfOption = ['months', 'quarters', 'years'];
           break;
 
         case (diffInDays > 30 && diffInDays <= 91):
-          arrayOfption = ['quarters', 'years'];
+          arrayOfOption = ['quarters', 'years'];
           break;
 
         case (diffInDays > 91):
-          arrayOfption = ['years'];
+          arrayOfOption = ['years'];
           break;
 
         default:
-          arrayOfption = ['weeks', 'months', 'quarters', 'years'];
+          arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
           break;
       }
-      return arrayOfption;
+      return arrayOfOption;
     },
     INTERVAL_OPEN() {
       return  moment.duration({[this.schedule.keepOpenForInterval]: this.schedule.keepOpenForTerm}).asDays();
     },
     AVAILABLE_PERIOD_INTERVAL() {
-      var arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
-      var diffInDays = this.INTERVAL_OPEN;
+      let arrayOfOption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+      let diffInDays = this.INTERVAL_OPEN;
       switch (true) {
         case (diffInDays <= 7):
-          arrayOfption = ['Daily'];
+          arrayOfOption = ['Daily'];
           break;
         case (diffInDays > 7 && diffInDays <= 14):
-          arrayOfption = ['Daily','Weekly'];
+          arrayOfOption = ['Daily','Weekly'];
           break;
         case (diffInDays > 14 && diffInDays <= 31):
-          arrayOfption = ['Daily','Weekly','Bi-weekly'];
+          arrayOfOption = ['Daily','Weekly','Bi-weekly'];
           break;
         case (diffInDays > 31 && diffInDays <= 91):
-          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly'];
+          arrayOfOption = ['Daily','Weekly','Bi-weekly','Monthly'];
           break;
         case (diffInDays > 91 && diffInDays <= 183):
-          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly'];
+          arrayOfOption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly'];
           break;
         case (diffInDays > 183 && diffInDays <= 365):
-          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually'];
+          arrayOfOption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually'];
           break;
         default:
-          arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+          arrayOfOption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
           break;
       }
-      return arrayOfption;
+      return arrayOfOption;
     },
     SCHEDULE_TYPE() {
       return ScheduleType;
@@ -686,6 +704,7 @@ export default {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
+        this.enableCopyExistingSubmission = false;
       }
       if (this.userType !== 'team') {
         this.reminder = {};

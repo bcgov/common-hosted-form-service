@@ -53,7 +53,7 @@ const queryUtils = {
  *
  */
 const isFormExpired = (formSchedule = {}) => {
-  var result = {
+  let result = {
     allowLateSubmissions:false,
     expire:false,
     message:'Form Submission is not available.'
@@ -63,15 +63,15 @@ const isFormExpired = (formSchedule = {}) => {
   {
     //Check if Form open date is in past or Is form already started for submission
     if(formSchedule.openSubmissionDateTime){
-      var startDate = moment(formSchedule.openSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
-      var isFormStartedAlready = moment().diff(startDate, 'seconds'); //If a positive number it means form get started
+      let startDate = moment(formSchedule.openSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
+      let isFormStartedAlready = moment().diff(startDate, 'seconds'); //If a positive number it means form get started
       if(isFormStartedAlready >= 0){
         //Form have valid past open date for scheduling so lets check for the next conditions
         if(isFormStartedAlready && formSchedule.enabled){
           if(formSchedule.closingMessage){
             result = {...result,message:formSchedule.closingMessage};
           }
-          var closeDate =  getCalculatedCloseSubmissionDate(
+          let closeDate =  getCalculatedCloseSubmissionDate(
             startDate,
             formSchedule.keepOpenForTerm,
             formSchedule.keepOpenForInterval,
@@ -81,13 +81,13 @@ const isFormExpired = (formSchedule = {}) => {
             formSchedule.repeatSubmission.everyIntervalType,
             formSchedule.repeatSubmission.repeatUntil
           ); //moment(formSchedule.closeSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
-          var isBetweenStartAndCloseDate = moment().isBetween(startDate, closeDate);
+          let isBetweenStartAndCloseDate = moment().isBetween(startDate, closeDate);
 
           if(isBetweenStartAndCloseDate){
             /** Check if form is Repeat enabled - start */
             /** Check if form is Repeat enabled and alow late submition - start */
             if(formSchedule.repeatSubmission.enabled){
-              var availableDates = getAvailableDates(
+              let availableDates = getAvailableDates(
                 formSchedule.keepOpenForTerm,
                 formSchedule.keepOpenForInterval,
                 startDate,
@@ -100,7 +100,7 @@ const isFormExpired = (formSchedule = {}) => {
               for (let i = 0; i < availableDates.length; i++) {
 
                 //Check if today is the day when a submitter can submit the form for given period of repeat submission
-                var repeatIsBetweenStartAndCloseDate = moment().isBetween(availableDates[i].startDate, availableDates[i].closeDate);
+                let repeatIsBetweenStartAndCloseDate = moment().isBetween(availableDates[i].startDate, availableDates[i].closeDate);
 
                 if(repeatIsBetweenStartAndCloseDate) {
                   result = {...result,expire:false}; //Form is available for given period to be submit.
@@ -108,7 +108,7 @@ const isFormExpired = (formSchedule = {}) => {
                 }else if(formSchedule.allowLateSubmissions.enabled){
                   result = {...result,expire:true};
                   /** Check if form is alow late submition - start */
-                  var isallowLateSubmissions = moment().isBetween(availableDates[i].startDate, availableDates[i].graceDate);
+                  let isallowLateSubmissions = moment().isBetween(availableDates[i].startDate, availableDates[i].graceDate);
                   
                   if(isallowLateSubmissions){ //If late submission is allowed for the given repeat submission period then stop checking for other dates
                     result = {
@@ -156,7 +156,7 @@ const isFormExpired = (formSchedule = {}) => {
  *
  */
 const checkIsFormExpired = (formSchedule = {}) => {
-  var result = {
+  let result = {
     allowLateSubmissions:false,
     expire:false,
     message:''
@@ -166,12 +166,12 @@ const checkIsFormExpired = (formSchedule = {}) => {
   {
     //Check if Form open date is in past or Is form already started for submission
     if(formSchedule.openSubmissionDateTime){
-      var startDate = moment(formSchedule.openSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
-      var closingDate = null;
+      let startDate = moment(formSchedule.openSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
+      let closingDate = null;
       if(formSchedule.scheduleType === 'closingDate' && formSchedule.closeSubmissionDateTime){
         closingDate = moment(formSchedule.closeSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
       }
-      var isFormStartedAlready = moment().diff(startDate, 'seconds'); //If a positive number it means form get started
+      let isFormStartedAlready = moment().diff(startDate, 'seconds'); //If a positive number it means form get started
       if(isFormStartedAlready >= 0){
 
 
@@ -187,7 +187,7 @@ const checkIsFormExpired = (formSchedule = {}) => {
             result = {...result,message:'The form submission period has expired.'};
           }
 
-          var closeDate = formSchedule.scheduleType === 'period' ? getCalculatedCloseSubmissionDate(
+          let closeDate = formSchedule.scheduleType === 'period' ? getCalculatedCloseSubmissionDate(
             startDate,
             formSchedule.keepOpenForTerm,
             formSchedule.keepOpenForInterval,
@@ -199,13 +199,13 @@ const checkIsFormExpired = (formSchedule = {}) => {
             formSchedule.scheduleType,
             formSchedule.closeSubmissionDateTime
           ) : closingDate ; //moment(formSchedule.closeSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
-          var isBetweenStartAndCloseDate = moment().isBetween(startDate, closeDate);
+          let isBetweenStartAndCloseDate = moment().isBetween(startDate, closeDate);
 
           if(isBetweenStartAndCloseDate){
             /** Check if form is Repeat enabled - start */
             /** Check if form is Repeat enabled and alow late submition - start */
             if(formSchedule.repeatSubmission.enabled){
-              var availableDates = getAvailableDates(
+              let availableDates = getAvailableDates(
                 formSchedule.keepOpenForTerm,
                 formSchedule.keepOpenForInterval,
                 startDate,
@@ -220,7 +220,7 @@ const checkIsFormExpired = (formSchedule = {}) => {
               for (let i = 0; i < availableDates.length; i++) {
 
                 //Check if today is the day when a submitter can submit the form for given period of repeat submission
-                var repeatIsBetweenStartAndCloseDate = moment().isBetween(availableDates[i].startDate, availableDates[i].closeDate);
+                let repeatIsBetweenStartAndCloseDate = moment().isBetween(availableDates[i].startDate, availableDates[i].closeDate);
 
                 if(repeatIsBetweenStartAndCloseDate) {
                   result = {...result,expire:false}; //Form is available for given period to be submit.
@@ -228,7 +228,7 @@ const checkIsFormExpired = (formSchedule = {}) => {
                 }else if(formSchedule.allowLateSubmissions.enabled){
                   result = {...result,expire:true};
                   /** Check if form is alow late submition - start */
-                  var isallowLateSubmissions = moment().isBetween(availableDates[i].startDate, availableDates[i].graceDate);
+                  let isallowLateSubmissions = moment().isBetween(availableDates[i].startDate, availableDates[i].graceDate);
                   if(isallowLateSubmissions){ //If late submission is allowed for the given repeat submission period then stop checking for other dates
                     result = {
                       ...result,
@@ -314,11 +314,11 @@ const  getAvailableDates = (
 
   let substartDate = moment(subStartDate);
   repeatUntil = moment(repeatUntil);
-  var calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
-  var availableDates = [];
+  let calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
+  let availableDates = [];
   if(calculatedsubcloseDate && term && interval) {
     while (substartDate.isBefore(calculatedsubcloseDate)) {
-      var newDate = substartDate.clone();
+      let newDate = substartDate.clone();
       if(substartDate.isBefore(repeatUntil)){
         availableDates.push(Object({
           startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
@@ -331,7 +331,7 @@ const  getAvailableDates = (
   }
 
   if((term == null && interval == null) && (keepAliveFor && keepAliveForInterval)){
-    var newDates = substartDate.clone();
+    let newDates = substartDate.clone();
     availableDates.push(Object({
       startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
       closeDate:newDates.add(keepAliveFor,keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
