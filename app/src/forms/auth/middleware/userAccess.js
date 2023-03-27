@@ -139,7 +139,6 @@ const hasSubmissionPermissions = (permissions) => {
 
 const filterMultipleSubmissions = () => {
   return async (req, _res, next) => {
-    let formId = req.formIdWithDeletePermission;
 
     // Get the provided list of submissions Id whether in a req body
     const submissionIds = req.body&&req.body.submissionIds;
@@ -148,14 +147,25 @@ const filterMultipleSubmissions = () => {
       return next(new Problem(401, { detail: 'SubmissionIds not found on request.' }));
     }
 
-    // check if users has not injected submission id that does not belong to this form
-    const metaData = await service.getMultipleSubmission(submissionIds);
-    const isForeignSubmissionId = metaData.every((SubmissionMetadata)=>SubmissionMetadata.formId===formId);
+    let formIdWithDeletePermission=req.formIdWithDeletePermission;
 
-    if (!isForeignSubmissionId) {
-      return next(new Problem(401, { detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.' }));
+    // Get the provided form ID whether in a param or query (precedence to param)
+    const formId = req.params.formId || req.query.formId;
+    if (!formId) {
+      // No submission provided to this route that secures based on form... that's a problem!
+      return next(new Problem(401, { detail: 'Form Id not found on request.' }));
     }
-    return next();
+
+    if (formIdWithDeletePermission===formId) {
+      // check if users has not injected submission id that does not belong to this form
+      const metaData = await service.getMultipleSubmission(submissionIds);
+      const isForeignSubmissionId = metaData.every((SubmissionMetadata)=>SubmissionMetadata.formId===formId);
+      if (!isForeignSubmissionId) {
+        return next(new Problem(401, { detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.' }));
+      }
+      return next();
+    }
+    return next(new Problem(401, { detail: 'Current user does not have required permission(s) for to delete submissions' }));
   };
 };
 

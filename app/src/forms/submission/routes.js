@@ -18,7 +18,7 @@ routes.delete('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_DELETE
   await controller.delete(req, res, next);
 });
 
-routes.put('/:formSubmissionId/submissions/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
+routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.restoreMutipleSubmissions(req, res, next);
 });
 
@@ -59,7 +59,7 @@ routes.post('/:formSubmissionId/template/render', hasSubmissionPermissions(P.SUB
   await controller.templateUploadAndRender(req, res, next);
 });
 
-routes.delete('/:formSubmissionId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
+routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.deleteMutipleSubmissions(req, res, next);
 });
 
