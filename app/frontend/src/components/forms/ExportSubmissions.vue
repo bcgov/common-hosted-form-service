@@ -4,7 +4,7 @@
       <template #activator="{ on, attrs }">
         <v-btn
           class="mx-1"
-          @click="dialog = true"
+          @click="openExportDialog"
           color="primary"
           icon
           v-bind="attrs"
@@ -154,7 +154,7 @@
               </template>
             </v-radio>
           </v-radio-group>
-          <v-row class="mt-5">
+          <v-row class="mt-5" v-if="exportFormat === 'csv'">
             <v-col cols="6">
               <div class="subTitleObjectStyle">
                 Select the submission version
@@ -197,19 +197,6 @@
                         (Recommended)
                       </div></span>
                   </template>
-
-                  <sup>Betas
-                    <font-awesome-icon
-                      icon="fa-solid fa-circle-info"
-                      size="xl"
-                      color="#1A5A96"
-                    />
-                    <font-awesome-icon
-                      icon="fa-solid fa-info"
-                      size="xl"
-                      color="#1A5A96"
-                    />
-                  </sup>
                 </v-radio>
                 <v-radio label="B" value="flattenedWithFilled">
                   <template v-slot:label>
@@ -285,7 +272,7 @@ export default {
       exportFormat: 'json',
       startDate: moment(Date()).format('YYYY-MM-DD'),
       startDateMenu: false,
-      versionSelected: 0,
+      versionSelected: 1,
       csvTemplates: 'flattenedWithBlankOut',
       versions: [],
     };
@@ -303,6 +290,10 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
+    async openExportDialog() {
+      this.dialog = true;
+      this.updateVersions();
+    },
     async callExport() {
       try {
         // UTC start of selected start date...
@@ -322,7 +313,7 @@ export default {
           this.form.id,
           this.exportFormat,
           this.csvTemplates,
-          this.versionSelected,
+          this.exportFormat==='csv'?this.versionSelected:undefined,
           {
             minDate: from,
             maxDate: to,
@@ -370,12 +361,6 @@ export default {
         }
       }
     },
-  },
-  mounted() {
-    this.updateVersions();
-    if (this.exportFormat === 'json') {
-      this.versionSelected = 'All';
-    }
   },
   watch: {
     startDate() {
