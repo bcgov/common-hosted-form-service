@@ -64,21 +64,53 @@
             <v-row class="mt-5">
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
-                <v-radio-group v-model="dataFields" hide-details="auto">
-                  <v-radio label="All data/fields" :value="false">
-                    <template v-slot:label>
-                      <span class="radioboxLabelStyle">All data/fields</span>
-                    </template>
-                  </v-radio>
-                  <v-radio label="Select Date Range" :value="true">
-                    <template v-slot:label>
-                      <span class="radioboxLabelStyle">Selected data/fields</span>
-                      <v-icon class="ml-3" color="#003366"> view_week</v-icon>
-                    </template>
-                  </v-radio>
-                </v-radio-group>
+                <v-switch
+                  v-model="allDataFields"
+                  label="All data/fields`"
+                  @change="onAllDataFieldsSwitchChange"
+                ></v-switch>
+                <v-switch
+                  v-model="selectedDataFields"
+                  label="Selected data/fields`"
+                  @change="onSelectedFieldsSwitchChange"
+                ></v-switch>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col>
+                <v-row>
+                  <v-col cols="7">
+                    <v-text-field
+                      v-model="inputFilter"
+                      placeholder="Search Fields"
+                      clearable
+                      color="primary"
+                      prepend-inner-icon="search"
+                      filled
+                      dense
+                      class="mt-3"
+                      single-line
+                    >
+                    </v-text-field>
+                    <v-data-table
+                      :headers="headers"
+                      :search="inputFilter"
+                      show-select
+                      hide-default-header
+                      fixed-header
+                      hide-default-footer
+                      v-model="selected"
+                      :items="desserts"
+                      item-key="name"
+                      height="300px"
+                      class="grey lighten-5"
+                    >
+                    </v-data-table>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+
             <v-row class="mt-5">
               <v-col>
                 <p class="subTitleObjectStyle">Submission Date</p>
@@ -244,19 +276,18 @@
               </small>
             </div>
 
-            <!--<v-card-actions class="justify-center">
-      <v-btn
-        class="mb-5 mr-5 exportButtonStyle"
-        color="primary"
-        @click="callExport"
-      >
-        <span>Export</span>
-      </v-btn>
-      <v-btn class="mb-5 cancelButtonStyle" outlined @click="dialog = false">
-        <span>Cancel</span>
-      </v-btn>
-    </v-card-actions>
-    -->
+            <v-card-actions class="justify-center">
+              <v-btn
+                class="mb-5 mr-5 exportButtonStyle"
+                color="primary"
+                @click="callExport"
+              >
+                <span>Export</span>
+              </v-btn>
+              <v-btn class="mb-5 cancelButtonStyle" outlined @click="dialog = false">
+                <span>Cancel</span>
+              </v-btn>
+            </v-card-actions>
           </v-col>
         </v-row>
       </v-col>
@@ -267,7 +298,7 @@
 <script>
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
-import formService from '@/services/formService.js';
+//import formService from '@/services/formService.js';
 import { FormPermissions } from '@/utils/constants';
 import {
   faXmark,
@@ -299,6 +330,65 @@ export default {
       versionSelected: 0,
       csvTemplates: 'flattenedWithBlankOut',
       versions: [],
+      selectedDataFields:false,
+      allDataFields:false,
+      inputFilter:'',
+      select: ['Vuetify', 'Programming'],
+      items: [
+        'Programming',
+        'Design',
+        'Vue',
+        'Vuetify',
+      ],
+      singleSelect: false,
+      selected: [],
+      headers: [
+        {
+          text: 'Dessert (100g serving)',
+          align: 'start',
+          sortable: false,
+          value: 'name',
+        },
+        { text: 'Calories', value: 'calories' },
+        { text: 'Fat (g)', value: 'fat' },
+        { text: 'Carbs (g)', value: 'carbs' },
+        { text: 'Protein (g)', value: 'protein' },
+        { text: 'Iron (%)', value: 'iron' },
+      ],
+      desserts: [
+        {
+          name: 'Frozen Yogurt',
+          calories: 159,
+          fat: 6.0,
+          carbs: 24,
+          protein: 4.0,
+          iron: 1,
+        },
+        {
+          name: 'Ice cream sandwich',
+          calories: 237,
+          fat: 9.0,
+          carbs: 37,
+          protein: 4.3,
+          iron: 1,
+        },
+        {
+          name: 'Eclair',
+          calories: 262,
+          fat: 16.0,
+          carbs: 23,
+          protein: 6.0,
+          iron: 7,
+        },
+        {
+          name: 'Cupcake',
+          calories: 305,
+          fat: 3.7,
+          carbs: 67,
+          protein: 4.3,
+          iron: 8,
+        },
+      ],
     };
   },
   computed: {
@@ -311,17 +401,32 @@ export default {
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
+    FILTER_HEADERS() {
+      return null;
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['getFormPreferencesForCurrentUser']),
-    openExportDialog() {
-      this.dialog = true;
-      this.updateVersions();
-      this.getFormPreferencesForCurrentUser(this.form.id);
+    ...mapActions('form', ['fetchForm','fetchFormFields']),
+    onAllDataFieldsSwitchChange() {
+      if(this.allDataFields) {
+        this.selected.push(...this.desserts);
+        this.selectedDataFields=false;
+      }
+      else {
+        this.selected=[];
+      }
+
+    },
+    onSelectedFieldsSwitchChange() {
+      if(this.selectedDataFields) {
+        this.selected=[];
+        this.allDataFields=false;
+      }
+
     },
     async callExport() {
-      try {
+      /*try {
         // UTC start of selected start date...
         const from =
           this.dateRange && this.startDate
@@ -375,6 +480,8 @@ export default {
           consoleError: `Error export submissions for ${this.form.id}: ${error}`,
         });
       }
+      */
+      console.log('-------------------->>> ',this.userFormPreferences);
     },
     canViewSubmissions() {
       const perms = [
@@ -386,6 +493,7 @@ export default {
     updateVersions() {
       this.versions = [];
       if (this.form && this.form.versions) {
+        console.log('I am here------->>> ', this.form);
         this.versions.push(
           ...this.form.versions.map((version) => version.version)
         );
@@ -396,6 +504,9 @@ export default {
         }
       }
     },
+  },
+  mounted() {
+    this.fetchForm(this.formId);
   },
 
   watch: {
