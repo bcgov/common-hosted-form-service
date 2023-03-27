@@ -54,8 +54,9 @@
                 <v-select
                   item-text="id"
                   item-value="version"
-                  :items="versions"
                   v-model="versionSelected"
+                  :items="versions"
+                  @change="changeVersions"
                   class="mt-0"
                   style="width: 25%; margin-top: 0px"
                 ></v-select>
@@ -100,9 +101,10 @@
                       fixed-header
                       hide-default-footer
                       v-model="selected"
-                      :items="desserts"
+                      :items="FILTER_HEADERS"
                       item-key="name"
                       height="300px"
+                      :custom-filter="searchWithCustom"
                       class="grey lighten-5"
                     >
                     </v-data-table>
@@ -228,20 +230,6 @@
                         </div></span
                       >
                     </template>
-
-                    <sup>
-                      Betas
-                      <font-awesome-icon
-                        icon="fa-solid fa-circle-info"
-                        size="xl"
-                        color="#1A5A96"
-                      />
-                      <font-awesome-icon
-                        icon="fa-solid fa-info"
-                        size="xl"
-                        color="#1A5A96"
-                      />
-                    </sup>
                   </v-radio>
                   <v-radio label="B" value="flattenedWithFilled">
                     <template v-slot:label>
@@ -328,65 +316,21 @@ export default {
       startDate: moment(Date()).format('YYYY-MM-DD'),
       startDateMenu: false,
       versionSelected: 0,
+      versionSelectedId:'',
       csvTemplates: 'flattenedWithBlankOut',
       versions: [],
       selectedDataFields:false,
       allDataFields:false,
       inputFilter:'',
       select: ['Vuetify', 'Programming'],
-      items: [
-        'Programming',
-        'Design',
-        'Vue',
-        'Vuetify',
-      ],
       singleSelect: false,
       selected: [],
       headers: [
         {
-          text: 'Dessert (100g serving)',
+          text: 'Fields',
           align: 'start',
-          sortable: false,
+          sortable: true,
           value: 'name',
-        },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
-        { text: 'Iron (%)', value: 'iron' },
-      ],
-      desserts: [
-        {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: 1,
-        },
-        {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: 1,
-        },
-        {
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: 7,
-        },
-        {
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: 8,
         },
       ],
     };
@@ -397,12 +341,12 @@ export default {
       let momentString = momentObj.format('YYYY-MM-DD');
       return momentString;
     },
-    ...mapGetters('form', ['form', 'userFormPreferences', 'permissions']),
+    ...mapGetters('form', ['form', 'userFormPreferences', 'permissions', 'formFields']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
     FILTER_HEADERS() {
-      return null;
+      return this.formFields.map(field=>({ name: field, value: field, align: 'start' }));
     },
   },
   methods: {
@@ -410,7 +354,7 @@ export default {
     ...mapActions('form', ['fetchForm','fetchFormFields']),
     onAllDataFieldsSwitchChange() {
       if(this.allDataFields) {
-        this.selected.push(...this.desserts);
+        this.selected.push(...this.FILTER_HEADERS);
         this.selectedDataFields=false;
       }
       else {
@@ -418,12 +362,23 @@ export default {
       }
 
     },
+    searchWithCustom(value, search, item) {
+      if(value.startsWith(search.toLowerCase()))
+        return item;
+    },
+    async changeVersions() {
+      this.updateVersions();
+      this.getVersionid();
+      await this.fetchFormFields({
+        formId: this.formId,
+        formVersionId: this.versionSelectedId,
+      });
+    },
     onSelectedFieldsSwitchChange() {
       if(this.selectedDataFields) {
         this.selected=[];
         this.allDataFields=false;
       }
-
     },
     async callExport() {
       /*try {
@@ -481,7 +436,6 @@ export default {
         });
       }
       */
-      console.log('-------------------->>> ',this.userFormPreferences);
     },
     canViewSubmissions() {
       const perms = [
@@ -490,22 +444,26 @@ export default {
       ];
       return this.permissions.some((p) => perms.includes(p));
     },
-    updateVersions() {
+    async updateVersions() {
       this.versions = [];
       if (this.form && this.form.versions) {
-        console.log('I am here------->>> ', this.form);
+        this.form.versions.sort((a, b)=>a.version < b.version ? -1 : (a.version > b.version ? 1 : 0));
         this.versions.push(
           ...this.form.versions.map((version) => version.version)
         );
-        if (this.exportFormat === 'json') {
-          this.versions.push('All');
-        } else {
-          this.versionSelected = this.versions.sort((a, b) => a < b)[0];
-        }
+        this.versionSelected = this.versions[0];
       }
     },
+    getVersionid() {
+      let version = this.form.versions.find(version=>{
+        if(version.version===this.versionSelected) {
+          return version;
+        }
+      });
+      this.versionSelectedId = version.id;
+    }
   },
-  mounted() {
+  async mounted() {
     this.fetchForm(this.formId);
   },
 
@@ -515,7 +473,7 @@ export default {
     },
     async exportFormat() {
       if (this.exportFormat === 'csv') {
-        this.updateVersions();
+        this.changeVersions();
       }
     },
     dateRange(value) {
