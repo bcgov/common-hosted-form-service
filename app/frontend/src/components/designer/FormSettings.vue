@@ -737,9 +737,7 @@ export default {
           'enabled': null,
           'repeatUntil': null,
           'everyTerm': null,
-          'onSpecificDay': null,
-          'everyIntervalType': null,
-          'keepAliveFor': null
+          'everyIntervalType': null
         },
         this.schedule.allowLateSubmissions = {
           'enabled': null,
@@ -758,9 +756,7 @@ export default {
           'enabled': null,
           'repeatUntil': null,
           'everyTerm': null,
-          'onSpecificDay': null,
-          'everyIntervalType': null,
-          'keepAliveFor': null
+          'everyIntervalType': null
         },
         this.schedule.allowLateSubmissions = {
           'enabled': null,
