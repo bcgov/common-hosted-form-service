@@ -276,7 +276,11 @@ export default {
         },
         {
           value: 'actions'
+        },
+        {
+          value: 'event'
         }
+
       ],
       loading: true,
       restoreItem: {},
