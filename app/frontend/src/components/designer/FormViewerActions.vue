@@ -3,9 +3,8 @@
     <v-col v-if="formId">
       <ul id="menu">
         <li class="active">
-          <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
-            <span>Bulk Submissions</span>
-          </router-link>
+          <span v-if="!bulkFile" >Single submission</span>
+          <span v-else>Bulk submission</span>
         </li>
         <li>
           <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
@@ -16,13 +15,6 @@
       </ul>
     </v-col>
     <v-col class="text-right">
-
-      <span v-if="allowSubmitterToUploadFile" class="ml-2">
-        <v-btn @click="switchView" color="primary">
-          <span v-if="!bulkFile" >Switch to bulk submission</span>
-          <span v-else>Switch to single submission</span>
-        </v-btn>
-      </span>
 
       <!-- Save a draft -->
       <span v-if="canSaveDraft && draftEnabled" class="ml-2">

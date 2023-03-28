@@ -1,92 +1,97 @@
 <template>
-  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-    <div v-if="displayTitle">
-      <div v-if="!isFormPublic(form)">
-        <FormViewerActions
-          :block="block"
-          :draftEnabled="form.enableSubmitterDraft"
-          :formId="form.id"
-          :isDraft="submissionRecord.draft"
-          :permissions="permissions"
-          :readOnly="readOnly"
-          :submissionId="submissionId"
-          :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
-          :bulkFile="bulkFile"
-          @save-draft="saveDraft"
-          @switchView="bulkFile=!bulkFile"
-        />
-      </div>
-      <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }} </h1>
-    </div>
-    <div class="form-wrapper">
-      <v-alert
-        :value="saved || saving"
-        :class="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.class
-            : NOTIFICATIONS_TYPES.SUCCESS.class
-        "
-        :color="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.color
-            : NOTIFICATIONS_TYPES.SUCCESS.color
-        "
-        :icon="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.icon
-            : NOTIFICATIONS_TYPES.SUCCESS.icon
-        "
-        transition="scale-transition"
-      >
-        <div v-if="saving">
-          <v-progress-linear indeterminate />
-          Saving
+  <div>
+    <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+      <div v-if="displayTitle">
+        <div v-if="!isFormPublic(form)">
+          <FormViewerActions
+            :block="block"
+            :draftEnabled="form.enableSubmitterDraft"
+            :formId="form.id"
+            :isDraft="submissionRecord.draft"
+            :permissions="permissions"
+            :readOnly="readOnly"
+            :submissionId="submissionId"
+            :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+            :bulkFile="bulkFile"
+            @save-draft="saveDraft"
+            @switchView="bulkFile=!bulkFile"
+          />
         </div>
-        <div v-else>Draft Saved</div>
-      </v-alert>
-
-      <slot name="alert" v-bind:form="form" />
-
-      <BaseDialog
-        v-model="showSubmitConfirmDialog"
-        type="CONTINUE"
-        :enableCustomButton="canSaveDraft"
-        @close-dialog="showSubmitConfirmDialog = false"
-        @continue-dialog="continueSubmit"
-      >
-        <template #title>Please Confirm</template>
-        <template #text>Are you sure you wish to submit your form?</template>
-        <template #button-text-continue>
-          <span>Submit</span>
-        </template>
-      </BaseDialog>
-      <div v-if="allowSubmitterToUploadFile && bulkFile" >
-        <FormViewerDownloadButton
-          :response="sbdMessage"
-          :formElement="formElement"
-          :form="form"
-          :formSchema="formSchema"
-          :json_csv="json_csv"
-          @save-bulk-data="saveBulkData"
-          @reset-message="resetMessage"
-          @set-error="setError"
-          :formFields="formFields" />
+        <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }} </h1>
       </div>
-      <Form
-        v-if="!bulkFile"
-        ref="chefForm"
-        :form="formSchema"
-        :key="reRenderFormIo"
-        :submission="submission"
-        @submit="onSubmit"
-        @submitDone="onSubmitDone"
-        @submitButton="onSubmitButton"
-        @customEvent="onCustomEvent"
-        :options="viewerOptions"
-      />
-      <p v-if="version" class="text-right">Version: {{ version }}</p>
-    </div>
-  </v-skeleton-loader>
+      <div class="form-wrapper">
+        <v-alert
+          :value="saved || saving"
+          :class="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.class
+              : NOTIFICATIONS_TYPES.SUCCESS.class
+          "
+          :color="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.color
+              : NOTIFICATIONS_TYPES.SUCCESS.color
+          "
+          :icon="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.icon
+              : NOTIFICATIONS_TYPES.SUCCESS.icon
+          "
+          transition="scale-transition"
+        >
+          <div v-if="saving">
+            <v-progress-linear indeterminate />
+            Saving
+          </div>
+          <div v-else>Draft Saved</div>
+        </v-alert>
+
+        <slot name="alert" v-bind:form="form" />
+
+        <BaseDialog
+          v-model="showSubmitConfirmDialog"
+          type="CONTINUE"
+          :enableCustomButton="canSaveDraft"
+          @close-dialog="showSubmitConfirmDialog = false"
+          @continue-dialog="continueSubmit"
+        >
+          <template #title>Please Confirm</template>
+          <template #text>Are you sure you wish to submit your form?</template>
+          <template #button-text-continue>
+            <span>Submit</span>
+          </template>
+        </BaseDialog>
+        <div v-if="allowSubmitterToUploadFile && bulkFile" >
+          <FormViewerDownloadButton
+            :response="sbdMessage"
+            :formElement="formElement"
+            :form="form"
+            :formSchema="formSchema"
+            :json_csv="json_csv"
+            @save-bulk-data="saveBulkData"
+            @reset-message="resetMessage"
+            @set-error="setError"
+            :formFields="formFields" />
+        </div>
+        <Form
+          v-if="!bulkFile"
+          ref="chefForm"
+          :form="formSchema"
+          :key="reRenderFormIo"
+          :submission="submission"
+          @submit="onSubmit"
+          @submitDone="onSubmitDone"
+          @submitButton="onSubmitButton"
+          @customEvent="onCustomEvent"
+          :options="viewerOptions"
+        />
+        <p v-if="version" class="text-right">Version: {{ version }}</p>
+      </div>
+      <FormBulkDialog @set-bulk-file="setBulkFile"/>
+    </v-skeleton-loader>
+ 
+  </div>
+
 </template>
 
 <script>
@@ -100,10 +105,12 @@ import FormViewerDownloadButton from '@/components/designer/FormViewerDownloadBu
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
+import FormBulkDialog  from '@/components/designer/FormBulkDialog.vue';
 
 export default {
   name: 'FormViewer',
   components: {
+    FormBulkDialog,
     Form,
     FormViewerActions,
     FormViewerDownloadButton
@@ -157,9 +164,10 @@ export default {
       },
       bulkFile: false,
       formElement: undefined,
-      sbdMessage:{
+      sbdMessage: {
         message: String,
-        error: Boolean
+        error: Boolean,
+        upload_state:Number
       },
       block:false
     };
@@ -203,6 +211,10 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     isFormPublic: isFormPublic,
+    // setBulkFile 
+    setBulkFile(state){
+      this.bulkFile = state;
+    },
     // Get the data for a form submission
     getCurrentAuthHeader() {
       return `Bearer ${this.token}`;
@@ -295,6 +307,7 @@ export default {
     resetMessage(){
       this.sbdMessage.message = undefined;
       this.sbdMessage.error = false;
+      this.sbdMessage.upload_state = 0;
       this.block = false;
     },
     async saveBulkData(submissions){
@@ -318,6 +331,7 @@ export default {
           // store our submission result...
           this.sbdMessage.message = 'The file was successfully uploaded';
           this.sbdMessage.error = false;
+          this.sbdMessage.upload_state = 10;
           this.block = false;
           this.addNotification({
             message: this.sbdMessage.message,
@@ -328,12 +342,14 @@ export default {
           // console.error(response); // eslint-disable-line no-console
           this.sbdMessage.message = `Failed response from submission endpoint. Response code: ${response.status}`;
           this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
           this.block = false;
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
         this.sbdMessage.message = 'An error occurred submitting this form';
         this.sbdMessage.error = true;
+        this.sbdMessage.upload_state = 10;
         this.block = false;
         this.addNotification({
           message: this.sbdMessage.message ,
@@ -546,6 +562,7 @@ export default {
     if (!this.preview && !this.readOnly) {
       window.onbeforeunload = () => true;
     }
+    this.resetMessage();
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change

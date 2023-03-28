@@ -108,6 +108,7 @@
           <template #title>Form Functionality</template>
           <v-checkbox
             class="my-0"
+            @change="enableSubmitterDraftChanged"
             v-model="enableSubmitterDraft"
             :disabled="userType === ID_MODE.PUBLIC"
           >
@@ -128,7 +129,7 @@
             </template>
           </v-checkbox>
 
-          <v-checkbox :disabled="userType === ID_MODE.PUBLIC" class="my-0" v-model="allowSubmitterToUploadFile">
+          <v-checkbox :disabled="!enableSubmitterDraft" class="my-0" v-model="allowSubmitterToUploadFile">
             <template #label>
               <span>
                 Allow <strong> bulk submission </strong> upload
@@ -154,6 +155,14 @@
               </span>
             </template>
           </v-checkbox>
+          <BaseInfoCard v-if="!enableSubmitterDraft" class="mr-4" >
+            <h4 class="primary--text">
+              <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+            </h4>
+            <p class="my-2">
+              Please to enable this option <span>save and Edit draft</span> must be selected
+            </p>
+          </BaseInfoCard>
         </BasePanel>
       </v-col>
 
@@ -300,6 +309,7 @@ export default {
     ID_PROVIDERS() {
       return IdentityProviders;
     },
+
   },
   methods: {
     ...mapActions('form', ['fetchForm']),
@@ -310,6 +320,11 @@ export default {
         this.allowSubmitterToUploadFile = false;
       }
     },
+    enableSubmitterDraftChanged(){
+      if(!this.enableSubmitterDraft){
+        this.allowSubmitterToUploadFile = false;
+      }
+    }
   },
 };
 </script>

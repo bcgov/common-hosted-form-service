@@ -6,6 +6,7 @@
       </span>
     </div>
 
+
     <v-row v-if="file" class="mt-4 fileinfo">
       <v-col cols="12" md="6">
         <label>{{ file.name }}</label>
@@ -21,14 +22,8 @@
 <script>
 
 export default {
-  name: 'ProgressBar',
-  components: {
-  },
+  name: 'ModalBulk',
   props: {
-    value:Number,
-    max:Number,
-    error:Boolean,
-    file: File
   },
   data() {
     return {

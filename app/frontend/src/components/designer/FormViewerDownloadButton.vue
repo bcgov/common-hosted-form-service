@@ -1,80 +1,86 @@
 <template>
   <div class="file-upload">
-    <div v-if="json_csv.data" class="download-box" >
-      <p class="head-title">
-        <v-icon color="primary" >information_outline</v-icon>
-        <span>IMPORTANT!</span>
-      </p>
-      <div class="alert-text">
-        In order to successfully complete bulk submissions, please download the instructions and the template.
-        <span class="link">
-          <vue-blob-json-csv
-            tag-name="i"
-            file-type="json"
-            :file-name="json_csv.file_name"
-            title="Download   "
-            :data="json_csv.data"
-            confirm="Do you want to download it?"
-          />
-          <v-icon class='mr-1' color='#003366'>download</v-icon>
-        </span>
+    <v-row>
+      <BaseInfoCard v-if="json_csv.data" class="mb-4" >
+        <h4 class="primary--text">
+          <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+        </h4>
+        <p class="my-2">
+          In order to successfully complete bulk submissions, please download the instructions and the template.
+          <span class="link">
+            <vue-blob-json-csv
+              tag-name="i"
+              file-type="json"
+              :file-name="json_csv.file_name"
+              title="Download   "
+              :data="json_csv.data"
+              confirm="Do you want to download it?"
+            />
+            <v-icon class='mr-1' color='#003366'>download</v-icon>
+          </span>
+        </p>
+      </BaseInfoCard>
+    </v-row>
+    <v-row>
+      <h3>{{form.name}}</h3>
+      <div v-if="!file" class="drop-zone" @click="handleFile" v-cloak @drop.prevent="addFile($event,0)" @dragover.prevent>
+        <v-icon class="mr-1 " color="#003366">upload</v-icon>
+        <h1>Select JSON file to upload </h1>
+        <p>or drag and drop it here</p>
+        <input class="drop-zone__input" ref="file" accept=".json" type="file" @change="addFile($event,1)" name="file" />
       </div>
-    </div>
-    <h3>{{form.name}}</h3>
-
-    <div v-if="!file" class="drop-zone" @click="handleFile" v-cloak @drop.prevent="addFile($event,0)" @dragover.prevent>
-      <v-icon class="mr-1 " color="#003366">upload</v-icon>
-      <h1>Select JSON file to upload </h1>
-      <p>or drag and drop it here</p>
-      <input class="drop-zone__input" ref="file" accept=".json" type="file" @change="addFile($event,1)" name="file" />
-    </div>
-
-    <div v-if="file" class="worker-zone">
-      <div class="wz-top">
-        <ProgressBar :value="value" :max="max" :error="error" :file="file" />
-      </div>
-      <div class="wz-bottom">
-        <div class="message-block" v-if="!progress" >
-          <span>Report: </span>
-          <p :class="txt_color">
-            <v-icon v-if="response.error" color="red">close</v-icon>
-            <v-icon v-if="!response.error" color="green">check</v-icon>
-            {{ response.message }}
-            <ul v-if="response.error && report.length>0" >
-              <li></li>
+      <div v-if="file" class="worker-zone">
+        <div class="wz-top">
+          <v-progress-linear v-model="value" color="blue-grey" height="25">
+            <template v-slot:default="{ value }">
+              <strong>{{ value }}%</strong>
+            </template>
+          </v-progress-linear>
+          <v-row class="fileinfo">
+            <v-col cols="12" md="6">
+              <label class="label-left">{{ file.name }}</label>
+            </v-col>
+            <v-col cols="12" md="6">
+              <label class="label-right">{{ fileSize }}</label>
+            </v-col>
+          </v-row>
+        </div>
+        <div class="wz-bottom">
+          <div class="message-block" v-if="!progress && response.upload_state==10" >
+            <span>Report: </span>
+            <p :class="txt_color">
+              <v-icon v-if="response.error" color="red">close</v-icon>
+              <v-icon v-if="!response.error" color="green">check</v-icon>
+              {{ response.message }}
+            </p>
+            <ul v-if="response.error && globalError.length>0" class="list-error">
+              <li v-for="item in globalError" v-bind:key="item.index" >
+                Submission {{ (item.index+1) }}
+                <ul v-if="item.errors.length>0" >
+                  <li v-for="(error, index) in item.errors" v-bind:key="index"> {{ error }}</li>
+                </ul>
+              </li>
             </ul>
-          </p>
+          </div>
         </div>
-        <hr v-if="error && report.length>0" />
-        <div class="alert-text" v-if="error && report.length>0" >
-          Please download the submission report and ensure that the data is entered correctly
-          <span @click="downloadCsvFile()" class="link">Download report <v-icon class="mr-1 " color="#003366">
-            download</v-icon>
-          </span>
-        </div>
+        <v-row v-if="file && !progress">
+          <v-col cols="12" md="12">
+            <span class="m-2 pull-right ">
+              <v-btn @click="resetUpload" color="primary">
+                <span>Upload new file</span>
+              </v-btn>
+            </span>
+          </v-col>
+        </v-row>
       </div>
-      <v-row v-if="file && !progress">
-        <v-col cols="12" md="12">
-          <span class="m-2 pull-right ">
-            <v-btn @click="resetUpload" color="primary">
-              <span>Upload new file</span>
-            </v-btn>
-          </span>
-        </v-col>
-      </v-row>
-    </div>
-
+    </v-row>
   </div>
 </template>
 <script>
 import {  mapActions,mapGetters } from 'vuex';
-import exportFromJSON from 'export-from-json';
-import ProgressBar from '@/components/designer/ProgressBar.vue';
-// import { Formio } from 'formiojs';
 export default {
   name: 'FormViewerDownloadButton',
   components: {
-    ProgressBar
   },
   props: {
     formElement: undefined,
@@ -84,7 +90,8 @@ export default {
     block:Boolean,
     response:{
       message: String,
-      error: Boolean
+      error: Boolean,
+      upload_state:Number
     },
     json_csv : {
       data: [],
@@ -101,8 +108,6 @@ export default {
       value:0,
       max: 100,
       upload_state : 0,
-      error: false,
-      report : ['test'],
       index:0,
       globalError :[],
       progress: false
@@ -113,16 +118,15 @@ export default {
     txt_color(){
       if(!this.error) return 'success-text';
       else return 'fail-text';
+    },
+    fileSize(){
+      if(this.file.size< 1024) return this.file.size.toFixed(2)+' bytes';
+      if(this.file.size< 1024 * 1024) return (this.file.size / 1024).toFixed(2)+' KB';
+      return (this.file.size / (1024 *1024)).toFixed(2)+' MB';
     }
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    downloadCsvFile() {
-      const data = this.json_csv.data;
-      const fileName = this.json_csv.file_name;
-      const exportType = exportFromJSON.types.csv;
-      if (data) exportFromJSON({ data, fileName, exportType });
-    },
     addFile(e,type) {
       if(this.block){ return;}
 
@@ -162,7 +166,7 @@ export default {
     },
     parseFile(){
 
-      try{
+      try {
         let reader = new FileReader();
         reader.onload = function(e) {
           this.Json = JSON.parse(e.target.result);
@@ -173,6 +177,7 @@ export default {
         };
         reader.readAsText(this.file);
       }catch(e){
+        this.resetUpload();
         this.addNotification({message:e,consoleError: e,});
       }
     },
@@ -180,11 +185,13 @@ export default {
       try {
 
         if(!Array.isArray(this.Json)){
+          this.resetUpload();
           this.addNotification({message:'An unexpected error occurred.',consoleError: 'An unexpected error occurred.'});
           return;
         }
         if(this.Json.length==0){
-          this.addNotification({message:'this json file is empty.',consoleError: 'this file is empty.'});
+          this.resetUpload();
+          this.addNotification({message:'This json file is empty.',consoleError: 'this file is empty.'});
           return;
         }
         this.globalError = [];
@@ -193,8 +200,8 @@ export default {
         this.progress = true;
         this.validate(this.Json[this.index]);
       } catch (error) {
-        this.file = undefined;
-        this.$emit('set-error', {error:true, message:'there is something wrong with this file' } );
+        this.resetUpload();
+        this.$emit('set-error', {error:true, message:'There is something wrong with this file' } );
         this.addNotification({message:'there is something wrong with this file',consoleError: error,});
         return;
       }
@@ -225,18 +232,37 @@ export default {
       }.bind(this), 25);
     },
     pourcentage(i){
-      let ndata = this.Json.length;
-      if(ndata>0){
-        return Math.ceil((i * this.max) / ndata);
+      let number_of_submission = this.Json.length;
+      if(number_of_submission>0){
+        return Math.ceil((i * this.max) / number_of_submission);
       }
       return 0;
     },
     endValidation(){
       this.progress = false;
+      this.globalError = [{
+        index: 0,
+        errors:  [
+          'Error 1 ','Error 2 '
+        ]
+      },
+      {
+        index: 1,
+        errors:  [
+          'Error 1 ','Error 2 '
+        ]
+      },
+      {
+        index: 2,
+        errors:  [
+          'Error 1 ','Error 2 '
+        ]
+      }
+      ];
       if(this.globalError.length==0){
-        this.report = this.globalError;
-        this.error = false;
         this.$emit('save-bulk-data', this.Json );
+      } else {
+        this.$emit('set-error', { message: 'Some errors found, see below for more information.', error: true, upload_state: 10});
       }
     },
     resetUpload(){
@@ -268,60 +294,8 @@ export default {
   display: block;
   margin-top: 3%;
   // border: #003366 1px solid;
-  .download-box {
-    position: relative;
-    width: 72%;
-    min-height:64px;
-    display: block;
-    margin-bottom: 3%;
-    border: 0.01px ridge #38598a;
-    border-left: 30px solid #38598a;
-    padding-left:0.5%;
-    padding-top: 0.5%;
-    padding-bottom: 0.5%;
-    .link{
-      color: #003366;
-    }
-    .head-title {
-      width:100%;
-      height: 30px;
-      display: inline-block;
-      padding:0%;
-      margin: 0%;
-      span {
-        position:absolute;
-        left:35px;
-        text-align: left;
-        font-size:13px;
-        font-weight: 100;
-        color:#003366;
-        display: inline-block;
-      }
-      i {
-        position:absolute;
-        text-align: left;
-        margin:none;
-        padding:none;
-        display: inline-block;
-      }
-    }
-    .alert-text{
-      width:100%;
-      height: 30px;
-      display: inline-block;
-      padding:0%;
-      margin: 0%;
-      font-weight: 300;
-      span {
-        width:100%;
-        font-size:14px;
-        font-weight:bold;
-        display: inline;
-      }
-    }
-
-  }
-  h3{
+  h3 {
+    width: 100%;
     color:#38598a;
   }
   .worker-zone {
@@ -344,6 +318,26 @@ export default {
       margin-right: auto;
       display:inline-block;
       padding:0;
+      padding-top: 2%;
+      .fileinfo{
+        position: relative;
+        width:100%;
+        margin-top: 0.5%;
+        padding: 1px;
+        label {
+          font-size: 12px;
+          color: #38598a;
+        }
+        .label-right{
+          text-align:right;
+          float: right;
+        }
+        .label-left{
+          text-align:left;
+          float: left;
+        }
+      }
+
     }
     .wz-bottom {
       width: 98%;
@@ -372,6 +366,7 @@ export default {
         width: 12%;
         margin:0.5%;
         padding:none;
+        font-size: 17px;
        }
         p {
          float: right;
@@ -379,10 +374,21 @@ export default {
          margin:0.5%;
          text-align: left;
          padding:0;
+         font-size: 15px;
          i{
             margin: 0;
             padding:0;
          }
+       }
+       .list-error{
+          color: #003366;
+          font-size: 15px;
+           ul {
+               li {
+                color: #38598a;
+                font-size: 12px;
+               }
+           }
        }
       }
       hr {
