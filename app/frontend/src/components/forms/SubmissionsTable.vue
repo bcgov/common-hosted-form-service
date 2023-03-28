@@ -276,7 +276,11 @@ export default {
         },
         {
           value: 'actions'
+        },
+        {
+          value: 'event'
         }
+
       ],
       loading: true,
       restoreItem: {},
@@ -376,7 +380,12 @@ export default {
       return headers;
     },
     FILTER_HEADERS() {
-      return this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value)).concat(this.formFields.map((ff) => { return { text: ff, value: ff }; }));
+      let filteredHeader = this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value))
+        .concat(this.formFields.map((ff) => { return { text: ff, value: ff, align: 'end' }; }));
+
+      return  filteredHeader.filter(function(item, index, inputArray) {
+        return inputArray.findIndex(arrayItem=>arrayItem.value===item.value) == index;
+      });
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
@@ -427,7 +436,7 @@ export default {
     async deleteMultiSubs() {
       let submissionsIdsToDelete = this.selectedSubmissions.map(submission=>submission.submissionId);
       this.showDeleteDialog = false;
-      await this.deleteMultiSubmissions({submissionIds:submissionsIdsToDelete, formId:this.form.id});
+      await this.deleteMultiSubmissions({submissionIds:submissionsIdsToDelete, formId:this.formId});
       this.refreshSubmissions();
     },
 
@@ -495,7 +504,7 @@ export default {
     async restoreMultipleSubs() {
       let submissionsIdsToRestore = this.selectedSubmissions.map(submission=>submission.submissionId);
       this.showRestoreDialog = false;
-      await this.restoreMultiSubmissions({submissionIds:submissionsIdsToRestore, formId:this.form.id});
+      await this.restoreMultiSubmissions({submissionIds:submissionsIdsToRestore, formId:this.formId});
       this.refreshSubmissions();
       this.selectedSubmissions = [];
     },
