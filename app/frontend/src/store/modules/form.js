@@ -19,7 +19,6 @@ const genInitialSchedule = () => ({
     'onSpecificDay': null,
     'everyIntervalType': null,
     'keepAliveFor': null,
-
   },
   'allowLateSubmissions': {
     'enabled': null,
@@ -30,9 +29,7 @@ const genInitialSchedule = () => ({
   }
 });
 const genInitialReminder = () => ({
-  'enabled':false,
-  'allowAdditionalNotifications': true,
-  'intervalType': null
+  'enabled':false
 });
 const genInitialForm = () => ({
   description: '',
