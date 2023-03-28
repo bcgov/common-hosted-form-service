@@ -100,7 +100,7 @@ describe('checkIfInMiddleOfThePeriod', () => {
     const now = moment('2023-02-03');
     const days_diff = 5;
     const start_date = moment('2023-02-01');
-    const result = reminderService.checkIfInMiddleOfThePeriod(null, now, start_date,  days_diff );
+    const result = reminderService.checkIfInMiddleOfThePeriod(now,start_date,days_diff);
     expect(result).toEqual(false);
   });
 
@@ -108,7 +108,7 @@ describe('checkIfInMiddleOfThePeriod', () => {
     const now = moment('2023-02-06');
     const days_diff = 10;
     const start_date = moment('2023-02-01');
-    const result = reminderService.checkIfInMiddleOfThePeriod(null, now, start_date,  days_diff );
+    const result = reminderService.checkIfInMiddleOfThePeriod(now,start_date,days_diff);
     expect(result).toEqual(true);
   });
 
