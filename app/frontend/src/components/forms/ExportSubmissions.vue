@@ -62,22 +62,25 @@
                 ></v-select>
               </v-col>
             </v-row>
-            <v-row class="mt-5">
+            <v-row class="mt-5" v-if="exportFormat === 'csv'">
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
                 <v-switch
                   v-model="allDataFields"
                   label="All data/fields`"
                   @change="onAllDataFieldsSwitchChange"
+
                 ></v-switch>
                 <v-switch
                   v-model="selectedDataFields"
                   label="Selected data/fields`"
                   @change="onSelectedFieldsSwitchChange"
+                  :disabled="allDataFields"
+                  class="mt-0 pt-0"
                 ></v-switch>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row class="mt-0 pt-0" v-if="exportFormat === 'csv'">
               <v-col>
                 <v-row>
                   <v-col cols="7">
@@ -89,7 +92,7 @@
                       prepend-inner-icon="search"
                       filled
                       dense
-                      class="mt-3"
+                      class="mt-3 submissions-table"
                       single-line
                     >
                     </v-text-field>
@@ -105,7 +108,7 @@
                       item-key="name"
                       height="300px"
                       :custom-filter="searchWithCustom"
-                      class="grey lighten-5"
+                      class="grey lighten-5 submissions-table"
                     >
                     </v-data-table>
                   </v-col>
@@ -253,18 +256,8 @@
             <div class="mt-6 mb-0 fileLabelStyle">
               File Name and Type: <strong>{{ fileName }}</strong>
             </div>
-            <div class="fileLabelStyle" :style="{ color: '#70707063' }">
-              <small class="text--disabled">
-                * The export data feature works well for simple form designs
-                that don't contain complex nested arrays of form components. If
-                you make changes to your form design the structure of your
-                export will also change. We therefore caution against
-                implementing automation with other systems without accounting
-                for these factors.
-              </small>
-            </div>
 
-            <v-card-actions class="justify-center">
+            <v-card-actions class="mt-5">
               <v-btn
                 class="mb-5 mr-5 exportButtonStyle"
                 color="primary"
@@ -331,6 +324,7 @@ export default {
           align: 'start',
           sortable: true,
           value: 'name',
+          width:'100px'
         },
       ],
     };
@@ -490,6 +484,9 @@ export default {
 
 
 <style lang="scss" scoped>
+.submissions-table{
+  width:500px;
+}
 .titleObjectStyle {
   text-align: left !important;
   font-style: normal !important;
