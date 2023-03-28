@@ -1,20 +1,24 @@
 
-const { getAvailableDates, periodType } = require('../common/utils');
-const exportService  = require('../form/exportService');
+const { getAvailableDates } = require('../common/utils');
 const emailService  = require('./emailService');
-const { Form } = require('../common/models');
 const moment = require('moment');
 const {  EmailTypes, ScheduleType } = require('../common/constants');
 const config = require('config');
 const log = require('../../components/log')(module.filename);
+const {  SubmissionData, UserFormAccess, Form } = require('../common/models');
+const { Roles } = require('../common/constants');
+
 const service = {
   _init: async ()=> {
     const forms = await service._getForms();
+
     const q     = await service._getReminders(forms);
+
     const referer = service._getReferer();
     const resolve = [];
     const errors = [];
     let mail = 0;
+    
     if(q.length!==0) {
       for(let i = 0 ; i < q.length ; i++) {
         if(!q[i].error){
@@ -134,7 +138,6 @@ const service = {
   _getForms: async ()=> {
     let fs = [];
     await Form.query()
-      .modify('hasReminder')
       .modify('reminderEnabled')
       .modify('filterActive', true)
       .then(forms => {
@@ -159,7 +162,8 @@ const service = {
 
       obj.form   = forms[i];
 
-      obj.state = service._getMailType(obj.report, forms[i].reminder, forms[i].schedule.allowLateSubmissions.enabled);
+
+      obj.state = service._getMailType(obj.report, forms[i].schedule.allowLateSubmissions.enabled);
 
       if(obj.state == undefined) {
         reminder.push({ error:true, message : ` Form ${forms[i].name } has no valid date ` });
@@ -169,7 +173,7 @@ const service = {
       reminder.push(
         {
           error : false,
-          statement : await exportService._getListSubmittersByFormId(forms[i].id, obj),
+          statement :  obj ,
           periodType : forms[i].schedule.scheduleType
         }
       );
@@ -177,11 +181,10 @@ const service = {
 
     return reminder;
   },
-  _getMailType : (report, reminder, late) => {
-
-    if(!reminder.enabled) return undefined;
+  _getMailType : (report, late) => {
 
     let state = undefined;
+
     const now = moment().format('YYYY-MM-DD');
     const start_date = moment(report.dates.startDate).format('YYYY-MM-DD');
     const end_date = (late) ? moment(report.dates.graceDate).format('YYYY-MM-DD') : moment(report.dates.closeDate).format('YYYY-MM-DD');
@@ -193,7 +196,7 @@ const service = {
 
     if(report.dates.closeDate==null || days_diff<=3 ) return  state;
 
-    if(service.checkIfInMiddleOfThePeriod(reminder.intervalType, now, start_date, days_diff )){
+    if(service.checkIfInMiddleOfThePeriod(now, start_date, days_diff )){
       return EmailTypes.REMINDER_FORM_NOT_FILL;
     }
 
@@ -205,36 +208,37 @@ const service = {
 
     return state;
   },
-  checkIfInMiddleOfThePeriod : (type, now, start_date,  days_diff )=>{
+  checkIfInMiddleOfThePeriod : ( now, start_date,  days_diff )=>{
     if (days_diff < 6 ) return false;
-
-    if(type!=null && type) {
-      for (const key in periodType) {
-        const interval = moment(now).diff(start_date, periodType[key].regex);
-        if( key==type &&  interval%periodType[key].value==0 ) {
-          return true;
-        }
-      }
-    } else {
-      let interval = Math.floor(days_diff/2);
-      // eslint-disable-next-line no-console
-      let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
-      return moment(now).isSame(mail_date);
-    }
-
-    return false;
+    let interval = Math.floor(days_diff/2);
+    // eslint-disable-next-line no-console
+    let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
+    return moment(now).isSame(mail_date);
   },
-  _runQueries : async (queries) => {
-    let obj = queries[2];
+  _runQueries : async (obj) => {
+
     obj.fillers = [];
-    await queries[0].then(function(data) {
-      obj.submitters = data;
-    });
-    if(obj.submitters && obj.submitters.length>0){
-      await queries[1].then(function(data2) {
-        obj.fillers = (data2) ? data2 : [];
+    await UserFormAccess.query()
+      .select('formVersionId','formName','userId','firstName','lastName', 'email')
+      .where('formId', obj.form.id)
+      .modify('filterActive', true)
+      .modify('filterByAccess', undefined, Roles.FORM_SUBMITTER, undefined)
+      .modify('orderDefault').then(function(data) {
+        obj.submitters = data;
       });
+
+    if(obj.submitters && obj.submitters.length>0){
+      await SubmissionData.query()
+        .select('confirmationId', 'createdAt', 'submissionId', 'formVersionId','userId','firstName','lastName', 'email')
+        .where('formId',obj.form.id)
+        .modify('filterDrafts', false)
+        .modify('filterDeleted', false)
+        .modify('filterCreatedAt', obj.report.dates.startDate, obj.report.dates.graceDate)
+        .modify('orderDefault').then(function(data2) {
+          obj.fillers = (data2) ? data2 : [];
+        });
     }
+
     return  obj;
   },
   getDifference : async (array1, array2) => {

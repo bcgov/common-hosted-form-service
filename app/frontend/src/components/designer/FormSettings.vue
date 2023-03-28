@@ -443,7 +443,7 @@
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
                       <template #title>SEND Reminder email</template>
-                      <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
+                      <v-checkbox class="my-0 m-0 p-0" v-model="reminder_enabled">
                         <template #label>
                           Enable automatic reminder notification
                           <v-tooltip bottom>
@@ -583,7 +583,7 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.schedule',
-      'form.reminder',
+      'form.reminder_enabled',
       'form.versions'
     ]),
     ID_MODE() {
@@ -691,12 +691,6 @@ export default {
     }
   },
   watch: {
-    INTERVAL_OPEN: {
-      deep: true,
-      handler: function (day) {
-        this.reminder.allowAdditionalNotifications = (day<=1) ? false : this.reminder.allowAdditionalNotifications;
-      }
-    },
   },
   methods: {
     ...mapActions('form', ['fetchForm']),
@@ -707,14 +701,14 @@ export default {
         this.enableCopyExistingSubmission = false;
       }
       if (this.userType !== 'team') {
-        this.reminder = {};
+        this.reminder_enabled = false;
       }
     },
     openDateTypeChanged() {
 
       if(isDateValidForMailNotification(this.schedule.openSubmissionDateTime)){
         this.enableReminderDraw=false;
-        this.reminder.enabled = false;
+        this.reminder_enabled = false;
       } else {
         this.enableReminderDraw = true;
       }

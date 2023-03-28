@@ -680,6 +680,7 @@ export default {
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
+        reminder_enabled : false
       });
 
       // Navigate back to this page with ID updated

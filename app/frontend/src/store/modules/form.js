@@ -28,9 +28,7 @@ const genInitialSchedule = () => ({
     }
   }
 });
-const genInitialReminder = () => ({
-  'enabled':false
-});
+
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -43,7 +41,7 @@ const genInitialForm = () => ({
   showSubmissionConfirmation: true,
   snake: '',
   submissionReceivedEmails: [],
-  reminder: genInitialReminder(),
+  reminder_enabled: false ,
   schedule: genInitialSchedule(),
   userType: IdentityMode.TEAM,
   versions: [],
@@ -293,10 +291,6 @@ export default {
           ...data.schedule
         };
 
-        data.reminder = {
-          ...genInitialReminder(),
-          ...data.reminder
-        };
         commit('SET_FORM', data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -353,9 +347,7 @@ export default {
           ...state.form.schedule
         } : {};
 
-        const reminder = state.form.schedule.enabled ? {
-          ...state.form.reminder
-        } : {};
+        // const reminder = state.form.schedule.enabled ?  : false ;
 
         await formService.updateForm(state.form.id, {
           name: state.form.name,
@@ -369,7 +361,7 @@ export default {
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
-          reminder : reminder,
+          reminder_enabled : state.form.reminder_enabled,
           enableCopyExistingSubmission: state.form.enableCopyExistingSubmission
         });
       } catch (error) {
