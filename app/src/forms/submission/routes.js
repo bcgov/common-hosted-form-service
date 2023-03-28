@@ -2,7 +2,7 @@ const routes = require('express').Router();
 
 const controller = require('./controller');
 const P = require('../common/constants').Permissions;
-const { currentUser, hasSubmissionPermissions, canDeleteAndRestoreMultiSubmissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
 
 routes.use(currentUser);
 
@@ -18,7 +18,7 @@ routes.delete('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_DELETE
   await controller.delete(req, res, next);
 });
 
-routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), canDeleteAndRestoreMultiSubmissions(P.SUBMISSION_DELETE), async (req, res, next) => {
+routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.restoreMutipleSubmissions(req, res, next);
 });
 
@@ -59,7 +59,7 @@ routes.post('/:formSubmissionId/template/render', hasSubmissionPermissions(P.SUB
   await controller.templateUploadAndRender(req, res, next);
 });
 
-routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), canDeleteAndRestoreMultiSubmissions(P.SUBMISSION_DELETE), async (req, res, next) => {
+routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.deleteMutipleSubmissions(req, res, next);
 });
 

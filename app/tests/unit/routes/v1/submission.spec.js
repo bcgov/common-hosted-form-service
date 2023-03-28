@@ -15,7 +15,7 @@ userAccess.hasSubmissionPermissions = jest.fn(() => {
     next();
   });
 });
-userAccess.canDeleteAndRestoreMultiSubmissions = jest.fn(() => {
+userAccess.filterMultipleSubmissions = jest.fn(() => {
   return jest.fn((req, res, next) => {
     next();
   });

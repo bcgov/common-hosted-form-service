@@ -8,7 +8,7 @@ class SubmissionData extends Model {
   static get modifiers() {
     return {
       filterVersion(query, value) {
-        if (value && value !== 0) {
+        if (value) {
           query.where('version', value);
         }
       },
