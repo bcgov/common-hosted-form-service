@@ -563,6 +563,151 @@ const encodeURI =(unsafe)=> {
     .replace(textDelimiterRegex, textDelimiter);
 };
 
+const validateScheduleObject = (schedule={}) => {
+  let result = {
+    message: '',
+    status: 'success'
+  };
+
+  if(schedule.enabled){
+    let schType = schedule.scheduleType;
+    let openSubmissionDateTime = schedule.openSubmissionDateTime;
+    if(isDateValid(openSubmissionDateTime)){
+      if(schType === 'closingDate'){
+        
+        if(!isDateValid(schedule.closeSubmissionDateTime)){
+          result = {
+            message: 'Invalid closed submission date.',
+            status: 'error'
+          };
+          return result;
+        }
+
+        if(!isLateSubmissionObjValid(schedule)){
+          result = {
+            message: 'Invalid late submission data.',
+            status: 'error'
+          };
+          return result;
+        }
+
+        if(!isClosingMessageValid(schedule)){
+          result = {
+            message: 'Invalid Closing message.',
+            status: 'error'
+          };
+          return result;
+        }
+      }else if(schType === 'period'){
+        if(!isLateSubmissionObjValid(schedule)){
+          result = {
+            message: 'Invalid late submission date.',
+            status: 'error'
+          };
+          return result;
+        }
+
+        if(!isClosingMessageValid(schedule)){
+          result = {
+            message: 'Invalid Closing message.',
+            status: 'error'
+          };
+          return result;
+        }
+
+        //Check keep open for
+        if(!isKeepOpenForValid(schedule)){
+          result = {
+            message: 'Invalid keep open submission data.',
+            status: 'error'
+          };
+          return result;
+        }
+
+        //Check repeat
+        if(!isRepeatDataValid(schedule)){
+          result = {
+            message: 'Invalid repeat submission data.',
+            status: 'error'
+          };
+          return result;
+        }
+      }else{
+        if(schType !== 'manual'){
+          result = {
+            message: 'Invalid schedule type.',
+            status: 'error'
+          };
+          return result;
+        }
+     
+      }
+    }else{
+      result = {
+        message: 'Invalid open submission date.',
+        status: 'error'
+      };
+      return result;
+    }
+  }else{
+    result = {
+      message: '',
+      status: 'success'
+    };
+    return result;
+  }
+
+
+  return result;
+};
+
+const isKeepOpenForValid = (schedule) => {
+  let keepOpenForInterval = schedule.keepOpenForInterval;
+  let keepOpenForTerm = schedule.keepOpenForTerm;
+  if(!keepOpenForInterval || keepOpenForInterval === null || !keepOpenForTerm || keepOpenForTerm === null){
+    return false;
+  }
+  return true;
+};
+
+const isRepeatDataValid = (schedule) => {
+  let isRepeatSubmissionEnabled = schedule && schedule.repeatSubmission && schedule.repeatSubmission.enabled;
+  if(isRepeatSubmissionEnabled)
+  {
+    if(!schedule.repeatSubmission.everyTerm || schedule.repeatSubmission.everyTerm === null || !schedule.repeatSubmission.repeatUntil || schedule.repeatSubmission.repeatUntil === null || !schedule.repeatSubmission.everyIntervalType || schedule.repeatSubmission.everyIntervalType === null)
+    {
+      return false;
+    }
+  }
+  return true;
+};
+
+const isLateSubmissionObjValid = (schedule) => {
+  
+  let allowLateSubmissions = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
+  let allowLateSubmissionsForNextTerm = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
+  let allowLateSubmissionsForNextInterval = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
+          
+  if(allowLateSubmissions){
+    if(!allowLateSubmissionsForNextTerm || allowLateSubmissionsForNextInterval === null || !allowLateSubmissionsForNextInterval || allowLateSubmissionsForNextInterval === null){
+      return false;
+    }
+  }
+  return true;
+};
+
+const isDateValid = (date) => { 
+  return Date.parse(date);
+};
+
+const isClosingMessageValid = (schedule) => {
+  if(schedule.closingMessageEnabled){
+    if(!schedule.closingMessage || schedule.closingMessage === null){
+      return false;
+    }
+  }
+  return true;
+};
 
 module.exports = {
   falsey,
@@ -578,5 +723,6 @@ module.exports = {
   flattenComponents,
   unwindPath,
   submissionHeaders,
-  encodeURI
+  encodeURI,
+  validateScheduleObject
 };
