@@ -1,23 +1,14 @@
 <template>
   <v-row class="d-print-none">
     <v-col v-if="formId">
-      <ul id="menu">
-        <li class="active">
-          <span v-if="!bulkFile" >Single submission</span>
-          <span v-else>Bulk submission</span>
-        </li>
-        <li>
-          <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
-            <span> View all submissions/drafts</span>
-          </router-link>
-        </li>
-
-      </ul>
+      <v-btn outlined @click="goToAllSubmissionOrDraft">
+        <span>View all submissions/drafts</span>
+      </v-btn>
     </v-col>
     <v-col class="text-right">
 
       <!-- Save a draft -->
-      <span v-if="canSaveDraft && draftEnabled" class="ml-2">
+      <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -119,6 +110,9 @@ export default {
   methods:{
     switchView(){
       this.$emit('switchView');
+    },
+    goToAllSubmissionOrDraft(){
+      this.$emit('showdoYouWantToSaveTheDraftModal');
     }
   }
 };

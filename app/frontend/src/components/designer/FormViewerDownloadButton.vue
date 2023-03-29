@@ -240,25 +240,25 @@ export default {
     },
     endValidation(){
       this.progress = false;
-      this.globalError = [{
-        index: 0,
-        errors:  [
-          'Error 1 ','Error 2 '
-        ]
-      },
-      {
-        index: 1,
-        errors:  [
-          'Error 1 ','Error 2 '
-        ]
-      },
-      {
-        index: 2,
-        errors:  [
-          'Error 1 ','Error 2 '
-        ]
-      }
-      ];
+      // this.globalError = [{
+      //   index: 0,
+      //   errors:  [
+      //     'Error 1 ','Error 2 '
+      //   ]
+      // },
+      // {
+      //   index: 1,
+      //   errors:  [
+      //     'Error 1 ','Error 2 '
+      //   ]
+      // },
+      // {
+      //   index: 2,
+      //   errors:  [
+      //     'Error 1 ','Error 2 '
+      //   ]
+      // }
+      // ];
       if(this.globalError.length==0){
         this.$emit('save-bulk-data', this.Json );
       } else {

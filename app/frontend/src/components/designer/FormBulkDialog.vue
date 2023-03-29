@@ -28,19 +28,13 @@
         <v-card-actions>
           <v-btn
             color="primary"
-            variant="text"
-            rounded="lg" 
+            rounded
             @click="typeSubmissionSelectedChanged"
           >
-            Confirm 
+            <span>Confirm</span>
           </v-btn>
-          <v-btn
-            color="blue-darken-1"
-            variant="outlined"
-            rounded="lg" 
-            @click="cancel"
-          >
-            Cancel
+          <v-btn outlined rounded @click="cancel">
+            <span>Cancel</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -69,6 +63,7 @@ export default {
     },
     cancel(){
       this.dialog = false;
+      this.$emit('leave-this-page');
     },
   }
 };

@@ -13,6 +13,7 @@
             :submissionId="submissionId"
             :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
             :bulkFile="bulkFile"
+            @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
             @save-draft="saveDraft"
             @switchView="bulkFile=!bulkFile"
           />
@@ -87,7 +88,8 @@
         />
         <p v-if="version" class="text-right">Version: {{ version }}</p>
       </div>
-      <FormBulkDialog @set-bulk-file="setBulkFile"/>
+      <FormBulkDialog v-if="!submissionId" @leave-this-page="leaveThisPage" @set-bulk-file="setBulkFile"/>
+      <BulkPrompt :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" />
     </v-skeleton-loader>
  
   </div>
@@ -106,10 +108,12 @@ import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
 import FormBulkDialog  from '@/components/designer/FormBulkDialog.vue';
+import BulkPrompt  from '@/components/designer/BulkPrompt.vue';
 
 export default {
   name: 'FormViewer',
   components: {
+    BulkPrompt,
     FormBulkDialog,
     Form,
     FormViewerActions,
@@ -169,7 +173,8 @@ export default {
         error: Boolean,
         upload_state:Number
       },
-      block:false
+      block:false,
+      doYouWantToSaveTheDraft: false,
     };
   },
   computed: {
@@ -329,7 +334,7 @@ export default {
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...
-          this.sbdMessage.message = 'The file was successfully uploaded';
+          this.sbdMessage.message ='Your multiple submissions upload has been  successful!';
           this.sbdMessage.error = false;
           this.sbdMessage.upload_state = 10;
           this.block = false;
@@ -337,7 +342,8 @@ export default {
             message: this.sbdMessage.message,
             ...NotificationTypes.SUCCESS,
           });
-          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
+          this.leaveThisPage();
+        // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
           // console.error(response); // eslint-disable-line no-console
           this.sbdMessage.message = `Failed response from submission endpoint. Response code: ${response.status}`;
@@ -551,6 +557,46 @@ export default {
       alert(
         `Custom button events not supported yet. Event Type: ${event.type}`
       );
+    },
+    showdoYouWantToSaveTheDraftModal(){
+      if(!this.bulkFile ){
+        this.doYouWantToSaveTheDraft = true;
+      } else {
+        this.leaveThisPage();
+      }  
+    },
+    goTo(path, params){
+      this.$router.push({
+        name: path,
+        query: params
+      });
+    },
+    leaveThisPage(){
+      this.goTo('UserSubmissions', { f: this.form.id } );
+    },
+    saveDraftFromModal(event){
+      this.doYouWantToSaveTheDraft = false;
+      if(event){
+        this.saveDraftFromModalNow();
+      } else {
+        this.leaveThisPage();
+      }
+    },
+    // Custom Event triggered from buttons with Action type "Event"
+    async saveDraftFromModalNow() {
+      try {
+        this.saving = true;
+        await this.sendSubmission(true, this.submission);
+        // Creating a new submission in draft state
+        // Go to the user form draft page
+        this.leaveThisPage();
+        this.showSubmitConfirmDialog = false;
+      } catch (error) {
+        this.addNotification({
+          message: 'An error occurred while saving a draft',
+          consoleError: `Error saving draft. SubmissionId: ${this.submissionId}. Error: ${error}`,
+        });
+      }
     },
   },
   created() {
