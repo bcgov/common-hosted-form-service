@@ -2802,25 +2802,25 @@ components:
                   example: true
                 scheduleType:
                   type: string
-                  example: maual
+                  example: manual
                 openSubmissionDateTime:
                   type: string
-                  example: maual
+                  example: '2023-12-22'
                 closeSubmissionDateTime:
                   type: string
-                  example: maual
+                  example: '2023-12-22'
                 closingMessageEnabled:
                   type: boolean
                   example: true
                 closingMessage:
                   type: string
-                  example: maual
+                  example: This form is expired.
                 keepOpenForTerm:
                   type: string
-                  example: maual
+                  example: '1'
                 keepOpenForInterval:
                   type: string
-                  example: maual
+                  example: 'weeks'
                 repeatSubmission:
                   type: Object
                   example: 
@@ -2829,13 +2829,13 @@ components:
                       example: true
                     everyTerm:
                       type: string
-                      example: maual
+                      example: '3'
                     repeatUntil:
                       type: string
-                      example: maual
+                      example: '2024-12-22'
                     everyIntervalType:
                       type: string
-                      example: maual
+                      example: 'months'
                 allowLateSubmissions:
                   type: Object
                   example: 
@@ -2847,10 +2847,10 @@ components:
                       example: 
                         term:
                           type: string
-                          example: maual
+                          example: '2'
                         intervalType:
                           type: string
-                          example: maual
+                          example: 'days'
               properties:
                 enabled:
                   type: boolean
