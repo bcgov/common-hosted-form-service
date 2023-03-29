@@ -601,7 +601,7 @@ const validateScheduleObject = (schedule={}) => {
       }else if(schType === 'period'){
         if(!isLateSubmissionObjValid(schedule)){
           result = {
-            message: 'Invalid late submission date.',
+            message: 'Invalid late submission data.',
             status: 'error'
           };
           return result;
