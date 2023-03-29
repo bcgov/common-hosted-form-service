@@ -278,7 +278,11 @@ export default {
         },
         {
           value: 'actions'
+        },
+        {
+          value: 'event'
         }
+
       ],
       loading: true,
       restoreItem: {},
@@ -382,7 +386,12 @@ export default {
       return headers;
     },
     FILTER_HEADERS() {
-      return this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value)).concat(this.formFields.map((ff) => { return { text: ff, value: ff }; }));
+      let filteredHeader = this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value))
+        .concat(this.formFields.map((ff) => { return { text: ff, value: ff, align: 'end' }; }));
+
+      return  filteredHeader.filter(function(item, index, inputArray) {
+        return inputArray.findIndex(arrayItem=>arrayItem.value===item.value) == index;
+      });
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;

@@ -171,7 +171,8 @@ const service = {
 
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
-        return await service._formatSubmissionsCsv(form, formatted,exportTemplate, columns, version);
+        let formVersion = version?parseInt(version):1;
+        return await service._formatSubmissionsCsv(form, formatted,exportTemplate, columns, formVersion);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
         return await service._formatSubmissionsJson(form, formatted);
@@ -297,10 +298,9 @@ const service = {
     const exportFormat = service._exportFormat(params);
     const exportTemplate = params.template?params.template:'flattenedWithFilled';
     const columns = params.columns?params.columns:undefined;
-    const version = params.version?parseInt(params.version):1;
     const form = await service._getForm(formId);
-    const data = await service._getData(exportType, version, form, params);
-    const result = await service._formatData(exportFormat, exportType,exportTemplate, form, data, columns, version);
+    const data = await service._getData(exportType, params.version, form, params);
+    const result = await service._formatData(exportFormat, exportType,exportTemplate, form, data, columns, params.version);
 
     return { data: result.data, headers: result.headers };
   }
