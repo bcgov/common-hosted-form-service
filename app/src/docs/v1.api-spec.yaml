@@ -2796,6 +2796,61 @@ components:
               example: true
             schedule:
               type: Object
+              example: 
+                enabled:
+                  type: boolean
+                  example: true
+                scheduleType:
+                  type: string
+                  example: maual
+                openSubmissionDateTime:
+                  type: string
+                  example: maual
+                closeSubmissionDateTime:
+                  type: string
+                  example: maual
+                closingMessageEnabled:
+                  type: boolean
+                  example: true
+                closingMessage:
+                  type: string
+                  example: maual
+                keepOpenForTerm:
+                  type: string
+                  example: maual
+                keepOpenForInterval:
+                  type: string
+                  example: maual
+                repeatSubmission:
+                  type: Object
+                  example: 
+                    enabled:
+                      type: boolean
+                      example: true
+                    everyTerm:
+                      type: string
+                      example: maual
+                    repeatUntil:
+                      type: string
+                      example: maual
+                    everyIntervalType:
+                      type: string
+                      example: maual
+                allowLateSubmissions:
+                  type: Object
+                  example: 
+                    enabled:
+                      type: boolean
+                      example: true
+                    forNext:
+                      type: Object
+                      example: 
+                        term:
+                          type: string
+                          example: maual
+                        intervalType:
+                          type: string
+                          example: maual
               properties:
                 enabled:
                   type: boolean
