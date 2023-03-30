@@ -68,5 +68,21 @@ module.exports = Object.freeze({
     MANUAL: 'manual',
     CLOSINGDATE: 'closingDate',
     PERIOD: 'period'
-  }
+  },
+  IdentityProviders: {
+    BCEIDBASIC: 'bceid-basic', // Basic BCeID
+    BCEIDBUSINESS: 'bceid-business', // Business BCeID
+    BCSC: 'bcsc', // Services Card
+    GITHUB: 'github', // Github
+    IDIR: 'idir' // IDIR
+  },
+  EXPORT_TYPES: {
+    submissions: 'submissions',
+    default: 'submissions'
+  },
+  EXPORT_FORMATS: {
+    csv: 'csv',
+    json: 'json',
+    default: 'csv'
+  },
 });

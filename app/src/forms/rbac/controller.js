@@ -78,7 +78,7 @@ module.exports = {
   },
   removeMultiUsers: async (req, res, next) => {
     try {
-      const response = await service.removeMultiUsers(req.query.formId, req.body, req.currentUser);
+      const response = await service.removeMultiUsers(req.query.formId, req.body);
       res.status(200).json(response);
     } catch (error) {
       next(error);

@@ -46,7 +46,44 @@ const service = {
     });
   },
 
+  // -------------------------------------------------------------------------------------------------------
+  // Submissions
+  // -------------------------------------------------------------------------------------------------------
+  _fetchSpecificSubmissionData: async (formSubmissionIds) => {
+    const meta = await SubmissionMetadata.query()
+      .whereIn('submissionId', formSubmissionIds);
+
+    if(meta.length>0) {
+      let submissionIds = meta.map(SubmissionMetadata=>SubmissionMetadata.submissionId);
+      let formVersionId = [...new Set(meta.map(SubmissionMetadata=>SubmissionMetadata.formVersionId))].at(0);
+      let formId =  [...new Set(meta.map(SubmissionMetadata=>SubmissionMetadata.formId))].at(0);
+      return await Promise.all([
+        FormSubmission.query()
+          .findByIds(submissionIds)
+          .throwIfNotFound(),
+        FormVersion.query()
+          .findByIds(formVersionId)
+          .throwIfNotFound(),
+        Form.query()
+          .findByIds(formId)
+          .allowGraph('identityProviders')
+          .withGraphFetched('identityProviders(orderDefault)')
+          .throwIfNotFound()
+      ]).then(data => {
+        return {
+          submission: data[0],
+          version: data[1],
+          form: data[2]
+        };
+      });
+    }
+    return [];
+  },
+
   read: (formSubmissionId) => service._fetchSubmissionData(formSubmissionId),
+
+  readSubmissionData: (formSubmissionIds) => service._fetchSpecificSubmissionData(formSubmissionIds),
+
 
   update: async (formSubmissionId, data, currentUser, referrer, etrx = undefined) => {
     let trx;
@@ -121,6 +158,40 @@ const service = {
       });
       await trx.commit();
       return await service.read(formSubmissionId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  deleteMutipleSubmissions:async (submissionIds, currentUser) => {
+    let trx;
+    try {
+      trx = await FormSubmission.startTransaction();
+      await  FormSubmission.query(trx)
+        .patch({deleted: true,
+          updatedBy: currentUser.usernameIdp })
+        .whereIn('id', submissionIds);
+      await trx.commit();
+      return await service.readSubmissionData(submissionIds);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  restoreMutipleSubmissions: async (submissionIds, currentUser) => {
+    let trx;
+    try {
+      trx = await FormSubmission.startTransaction();
+      await FormSubmission.query(trx)
+        .patch({
+          deleted: false,
+          updatedBy: currentUser.usernameIdp
+        })
+        .whereIn('id', submissionIds);
+      await trx.commit();
+      return await service.readSubmissionData(submissionIds);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

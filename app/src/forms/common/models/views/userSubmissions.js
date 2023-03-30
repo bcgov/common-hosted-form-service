@@ -6,10 +6,19 @@ class UserSubmissions extends Model {
   }
 
   static get relationMappings() {
+    const FormSubmission = require('../tables/formSubmission');
     const FormSubmissionStatus = require('../tables/formSubmissionStatus');
     const User = require('../tables/user');
 
     return {
+      submission: {
+        relation: Model.HasOneRelation,
+        modelClass: FormSubmission,
+        join: {
+          from: 'submissions_submitters_vw.formSubmissionId',
+          to: 'form_submission.id'
+        }
+      },
       submissionStatus: {
         relation: Model.HasManyRelation,
         modelClass: FormSubmissionStatus,
