@@ -124,7 +124,6 @@ const buildEmailTemplateFormForReminder = async (form, emailType, users, report,
     return 'Hi,\n'+messageValue+'\nThank you';
   };
   const message = formatEmailTextMessage(form.name, closeDate);
-  console.log(message);
   const contextToVal = users;
   if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
     configData = {
