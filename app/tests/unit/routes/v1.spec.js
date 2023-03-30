@@ -10,11 +10,10 @@ const app = expressHelper(basePath, router);
 describe(`GET ${basePath}`, () => {
   it('should return all available endpoints', async () => {
     const response = await request(app).get(`${basePath}`);
-
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
     expect(Array.isArray(response.body.endpoints)).toBeTruthy();
-    expect(response.body.endpoints).toHaveLength(9);
+    expect(response.body.endpoints).toHaveLength(10);
     expect(response.body.endpoints).toContain('/docs');
     expect(response.body.endpoints).toContain('/files');
     expect(response.body.endpoints).toContain('/forms');
@@ -23,6 +22,7 @@ describe(`GET ${basePath}`, () => {
     expect(response.body.endpoints).toContain('/roles');
     expect(response.body.endpoints).toContain('/submissions');
     expect(response.body.endpoints).toContain('/users');
+    expect(response.body.endpoints).toContain('/public');
   });
 });
 

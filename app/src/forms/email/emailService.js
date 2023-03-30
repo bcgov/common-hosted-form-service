@@ -5,7 +5,7 @@ const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
 const formService = require('../form/service');
-
+const moment = require('moment');
 /** Helper function used to build the email template based on email type and contents */
 const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
@@ -95,6 +95,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
     };
   }
 
+
   return {
     configData,
     contexts: [{
@@ -105,6 +106,65 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
         messageLinkText: configData.messageLinkText,
         messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
         emailContent: additionalProperties.emailContent,
+        title: configData.title
+      },
+      to: contextToVal
+    }]
+  };
+};
+
+/** Helper function used to build the email template based on email type and contents for reminder */
+const buildEmailTemplateFormForReminder = async (form, emailType, users, report, referer) => {
+  let configData = {};
+  const closeDate = (report.dates.closeDate) ? moment(report.dates.closeDate).format('MMM. D, YYYY') : undefined ;
+  const subject = 'CHEFS Submission Reminder';
+
+  const formatEmailTextMessage = (name, closeDate )=> {
+    const messageValue =  (closeDate) ? `This email is to inform you that the ${name} form is now open for submission and will stay open until ${closeDate}. Please complete your submission before the submission period is closed.` : `This email is to inform you that the ${name} form is now open for submission.`;
+    return 'Hi,\n'+messageValue+'\nThank you';
+  };
+  const message = formatEmailTextMessage(form.name, closeDate);
+  const contextToVal = users;
+  if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
+    configData = {
+      bodyTemplate: 'reminder-form-open.html',
+      title: `Submission Start for ${form.name} `,
+      subject: subject,
+      messageLinkText: `${message}
+      `,
+      priority: 'normal',
+      form,
+    };
+  } else if (emailType === EmailTypes.REMINDER_FORM_NOT_FILL) {
+    configData = {
+      bodyTemplate: 'reminder-form-not-fill.html',
+      title: `Submission Reminder for ${form.name}`,
+      subject: subject,
+      messageLinkText: `${message}`,
+      priority: 'normal',
+      form,
+    };
+  } else if (emailType === EmailTypes.REMINDER_FORM_WILL_CLOSE) {
+    configData = {
+      bodyTemplate: 'reminder-form-will-close.html',
+      title: `Submission Closing for ${form.name}`,
+      subject: subject,
+      messageLinkText: `${message}`,
+      priority: 'normal',
+      form,
+    };
+
+  }
+
+  return {
+    configData,
+    contexts: [{
+      context: {
+        allFormSubmissionUrl: '',
+        form: configData.form,
+        report: report,
+        messageLinkText: configData.messageLinkText,
+        messageLinkUrl : `${referer}/form/submit?f=${configData.form.id}`,
         title: configData.title
       },
       to: contextToVal
@@ -158,7 +218,6 @@ const service = {
       body,
       template.substring(bodyInsertIndex, template.length),
     ].join('');
-
     return result;
   },
 
@@ -365,6 +424,25 @@ const service = {
       throw e;
     }
   },
+  /**
+   * @function formOpen
+   * Manual email confirmation after form has been submitted
+   * @param {object} information about the submitter and the form
+   * @returns The result of the email merge operation
+   */
+  initReminder: async (obj) => {
+    try {
+      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.users, obj.report, obj.referer);
+      return service._sendEmailTemplate(configData, contexts);
+    } catch (e) {
+      log.error(e.message, {
+        function: obj.state,
+        formId: obj.form.id,
+      });
+      throw e;
+    }
+  },
+
 };
 
 module.exports = service;

@@ -217,6 +217,19 @@ export default function getRouter(basePath = '/') {
               preFlightAuth({ submissionId: to.query.s }, next);
             },
           },
+          {
+            path: 'duplicate',
+            name: 'UserFormDuplicate',
+            component: () => import(/* webpackChunkName: "userformduplicate" */ '@/views/user/SubmissionDuplicate.vue'),
+            meta: {
+              breadcrumbTitle: 'Create from existing',
+              formSubmitMode: true
+            },
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ submissionId: to.query.s, formId: to.query.f, sv: true }, next);
+            },
+          },
           // For when we have the recieve->review->send-back flow
           // This route can be used for the submitter to edit and see status stuff about their submission
           // Different from the draft one above, which can be used to simply edit drafts
