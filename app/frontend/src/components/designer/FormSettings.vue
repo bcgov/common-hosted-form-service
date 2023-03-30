@@ -119,15 +119,6 @@
                 </template>
                 <span>Experimental <a :href="githubLinkScheduleAndReminderFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
                   <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a></span>
-                <!-- <span>
-                  Selecting this option controls this form to be open or close
-                  for a given period.<br />
-                  If checked, it will display form schedule section where you can
-                  <ul>
-                    <li>Set form submissions open and close date</li>
-                    <li>Set form recurrence settings</li>
-                  </ul>
-                </span> -->
               </v-tooltip>
             </template>
           </v-checkbox>
@@ -446,14 +437,16 @@
                       <v-checkbox class="my-0 m-0 p-0" v-model="reminder_enabled">
                         <template #label>
                           Enable automatic reminder notification
-                          <v-tooltip bottom>
+                          <v-tooltip close-delay="2500" bottom>
                             <template v-slot:activator="{ on, attrs }">
                               <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
                                 help_outline
                               </v-icon>
                             </template>
                             <span>
-                              Send reminder email/s with the form link during the submission period. (Learn more)
+                              Send reminder email/s with the form link during the submission period. 
+                              <a :href="githubLinkScheduleAndReminderFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                                <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a>
                             </span>
                           </v-tooltip>
                         </template>
