@@ -13,7 +13,15 @@ describe('form getters', () => {
   const sampleState = {
     drafts: [],
     form: {
-      name: 'ABC'
+      name: 'ABC',
+      reminder : {
+        'enabled':false,
+        'allowAdditionalNotifications': true
+      },
+      schedule : {
+        'enabled':true,
+        'scheduleType':'manual'
+      }
     },
     formList: [
       {
@@ -30,9 +38,7 @@ describe('form getters', () => {
     },
     permissions: ['SUBMIT', 'READ'],
     submissionList: ['test', 'sub'],
-    version: { type: 'form' },
-    reminder : {},
-    schedule : {}
+    version: { type: 'form' }
   };
 
   beforeEach(() => {

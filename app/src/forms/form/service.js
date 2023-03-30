@@ -1,6 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
+const { validateScheduleObject } = require('../common/utils');
 
 const {
   FileStorage,
@@ -48,6 +49,11 @@ const service = {
 
   createForm: async (data, currentUser) => {
     let trx;
+    const scheduleData = validateScheduleObject(data.schedule);
+    if(scheduleData.status !== 'success'){
+      throw new Problem(422, `${scheduleData.message}`);
+    }
+    
     try {
       trx = await Form.startTransaction();
       const obj = {};
@@ -118,6 +124,10 @@ const service = {
       const obj = await service.readForm(formId);
       trx = await Form.startTransaction();
       // do not update the active flag, that should be done via DELETE
+      const scheduleData = validateScheduleObject(data.schedule);
+      if(scheduleData.status !== 'success'){
+        throw new Problem(422, `${scheduleData.message}`);
+      }
       const upd = {
         name: data.name,
         description: data.description,

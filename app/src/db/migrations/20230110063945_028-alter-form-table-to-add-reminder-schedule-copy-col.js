@@ -1,14 +1,18 @@
 exports.up = function(knex) {
   return Promise.resolve()
-    // create new collumn to store Enable/disable feature setting (Copy from existing submission)
+  // create new collumn to store Schedule (Period) setting
     .then(() => knex.schema.alterTable('form', table => {
+      table.jsonb('schedule').comment('Form level Schedule settings.');
+      table.boolean('reminder_enabled').comment('Form level reminder settings.');
       table.boolean('enableCopyExistingSubmission').notNullable().defaultTo(false).comment('Form level feature settings.');
     }));
 };
+
 exports.down = function(knex) {
   return Promise.resolve()
-    // undo the new field add
     .then(() => knex.schema.alterTable('form', table => {
+      table.dropColumn('schedule');
+      table.dropColumn('reminder_enabled');
       table.dropColumn('enableCopyExistingSubmission');
     }));
 };

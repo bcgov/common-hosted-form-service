@@ -63,24 +63,13 @@
           </div>
           <div v-else>Draft Saved</div>
         </v-alert>
+
         <slot name="alert" v-bind:form="form" />
-        <BaseDialog
-          v-model="showSubmitConfirmDialog"
-          type="CONTINUE"
-          :enableCustomButton="canSaveDraft"
-          @close-dialog="showSubmitConfirmDialog = false"
-          @continue-dialog="continueSubmit"
-        >
-          <template #title>Please Confirm</template>
-          <template #text>Are you sure you wish to submit your form?</template>
-          <template #button-text-continue>
-            <span>Submit</span>
-          </template>
-        </BaseDialog>
 
         <BaseDialog
           v-model="showSubmitConfirmDialog"
           type="CONTINUE"
+          :enableCustomButton="canSaveDraft"
           @close-dialog="showSubmitConfirmDialog = false"
           @continue-dialog="continueSubmit"
         >
