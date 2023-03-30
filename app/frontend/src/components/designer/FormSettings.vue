@@ -619,8 +619,8 @@ export default {
       return closeDateCalculated;
     },
     AVAILABLE_PERIOD_OPTIONS() {
-      var arrayOfption = ['weeks', 'months', 'quarters', 'years'];
-      var diffInDays = 0;
+      let arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
+      let diffInDays = 0;
       if(this.schedule.openSubmissionDateTime && this.schedule.keepOpenForInterval && this.schedule.keepOpenForTerm){
         diffInDays = moment.duration({[this.schedule.keepOpenForInterval]: this.schedule.keepOpenForTerm}).asDays();// moment.duration(this.schedule.keepOpenForTerm, this.schedule.keepOpenForInterval).days();
 
@@ -638,53 +638,53 @@ export default {
 
       switch (true) {
         case (diffInDays > 7 && diffInDays <= 30):
-          arrayOfption = ['months', 'quarters', 'years'];
+          arrayOfOption = ['months', 'quarters', 'years'];
           break;
 
         case (diffInDays > 30 && diffInDays <= 91):
-          arrayOfption = ['quarters', 'years'];
+          arrayOfOption = ['quarters', 'years'];
           break;
 
         case (diffInDays > 91):
-          arrayOfption = ['years'];
+          arrayOfOption = ['years'];
           break;
 
         default:
-          arrayOfption = ['weeks', 'months', 'quarters', 'years'];
+          arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
           break;
       }
-      return arrayOfption;
+      return arrayOfOption;
     },
     INTERVAL_OPEN() {
       return  moment.duration({[this.schedule.keepOpenForInterval]: this.schedule.keepOpenForTerm}).asDays();
     },
     AVAILABLE_PERIOD_INTERVAL() {
-      var arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
-      var diffInDays = this.INTERVAL_OPEN;
+      let arrayOfOption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+      let diffInDays = this.INTERVAL_OPEN;
       switch (true) {
         case (diffInDays <= 7):
-          arrayOfption = ['Daily'];
+          arrayOfOption = ['Daily'];
           break;
         case (diffInDays > 7 && diffInDays <= 14):
-          arrayOfption = ['Daily','Weekly'];
+          arrayOfOption = ['Daily','Weekly'];
           break;
         case (diffInDays > 14 && diffInDays <= 31):
-          arrayOfption = ['Daily','Weekly','Bi-weekly'];
+          arrayOfOption = ['Daily','Weekly','Bi-weekly'];
           break;
         case (diffInDays > 31 && diffInDays <= 91):
-          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly'];
+          arrayOfOption = ['Daily','Weekly','Bi-weekly','Monthly'];
           break;
         case (diffInDays > 91 && diffInDays <= 183):
-          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly'];
+          arrayOfOption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly'];
           break;
         case (diffInDays > 183 && diffInDays <= 365):
-          arrayOfption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually'];
+          arrayOfOption = ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually'];
           break;
         default:
-          arrayOfption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
+          arrayOfOption =  ['Daily','Weekly','Bi-weekly','Monthly','Quarterly','Semi-Annually','Annually'];
           break;
       }
-      return arrayOfption;
+      return arrayOfOption;
     },
     SCHEDULE_TYPE() {
       return ScheduleType;
@@ -731,9 +731,7 @@ export default {
           'enabled': null,
           'repeatUntil': null,
           'everyTerm': null,
-          'onSpecificDay': null,
-          'everyIntervalType': null,
-          'keepAliveFor': null
+          'everyIntervalType': null
         },
         this.schedule.allowLateSubmissions = {
           'enabled': null,
@@ -752,9 +750,7 @@ export default {
           'enabled': null,
           'repeatUntil': null,
           'everyTerm': null,
-          'onSpecificDay': null,
-          'everyIntervalType': null,
-          'keepAliveFor': null
+          'everyIntervalType': null
         },
         this.schedule.allowLateSubmissions = {
           'enabled': null,

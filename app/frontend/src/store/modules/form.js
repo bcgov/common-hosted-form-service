@@ -16,9 +16,7 @@ const genInitialSchedule = () => ({
     'enabled': null,
     'repeatUntil': null,
     'everyTerm': null,
-    'onSpecificDay': null,
-    'everyIntervalType': null,
-    'keepAliveFor': null,
+    'everyIntervalType': null
   },
   'allowLateSubmissions': {
     'enabled': null,
