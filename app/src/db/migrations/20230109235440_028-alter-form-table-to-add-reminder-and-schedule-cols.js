@@ -3,6 +3,9 @@ exports.up = function(knex) {
     // create new collumn to store Schedule (Period) setting
     .then(() => knex.schema.alterTable('form', table => {
       table.boolean('reminder_enabled').defaultTo(false).comment('Form level reminder enabled settings.');
+    }))
+    .then(() => knex.schema.alterTable('form', table => {
+      table.jsonb('schedule').comment('Form level Schedule settings.');
     }));
 };
 exports.down = function(knex) {
@@ -10,5 +13,8 @@ exports.down = function(knex) {
     // undo the new field add
     .then(() => knex.schema.alterTable('form', table => {
       table.dropColumn('reminder_enabled');
+    }))
+    .then(() => knex.schema.alterTable('form', table => {
+      table.dropColumn('schedule');
     }));
 };
