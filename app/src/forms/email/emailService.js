@@ -120,11 +120,11 @@ const buildEmailTemplateFormForReminder = async (form, emailType, users, report,
   const subject = 'CHEFS Submission Reminder';
 
   const formatEmailTextMessage = (name, closeDate )=> {
-    const messageValue =  'Hi,\n'+(closeDate) ? `This email is to inform you that the ${name} form is now open for submission and will stay open until ${closeDate}. Please complete your submission before the submission period is closed.` : `This email is to inform you that the ${name} form is now open for submission.`;
-    return messageValue+'\n Thank you';
+    const messageValue =  (closeDate) ? `This email is to inform you that the ${name} form is now open for submission and will stay open until ${closeDate}. Please complete your submission before the submission period is closed.` : `This email is to inform you that the ${name} form is now open for submission.`;
+    return 'Hi,\n'+messageValue+'\nThank you';
   };
   const message = formatEmailTextMessage(form.name, closeDate);
-
+  console.log(message);
   const contextToVal = users;
   if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
     configData = {
