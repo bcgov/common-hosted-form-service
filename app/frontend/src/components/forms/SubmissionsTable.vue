@@ -7,9 +7,22 @@
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <ColumnPreferences @preferences-saved="populateSubmissionsTable" />
-
         <span v-if="checkFormManage">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="showColumnsDialog = true"
+                class="mx-1"
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>view_column</v-icon>
+              </v-btn>
+            </template>
+            <span>Select Columns</span>
+          </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
@@ -28,10 +41,10 @@
             <span>Manage Form</span>
           </v-tooltip>
         </span>
-
         <ExportSubmissions />
       </v-col>
     </v-row>
+
 
     <v-row no-gutters>
       <v-spacer />
@@ -65,20 +78,64 @@
         </div>
       </v-col>
     </v-row>
-    <v-row no-gutters>
-    </v-row>
 
     <!-- table header -->
     <v-data-table
       class="submissions-table"
-      :headers="calcHeaders"
-      item-key="title"
+      :headers="HEADERS"
+      item-key="submissionId"
       :items="submissionTable"
       :search="search"
       :loading="loading"
+      :show-select="!switchSubmissionView"
+      v-model="selectedSubmissions"
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
+
+      <template v-slot:[`header.event`]>
+        <span v-if="!deletedOnly">
+          <v-btn
+            @click="showDeleteDialog=true, singleSubmissionDelete=false"
+            color="red"
+            :disabled="selectedSubmissions.length===0"
+            icon
+          >
+            <v-tooltip bottom >
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  color="red"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                >remove_circle</v-icon>
+              </template>
+              <span>Delete selected submissions</span>
+            </v-tooltip >
+          </v-btn>
+        </span>
+        <span v-if="deletedOnly">
+          <v-btn
+            @click="showRestoreDialog=true, singleSubmissionRestore=false"
+            color="red"
+            :disabled="selectedSubmissions.length===0"
+            icon
+          >
+            <v-tooltip bottom >
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  color="green"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                >restore_from_trash</v-icon>
+              </template>
+              <span>Restore selected submissions</span>
+            </v-tooltip>
+          </v-btn>
+        </span>
+      </template>
+
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
@@ -89,31 +146,50 @@
         {{ item.lateEntry === true ? 'Yes' : 'No' }}
       </template>
       <template #[`item.actions`]="{ item }">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <router-link
+              :to="{
+                name: 'FormView',
+                query: {
+                  s: item.submissionId,
+                },
+              }"
+            >
+              <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                <v-icon>remove_red_eye</v-icon>
+              </v-btn>
+            </router-link>
+          </template>
+          <span>View Submission</span>
+        </v-tooltip>
+      </template>
+      <template #[`item.event`]="{ item }">
         <span>
-          <v-tooltip bottom>
+
+          <v-tooltip bottom v-if="!item.deleted">
             <template #activator="{ on, attrs }">
-              <router-link
-                :to="{
-                  name: 'FormView',
-                  query: {
-                    s: item.submissionId,
-                  },
-                }"
+              <v-btn
+                @click="showDeleteDialog=true,
+                        deleteItem=item, singleSubmissionDelete=true"
+                color="red"
+                icon
+                v-bind="attrs"
+                v-on="on"
               >
-                <v-btn color="primary" icon v-bind="attrs" v-on="on">
-                  <v-icon>remove_red_eye</v-icon>
-                </v-btn>
-              </router-link>
+                <v-icon>remove_circle</v-icon>
+              </v-btn>
             </template>
-            <span>View Submission</span>
+            <span>Delete Submission</span>
           </v-tooltip>
         </span>
         <span v-if="item.deleted">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="restoreItem=item; showRestoreDialog = true"
-                color="red"
+                @click="restoreItem=item; showRestoreDialog = true
+                        singleSubmissionRestore=true"
+                color="green"
                 icon
                 v-bind="attrs"
                 v-on="on">
@@ -126,7 +202,20 @@
       </template>
     </v-data-table>
 
-
+    <BaseDialog
+      v-model="showDeleteDialog"
+      type="CONTINUE"
+      @close-dialog="showDeleteDialog = false"
+      @continue-dialog="delSub"
+    >
+      <template #title>Confirm Deletion</template>
+      <template #text>
+        {{singleSubmissionDelete?singleDeleteMessage:multiDeleteMessage}}
+      </template>
+      <template #button-text-continue>
+        <span>Delete</span>
+      </template>
+    </BaseDialog>
     <BaseDialog
       v-model="showRestoreDialog"
       type="CONTINUE"
@@ -135,12 +224,25 @@
     >
       <template #title>Confirm Restoration</template>
       <template #text>
-        Are you sure you wish to restore this submission?
+        {{singleSubmissionRestore?singleRestoreMessage:multiRestoreMessage}}
       </template>
       <template #button-text-continue>
         <span>Restore</span>
       </template>
     </BaseDialog>
+
+    <v-dialog v-model="showColumnsDialog" width="700">
+      <BaseFilter
+        inputFilterPlaceholder="Search submission fields"
+        inputItemKey="value"
+        inputSaveButtonText="Save"
+        :inputData="FILTER_HEADERS"
+        @saving-filter-data="updateFilter"
+        @cancel-filter-data="showColumnsDialog = false"
+      >
+        <template #filter-title>Search and select columns to show under your dashboard</template>
+      </BaseFilter>
+    </v-dialog>
   </div>
 </template>
 
@@ -148,13 +250,16 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 import moment from 'moment';
-import ColumnPreferences from '@/components/forms/ColumnPreferences.vue';
 import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
+
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+library.add(faTrash);
+
 
 export default {
   name: 'SubmissionsTable',
   components: {
-    ColumnPreferences,
     ExportSubmissions,
   },
   props: {
@@ -165,13 +270,39 @@ export default {
   },
   data() {
     return {
-      deletedOnly: false,
       currentUserOnly: false,
+      deletedOnly: false,
+      filterData: [],
+      filterIgnore: [
+        {
+          value: 'confirmationId'
+        },
+        {
+          value: 'actions'
+        },
+        {
+          value: 'event'
+        }
+
+      ],
       loading: true,
       restoreItem: {},
       search: '',
+      showColumnsDialog: false,
       showRestoreDialog: false,
       submissionTable: [],
+      submissionsCheckboxes:[],
+      showDeleteDialog:false,
+      selectedSubmissions: [],
+      multiDeleteMessage:'Are you sure you wish to delete selected submissions?',
+      singleDeleteMessage: 'Are you sure you wish to delete this submission?',
+      multiRestoreMessage:'Are you sure you wish to restore these submissions?',
+      singleRestoreMessage: 'Are you sure you wish to restore this submission?',
+      singleSubmissionDelete:false,
+      singleSubmissionRestore:false,
+      deleteItem:{},
+      switchSubmissionView:false,
+      switchSubmissionViewMessage: 'Show Deleted submissions',
     };
   },
   computed: {
@@ -181,6 +312,8 @@ export default {
       'permissions',
       'submissionList',
       'userFormPreferences',
+      'roles',
+      'deletedSubmissions',
     ]),
     ...mapGetters('auth', [
       'user'
@@ -190,7 +323,7 @@ export default {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
 
-    calcHeaders() {
+    DEFAULT_HEADERS() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
         { text: 'Submission Date', align: 'start', value: 'date' },
@@ -225,16 +358,41 @@ export default {
 
       // Actions column at the end
       headers.push({
-        text: 'Actions',
+        text: 'View',
         align: 'end',
         value: 'actions',
         filterable: false,
         sortable: false,
+        width: '40px'
+      });
+
+      // Actions column at the end
+      headers.push({
+        text: 'event',
+        align: 'end',
+        value: 'event',
+        filterable: false,
+        sortable: false,
+        width: '40px'
       });
 
       return headers.filter(
         (x) => x.value !== 'updatedAt' || this.deletedOnly
       );
+    },
+
+    HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+      if (this.filterData.length > 0) headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
+      return headers;
+    },
+    FILTER_HEADERS() {
+      let filteredHeader = this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value))
+        .concat(this.formFields.map((ff) => { return { text: ff, value: ff, align: 'end' }; }));
+
+      return  filteredHeader.filter(function(item, index, inputArray) {
+        return inputArray.findIndex(arrayItem=>arrayItem.value===item.value) == index;
+      });
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
@@ -274,8 +432,33 @@ export default {
       'fetchSubmissions',
       'restoreSubmission',
       'getFormPermissionsForUser',
+      'getFormRolesForUser',
       'getFormPreferencesForCurrentUser',
+      'deleteMultiSubmissions',
+      'restoreMultiSubmissions',
+      'deleteSubmission',
+      'updateFormPreferencesForCurrentUser',
     ]),
+    ...mapActions('notifications', ['addNotification']),
+
+    async delSub() {
+      this.singleSubmissionDelete?this.deleteSingleSubs():this.deleteMultiSubs();
+    },
+
+    async restoreSub() {
+      this.singleSubmissionRestore?this.restoreSingleSub():this.restoreMultipleSubs();
+    },
+    async deleteSingleSubs() {
+      this.showDeleteDialog = false;
+      await this.deleteSubmission(this.deleteItem.submissionId);
+      this.refreshSubmissions();
+    },
+    async deleteMultiSubs() {
+      let submissionsIdsToDelete = this.selectedSubmissions.map(submission=>submission.submissionId);
+      this.showDeleteDialog = false;
+      await this.deleteMultiSubmissions(submissionsIdsToDelete);
+      this.refreshSubmissions();
+    },
 
     async populateSubmissionsTable() {
       try {
@@ -317,6 +500,7 @@ export default {
               return fields;
             });
           this.submissionTable = tableRows;
+          this.submissionsCheckboxes= new Array(this.submissionTable.length).fill(false);
         }
       } catch (error) {
         // Handled in state fetchSubmissions
@@ -328,22 +512,48 @@ export default {
     async refreshSubmissions() {
       this.loading = true;
       Promise.all([
+        this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
-        this.fetchForm(this.formId).then(() => {
-          this.fetchFormFields({
+        this.fetchForm(this.formId).then(async () => {
+          await this.fetchFormFields({
             formId: this.formId,
             formVersionId: this.form.versions[0].id,
           });
         }),
-      ]).then(() => {
-        this.populateSubmissionsTable();
+      ]).then(async () => {
+        await this.populateSubmissionsTable();
       });
+      this.selectedSubmissions = [];
     },
 
-    async restoreSub() {
+    async restoreSingleSub() {
       await this.restoreSubmission({ submissionId: this.restoreItem.submissionId, deleted: false });
       this.showRestoreDialog = false;
       this.refreshSubmissions();
+    },
+    async restoreMultipleSubs() {
+      let submissionsIdsToRestore = this.selectedSubmissions.map(submission=>submission.submissionId);
+      this.showRestoreDialog = false;
+      await this.restoreMultiSubmissions(submissionsIdsToRestore);
+      this.refreshSubmissions();
+      this.selectedSubmissions = [];
+    },
+    async updateFilter(data) {
+      this.filterData = data;
+      let preferences = {
+        columns: [],
+      };
+      data.forEach((d) => {
+        if (this.formFields.includes(d.value))
+          preferences.columns.push(d.value);
+      });
+
+      await this.updateFormPreferencesForCurrentUser({
+        formId: this.form.id,
+        preferences: preferences,
+      });
+      this.showColumnsDialog = false;
+      await this.populateSubmissionsTable();
     },
   },
 

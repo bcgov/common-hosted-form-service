@@ -69,6 +69,7 @@
         <BaseDialog
           v-model="showSubmitConfirmDialog"
           type="CONTINUE"
+          :enableCustomButton="canSaveDraft"
           @close-dialog="showSubmitConfirmDialog = false"
           @continue-dialog="continueSubmit"
         >
@@ -106,7 +107,7 @@ import FormViewerActions from '@/components/designer/FormViewerActions.vue';
 
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
-import { NotificationTypes } from '@/utils/constants';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
 
 export default {
   name: 'FormViewer',
@@ -193,6 +194,12 @@ export default {
         },
       };
     },
+    canSaveDraft() {
+      return (
+        !this.readOnly &&
+        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
+      );
+    }
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -332,6 +339,7 @@ export default {
             },
           });
         }
+        this.showSubmitConfirmDialog = false;
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while saving a draft',
