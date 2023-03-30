@@ -24,7 +24,7 @@ const service = {
         if(!q[i].error){
           const obj = await  service._runQueries(q[i].statement);
           let result = await service._initStatement(obj);
-          let chesResponses = service._initMaillSender(result, referer);
+          let chesResponses = service._initMailSender(result, referer);
           resolve.push({
             formId:result.form.id,
             formName :  result.form.name,
@@ -40,14 +40,14 @@ const service = {
         }
       }
       return {
-        messsage: `${q.length} Forms found , ${mail} mails sent.`,
+        message: `${q.length} forms found , ${mail} mails sent.`,
         errors,
         resolve
       };
     }
     else {
       return {
-        messsage: '0 email sent',
+        message: '0 emails sent',
         data: q,
       };
     }
@@ -151,14 +151,14 @@ const service = {
     for (let i = 0; i< forms.length; i++) {
       let obj = {};
 
-      obj.avalaibleDate =  service._listDates(forms[i].schedule) ;
+      obj.availableDate =  service._listDates(forms[i].schedule) ;
 
-      if (obj.avalaibleDate.length == 0) {
+      if (obj.availableDate.length == 0) {
         reminder.push({ error:true, message : `Form ${forms[i].name } has no avalaible date.` });
         continue;
       }
 
-      obj.report = service.getCurrentPeriod(obj.avalaibleDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
+      obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
 
       obj.form   = forms[i];
 
@@ -166,7 +166,7 @@ const service = {
       obj.state = service._getMailType(obj.report, forms[i].schedule.allowLateSubmissions.enabled);
 
       if(obj.state == undefined) {
-        reminder.push({ error:true, message : ` Form ${forms[i].name } has no valid date ` });
+        reminder.push({ error:true, message : `Form ${forms[i].name } has no valid date` });
         continue;
       }
 
@@ -284,7 +284,7 @@ const service = {
       throw error;
     }
   },
-  _initMaillSender: async (statement, referer) => {
+  _initMailSender: async (statement, referer) => {
     const chesResponse = [];
     const users = statement.submitters.map(user => user.email );
     const data = { form :statement.form, report : statement.report, users , state : statement.state, referer};

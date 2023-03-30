@@ -68,7 +68,7 @@ const service = {
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser.usernameIdp;
       obj.schedule = data.schedule;
-      obj.reminder_enabled = data.reminder_enabled ;
+      obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
 
       await Form.query(trx).insert(obj);
