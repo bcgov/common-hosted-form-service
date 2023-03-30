@@ -114,21 +114,23 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
 };
 
 /** Helper function used to build the email template based on email type and contents for reminder */
-const buildEmailTemplateFormForReminder = async (form, emailType, user, report, referer) => {
+const buildEmailTemplateFormForReminder = async (form, emailType, users, report, referer) => {
   let configData = {};
-  const closeDate = moment(report.dates.closeDate).format('MMM. D, YYYY');
+  const closeDate = (report.dates.closeDate) ? moment(report.dates.closeDate).format('MMM. D, YYYY') : undefined ;
   const subject = 'CHEFS Submission Reminder';
-  const message = (report.dates.closeDate) ? `This email is to inform you that the ${form.name} form is now open for submissions and will stay open until ${closeDate}. Please ensure to complete your submission before the period is closed.
-  Thank you.` : `This email is to inform you that the ${form.name} form is now open for submissions.
-  Thank you. `;
-  const contextToVal = [user.email];
-  const names = `${user.firstName} ${user.lastName}`;
+
+  const formatEmailTextMessage = (name, closeDate )=> {
+    const messageValue =  (closeDate) ? `This email is to inform you that the ${name} form is now open for submission and will stay open until ${closeDate}. Please complete your submission before the submission period is closed.` : `This email is to inform you that the ${name} form is now open for submission.`;
+    return 'Hi,\n'+messageValue+'\nThank you';
+  };
+  const message = formatEmailTextMessage(form.name, closeDate);
+  const contextToVal = users;
   if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
     configData = {
       bodyTemplate: 'reminder-form-open.html',
       title: `Submission Start for ${form.name} `,
       subject: subject,
-      messageLinkText: `Hi ${names},\n ${message}
+      messageLinkText: `${message}
       `,
       priority: 'normal',
       form,
@@ -138,10 +140,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
       bodyTemplate: 'reminder-form-not-fill.html',
       title: `Submission Reminder for ${form.name}`,
       subject: subject,
-      messageLinkText: `Hi ${names},\n
-      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }. Please ensure to complete your submission before the period is closed.
-      Thank you.
-      `,
+      messageLinkText: `${message}`,
       priority: 'normal',
       form,
     };
@@ -150,9 +149,7 @@ const buildEmailTemplateFormForReminder = async (form, emailType, user, report, 
       bodyTemplate: 'reminder-form-will-close.html',
       title: `Submission Closing for ${form.name}`,
       subject: subject,
-      messageLinkText: `Hi ${names},\n
-      This email is to remind you that the ${form.name} form is open for submissions until ${ closeDate }. Please ensure to complete your submission before the period is closed.
-      Thank you. `,
+      messageLinkText: `${message}`,
       priority: 'normal',
       form,
     };
@@ -435,7 +432,7 @@ const service = {
    */
   initReminder: async (obj) => {
     try {
-      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.user, obj.report, obj.referer);
+      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.users, obj.report, obj.referer);
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {

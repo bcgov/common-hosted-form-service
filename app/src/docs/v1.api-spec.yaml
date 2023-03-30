@@ -2801,63 +2801,13 @@ components:
             enableSubmitterDraft:
               type: boolean
               example: true
+            reminder_enabled:
+              type: boolean
+              example: true
+              description: Allow form to send reminder email to all submitters
             schedule:
               type: Object
-              example: 
-                enabled:
-                  type: boolean
-                  example: true
-                scheduleType:
-                  type: string
-                  example: manual
-                openSubmissionDateTime:
-                  type: string
-                  example: '2023-12-22'
-                closeSubmissionDateTime:
-                  type: string
-                  example: '2023-12-22'
-                closingMessageEnabled:
-                  type: boolean
-                  example: true
-                closingMessage:
-                  type: string
-                  example: This form is expired.
-                keepOpenForTerm:
-                  type: string
-                  example: '1'
-                keepOpenForInterval:
-                  type: string
-                  example: 'weeks'
-                repeatSubmission:
-                  type: Object
-                  example: 
-                    enabled:
-                      type: boolean
-                      example: true
-                    everyTerm:
-                      type: string
-                      example: '3'
-                    repeatUntil:
-                      type: string
-                      example: '2024-12-22'
-                    everyIntervalType:
-                      type: string
-                      example: 'months'
-                allowLateSubmissions:
-                  type: Object
-                  example: 
-                    enabled:
-                      type: boolean
-                      example: true
-                    forNext:
-                      type: Object
-                      example: 
-                        term:
-                          type: string
-                          example: '2'
-                        intervalType:
-                          type: string
-                          example: 'days'
+              description: Contains schedule related data
               properties:
                 enabled:
                   type: boolean

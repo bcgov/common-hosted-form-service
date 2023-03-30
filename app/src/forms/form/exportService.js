@@ -1,10 +1,9 @@
 const Problem = require('api-problem');
 const {flattenComponents, unwindPath, submissionHeaders} = require('../common/utils');
-const { EXPORT_FORMATS, EXPORT_TYPES, Roles } = require('../common/constants');
-const { Form, FormVersion, SubmissionData, UserFormAccess } = require('../common/models');
+const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
+const { Form, FormVersion, SubmissionData } = require('../common/models');
 const {  transforms } = require('json2csv');
 const { Parser } = require('json2csv');
-
 
 
 const service = {
@@ -231,24 +230,6 @@ const service = {
     const result = await service._formatData(exportFormat, exportType,exportTemplate, form, data, columns, params.version);
 
     return { data: result.data, headers: result.headers };
-  },
-  _getListSubmittersByFormId : async (formId, obj ) => {
-
-    return [ await UserFormAccess.query()
-      .select('formVersionId','formName','userId','firstName','lastName', 'email')
-      .where('formId',formId)
-      .modify('filterActive', true)
-      .modify('filterByAccess', undefined, Roles.FORM_SUBMITTER, undefined)
-      .modify('orderDefault'),
-    await SubmissionData.query()
-      .select('confirmationId', 'createdAt', 'submissionId', 'formVersionId','userId','firstName','lastName', 'email')
-      .where('formId',formId)
-      .modify('filterDrafts', false)
-      .modify('filterDeleted', false)
-      .modify('filterCreatedAt', obj.report.dates.startDate, obj.report.dates.graceDate)
-      .modify('orderDefault'),
-    obj
-    ];
   }
 
 };

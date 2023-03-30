@@ -119,15 +119,6 @@
                 </template>
                 <span>Experimental <a :href="githubLinkScheduleAndReminderFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
                   <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a></span>
-                <!-- <span>
-                  Selecting this option controls this form to be open or close
-                  for a given period.<br />
-                  If checked, it will display form schedule section where you can
-                  <ul>
-                    <li>Set form submissions open and close date</li>
-                    <li>Set form recurrence settings</li>
-                  </ul>
-                </span> -->
               </v-tooltip>
             </template>
           </v-checkbox>
@@ -443,17 +434,19 @@
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
                       <template #title>SEND Reminder email</template>
-                      <v-checkbox class="my-0 m-0 p-0" v-model="reminder.enabled">
+                      <v-checkbox class="my-0 m-0 p-0" v-model="reminder_enabled">
                         <template #label>
                           Enable automatic reminder notification
-                          <v-tooltip bottom>
+                          <v-tooltip close-delay="2500" bottom>
                             <template v-slot:activator="{ on, attrs }">
                               <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
                                 help_outline
                               </v-icon>
                             </template>
                             <span>
-                              Send reminder email/s with the form link during the submission period. (Learn more)
+                              Send reminder email/s with the form link during the submission period. 
+                              <a :href="githubLinkScheduleAndReminderFeature" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                                <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a>
                             </span>
                           </v-tooltip>
                         </template>
@@ -583,7 +576,7 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.schedule',
-      'form.reminder',
+      'form.reminder_enabled',
       'form.versions'
     ]),
     ID_MODE() {
@@ -691,12 +684,6 @@ export default {
     }
   },
   watch: {
-    INTERVAL_OPEN: {
-      deep: true,
-      handler: function (day) {
-        this.reminder.allowAdditionalNotifications = (day<=1) ? false : this.reminder.allowAdditionalNotifications;
-      }
-    },
   },
   methods: {
     ...mapActions('form', ['fetchForm']),
@@ -707,14 +694,14 @@ export default {
         this.enableCopyExistingSubmission = false;
       }
       if (this.userType !== 'team') {
-        this.reminder = {};
+        this.reminder_enabled = false;
       }
     },
     openDateTypeChanged() {
 
       if(isDateValidForMailNotification(this.schedule.openSubmissionDateTime)){
         this.enableReminderDraw=false;
-        this.reminder.enabled = false;
+        this.reminder_enabled = false;
       } else {
         this.enableReminderDraw = true;
       }
