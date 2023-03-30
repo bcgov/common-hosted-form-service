@@ -359,7 +359,7 @@ export default {
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
-          reminder_enabled : state.form.reminder_enabled,
+          reminder_enabled: state.form.reminder_enabled,
           enableCopyExistingSubmission: state.form.enableCopyExistingSubmission
         });
       } catch (error) {
