@@ -109,6 +109,8 @@ import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
 
+import _ from 'lodash';
+
 export default {
   name: 'FormViewer',
   components: {
@@ -161,7 +163,7 @@ export default {
       version: 0,
       versionIdToSubmitTo: this.versionId,
       isFormScheduleExpired: false,
-      formScheduleExpireMessage: 'Form Submission is not available for this moment.',
+      formScheduleExpireMessage: 'Form submission is not available as the scheduled submission period has expired.',
       isLateSubmissionAllowed: false
     };
   },
@@ -209,13 +211,24 @@ export default {
       return `Bearer ${this.token}`;
     },
     async getFormData() {
+      function iterate(obj, stack, fields, propNeeded) { //Get property path from nested object
+        for (var property in obj) {
+          if (typeof obj[property] == 'object') {
+            return iterate(obj[property], stack + '.' + property, fields, propNeeded);
+          } else if(propNeeded === property){
+            fields = fields+stack + '.' + property;
+            return fields;
+          }
+        }
+      }
+
       function deleteFieldData(fieldcomponent,submission) {
         if(Object.prototype.hasOwnProperty.call(fieldcomponent,'components')){
           fieldcomponent.components.map((subComponent) => { // Check if it's a Nested component
             deleteFieldData(subComponent,submission);
           });
         }else if(!fieldcomponent?.validate?.isUseForCopy){
-          delete submission?.data[fieldcomponent.key]; //Delete fields date as it's not activated for Value propagation
+          _.unset(submission, iterate(submission,'','',fieldcomponent.key).replace(/^\./, ''));
         }
       }
           
@@ -232,7 +245,6 @@ export default {
         }else{
           /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
           if(response.data?.version?.schema?.components && response.data?.version?.schema?.components.length){
-            // console.log('response.data.version.schema.components--',response.data.version.schema.components);
             response.data.version.schema.components.map((component) => {
               deleteFieldData(component,this.submission); //Delete all the fields data that are not enabled for duplication
             });
