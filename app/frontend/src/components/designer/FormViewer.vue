@@ -1,14 +1,13 @@
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-
     <div v-if="isFormScheduleExpired">
       <template>
-        <v-alert
-          text
-          prominent
-          type="error"
-        >
-          {{isLateSubmissionAllowed ? "The form submission period has expired! You can still create a late submission by clicking the button below." : formScheduleExpireMessage}}
+        <v-alert text prominent type="error">
+          {{
+            isLateSubmissionAllowed
+              ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
+              : formScheduleExpireMessage
+          }}
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
@@ -157,14 +156,15 @@ export default {
       saving: false,
       showSubmitConfirmDialog: false,
       submission: {
-        data: {lateEntry:false},
+        data: { lateEntry: false },
       },
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
       isFormScheduleExpired: false,
-      formScheduleExpireMessage: 'Form submission is not available as the scheduled submission period has expired.',
-      isLateSubmissionAllowed: false
+      formScheduleExpireMessage:
+        'Form submission is not available as the scheduled submission period has expired.',
+      isLateSubmissionAllowed: false,
     };
   },
   computed: {
@@ -187,7 +187,7 @@ export default {
         componentOptions: {
           simplefile: {
             config: Vue.prototype.$config,
-            chefsToken: this.getCurrentAuthHeader
+            chefsToken: this.getCurrentAuthHeader,
           },
         },
         evalContext: {
@@ -201,7 +201,7 @@ export default {
         !this.readOnly &&
         this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
       );
-    }
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -211,42 +211,57 @@ export default {
       return `Bearer ${this.token}`;
     },
     async getFormData() {
-      function iterate(obj, stack, fields, propNeeded) { //Get property path from nested object
+      function iterate(obj, stack, fields, propNeeded) {
+        //Get property path from nested object
         for (var property in obj) {
           if (typeof obj[property] == 'object') {
-            return iterate(obj[property], stack + '.' + property, fields, propNeeded);
-          } else if(propNeeded === property){
-            fields = fields+stack + '.' + property;
+            return iterate(
+              obj[property],
+              stack + '.' + property,
+              fields,
+              propNeeded
+            );
+          } else if (propNeeded === property) {
+            fields = fields + stack + '.' + property;
             return fields;
           }
         }
       }
 
-      function deleteFieldData(fieldcomponent,submission) {
-        if(Object.prototype.hasOwnProperty.call(fieldcomponent,'components')){
-          fieldcomponent.components.map((subComponent) => { // Check if it's a Nested component
-            deleteFieldData(subComponent,submission);
+      function deleteFieldData(fieldcomponent, submission) {
+        if (
+          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
+        ) {
+          fieldcomponent.components.map((subComponent) => {
+            // Check if it's a Nested component
+            deleteFieldData(subComponent, submission);
           });
-        }else if(!fieldcomponent?.validate?.isUseForCopy){
-          _.unset(submission, iterate(submission,'','',fieldcomponent.key).replace(/^\./, ''));
+        } else if (!fieldcomponent?.validate?.isUseForCopy) {
+          _.unset(
+            submission,
+            iterate(submission, '', '', fieldcomponent.key).replace(/^\./, '')
+          );
         }
       }
-          
+
       try {
         this.loadingSubmission = true;
         const response = await formService.getSubmission(this.submissionId);
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
         this.form = response.data.form;
-        if(!this.isDuplicate){
+        if (!this.isDuplicate) {
           //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
           this.formSchema = response.data.version.schema;
           this.version = response.data.version.version;
-        }else{
+        } else {
           /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
-          if(response.data?.version?.schema?.components && response.data?.version?.schema?.components.length){
+          if (
+            response.data?.version?.schema?.components &&
+            response.data?.version?.schema?.components.length
+          ) {
             response.data.version.schema.components.map((component) => {
-              deleteFieldData(component,this.submission); //Delete all the fields data that are not enabled for duplication
+              deleteFieldData(component, this.submission); //Delete all the fields data that are not enabled for duplication
             });
           }
         }
@@ -306,19 +321,20 @@ export default {
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
 
-          if(response.data.schedule && response.data.schedule.expire){
+          if (response.data.schedule && response.data.schedule.expire) {
             let formScheduleStatus = response.data.schedule;
             this.isFormScheduleExpired = formScheduleStatus.expire;
-            this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
+            this.isLateSubmissionAllowed =
+              formScheduleStatus.allowLateSubmissions;
             this.formScheduleExpireMessage = formScheduleStatus.message;
           }
-
         }
       } catch (error) {
         if (this.authenticated) {
           this.isFormScheduleExpired = true;
           this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage = 'An error occurred fetching this form';
+          this.formScheduleExpireMessage =
+            'An error occurred fetching this form';
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,
@@ -361,10 +377,13 @@ export default {
     },
     async sendSubmission(isDraft, submission) {
       const formScheduleStatus = this.form.schedule;
-      submission.data.lateEntry = formScheduleStatus.expire === true ? formScheduleStatus.allowLateSubmissions : false;
+      submission.data.lateEntry =
+        formScheduleStatus.expire === true
+          ? formScheduleStatus.allowLateSubmissions
+          : false;
       const body = {
         draft: isDraft,
-        submission: submission
+        submission: submission,
       };
 
       let response;
@@ -480,16 +499,17 @@ export default {
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...
-          this.submissionRecord = Object.assign(
-            {},
-            this.submissionId && this.isDuplicate  //Check if this submission is creating with the existing one
+          this.submissionRecord = Object.assign({},
+            this.submissionId && this.isDuplicate //Check if this submission is creating with the existing one
               ? response.data
               : this.submissionId && !this.isDuplicate
                 ? response.data.submission
                 : response.data
           );
         } else {
-          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
+          throw new Error(
+            `Failed response from submission endpoint. Response code: ${response.status}`
+          );
         }
       } catch (error) {
         console.error(error); // eslint-disable-line no-console
@@ -524,10 +544,11 @@ export default {
     },
   },
   async created() {
-    if (this.submissionId && this.isDuplicate) { //Run when make new submission from existing one called.
+    if (this.submissionId && this.isDuplicate) {
+      //Run when make new submission from existing one called.
       await this.getFormData();
       await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
-    } else if(this.submissionId && !this.isDuplicate) {
+    } else if (this.submissionId && !this.isDuplicate) {
       await this.getFormData();
     } else {
       await this.getFormSchema();

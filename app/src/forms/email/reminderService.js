@@ -18,7 +18,7 @@ const service = {
     const resolve = [];
     const errors = [];
     let mail = 0;
-    
+
     if(q.length!==0) {
       for(let i = 0 ; i < q.length ; i++) {
         if(!q[i].error){
@@ -40,14 +40,14 @@ const service = {
         }
       }
       return {
-        message: `${q.length} forms found , ${mail} mails sent.`,
+        message: `${q.length} forms found, ${mail} emails sent.`,
         errors,
         resolve
       };
     }
     else {
       return {
-        message: '0 emails sent',
+        message: '0 emails sent.',
         data: q,
       };
     }
@@ -154,7 +154,7 @@ const service = {
       obj.availableDate =  service._listDates(forms[i].schedule) ;
 
       if (obj.availableDate.length == 0) {
-        reminder.push({ error:true, message : `Form ${forms[i].name } has no avalaible date.` });
+        reminder.push({ error:true, message : `Form ${forms[i].name } has no available date.` });
         continue;
       }
 
