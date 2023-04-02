@@ -97,10 +97,6 @@ const hasSubmissionPermissions = (permissions) => {
       return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
     }
 
-    //validate submission id
-    if(!validate(submissionId)) {
-      return next(new Problem(401, { detail: 'Not a valid submission id' }));
-    }
 
     // Get the submission results so we know what form this submission is for
     const submissionForm = await service.getSubmissionForm(submissionId);
