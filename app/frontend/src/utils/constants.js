@@ -101,3 +101,10 @@ export const Regex = Object.freeze({
   // From ajv-format
   EMAIL: '^[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$'
 });
+
+/** Identity modes that a form can operate in regards to user identification */
+export const ScheduleType = Object.freeze({
+  MANUAL: 'manual', // Requires Login
+  CLOSINGDATE: 'closingDate', // Anonymous
+  PERIOD: 'period' // Specific People
+});

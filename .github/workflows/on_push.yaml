@@ -55,6 +55,7 @@ jobs:
           namespace_environment: dev
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
 
   deploy-test:
@@ -81,6 +82,7 @@ jobs:
           namespace_environment: test
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
 
   deploy-prod:
@@ -108,4 +110,5 @@ jobs:
           namespace_environment: prod
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          server_host: ${{ vars.SERVER_HOST }}
           route_path: /app

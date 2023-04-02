@@ -12,7 +12,6 @@ const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
-
 const apiRouter = express.Router();
 const state = {
   connections: {
@@ -22,7 +21,6 @@ const state = {
   shutdown: false
 };
 let probeId;
-
 const app = express();
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));

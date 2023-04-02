@@ -229,7 +229,8 @@ objects:
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
-          securityContext: {}
+          securityContext:
+            allowPrivilegeEscalation: true
           serviceAccountName: "${NAME}-${INSTANCE}"
           volumes:
             - name: postgresql

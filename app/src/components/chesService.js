@@ -106,6 +106,7 @@ class ChesService {
 
 
   async merge(data) {
+    // eslint-disable-next-line no-console
     try {
       const response = await this.axios.post(
         `${this.apiV1}/emailMerge`,
