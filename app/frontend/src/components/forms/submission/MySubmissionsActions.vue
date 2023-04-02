@@ -24,9 +24,35 @@
       </v-tooltip>
     </router-link>
 
+    <span v-if="submission.status === 'SUBMITTED' && isCopyFromExistingSubmissionEnabled === true">
+      <router-link
+        :to="{
+          name: 'UserFormDuplicate',
+          query: {
+            s: submission.submissionId,
+            f: formId,
+          },
+        }"
+      >
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              :disabled="!hasViewPerm()"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>app_registration</v-icon>
+            </v-btn>
+          </template>
+          <span>Copy This Submission</span>
+        </v-tooltip>
+      </router-link>
+    </span>
+
     <span v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'">
       <router-link
-        v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
         :to="{
           name: 'UserFormDraftEdit',
           query: {
@@ -61,6 +87,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
 import { FormPermissions } from '@/utils/constants';
 
@@ -74,6 +101,16 @@ export default {
       type: Object,
       required: true,
     },
+    formId: {
+      type: String,
+      required: true
+    }
+  },
+  computed: {
+    ...mapGetters('form', ['form']),
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
+    }
   },
   methods: {
     draftDeleted() {
