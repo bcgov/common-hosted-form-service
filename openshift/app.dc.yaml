@@ -229,6 +229,11 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-objectstorage-secret"
+                - name: APITOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      key: mailapitoken
+                      name: "chefs-${JOB_NAME}-secret"
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:
@@ -238,6 +243,8 @@ objects:
                     name: "${APP_NAME}-sc-config"
                 - configMapRef:
                     name: "${APP_NAME}-server-config"
+                - configMapRef:
+                    name: "${APP_NAME}-service-config"
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
                 - configMapRef:

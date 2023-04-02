@@ -197,6 +197,7 @@ export default {
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
+      'form.enableCopyExistingSubmission',
       'form.enableStatusUpdates',
       'form.idps',
       'form.name',
@@ -269,15 +270,27 @@ export default {
             weight: 40,
             components: {
               // Need to re-define Formio basic fields here
-              textfield: true,
-              textarea: true,
-              number: true,
-              password: true,
-              checkbox: true,
-              selectboxes: true,
-              select: true,
-              radio: true,
-              button: true,
+              // To disable fields make it false here
+              // textfield: true,
+              // textarea: true,
+              // number: true,
+              // password: true,
+              // checkbox: true,
+              // selectboxes: true,
+              // select: true,
+              // radio: true,
+              // button: true,
+              email: false,
+              url: false,
+              phoneNumber: false,
+              tags: false,
+              address: false,
+              datetime: false,
+              day: false,
+              time: false,
+              currency: false,
+              survey: false,
+              signature: false,
               // Prevent duplicate appearance of orgbook component
               orgbook: false,
               bcaddress:false
@@ -663,9 +676,11 @@ export default {
           userType: this.userType,
         }),
         enableSubmitterDraft: this.enableSubmitterDraft,
+        enableCopyExistingSubmission: this.enableCopyExistingSubmission,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
+        reminder_enabled : false
       });
 
       // Navigate back to this page with ID updated

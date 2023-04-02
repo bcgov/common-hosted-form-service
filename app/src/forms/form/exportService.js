@@ -6,7 +6,6 @@ const {  transforms } = require('json2csv');
 const { Parser } = require('json2csv');
 
 
-
 const service = {
   /**
    * @function _readSchemaFields
