@@ -1,4 +1,5 @@
 const Problem = require('api-problem');
+const { validate } = require('uuid');
 
 const keycloak = require('../../../components/keycloak');
 const Permissions = require('../../common/constants').Permissions;
@@ -96,6 +97,7 @@ const hasSubmissionPermissions = (permissions) => {
       return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
     }
 
+
     // Get the submission results so we know what form this submission is for
     const submissionForm = await service.getSubmissionForm(submissionId);
 
@@ -109,6 +111,7 @@ const hasSubmissionPermissions = (permissions) => {
           return formFromCurrentUser.permissions.includes(p);
         });
         if (intersection.length === permissions.length) {
+          req.formIdWithDeletePermission = submissionForm.form.id;
           return next();
         }
       }
@@ -133,6 +136,51 @@ const hasSubmissionPermissions = (permissions) => {
 
     // no access to this submission...
     return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  };
+};
+
+const filterMultipleSubmissions = () => {
+  return async (req, _res, next) => {
+
+    // Get the provided list of submissions Id whether in a req body
+    const submissionIds = req.body&&req.body.submissionIds;
+    if (!Array.isArray(submissionIds)) {
+      // No submission provided to this route that secures based on form... that's a problem!
+      return next(new Problem(401, { detail: 'SubmissionIds not found on request.' }));
+    }
+
+    let formIdWithDeletePermission=req.formIdWithDeletePermission;
+
+    // Get the provided form ID whether in a param or query (precedence to param)
+    const formId = req.params.formId || req.query.formId;
+    if (!formId) {
+      // No submission provided to this route that secures based on form... that's a problem!
+      return next(new Problem(401, { detail: 'Form Id not found on request.' }));
+    }
+
+    //validate form id
+    if(!validate(formId)) {
+      return next(new Problem(401, { detail: 'Not a valid form id' }));
+    }
+
+    //validate all submission ids
+    const isValidSubmissionId =submissionIds.every((submissionId)=>validate(submissionId));
+    if(!isValidSubmissionId) {
+      return next(new Problem(401, { detail: 'Invalid submissionId(s) in the submissionIds list.' }));
+    }
+
+    if (formIdWithDeletePermission===formId) {
+
+      // check if users has not injected submission id that does not belong to this form
+      const metaData = await service.getMultipleSubmission(submissionIds);
+
+      const isForeignSubmissionId = metaData.every((SubmissionMetadata)=>SubmissionMetadata.formId===formId);
+      if (!isForeignSubmissionId || metaData.length!==submissionIds.length) {
+        return next(new Problem(401, { detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.' }));
+      }
+      return next();
+    }
+    return next(new Problem(401, { detail: 'Current user does not have required permission(s) for to delete submissions' }));
   };
 };
 
@@ -274,5 +322,5 @@ const hasRolePermissions = (removingUsers = false) => {
 };
 
 module.exports = {
-  currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasFormRole, hasRolePermissions,
+  currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasFormRole, hasRolePermissions, filterMultipleSubmissions,
 };
