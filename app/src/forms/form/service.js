@@ -2,6 +2,9 @@ const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 const { validateScheduleObject } = require('../common/utils');
+const { PassThrough } = require('stream');
+const fileService = require('../file/service');
+const archiver = require('archiver');
 
 const {
   FileStorage,
@@ -53,7 +56,7 @@ const service = {
     if(scheduleData.status !== 'success'){
       throw new Problem(422, `${scheduleData.message}`);
     }
-    
+
     try {
       trx = await Form.startTransaction();
       const obj = {};
@@ -327,7 +330,7 @@ const service = {
   listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query()
       .where('formVersionId', formVersionId)
-      .modify('filterCreatedBy', params.createdBy)
+      .modify('filterCreatedBy', params&&params.createdBy)
       .modify('orderDescending');
   },
 
@@ -576,6 +579,33 @@ const service = {
     return FormApiKey.query()
       .deleteById(currentKey.id)
       .throwIfNotFound();
+  },
+
+  extactFilesFromSubmission:async(formId, formVersionId) =>{
+
+    const sumbmissions = await service.listSubmissions( formVersionId);
+    let submissionsIds = sumbmissions.map(submission=>submission.id);
+    let paths = await FileStorage.query()
+      .column('path','originalName')
+      .whereIn('formSubmissionId', submissionsIds);
+
+    return await service.multiFilesStream(paths);
+
+  },
+
+  multiFilesStream: async(infos) => {
+    // using archiver package to create archive object with zip setting -> level from 0(fast, low compression) to 10(slow, high compression)
+    const archive = archiver('zip', { zlib: { level: 5 } });
+
+    for (let i = 0; i < infos.length; i += 1) {
+      // using pass through stream object to wrap the stream from aws s3
+      const passthrough = new PassThrough();
+      let stream = await fileService.readFile({path:infos[i].path, storage:'objectStorage'});
+      stream.pipe(passthrough);
+      // name parameter is the name of the file that the file needs to be when unzipped.
+      archive.append(passthrough, { name: infos[i].originalName });
+    }
+    return archive;
   },
 
   /**

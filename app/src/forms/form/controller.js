@@ -104,6 +104,15 @@ module.exports = {
       next(error);
     }
   },
+  extactFilesFromSubmission: async (req, res, next) => {
+    try {
+      const response = await service.extactFilesFromSubmission(req.params.formId, req.params.formVersionId);
+      response.pipe(res);
+      response.finalize();
+    } catch (error) {
+      next(error);
+    }
+  },
   listSubmissions: async (req, res, next) => {
     try {
       const response = await service.listSubmissions(req.params.formVersionId, req.query);

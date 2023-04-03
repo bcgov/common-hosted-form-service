@@ -37,6 +37,11 @@ const service = {
     }
   },
 
+  readFile: async(fileStorage)=>{
+    return await storageService._readFile(fileStorage);
+
+  },
+
   read: async (id) => {
     return FileStorage.query()
       .findById(id)

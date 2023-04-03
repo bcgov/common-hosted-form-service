@@ -98,6 +98,10 @@ routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
   await controller.readDraft(req, res, next);
 });
 
+routes.get('/:formId/versions/:formVersionId/files', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
+  await controller.extactFilesFromSubmission(req, res, next);
+});
+
 routes.put('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_UPDATE]), async (req, res, next) => {
   await controller.updateDraft(req, res, next);
 });
