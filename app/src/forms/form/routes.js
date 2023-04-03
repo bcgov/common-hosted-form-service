@@ -1,6 +1,6 @@
 const config = require('config');
 const routes = require('express').Router();
-
+const middleware = require('../common/middleware');
 const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
@@ -98,7 +98,7 @@ routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
   await controller.readDraft(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/files', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
+routes.get('/:formId/versions/:formVersionId/files',middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
   await controller.extactFilesFromSubmission(req, res, next);
 });
 
