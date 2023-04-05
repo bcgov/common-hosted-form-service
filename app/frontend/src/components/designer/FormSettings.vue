@@ -129,15 +129,13 @@
             </template>
           </v-checkbox>
 
-          <v-checkbox :disabled="!enableSubmitterDraft" class="my-0" v-model="allowSubmitterToUploadFile">
+          <v-checkbox @change="allowSubmitterToUploadFileChanged" class="my-0" v-model="allowSubmitterToUploadFile">
             <template #label>
               <span>
                 Allow <strong> bulk submission </strong> upload
-                <v-tooltip bottom>
+                <v-tooltip close-delay="1000" bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                      help_outline
-                    </v-icon>
+                    <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
                   </template>
                   <span>
                     Selecting this option controls what the submitting user of
@@ -155,14 +153,7 @@
               </span>
             </template>
           </v-checkbox>
-          <BaseInfoCard v-if="!enableSubmitterDraft" class="mr-4" >
-            <h4 class="primary--text">
-              <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
-            </h4>
-            <p class="my-2">
-              Please to enable this option <span>save and Edit draft</span> must be selected
-            </p>
-          </BaseInfoCard>
+
         </BasePanel>
       </v-col>
 
@@ -250,6 +241,9 @@
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import { IdentityMode, IdentityProviders, Regex } from '@/utils/constants';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faFlask,faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
+library.add(faFlask,faXmark,faSquareArrowUpRight);
 
 export default {
   name: 'FormSettings',
@@ -323,6 +317,11 @@ export default {
     enableSubmitterDraftChanged(){
       if(!this.enableSubmitterDraft){
         this.allowSubmitterToUploadFile = false;
+      }
+    },
+    allowSubmitterToUploadFileChanged(){
+      if(this.allowSubmitterToUploadFile && !this.enableSubmitterDraft){
+        this.enableSubmitterDraft = true;
       }
     }
   },

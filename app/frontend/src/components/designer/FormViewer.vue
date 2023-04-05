@@ -88,8 +88,8 @@
         />
         <p v-if="version" class="text-right">Version: {{ version }}</p>
       </div>
-      <FormBulkDialog v-if="!submissionId" @leave-this-page="leaveThisPage" @set-bulk-file="setBulkFile"/>
-      <BulkPrompt :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" />
+      <FormBulkDialog v-if="!submissionId && form.allowSubmitterToUploadFile" @leave-this-page="leaveThisPage" @set-bulk-file="setBulkFile"/>
+      <BulkPrompt :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" @close-bulk-yes-or-no="closeBulkYesOrNo"/>
     </v-skeleton-loader>
  
   </div>
@@ -285,8 +285,14 @@ export default {
             );
           }
 
+          this.form = response.data;
+          this.version = response.data.versions[0].version;
+          this.versionIdToSubmitTo = response.data.versions[0].id;
+          this.formSchema = response.data.versions[0].schema;
+
           if (response.data.allowSubmitterToUploadFile && !this.draftId)
             this.jsonManager(response);
+
         }
       } catch (error) {
         if (this.authenticated) {
@@ -298,12 +304,7 @@ export default {
       }
     },
     jsonManager(response){
-
       this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
-      this.form = response.data;
-      this.version = response.data.versions[0].version;
-      this.versionIdToSubmitTo = response.data.versions[0].id;
-      this.formSchema = response.data.versions[0].schema;
       const form = this.$refs.chefForm.formio;
       this.formElement = form;
       this.json_csv.data = [form.data, form.data] ;
@@ -598,6 +599,9 @@ export default {
         });
       }
     },
+    closeBulkYesOrNo(){
+      this.doYouWantToSaveTheDraft = false;
+    }
   },
   created() {
     if (this.submissionId) {

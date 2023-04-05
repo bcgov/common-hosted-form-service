@@ -110,7 +110,19 @@ export default {
       upload_state : 0,
       index:0,
       globalError :[],
-      progress: false
+      progress: false,
+      ERROR : {
+        UPLOAD_MULTIPLE_FILE_ERROR: 'Sorry, you can upload only one file',
+        DRAG_MULPLE_FILE_ERROR: 'Sorry, you can drag only one file',
+        FILE_FORMAT_ERROR:'Sorry, we only accept json files',
+        FILE_SIZE_ERROR: 'Max file size allowed is 5MB',
+        PARSE_JSON_ERROR:'An unexpected error occurred',
+        JSON_OBJECT_NOT_ARRAY:'An unexpected error occurred.',
+        JSON_ARRAY_EMPTY:'This json file is empty.',
+        ERROR_WHILE_VALIDATE:'There is something wrong with this file',
+        ERROR_WHILE_CHECKVALIDITY: 'There is something wrong with this file',
+        ERROR_AFTER_VALIDATE:'Some errors found, see below for more information.'
+      }
     };
   },
   computed: {
@@ -131,7 +143,7 @@ export default {
       if(this.block){ return;}
 
       if(this.file!=undefined) {
-        this.addNotification({message:'Sorry, you can upload only one file.',consoleError: 'Only one file can be drag.',});
+        this.addNotification({message:this.ERROR.UPLOAD_MULTIPLE_FILE_ERROR,consoleError:this.ERROR.UPLOAD_MULTIPLE_FILE_ERROR});
         return;
       }
       let droppedFiles = (type==0)?  e.dataTransfer.files : this.$refs.file.files;
@@ -139,16 +151,16 @@ export default {
       if(!droppedFiles) return;
 
       if(droppedFiles.length>1) {
-        this.addNotification({message:'Sorry, you can drag only one file.',consoleError: 'Only one file can be drag.',});
+        this.addNotification({message:this.ERROR.DRAG_MULPLE_FILE_ERROR,consoleError: this.ERROR.DRAG_MULPLE_FILE_ERROR,});
         return;
       }
       if(droppedFiles[0]['type']!='application/json'){
-        this.addNotification({message:'Sorry, we only accept json files.',consoleError: 'Sorry, we only accept json files.',});
+        this.addNotification({message:this.ERROR.FILE_FORMAT_ERROR,consoleError: this.ERROR.FILE_FORMAT_ERROR,});
         return;
       }
       let size = (droppedFiles[0] / (1024 *1024));
       if(size>5) {
-        this.addNotification({message:'Max file size allowed is 5MB.',consoleError: 'Max file size allowed is 5MB.',});
+        this.addNotification({ message:this.ERROR.FILE_SIZE_ERROR, consoleError: this.ERROR.FILE_SIZE_ERROR});
         return;
       }
       this.file = droppedFiles [0];
@@ -178,7 +190,7 @@ export default {
         reader.readAsText(this.file);
       }catch(e){
         this.resetUpload();
-        this.addNotification({message:e,consoleError: e,});
+        this.addNotification({message:this.ERROR.PARSE_JSON_ERROR,consoleError: e,});
       }
     },
     preValidateSubmission(){
@@ -186,12 +198,12 @@ export default {
 
         if(!Array.isArray(this.Json)){
           this.resetUpload();
-          this.addNotification({message:'An unexpected error occurred.',consoleError: 'An unexpected error occurred.'});
+          this.addNotification({message:this.ERROR.JSON_OBJECT_NOT_ARRAY,consoleError: 'An unexpected error occurred.'});
           return;
         }
         if(this.Json.length==0){
           this.resetUpload();
-          this.addNotification({message:'This json file is empty.',consoleError: 'this file is empty.'});
+          this.addNotification({message:this.ERROR.JSON_ARRAY_EMPTY,consoleError: 'this file is empty.'});
           return;
         }
         this.globalError = [];
@@ -201,8 +213,8 @@ export default {
         this.validate(this.Json[this.index]);
       } catch (error) {
         this.resetUpload();
-        this.$emit('set-error', {error:true, message:'There is something wrong with this file' } );
-        this.addNotification({message:'there is something wrong with this file',consoleError: error,});
+        this.$emit('set-error', {error:true, message: this.ERROR.ERROR_WHILE_VALIDATE } );
+        this.addNotification({ message: this.ERROR.ERROR_WHILE_VALIDATE ,consoleError: error,});
         return;
       }
 
@@ -219,7 +231,7 @@ export default {
             });
           }
         } catch (error) {
-          this.addNotification({message:error,consoleError: error,});
+          this.addNotification({ message: this.ERROR.ERROR_WHILE_CHECKVALIDITY ,consoleError: error,});
         }
         this.index++;
         this.value = this.pourcentage(this.index);
@@ -262,7 +274,7 @@ export default {
       if(this.globalError.length==0){
         this.$emit('save-bulk-data', this.Json );
       } else {
-        this.$emit('set-error', { message: 'Some errors found, see below for more information.', error: true, upload_state: 10});
+        this.$emit('set-error', { message: this.ERROR.ERROR_AFTER_VALIDATE, error: true, upload_state: 10});
       }
     },
     resetUpload(){

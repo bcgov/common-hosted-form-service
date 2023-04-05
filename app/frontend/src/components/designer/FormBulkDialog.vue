@@ -5,35 +5,37 @@
       v-model="dialog"
       scrollable
       width="auto"
+      @click:outside="cancel"
     >
       <v-card>
         <v-card-title>Create</v-card-title>
-        <v-divider></v-divider>
+        
         <v-card-text style="height:auto;">
           <v-radio-group
             v-model="typeSubmissionSelected"
             column
           >
             <v-radio
+              class="mt-4"
               label="Sigle Submission"
               :value="false"
             ></v-radio>
             <v-radio
+              class="mt-4"
               label="Multiple Submission upload"
               :value="true"
             ></v-radio>
           </v-radio-group>
         </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
+       
+        <v-card-actions class="mb-2">
           <v-btn
             color="primary"
-            rounded
             @click="typeSubmissionSelectedChanged"
           >
             <span>Confirm</span>
           </v-btn>
-          <v-btn outlined rounded @click="cancel">
+          <v-btn outlined @click="cancel">
             <span>Cancel</span>
           </v-btn>
         </v-card-actions>
