@@ -213,7 +213,7 @@ export default {
     async getFormData() {
       function iterate(obj, stack, fields, propNeeded) {
         //Get property path from nested object
-        for (var property in obj) {
+        for (let property in obj) {
           if (typeof obj[property] == 'object') {
             return iterate(
               obj[property],
@@ -377,7 +377,7 @@ export default {
     },
     async sendSubmission(isDraft, submission) {
       submission.data.lateEntry =
-        (this.form && 'schedule' in this.form && 'expire' in this.form.schedule && this.form.schedule.expire === true)
+        (this.form?.schedule?.expire !== undefined && this.form.schedule.expire === true)
           ? this.form.schedule.allowLateSubmissions
           : false;
       const body = {
