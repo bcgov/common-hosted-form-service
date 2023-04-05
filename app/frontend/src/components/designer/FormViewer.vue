@@ -378,7 +378,7 @@ export default {
     async sendSubmission(isDraft, submission) {
       const formScheduleStatus = this.form.schedule;
       submission.data.lateEntry =
-        formScheduleStatus.expire === true
+        ('expire' in formScheduleStatus && formScheduleStatus.expire === true)
           ? formScheduleStatus.allowLateSubmissions
           : false;
       const body = {
