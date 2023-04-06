@@ -1,0 +1,30 @@
+name: Format
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - reopened
+      - synchronize
+jobs:
+  style_format:
+    name: Check Eslint and Prettier code format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "18.x"
+      - name: Install backend/frontend packages
+        run: cd app && npm i && cd frontend && npm i
+      - name: Frontend Lint
+        run: npm run lint
+      - name: Frontend Fromat
+        run: npm run prettier
+      - name: Backend Lint
+        run: cd ../ && npm run lint
+      - name: Backend Fromat
+        run: npm run prettier
