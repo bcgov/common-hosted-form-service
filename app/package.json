@@ -47,6 +47,8 @@
     "dev:reset-db": "npm run migrate:rollback:all && npm run migrate"
   },
   "dependencies": {
+    "@json2csv/node": "^6.1.2",
+    "@json2csv/transforms": "^6.1.2",
     "api-problem": "^7.0.3",
     "aws-sdk": "^2.1167.0",
     "axios": "^0.27.2",

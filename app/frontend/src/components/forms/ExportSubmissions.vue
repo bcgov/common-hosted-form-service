@@ -2,39 +2,20 @@
   <span>
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
-        <v-btn
-          class="mx-1"
-          @click="openExportDialog"
-          color="primary"
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
+        <v-btn class="mx-1" @click="openExportDialog" color="primary" icon v-bind="attrs" v-on="on">
           <v-icon>get_app</v-icon>
         </v-btn>
       </template>
       <span>Export Submissions to File</span>
     </v-tooltip>
 
-    <v-dialog
-      v-if="dialog"
-      v-model="dialog"
-      width="900"
-      content-class="export-submissions-dlg"
-    >
+    <v-dialog v-if="dialog" v-model="dialog" width="900" content-class="export-submissions-dlg">
       <v-card>
         <v-card-title class="text-h5 pb-0 titleObjectStyle"
           >Export Submissions to File</v-card-title
         >
         <v-card-text>
-          <hr
-            style="
-              height: 2px;
-              border: none;
-              background-color: #707070c1;
-              margin-top: 5px;
-            "
-          />
+          <hr style="height: 2px; border: none; background-color: #707070c1; margin-top: 5px" />
 
           <v-row>
             <v-col>
@@ -141,9 +122,7 @@
             </v-row>
           </div>
 
-          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-5' : ''">
-            Select your export options
-          </p>
+          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-5' : ''">Select your export options</p>
           <v-radio-group v-model="exportFormat" hide-details="auto">
             <v-radio label="JSON" value="json">
               <template v-slot:label>
@@ -158,9 +137,7 @@
           </v-radio-group>
           <v-row class="mt-5" v-if="exportFormat === 'csv'">
             <v-col cols="6">
-              <div class="subTitleObjectStyle">
-                Select the submission version
-              </div>
+              <div class="subTitleObjectStyle">Select the submission version</div>
               <v-select
                 item-text="id"
                 item-value="version"
@@ -174,17 +151,10 @@
           <v-row v-if="exportFormat === 'csv'" class="mt-0">
             <v-col>
               <div style="display: flex; align-content: flex-start">
-                <div class="subTitleObjectStyle mr-1">
-                  Select the export template
-                </div>
-                (<a
-                  :href="githubLink"
-                  class="preview_info_link_field"
-                  :target="'_blank'"
-                >
+                <div class="subTitleObjectStyle mr-1">Select the export template</div>
+                (<a :href="githubLink" class="preview_info_link_field" :target="'_blank'">
                   Learn more
-                  <font-awesome-icon
-                    icon="fa-solid fa-square-arrow-up-right" /></a
+                  <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a
                 >)
               </div>
 
@@ -220,28 +190,18 @@
           </div>
           <div class="fileLabelStyle" :style="{ color: '#70707063' }">
             <small class="text--disabled">
-              * The export data feature works well for simple form designs that
-              don't contain complex nested arrays of form components. If you
-              make changes to your form design the structure of your export will
-              also change. We therefore caution against implementing automation
-              with other systems without accounting for these factors.
+              * The export data feature works well for simple form designs that don't contain complex nested arrays of form components. If
+              you make changes to your form design the structure of your export will also change. We therefore caution against implementing
+              automation with other systems without accounting for these factors.
             </small>
           </div>
         </v-card-text>
 
         <v-card-actions class="justify-center">
-          <v-btn
-            class="mb-5 mr-5 exportButtonStyle"
-            color="primary"
-            @click="callExport"
-          >
+          <v-btn class="mb-5 mr-5 exportButtonStyle" color="primary" @click="callExport">
             <span>Export</span>
           </v-btn>
-          <v-btn
-            class="mb-5 cancelButtonStyle"
-            outlined
-            @click="dialog = false"
-          >
+          <v-btn class="mb-5 cancelButtonStyle" outlined @click="dialog = false">
             <span>Cancel</span>
           </v-btn>
         </v-card-actions>
@@ -254,19 +214,16 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
+import { NotificationTypes } from '@/utils/constants';
 
-import {
-  faXmark,
-  faSquareArrowUpRight,
-} from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark, faSquareArrowUpRight);
 
 export default {
   data() {
     return {
-      githubLink:
-        'https://github.com/bcgov/common-hosted-form-service/wiki/Submission-to-CSV-Export',
+      githubLink: 'https://github.com/bcgov/common-hosted-form-service/wiki/Submission-to-CSV-Export',
       dateRange: false,
       dialog: false,
       endDate: moment(Date()).format('YYYY-MM-DD'),
@@ -286,7 +243,8 @@ export default {
       let momentString = momentObj.format('YYYY-MM-DD');
       return momentString;
     },
-    ...mapGetters('form', ['form', 'userFormPreferences']),
+    ...mapGetters('form', ['form', 'userFormPreferences', 'formFields', 'submissionList']),
+    ...mapGetters('auth', ['email']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
@@ -300,10 +258,7 @@ export default {
     async callExport() {
       try {
         // UTC start of selected start date...
-        const from =
-          this.dateRange && this.startDate
-            ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format()
-            : undefined;
+        const from = this.dateRange && this.startDate ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format() : undefined;
         // UTC end of selected end date...
         const to =
           this.dateRange && this.endDate
@@ -312,6 +267,15 @@ export default {
                 .format()
             : undefined;
 
+        let emailExport = false;
+        if (this.submissionList.length > 500 || this.formFields.length > 70) {
+          this.dialog = false;
+          emailExport = true;
+          this.addNotification({
+            ...NotificationTypes.SUCCESS,
+            message: `Export in progress... An email will be send to ${this.email} containing a link to download your data when it is ready.`,
+          });
+        }
         const response = await formService.exportSubmissions(
           this.form.id,
           this.exportFormat,
@@ -323,10 +287,11 @@ export default {
             // deleted: true,
             // drafts: true
           },
-          this.dataFields ? this.userFormPreferences.preferences : undefined
+          this.dataFields ? this.userFormPreferences.preferences : undefined,
+          emailExport
         );
 
-        if (response && response.data) {
+        if (response && response.data && !emailExport) {
           const blob = new Blob([response.data], {
             type: response.headers['content-type'],
           });
@@ -340,13 +305,12 @@ export default {
           a.click();
           document.body.removeChild(a);
           this.dialog = false;
-        } else {
+        } else if (response && !response.data && !emailExport) {
           throw new Error('No data in response from exportSubmissions call');
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to export submissions for this form.',
+          message: 'An error occurred while attempting to export submissions for this form.',
           consoleError: `Error export submissions for ${this.form.id}: ${error}`,
         });
       }
@@ -354,9 +318,7 @@ export default {
     updateVersions() {
       this.versions = [];
       if (this.form && this.form.versions) {
-        this.versions.push(
-          ...this.form.versions.map((version) => version.version)
-        );
+        this.versions.push(...this.form.versions.map((version) => version.version));
         if (this.exportFormat === 'json') {
           this.versions.push('All');
         } else {
@@ -392,6 +354,7 @@ export default {
   letter-spacing: 0px !important;
   color: #000000 !important;
 }
+
 .subTitleObjectStyle {
   text-align: left !important;
   text-decoration: underline !important;
@@ -403,6 +366,7 @@ export default {
   letter-spacing: 0px !important;
   color: #000000 !important;
 }
+
 .radioboxLabelStyle {
   text-align: left !important;
   font-style: normal !important;
