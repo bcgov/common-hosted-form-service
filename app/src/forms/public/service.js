@@ -1,10 +1,8 @@
-
-const reminderService  = require('../email/reminderService');
+const reminderService = require('../email/reminderService');
 const service = {
-
-  sendReminderToSubmitter: async ()=> {
+  sendReminderToSubmitter: async () => {
     return await reminderService._init();
-  }
+  },
 };
 
 module.exports = service;

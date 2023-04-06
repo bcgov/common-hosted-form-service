@@ -3,10 +3,10 @@
     <div class="nav-holder">
       <ul>
         <li>
-          <router-link data-cy=aboutLinks :to="{ name: 'About' }">About</router-link>
+          <router-link data-cy="aboutLinks" :to="{ name: 'About' }">About</router-link>
         </li>
         <li v-if="authenticated">
-          <router-link data-cy=userFormsLinks :to="{ name: 'UserForms' }">My Forms</router-link>
+          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }">My Forms</router-link>
         </li>
         <li v-if="hasPrivileges">
           <router-link :to="{ name: 'FormCreate' }">Create a New Form</router-link>
@@ -43,8 +43,8 @@ export default {
     },
     hasPrivileges() {
       return this.identityProvider === IdentityProviders.IDIR;
-    }
-  }
+    },
+  },
 };
 </script>
 

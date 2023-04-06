@@ -10,7 +10,7 @@ export default {
 
     const defaultParams = {
       config: window.__BASEURL__ ? `${window.__BASEURL__}/config` : '/config',
-      init: { onLoad: 'login-required' }
+      init: { onLoad: 'login-required' },
     };
     const options = Object.assign({}, defaultParams, params);
     if (assertOptions(options).hasError) throw new Error(`Invalid options given: ${assertOptions(options).error}`);
@@ -46,23 +46,23 @@ export default {
           responseMode: null,
           responseType: null,
           hasRealmRole: null,
-          hasResourceRole: null
+          hasResourceRole: null,
         };
-      }
+      },
     });
     Object.defineProperty(Vue.prototype, '$keycloak', {
       get() {
         return watch;
-      }
+      },
     });
     getConfig(options.config)
-      .then(config => {
+      .then((config) => {
         init(config, watch, options);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err); // eslint-disable-line no-console
       });
-  }
+  },
 };
 
 function init(config, watch, options) {
@@ -81,12 +81,16 @@ function init(config, watch, options) {
   keycloak.onAuthSuccess = function () {
     // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.
     // Refresh token if it's valid for less then 60 seconds
-    const updateTokenInterval = setInterval(() => keycloak.updateToken(60).catch(() => {
-      keycloak.clearToken();
-    }), 10000);
+    const updateTokenInterval = setInterval(
+      () =>
+        keycloak.updateToken(60).catch(() => {
+          keycloak.clearToken();
+        }),
+      10000
+    );
     watch.logoutFn = () => {
       clearInterval(updateTokenInterval);
-      keycloak.logout(options.logout || { 'redirectUri': config['logoutRedirectUri'] });
+      keycloak.logout(options.logout || { redirectUri: config['logoutRedirectUri'] });
     };
   };
   keycloak.onAuthRefreshSuccess = function () {
@@ -95,10 +99,9 @@ function init(config, watch, options) {
   keycloak.onAuthLogout = function () {
     updateWatchVariables(false);
   };
-  keycloak.init(options.init)
-    .catch(err => {
-      typeof options.onInitError === 'function' && options.onInitError(err);
-    });
+  keycloak.init(options.init).catch((err) => {
+    typeof options.onInitError === 'function' && options.onInitError(err);
+  });
 
   function updateWatchVariables(isAuthenticated = false) {
     watch.authenticated = isAuthenticated;
@@ -149,7 +152,7 @@ function assertOptions(options) {
   }
   return {
     hasError: false,
-    error: null
+    error: null,
   };
 }
 
@@ -180,7 +183,7 @@ function sanitizeConfig(config) {
   const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => {
     return {
       [newProp]: old,
-      ...others
+      ...others,
     };
   };
   return Object.keys(config).reduce(function (previous, key) {

@@ -3,12 +3,8 @@ const { v4: uuidv4 } = require('uuid');
 const { Role } = require('../common/models');
 
 const service = {
-
   list: async () => {
-    return Role.query()
-      .allowGraph('[permissions]')
-      .withGraphFetched('permissions(orderDefault)')
-      .modify('orderDefault');
+    return Role.query().allowGraph('[permissions]').withGraphFetched('permissions(orderDefault)').modify('orderDefault');
   },
 
   create: async (data, currentUser) => {
@@ -30,11 +26,7 @@ const service = {
   },
 
   read: async (code) => {
-    return Role.query()
-      .findOne('code', code)
-      .allowGraph('[permissions]')
-      .withGraphFetched('permissions(orderDefault)')
-      .throwIfNotFound();
+    return Role.query().findOne('code', code).allowGraph('[permissions]').withGraphFetched('permissions(orderDefault)').throwIfNotFound();
   },
 
   update: async (code, data, currentUser) => {
@@ -49,14 +41,18 @@ const service = {
           display: data.display,
           description: data.description,
           active: data.active,
-          updatedBy: currentUser.usernameIdp
+          updatedBy: currentUser.usernameIdp,
         });
       }
       // clean out existing permissions...
       await trx.raw(`delete from role_permission where "role" = '${obj.code}'`);
       // set to specified permissions...
       for (const p of data.permissions) {
-        await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${obj.code}', '${p.code}', '${currentUser.usernameIdp}');`);
+        await trx.raw(
+          `insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${obj.code}', '${p.code}', '${
+            currentUser.usernameIdp
+          }');`
+        );
       }
 
       await trx.commit();
@@ -65,8 +61,7 @@ const service = {
       if (trx) await trx.rollback();
       throw err;
     }
-  }
-
+  },
 };
 
 module.exports = service;

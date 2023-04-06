@@ -39,21 +39,9 @@
       <div class="form-wrapper">
         <v-alert
           :value="saved || saving"
-          :class="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.class
-              : NOTIFICATIONS_TYPES.SUCCESS.class
-          "
-          :color="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.color
-              : NOTIFICATIONS_TYPES.SUCCESS.color
-          "
-          :icon="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.icon
-              : NOTIFICATIONS_TYPES.SUCCESS.icon
-          "
+          :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
+          :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
+          :icon="saving ? NOTIFICATIONS_TYPES.INFO.icon : NOTIFICATIONS_TYPES.SUCCESS.icon"
           transition="scale-transition"
         >
           <div v-if="saving">
@@ -162,8 +150,7 @@ export default {
       version: 0,
       versionIdToSubmitTo: this.versionId,
       isFormScheduleExpired: false,
-      formScheduleExpireMessage:
-        'Form submission is not available as the scheduled submission period has expired.',
+      formScheduleExpireMessage: 'Form submission is not available as the scheduled submission period has expired.',
       isLateSubmissionAllowed: false,
     };
   },
@@ -197,10 +184,7 @@ export default {
       };
     },
     canSaveDraft() {
-      return (
-        !this.readOnly &&
-        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
-      );
+      return !this.readOnly && this.permissions.includes(FormPermissions.SUBMISSION_UPDATE);
     },
   },
   methods: {
@@ -215,12 +199,7 @@ export default {
         //Get property path from nested object
         for (let property in obj) {
           if (typeof obj[property] == 'object') {
-            return iterate(
-              obj[property],
-              stack + '.' + property,
-              fields,
-              propNeeded
-            );
+            return iterate(obj[property], stack + '.' + property, fields, propNeeded);
           } else if (propNeeded === property) {
             fields = fields + stack + '.' + property;
             return fields;
@@ -229,18 +208,13 @@ export default {
       }
 
       function deleteFieldData(fieldcomponent, submission) {
-        if (
-          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
-        ) {
+        if (Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')) {
           fieldcomponent.components.map((subComponent) => {
             // Check if it's a Nested component
             deleteFieldData(subComponent, submission);
           });
         } else if (!fieldcomponent?.validate?.isUseForCopy) {
-          _.unset(
-            submission,
-            iterate(submission, '', '', fieldcomponent.key).replace(/^\./, '')
-          );
+          _.unset(submission, iterate(submission, '', '', fieldcomponent.key).replace(/^\./, ''));
         }
       }
 
@@ -256,10 +230,7 @@ export default {
           this.version = response.data.version.version;
         } else {
           /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
-          if (
-            response.data?.version?.schema?.components &&
-            response.data?.version?.schema?.components.length
-          ) {
+          if (response.data?.version?.schema?.components && response.data?.version?.schema?.components.length) {
             response.data.version.schema.components.map((component) => {
               deleteFieldData(component, this.submission); //Delete all the fields data that are not enabled for duplication
             });
@@ -290,9 +261,7 @@ export default {
           // If getting for a specific older version of the form
           response = await formService.readVersion(this.formId, this.versionId);
           if (!response.data || !response.data.schema) {
-            throw new Error(
-              `No schema in response. VersionId: ${this.versionId}`
-            );
+            throw new Error(`No schema in response. VersionId: ${this.versionId}`);
           }
           this.form = response.data;
           this.formSchema = response.data.schema;
@@ -307,14 +276,8 @@ export default {
         } else {
           // If getting the HEAD form version (IE making a new submission)
           response = await formService.readPublished(this.formId);
-          if (
-            !response.data ||
-            !response.data.versions ||
-            !response.data.versions[0]
-          ) {
-            throw new Error(
-              `No published version found in response. FormID: ${this.formId}`
-            );
+          if (!response.data || !response.data.versions || !response.data.versions[0]) {
+            throw new Error(`No published version found in response. FormID: ${this.formId}`);
           }
           this.form = response.data;
           this.version = response.data.versions[0].version;
@@ -324,8 +287,7 @@ export default {
           if (response.data.schedule && response.data.schedule.expire) {
             let formScheduleStatus = response.data.schedule;
             this.isFormScheduleExpired = formScheduleStatus.expire;
-            this.isLateSubmissionAllowed =
-              formScheduleStatus.allowLateSubmissions;
+            this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
             this.formScheduleExpireMessage = formScheduleStatus.message;
           }
         }
@@ -333,8 +295,7 @@ export default {
         if (this.authenticated) {
           this.isFormScheduleExpired = true;
           this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage =
-            'An error occurred fetching this form';
+          this.formScheduleExpireMessage = 'An error occurred fetching this form';
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,
@@ -377,9 +338,7 @@ export default {
     },
     async sendSubmission(isDraft, submission) {
       submission.data.lateEntry =
-        (this.form?.schedule?.expire !== undefined && this.form.schedule.expire === true)
-          ? this.form.schedule.allowLateSubmissions
-          : false;
+        this.form?.schedule?.expire !== undefined && this.form.schedule.expire === true ? this.form.schedule.allowLateSubmissions : false;
       const body = {
         draft: isDraft,
         submission: submission,
@@ -392,11 +351,7 @@ export default {
         response = await formService.updateSubmission(this.submissionId, body);
       } else {
         // Adding a new submission
-        response = await formService.createSubmission(
-          this.formId,
-          this.versionIdToSubmitTo,
-          body
-        );
+        response = await formService.createSubmission(this.formId, this.versionIdToSubmitTo, body);
       }
       return response;
     },
@@ -498,17 +453,16 @@ export default {
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...
-          this.submissionRecord = Object.assign({},
+          this.submissionRecord = Object.assign(
+            {},
             this.submissionId && this.isDuplicate //Check if this submission is creating with the existing one
               ? response.data
               : this.submissionId && !this.isDuplicate
-                ? response.data.submission
-                : response.data
+              ? response.data.submission
+              : response.data
           );
         } else {
-          throw new Error(
-            `Failed response from submission endpoint. Response code: ${response.status}`
-          );
+          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
         console.error(error); // eslint-disable-line no-console
@@ -537,9 +491,7 @@ export default {
     },
     // Custom Event triggered from buttons with Action type "Event"
     onCustomEvent(event) {
-      alert(
-        `Custom button events not supported yet. Event Type: ${event.type}`
-      );
+      alert(`Custom button events not supported yet. Event Type: ${event.type}`);
     },
   },
   async created() {

@@ -14,7 +14,7 @@ const TEMP_DIR = 'uploads';
 const Delimiter = '/';
 
 class ObjectStorageService {
-  constructor({endpoint, bucket, key, accessKeyId, secretAccessKey}) {
+  constructor({ endpoint, bucket, key, accessKeyId, secretAccessKey }) {
     log.debug(`Constructed with ${endpoint}, ${bucket}, ${key}, ${accessKeyId}, secretAccessKey`, { function: 'constructor' });
     if (!endpoint || !bucket || !key || !accessKeyId || !secretAccessKey) {
       log.error('Invalid configuration.', { function: 'constructor' });
@@ -31,17 +31,17 @@ class ObjectStorageService {
       secretAccessKey: this._secretAccessKey,
       s3ForcePathStyle: true,
       params: {
-        Bucket: this._bucket
-      }
+        Bucket: this._bucket,
+      },
     });
   }
 
   _join(...items) {
     if (items && items.length) {
       const parts = [];
-      items.map(p => {
+      items.map((p) => {
         if (p) {
-          p.split('/').map(x => {
+          p.split('/').map((x) => {
             if (x && x.trim().length) parts.push(x);
           });
         }
@@ -60,7 +60,6 @@ class ObjectStorageService {
 
   async uploadFile(fileStorage) {
     try {
-
       const fileContent = fs.readFileSync(fileStorage.path);
 
       // uploads can go to a 'holding' area, we can shuffle it later if we want to.
@@ -71,9 +70,9 @@ class ObjectStorageService {
         Key: key,
         Body: fileContent,
         Metadata: {
-          'name': fileStorage.originalName,
-          'id': fileStorage.id
-        }
+          name: fileStorage.originalName,
+          id: fileStorage.id,
+        },
       };
 
       if (mime.contentType(path.extname(fileStorage.originalName))) {
@@ -88,7 +87,7 @@ class ObjectStorageService {
           } else {
             resolve({
               path: data.Key,
-              storage: StorageTypes.OBJECT_STORAGE
+              storage: StorageTypes.OBJECT_STORAGE,
             });
           }
         });
@@ -102,7 +101,7 @@ class ObjectStorageService {
     try {
       const params = {
         Bucket: this._bucket,
-        Key: fileStorage.path
+        Key: fileStorage.path,
       };
       return new Promise((resolve, reject) => {
         this._s3.deleteObject(params, (err, data) => {
@@ -123,7 +122,7 @@ class ObjectStorageService {
     try {
       const params = {
         Bucket: this._bucket,
-        Key: fileStorage.path
+        Key: fileStorage.path,
       };
       return new Promise((resolve, reject) => {
         const _local_s3 = this._s3;
@@ -156,7 +155,7 @@ class ObjectStorageService {
         // now delete original...
         const params = {
           Bucket: this._bucket,
-          Key: sourcePath
+          Key: sourcePath,
         };
 
         return new Promise((resolve, reject) => {
@@ -182,7 +181,7 @@ class ObjectStorageService {
       const params = {
         Bucket: `${this._bucket}/${this._key}${destPath}`,
         CopySource: `${this._bucket}/${fileStorage.path}`,
-        Key: fileStorage.id
+        Key: fileStorage.id,
       };
 
       return new Promise((resolve, reject) => {
@@ -199,7 +198,6 @@ class ObjectStorageService {
       errorToProblem(SERVICE, e);
     }
   }
-
 }
 
 const endpoint = config.get('files.objectStorage.endpoint');
@@ -208,5 +206,11 @@ const key = config.get('files.objectStorage.key');
 const accessKeyId = config.get('files.objectStorage.accessKeyId');
 const secretAccessKey = config.get('files.objectStorage.secretAccessKey');
 
-let objectStorageService = new ObjectStorageService({accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, endpoint: endpoint, bucket: bucket, key: key});
+let objectStorageService = new ObjectStorageService({
+  accessKeyId: accessKeyId,
+  secretAccessKey: secretAccessKey,
+  endpoint: endpoint,
+  bucket: bucket,
+  key: key,
+});
 module.exports = objectStorageService;
