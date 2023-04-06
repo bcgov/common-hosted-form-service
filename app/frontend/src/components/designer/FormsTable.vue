@@ -6,10 +6,7 @@
         <h1>My Forms</h1>
       </v-col>
       <!-- buttons -->
-      <v-col
-        v-if="user.idp === ID_PROVIDERS.IDIR"
-        class="text-right" cols="12" sm="6" order="1" order-sm="2"
-      >
+      <v-col v-if="user.idp === ID_PROVIDERS.IDIR" class="text-right" cols="12" sm="6" order="1" order-sm="2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <router-link :to="{ name: 'FormCreate' }">
@@ -28,14 +25,7 @@
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-            class="pb-5"
-          />
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details class="pb-5" />
         </div>
       </v-col>
     </v-row>
@@ -82,10 +72,7 @@
         </v-icon>
       </template>
       <template #[`item.actions`]="{ item }">
-        <router-link
-          v-if="checkFormManage(item)"
-          :to="{ name: 'FormManage', query: { f: item.id } }"
-        >
+        <router-link v-if="checkFormManage(item)" :to="{ name: 'FormManage', query: { f: item.id } }">
           <v-btn color="primary" text small>
             <v-icon class="mr-1">settings</v-icon>
             <span class="d-none d-sm-flex">Manage</span>
@@ -104,11 +91,7 @@
       </template>
     </v-data-table>
 
-    <BaseDialog
-      v-model="showDescriptionDialog"
-      showCloseButton
-      @close-dialog="showDescriptionDialog = false;"
-    >
+    <BaseDialog v-model="showDescriptionDialog" showCloseButton @close-dialog="showDescriptionDialog = false">
       <template #title>
         <span class="pl-5">Description:</span>
       </template>
@@ -116,18 +99,13 @@
         <slot name="formDescription">{{ formDescription }}</slot>
       </template>
     </BaseDialog>
-
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { IdentityProviders } from '@/utils/constants';
-import {
-  checkFormManage,
-  checkFormSubmit,
-  checkSubmissionView,
-} from '@/utils/permissionUtils';
+import { checkFormManage, checkFormSubmit, checkSubmissionView } from '@/utils/permissionUtils';
 
 export default {
   name: 'FormsTable',
@@ -136,7 +114,7 @@ export default {
       // Assigning width: '1%' to dynamically assign width to the Table's Columns as described by this post on Stack Overflow:
       // https://stackoverflow.com/a/51569928
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name', width: '1%', },
+        { text: 'Form Title', align: 'start', value: 'name', width: '1%' },
         {
           text: 'Actions',
           align: 'end',
@@ -159,9 +137,7 @@ export default {
     filteredFormList() {
       // At this point, we're only showing forms you can manage or view submissions of here
       // This may get reconceptualized in the future to different pages or something
-      return this.formList.filter(
-        (f) => checkFormManage(f) || checkSubmissionView(f)
-      );
+      return this.formList.filter((f) => checkFormManage(f) || checkSubmissionView(f));
     },
     ID_PROVIDERS: () => IdentityProviders,
   },
@@ -175,8 +151,7 @@ export default {
       this.formId = formId;
       this.formDescription = formDescription;
       this.showDescriptionDialog = true;
-    }
-
+    },
   },
   async mounted() {
     await this.getFormsForCurrentUser();

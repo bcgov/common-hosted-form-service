@@ -2,7 +2,7 @@ const Problem = require('api-problem');
 
 const log = require('./log')(module.filename);
 
-module.exports = function(service, e) {
+module.exports = function (service, e) {
   if (e.response) {
     // Handle raw data
     let data;
@@ -17,7 +17,7 @@ module.exports = function(service, e) {
     if (e.response.status === 422) {
       throw new Problem(e.response.status, {
         detail: data.detail,
-        errors: data.errors
+        errors: data.errors,
       });
     }
     // Something else happened but there's a response

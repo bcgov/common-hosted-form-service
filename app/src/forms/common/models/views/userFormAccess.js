@@ -103,7 +103,7 @@ class UserFormAccess extends Model {
       },
       orderDefault(builder) {
         builder.orderByRaw('lower("lastName"), lower("firstName"), lower("formName")');
-      }
+      },
     };
   }
 }

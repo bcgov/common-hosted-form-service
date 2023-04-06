@@ -10,7 +10,7 @@ export const ApiRoutes = Object.freeze({
   RBAC: '/rbac',
   ROLES: '/roles',
   SUBMISSION: '/submissions',
-  USERS: '/users'
+  USERS: '/users',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */
@@ -45,7 +45,7 @@ export const FormPermissions = Object.freeze({
   DESIGN_DELETE: 'design_delete',
 
   TEAM_READ: 'team_read',
-  TEAM_UPDATE: 'team_update'
+  TEAM_UPDATE: 'team_update',
 });
 
 /** Permissions a user needs to Manage a Form */
@@ -54,14 +54,14 @@ export const FormManagePermissions = Object.freeze([
   FormPermissions.FORM_DELETE,
   FormPermissions.DESIGN_UPDATE,
   FormPermissions.DESIGN_DELETE,
-  FormPermissions.TEAM_UPDATE
+  FormPermissions.TEAM_UPDATE,
 ]);
 
 /** Identity modes that a form can operate in regards to user identification */
 export const IdentityMode = Object.freeze({
   LOGIN: 'login', // Requires Login
   PUBLIC: 'public', // Anonymous
-  TEAM: 'team' // Specific People
+  TEAM: 'team', // Specific People
 });
 
 /** Identitiy Providers a user can log in as and a form can be allowed for */
@@ -70,7 +70,7 @@ export const IdentityProviders = Object.freeze({
   BCEIDBUSINESS: 'bceid-business', // Business BCeID
   BCSC: 'bcsc', // Services Card
   GITHUB: 'github', // Github
-  IDIR: 'idir' // IDIR
+  IDIR: 'idir', // IDIR
 });
 
 /** Corresponds to vuetify alert classes for notification types */
@@ -99,12 +99,13 @@ export const NotificationTypes = Object.freeze({
 
 export const Regex = Object.freeze({
   // From ajv-format
-  EMAIL: '^[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$'
+  EMAIL:
+    "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$",
 });
 
 /** Identity modes that a form can operate in regards to user identification */
 export const ScheduleType = Object.freeze({
   MANUAL: 'manual', // Requires Login
   CLOSINGDATE: 'closingDate', // Anonymous
-  PERIOD: 'period' // Specific People
+  PERIOD: 'period', // Specific People
 });

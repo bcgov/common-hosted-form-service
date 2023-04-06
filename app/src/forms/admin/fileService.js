@@ -5,9 +5,9 @@ const fileService = {
     return await storageService.uploadImage(imageData);
   },
 
-  signedUrl:async (param) => {
+  signedUrl: async (param) => {
     return await storageService.readSignedUrl(param.imageName);
-  }
+  },
 };
 
 module.exports = fileService;

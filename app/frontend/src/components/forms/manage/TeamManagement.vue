@@ -2,25 +2,14 @@
   <div>
     <v-container fluid class="d-flex">
       <h1 class="mr-auto">Team Management</h1>
-      <div style="z-index: 1;">
+      <div style="z-index: 1">
         <span>
-          <AddTeamMember
-            :disabled="!canManageTeam"
-            @adding-users="addingUsers"
-            @new-users="addNewUsers"
-          />
+          <AddTeamMember :disabled="!canManageTeam" @adding-users="addingUsers" @new-users="addNewUsers" />
         </span>
         <span v-if="!isAddingUsers">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <v-btn
-                @click="showColumnsDialog = true"
-                class="mx-1"
-                color="primary"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
+              <v-btn @click="showColumnsDialog = true" class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
@@ -29,14 +18,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  :disabled="!formId"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
+                <v-btn class="mx-1" color="primary" :disabled="!formId" icon v-bind="attrs" v-on="on">
                   <v-icon>settings</v-icon>
                 </v-btn>
               </router-link>
@@ -78,7 +60,7 @@
       dense
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
-      <template v-for="(h) in HEADERS" v-slot:[`header.${h.value}`]="{ HEADERS }">
+      <template v-for="h in HEADERS" v-slot:[`header.${h.value}`]="{ HEADERS }">
         <v-tooltip v-if="roleOrder.includes(h.value)" :key="h.value" bottom>
           <template v-slot:activator="{ on }">
             <span v-on="on">{{ h.text }}</span>
@@ -88,27 +70,16 @@
         <span v-else :key="h.value">{{ h.text }}</span>
       </template>
       <template v-slot:[`header.actions`]>
-        <v-btn
-          @click="onRemoveClick(selectedUsers)"
-          color="red"
-          :disabled="updating || selectedUsers.length < 1"
-          icon
-        >
+        <v-btn @click="onRemoveClick(selectedUsers)" color="red" :disabled="updating || selectedUsers.length < 1" icon>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon
-                color="red"
-                dark
-                v-bind="attrs"
-                v-on="on"
-              >remove_circle</v-icon>
+              <v-icon color="red" dark v-bind="attrs" v-on="on">remove_circle</v-icon>
             </template>
             <span>Remove selected users</span>
           </v-tooltip>
         </v-btn>
       </template>
-      <template
-        v-for="(role) in roleList" v-slot:[`item.${role.code}`]="{ item }">
+      <template v-for="role in roleList" v-slot:[`item.${role.code}`]="{ item }">
         <v-checkbox
           v-if="!disableRole(role.code, item, userType)"
           v-model="item[role.code]"
@@ -119,19 +90,10 @@
         ></v-checkbox>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-btn @click="onRemoveClick(item)"
-               color="red"
-               icon
-               :disabled="updating"
-        >
+        <v-btn @click="onRemoveClick(item)" color="red" icon :disabled="updating">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon
-                color="red"
-                dark
-                v-bind="attrs"
-                v-on="on"
-              >remove_circle</v-icon>
+              <v-icon color="red" dark v-bind="attrs" v-on="on">remove_circle</v-icon>
             </template>
             <span>Remove this user</span>
           </v-tooltip>
@@ -139,17 +101,10 @@
       </template>
     </v-data-table>
 
-    <BaseDialog
-      v-model="showDeleteDialog"
-      type="CONTINUE"
-      @close-dialog="
-        showDeleteDialog = false;
-      "
-      @continue-dialog="removeUser"
-    >
+    <BaseDialog v-model="showDeleteDialog" type="CONTINUE" @close-dialog="showDeleteDialog = false" @continue-dialog="removeUser">
       <template #title>Confirm Removal</template>
       <template #text>
-        {{DeleteMessage}}
+        {{ DeleteMessage }}
       </template>
       <template #button-text-continue>
         <span>Remove</span>
@@ -199,15 +154,15 @@ export default {
     },
     roleOrder: () => Object.values(FormRoleCodes),
     DeleteMessage() {
-      return (this.itemsToDelete.length > 1) ?
-        'Are you sure you want to remove the selected members?' :
-        'Are you sure you want to remove the selected member?';
+      return this.itemsToDelete.length > 1
+        ? 'Are you sure you want to remove the selected members?'
+        : 'Are you sure you want to remove the selected member?';
     },
     DEFAULT_HEADERS() {
       const headers = [
         { text: 'Full Name', value: 'fullName' },
         { text: 'Username', value: 'username' },
-        { text: 'Identity Provider', value: 'identityProvider' }
+        { text: 'Identity Provider', value: 'identityProvider' },
       ];
       return headers
         .concat(
@@ -217,19 +172,18 @@ export default {
               filterable: false,
               text: role.display,
               value: role.code,
-              description: role.description
+              description: role.description,
             }))
-            .sort((a, b) =>
-              this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
-                ? 1
-                : -1
-            )
+            .sort((a, b) => (this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value) ? 1 : -1))
         )
         .concat({ text: '', value: 'actions', width: '1rem', sortable: false });
     },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
-      if (this.filterData.length > 0) headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
+      if (this.filterData.length > 0)
+        headers = headers.filter(
+          (h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value)
+        );
       return headers;
     },
   },
@@ -237,9 +191,11 @@ export default {
     return {
       formUsers: [],
       filterData: [],
-      filterIgnore: [{
-        value: 'actions'
-      }],
+      filterIgnore: [
+        {
+          value: 'actions',
+        },
+      ],
       isAddingUsers: false,
       loading: true,
       roleList: [],
@@ -267,17 +223,16 @@ export default {
             this.tableData.push({
               formId: this.formId,
               userId: user.id,
-              form_submitter: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.FORM_SUBMITTER) : false,
-              form_designer: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.FORM_DESIGNER) : false,
-              submission_reviewer: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.SUBMISSION_REVIEWER) : false,
-              team_manager: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.TEAM_MANAGER) : false,
-              owner: (Array.isArray(roles) && roles.length) ? roles.includes(FormRoleCodes.OWNER) : false,
+              form_submitter: Array.isArray(roles) && roles.length ? roles.includes(FormRoleCodes.FORM_SUBMITTER) : false,
+              form_designer: Array.isArray(roles) && roles.length ? roles.includes(FormRoleCodes.FORM_DESIGNER) : false,
+              submission_reviewer: Array.isArray(roles) && roles.length ? roles.includes(FormRoleCodes.SUBMISSION_REVIEWER) : false,
+              team_manager: Array.isArray(roles) && roles.length ? roles.includes(FormRoleCodes.TEAM_MANAGER) : false,
+              owner: Array.isArray(roles) && roles.length ? roles.includes(FormRoleCodes.OWNER) : false,
               fullName: user.fullName,
               username: user.username,
             });
 
-            if (Array.isArray(roles) && roles.length)
-              this.setUserForms(user.id);
+            if (Array.isArray(roles) && roles.length) this.setUserForms(user.id);
           } else {
             this.addNotification({
               message: `${user.username}@${user.idpCode} is already in the team.`,
@@ -306,21 +261,29 @@ export default {
           username: user.username,
           identityProvider: user.idp,
         };
-        this.roleList
-          .map((role) => role.code)
-          .forEach((role) => (row[role] = user.roles.includes(role)));
+        this.roleList.map((role) => role.code).forEach((role) => (row[role] = user.roles.includes(role)));
         return row;
       });
 
       this.selectedItemToDelete = new Array(this.tableData.length).fill(false);
     },
     // Is this the submitter column, and does this form have login type other than TEAM
-    disableSubmitter: (header, userType) =>
-      header === FormRoleCodes.FORM_SUBMITTER && userType !== IdentityMode.TEAM,
+    disableSubmitter: (header, userType) => header === FormRoleCodes.FORM_SUBMITTER && userType !== IdentityMode.TEAM,
     disableRole(header, user, userType) {
       if (header === FormRoleCodes.FORM_SUBMITTER && userType !== IdentityMode.TEAM) return true;
-      if (user.identityProvider === IdentityProviders.BCEIDBUSINESS && (header === FormRoleCodes.OWNER || header === FormRoleCodes.FORM_DESIGNER)) return true;
-      if (user.identityProvider === IdentityProviders.BCEIDBASIC && (header === FormRoleCodes.OWNER || header === FormRoleCodes.FORM_DESIGNER || header === FormRoleCodes.TEAM_MANAGER || header === FormRoleCodes.SUBMISSION_REVIEWER)) return true;
+      if (
+        user.identityProvider === IdentityProviders.BCEIDBUSINESS &&
+        (header === FormRoleCodes.OWNER || header === FormRoleCodes.FORM_DESIGNER)
+      )
+        return true;
+      if (
+        user.identityProvider === IdentityProviders.BCEIDBASIC &&
+        (header === FormRoleCodes.OWNER ||
+          header === FormRoleCodes.FORM_DESIGNER ||
+          header === FormRoleCodes.TEAM_MANAGER ||
+          header === FormRoleCodes.SUBMISSION_REVIEWER)
+      )
+        return true;
       return false;
     },
     generateFormRoleUsers(user) {
@@ -341,12 +304,14 @@ export default {
           formId: this.formId,
           roles: '*',
         });
-        this.formUsers = await Promise.all(formUsersResponse.data.map(async (user) => {
-          const userId = user.userId;
-          const response = await userService.getUser(userId);
-          user.idp = response.data.idpCode;
-          return user;
-        }));
+        this.formUsers = await Promise.all(
+          formUsersResponse.data.map(async (user) => {
+            const userId = user.userId;
+            const response = await userService.getUser(userId);
+            user.idp = response.data.idpCode;
+            return user;
+          })
+        );
       } catch (error) {
         this.addNotification({
           message: error.message,
@@ -408,7 +373,10 @@ export default {
         await this.getFormUsers();
       } catch (error) {
         this.addNotification({
-          message: (error && error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to delete the selected users',
+          message:
+            error && error.response && error.response.data && error.response.data.detail
+              ? error.response.data.detail
+              : 'An error occurred while attempting to delete the selected users',
           consoleError: `Error deleting users from form ${this.formId}: ${error}`,
         });
       } finally {
@@ -424,9 +392,7 @@ export default {
     async setFormUsers() {
       this.updating = true;
       try {
-        const userRoles = this.tableData
-          .map((user) => this.generateFormRoleUsers(user))
-          .flat();
+        const userRoles = this.tableData.map((user) => this.generateFormRoleUsers(user)).flat();
         await rbacService.setFormUsers(userRoles, {
           formId: this.formId,
         });
@@ -456,7 +422,10 @@ export default {
         });
       } catch (error) {
         this.addNotification({
-          message: (error && error.response && error.response.data && error.response.data.detail) ? error.response.data.detail : 'An error occurred while attempting to update roles for a user',
+          message:
+            error && error.response && error.response.data && error.response.data.detail
+              ? error.response.data.detail
+              : 'An error occurred while attempting to update roles for a user',
           consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
         });
       } finally {
@@ -466,7 +435,10 @@ export default {
       }
     },
     showDeleteButton(item) {
-      return this.updating || this.selectedUsers.some((user) => user.username === item.username && user.identityProvider === item.identityProvider);
+      return (
+        this.updating ||
+        this.selectedUsers.some((user) => user.username === item.username && user.identityProvider === item.identityProvider)
+      );
     },
     async updateFilter(data) {
       this.filterData = data;
@@ -475,13 +447,8 @@ export default {
   },
   async mounted() {
     // TODO: Make sure vuex fetchForm has been called at least once before this
-    await Promise.all([
-      this.fetchForm(this.formId),
-      this.getFormPermissionsForUser(this.formId),
-      this.getRolesList()
-    ]);
-    await this.getFormUsers(),
-    this.loading = false;
+    await Promise.all([this.fetchForm(this.formId), this.getFormPermissionsForUser(this.formId), this.getRolesList()]);
+    await this.getFormUsers(), (this.loading = false);
   },
 };
 </script>
