@@ -21,10 +21,10 @@ jobs:
       - name: Install backend/frontend packages
         run: cd app && npm i && cd frontend && npm i
       - name: Frontend Lint
-        run: npm run lint
+        run: cd app/frontend && npm run lint
       - name: Frontend Fromat
-        run: npm run prettier
+        run: cd app/frontend && npm run prettier
       - name: Backend Lint
-        run: cd ../ && npm run lint
+        run: cd app && npm run lint
       - name: Backend Fromat
-        run: npm run prettier
+        run: cd app && npm run prettier
