@@ -16,9 +16,9 @@ class FormIdentityProvider extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         code: { type: 'string', maxLength: 255 },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

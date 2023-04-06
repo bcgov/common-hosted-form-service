@@ -15,14 +15,18 @@
         <v-card-text>
           <hr />
           <p>
-            <strong>1.</strong> <a href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser" target="blank">Print</a> the page from your browser
+            <strong>1.</strong>
+            <a href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser" target="blank">Print</a> the page
+            from your browser
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
             <span>Browser Print</span>
           </v-btn>
 
           <p>
-            <strong>2.</strong> Upload a <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload" target="blank">CDOGS template</a> to have a structured version
+            <strong>2.</strong> Upload a
+            <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload" target="blank">CDOGS template</a> to
+            have a structured version
           </p>
           <v-file-input
             counter
@@ -140,20 +144,13 @@ export default {
         contentFileType = this.templateForm.contentFileType;
         outputFileName = this.templateForm.outputFileName;
 
-        const body = this.createBody(
-          content,
-          contentFileType,
-          outputFileName,
-          outputFileType
-        );
+        const body = this.createBody(content, contentFileType, outputFileName, outputFileType);
 
         // Submit Template to CDOGS API
         const response = await formService.docGen(this.submissionId, body);
 
         // create file to download
-        const filename = this.getDispositionFilename(
-          response.headers['content-disposition']
-        );
+        const filename = this.getDispositionFilename(response.headers['content-disposition']);
 
         const blob = new Blob([response.data], {
           type: 'attachment',

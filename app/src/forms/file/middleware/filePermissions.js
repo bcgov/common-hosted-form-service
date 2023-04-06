@@ -75,5 +75,7 @@ const hasFilePermissions = (permissions) => {
 };
 
 module.exports = {
-  currentFileRecord, hasFileCreate, hasFilePermissions
+  currentFileRecord,
+  hasFileCreate,
+  hasFilePermissions,
 };

@@ -18,7 +18,7 @@ export default {
     ...mapGetters('auth', ['authenticated', 'keycloakReady']),
     hasLogin() {
       return this.$route && this.$route.meta && this.$route.meta.hasLogin;
-    }
+    },
   },
   methods: mapActions('auth', ['login', 'logout']),
 };

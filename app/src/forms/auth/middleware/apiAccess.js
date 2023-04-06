@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
 
     if (params.formId && uuidValidate(params.formId)) {
       const result = await service.readApiKey(params.formId);
-      secret = (result && result.secret) ? result.secret : '';
+      secret = result && result.secret ? result.secret : '';
     }
 
     const checkCredentials = basicAuth({
@@ -27,7 +27,7 @@ module.exports = async (req, res, next) => {
       },
       unauthorizedResponse: () => {
         return new Problem(401, { detail: 'Invalid authorization credentials.' });
-      }
+      },
     });
 
     return checkCredentials(req, res, next);

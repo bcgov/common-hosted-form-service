@@ -10,13 +10,7 @@
     >
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
-          <v-btn
-            color="primary"
-            :disabled="!hasViewPerm()"
-            icon
-            v-bind="attrs"
-            v-on="on"
-          >
+          <v-btn color="primary" :disabled="!hasViewPerm()" icon v-bind="attrs" v-on="on">
             <v-icon>remove_red_eye</v-icon>
           </v-btn>
         </template>
@@ -36,13 +30,7 @@
       >
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              :disabled="!hasViewPerm()"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn color="primary" :disabled="!hasViewPerm()" icon v-bind="attrs" v-on="on">
               <v-icon>app_registration</v-icon>
             </v-btn>
           </template>
@@ -62,13 +50,7 @@
       >
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              :disabled="!hasEditPerm()"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn color="primary" :disabled="!hasEditPerm()" icon v-bind="attrs" v-on="on">
               <v-icon>mode_edit</v-icon>
             </v-btn>
           </template>
@@ -103,14 +85,14 @@ export default {
     },
     formId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     ...mapGetters('form', ['form']),
     isCopyFromExistingSubmissionEnabled() {
       return this.form && this.form.enableCopyExistingSubmission;
-    }
+    },
   },
   methods: {
     draftDeleted() {
@@ -118,19 +100,13 @@ export default {
     },
     hasDeletePerm() {
       // Only the creator of the draft can delete it
-      return this.submission.permissions.includes(
-        FormPermissions.SUBMISSION_CREATE
-      );
+      return this.submission.permissions.includes(FormPermissions.SUBMISSION_CREATE);
     },
     hasEditPerm() {
-      return this.submission.permissions.includes(
-        FormPermissions.SUBMISSION_UPDATE
-      );
+      return this.submission.permissions.includes(FormPermissions.SUBMISSION_UPDATE);
     },
     hasViewPerm() {
-      return this.submission.permissions.includes(
-        FormPermissions.SUBMISSION_READ
-      );
+      return this.submission.permissions.includes(FormPermissions.SUBMISSION_READ);
     },
   },
 };

@@ -1,27 +1,16 @@
 <template>
   <div>
     <BaseInfoCard class="my-4">
-      <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
-      </h4>
+      <h4 class="primary--text"><v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!</h4>
       <p>
-        If there are no published versions, users are unable to access this form
-        until there is a published version assigned. Once a version is
-        published, that version is no longer editable. You must create a new
-        version based on one of the previous form versions to continue editing.
+        If there are no published versions, users are unable to access this form until there is a published version assigned. Once a version
+        is published, that version is no longer editable. You must create a new version based on one of the previous form versions to
+        continue editing.
       </p>
     </BaseInfoCard>
 
-    <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary">info</v-icon>Note: Only one version
-      can be published.
-    </div>
-    <v-data-table
-      :key="rerenderTable"
-      class="submissions-table"
-      :headers="headers"
-      :items="versionList"
-    >
+    <div class="mt-8 mb-5"><v-icon class="mr-1" color="primary">info</v-icon>Note: Only one version can be published.</div>
+    <v-data-table :key="rerenderTable" class="submissions-table" :headers="headers" :items="versionList">
       <!-- Version  -->
       <template #[`item.version`]="{ item }">
         <router-link
@@ -37,15 +26,7 @@
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
                 Version {{ item.version }}
-                <v-chip
-                  v-if="item.isDraft"
-                  color="secondary"
-                  class="mb-5 px-1"
-                  x-small
-                  text-color="black"
-                >
-                  Draft
-                </v-chip>
+                <v-chip v-if="item.isDraft" color="secondary" class="mb-5 px-1" x-small text-color="black"> Draft </v-chip>
               </span>
             </template>
             <span>
@@ -88,16 +69,10 @@
               <router-link
                 :to="{
                   name: 'FormDesigner',
-                  query: { d: item.id, f: item.formId, nf:false },
+                  query: { d: item.id, f: item.formId, nf: false },
                 }"
               >
-                <v-btn
-                  color="primary"
-                  class="mx-1"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
+                <v-btn color="primary" class="mx-1" icon v-bind="attrs" v-on="on">
                   <v-icon>edit</v-icon>
                 </v-btn>
               </router-link>
@@ -106,19 +81,11 @@
           </v-tooltip>
         </span>
 
-
         <!-- export -->
         <span>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                class="mx-1"
-                icon
-                @click="onExportClick(item.id, item.isDraft)"
-                v-bind="attrs"
-                v-on="on"
-              >
+              <v-btn color="primary" class="mx-1" icon @click="onExportClick(item.id, item.isDraft)" v-bind="attrs" v-on="on">
                 <v-icon>get_app</v-icon>
               </v-btn>
             </template>
@@ -131,24 +98,13 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
-                <v-btn
-                  color="primary"
-                  class="mx-1"
-                  :disabled="hasDraft"
-                  icon
-                  @click="createVersion(item.formId, item.id)"
-                >
+                <v-btn color="primary" class="mx-1" :disabled="hasDraft" icon @click="createVersion(item.formId, item.id)">
                   <v-icon>add</v-icon>
                 </v-btn>
               </span>
             </template>
-            <span v-if="hasDraft">
-              Please publish or delete your latest draft version before starting
-              a new version.
-            </span>
-            <span v-else>
-              Use version {{ item.version }} as the base for a new version
-            </span>
+            <span v-if="hasDraft"> Please publish or delete your latest draft version before starting a new version. </span>
+            <span v-else> Use version {{ item.version }} as the base for a new version </span>
           </v-tooltip>
         </span>
 
@@ -157,13 +113,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
-                <v-btn
-                  color="red"
-                  class="mx-1"
-                  :disabled="!hasVersions"
-                  icon
-                  @click="showDeleteDraftDialog = true"
-                >
+                <v-btn color="red" class="mx-1" :disabled="!hasVersions" icon @click="showDeleteDraftDialog = true">
                   <v-icon>delete</v-icon>
                 </v-btn>
               </span>
@@ -174,38 +124,19 @@
       </template>
     </v-data-table>
 
-    <BaseDialog
-      v-model="showHasDraftsDialog"
-      type="OK"
-      @close-dialog="showHasDraftsDialog = false"
-    >
+    <BaseDialog v-model="showHasDraftsDialog" type="OK" @close-dialog="showHasDraftsDialog = false">
       <template #title>Draft already exists</template>
-      <template #text>
-        Please edit, publish or delete the existing draft before starting a new
-        draft.
-      </template>
+      <template #text> Please edit, publish or delete the existing draft before starting a new draft. </template>
     </BaseDialog>
 
-    <BaseDialog
-      v-model="showPublishDialog"
-      type="CONTINUE"
-      @continue-dialog="updatePublish"
-      @close-dialog="cancelPublish"
-    >
+    <BaseDialog v-model="showPublishDialog" type="CONTINUE" @continue-dialog="updatePublish" @close-dialog="cancelPublish">
       <template #title>
-        <span v-if="publishOpts.publishing">
-          Publish Version {{ publishOpts.version }}
-        </span>
+        <span v-if="publishOpts.publishing"> Publish Version {{ publishOpts.version }} </span>
         <span v-else>Unpublish Version {{ publishOpts.version }}</span>
       </template>
       <template #text>
-        <span v-if="publishOpts.publishing">
-          This will make Version {{ publishOpts.version }} of your form live.
-        </span>
-        <span v-else>
-          Unpublishing this form will take the form out of circulation until a
-          version is published again.
-        </span>
+        <span v-if="publishOpts.publishing"> This will make Version {{ publishOpts.version }} of your form live. </span>
+        <span v-else> Unpublishing this form will take the form out of circulation until a version is published again. </span>
       </template>
     </BaseDialog>
 
@@ -231,7 +162,7 @@ import { FormPermissions } from '@/utils/constants';
 
 export default {
   name: 'ManageVersions',
-  inject:['fd','draftId','formId'],
+  inject: ['fd', 'draftId', 'formId'],
   data() {
     return {
       headers: [
@@ -299,20 +230,14 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', [
-      'fetchForm',
-      'fetchDrafts',
-      'publishDraft',
-      'deleteDraft',
-      'toggleVersionPublish',
-    ]),
+    ...mapActions('form', ['fetchForm', 'fetchDrafts', 'publishDraft', 'deleteDraft', 'toggleVersionPublish']),
     createVersion(formId, versionId) {
       if (this.hasDraft) {
         this.showHasDraftsDialog = true;
       } else {
         this.$router.push({
           name: 'FormDesigner',
-          query: { f: formId, v: versionId,nv:true},
+          query: { f: formId, v: versionId, nv: true },
         });
       }
     },
@@ -323,15 +248,17 @@ export default {
     cancelPublish() {
       this.showPublishDialog = false;
       document.documentElement.style.overflow = 'auto';
-      if(this.draftId){
-        this.$router.replace({
-          name: 'FormDesigner',
-          query: {
-            f: this.formId,
-            d: this.draftId,
-            saved: true,
-          },
-        }).catch(()=>{});
+      if (this.draftId) {
+        this.$router
+          .replace({
+            name: 'FormDesigner',
+            query: {
+              f: this.formId,
+              d: this.draftId,
+              saved: true,
+            },
+          })
+          .catch(() => {});
         return;
       }
       // To get the toggle back to original state
@@ -346,10 +273,10 @@ export default {
       };
       this.showPublishDialog = true;
     },
-    turnOnPublish(){
-      if(this.versionList){
-        for (const item  of this.versionList) {
-          if(item.id===this.draftId){
+    turnOnPublish() {
+      if (this.versionList) {
+        for (const item of this.versionList) {
+          if (item.id === this.draftId) {
             this.publishOpts = {
               publishing: true,
               version: item.version,
@@ -387,7 +314,6 @@ export default {
     },
     // ----------------------------------------------------------------------/ Publish/unpublish actions
 
-
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;
       await this.deleteDraft({
@@ -408,9 +334,7 @@ export default {
       }
 
       const a = document.createElement('a');
-      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(this.formSchema)
-      )}`;
+      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.formSchema))}`;
       a.download = `${snek}_schema.json`;
       a.style.display = 'none';
       a.classList.add('hiddenDownloadTextElement');
@@ -421,9 +345,7 @@ export default {
 
     async getFormSchema(id, isDraft = false) {
       try {
-        let res = !isDraft
-          ? await formService.readVersion(this.form.id, id)
-          : await formService.readDraft(this.form.id, id);
+        let res = !isDraft ? await formService.readVersion(this.form.id, id) : await formService.readDraft(this.form.id, id);
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
@@ -433,13 +355,11 @@ export default {
       }
     },
   },
-  created(){
+  created() {
     //check if the navigation to this page is from FormDesigner
-    if(this.fd)
-    {
+    if (this.fd) {
       this.turnOnPublish();
     }
-
   },
 };
 </script>

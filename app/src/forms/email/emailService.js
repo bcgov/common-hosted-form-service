@@ -84,7 +84,10 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
   } else if (emailType === EmailTypes.SUBMISSION_CONFIRMATION) {
     contextToVal = [additionalProperties.body.to];
     userTypePath = 'form/success';
-    const bodyTemplate = form.identityProviders.length > 0 && form.identityProviders[0].idp === 'public' ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
+    const bodyTemplate =
+      form.identityProviders.length > 0 && form.identityProviders[0].idp === 'public'
+        ? 'submission-received-confirmation-public.html'
+        : 'submission-received-confirmation-login.html';
     configData = {
       bodyTemplate: bodyTemplate,
       title: `${form.name} Accepted`,
@@ -95,33 +98,36 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
     };
   }
 
-
   return {
     configData,
-    contexts: [{
-      context: {
-        allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
-        confirmationNumber: submission.confirmationId,
-        form: configData.form,
-        messageLinkText: configData.messageLinkText,
-        messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
-        emailContent: additionalProperties.emailContent,
-        title: configData.title
+    contexts: [
+      {
+        context: {
+          allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
+          confirmationNumber: submission.confirmationId,
+          form: configData.form,
+          messageLinkText: configData.messageLinkText,
+          messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
+          emailContent: additionalProperties.emailContent,
+          title: configData.title,
+        },
+        to: contextToVal,
       },
-      to: contextToVal
-    }]
+    ],
   };
 };
 
 /** Helper function used to build the email template based on email type and contents for reminder */
 const buildEmailTemplateFormForReminder = async (form, emailType, users, report, referer) => {
   let configData = {};
-  const closeDate = (report.dates.closeDate) ? moment(report.dates.closeDate).format('MMM. D, YYYY') : undefined ;
+  const closeDate = report.dates.closeDate ? moment(report.dates.closeDate).format('MMM. D, YYYY') : undefined;
   const subject = 'CHEFS Submission Reminder';
 
-  const formatEmailTextMessage = (name, closeDate )=> {
-    const messageValue =  (closeDate) ? `This email is to inform you that the ${name} form is now open for submission and will stay open until ${closeDate}. Please complete your submission before the submission period is closed.` : `This email is to inform you that the ${name} form is now open for submission.`;
-    return 'Hi,\n'+messageValue+'\nThank you';
+  const formatEmailTextMessage = (name, closeDate) => {
+    const messageValue = closeDate
+      ? `This email is to inform you that the ${name} form is now open for submission and will stay open until ${closeDate}. Please complete your submission before the submission period is closed.`
+      : `This email is to inform you that the ${name} form is now open for submission.`;
+    return 'Hi,\n' + messageValue + '\nThank you';
   };
   const message = formatEmailTextMessage(form.name, closeDate);
   const contextToVal = users;
@@ -153,22 +159,23 @@ const buildEmailTemplateFormForReminder = async (form, emailType, users, report,
       priority: 'normal',
       form,
     };
-
   }
 
   return {
     configData,
-    contexts: [{
-      context: {
-        allFormSubmissionUrl: '',
-        form: configData.form,
-        report: report,
-        messageLinkText: configData.messageLinkText,
-        messageLinkUrl : `${referer}/form/submit?f=${configData.form.id}`,
-        title: configData.title
+    contexts: [
+      {
+        context: {
+          allFormSubmissionUrl: '',
+          form: configData.form,
+          report: report,
+          messageLinkText: configData.messageLinkText,
+          messageLinkUrl: `${referer}/form/submit?f=${configData.form.id}`,
+          title: configData.title,
+        },
+        to: contextToVal,
       },
-      to: contextToVal
-    }]
+    ],
   };
 };
 
@@ -188,7 +195,7 @@ const service = {
     } catch (err) {
       log.error(err.message, {
         function: '_appUrl',
-        referer: referer
+        referer: referer,
       });
       throw err;
     }
@@ -201,23 +208,10 @@ const service = {
    * @returns joined template files
    */
   _mergeEmailTemplate: (bodyTemplate) => {
-    const template = fs.readFileSync(
-      `${path.join(
-        __dirname,
-        'assets'
-      )}/triggered-notification-email-template.html`,
-      'utf8'
-    );
-    const body = fs.readFileSync(
-      `${path.join(__dirname, 'assets', 'bodies')}/${bodyTemplate}`,
-      'utf8'
-    );
+    const template = fs.readFileSync(`${path.join(__dirname, 'assets')}/triggered-notification-email-template.html`, 'utf8');
+    const body = fs.readFileSync(`${path.join(__dirname, 'assets', 'bodies')}/${bodyTemplate}`, 'utf8');
     const bodyInsertIndex = template.search('<!-- BODY END -->');
-    const result = [
-      template.substring(0, bodyInsertIndex),
-      body,
-      template.substring(bodyInsertIndex, template.length),
-    ].join('');
+    const result = [template.substring(0, bodyInsertIndex), body, template.substring(bodyInsertIndex, template.length)].join('');
     return result;
   },
 
@@ -259,14 +253,20 @@ const service = {
    */
   submissionAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_ASSIGNED, referer, { assignmentNotificationEmail });
+      const { configData, contexts } = await buildEmailTemplate(
+        formId,
+        currentStatus.formSubmissionId,
+        EmailTypes.SUBMISSION_ASSIGNED,
+        referer,
+        { assignmentNotificationEmail }
+      );
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {
         function: EmailTypes.SUBMISSION_ASSIGNED,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -283,14 +283,20 @@ const service = {
    */
   submissionUnassigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_UNASSIGNED, referer, { assignmentNotificationEmail });
+      const { configData, contexts } = await buildEmailTemplate(
+        formId,
+        currentStatus.formSubmissionId,
+        EmailTypes.SUBMISSION_UNASSIGNED,
+        referer,
+        { assignmentNotificationEmail }
+      );
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {
         function: EmailTypes.SUBMISSION_UNASSIGNED,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -308,14 +314,17 @@ const service = {
    */
   statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, referer, { assignmentNotificationEmail, emailContent });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, referer, {
+        assignmentNotificationEmail,
+        emailContent,
+      });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {
         function: EmailTypes.STATUS_ASSIGNED,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -333,13 +342,16 @@ const service = {
    */
   statusCompleted: async (formId, currentStatus, submissionUserEmail, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, { submissionUserEmail, emailContent });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, {
+        submissionUserEmail,
+        emailContent,
+      });
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {
         function: EmailTypes.STATUS_COMPLETED,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -357,14 +369,17 @@ const service = {
    */
   statusRevising: async (formId, currentStatus, submissionUserEmail, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, { submissionUserEmail, emailContent });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, {
+        submissionUserEmail,
+        emailContent,
+      });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {
         function: EmailTypes.STATUS_REVISING,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -393,7 +408,7 @@ const service = {
         formId: formId,
         submissionId: submissionId,
         body: body,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -410,7 +425,9 @@ const service = {
    */
   submissionConfirmation: async (formId, submissionId, body, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, { body: body });
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, {
+        body: body,
+      });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
@@ -419,7 +436,7 @@ const service = {
         formId: formId,
         submissionId: submissionId,
         body: body,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -442,7 +459,6 @@ const service = {
       throw e;
     }
   },
-
 };
 
 module.exports = service;

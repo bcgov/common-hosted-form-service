@@ -1,11 +1,6 @@
 import { formService } from '@/services';
 import store from '@/store';
-import {
-  FormPermissions,
-  FormManagePermissions,
-  IdentityMode,
-  IdentityProviders
-} from '@/utils/constants';
+import { FormPermissions, FormManagePermissions, IdentityMode, IdentityProviders } from '@/utils/constants';
 
 //
 // Utility Functions for determining permissions
@@ -18,9 +13,11 @@ import {
  * @returns {boolean} TRUE if they can
  */
 export function checkFormSubmit(userForm) {
-  return userForm &&
-    (userForm.idps && userForm.idps.includes(IdentityProviders.PUBLIC) ||
-      userForm.permissions && userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE));
+  return (
+    userForm &&
+    ((userForm.idps && userForm.idps.includes(IdentityProviders.PUBLIC)) ||
+      (userForm.permissions && userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)))
+  );
 }
 
 /**
@@ -30,7 +27,7 @@ export function checkFormSubmit(userForm) {
  * @returns {boolean} TRUE if they can
  */
 export function checkFormManage(userForm) {
-  return userForm && userForm.permissions && userForm.permissions.some(p => FormManagePermissions.includes(p));
+  return userForm && userForm.permissions && userForm.permissions.some((p) => FormManagePermissions.includes(p));
 }
 
 /**
@@ -40,11 +37,8 @@ export function checkFormManage(userForm) {
  * @returns {boolean} TRUE if they can
  */
 export function checkSubmissionView(userForm) {
-  const perms = [
-    FormPermissions.SUBMISSION_READ,
-    FormPermissions.SUBMISSION_UPDATE
-  ];
-  return userForm && userForm.permissions && userForm.permissions.some(p => perms.includes(p));
+  const perms = [FormPermissions.SUBMISSION_READ, FormPermissions.SUBMISSION_UPDATE];
+  return userForm && userForm.permissions && userForm.permissions.some((p) => perms.includes(p));
 }
 
 /**
@@ -56,7 +50,7 @@ export function checkSubmissionView(userForm) {
 export async function preFlightAuth(options = {}, next) {
   // Support lambda functions (Consider making them util functions?)
   const getIdpHint = (values) => {
-    return (Array.isArray(values) && values.length) ? values[0] : undefined;
+    return Array.isArray(values) && values.length ? values[0] : undefined;
   };
   const isValidIdp = (value) => Object.values(IdentityProviders).includes(value);
 
@@ -114,7 +108,5 @@ export async function preFlightAuth(options = {}, next) {
  * @returns {boolean} TRUE if public
  */
 export function isFormPublic(form) {
-  return form &&
-    (form.identityProviders && form.identityProviders.some(i => i.code === IdentityMode.PUBLIC));
+  return form && form.identityProviders && form.identityProviders.some((i) => i.code === IdentityMode.PUBLIC);
 }
-

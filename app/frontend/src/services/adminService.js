@@ -16,11 +16,15 @@ export default {
    * @returns {Promise} An axios response
    */
   addFormUser(userId, formId, roles) {
-    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`, roles.map(role => ({
-      userId: userId,
-      formId: formId,
-      role: role
-    })), { params: { userId: userId } });
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`,
+      roles.map((role) => ({
+        userId: userId,
+        formId: formId,
+        role: role,
+      })),
+      { params: { userId: userId } }
+    );
   },
 
   /**
@@ -32,7 +36,6 @@ export default {
   deleteApiKey(formId) {
     return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
-
 
   /**
    * @function listForms
@@ -128,7 +131,6 @@ export default {
     return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/object`, data);
   },
 
-
   /**
    * updateFormComponentsProactiveHelpStatus
    * @function updateFCProactiveHelpStatus
@@ -141,13 +143,12 @@ export default {
     return appAxios().put(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`);
   },
 
-
   /**
    * @function getPresignedUrl
    * get signed image upload url
    * @param {Object} imageName component name and component image encoded into base64
    * @returns {Promise} An axios response
-  */
+   */
   async getFCProactiveHelpImageUrl(componentId) {
     return appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/imageUrl/${componentId}`);
   },
@@ -157,9 +158,8 @@ export default {
    * @function listFCProactiveHelp
    * Reads all form components help information
    * @returns {Promise} An axios response
-  */
+   */
   async listFCProactiveHelp() {
     return await appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`);
   },
 };
-

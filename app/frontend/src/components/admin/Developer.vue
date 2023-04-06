@@ -13,7 +13,8 @@
         {{ userName }}
         <br />
         <br />
-        <h4>JWT Contents
+        <h4>
+          JWT Contents
           <BaseCopyToClipboard
             :copyText="JSON.stringify(tokenParsed)"
             snackBarText="JWT Contents copied to clipboard"
@@ -21,19 +22,17 @@
           />
         </h4>
         <vue-json-pretty :data="tokenParsed" />
-        <h4>JWT Token
-          <BaseCopyToClipboard
-            :copyText="token"
-            snackBarText="JWT Token copied to clipboard"
-            tooltipText="Copy JWT Token to clipboard"
-          />
+        <h4>
+          JWT Token
+          <BaseCopyToClipboard :copyText="token" snackBarText="JWT Token copied to clipboard" tooltipText="Copy JWT Token to clipboard" />
         </h4>
         <div style="word-break: break-all">{{ token }}</div>
       </v-col>
       <v-col cols="5" offset="1">
         <h3>CHEFS API</h3>
         <br />
-        <h4>/rbac/current
+        <h4>
+          /rbac/current
           <BaseCopyToClipboard
             :copyText="JSON.stringify(apiRes)"
             snackBarText="RBAC Response copied to clipboard"
@@ -41,7 +40,6 @@
           />
         </h4>
         <vue-json-pretty :data="apiRes" />
-
       </v-col>
     </v-row>
   </div>
@@ -56,7 +54,7 @@ import VueJsonPretty from 'vue-json-pretty';
 export default {
   name: 'Developer',
   components: {
-    VueJsonPretty
+    VueJsonPretty,
   },
   data() {
     return {

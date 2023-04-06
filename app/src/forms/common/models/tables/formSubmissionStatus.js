@@ -17,9 +17,9 @@ class FormSubmissionStatus extends Timestamps(Model) {
         modelClass: User,
         join: {
           from: 'form_submission_status.assignedToUserId',
-          to: 'user.id'
-        }
-      }
+          to: 'user.id',
+        },
+      },
     };
   }
 
@@ -32,7 +32,7 @@ class FormSubmissionStatus extends Timestamps(Model) {
       },
       orderDescending(builder) {
         builder.orderBy('createdAt', 'desc');
-      }
+      },
     };
   }
 
@@ -46,9 +46,9 @@ class FormSubmissionStatus extends Timestamps(Model) {
         code: { type: 'string' },
         assignedToUserId: { type: 'string', pattern: Regex.UUID },
         actionDate: { type: 'string' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

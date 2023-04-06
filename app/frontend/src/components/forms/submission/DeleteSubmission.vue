@@ -2,26 +2,14 @@
   <span>
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
-        <v-btn
-          @click="showDeleteDialog = true"
-          color="red"
-          :disabled="disabled"
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
+        <v-btn @click="showDeleteDialog = true" color="red" :disabled="disabled" icon v-bind="attrs" v-on="on">
           <v-icon>delete</v-icon>
         </v-btn>
       </template>
       <span>Delete This {{ isDraft ? 'Draft' : 'Submission' }}</span>
     </v-tooltip>
 
-    <BaseDialog
-      v-model="showDeleteDialog"
-      type="CONTINUE"
-      @close-dialog="showDeleteDialog = false"
-      @continue-dialog="delSub"
-    >
+    <BaseDialog v-model="showDeleteDialog" type="CONTINUE" @close-dialog="showDeleteDialog = false" @continue-dialog="delSub">
       <template #title>Confirm Deletion</template>
       <template #text>
         Are you sure you wish to delete this
