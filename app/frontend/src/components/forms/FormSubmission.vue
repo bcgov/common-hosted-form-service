@@ -49,19 +49,15 @@
           :color="NOTIFICATIONS_TYPES.INFO.color"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
           transition="scale-transition"
-        >After editing, re-submit the form to save your changes.</v-alert>
+          >After editing, re-submit the form to save your changes.</v-alert
+        >
         <v-card outlined class="review-form">
           <v-row no-gutters>
             <v-col cols="12" sm="6">
               <h2 class="review-heading">Submission</h2>
             </v-col>
             <v-spacer />
-            <v-col
-              v-if="form.enableStatusUpdates"
-              class="text-sm-right d-print-none"
-              cols="12"
-              sm="6"
-            >
+            <v-col v-if="form.enableStatusUpdates" class="text-sm-right d-print-none" cols="12" sm="6">
               <span v-if="submissionReadOnly">
                 <AuditHistory :submissionId="submissionId" />
                 <v-tooltip bottom>
@@ -98,22 +94,10 @@
       </v-col>
 
       <!-- Status updates and notes -->
-      <v-col
-        v-if="form.enableStatusUpdates"
-        cols="12"
-        md="4"
-        class="pl-0 pt-0 d-print-none"
-        order="first"
-        order-md="last"
-      >
+      <v-col v-if="form.enableStatusUpdates" cols="12" md="4" class="pl-0 pt-0 d-print-none" order="first" order-md="last">
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Status</h2>
-          <StatusPanel
-            :submissionId="submissionId"
-            :formId="form.id"
-            @note-updated="refreshNotes"
-            @draft-enabled="setDraft"
-          />
+          <StatusPanel :submissionId="submissionId" :formId="form.id" @note-updated="refreshNotes" @draft-enabled="setDraft" />
         </v-card>
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <NotesPanel :submissionId="submissionId" ref="notesPanel" />

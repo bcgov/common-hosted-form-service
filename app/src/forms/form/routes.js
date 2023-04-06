@@ -62,21 +62,41 @@ routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissi
 //   next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to modify form versions.' }));
 // });
 
-routes.post('/:formId/versions/:formVersionId/publish', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
-  await controller.publishVersion(req, res, next);
-});
+routes.post(
+  '/:formId/versions/:formVersionId/publish',
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]),
+  async (req, res, next) => {
+    await controller.publishVersion(req, res, next);
+  }
+);
 
-routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
-  await controller.listSubmissions(req, res, next);
-});
+routes.get(
+  '/:formId/versions/:formVersionId/submissions',
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]),
+  async (req, res, next) => {
+    await controller.listSubmissions(req, res, next);
+  }
+);
 
-routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
-  await controller.createSubmission(req, res, next);
-});
+routes.post(
+  '/:formId/versions/:formVersionId/submissions',
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]),
+  async (req, res, next) => {
+    await controller.createSubmission(req, res, next);
+  }
+);
 
-routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
-  controller.listSubmissionFields(req, res, next);
-});
+routes.get(
+  '/:formId/versions/:formVersionId/submissions/discover',
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]),
+  (req, res, next) => {
+    controller.listSubmissionFields(req, res, next);
+  }
+);
 
 // routes.get('/:formId/versions/:formVersionId/submissions/:formSubmissionId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
 //   next(new Problem(410, { detail: 'This method is deprecated, use /submissions to read a submission.' }));
@@ -102,13 +122,23 @@ routes.put('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
   await controller.updateDraft(req, res, next);
 });
 
-routes.delete('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_DELETE]), async (req, res, next) => {
-  await controller.deleteDraft(req, res, next);
-});
+routes.delete(
+  '/:formId/drafts/:formVersionDraftId',
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.DESIGN_DELETE]),
+  async (req, res, next) => {
+    await controller.deleteDraft(req, res, next);
+  }
+);
 
-routes.post('/:formId/drafts/:formVersionDraftId/publish', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
-  await controller.publishDraft(req, res, next);
-});
+routes.post(
+  '/:formId/drafts/:formVersionDraftId/publish',
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]),
+  async (req, res, next) => {
+    await controller.publishDraft(req, res, next);
+  }
+);
 
 routes.get('/:formId/statusCodes', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.getStatusCodes(req, res, next);
@@ -126,7 +156,7 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
   await controller.deleteApiKey(req, res, next);
 });
 
-routes.get('/formcomponents/proactivehelp/list', async(req,res,next) => {
+routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
 

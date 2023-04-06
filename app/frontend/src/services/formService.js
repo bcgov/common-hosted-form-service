@@ -58,11 +58,11 @@ export default {
   },
 
   /**
-  * @function getStatusCodes
-  * Get the statuses that are available to a form
-  * @param {string} formId The form identifier
-  * @returns {Promise} An axios response
-  */
+   * @function getStatusCodes
+   * Get the statuses that are available to a form
+   * @param {string} formId The form identifier
+   * @returns {Promise} An axios response
+   */
   getStatusCodes(formId) {
     return appAxios().get(`/forms/${formId}/statusCodes`);
   },
@@ -173,7 +173,6 @@ export default {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/fields`);
   },
 
-
   /**
    * @function publishVersion
    * Publish or unpublish a specific form version. Publishing a verison will unpublish all others.
@@ -186,7 +185,7 @@ export default {
     return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/publish`, null, {
       params: {
         unpublish: !publish,
-      }
+      },
     });
   },
 
@@ -235,7 +234,7 @@ export default {
    * @returns {Promise} An axios response
    */
   deleteMultipleSubmissions(submissionId, formId, requestBody) {
-    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions`,requestBody);
+    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions`, requestBody);
   },
 
   /**
@@ -258,7 +257,6 @@ export default {
   restoreMutipleSubmissions(submissionId, formId, requestBody) {
     return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions/restore`, requestBody);
   },
-
 
   /**
    * @function updateSubmission
@@ -321,65 +319,62 @@ export default {
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, format,template,versionSelected, preference, options = {}) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
-      {
-        params: {
-          format: format,
-          template:template,
-          version:versionSelected,
-          type: 'submissions',
-          preference:preference,
-          ...options
-        },
-        responseType: 'blob'
-      }
-    );
+  exportSubmissions(formId, format, template, versionSelected, preference, options = {}) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`, {
+      params: {
+        format: format,
+        template: template,
+        version: versionSelected,
+        type: 'submissions',
+        preference: preference,
+        ...options,
+      },
+      responseType: 'blob',
+    });
   },
-
 
   //
   // Notes and Status
   //
 
   /**
-  * @function getSubmissionNotes
-  * Get the notes associated with the submission
-  * @param {string} submissionId The form submission identifier
-  * @returns {Promise} An axios response
-  */
+   * @function getSubmissionNotes
+   * Get the notes associated with the submission
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
   getSubmissionNotes(submissionId) {
     return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/notes`);
   },
 
   /**
-  * @function addNote
-  * Add a new notes to the submission
-  * @param {string} submissionId The form submission identifier
+   * @function addNote
+   * Add a new notes to the submission
+   * @param {string} submissionId The form submission identifier
    * @param {Object} data The request body
-  * @returns {Promise} An axios response
-  */
+   * @returns {Promise} An axios response
+   */
   addNote(submissionId, data) {
     return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/notes`, data);
   },
 
   /**
-  * @function getSubmissionStatuses
-  * Get the current status history associated with the submission
-  * @param {string} submissionId The form submission identifier
-  * @returns {Promise} An axios response
-  */
+   * @function getSubmissionStatuses
+   * Get the current status history associated with the submission
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
   getSubmissionStatuses(submissionId) {
     return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/status`);
   },
 
   /**
-  * @function docGen
-  * Upload a template to generate PDF from CDOGS API
-  * @param {string} submissionId The form submission identifier
-  * @param {Object} body The request body
-  * @returns {Promise} An axios response
-  */
+   * @function docGen
+   * Upload a template to generate PDF from CDOGS API
+   * @param {string} submissionId The form submission identifier
+   * @param {Object} body The request body
+   * @returns {Promise} An axios response
+   */
   docGen(submissionId, body) {
     return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/template/render`, body, {
       responseType: 'arraybuffer', // Needed for binaries unless you want pain
@@ -388,12 +383,12 @@ export default {
   },
 
   /**
-  * @function updateSubmissionStatus
-  * Add a new status entry to the submission
-  * @param {string} submissionId The form submission identifier
-  * @param {Object} data The request body
-  * @returns {Promise} An axios response
-  */
+   * @function updateSubmissionStatus
+   * Add a new status entry to the submission
+   * @param {string} submissionId The form submission identifier
+   * @param {Object} data The request body
+   * @returns {Promise} An axios response
+   */
   updateSubmissionStatus(submissionId, data) {
     return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/status`, data);
   },
@@ -403,12 +398,12 @@ export default {
   //
 
   /**
-  * @function requestReceiptEmail
-  * Send a receipt email
-  * @param {string} submissionId The submission uuid
-  * @param {Object} requestBody The body for the api call: { to }
-  * @returns {Promise} An axios response
-  */
+   * @function requestReceiptEmail
+   * Send a receipt email
+   * @param {string} submissionId The submission uuid
+   * @param {Object} requestBody The body for the api call: { to }
+   * @returns {Promise} An axios response
+   */
   requestReceiptEmail(submissionId, requestBody) {
     return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/email`, requestBody);
   },
@@ -418,18 +413,17 @@ export default {
    * @function listFCProactiveHelp
    * Reads all form components help information
    * @returns {Promise} An axios response
-  */
+   */
   async listFCProactiveHelp() {
     return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/list`);
   },
-
 
   /**
    * @function getPresignedUrl
    * get signed image upload url
    * @param {Object} imageName component name and component image encoded into base64
    * @returns {Promise} An axios response
-  */
+   */
   async getFCProactiveHelpImageUrl(componentId) {
     return appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`);
   },

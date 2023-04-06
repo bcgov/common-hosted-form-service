@@ -20,7 +20,7 @@ class IdentityProvider extends Timestamps(Model) {
       },
       orderDefault(builder) {
         builder.orderByRaw('lower("identity_provider"."code")');
-      }
+      },
     };
   }
 
@@ -33,12 +33,11 @@ class IdentityProvider extends Timestamps(Model) {
         display: { type: 'string', minLength: 1, maxLength: 255 },
         idp: { type: 'string', minLength: 1, maxLength: 255 },
         active: { type: 'boolean' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = IdentityProvider;

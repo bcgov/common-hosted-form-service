@@ -19,12 +19,15 @@ class ClientConnection {
       // Wraps axios-token-interceptor with oauth-specific configuration,
       // fetches the token using the desired claim method, and caches
       // until the token expires
-      oauth.interceptor(tokenProvider, oauth.client(axios.create(), {
-        url: this.tokenUrl,
-        grant_type: 'client_credentials',
-        client_id: clientId,
-        client_secret: clientSecret,
-      }))
+      oauth.interceptor(
+        tokenProvider,
+        oauth.client(axios.create(), {
+          url: this.tokenUrl,
+          grant_type: 'client_credentials',
+          client_id: clientId,
+          client_secret: clientSecret,
+        })
+      )
     );
   }
 }

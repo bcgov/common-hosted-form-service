@@ -17,9 +17,9 @@ class FormVersion extends Timestamps(Model) {
         modelClass: FormSubmission,
         join: {
           from: 'form_version.id',
-          to: 'form_submission.formVersionId'
-        }
-      }
+          to: 'form_submission.formVersionId',
+        },
+      },
     };
   }
 
@@ -43,7 +43,7 @@ class FormVersion extends Timestamps(Model) {
       },
       orderVersionDescending(builder) {
         builder.orderBy('version', 'desc');
-      }
+      },
     };
   }
 
@@ -57,12 +57,11 @@ class FormVersion extends Timestamps(Model) {
         version: { type: 'integer' },
         schema: { type: 'object' },
         published: { type: 'boolean' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = FormVersion;

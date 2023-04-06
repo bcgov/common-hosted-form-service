@@ -28,11 +28,11 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
-    svs:String,
-    nv:{
-      type:Boolean,
-      default:false
-    }
+    svs: String,
+    nv: {
+      type: Boolean,
+      default: false,
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -40,21 +40,15 @@ export default {
     });
   },
 
-  methods:{
-    ...mapActions('form', ['listFCProactiveHelp','deleteCurrentForm']),
+  methods: {
+    ...mapActions('form', ['listFCProactiveHelp', 'deleteCurrentForm']),
   },
   computed: {
     ...mapGetters('form', ['form']),
     IDP: () => IdentityProviders,
   },
-  beforeRouteLeave(_to, _from,next) {
-    this.form.isDirty
-      ? next(
-        window.confirm(
-          'Do you really want to leave this page? Changes you made will not be saved.'
-        )
-      )
-      : next();
+  beforeRouteLeave(_to, _from, next) {
+    this.form.isDirty ? next(window.confirm('Do you really want to leave this page? Changes you made will not be saved.')) : next();
   },
   beforeMount() {
     this.listFCProactiveHelp();
