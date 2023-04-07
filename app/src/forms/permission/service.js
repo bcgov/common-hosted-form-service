@@ -48,11 +48,7 @@ const service = {
       await trx.raw(`delete from role_permission where "permission" = '${obj.code}'`);
       // set to specified roles...
       for (const r of data.roles) {
-        await trx.raw(
-          `insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${r.code}', '${obj.code}', '${
-            currentUser.usernameIdp
-          }');`
-        );
+        await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${r.code}', '${obj.code}', '${currentUser.usernameIdp}');`);
       }
       await trx.commit();
 
@@ -79,10 +75,7 @@ const service = {
 
       // DANGER - do not mess up the where clauses!
       // ALWAYS ensure submissionid is enforced and you know what KNEX is doing about chaining the where clauses as to if it's making an AND or an OR
-      const users = await FormSubmissionUser.query()
-        .select('userId')
-        .where('formSubmissionId', submissionId)
-        .whereIn('permission', [Permissions.SUBMISSION_READ]);
+      const users = await FormSubmissionUser.query().select('userId').where('formSubmissionId', submissionId).whereIn('permission', [Permissions.SUBMISSION_READ]);
 
       const itemsToInsert = users.map((user) => ({
         id: uuidv4(),

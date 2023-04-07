@@ -131,9 +131,7 @@ const service = {
     let substartDate = moment(schedule.openSubmissionDateTime);
     let newDate = substartDate.clone();
     return schedule.allowLateSubmissions.enabled
-      ? newDate
-          .add(schedule.allowLateSubmissions.forNext.term, schedule.allowLateSubmissions.forNext.intervalType)
-          .format('YYYY-MM-DD HH:MM:SS')
+      ? newDate.add(schedule.allowLateSubmissions.forNext.term, schedule.allowLateSubmissions.forNext.intervalType).format('YYYY-MM-DD HH:MM:SS')
       : null;
   },
   _getForms: async () => {
