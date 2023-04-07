@@ -7,8 +7,7 @@ routes.use('/reminder', (req, res, next) => {
     if (req.method == 'GET') {
       const apikeyEnv = process.env.APITOKEN;
       const apikeyIncome = req.headers.apikey;
-      if (apikeyEnv == apikeyIncome && (apikeyIncome == undefined || apikeyIncome == ''))
-        return res.status(401).json({ message: 'No API key provided' });
+      if (apikeyEnv == apikeyIncome && (apikeyIncome == undefined || apikeyIncome == '')) return res.status(401).json({ message: 'No API key provided' });
       if (apikeyIncome === apikeyEnv) {
         next();
       } else {

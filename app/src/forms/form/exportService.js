@@ -162,10 +162,7 @@ const service = {
     let headers = await service._buildCsvHeaders(form, data, version, columns);
 
     const opts = {
-      transforms: [
-        transforms.unwind({ paths: pathToUnwind, blankOut: blankout }),
-        transforms.flatten({ object: true, array: true, separator: '.' }),
-      ],
+      transforms: [transforms.unwind({ paths: pathToUnwind, blankOut: blankout }), transforms.flatten({ object: true, array: true, separator: '.' })],
       fields: headers,
     };
     const parser = new Parser(opts);

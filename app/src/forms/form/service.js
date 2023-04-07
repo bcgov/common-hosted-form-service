@@ -243,16 +243,7 @@ const service = {
       .modify('filterVersion', params.version)
       .modify('filterCreatedAt', params.createdAt[0], params.createdAt[1])
       .modify('orderDefault');
-    const selection = [
-      'confirmationId',
-      'createdAt',
-      'formId',
-      'formSubmissionStatusCode',
-      'submissionId',
-      'deleted',
-      'createdBy',
-      'formVersionId',
-    ];
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
@@ -334,10 +325,7 @@ const service = {
   },
 
   listSubmissions: async (formVersionId, params) => {
-    return FormSubmission.query()
-      .where('formVersionId', formVersionId)
-      .modify('filterCreatedBy', params.createdBy)
-      .modify('orderDescending');
+    return FormSubmission.query().where('formVersionId', formVersionId).modify('filterCreatedBy', params.createdBy).modify('orderDescending');
   },
 
   createSubmission: async (formVersionId, data, currentUser) => {

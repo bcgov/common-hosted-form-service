@@ -80,10 +80,7 @@ class User extends Timestamps(Model) {
         // must be written as subquery function to force parentheses grouping
         if (value) {
           query.where((subquery) => {
-            subquery
-              .where('username', 'ilike', `%${value}%`)
-              .orWhere('fullName', 'ilike', `%${value}%`)
-              .orWhere('email', 'ilike', `%${value}%`);
+            subquery.where('username', 'ilike', `%${value}%`).orWhere('fullName', 'ilike', `%${value}%`).orWhere('email', 'ilike', `%${value}%`);
           });
         }
       },

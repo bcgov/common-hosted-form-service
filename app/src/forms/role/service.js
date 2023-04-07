@@ -48,11 +48,7 @@ const service = {
       await trx.raw(`delete from role_permission where "role" = '${obj.code}'`);
       // set to specified permissions...
       for (const p of data.permissions) {
-        await trx.raw(
-          `insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${obj.code}', '${p.code}', '${
-            currentUser.usernameIdp
-          }');`
-        );
+        await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${obj.code}', '${p.code}', '${currentUser.usernameIdp}');`);
       }
 
       await trx.commit();

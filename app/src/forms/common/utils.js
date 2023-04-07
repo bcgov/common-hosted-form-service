@@ -132,11 +132,7 @@ const isFormExpired = (formSchedule = {}) => {
               result = {
                 ...result,
                 expire: true,
-                allowLateSubmissions: isEligibleLateSubmission(
-                  closeDate,
-                  formSchedule.allowLateSubmissions.forNext.term,
-                  formSchedule.allowLateSubmissions.forNext.intervalType
-                ),
+                allowLateSubmissions: isEligibleLateSubmission(closeDate, formSchedule.allowLateSubmissions.forNext.term, formSchedule.allowLateSubmissions.forNext.intervalType),
               };
               /** Check if form is alow late submition - end */
             } else {
@@ -257,11 +253,7 @@ const checkIsFormExpired = (formSchedule = {}) => {
               result = {
                 ...result,
                 expire: true,
-                allowLateSubmissions: isEligibleLateSubmission(
-                  closeDate,
-                  formSchedule.allowLateSubmissions.forNext.term,
-                  formSchedule.allowLateSubmissions.forNext.intervalType
-                ),
+                allowLateSubmissions: isEligibleLateSubmission(closeDate, formSchedule.allowLateSubmissions.forNext.term, formSchedule.allowLateSubmissions.forNext.intervalType),
               };
               /** Check if form is alow late submition - end */
             } else {
@@ -403,10 +395,7 @@ const getCalculatedCloseSubmissionDate = (
       calculatedCloseDate = repeatSubmissionUntil;
     }
     if (allowLateTerm && allowLateInterval) {
-      calculatedCloseDate = calculatedCloseDate
-        .add(keepOpenForTerm, keepOpenForInterval)
-        .add(allowLateTerm, allowLateInterval)
-        .format('YYYY-MM-DD HH:MM:SS');
+      calculatedCloseDate = calculatedCloseDate.add(keepOpenForTerm, keepOpenForInterval).add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
     }
   }
 
@@ -478,8 +467,7 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
           component.questions.forEach((e) => keyPath.push(path ? `${path}.${component.key}.${e.value}` : `${component.key}.${e.value}`));
         }
         // for checkboxes and selectboxes, get field name from obj.values.value
-        else if (component.values)
-          component.values.forEach((e) => keyPath.push(path ? `${path}.${component.key}.${e.value}` : `${component.key}.${e.value}`));
+        else if (component.values) component.values.forEach((e) => keyPath.push(path ? `${path}.${component.key}.${e.value}` : `${component.key}.${e.value}`));
         // else push the parent field
         else {
           keyPath.push(component.key);
@@ -495,8 +483,7 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
       if (
         component.key &&
         !['panel', 'table', 'well', 'columns', 'fieldset', 'tabs', 'form'].includes(component.type) &&
-        (['datagrid', 'container', 'editgrid', 'address', 'dynamicWizard', 'datatable', 'tagpad'].includes(component.type) ||
-          component.tree)
+        (['datagrid', 'container', 'editgrid', 'address', 'dynamicWizard', 'datatable', 'tagpad'].includes(component.type) || component.tree)
       ) {
         return newPath;
       } else if (component.key && component.type === 'form') {
@@ -698,21 +685,12 @@ const isRepeatDataValid = (schedule) => {
 
 const isLateSubmissionObjValid = (schedule) => {
   let allowLateSubmissions = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
-  let allowLateSubmissionsForNextTerm =
-    schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
+  let allowLateSubmissionsForNextTerm = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
   let allowLateSubmissionsForNextInterval =
-    schedule &&
-    schedule.allowLateSubmissions &&
-    schedule.allowLateSubmissions.forNext &&
-    schedule.allowLateSubmissions.forNext.intervalType;
+    schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
 
   if (allowLateSubmissions) {
-    if (
-      !allowLateSubmissionsForNextTerm ||
-      allowLateSubmissionsForNextInterval === null ||
-      !allowLateSubmissionsForNextInterval ||
-      allowLateSubmissionsForNextInterval === null
-    ) {
+    if (!allowLateSubmissionsForNextTerm || allowLateSubmissionsForNextInterval === null || !allowLateSubmissionsForNextInterval || allowLateSubmissionsForNextInterval === null) {
       return false;
     }
   }
