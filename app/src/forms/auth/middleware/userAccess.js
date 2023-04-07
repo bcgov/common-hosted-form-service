@@ -172,9 +172,7 @@ const filterMultipleSubmissions = () => {
 
       const isForeignSubmissionId = metaData.every((SubmissionMetadata) => SubmissionMetadata.formId === formId);
       if (!isForeignSubmissionId || metaData.length !== submissionIds.length) {
-        return next(
-          new Problem(401, { detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.' })
-        );
+        return next(new Problem(401, { detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.' }));
       }
       return next();
     }
@@ -263,7 +261,7 @@ const hasRolePermissions = (removingUsers = false) => {
 
           // Can't update another user's roles if they are an owner
           if (userRoles.some((fru) => fru.role === Roles.OWNER) && userId !== currentUser.id) {
-            return next(new Problem(401, { detail: "You can't update an owner's roles." }));
+            return next(new Problem(401, { detail: "You can not update an owner's roles." }));
           }
 
           // If the user is trying to remove the designer role
@@ -282,11 +280,7 @@ const hasRolePermissions = (removingUsers = false) => {
         const userRoles = await rbacService.readUserRole(userId, formId);
 
         // If the user is trying to remove the team manager role for their own userid
-        if (
-          userRoles.some((fru) => fru.role === Roles.TEAM_MANAGER) &&
-          !data.some((role) => role.role === Roles.TEAM_MANAGER) &&
-          userId == currentUser.id
-        ) {
+        if (userRoles.some((fru) => fru.role === Roles.TEAM_MANAGER) && !data.some((role) => role.role === Roles.TEAM_MANAGER) && userId == currentUser.id) {
           return next(new Problem(401, { detail: "You can't remove your own team manager role." }));
         }
 

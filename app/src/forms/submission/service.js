@@ -16,11 +16,7 @@ const service = {
     return await Promise.all([
       FormSubmission.query().findById(meta.submissionId).throwIfNotFound(),
       FormVersion.query().findById(meta.formVersionId).throwIfNotFound(),
-      Form.query()
-        .findById(meta.formId)
-        .allowGraph('identityProviders')
-        .withGraphFetched('identityProviders(orderDefault)')
-        .throwIfNotFound(),
+      Form.query().findById(meta.formId).allowGraph('identityProviders').withGraphFetched('identityProviders(orderDefault)').throwIfNotFound(),
     ]).then((data) => {
       return {
         submission: data[0],
@@ -43,11 +39,7 @@ const service = {
       return await Promise.all([
         FormSubmission.query().findByIds(submissionIds).throwIfNotFound(),
         FormVersion.query().findByIds(formVersionId).throwIfNotFound(),
-        Form.query()
-          .findByIds(formId)
-          .allowGraph('identityProviders')
-          .withGraphFetched('identityProviders(orderDefault)')
-          .throwIfNotFound(),
+        Form.query().findByIds(formId).allowGraph('identityProviders').withGraphFetched('identityProviders(orderDefault)').throwIfNotFound(),
       ]).then((data) => {
         return {
           submission: data[0],

@@ -253,13 +253,7 @@ const service = {
    */
   submissionAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(
-        formId,
-        currentStatus.formSubmissionId,
-        EmailTypes.SUBMISSION_ASSIGNED,
-        referer,
-        { assignmentNotificationEmail }
-      );
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_ASSIGNED, referer, { assignmentNotificationEmail });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
@@ -283,13 +277,7 @@ const service = {
    */
   submissionUnassigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(
-        formId,
-        currentStatus.formSubmissionId,
-        EmailTypes.SUBMISSION_UNASSIGNED,
-        referer,
-        { assignmentNotificationEmail }
-      );
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_UNASSIGNED, referer, { assignmentNotificationEmail });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {

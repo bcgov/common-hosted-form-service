@@ -18,14 +18,9 @@ routes.delete('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_DELETE
   await controller.delete(req, res, next);
 });
 
-routes.put(
-  '/:formSubmissionId/:formId/submissions/restore',
-  hasSubmissionPermissions(P.SUBMISSION_DELETE),
-  filterMultipleSubmissions(),
-  async (req, res, next) => {
-    await controller.restoreMutipleSubmissions(req, res, next);
-  }
-);
+routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
+  await controller.restoreMutipleSubmissions(req, res, next);
+});
 
 routes.put('/:formSubmissionId/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), async (req, res, next) => {
   await controller.restore(req, res, next);
@@ -63,14 +58,9 @@ routes.post('/:formSubmissionId/template/render', hasSubmissionPermissions(P.SUB
   await controller.templateUploadAndRender(req, res, next);
 });
 
-routes.delete(
-  '/:formSubmissionId/:formId/submissions',
-  hasSubmissionPermissions(P.SUBMISSION_DELETE),
-  filterMultipleSubmissions(),
-  async (req, res, next) => {
-    await controller.deleteMutipleSubmissions(req, res, next);
-  }
-);
+routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
+  await controller.deleteMutipleSubmissions(req, res, next);
+});
 
 // Implement this when we want to fetch a specific audit row including the whole old submission record
 // routes.get('/:formSubmissionId/edits/:auditId', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
