@@ -80,11 +80,13 @@
   },
   "devDependencies": {
     "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-config-recommended": "^4.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "jest": "^27.3.1",
     "nodemon": "^2.0.18",
     "prettier": "^2.8.7",
+    "prettier-eslint": "^15.0.1",
     "supertest": "^6.2.4"
   }
 }

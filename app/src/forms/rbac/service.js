@@ -7,10 +7,7 @@ const authService = require('../auth/service');
 
 const service = {
   list: async () => {
-    return FormRoleUser.query()
-      .allowGraph('[form, userRole, user]')
-      .withGraphFetched('[form, userRole, user]')
-      .modify('orderCreatedAtDescending');
+    return FormRoleUser.query().allowGraph('[form, userRole, user]').withGraphFetched('[form, userRole, user]').modify('orderCreatedAtDescending');
   },
   create: async (data) => {
     let trx;
@@ -53,11 +50,7 @@ const service = {
   },
 
   read: async (id) => {
-    return FormRoleUser.query()
-      .findById(id)
-      .allowGraph('[form, userRole, user]')
-      .withGraphFetched('[form, userRole, user]')
-      .throwIfNotFound();
+    return FormRoleUser.query().findById(id).allowGraph('[form, userRole, user]').withGraphFetched('[form, userRole, user]').throwIfNotFound();
   },
 
   readUserRole: async (userId, formId) => {
@@ -260,12 +253,7 @@ const service = {
     }
 
     // If trying to remove the only owner
-    if (
-      userRoles.length === 1 &&
-      userRoles.some((ur) => ur.role === Roles.OWNER) &&
-      userRoles.some((ur) => ur.userId === userId) &&
-      !data.some((d) => d.role === Roles.OWNER)
-    ) {
+    if (userRoles.length === 1 && userRoles.some((ur) => ur.role === Roles.OWNER) && userRoles.some((ur) => ur.userId === userId) && !data.some((d) => d.role === Roles.OWNER)) {
       throw new Problem(400, { detail: "Can't remove the only owner." });
     }
 
