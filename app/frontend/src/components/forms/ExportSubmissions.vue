@@ -62,7 +62,8 @@
                 ></v-select>
               </v-col>
             </v-row>
-            <v-row v-if="exportFormat === 'csv'">
+            <v-row v-if="exportFormat === 'csv'" class="mt-0">
+
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
                 <v-switch
@@ -108,8 +109,7 @@
                 </v-row>
               </v-col>
             </v-row>
-
-            <v-row class="mt-5">
+            <v-row class="mt-4">
               <v-col>
                 <p class="subTitleObjectStyle">Submission Date</p>
                 <v-radio-group v-model="dateRange" hide-details="auto">
@@ -196,7 +196,7 @@
                 </div>
               </v-col>
             </v-row>
-            <v-row v-if="exportFormat === 'csv'">
+            <v-row v-if="exportFormat === 'csv'" class="mt-0 pt-0">
               <v-col>
                 <div style="display: flex; align-content: flex-start">
                   <div class="subTitleObjectStyle mr-1">CSV Format</div>
