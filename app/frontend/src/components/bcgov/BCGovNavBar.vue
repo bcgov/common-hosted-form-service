@@ -3,19 +3,33 @@
     <div class="nav-holder">
       <ul>
         <li>
-          <router-link data-cy="aboutLinks" :to="{ name: 'About' }">About</router-link>
+          <router-link data-cy="aboutLinks" :to="{ name: 'About' }"
+            >About</router-link
+          >
         </li>
         <li v-if="authenticated">
-          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }">My Forms</router-link>
+          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }"
+            >My Forms</router-link
+          >
         </li>
         <li v-if="hasPrivileges">
-          <router-link :to="{ name: 'FormCreate' }">Create a New Form</router-link>
+          <router-link :to="{ name: 'FormCreate' }"
+            >Create a New Form</router-link
+          >
         </li>
         <li v-if="hasPrivileges">
-          <a href="https://github.com/bcgov/common-hosted-form-service/wiki" target="_blank">Help</a>
+          <a
+            href="https://github.com/bcgov/common-hosted-form-service/wiki"
+            target="_blank"
+            >Help</a
+          >
         </li>
         <li v-if="hasPrivileges">
-          <a href="https://chefs-fider.apps.silver.devops.gov.bc.ca/" target="_blank">Feedback</a>
+          <a
+            href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
+            target="_blank"
+            >Feedback</a
+          >
         </li>
         <!-- <li>
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>

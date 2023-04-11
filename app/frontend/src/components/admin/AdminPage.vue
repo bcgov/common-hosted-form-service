@@ -19,7 +19,8 @@ export default {
     AdminFormsTable: () => import('@/components/admin/AdminFormsTable.vue'),
     AdminUsersTable: () => import('@/components/admin/AdminUsersTable.vue'),
     Developer: () => import('@/components/admin/Developer.vue'),
-    FormComponentsProactiveHelp: () => import('@/components/admin/FormComponentsProactiveHelp.vue'),
+    FormComponentsProactiveHelp: () =>
+      import('@/components/admin/FormComponentsProactiveHelp.vue'),
   },
 };
 </script>

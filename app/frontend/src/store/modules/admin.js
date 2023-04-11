@@ -68,7 +68,11 @@ export default {
     //
     async addFormUser({ dispatch }, formUser) {
       try {
-        const response = await adminService.addFormUser(formUser.userId, formUser.formId, formUser.roles);
+        const response = await adminService.addFormUser(
+          formUser.userId,
+          formUser.formId,
+          formUser.roles
+        );
         dispatch(
           'notifications/addNotification',
           {
@@ -172,7 +176,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: "An error occurred while fetching this form's API details.",
+            message:
+              "An error occurred while fetching this form's API details.",
             consoleError: `Error getting admin API details from form ${formId} data: ${error}`,
           },
           { root: true }
@@ -245,8 +250,10 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while storing form component help information.',
-            consoleError: 'Error getting storing form component help information',
+            message:
+              'An error occurred while storing form component help information.',
+            consoleError:
+              'Error getting storing form component help information',
           },
           { root: true }
         );
@@ -257,7 +264,9 @@ export default {
       try {
         // Get Common Components Help Information
         commit('SET_FCPROACTIVEHELPIMAGEURL', {});
-        const response = await adminService.getFCProactiveHelpImageUrl(componentId);
+        const response = await adminService.getFCProactiveHelpImageUrl(
+          componentId
+        );
         commit('SET_FCPROACTIVEHELPIMAGEURL', response.data.url);
       } catch (error) {
         dispatch(
@@ -272,10 +281,16 @@ export default {
     },
 
     //updateFormComponentsProactiveHelpStatus
-    async updateFCProactiveHelpStatus({ commit, dispatch }, { componentId, publishStatus }) {
+    async updateFCProactiveHelpStatus(
+      { commit, dispatch },
+      { componentId, publishStatus }
+    ) {
       try {
         // Get Common Components Help Information
-        const response = await adminService.updateFCProactiveHelpStatus(componentId, publishStatus);
+        const response = await adminService.updateFCProactiveHelpStatus(
+          componentId,
+          publishStatus
+        );
         commit('SET_FCPROACTIVEHELP', response.data);
       } catch (error) {
         dispatch(

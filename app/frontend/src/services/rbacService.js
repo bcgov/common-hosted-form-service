@@ -78,7 +78,11 @@ export default {
    * @returns {Promise} An axios response
    */
   removeMultiUsers(requestBody, params = {}) {
-    return appAxios().delete(`${ApiRoutes.RBAC}/users?formId=${params.formId}`, { data: requestBody }, { params });
+    return appAxios().delete(
+      `${ApiRoutes.RBAC}/users?formId=${params.formId}`,
+      { data: requestBody },
+      { params }
+    );
   },
 
   //
@@ -103,6 +107,8 @@ export default {
    * @returns {Promise} An axios response
    */
   setSubmissionUserPermissions(requestBody, params = {}) {
-    return appAxios().put(`${ApiRoutes.RBAC}/submissions`, requestBody, { params });
+    return appAxios().put(`${ApiRoutes.RBAC}/submissions`, requestBody, {
+      params,
+    });
   },
 };

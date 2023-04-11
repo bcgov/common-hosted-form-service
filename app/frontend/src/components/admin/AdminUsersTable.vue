@@ -5,7 +5,14 @@
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
-          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details class="pb-5" />
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+            class="pb-5"
+          />
         </div>
       </v-col>
     </v-row>

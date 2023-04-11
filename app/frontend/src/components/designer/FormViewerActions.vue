@@ -12,7 +12,13 @@
       <span v-if="canSaveDraft" class="ml-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn @click="$emit('save-draft')" color="primary" icon v-bind="attrs" v-on="on">
+            <v-btn
+              @click="$emit('save-draft')"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon>save</v-icon>
             </v-btn>
           </template>
@@ -43,7 +49,10 @@
 
       <!-- Go to draft edit -->
       <span v-if="submissionId" class="ml-2">
-        <ManageSubmissionUsers :isDraft="isDraft" :submissionId="submissionId" />
+        <ManageSubmissionUsers
+          :isDraft="isDraft"
+          :submissionId="submissionId"
+        />
       </span>
     </v-col>
   </v-row>
@@ -88,7 +97,10 @@ export default {
       return !this.readOnly;
     },
     showEditToggle() {
-      return this.readOnly && this.permissions.includes(FormPermissions.SUBMISSION_UPDATE);
+      return (
+        this.readOnly &&
+        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
+      );
     },
   },
 };
