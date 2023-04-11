@@ -45,9 +45,9 @@ const service = {
     }
 
     if(fields && Array.isArray(fields)){
-      return await formSchemaheaders.filter(field=>{
-        if(fields.includes(field)){
-          return field;
+      return await formSchemaheaders.filter(header=>{
+        if(fields.includes(header)){
+          return header;
         }
       });
     }
