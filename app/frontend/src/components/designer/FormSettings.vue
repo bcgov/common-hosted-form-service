@@ -132,22 +132,13 @@
           <v-checkbox @change="allowSubmitterToUploadFileChanged" class="my-0" v-model="allowSubmitterToUploadFile">
             <template #label>
               <span>
-                Allow <strong> bulk submission </strong> upload
-                <v-tooltip close-delay="1000" bottom>
+                Allow <strong> multiple draft</strong> upload
+                <v-tooltip close-delay="3000" bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon icon="fa-solid fa-flask" color="primary" class="ml-3" v-bind="attrs" v-on="on" />
                   </template>
-                  <span>
-                    Selecting this option controls what the submitting user of
-                    this form will see on successful submission. <br />
-                    If checked, it will display
-                    <ul>
-                      <li>the Confirmation ID</li>
-                      <li>
-                        the option for the user to email themselves a submission
-                        confirmation.
-                      </li>
-                    </ul>
+                  <span>Experimental <a :href="githubLinkBulkUpload" class="preview_info_link_field_white" :target="'_blank'"> Learn more
+                    <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" /></a>
                   </span>
                 </v-tooltip>
               </span>
@@ -243,7 +234,7 @@ import { mapFields } from 'vuex-map-fields';
 import { IdentityMode, IdentityProviders, Regex } from '@/utils/constants';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFlask,faXmark,faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
-library.add(faFlask,faXmark,faSquareArrowUpRight);
+library.add(faFlask,faXmark,faSquareArrowUpRight );
 
 export default {
   name: 'FormSettings',
@@ -252,6 +243,7 @@ export default {
   },
   data() {
     return {
+      githubLinkBulkUpload: 'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload',
       valid: false,
       // Validation
       loginRequiredRules: [

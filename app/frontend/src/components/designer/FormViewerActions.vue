@@ -2,10 +2,27 @@
   <v-row class="d-print-none">
     <v-col v-if="formId">
       <v-btn outlined @click="goToAllSubmissionOrDraft">
-        <span>View all submissions/drafts</span>
+        <span>view all submission</span>
       </v-btn>
     </v-col>
     <v-col class="text-right">
+
+      <!-- Bulk button -->
+      <span v-if="allowSubmitterToUploadFile" class="ml-2">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="$emit('switchView')"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on">
+              <v-icon>repeat</v-icon>
+            </v-btn>
+          </template>
+          <span>{{(bulkFile)?'Switch to sigle submission':'Switch to multiple submission'}}</span>
+        </v-tooltip>
+      </span>
 
       <!-- Save a draft -->
       <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">

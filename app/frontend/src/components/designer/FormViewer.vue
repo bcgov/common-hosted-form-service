@@ -88,10 +88,10 @@
         />
         <p v-if="version" class="text-right">Version: {{ version }}</p>
       </div>
-      <FormBulkDialog v-if="!submissionId && form.allowSubmitterToUploadFile" @leave-this-page="leaveThisPage" @set-bulk-file="setBulkFile"/>
+      <!-- <FormBulkDialog v-if="!submissionId && form.allowSubmitterToUploadFile" @leave-this-page="leaveThisPage" @set-bulk-file="setBulkFile"/> -->
       <BulkPrompt :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" @close-bulk-yes-or-no="closeBulkYesOrNo"/>
     </v-skeleton-loader>
- 
+
   </div>
 
 </template>
@@ -107,14 +107,13 @@ import FormViewerDownloadButton from '@/components/designer/FormViewerDownloadBu
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
-import FormBulkDialog  from '@/components/designer/FormBulkDialog.vue';
+// import FormBulkDialog  from '@/components/designer/FormBulkDialog.vue';
 import BulkPrompt  from '@/components/designer/BulkPrompt.vue';
 
 export default {
   name: 'FormViewer',
   components: {
     BulkPrompt,
-    FormBulkDialog,
     Form,
     FormViewerActions,
     FormViewerDownloadButton
@@ -216,7 +215,7 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     isFormPublic: isFormPublic,
-    // setBulkFile 
+    // setBulkFile
     setBulkFile(state){
       this.bulkFile = state;
     },
@@ -564,7 +563,7 @@ export default {
         this.doYouWantToSaveTheDraft = true;
       } else {
         this.leaveThisPage();
-      }  
+      }
     },
     goTo(path, params){
       this.$router.push({
