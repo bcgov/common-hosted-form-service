@@ -13,7 +13,8 @@ export default {
       init: { onLoad: 'login-required' },
     };
     const options = Object.assign({}, defaultParams, params);
-    if (assertOptions(options).hasError) throw new Error(`Invalid options given: ${assertOptions(options).error}`);
+    if (assertOptions(options).hasError)
+      throw new Error(`Invalid options given: ${assertOptions(options).error}`);
 
     const watch = new Vue({
       data() {
@@ -76,7 +77,8 @@ function init(config, watch, options) {
   keycloak.onReady = function (authenticated) {
     updateWatchVariables(authenticated);
     watch.ready = true;
-    typeof options.onReady === 'function' && watch.$emit('ready', options.onReady.bind(this, keycloak));
+    typeof options.onReady === 'function' &&
+      watch.$emit('ready', options.onReady.bind(this, keycloak));
   };
   keycloak.onAuthSuccess = function () {
     // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.
@@ -90,7 +92,9 @@ function init(config, watch, options) {
     );
     watch.logoutFn = () => {
       clearInterval(updateTokenInterval);
-      keycloak.logout(options.logout || { redirectUri: config['logoutRedirectUri'] });
+      keycloak.logout(
+        options.logout || { redirectUri: config['logoutRedirectUri'] }
+      );
     };
   };
   keycloak.onAuthRefreshSuccess = function () {
@@ -139,16 +143,28 @@ function init(config, watch, options) {
 function assertOptions(options) {
   const { config, init, onReady, onInitError } = options;
   if (typeof config !== 'string' && !_isObject(config)) {
-    return { hasError: true, error: `'config' option must be a string or an object. Found: '${config}'` };
+    return {
+      hasError: true,
+      error: `'config' option must be a string or an object. Found: '${config}'`,
+    };
   }
   if (!_isObject(init) || typeof init.onLoad !== 'string') {
-    return { hasError: true, error: `'init' option must be an object with an 'onLoad' property. Found: '${init}'` };
+    return {
+      hasError: true,
+      error: `'init' option must be an object with an 'onLoad' property. Found: '${init}'`,
+    };
   }
   if (onReady && typeof onReady !== 'function') {
-    return { hasError: true, error: `'onReady' option must be a function. Found: '${onReady}'` };
+    return {
+      hasError: true,
+      error: `'onReady' option must be a function. Found: '${onReady}'`,
+    };
   }
   if (onInitError && typeof onInitError !== 'function') {
-    return { hasError: true, error: `'onInitError' option must be a function. Found: '${onInitError}'` };
+    return {
+      hasError: true,
+      error: `'onInitError' option must be a function. Found: '${onInitError}'`,
+    };
   }
   return {
     hasError: false,
@@ -157,7 +173,11 @@ function assertOptions(options) {
 }
 
 function _isObject(obj) {
-  return obj !== null && typeof obj === 'object' && Object.prototype.toString.call(obj) !== '[object Array]';
+  return (
+    obj !== null &&
+    typeof obj === 'object' &&
+    Object.prototype.toString.call(obj) !== '[object Array]'
+  );
 }
 
 function getConfig(config) {
