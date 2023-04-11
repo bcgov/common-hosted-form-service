@@ -17,9 +17,11 @@ const helper = {
     const app = express();
 
     app.use(express.json());
-    app.use(express.urlencoded({
-      extended: false
-    }));
+    app.use(
+      express.urlencoded({
+        extended: false,
+      })
+    );
     app.use(basePath, router);
 
     // Handle 500
@@ -29,7 +31,7 @@ const helper = {
         err.send(res);
       } else {
         new Problem(500, {
-          details: (err.message) ? err.message : err
+          details: err.message ? err.message : err,
         }).send(res);
       }
     });
@@ -40,7 +42,7 @@ const helper = {
     });
 
     return app;
-  }
+  },
 };
 
 module.exports = helper;

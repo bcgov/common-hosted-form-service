@@ -1,7 +1,6 @@
 const { toArray, inArrayClause, inArrayFilter } = require('../../../../../src/forms/common/models/utils');
 
 describe('Test Model Utils toArray function', () => {
-
   it('should return blank array if nothing specified', () => {
     expect(toArray()).toEqual([]);
     expect(toArray(undefined)).toEqual([]);
@@ -22,7 +21,6 @@ describe('Test Model Utils toArray function', () => {
   it('should convert to an array', () => {
     expect(toArray('hello')).toEqual(['hello']);
   });
-
 });
 
 describe('Test Model Utils inArrayClause function', () => {
