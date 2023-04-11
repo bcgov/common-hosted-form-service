@@ -5,12 +5,22 @@
       <span>Email a receipt of this submission</span>
     </v-btn>
 
-    <BaseDialog v-model="showDialog" type="CONTINUE" @close-dialog="showDialog = false" @continue-dialog="requestReceipt()">
+    <BaseDialog
+      v-model="showDialog"
+      type="CONTINUE"
+      @close-dialog="showDialog = false"
+      @continue-dialog="requestReceipt()"
+    >
       <template #icon>
         <v-icon large color="primary" class="d-none d-sm-flex"> email </v-icon>
       </template>
       <template #text>
-        <v-form ref="form" v-model="valid" @submit="requestReceipt()" @submit.prevent>
+        <v-form
+          ref="form"
+          v-model="valid"
+          @submit="requestReceipt()"
+          @submit.prevent
+        >
           <v-text-field
             dense
             flat

@@ -7,8 +7,12 @@ module.exports = {
     jest: true,
     node: true,
   },
-  extends: ['plugin:vue/essential', 'eslint:recommended'],
-  plugins: ['vuetify'],
+  extends: [
+    'plugin:vue/essential',
+    'eslint:recommended',
+    'plugin:prettier/recommended',
+  ],
+  plugins: ['vuetify', 'prettier'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -20,36 +24,18 @@ module.exports = {
     parser: 'babel-eslint',
   },
   rules: {
+    'prettier/prettier': 'error',
     'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'eol-last': ['error', 'always'],
-    indent: [
-      'error',
-      2,
-      {
-        SwitchCase: 1,
-      },
-    ],
     'linebreak-style': ['error', 'unix'],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    quotes: ['error', 'single'],
     semi: ['error', 'always'],
     'vue/html-closing-bracket-newline': [
       'off',
       {
         singleline: 'never',
         multiline: 'never',
-      },
-    ],
-    'vue/html-indent': [
-      'error',
-      2,
-      {
-        attribute: 1,
-        baseIndent: 1,
-        closeBracket: 0,
-        alignAttributesVertically: true,
-        ignores: [],
       },
     ],
     'vue/max-attributes-per-line': [
@@ -76,7 +62,10 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
+      files: [
+        '**/__tests__/*.{j,t}s?(x)',
+        '**/tests/unit/**/*.spec.{j,t}s?(x)',
+      ],
       env: {
         jest: true,
       },

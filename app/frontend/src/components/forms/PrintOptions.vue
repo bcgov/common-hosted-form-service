@@ -2,22 +2,37 @@
   <span>
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
-        <v-btn class="mx-1" @click="dialog = true" color="primary" icon v-bind="attrs" v-on="on">
+        <v-btn
+          class="mx-1"
+          @click="dialog = true"
+          color="primary"
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
           <v-icon>print</v-icon>
         </v-btn>
       </template>
       <span>Print</span>
     </v-tooltip>
 
-    <v-dialog v-model="dialog" width="900" content-class="export-submissions-dlg">
+    <v-dialog
+      v-model="dialog"
+      width="900"
+      content-class="export-submissions-dlg"
+    >
       <v-card>
         <v-card-title class="text-h5 pb-0">Download Options</v-card-title>
         <v-card-text>
           <hr />
           <p>
             <strong>1.</strong>
-            <a href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser" target="blank">Print</a> the page
-            from your browser
+            <a
+              href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
+              target="blank"
+              >Print</a
+            >
+            the page from your browser
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
             <span>Browser Print</span>
@@ -25,8 +40,12 @@
 
           <p>
             <strong>2.</strong> Upload a
-            <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload" target="blank">CDOGS template</a> to
-            have a structured version
+            <a
+              href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
+              target="blank"
+              >CDOGS template</a
+            >
+            to have a structured version
           </p>
           <v-file-input
             counter
@@ -120,7 +139,9 @@ export default {
       });
     },
     getDispositionFilename(disposition) {
-      return disposition ? disposition.substring(disposition.indexOf('filename=') + 9) : undefined;
+      return disposition
+        ? disposition.substring(disposition.indexOf('filename=') + 9)
+        : undefined;
     },
     createDownload(blob, filename = undefined) {
       const url = window.URL.createObjectURL(blob);
@@ -144,13 +165,20 @@ export default {
         contentFileType = this.templateForm.contentFileType;
         outputFileName = this.templateForm.outputFileName;
 
-        const body = this.createBody(content, contentFileType, outputFileName, outputFileType);
+        const body = this.createBody(
+          content,
+          contentFileType,
+          outputFileName,
+          outputFileType
+        );
 
         // Submit Template to CDOGS API
         const response = await formService.docGen(this.submissionId, body);
 
         // create file to download
-        const filename = this.getDispositionFilename(response.headers['content-disposition']);
+        const filename = this.getDispositionFilename(
+          response.headers['content-disposition']
+        );
 
         const blob = new Blob([response.data], {
           type: 'attachment',
