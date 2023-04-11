@@ -63,6 +63,7 @@
               </v-col>
             </v-row>
             <v-row v-if="exportFormat === 'csv'" class="mt-0">
+
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
                 <v-switch
@@ -108,7 +109,6 @@
                 </v-row>
               </v-col>
             </v-row>
-
             <v-row class="mt-4">
               <v-col>
                 <p class="subTitleObjectStyle">Submission Date</p>
