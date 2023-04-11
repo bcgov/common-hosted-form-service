@@ -422,9 +422,11 @@ describe('Form Service', () => {
     });
   });
 
-  describe('submissions/${submissionId}/submissions', () => {
+  describe('submissions/${submissionId}/${formId}/submissions', () => {
     let submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
-    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/submissions`;
+    let formId = 'd15a8c14-c78a-42fa-8afd-b3f1fed59159';
+
+    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions`;
 
     it('calls delete endpoint', async () => {
       mockAxios.onDelete(endpoint).reply(200);
@@ -434,16 +436,17 @@ describe('Form Service', () => {
         '0715b1ac-4069-4778-a868-b4f71fdea18d'
       ];
 
-      const result = await formService.deleteMultipleSubmissions(submissionId,{data:{submissionIds}});
+      const result = await formService.deleteMultipleSubmissions(submissionId,formId,{data:{submissionIds}});
       expect(result).toBeTruthy();
       expect(mockAxios.history.delete).toHaveLength(1);
     });
   });
 
 
-  describe('submissions/${submissionId}/submissions/restore', () => {
+  describe('submissions/${submissionId}/${formId}/submissions/restore', () => {
     let submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
-    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/submissions/restore`;
+    let formId = 'd15a8c14-c78a-42fa-8afd-b3f1fed59159';
+    const endpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions/restore`;
 
     it('calls restore multiple submission endpoint', async () => {
       mockAxios.onPut(endpoint).reply(200);
@@ -452,9 +455,23 @@ describe('Form Service', () => {
         '0715b1ac-4069-4778-a868-b4f71fdea18d'
       ];
 
-      const result = await formService.restoreMutipleSubmissions(submissionId,{submissionIds});
+      const result = await formService.restoreMutipleSubmissions(submissionId,formId,{submissionIds});
       expect(result).toBeTruthy();
       expect(mockAxios.history.put).toHaveLength(1);
+    });
+  });
+
+
+  describe('submissions/${formId}/csvexport/fields', () => {
+   let formId = 'd15a8c14-c78a-42fa-8afd-b3f1fed59159';
+
+    const endpoint = `${ApiRoutes.FORMS}/${formId}/csvexport/fields`;
+
+    it('calls to get submissions fields for csv export', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+      const result = await formService.readCSVExportFields(formId, 'submissions', false, false, 1);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
     });
   });
 });

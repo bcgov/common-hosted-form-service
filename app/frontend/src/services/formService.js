@@ -174,6 +174,7 @@ export default {
   },
 
 
+
   /**
    * @function publishVersion
    * Publish or unpublish a specific form version. Publishing a verison will unpublish all others.
@@ -234,8 +235,8 @@ export default {
    * @param {array} submissionIds The form submission identifier
    * @returns {Promise} An axios response
    */
-  deleteMultipleSubmissions(submissionId, requestBody) {
-    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionId}/submissions`,requestBody);
+  deleteMultipleSubmissions(submissionId, formId, requestBody) {
+    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions`,requestBody);
   },
 
   /**
@@ -255,9 +256,10 @@ export default {
    * @param {string} submissionId The form uuid
    * @returns {Promise} An axios response
    */
-  restoreMutipleSubmissions(submissionId, requestBody) {
-    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}/submissions/restore`, requestBody);
+  restoreMutipleSubmissions(submissionId, formId, requestBody) {
+    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions/restore`, requestBody);
   },
+
 
   /**
    * @function updateSubmission
@@ -309,6 +311,28 @@ export default {
    */
   listSubmissionEdits(submissionId) {
     return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/edits`);
+  },
+
+  /**
+   * @function readCSVExportFields
+   * Get a list of valid form fields in this form version
+   * @param {string} formId The form uuid
+   * @param {string} type The export type and it is defaulted to submissions
+   * @param {string} draft The default value is false
+   * @param {string} deleted The default value is false
+   * @param {string} version The form version
+   * @returns {Promise} An axios response
+   */
+  readCSVExportFields(formId, type, draft, deleted, version) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/csvexport/fields`,{
+      params: {
+        type: type,
+        draft: draft,
+        deleted:deleted,
+        version: version
+      }
+
+    });
   },
 
   /**

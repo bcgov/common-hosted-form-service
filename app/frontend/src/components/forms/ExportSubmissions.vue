@@ -62,55 +62,48 @@
                 ></v-select>
               </v-col>
             </v-row>
-            <v-row class="mt-5" v-if="exportFormat === 'csv'">
+            <v-row v-if="exportFormat === 'csv'">
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
                 <v-switch
                   v-model="allDataFields"
                   label="All data/fields`"
                   @change="onAllDataFieldsSwitchChange"
-
                 ></v-switch>
-                <v-switch
-                  v-model="selectedDataFields"
-                  label="Selected data/fields`"
-                  @change="onSelectedFieldsSwitchChange"
-                  :disabled="allDataFields"
-                  class="mt-0 pt-0"
-                ></v-switch>
-              </v-col>
-            </v-row>
-            <v-row class="mt-0 pt-0" v-if="exportFormat === 'csv'">
-              <v-col>
-                <v-row>
-                  <v-col cols="7">
-                    <v-text-field
-                      v-model="inputFilter"
-                      placeholder="Search Fields"
-                      clearable
-                      color="primary"
-                      prepend-inner-icon="search"
-                      filled
-                      dense
-                      class="mt-3 submissions-table"
-                      single-line
-                    >
-                    </v-text-field>
-                    <v-data-table
-                      :headers="headers"
-                      :search="inputFilter"
-                      show-select
-                      hide-default-header
-                      fixed-header
-                      hide-default-footer
-                      v-model="selected"
-                      :items="FILTER_HEADERS"
-                      item-key="name"
-                      height="300px"
-                      :custom-filter="searchWithCustom"
-                      class="grey lighten-5 submissions-table"
-                    >
-                    </v-data-table>
+                <v-row v-if="exportFormat === 'csv'">
+                  <v-col>
+                    <v-row>
+                      <v-col cols="7">
+                        <v-text-field
+                          v-model="inputFilter"
+                          placeholder="Search Fields"
+                          clearable
+                          color="primary"
+                          prepend-inner-icon="search"
+                          filled
+                          dense
+                          class="mt-3 submissions-table"
+                          single-line
+                        >
+                        </v-text-field>
+                        <v-data-table
+                          :headers="headers"
+                          :search="inputFilter"
+                          show-select
+                          hide-default-header
+                          fixed-header
+                          hide-default-footer
+                          v-model="selected"
+                          :items="FILTER_HEADERS"
+                          item-key="name"
+                          height="300px"
+                          disable-pagination
+                          :custom-filter="searchWithCustom"
+                          class="grey lighten-5 submissions-table"
+                        >
+                        </v-data-table>
+                      </v-col>
+                    </v-row>
                   </v-col>
                 </v-row>
               </v-col>
@@ -203,12 +196,10 @@
                 </div>
               </v-col>
             </v-row>
-            <v-row v-if="exportFormat === 'csv'" >
+            <v-row v-if="exportFormat === 'csv'">
               <v-col>
                 <div style="display: flex; align-content: flex-start">
-                  <div class="subTitleObjectStyle mr-1">
-                    CSV Format
-                  </div>
+                  <div class="subTitleObjectStyle mr-1">CSV Format</div>
                   (<a
                     :href="githubLink"
                     class="preview_info_link_field"
@@ -265,7 +256,11 @@
               >
                 <span>Export</span>
               </v-btn>
-              <v-btn class="mb-5 cancelButtonStyle" outlined @click="dialog = false">
+              <v-btn
+                class="mb-5 cancelButtonStyle"
+                outlined
+                @click="dialog = false"
+              >
                 <span>Cancel</span>
               </v-btn>
             </v-card-actions>
@@ -279,7 +274,7 @@
 <script>
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
-//import formService from '@/services/formService.js';
+import formService from '@/services/formService.js';
 import { FormPermissions } from '@/utils/constants';
 import {
   faXmark,
@@ -309,12 +304,11 @@ export default {
       startDate: moment(Date()).format('YYYY-MM-DD'),
       startDateMenu: false,
       versionSelected: 0,
-      versionSelectedId:'',
+      versionSelectedId: '',
       csvTemplates: 'flattenedWithBlankOut',
       versions: [],
-      selectedDataFields:false,
-      allDataFields:false,
-      inputFilter:'',
+      allDataFields: true,
+      inputFilter: '',
       select: ['Vuetify', 'Programming'],
       singleSelect: false,
       selected: [],
@@ -324,7 +318,7 @@ export default {
           align: 'start',
           sortable: true,
           value: 'name',
-          width:'100px'
+          width: '100px',
         },
       ],
     };
@@ -335,47 +329,54 @@ export default {
       let momentString = momentObj.format('YYYY-MM-DD');
       return momentString;
     },
-    ...mapGetters('form', ['form', 'userFormPreferences', 'permissions', 'formFields']),
+    ...mapGetters('form', [
+      'form',
+      'userFormPreferences',
+      'permissions',
+      'formFields',
+    ]),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
     FILTER_HEADERS() {
-      return this.formFields.map(field=>({ name: field, value: field, align: 'start' }));
+      return this.formFields.map((field) => ({
+        name: field,
+        value: field,
+        align: 'start',
+      }));
     },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['fetchForm','fetchFormFields']),
+    ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
     onAllDataFieldsSwitchChange() {
-      if(this.allDataFields) {
+      if (this.allDataFields) {
         this.selected.push(...this.FILTER_HEADERS);
-        this.selectedDataFields=false;
+      } else {
+        this.selected = [];
       }
-      else {
-        this.selected=[];
-      }
-
     },
     searchWithCustom(value, search, item) {
-      if(value.startsWith(search.toLowerCase()))
-        return item;
+      if (value.startsWith(search.toLowerCase())) return item;
     },
-    async changeVersions() {
-      this.updateVersions();
-      this.getVersionid();
-      await this.fetchFormFields({
+    async changeVersions(value) {
+      await this.refreshFormFields(value);
+    },
+    async refreshFormFields(version) {
+      await this.fetchFormCSVExportFields({
         formId: this.formId,
-        formVersionId: this.versionSelectedId,
+        type: 'submissions',
+        draft: false,
+        deleted: false,
+        version: version,
       });
-    },
-    onSelectedFieldsSwitchChange() {
-      if(this.selectedDataFields) {
-        this.selected=[];
-        this.allDataFields=false;
-      }
+      this.allDataFields = true,
+      this.selected.push(...this.FILTER_HEADERS);
     },
     async callExport() {
-      /*try {
+
+      let fieldToExport = this.selected.length>0?this.selected.map(field=>field.value):[''];
+      try {
         // UTC start of selected start date...
         const from =
           this.dateRange && this.startDate
@@ -393,16 +394,14 @@ export default {
           this.form.id,
           this.exportFormat,
           this.csvTemplates,
-          this.exportFormat === 'json' ? undefined : this.versionSelected,
+          this.versionSelected,
           {
             minDate: from,
             maxDate: to,
             // deleted: true,
             // drafts: true
           },
-          this.dataFields
-            ? this.userFormPreferences.preferences.columns
-            : undefined
+          fieldToExport
         );
 
         if (response && response.data) {
@@ -428,8 +427,8 @@ export default {
             'An error occurred while attempting to export submissions for this form.',
           consoleError: `Error export submissions for ${this.form.id}: ${error}`,
         });
+
       }
-      */
     },
     canViewSubmissions() {
       const perms = [
@@ -441,35 +440,39 @@ export default {
     async updateVersions() {
       this.versions = [];
       if (this.form && this.form.versions) {
-        this.form.versions.sort((a, b)=>a.version < b.version ? -1 : (a.version > b.version ? 1 : 0));
+        this.form.versions.sort((a, b) =>
+          a.version < b.version ? -1 : a.version > b.version ? 1 : 0
+        );
         this.versions.push(
           ...this.form.versions.map((version) => version.version)
         );
         this.versionSelected = this.versions[0];
+        this.refreshFormFields(this.versionSelected);
       }
     },
-    getVersionid() {
-      let version = this.form.versions.find(version=>{
-        if(version.version===this.versionSelected) {
-          return version;
-        }
-      });
-      this.versionSelectedId = version.id;
-    }
   },
   async mounted() {
-    this.fetchForm(this.formId);
+    this.fetchForm(this.formId).then(() => {
+      this.updateVersions();
+    });
   },
 
   watch: {
     startDate() {
       this.endDate = moment(Date()).format('YYYY-MM-DD');
     },
-    async exportFormat() {
-      if (this.exportFormat === 'csv') {
-        this.changeVersions();
+
+    selected(oldValue, newValue) {
+      if(oldValue!==newValue) {
+        if (this.selected.length === this.FILTER_HEADERS.length) {
+          this.allDataFields = true;
+        }
+        else {
+          this.allDataFields = false;
+        }
       }
     },
+
     dateRange(value) {
       if (!value) {
         this.endDate = moment(Date()).format('YYYY-MM-DD');
@@ -484,8 +487,8 @@ export default {
 
 
 <style lang="scss" scoped>
-.submissions-table{
-  width:500px;
+.submissions-table {
+  width: 500px;
 }
 .titleObjectStyle {
   text-align: left !important;

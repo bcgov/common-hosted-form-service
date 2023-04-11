@@ -275,6 +275,7 @@ describe('readVersionFields', () => {
     expect(fields.length).toEqual(1);
   });
 
+
   it('should return right number of fields with columns',  async () => {
     const schema = {
       type: 'form',
@@ -311,6 +312,8 @@ describe('readVersionFields', () => {
         }
       ]
     };
+
+
 
     // mock readVersion function
     service.readVersion = jest.fn().mockReturnValue( { schema } );

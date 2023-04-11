@@ -231,17 +231,27 @@ module.exports = {
     try{
       const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
       res.status(200).send(response);
-    } catch(error){
+    } catch(error) {
       next(error);
     }
   },
-  listFormComponentsProactiveHelp:async(req,res,next)=> {
+  listFormComponentsProactiveHelp:async(req, res, next)=> {
     try{
       const response = await service.listFormComponentsProactiveHelp();
       res.status(200).json(response);
-    } catch(error){
+    } catch(error) {
       next(error);
     }
   },
+
+  readFieldsForCSVExport:async(req, res, next)=> {
+    try {
+      const response = await exportService.fieldsForCSVExport(req.params.formId, req.query);
+      res.status(200).json(response);
+    } catch(error) {
+      next(error);
+    }
+
+  }
 
 };

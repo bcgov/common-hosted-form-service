@@ -6,7 +6,6 @@ const {  transforms } = require('json2csv');
 const { Parser } = require('json2csv');
 
 
-
 const service = {
   /**
    * @function _readSchemaFields
@@ -45,11 +44,9 @@ const service = {
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
     if(fields){
-      return formSchemaheaders.filter(field=>{
-        for(let item of fields) {
-          if(field.includes(item)){
-            return field;
-          }
+      return await formSchemaheaders.filter(field=>{
+        if(fields.includes(field)){
+          return field;
         }
       });
     }
@@ -109,7 +106,8 @@ const service = {
 
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
-        return await service._formatSubmissionsCsv(form, formatted,exportTemplate,  version, fields);
+        let formVersion = version?parseInt(version):1;
+        return await service._formatSubmissionsCsv(form, formatted, exportTemplate, formVersion, fields);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
         return await service._formatSubmissionsJson(form, formatted);
@@ -140,7 +138,7 @@ const service = {
       }
     };
   },
-  _formatSubmissionsCsv: async (form, data, exportTemplate,  version, fields) => {
+  _formatSubmissionsCsv: async (form, data, exportTemplate, version, fields) => {
     try {
       switch(exportTemplate) {
         case 'flattenedWithBlankOut':
@@ -160,7 +158,7 @@ const service = {
     }
   },
 
-  _flattenedSubmissionsCSVExport: async(form, data, version,  blankout, fields) => {
+  _flattenedSubmissionsCSVExport: async(form, data, version, blankout, fields) => {
     let pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, fields);
 
@@ -228,6 +226,17 @@ const service = {
       .then((row) => row.schema);
   },
 
+  fieldsForCSVExport: async(formId, params={}) => {
+    const form = await service._getForm(formId);
+    const data = await service._getData(params.type, params.version, form, params);
+    const formatted = data.map(obj => {
+      const { submission, ...form } = obj;
+      return Object.assign({ form: form }, submission);
+    });
+
+    return await service._buildCsvHeaders(form, formatted, params.version, undefined);
+  },
+
   export: async (formId, params = {}) => {
     // ok, let's determine what we are exporting and do it!!!!
     // what operation?
@@ -235,11 +244,9 @@ const service = {
     const exportType = service._exportType(params);
     const exportFormat = service._exportFormat(params);
     const exportTemplate = params.template?params.template:'flattenedWithFilled';
-    const fields = params.fields;
-    const version = params.version;
     const form = await service._getForm(formId);
-    const data = await service._getData(exportType, version, form, params);
-    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, version, fields);
+    const data = await service._getData(exportType, params.version, form, params);
+    const result = await service._formatData(exportFormat, exportType,exportTemplate, form, data, params.version, params.fields );
 
     return { data: result.data, headers: result.headers };
   }
