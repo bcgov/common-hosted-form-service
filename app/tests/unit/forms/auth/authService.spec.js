@@ -5,7 +5,6 @@ afterEach(() => {
 });
 
 describe('parseToken', () => {
-
   it('returns a default object when an exception happens', () => {
     const result = service.parseToken(undefined);
     expect(result).toEqual({
@@ -16,7 +15,7 @@ describe('parseToken', () => {
       fullName: 'public',
       email: undefined,
       idp: 'public',
-      public: true
+      public: true,
     });
   });
 });
@@ -35,7 +34,7 @@ describe('formAccessToForm', () => {
       published: 9,
       versionUpdatedAt: 10,
       roles: 11,
-      permissions: 12
+      permissions: 12,
     };
     const result = service.formAccessToForm(form);
     expect(result).toEqual(form);
@@ -46,7 +45,7 @@ describe('login', () => {
   const resultSample = {
     user: 'me',
     forms: [{ formID: 1 }, { formId: 2 }],
-    deletedForms: [{ formID: 1 }, { formId: 2 }]
+    deletedForms: [{ formID: 1 }, { formId: 2 }],
   };
 
   it('returns a currentUser object', async () => {

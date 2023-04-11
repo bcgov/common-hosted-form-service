@@ -65,7 +65,6 @@ describe('addStatus', () => {
   });
 });
 
-
 describe('templateUploadAndRender', () => {
   const content = 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK';
   const contentFileType = 'txt';
@@ -92,23 +91,23 @@ describe('templateUploadAndRender', () => {
   const mockCdogsResponse = {
     data: {},
     headers: {},
-    status: 200
+    status: 200,
   };
 
   const mockTemplateReadResponse = {
     form: {
-      id: '123'
+      id: '123',
     },
     submission: {
       submission: {
         submission: {
           data: {
             simpletextfield: 'fistName lastName',
-            submit: true
-          }
-        }
-      }
-    }
+            submit: true,
+          },
+        },
+      },
+    },
   };
 
   mockCdogsResponse.headers['content-disposition'] = 'attachment; filename=template_hello_world.pdf';
@@ -124,18 +123,18 @@ describe('templateUploadAndRender', () => {
 });
 
 describe('deleteMutipleSubmissions', () => {
-  const returnValue = {submission: [{id: 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: 'AC4EF441', draft: false, deleted: true},{id: '0715b1ac-4069-4778-a868-b4f71fdea18d', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0',
-    confirmationId: '0715B1AC', draft: false, deleted: true}],
-  version: [{id: '8d8e24ce-326f-4536-9100-a0844c27d5a0', formId: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca',
-    version: 1, schema: {}, createdBy: 'testa@idir'}],
-  form: [{id: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca', name: 'FisheriesAA', description: '', active: true, labels: null}]};
+  const returnValue = {
+    submission: [
+      { id: 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: 'AC4EF441', draft: false, deleted: true },
+      { id: '0715b1ac-4069-4778-a868-b4f71fdea18d', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: '0715B1AC', draft: false, deleted: true },
+    ],
+    version: [{ id: '8d8e24ce-326f-4536-9100-a0844c27d5a0', formId: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca', version: 1, schema: {}, createdBy: 'testa@idir' }],
+    form: [{ id: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca', name: 'FisheriesAA', description: '', active: true, labels: null }],
+  };
 
   const req = {
     params: {},
-    body: {submissionIds:[
-      'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
-      '0715b1ac-4069-4778-a868-b4f71fdea18d',
-    ]},
+    body: { submissionIds: ['ac4ef441-43b1-414a-a0d4-1e2f67c2a745', '0715b1ac-4069-4778-a868-b4f71fdea18d'] },
     currentUser: {},
     headers: {},
   };
@@ -144,24 +143,23 @@ describe('deleteMutipleSubmissions', () => {
     await controller.deleteMutipleSubmissions(req, {}, jest.fn());
 
     expect(service.deleteMutipleSubmissions).toHaveBeenCalledTimes(1);
-    expect(service.deleteMutipleSubmissions).toHaveBeenCalledWith(req.body.submissionIds, req.currentUser );
+    expect(service.deleteMutipleSubmissions).toHaveBeenCalledWith(req.body.submissionIds, req.currentUser);
   });
 });
 
-
 describe('restoreMutipleSubmissions', () => {
-  const returnValue = {submission: [{id: 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: 'AC4EF441', draft: false, deleted: false},{id: '0715b1ac-4069-4778-a868-b4f71fdea18d', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0',
-    confirmationId: '0715B1AC', draft: false, deleted: false}],
-  version: [{id: '8d8e24ce-326f-4536-9100-a0844c27d5a0', formId: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca',
-    version: 1, schema: {}, createdBy: 'testa@idir'}],
-  form: [{id: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca', name: 'FisheriesAA', description: '', active: true, labels: null}]};
+  const returnValue = {
+    submission: [
+      { id: 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: 'AC4EF441', draft: false, deleted: false },
+      { id: '0715b1ac-4069-4778-a868-b4f71fdea18d', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: '0715B1AC', draft: false, deleted: false },
+    ],
+    version: [{ id: '8d8e24ce-326f-4536-9100-a0844c27d5a0', formId: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca', version: 1, schema: {}, createdBy: 'testa@idir' }],
+    form: [{ id: 'a9ac13d3-340d-4b73-8920-8c8776b4eeca', name: 'FisheriesAA', description: '', active: true, labels: null }],
+  };
 
   const req = {
     params: {},
-    body: {submissionIds:[
-      'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
-      '0715b1ac-4069-4778-a868-b4f71fdea18d',
-    ]},
+    body: { submissionIds: ['ac4ef441-43b1-414a-a0d4-1e2f67c2a745', '0715b1ac-4069-4778-a868-b4f71fdea18d'] },
     currentUser: {},
     headers: {},
   };
@@ -170,6 +168,6 @@ describe('restoreMutipleSubmissions', () => {
     await controller.restoreMutipleSubmissions(req, {}, jest.fn());
 
     expect(service.restoreMutipleSubmissions).toHaveBeenCalledTimes(1);
-    expect(service.restoreMutipleSubmissions).toHaveBeenCalledWith(req.body.submissionIds, req.currentUser );
+    expect(service.restoreMutipleSubmissions).toHaveBeenCalledWith(req.body.submissionIds, req.currentUser);
   });
 });
