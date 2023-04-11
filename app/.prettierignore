@@ -1,3 +1,5 @@
-.eslintignore
-.gitignore
+dist
+frontend
+node_modules
+public/js
 src/db/*
