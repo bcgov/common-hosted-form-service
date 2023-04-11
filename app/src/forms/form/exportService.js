@@ -43,6 +43,7 @@ const service = {
       let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
+
     if(fields && Array.isArray(fields)){
       return await formSchemaheaders.filter(field=>{
         if(fields.includes(field)){
