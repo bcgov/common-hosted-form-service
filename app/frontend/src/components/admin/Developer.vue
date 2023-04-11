@@ -24,7 +24,11 @@
         <vue-json-pretty :data="tokenParsed" />
         <h4>
           JWT Token
-          <BaseCopyToClipboard :copyText="token" snackBarText="JWT Token copied to clipboard" tooltipText="Copy JWT Token to clipboard" />
+          <BaseCopyToClipboard
+            :copyText="token"
+            snackBarText="JWT Token copied to clipboard"
+            tooltipText="Copy JWT Token to clipboard"
+          />
         </h4>
         <div style="word-break: break-all">{{ token }}</div>
       </v-col>

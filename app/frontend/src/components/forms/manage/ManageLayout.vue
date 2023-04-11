@@ -48,7 +48,11 @@ export default {
     IDP: () => IdentityProviders,
   },
   methods: {
-    ...mapActions('form', ['fetchDrafts', 'fetchForm', 'getFormPermissionsForUser']),
+    ...mapActions('form', [
+      'fetchDrafts',
+      'fetchForm',
+      'getFormPermissionsForUser',
+    ]),
   },
   async mounted() {
     this.loading = true;
@@ -58,7 +62,8 @@ export default {
       // Get the permissions for this form
       this.getFormPermissionsForUser(this.f),
     ]);
-    if (this.permissions.includes(FormPermissions.DESIGN_READ)) await this.fetchDrafts(this.f);
+    if (this.permissions.includes(FormPermissions.DESIGN_READ))
+      await this.fetchDrafts(this.f);
     this.loading = false;
   },
 };

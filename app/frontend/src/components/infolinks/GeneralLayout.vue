@@ -13,14 +13,22 @@
       <template #[`item.componentName`]="{ item }">
         <div>
           <template>
-            <div style="text-transform: capitalize label">{{ item.componentName }}</div>
+            <div style="text-transform: capitalize label">
+              {{ item.componentName }}
+            </div>
           </template>
         </div>
       </template>
       <template #[`item.actions`]="{ item, index }">
         <div class="d-flex flex-row justify-end align-center actions">
           <div>
-            <v-btn data-cy="edit_button" color="primary" small text @click="onOpenDialog(item.componentName)">
+            <v-btn
+              data-cy="edit_button"
+              color="primary"
+              small
+              text
+              @click="onOpenDialog(item.componentName)"
+            >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
               <span class="d-none d-sm-flex" style="font-size: 16px">EDIT</span>
             </v-btn>
@@ -35,11 +43,19 @@
               :disabled="canDisabled(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-eye" />
-              <span class="d-none d-sm-flex" style="font-size: 16px">PREVIEW</span>
+              <span class="d-none d-sm-flex" style="font-size: 16px"
+                >PREVIEW</span
+              >
             </v-btn>
           </div>
           <div>
-            <v-btn data-cy="status_button" color="primary" text small :disabled="canDisabled(item.componentName)">
+            <v-btn
+              data-cy="status_button"
+              color="primary"
+              text
+              small
+              :disabled="canDisabled(item.componentName)"
+            >
               <v-switch
                 small
                 color="success"
@@ -47,9 +63,11 @@
                 v-model="publish[index]"
                 @change="onSwitchChange(item.componentName, index)"
               ></v-switch>
-              <span style="width: 120px !important; font-size: 16px" class="d-none d-sm-flex">{{
-                publish[index] ? 'PUBLISHED' : 'UNPUBLISHED'
-              }}</span>
+              <span
+                style="width: 120px !important; font-size: 16px"
+                class="d-none d-sm-flex"
+                >{{ publish[index] ? 'PUBLISHED' : 'UNPUBLISHED' }}</span
+              >
             </v-btn>
           </div>
         </div>
@@ -96,7 +114,12 @@ export default {
       component: {},
       listLength: this.componentsList.length,
       headers: [
-        { text: 'Form Title', align: 'start', value: 'componentName', width: '1%' },
+        {
+          text: 'Form Title',
+          align: 'start',
+          value: 'componentName',
+          width: '1%',
+        },
         {
           text: 'Actions',
           align: 'end',
@@ -123,7 +146,10 @@ export default {
     groupName: String,
   },
   methods: {
-    ...mapActions('admin', ['updateFCProactiveHelpStatus', 'getFCProactiveHelpImageUrl']),
+    ...mapActions('admin', [
+      'updateFCProactiveHelpStatus',
+      'getFCProactiveHelpImageUrl',
+    ]),
 
     //used to open form component help information dialog
     onDialog() {
@@ -134,7 +160,11 @@ export default {
       this.showPreviewDialog = !this.showPreviewDialog;
     },
     canDisabled(componentName) {
-      return this.componentsList.filter((component) => component.componentName === componentName).length == 0;
+      return (
+        this.componentsList.filter(
+          (component) => component.componentName === componentName
+        ).length == 0
+      );
     },
 
     isComponentPublish(componentName, index) {
@@ -149,7 +179,9 @@ export default {
       this.onDialog();
     },
     async onOpenPreviewDialog(componentName) {
-      const item = this.componentsList.find((item) => item.componentName === componentName);
+      const item = this.componentsList.find(
+        (item) => item.componentName === componentName
+      );
       await this.getFCProactiveHelpImageUrl(item.id);
       this.getComponent(item.componentName);
       this.onPreviewDialog();
