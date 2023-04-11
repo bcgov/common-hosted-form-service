@@ -174,6 +174,7 @@ export default {
   },
 
 
+
   /**
    * @function publishVersion
    * Publish or unpublish a specific form version. Publishing a verison will unpublish all others.
@@ -313,6 +314,28 @@ export default {
   },
 
   /**
+   * @function readCSVExportFields
+   * Get a list of valid form fields in this form version
+   * @param {string} formId The form uuid
+   * @param {string} type The export type and it is defaulted to submissions
+   * @param {string} draft The default value is false
+   * @param {string} deleted The default value is false
+   * @param {string} version The form version
+   * @returns {Promise} An axios response
+   */
+  readCSVExportFields(formId, type, draft, deleted, version) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/csvexport/fields`,{
+      params: {
+        type: type,
+        draft: draft,
+        deleted:deleted,
+        version: version
+      }
+
+    });
+  },
+
+  /**
    * @function exportSubmissions
    * Get the export file for a range of form submittions
    * @param {string} formId The form uuid
@@ -321,7 +344,7 @@ export default {
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, format,template,versionSelected, preference, options = {}) {
+  exportSubmissions(formId, format,template,versionSelected, preference, fields, options = {}) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
       {
         params: {
@@ -330,6 +353,7 @@ export default {
           version:versionSelected,
           type: 'submissions',
           preference:preference,
+          fields:fields,
           ...options
         },
         responseType: 'blob'

@@ -53,7 +53,7 @@ const service = {
     if(scheduleData.status !== 'success'){
       throw new Problem(422, `${scheduleData.message}`);
     }
-    
+
     try {
       trx = await Form.startTransaction();
       const obj = {};

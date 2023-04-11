@@ -109,7 +109,7 @@ const isFormExpired = (formSchedule = {}) => {
                   result = {...result,expire:true};
                   /** Check if form is alow late submition - start */
                   let isallowLateSubmissions = moment().isBetween(availableDates[i].startDate, availableDates[i].graceDate);
-                  
+
                   if(isallowLateSubmissions){ //If late submission is allowed for the given repeat submission period then stop checking for other dates
                     result = {
                       ...result,
@@ -401,6 +401,7 @@ const flattenComponents = (components, includeAll) => {
   return flattened.flatMap(path => path);
 };
 
+
 const eachComponent = (components, fn, includeAll, path, parent, inRecursion) => {
   if (!components) return;
   path = path || '';
@@ -574,7 +575,7 @@ const validateScheduleObject = (schedule={}) => {
     let openSubmissionDateTime = schedule.openSubmissionDateTime;
     if(isDateValid(openSubmissionDateTime)){
       if(schType === 'closingDate'){
-        
+
         if(!isDateValid(schedule.closeSubmissionDateTime)){
           result = {
             message: 'Invalid closed submission date.',
@@ -640,7 +641,7 @@ const validateScheduleObject = (schedule={}) => {
           };
           return result;
         }
-     
+
       }
     }else{
       result = {
@@ -683,11 +684,11 @@ const isRepeatDataValid = (schedule) => {
 };
 
 const isLateSubmissionObjValid = (schedule) => {
-  
+
   let allowLateSubmissions = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
   let allowLateSubmissionsForNextTerm = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
   let allowLateSubmissionsForNextInterval = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
-          
+
   if(allowLateSubmissions){
     if(!allowLateSubmissionsForNextTerm || allowLateSubmissionsForNextInterval === null || !allowLateSubmissionsForNextInterval || allowLateSubmissionsForNextInterval === null){
       return false;
@@ -696,7 +697,7 @@ const isLateSubmissionObjValid = (schedule) => {
   return true;
 };
 
-const isDateValid = (date) => { 
+const isDateValid = (date) => {
   return Date.parse(date);
 };
 
