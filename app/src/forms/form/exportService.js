@@ -44,9 +44,9 @@ const service = {
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
-    if(fields && Array.isArray(fields)){
+    if(fields) {
       return await formSchemaheaders.filter(header=>{
-        if(fields.includes(header)){
+        if(Array.isArray(fields) && fields.includes(header)){
           return header;
         }
       });
