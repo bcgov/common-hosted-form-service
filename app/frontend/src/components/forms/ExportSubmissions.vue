@@ -394,7 +394,7 @@ export default {
           this.form.id,
           this.exportFormat,
           this.csvTemplates,
-          this.versionSelected,
+          this.exportFormat==='csv'?this.versionSelected:undefined,
           {
             minDate: from,
             maxDate: to,

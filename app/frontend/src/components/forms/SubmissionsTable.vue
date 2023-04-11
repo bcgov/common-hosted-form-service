@@ -265,8 +265,6 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 import moment from 'moment';
-//import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
-
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faTrash);
