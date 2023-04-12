@@ -9,5 +9,5 @@ module.exports = {
   testMatch: ['**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'],
   testPathIgnorePatterns: ['frontend'],
   testURL: 'http://localhost/',
-  transformIgnorePatterns: ['node_modules/@json2csv/**/*.js', '/node_modules/(?!(@json2csv))'],
+  transformIgnorePatterns: ['node_modules/@json2csv/**/*.js', '/node_modules/(?!@json2csv)'],
 };
