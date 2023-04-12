@@ -91,17 +91,18 @@
                           :headers="headers"
                           :search="inputFilter"
                           show-select
-                          single-select
                           hide-default-footer
                           v-model="selected"
                           :items="FILTER_HEADERS"
                           item-key="name"
                           height="300px"
+                          mobile
                           disable-pagination
                           fixed-header
                           class="grey lighten-5 submissions-table"
                         >
-
+                          <!-- This will override select-all props and remove the checkbox from the header. It is meant to be empty-->
+                          <template v-slot:[`header.data-table-select`]></template>
                         </v-data-table>
                       </v-col>
                     </v-row>
