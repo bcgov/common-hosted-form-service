@@ -27,5 +27,5 @@ module.exports = {
   SubmissionData: require('./views/submissionData'),
   SubmissionMetadata: require('./views/submissionMetadata'),
   UserFormAccess: require('./views/userFormAccess'),
-  UserSubmissions: require('./views/userSubmissions')
+  UserSubmissions: require('./views/userSubmissions'),
 };

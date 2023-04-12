@@ -377,7 +377,8 @@ export default {
     },
     async sendSubmission(isDraft, submission) {
       submission.data.lateEntry =
-        (this.form?.schedule?.expire !== undefined && this.form.schedule.expire === true)
+        this.form?.schedule?.expire !== undefined &&
+        this.form.schedule.expire === true
           ? this.form.schedule.allowLateSubmissions
           : false;
       const body = {
@@ -498,12 +499,13 @@ export default {
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...
-          this.submissionRecord = Object.assign({},
+          this.submissionRecord = Object.assign(
+            {},
             this.submissionId && this.isDuplicate //Check if this submission is creating with the existing one
               ? response.data
               : this.submissionId && !this.isDuplicate
-                ? response.data.submission
-                : response.data
+              ? response.data.submission
+              : response.data
           );
         } else {
           throw new Error(

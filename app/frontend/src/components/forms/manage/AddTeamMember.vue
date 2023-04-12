@@ -1,15 +1,12 @@
 <template>
   <span>
-    <span v-if="addingUsers" style="margin-right: 656px;" elevation="1">
+    <span v-if="addingUsers" style="margin-right: 656px" elevation="1">
       <v-sheet
         elevation="1"
         class="float-right"
-        style="position: absolute; width: 669px;"
+        style="position: absolute; width: 669px"
       >
-        <v-sheet
-          style="background-color: #38598a"
-          elevation="1"
-        >
+        <v-sheet style="background-color: #38598a" elevation="1">
           <v-row justify="center" align="center">
             <v-col cols="12" sm="12">
               <v-radio-group
@@ -22,14 +19,15 @@
               >
                 <v-radio class="my-0" label="IDIR" :value="ID_PROVIDERS.IDIR" />
                 <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
-                <v-radio label="Business BCeID" :value="ID_PROVIDERS.BCEIDBUSINESS" />
+                <v-radio
+                  label="Business BCeID"
+                  :value="ID_PROVIDERS.BCEIDBUSINESS"
+                />
               </v-radio-group>
             </v-col>
           </v-row>
         </v-sheet>
-        <v-row
-          class="p-3"
-        >
+        <v-row class="p-3">
           <v-col cols="12">
             <v-autocomplete
               autocomplete="autocomplete_off"
@@ -107,9 +105,7 @@
             </v-chip-group>
           </v-col>
         </v-row>
-        <v-row
-          class="pl-1 my-0"
-        >
+        <v-row class="pl-1 my-0">
           <v-col cols="auto">
             <!-- buttons -->
             <v-btn
@@ -122,8 +118,12 @@
               <span>Add</span>
             </v-btn>
             <v-btn
-              outlined class="ml-2"
-              @click="addingUsers = false; showError = false;"
+              outlined
+              class="ml-2"
+              @click="
+                addingUsers = false;
+                showError = false;
+              "
             >
               <span>Cancel</span>
             </v-btn>
@@ -131,7 +131,9 @@
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="red--text">You must select at least one role to add this user.</span>
+            <span class="red--text"
+              >You must select at least one role to add this user.</span
+            >
           </v-col>
         </v-row>
       </v-sheet>
@@ -212,9 +214,16 @@ export default {
     },
     FORM_ROLES() {
       if (this.selectedIdp === IdentityProviders.BCEIDBASIC)
-        return Object.values(FormRoleCodes).filter((frc) => frc === FormRoleCodes.FORM_SUBMITTER);
+        return Object.values(FormRoleCodes).filter(
+          (frc) => frc === FormRoleCodes.FORM_SUBMITTER
+        );
       else if (this.selectedIdp === IdentityProviders.BCEIDBUSINESS)
-        return Object.values(FormRoleCodes).filter((frc) => frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER).sort();
+        return Object.values(FormRoleCodes)
+          .filter(
+            (frc) =>
+              frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER
+          )
+          .sort();
       return Object.values(FormRoleCodes).sort();
     },
     autocompleteLabel() {
@@ -278,8 +287,9 @@ export default {
 </script>
 
 <style scoped>
-.v-radio >>> label, .v-radio >>> i.v-icon {
-  color: white!important;
+.v-radio >>> label,
+.v-radio >>> i.v-icon {
+  color: white !important;
   font-weight: bold;
 }
 </style>

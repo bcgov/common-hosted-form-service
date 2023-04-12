@@ -122,7 +122,8 @@ export default {
         this.notes = response.data;
       } catch (error) {
         this.addNotification({
-          message: 'An error occured while trying to fetch notes for this submission.',
+          message:
+            'An error occured while trying to fetch notes for this submission.',
           consoleError: `Error getting notes for ${this.submissionId}: ${error}`,
         });
       } finally {
@@ -138,6 +139,6 @@ export default {
 
 <style lang="scss" scoped>
 .note-heading {
-    color: #003366;
+  color: #003366;
 }
 </style>

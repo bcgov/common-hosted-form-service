@@ -1,6 +1,6 @@
 <template>
   <v-tabs>
-    <v-tab >Forms</v-tab>
+    <v-tab>Forms</v-tab>
     <v-tab>Users</v-tab>
     <v-tab>Developer</v-tab>
     <v-tab data-cy="infoLinks">Info Links</v-tab>
@@ -19,7 +19,8 @@ export default {
     AdminFormsTable: () => import('@/components/admin/AdminFormsTable.vue'),
     AdminUsersTable: () => import('@/components/admin/AdminUsersTable.vue'),
     Developer: () => import('@/components/admin/Developer.vue'),
-    FormComponentsProactiveHelp:()=>import('@/components/admin/FormComponentsProactiveHelp.vue'),
+    FormComponentsProactiveHelp: () =>
+      import('@/components/admin/FormComponentsProactiveHelp.vue'),
   },
 };
 </script>

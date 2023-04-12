@@ -90,29 +90,29 @@ module.exports = {
   //
   // Form Components Help Information
   //
-  createFormComponentsProactiveHelp:async(req,res,next)=>{
-    try{
+  createFormComponentsProactiveHelp: async (req, res, next) => {
+    try {
       const response = await service.createFormComponentsProactiveHelp(req.body);
       res.status(200).json(response);
-    } catch(error){
+    } catch (error) {
       next(error);
     }
   },
 
-  updateFormComponentsProactiveHelp:async(req,res,next)=> {
-    try{
+  updateFormComponentsProactiveHelp: async (req, res, next) => {
+    try {
       const response = await service.updateFormComponentsProactiveHelp(req.params);
       res.status(200).json(response);
-    } catch(error){
+    } catch (error) {
       next(error);
     }
   },
 
-  getFCProactiveHelpImageUrl:async(req, res, next)=> {
-    try{
+  getFCProactiveHelpImageUrl: async (req, res, next) => {
+    try {
       const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
       res.status(200).send(response);
-    } catch(error){
+    } catch (error) {
       next(error);
     }
   },
@@ -120,9 +120,11 @@ module.exports = {
     try {
       // Safety guard that this admin call isn't ever used without a form or user id
       if (!req.params.formId || !req.query.userId) {
-        return next(new Problem(422, {
-          detail: 'Must supply userId and formId'
-        }));
+        return next(
+          new Problem(422, {
+            detail: 'Must supply userId and formId',
+          })
+        );
       }
       const response = await rbacService.setFormUsers(req.params.formId, req.query.userId, req.body, req.currentUser);
       res.status(200).json(response);
@@ -131,13 +133,12 @@ module.exports = {
     }
   },
 
-  listFormComponentsProactiveHelp:async(req,res,next)=> {
-    try{
+  listFormComponentsProactiveHelp: async (req, res, next) => {
+    try {
       const response = await service.listFormComponentsProactiveHelp();
       res.status(200).json(response);
-    } catch(error){
+    } catch (error) {
       next(error);
     }
   },
-
 };

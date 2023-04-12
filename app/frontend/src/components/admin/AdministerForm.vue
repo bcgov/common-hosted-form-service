@@ -50,7 +50,7 @@
 
     <div v-if="form.active" class="mt-12">
       <h4>Assign A New Owner</h4>
-      <AddOwner :formId="form.id"/>
+      <AddOwner :formId="form.id" />
     </div>
 
     <BaseDialog

@@ -93,7 +93,9 @@
           @draft-deleted="populateSubmissionsTable"
           :submission="item"
           :formId="formId"
-          :isCopyFromExistingSubmissionEnabled="isCopyFromExistingSubmissionEnabled"
+          :isCopyFromExistingSubmissionEnabled="
+            isCopyFromExistingSubmissionEnabled
+          "
         />
       </template>
     </v-data-table>
@@ -102,11 +104,17 @@
         inputFilterPlaceholder="Search submission fields"
         inputItemKey="value"
         inputSaveButtonText="Save"
-        :inputData="DEFAULT_HEADERS.filter((h) => !filterIgnore.some((fd) => fd.value === h.value))"
+        :inputData="
+          DEFAULT_HEADERS.filter(
+            (h) => !filterIgnore.some((fd) => fd.value === h.value)
+          )
+        "
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title>Search and select columns to show under your dashboard</template>
+        <template #filter-title
+          >Search and select columns to show under your dashboard</template
+        >
       </BaseFilter>
     </v-dialog>
   </div>
@@ -134,11 +142,11 @@ export default {
       filterData: [],
       filterIgnore: [
         {
-          value: 'confirmationId'
+          value: 'confirmationId',
         },
         {
-          value: 'actions'
-        }
+          value: 'actions',
+        },
       ],
       showColumnsDialog: false,
       submissionTable: [],
@@ -198,7 +206,12 @@ export default {
     },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
-      if (this.filterData.length > 0) headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
+      if (this.filterData.length > 0)
+        headers = headers.filter(
+          (h) =>
+            this.filterData.some((fd) => fd.value === h.value) ||
+            this.filterIgnore.some((ign) => ign.value === h.value)
+        );
       return headers;
     },
     showStatus() {
@@ -209,7 +222,7 @@ export default {
     },
     isCopyFromExistingSubmissionEnabled() {
       return this.form && this.form.enableCopyExistingSubmission;
-    }
+    },
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
@@ -217,9 +230,10 @@ export default {
     // Status columns in the table
     getCurrentStatus(record) {
       // Current status is most recent status (top in array, query returns in status created desc)
-      const status = record.submissionStatus && record.submissionStatus[0]
-        ? record.submissionStatus[0].code
-        : 'N/A';
+      const status =
+        record.submissionStatus && record.submissionStatus[0]
+          ? record.submissionStatus[0].code
+          : 'N/A';
       if (record.draft && status !== 'REVISING') {
         return 'DRAFT';
       } else {
@@ -253,7 +267,10 @@ export default {
             submissionId: s.formSubmissionId,
             submittedDate: this.getStatusDate(s, 'SUBMITTED'),
             createdBy: s.submission.createdBy,
-            username: (s.submissionStatus && s.submissionStatus.length > 0) ? s.submissionStatus[0].createdBy : '',
+            username:
+              s.submissionStatus && s.submissionStatus.length > 0
+                ? s.submissionStatus[0].createdBy
+                : '',
           };
         });
         this.submissionTable = tableRows;

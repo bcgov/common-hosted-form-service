@@ -10,7 +10,9 @@
       <div class="dialog-body">
         <div v-if="showCloseButton">
           <v-spacer />
-          <v-icon color="primary" class="float-right m-3" @click="closeDialog">close</v-icon>
+          <v-icon color="primary" class="float-right m-3" @click="closeDialog"
+            >close</v-icon
+          >
         </div>
         <v-card-title class primary-title>
           <slot name="title"></slot>
@@ -116,7 +118,7 @@ export default {
     },
     customDialog() {
       this.$emit('custom-dialog');
-    }
+    },
   },
   props: {
     value: {
@@ -137,8 +139,8 @@ export default {
     },
     enableCustomButton: {
       default: false,
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
 };
 </script>

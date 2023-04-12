@@ -6,14 +6,14 @@ Vue.use(Vuetify);
 export default new Vuetify({
   defaultAssets: {
     font: true,
-    icons: 'md'
+    icons: 'md',
   },
   icons: {
     iconfont: 'md',
   },
   theme: {
     options: {
-      customProperties: true
+      customProperties: true,
     },
     themes: {
       light: {
@@ -24,8 +24,8 @@ export default new Vuetify({
         error: '#D8292F',
         info: '#2196F3',
         success: '#2E8540',
-        warning: '#FFC107'
-      }
-    }
-  }
+        warning: '#FFC107',
+      },
+    },
+  },
 });

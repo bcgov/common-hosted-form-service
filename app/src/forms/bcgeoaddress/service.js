@@ -1,10 +1,9 @@
-
 const geoAddressService = require('../../components/geoAddressService');
 
 const service = {
-  searchBCGeoAddress:async(query)=>{
+  searchBCGeoAddress: async (query) => {
     return geoAddressService.addressQuerySearch(query);
-  }
+  },
 };
 
 module.exports = service;

@@ -15,33 +15,32 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
         }
       },
       findByComponentNameAndGroup(query, componentName, groupName) {
-        if (componentName !== undefined && groupName!==undefined) {
-          query.where('componentName', componentName)
-            .where('groupName', groupName);
+        if (componentName !== undefined && groupName !== undefined) {
+          query.where('componentName', componentName).where('groupName', groupName);
         }
       },
       distinctOnComponentNameAndGroupName(builder) {
         builder.distinctOn(['componentName', 'groupName']);
       },
       selectWithoutImages(query) {
-        query.select('id', 'componentName', 'externalLink', 'imageType', 'groupName', 'publishStatus', 'isLinkEnabled', 'description','componentImageName');
+        query.select('id', 'componentName', 'externalLink', 'imageType', 'groupName', 'publishStatus', 'isLinkEnabled', 'description', 'componentImageName');
       },
       selectImageUrl(query, id) {
         query.select('image').where('id', id);
       },
-      
+
       findByComponentId(query, value) {
         if (value !== undefined) {
           query.where('id', value);
         }
-      }
+      },
     };
   }
 
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['id','componentName','groupName'],
+      required: ['id', 'componentName', 'groupName'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         componentName: { type: 'string', minLength: 1, maxLength: 255 },
@@ -50,15 +49,14 @@ class FormComponentsProactiveHelp extends Timestamps(Model) {
         componentImageName: { type: 'string' },
         imageType: { type: 'string' },
         groupName: { type: 'string', minLength: 1, maxLength: 255 },
-        publishStatus:{type:'boolean'},
-        isLinkEnabled: {type:'boolean'},
-        description: { type: 'string'},
-        ...stamps
+        publishStatus: { type: 'boolean' },
+        isLinkEnabled: { type: 'boolean' },
+        description: { type: 'string' },
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = FormComponentsProactiveHelp;

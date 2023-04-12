@@ -16,25 +16,25 @@ class UserSubmissions extends Model {
         modelClass: FormSubmission,
         join: {
           from: 'submissions_submitters_vw.formSubmissionId',
-          to: 'form_submission.id'
-        }
+          to: 'form_submission.id',
+        },
       },
       submissionStatus: {
         relation: Model.HasManyRelation,
         modelClass: FormSubmissionStatus,
         join: {
           from: 'submissions_submitters_vw.formSubmissionId',
-          to: 'form_submission_status.submissionId'
-        }
+          to: 'form_submission_status.submissionId',
+        },
       },
       user: {
         relation: Model.HasOneRelation,
         modelClass: User,
         join: {
           from: 'submissions_submitters_vw.userId',
-          to: 'user.id'
-        }
-      }
+          to: 'user.id',
+        },
+      },
     };
   }
 
@@ -62,7 +62,7 @@ class UserSubmissions extends Model {
       },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
-      }
+      },
     };
   }
 }

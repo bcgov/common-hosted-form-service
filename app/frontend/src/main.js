@@ -25,7 +25,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 /* add font awesome icon component */
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
-
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
 Vue.config.productionTip = false;
@@ -33,13 +32,18 @@ Vue.config.productionTip = false;
 NProgress.configure({ showSpinner: false });
 NProgress.start();
 
-
-
 // Globally register all components with base in the name
-const requireComponent = require.context('@/components', true, /Base[A-Z]\w+\.(vue|js)$/);
-requireComponent.keys().forEach(fileName => {
+const requireComponent = require.context(
+  '@/components',
+  true,
+  /Base[A-Z]\w+\.(vue|js)$/
+);
+requireComponent.keys().forEach((fileName) => {
   const componentConfig = requireComponent(fileName);
-  const componentName = fileName.split('/').pop().replace(/\.\w+$/, '');
+  const componentName = fileName
+    .split('/')
+    .pop()
+    .replace(/\.\w+$/, '');
   Vue.component(componentName, componentConfig.default || componentConfig);
 });
 
@@ -67,7 +71,7 @@ function initializeApp(kcSuccess = false, basePath = '/') {
     router: getRouter(basePath),
     store,
     vuetify,
-    render: h => h(App)
+    render: (h) => h(App),
   }).$mount('#app');
 
   NProgress.done();
@@ -79,7 +83,10 @@ function initializeApp(kcSuccess = false, basePath = '/') {
  */
 async function loadConfig() {
   // App publicPath is ./ - so use relative path here, will hit the backend server using relative path to root.
-  const configUrl = process.env.NODE_ENV === 'production' ? 'config' : `${process.env.BASE_URL}/config`;
+  const configUrl =
+    process.env.NODE_ENV === 'production'
+      ? 'config'
+      : `${process.env.BASE_URL}/config`;
   const storageKey = 'config';
   try {
     // Get configuration if it isn't already in session storage
@@ -92,8 +99,13 @@ async function loadConfig() {
     const config = JSON.parse(sessionStorage.getItem(storageKey));
     Vue.prototype.$config = Object.freeze(config);
 
-    if (!config || !config.keycloak ||
-      !config.keycloak.clientId || !config.keycloak.realm || !config.keycloak.serverUrl) {
+    if (
+      !config ||
+      !config.keycloak ||
+      !config.keycloak.clientId ||
+      !config.keycloak.realm ||
+      !config.keycloak.serverUrl
+    ) {
       throw new Error('Keycloak is misconfigured');
     }
 
@@ -112,18 +124,18 @@ async function loadConfig() {
  */
 function loadKeycloak(config) {
   Vue.use(VueKeycloakJs, {
-    init: { onLoad: 'check-sso'},
+    init: { onLoad: 'check-sso' },
     config: {
       clientId: config.keycloak.clientId,
       realm: config.keycloak.realm,
-      url: config.keycloak.serverUrl
+      url: config.keycloak.serverUrl,
     },
     onReady: () => {
       initializeApp(true, config.basePath);
     },
-    onInitError: error => {
+    onInitError: (error) => {
       console.error('Keycloak failed to initialize'); // eslint-disable-line no-console
       console.error(error); // eslint-disable-line no-console
-    }
+    },
   });
 }

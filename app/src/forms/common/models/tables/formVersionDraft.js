@@ -17,9 +17,9 @@ class FormVersionDraft extends Timestamps(Model) {
         modelClass: FormVersion,
         join: {
           from: 'form_version_draft.formVersionId',
-          to: 'form_version.id'
-        }
-      }
+          to: 'form_version.id',
+        },
+      },
     };
   }
 
@@ -50,12 +50,11 @@ class FormVersionDraft extends Timestamps(Model) {
         formId: { type: 'string', pattern: Regex.UUID },
         formVersionId: { type: ['string', 'null'], pattern: Regex.UUID },
         schema: { type: 'object' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = FormVersionDraft;

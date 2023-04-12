@@ -17,9 +17,9 @@ class Note extends Timestamps(Model) {
         modelClass: User,
         join: {
           from: 'note.userId',
-          to: 'user.id'
-        }
-      }
+          to: 'user.id',
+        },
+      },
     };
   }
 
@@ -42,7 +42,7 @@ class Note extends Timestamps(Model) {
       },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
-      }
+      },
     };
   }
 
@@ -56,9 +56,9 @@ class Note extends Timestamps(Model) {
         submissionStatusId: { type: 'string', pattern: Regex.UUID },
         note: { type: ['string', 'null'], maxLength: 4000 },
         userId: { type: 'string', pattern: Regex.UUID },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

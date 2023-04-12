@@ -16,7 +16,9 @@ import { IdentityMode } from '@/utils/constants';
 export function generateIdps({ idps, userType }) {
   let identityProviders = [];
   if (userType === IdentityMode.LOGIN && idps && idps.length) {
-    identityProviders = identityProviders.concat(idps.map((i) => ({ code: i })));
+    identityProviders = identityProviders.concat(
+      idps.map((i) => ({ code: i }))
+    );
   } else if (userType === IdentityMode.PUBLIC) {
     identityProviders.push({ code: IdentityMode.PUBLIC });
   }
@@ -51,21 +53,26 @@ export function parseIdps(identityProviders) {
  * @param {Object[]} formSchemaComponents An array of Components
  */
 export function attachAttributesToLinks(formSchemaComponents) {
-  const simpleContentComponents = formioUtils.searchComponents(formSchemaComponents, {
-    type: 'simplecontent'
-  });
+  const simpleContentComponents = formioUtils.searchComponents(
+    formSchemaComponents,
+    {
+      type: 'simplecontent',
+    }
+  );
   const advancedContent = formioUtils.searchComponents(formSchemaComponents, {
-    type: 'content'
+    type: 'content',
   });
   const combinedLinks = [...simpleContentComponents, ...advancedContent];
 
   combinedLinks.forEach((component) => {
     if (component.html && component.html.includes('<a ')) {
-      component.html = component.html.replace(/<a(?![^>]+target=)/g,'<a target="_blank" rel="noopener"');
+      component.html = component.html.replace(
+        /<a(?![^>]+target=)/g,
+        '<a target="_blank" rel="noopener"'
+      );
     }
   });
 }
-
 
 /**
  * @function getAvailableDates
@@ -84,48 +91,76 @@ export function attachAttributesToLinks(formSchemaComponents) {
  * @returns {Object[]} An object array of Available dates in given period
  */
 export function getAvailableDates(
-  keepAliveFor=0,
-  keepAliveForInterval='days',
+  keepAliveFor = 0,
+  keepAliveForInterval = 'days',
   formStartDate,
-  term=null,
-  interval=null,
-  allowLateTerm=null,
-  allowLateInterval=null,
+  term = null,
+  interval = null,
+  allowLateTerm = null,
+  allowLateInterval = null,
   repeatUntil,
   scheduleType,
-  closeDate=null
+  closeDate = null
 ) {
-
   let substartDate = moment(formStartDate);
   repeatUntil = moment(repeatUntil);
-  let calculatedsubcloseDate = getCalculatedCloseSubmissionDate(substartDate,keepAliveFor,keepAliveForInterval,allowLateTerm,allowLateInterval,term,interval,repeatUntil,scheduleType,closeDate);
+  let calculatedsubcloseDate = getCalculatedCloseSubmissionDate(
+    substartDate,
+    keepAliveFor,
+    keepAliveForInterval,
+    allowLateTerm,
+    allowLateInterval,
+    term,
+    interval,
+    repeatUntil,
+    scheduleType,
+    closeDate
+  );
   let availableDates = [];
-  if(calculatedsubcloseDate && term && interval) {
+  if (calculatedsubcloseDate && term && interval) {
     while (substartDate.isBefore(calculatedsubcloseDate)) {
       let newDate = substartDate.clone();
-      if(substartDate.isBefore(repeatUntil)){
-        availableDates.push(Object({
-          startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
-          closeDate:newDate.add(keepAliveFor,keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
-          graceDate:newDate.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS')
-        }));
+      if (substartDate.isBefore(repeatUntil)) {
+        availableDates.push(
+          Object({
+            startDate: substartDate.format('YYYY-MM-DD HH:MM:SS'),
+            closeDate: newDate
+              .add(keepAliveFor, keepAliveForInterval)
+              .format('YYYY-MM-DD HH:MM:SS'),
+            graceDate: newDate
+              .add(allowLateTerm, allowLateInterval)
+              .format('YYYY-MM-DD HH:MM:SS'),
+          })
+        );
       }
-      substartDate.add(term,interval);
+      substartDate.add(term, interval);
     }
   }
 
-  if((term == null && interval == null) && (keepAliveFor && keepAliveForInterval)){
+  if (
+    term == null &&
+    interval == null &&
+    keepAliveFor &&
+    keepAliveForInterval
+  ) {
     let newDates = substartDate.clone();
-    availableDates.push(Object({
-      startDate:substartDate.format('YYYY-MM-DD HH:MM:SS'),
-      closeDate:newDates.add(keepAliveFor,keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
-      graceDate: allowLateTerm && allowLateInterval ? newDates.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS') : null
-    }));
+    availableDates.push(
+      Object({
+        startDate: substartDate.format('YYYY-MM-DD HH:MM:SS'),
+        closeDate: newDates
+          .add(keepAliveFor, keepAliveForInterval)
+          .format('YYYY-MM-DD HH:MM:SS'),
+        graceDate:
+          allowLateTerm && allowLateInterval
+            ? newDates
+                .add(allowLateTerm, allowLateInterval)
+                .format('YYYY-MM-DD HH:MM:SS')
+            : null,
+      })
+    );
   }
   return availableDates;
 }
-
-
 
 /**
  * @function getCalculatedCloseSubmissionDate
@@ -141,23 +176,45 @@ export function getAvailableDates(
  * @param {Object[]} repeatSubmissionUntil An object of Moment JS date, that tells form to be finally close after repetition on particular day date
  * @returns {Object[]} An object of Moment JS date
  */
-export function getCalculatedCloseSubmissionDate(openedDate=moment(),keepOpenForTerm=0,keepOpenForInterval='days',allowLateTerm=0,allowLateInterval='days',repeatSubmissionTerm=0,repeatSubmissionInterval='days',repeatSubmissionUntil=moment()){
+export function getCalculatedCloseSubmissionDate(
+  openedDate = moment(),
+  keepOpenForTerm = 0,
+  keepOpenForInterval = 'days',
+  allowLateTerm = 0,
+  allowLateInterval = 'days',
+  repeatSubmissionTerm = 0,
+  repeatSubmissionInterval = 'days',
+  repeatSubmissionUntil = moment()
+) {
   const openDate = moment(openedDate).clone();
   let calculatedCloseDate = moment(openDate);
   repeatSubmissionUntil = moment(repeatSubmissionUntil);
-  if(!allowLateTerm && !allowLateInterval && !repeatSubmissionTerm && !repeatSubmissionInterval){
-    calculatedCloseDate = openDate.add(keepOpenForTerm,keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
-  }else{
-    if(repeatSubmissionTerm && repeatSubmissionInterval && repeatSubmissionUntil){
+  if (
+    !allowLateTerm &&
+    !allowLateInterval &&
+    !repeatSubmissionTerm &&
+    !repeatSubmissionInterval
+  ) {
+    calculatedCloseDate = openDate
+      .add(keepOpenForTerm, keepOpenForInterval)
+      .format('YYYY-MM-DD HH:MM:SS');
+  } else {
+    if (
+      repeatSubmissionTerm &&
+      repeatSubmissionInterval &&
+      repeatSubmissionUntil
+    ) {
       calculatedCloseDate = repeatSubmissionUntil;
     }
-    if(allowLateTerm && allowLateInterval){
-      calculatedCloseDate = calculatedCloseDate.add(keepOpenForTerm,keepOpenForInterval).add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+    if (allowLateTerm && allowLateInterval) {
+      calculatedCloseDate = calculatedCloseDate
+        .add(keepOpenForTerm, keepOpenForInterval)
+        .add(allowLateTerm, allowLateInterval)
+        .format('YYYY-MM-DD HH:MM:SS');
     }
   }
   return calculatedCloseDate;
 }
-
 
 /**
  * @function calculateCloseDate
@@ -170,12 +227,14 @@ export function getCalculatedCloseSubmissionDate(openedDate=moment(),keepOpenFor
  * @param {String} allowLateInterval A string of days,Weeks,months, that tells form to be allowed for late submission for a particular period
  */
 export function calculateCloseDate(
-  subCloseDate=moment(),
-  allowLateTerm=null,
-  allowLateInterval=null
+  subCloseDate = moment(),
+  allowLateTerm = null,
+  allowLateInterval = null
 ) {
   let closeDate = moment(subCloseDate);
-  const closeDateRet = closeDate.add(allowLateTerm,allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+  const closeDateRet = closeDate
+    .add(allowLateTerm, allowLateInterval)
+    .format('YYYY-MM-DD HH:MM:SS');
   return closeDateRet;
 }
 
@@ -188,7 +247,7 @@ export function calculateCloseDate(
 export function isDateValidForMailNotification(parseDate) {
   const formDate = moment(parseDate, 'YYYY-MM-DD');
   const now = moment();
-  if(now.isSameOrAfter(formDate, 'day')){
+  if (now.isSameOrAfter(formDate, 'day')) {
     return true;
   }
   return false;

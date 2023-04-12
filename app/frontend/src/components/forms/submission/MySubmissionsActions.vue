@@ -24,7 +24,12 @@
       </v-tooltip>
     </router-link>
 
-    <span v-if="submission.status === 'SUBMITTED' && isCopyFromExistingSubmissionEnabled === true">
+    <span
+      v-if="
+        submission.status === 'SUBMITTED' &&
+        isCopyFromExistingSubmissionEnabled === true
+      "
+    >
       <router-link
         :to="{
           name: 'UserFormDuplicate',
@@ -51,7 +56,9 @@
       </router-link>
     </span>
 
-    <span v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'">
+    <span
+      v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
+    >
       <router-link
         :to="{
           name: 'UserFormDraftEdit',
@@ -103,14 +110,14 @@ export default {
     },
     formId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     ...mapGetters('form', ['form']),
     isCopyFromExistingSubmissionEnabled() {
       return this.form && this.form.enableCopyExistingSubmission;
-    }
+    },
   },
   methods: {
     draftDeleted() {

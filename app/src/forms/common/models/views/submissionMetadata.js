@@ -63,7 +63,7 @@ class SubmissionMetadata extends Model {
         } else if (maxDate) {
           query.where('createdAt', '<=', maxDate);
         }
-      }
+      },
     };
   }
 }

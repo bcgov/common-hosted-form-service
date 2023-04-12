@@ -384,15 +384,15 @@ export default {
         const to =
           this.dateRange && this.endDate
             ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
-              .utc()
-              .format()
+                .utc()
+                .format()
             : undefined;
 
         const response = await formService.exportSubmissions(
           this.form.id,
           this.exportFormat,
           this.csvTemplates,
-          this.exportFormat==='csv'?this.versionSelected:undefined,
+          this.exportFormat === 'csv' ? this.versionSelected : undefined,
           {
             minDate: from,
             maxDate: to,

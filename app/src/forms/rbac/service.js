@@ -1,24 +1,13 @@
 const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
-const {
-  FormRoleUser,
-  FormSubmissionUser,
-  IdentityProvider,
-  User,
-  UserFormAccess,
-  UserSubmissions
-} = require('../common/models');
+const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess, UserSubmissions } = require('../common/models');
 const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
 
 const service = {
-
   list: async () => {
-    return FormRoleUser.query()
-      .allowGraph('[form, userRole, user]')
-      .withGraphFetched('[form, userRole, user]')
-      .modify('orderCreatedAtDescending');
+    return FormRoleUser.query().allowGraph('[form, userRole, user]').withGraphFetched('[form, userRole, user]').modify('orderCreatedAtDescending');
   },
   create: async (data) => {
     let trx;
@@ -47,7 +36,7 @@ const service = {
       const update = {
         formId: data.formId,
         role: data.role,
-        userId: data.userId
+        userId: data.userId,
       };
 
       await FormRoleUser.query(trx).patchAndFetchById(obj.id, update);
@@ -61,29 +50,19 @@ const service = {
   },
 
   read: async (id) => {
-    return FormRoleUser.query()
-      .findById(id)
-      .allowGraph('[form, userRole, user]')
-      .withGraphFetched('[form, userRole, user]')
-      .throwIfNotFound();
+    return FormRoleUser.query().findById(id).allowGraph('[form, userRole, user]').withGraphFetched('[form, userRole, user]').throwIfNotFound();
   },
 
   readUserRole: async (userId, formId) => {
-    return FormRoleUser.query()
-      .modify('filterUserId', userId)
-      .modify('filterFormId', formId);
+    return FormRoleUser.query().modify('filterUserId', userId).modify('filterFormId', formId);
   },
 
   delete: async (id) => {
-    return FormRoleUser.query()
-      .deleteById(id)
-      .throwIfNotFound();
+    return FormRoleUser.query().deleteById(id).throwIfNotFound();
   },
 
   readUser: async (id) => {
-    return User.query()
-      .findById(id)
-      .throwIfNotFound();
+    return User.query().findById(id).throwIfNotFound();
   },
 
   getCurrentUser: async (currentUser, params) => {
@@ -172,23 +151,22 @@ const service = {
     try {
       trx = await FormRoleUser.startTransaction();
       // remove existing mappings...
-      await FormRoleUser.query(trx)
-        .delete()
-        .where('formId', formId)
-        .where('userId', userId);
+      await FormRoleUser.query(trx).delete().where('formId', formId).where('userId', userId);
 
       // create the batch and insert...
       if (!Array.isArray(data)) {
         data = [data];
       }
       // remove any data that isn't for this form...
-      data = data.filter(d => d.formId === formId);
+      data = data.filter((d) => d.formId === formId);
       if (userId && userId.length) {
-        data = data.filter(d => d.userId === userId);
+        data = data.filter((d) => d.userId === userId);
       }
       // add an id and save them
-      const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d }; });
-      if(items && items.length) await FormRoleUser.query(trx).insert(items);
+      const items = data.map((d) => {
+        return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d };
+      });
+      if (items && items.length) await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       return service.getFormUsers({ userId: userId, formId: formId });
     } catch (err) {
@@ -206,22 +184,19 @@ const service = {
     try {
       trx = await FormSubmissionUser.startTransaction();
       // remove existing mappings for the user...
-      await FormSubmissionUser.query(trx)
-        .delete()
-        .where('formSubmissionId', formSubmissionId)
-        .where('userId', userId);
+      await FormSubmissionUser.query(trx).delete().where('formSubmissionId', formSubmissionId).where('userId', userId);
 
       // create the batch and insert. So if permissions is empty it removes the user from the submission
       if (body.permissions !== []) {
         // add ids and save them
-        const items = body.permissions.map(perm => ({
+        const items = body.permissions.map((perm) => ({
           id: uuidv4(),
           formSubmissionId: formSubmissionId,
           userId: userId,
           createdBy: currentUser.usernameIdp,
-          permission: perm
+          permission: perm,
         }));
-        if(items && items.length) await FormSubmissionUser.query(trx).insert(items);
+        if (items && items.length) await FormSubmissionUser.query(trx).insert(items);
       }
       await trx.commit();
       return service.getSubmissionUsers({ formSubmissionId: formSubmissionId });
@@ -230,28 +205,22 @@ const service = {
       throw err;
     }
   },
-  removeMultiUsers: async(formId, data) => {
+  removeMultiUsers: async (formId, data) => {
     // create the batch and insert...
-    if (Array.isArray(data) && data.length!==0 && formId) {
+    if (Array.isArray(data) && data.length !== 0 && formId) {
       // check if they're deleting the only owner
-      const userRoles = await FormRoleUser.query()
-        .where('formId', formId)
-        .where('role', Roles.OWNER);
+      const userRoles = await FormRoleUser.query().where('formId', formId).where('role', Roles.OWNER);
       if (userRoles.every((ur) => data.includes(ur.userId))) {
-        throw new Problem(400, { detail: 'Can\'t remove all the owners.' });
+        throw new Problem(400, { detail: "Can't remove all the owners." });
       }
       let trx;
       try {
         trx = await FormRoleUser.startTransaction();
         // remove existing mappings...
-        await FormRoleUser.query(trx)
-          .delete()
-          .where('formId', formId)
-          .whereIn('userId', data);
+        await FormRoleUser.query(trx).delete().where('formId', formId).whereIn('userId', data);
 
         await trx.commit();
         return;
-
       } catch (err) {
         if (trx) await trx.rollback();
         throw err;
@@ -259,11 +228,11 @@ const service = {
     }
   },
   /*
-  *
-  * @param data An array of roles being applied to a user id for a form id
-  * @param currentUser A user that contains an array of form objects and the roles
-  *                     that user has for that form.
-  */
+   *
+   * @param data An array of roles being applied to a user id for a form id
+   * @param currentUser A user that contains an array of form objects and the roles
+   *                     that user has for that form.
+   */
   setUserForms: async (userId, formId, data, currentUser) => {
     // check this in middleware? 422 in valid params
     if (!userId || 0 === userId.length) {
@@ -271,41 +240,34 @@ const service = {
     }
 
     // check if they're deleting the only owner
-    const userRoles = await FormRoleUser.query()
-      .where('formId', formId)
-      .where('role', Roles.OWNER);
+    const userRoles = await FormRoleUser.query().where('formId', formId).where('role', Roles.OWNER);
 
     // create the batch...
     if (!Array.isArray(data)) {
       data = [data];
     }
     // remove any data that isn't for this userId...
-    data = data.filter(d => d.userId === userId);
+    data = data.filter((d) => d.userId === userId);
     if (formId && formId.length) {
-      data = data.filter(d => d.formId === formId);
+      data = data.filter((d) => d.formId === formId);
     }
 
     // If trying to remove the only owner
-    if (
-      userRoles.length === 1 &&
-      userRoles.some(ur => ur.role === Roles.OWNER) &&
-      userRoles.some(ur => ur.userId === userId) &&
-      !data.some(d => d.role === Roles.OWNER)){
-      throw new Problem(400, { detail: 'Can\'t remove the only owner.' });
+    if (userRoles.length === 1 && userRoles.some((ur) => ur.role === Roles.OWNER) && userRoles.some((ur) => ur.userId === userId) && !data.some((d) => d.role === Roles.OWNER)) {
+      throw new Problem(400, { detail: "Can't remove the only owner." });
     }
 
     let trx;
     try {
       trx = await FormRoleUser.startTransaction();
       // remove existing mappings...
-      await FormRoleUser.query(trx)
-        .delete()
-        .where('userId', userId)
-        .where('formId', formId);
+      await FormRoleUser.query(trx).delete().where('userId', userId).where('formId', formId);
 
       // add an id and save them
-      const items = data.map(d => { return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d }; });
-      if(items && items.length) await FormRoleUser.query(trx).insert(items);
+      const items = data.map((d) => {
+        return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d };
+      });
+      if (items && items.length) await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       // return the new mappings
       const result = await service.getUserForms({ userId: userId, formId: formId });
@@ -317,11 +279,8 @@ const service = {
   },
 
   getIdentityProviders: (params) => {
-    return IdentityProvider.query()
-      .modify('filterActive', params.active)
-      .modify('orderDefault');
-  }
-
+    return IdentityProvider.query().modify('filterActive', params.active).modify('orderDefault');
+  },
 };
 
 module.exports = service;

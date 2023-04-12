@@ -26,7 +26,6 @@ routes.put('/:formSubmissionId/restore', hasSubmissionPermissions(P.SUBMISSION_D
   await controller.restore(req, res, next);
 });
 
-
 routes.get('/:formSubmissionId/options', async (req, res, next) => {
   await controller.readOptions(req, res, next);
 });
@@ -63,11 +62,9 @@ routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions
   await controller.deleteMutipleSubmissions(req, res, next);
 });
 
-
 // Implement this when we want to fetch a specific audit row including the whole old submission record
 // routes.get('/:formSubmissionId/edits/:auditId', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
 //   await controller.listEdits(req, res, next);
 // });
-
 
 module.exports = routes;

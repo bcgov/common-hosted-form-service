@@ -54,7 +54,12 @@
     </v-expansion-panels>
 
     <!-- Api Key -->
-    <v-expansion-panels v-model="apiKeyPanel" flat class="nrmc-expand-collapse" v-if="canManageAPI">
+    <v-expansion-panels
+      v-model="apiKeyPanel"
+      flat
+      class="nrmc-expand-collapse"
+      v-if="canManageAPI"
+    >
       <v-expansion-panel flat>
         <v-expansion-panel-header>
           <template v-slot:actions>
@@ -164,8 +169,15 @@ export default {
       }
     },
     canManageAPI() {
-      return this.permissions.some(p => [FormPermissions.FORM_API_CREATE, FormPermissions.FORM_API_READ, FormPermissions.FORM_API_UPDATE, FormPermissions.FORM_API_DELETE].includes(p));
-    }
+      return this.permissions.some((p) =>
+        [
+          FormPermissions.FORM_API_CREATE,
+          FormPermissions.FORM_API_READ,
+          FormPermissions.FORM_API_UPDATE,
+          FormPermissions.FORM_API_DELETE,
+        ].includes(p)
+      );
+    },
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'updateForm']),
@@ -193,7 +205,8 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while attempting to update the settings for this form.',
+          message:
+            'An error occurred while attempting to update the settings for this form.',
           consoleError: `Error updating settings for ${this.form.id}: ${error}`,
         });
       }

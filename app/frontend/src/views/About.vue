@@ -9,12 +9,12 @@
           </h1>
           <p>
             All B.C. Government employees or contractors with an IDIR account
-            can use our hosted version of Common
-            Hosted Forms Service (CHEFS) to create forms.<br />
+            can use our hosted version of Common Hosted Forms Service (CHEFS) to
+            create forms.<br />
           </p>
 
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated" >Log in with IDIR to get started</span>
+            <span v-if="!authenticated">Log in with IDIR to get started</span>
             <span v-else>Create a Form</span>
           </v-btn>
 
@@ -22,13 +22,15 @@
             Take a tour of CHEFS to see it in action.
           </h2>
           <div class="video-wrapper">
-            <iframe width="100%"
-                    height="100%"
-                    :src="chefsTourVideoUrl"
-                    title="Introduction to the Common Hosted Forms Service (CHEFS)"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
+            <iframe
+              width="100%"
+              height="100%"
+              :src="chefsTourVideoUrl"
+              title="Introduction to the Common Hosted Forms Service (CHEFS)"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            >
             </iframe>
           </div>
         </v-col>
@@ -39,7 +41,9 @@
       <v-col cols="12" lg="4">
         <h2>CHEFS How-to Videos</h2>
         <p>
-          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. <a :href="howToVideoUrl" target="_blank">Get started!</a>
+          Our Quickstart Guide will introduce you to some of the basic functions
+          of CHEFS.
+          <a :href="howToVideoUrl" target="_blank">Get started!</a>
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -99,7 +103,7 @@
             improve your workflows.
           </p>
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated" >Log in to get Started</span>
+            <span v-if="!authenticated">Log in to get Started</span>
             <span v-else>Create a Form</span>
           </v-btn>
         </v-col>
@@ -113,16 +117,15 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'About',
-  computed:{
+  computed: {
     ...mapGetters('auth', ['authenticated']),
     howToVideoUrl() {
       return process.env.VUE_APP_HOWTOURL;
     },
     chefsTourVideoUrl() {
       return process.env.VUE_APP_CHEFSTOURURL;
-    }
-  }
-
+    },
+  },
 };
 //
 </script>

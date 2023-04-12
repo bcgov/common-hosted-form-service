@@ -7,9 +7,7 @@
         <br />
         <strong>Assigned To:</strong>
         {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-        <span
-          v-if="currentStatus.user"
-        >({{ currentStatus.user.email }})</span>
+        <span v-if="currentStatus.user">({{ currentStatus.user.email }})</span>
       </p>
 
       <v-form ref="form" v-model="valid" lazy-validation>
@@ -33,12 +31,14 @@
                   Assign To
                   <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
-                      <v-icon color="primary" v-bind="attrs" v-on="on">help_outline</v-icon>
+                      <v-icon color="primary" v-bind="attrs" v-on="on"
+                        >help_outline</v-icon
+                      >
                     </template>
                     <span>
                       Submissions can be assigned to Form Reviewers.
-                      <br />To add more team members as Form Reviewers, go to the
-                      Manage page for this form.
+                      <br />To add more team members as Form Reviewers, go to
+                      the Manage page for this form.
                     </span>
                   </v-tooltip>
                 </label>
@@ -97,11 +97,19 @@
                 </div>
               </div>
               <div v-show="statusFields" v-if="showRevising">
-                <v-text-field v-model="submissionUserEmail" label="Recipient Email" outlined dense />
+                <v-text-field
+                  v-model="submissionUserEmail"
+                  label="Recipient Email"
+                  outlined
+                  dense
+                />
               </div>
 
               <div v-if="showRevising || showAsignee || showCompleted">
-                <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
+                <v-checkbox
+                  v-model="addComment"
+                  :label="'Attach Comment to Email'"
+                />
                 <div v-if="addComment">
                   <label>Email Comment</label>
                   <v-textarea
@@ -139,7 +147,11 @@
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn @click="historyDialog = false" class="mb-5 close-dlg" color="primary">
+                  <v-btn
+                    @click="historyDialog = false"
+                    class="mb-5 close-dlg"
+                    color="primary"
+                  >
                     <span>CLOSE</span>
                   </v-btn>
                 </v-card-actions>
@@ -243,17 +255,22 @@ export default {
           await this.fetchSubmissionUsers(this.submissionId);
 
           const submitterData = this.submissionUsers.data.find((data) => {
-            const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
+            const username = data.user.idpCode
+              ? `${data.user.username}@${data.user.idpCode}`
+              : data.user.username;
             return username === this.formSubmission.createdBy;
           });
 
           if (submitterData) {
-            this.submissionUserEmail = submitterData.user ? submitterData.user.email : undefined;
+            this.submissionUserEmail = submitterData.user
+              ? submitterData.user.email
+              : undefined;
             this.showSendConfirmEmail = status === 'COMPLETED';
           }
         } catch (error) {
           this.addNotification({
-            message: 'An error occured while trying to fetch recipient emails for this submission.',
+            message:
+              'An error occured while trying to fetch recipient emails for this submission.',
             consoleError: `Error getting recipient emails for ${this.submissionId}: ${error}`,
           });
         }
@@ -365,7 +382,10 @@ export default {
             let formattedComment;
             if (this.statusToSet === 'ASSIGNED') {
               formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
-            } else if (this.statusToSet === 'REVISING' || this.statusToSet === 'COMPLETED') {
+            } else if (
+              this.statusToSet === 'REVISING' ||
+              this.statusToSet === 'COMPLETED'
+            ) {
               formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
             }
 
