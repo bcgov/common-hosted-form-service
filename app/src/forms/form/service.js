@@ -139,7 +139,7 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.usernameIdp,
-        allowSubmitterToUploadFile : data.allowSubmitterToUploadFile,
+        allowSubmitterToUploadFile: data.allowSubmitterToUploadFile,
         schedule: data.schedule,
         reminder_enabled: data.reminder_enabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
@@ -245,14 +245,10 @@ const service = {
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
       .modify('orderDefault');
-<<<<<<< HEAD
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId','idBulkFile','originalName'];
-=======
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
->>>>>>> 7292acbb51c5e66bd712f848c70c7587f21f6888
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId', 'idBulkFile', 'originalName'];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
@@ -338,26 +334,26 @@ const service = {
     let fields = [];
 
     const getParent = (obj) => {
-      let key = (obj.key)? obj.key : '';
-      let type = (obj.type) ? obj.type : '';
-      let label = (obj.label) ? obj.label : '';
-      let pt =  key+ '_'+type+ '_' + label ;
+      let key = obj.key ? obj.key : '';
+      let type = obj.type ? obj.type : '';
+      let label = obj.label ? obj.label : '';
+      let pt = key + '_' + type + '_' + label;
       return pt;
     };
 
-    const getFieldsObject = (obj, parent)=> {
-      return { id: obj.id, key: obj.key, type: obj.type, label: obj.label, value:obj.values, unique: obj.unique, format: obj.format, parent: parent };
+    const getFieldsObject = (obj, parent) => {
+      return { id: obj.id, key: obj.key, type: obj.type, label: obj.label, value: obj.values, unique: obj.unique, format: obj.format, parent: parent };
     };
 
-    const addDynamicFields= (dyn_fields, parent, pt, type) =>{
-      const  f = [];
-      let key = type+'_'+pt+'-';
-      for (let i = 0; i < 10; i++){
-        const end = '-'+i;
+    const addDynamicFields = (dyn_fields, parent, pt, type) => {
+      const f = [];
+      let key = type + '_' + pt + '-';
+      for (let i = 0; i < 10; i++) {
+        const end = '-' + i;
         for (let j = 0; j < dyn_fields.length; j++) {
-          const new_obj = {...dyn_fields[j] };
+          const new_obj = { ...dyn_fields[j] };
           new_obj.key = key + new_obj.key + end;
-          f.push(getFieldsObject(new_obj,parent));
+          f.push(getFieldsObject(new_obj, parent));
         }
       }
       return f;
@@ -368,8 +364,8 @@ const service = {
       const findSubField = (obj, parent) => {
         if (!obj.hidden) {
           let data = fieldsManager(obj, parent, []);
-          for(let i=0; i<data.length; i++){
-            if(data[i].keepOn){
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].keepOn) {
               findSubField(data[i].component, data[i].parent);
             } else {
               flds = flds.concat(data[i].fields);
@@ -380,59 +376,54 @@ const service = {
       findSubField(o, p);
       return flds;
     };
-    const  fieldsManager = (obj, parent) => {
+    const fieldsManager = (obj, parent) => {
       let pt = getParent(obj);
       let results = [];
-      if (!obj.input && obj.type && obj.type=='form') {
-        for(let i = 0; i < obj.components.length ; i++ ){
-          results.push( { keepOn: true, component: obj.components[i] , parent: pt } );
+      if (!obj.input && obj.type && obj.type == 'form') {
+        for (let i = 0; i < obj.components.length; i++) {
+          results.push({ keepOn: true, component: obj.components[i], parent: pt });
         }
-      }
-      else if (!obj.input && obj.type &&  obj.type.includes('cols')) {
-        for(let i = 0 ; i < obj.columns.length; i++ ){
-          for(let j = 0 ; j < obj.columns[i].components.length ; j++ ) {
+      } else if (!obj.input && obj.type && obj.type.includes('cols')) {
+        for (let i = 0; i < obj.columns.length; i++) {
+          for (let j = 0; j < obj.columns[i].components.length; j++) {
             results.push({ keepOn: true, component: obj.columns[i].components[j], parent: pt });
           }
         }
-      }
-      else if (!obj.input && obj.type && obj.type=='table') {
-        for(let i = 0 ; i < obj.rows.length ; i++ ){
-          for(let j = 0 ; j < obj.rows[i].length ; j++ ) {
-            for(let k = 0 ; k < obj.rows[i][j].components.length ; k++ ) {
-              results.push({ keepOn: true, component: obj.rows[i][j].components[k] , parent: pt });
+      } else if (!obj.input && obj.type && obj.type == 'table') {
+        for (let i = 0; i < obj.rows.length; i++) {
+          for (let j = 0; j < obj.rows[i].length; j++) {
+            for (let k = 0; k < obj.rows[i][j].components.length; k++) {
+              results.push({ keepOn: true, component: obj.rows[i][j].components[k], parent: pt });
             }
           }
         }
-      }
-      else if(obj.input &&  (obj.type=='datagrid' || obj.type=='editgrid' || obj.type=='tree'  ) ) {
+      } else if (obj.input && (obj.type == 'datagrid' || obj.type == 'editgrid' || obj.type == 'tree')) {
         let dtFields = [];
-        for(let i=0; i < obj.components.length; i++){
+        for (let i = 0; i < obj.components.length; i++) {
           dtFields.push(findSubFields(obj.components[i], pt));
         }
         dtFields = dtFields.flat();
         let _sybs = getSymbs(obj.type);
         let new_fields = addDynamicFields(dtFields, parent, pt, _sybs);
-        results.push({ keepOn: false, parent: pt, fields : new_fields });
-      }
-      else if(obj.input && obj.type=='datamap') {
+        results.push({ keepOn: false, parent: pt, fields: new_fields });
+      } else if (obj.input && obj.type == 'datamap') {
         let dtFields = [];
         dtFields.push(findSubFields(obj.valueComponent, pt));
         dtFields = dtFields.flat();
-        const key = { ...obj};
+        const key = { ...obj };
         key.valueComponent = undefined;
         dtFields.unshift(key);
         let new_fields = addDynamicFields(dtFields, parent, pt, '#');
-        results.push({ keepOn: false, parent: pt, fields : new_fields });
-      }
-      else {
-        if(obj.components){
-          for(let i = 0; i < obj.components.length ; i++ ) {
-            results.push({ keepOn: true, component: obj.components[i] , parent: pt });
+        results.push({ keepOn: false, parent: pt, fields: new_fields });
+      } else {
+        if (obj.components) {
+          for (let i = 0; i < obj.components.length; i++) {
+            results.push({ keepOn: true, component: obj.components[i], parent: pt });
           }
         } else {
           if (obj.input) {
-            if(obj.type != 'button'){
-              results.push({ keepOn: false,  fields : [getFieldsObject(obj,parent)] });
+            if (obj.type != 'button') {
+              results.push({ keepOn: false, fields: [getFieldsObject(obj, parent)] });
             }
           }
         }
@@ -441,21 +432,21 @@ const service = {
     };
     const getSymbs = (type) => {
       switch (type) {
-        case 'datagrid' :
+        case 'datagrid':
           return '$';
-        case 'editgrid' :
+        case 'editgrid':
           return '@';
-        case 'datamap' :
+        case 'datamap':
           return '#';
-        case 'tree' :
+        case 'tree':
           return '%';
       }
     };
     const findFields = (obj, parent) => {
       if (!obj.hidden) {
         let data = fieldsManager(obj, parent, []);
-        for(let i=0; i<data.length; i++){
-          if(data[i].keepOn){
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].keepOn) {
             findFields(data[i].component, data[i].parent);
           } else {
             fields = fields.concat(data[i].fields);
@@ -556,7 +547,7 @@ const service = {
       trx = await FormSubmission.startTransaction();
 
       // Ensure we only record the user if the form is not public facing
-      const isPublicForm = identityProviders.some(idp => idp.code === 'public');
+      const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
       const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
 
       const submissionDataArray = data.submission.data;
@@ -574,10 +565,10 @@ const service = {
           formVersionId: formVersion.id,
           confirmationId: submissionId.substring(0, 8).toUpperCase(),
           createdBy: createdBy,
-          submission:{
+          submission: {
             ...recordWithoutData.submission,
-            data:singleData
-          }
+            data: singleData,
+          },
         });
       });
 
@@ -590,24 +581,22 @@ const service = {
         // These are adjusted at the update point if going from draft to submitted, or when adding
         // team submitters to a draft
 
-        const perms = [
-          Permissions.SUBMISSION_CREATE,
-          Permissions.SUBMISSION_READ
-        ];
+        const perms = [Permissions.SUBMISSION_CREATE, Permissions.SUBMISSION_READ];
         if (data.draft) {
           perms.push(Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE);
         }
         let itemsToInsert = [];
         result.map((singleSubmission) => {
-          itemsToInsert.push(...perms.map(perm => ({
-            id: uuidv4(),
-            userId: currentUser.id,
-            formSubmissionId: singleSubmission.id,
-            permission: perm,
-            createdBy: createdBy
-          })));
+          itemsToInsert.push(
+            ...perms.map((perm) => ({
+              id: uuidv4(),
+              userId: currentUser.id,
+              formSubmissionId: singleSubmission.id,
+              permission: perm,
+              createdBy: createdBy,
+            }))
+          );
         });
-
 
         await FormSubmissionUser.query(trx).insert(itemsToInsert);
       }
