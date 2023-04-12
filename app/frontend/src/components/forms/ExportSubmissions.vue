@@ -91,17 +91,17 @@
                           :headers="headers"
                           :search="inputFilter"
                           show-select
-                          hide-default-header
-                          fixed-header
+                          single-select
                           hide-default-footer
                           v-model="selected"
                           :items="FILTER_HEADERS"
                           item-key="name"
                           height="300px"
                           disable-pagination
-                          :custom-filter="searchWithCustom"
+                          fixed-header
                           class="grey lighten-5 submissions-table"
                         >
+
                         </v-data-table>
                       </v-col>
                     </v-row>
@@ -314,11 +314,10 @@ export default {
       selected: [],
       headers: [
         {
-          text: 'Fields',
-          align: 'start',
+          text: 'Submissions Fields',
+          align: ' start',
           sortable: true,
-          value: 'name',
-          width: '100px',
+          value: 'name'
         },
       ],
     };
@@ -342,7 +341,6 @@ export default {
       return this.formFields.map((field) => ({
         name: field,
         value: field,
-        align: 'start',
       }));
     },
   },
@@ -355,9 +353,6 @@ export default {
       } else {
         this.selected = [];
       }
-    },
-    searchWithCustom(value, search, item) {
-      if (value.startsWith(search.toLowerCase())) return item;
     },
     async changeVersions(value) {
       await this.refreshFormFields(value);
@@ -486,9 +481,24 @@ export default {
 
 
 
-<style lang="scss" scoped>
+<style scoped>
+
 .submissions-table {
-  width: 500px;
+  clear: both;
+}
+@media (max-width: 1263px) {
+  .submissions-table >>> th {
+    vertical-align: top;
+  }
+}
+/* Want to use scss but the world hates me */
+.submissions-table >>> tbody tr:nth-of-type(odd) {
+  background-color: #f5f5f5;
+}
+.submissions-table >>> thead tr th {
+  font-weight: normal;
+  color: #003366 !important;
+  font-size: 1.1em !important;
 }
 .titleObjectStyle {
   text-align: left !important;
