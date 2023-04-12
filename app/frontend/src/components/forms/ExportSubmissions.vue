@@ -87,19 +87,21 @@
                           single-line
                         >
                         </v-text-field>
+                        <div class=" subTitleObjectStyle"> {{ selected.length }} of {{ FILTER_HEADERS.length }} selected for exports</div>
                         <v-data-table
                           :headers="headers"
                           :search="inputFilter"
                           show-select
                           hide-default-footer
                           v-model="selected"
+                          disable-sort
                           :items="FILTER_HEADERS"
                           item-key="name"
                           height="300px"
                           mobile
                           disable-pagination
                           fixed-header
-                          class="grey lighten-5 submissions-table"
+                          class="grey lighten-5 mt-2 submissions-table"
                         >
                           <!-- This will override select-all props and remove the checkbox from the header. It is meant to be empty-->
                           <template v-slot:[`header.data-table-select`]></template>
