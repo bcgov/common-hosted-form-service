@@ -1,9 +1,5 @@
 const Problem = require('api-problem');
-const {
-  flattenComponents,
-  unwindPath,
-  submissionHeaders,
-} = require('../common/utils');
+const { flattenComponents, unwindPath, submissionHeaders } = require('../common/utils');
 const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
 const { Readable } = require('stream');
@@ -35,10 +31,7 @@ const service = {
      */
 
     // get correctly ordered field names (keys) from latest form version
-    const latestFormDesign = await service._readLatestFormSchema(
-      form.id,
-      version
-    );
+    const latestFormDesign = await service._readLatestFormSchema(form.id, version);
 
     const fieldNames = await service._readSchemaFields(latestFormDesign, data);
 
@@ -53,11 +46,7 @@ const service = {
     let formSchemaheaders = metaHeaders.concat(fieldNames);
     if (Array.isArray(data) && data.length > 0) {
       let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
-      formSchemaheaders = formSchemaheaders.concat(
-        flattenSubmissionHeaders.filter(
-          (item) => formSchemaheaders.indexOf(item) < 0
-        )
-      );
+      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
     return formSchemaheaders;
   },
@@ -78,15 +67,7 @@ const service = {
 
   _submissionsColumns: (form) => {
     // Custom columns not defined - return default column selection behavior
-    let columns = [
-      'confirmationId',
-      'formName',
-      'version',
-      'createdAt',
-      'fullName',
-      'username',
-      'email',
-    ];
+    let columns = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email'];
     // if form has 'status updates' enabled in the form settings include these in export
     if (form.enableStatusUpdates) {
       columns = columns.concat(['status', 'assignee', 'assigneeEmail']);
@@ -106,18 +87,7 @@ const service = {
     return {};
   },
 
-  _formatData: async (
-    exportFormat,
-    exportType,
-    exportTemplate,
-    form,
-    data = {},
-    columns,
-    version,
-    emailExport,
-    currentUser,
-    referer
-  ) => {
+  _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, columns, version, emailExport, currentUser, referer) => {
     // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map((obj) => {
       const { submission, ...form } = obj;
@@ -127,41 +97,25 @@ const service = {
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
         let formVersion = version ? parseInt(version) : 1;
-        return await service._formatSubmissionsCsv(
-          form,
-          formatted,
-          exportTemplate,
-          columns,
-          formVersion,
-          emailExport,
-          currentUser,
-          referer
-        );
+        return await service._formatSubmissionsCsv(form, formatted, exportTemplate, columns, formVersion, emailExport, currentUser, referer);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
         return await service._formatSubmissionsJson(form, formatted);
       }
     }
     throw new Problem(422, {
-      detail:
-        'Could not create an export for this form. Invalid options provided',
+      detail: 'Could not create an export for this form. Invalid options provided',
     });
   },
 
   _getSubmissions: async (form, params, version) => {
-    let preference = params.preference
-      ? JSON.parse(params.preference)
-      : undefined;
+    let preference = params.preference ? JSON.parse(params.preference) : undefined;
     // params for this export include minDate and maxDate (full timestamp dates).
     let submissionData = await SubmissionData.query()
       .column(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterVersion', version)
-      .modify(
-        'filterCreatedAt',
-        preference && preference.minDate,
-        preference && preference.maxDate
-      )
+      .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault');
@@ -191,60 +145,21 @@ const service = {
     return {
       data: data,
       headers: {
-        'content-disposition': `attachment; filename="${service._exportFilename(
-          form,
-          EXPORT_TYPES.submissions,
-          EXPORT_FORMATS.json
-        )}"`,
+        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.json)}"`,
         'content-type': 'text/json',
       },
     };
   },
 
-  _formatSubmissionsCsv: async (
-    form,
-    data,
-    exportTemplate,
-    columns,
-    version,
-    emailExport,
-    currentUser,
-    referer
-  ) => {
+  _formatSubmissionsCsv: async (form, data, exportTemplate, columns, version, emailExport, currentUser, referer) => {
     try {
       switch (exportTemplate) {
         case 'flattenedWithBlankOut':
-          return service._flattenSubmissionsCSVExport(
-            form,
-            data,
-            columns,
-            false,
-            version,
-            emailExport,
-            currentUser,
-            referer
-          );
+          return service._flattenSubmissionsCSVExport(form, data, columns, false, version, emailExport, currentUser, referer);
         case 'flattenedWithFilled':
-          return service._flattenSubmissionsCSVExport(
-            form,
-            data,
-            columns,
-            true,
-            version,
-            emailExport,
-            currentUser,
-            referer
-          );
+          return service._flattenSubmissionsCSVExport(form, data, columns, true, version, emailExport, currentUser, referer);
         case 'unflattened':
-          return service._unFlattenSubmissionsCSVExport(
-            form,
-            data,
-            columns,
-            version,
-            emailExport,
-            currentUser,
-            referer
-          );
+          return service._unFlattenSubmissionsCSVExport(form, data, columns, version, emailExport, currentUser, referer);
         default:
         // code block
       }
@@ -254,24 +169,12 @@ const service = {
       });
     }
   },
-  _flattenSubmissionsCSVExport: async (
-    form,
-    data,
-    columns,
-    blankout,
-    version,
-    emailExport,
-    currentUser,
-    referer
-  ) => {
+  _flattenSubmissionsCSVExport: async (form, data, columns, blankout, version, emailExport, currentUser, referer) => {
     let pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, columns);
 
     const opts = {
-      transforms: [
-        unwind({ paths: pathToUnwind, blankOut: blankout }),
-        flatten({ object: true, array: true, separator: '.' }),
-      ],
+      transforms: [unwind({ paths: pathToUnwind, blankOut: blankout }), flatten({ object: true, array: true, separator: '.' })],
       fields: headers,
     };
 
@@ -298,9 +201,7 @@ const service = {
       // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
       // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
       // to use it in email for link generation for downloading...
-      const path = config.get('files.localStorage.path')
-        ? config.get('files.localStorage.path')
-        : fs.realpathSync(os.tmpdir());
+      const path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fs.realpathSync(os.tmpdir());
       const pathToTmpFile = `${path}/${uuidv4()}.csv`;
       const outputStream = fs.createWriteStream(pathToTmpFile);
       dataStream.pipe(json2csvParser).pipe(outputStream);
@@ -313,11 +214,7 @@ const service = {
             console.log('Error while trying to fetch file stats');
           } else {
             const fileData = {
-              originalname: service._exportFilename(
-                form,
-                EXPORT_TYPES.submissions,
-                EXPORT_FORMATS.csv
-              ),
+              originalname: service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv),
               mimetype: 'text/csv',
               size: stats.size,
               path: pathToTmpFile,
@@ -326,18 +223,9 @@ const service = {
               usernameIdp: currentUser.usernameIdp,
             };
             // Uploading to Object storage
-            const fileResult = await fileService.create(
-              fileData,
-              fileCurrentUser
-            );
+            const fileResult = await fileService.create(fileData, fileCurrentUser);
             // Sending the email with link to uploaded export
-            emailService.submissionExportLink(
-              form.id,
-              null,
-              { to: currentUser.email },
-              referer,
-              fileResult.id
-            );
+            emailService.submissionExportLink(form.id, null, { to: currentUser.email }, referer, fileResult.id);
           }
         });
       });
@@ -346,11 +234,7 @@ const service = {
     return {
       data: csv.join(''),
       headers: {
-        'content-disposition': `attachment; filename="${service._exportFilename(
-          form,
-          EXPORT_TYPES.submissions,
-          EXPORT_FORMATS.csv
-        )}"`,
+        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
         'content-type': 'text/csv',
       },
     };
@@ -366,11 +250,7 @@ const service = {
     return {
       data: csv,
       headers: {
-        'content-disposition': `attachment; filename="${service._exportFilename(
-          form,
-          EXPORT_TYPES.submissions,
-          EXPORT_FORMATS.csv
-        )}"`,
+        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
         'content-type': 'text/csv',
       },
     };
@@ -391,29 +271,11 @@ const service = {
     // what output format?
     const exportType = service._exportType(params);
     const exportFormat = service._exportFormat(params);
-    const exportTemplate = params.template
-      ? params.template
-      : 'flattenedWithFilled';
+    const exportTemplate = params.template ? params.template : 'flattenedWithFilled';
     const columns = params.columns ? params.columns : undefined;
     const form = await service._getForm(formId);
-    const data = await service._getData(
-      exportType,
-      params.version,
-      form,
-      params
-    );
-    const result = await service._formatData(
-      exportFormat,
-      exportType,
-      exportTemplate,
-      form,
-      data,
-      columns,
-      params.version,
-      params.emailExport,
-      currentUser,
-      referer
-    );
+    const data = await service._getData(exportType, params.version, form, params);
+    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, columns, params.version, params.emailExport, currentUser, referer);
 
     return { data: result.data, headers: result.headers };
   },
