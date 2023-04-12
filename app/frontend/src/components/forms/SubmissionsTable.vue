@@ -285,7 +285,7 @@ export default {
       filterData: [],
       filterIgnore: [
         {
-          value: 'actions'
+          value: 'confirmationId'
         },
         {
           value: 'actions'
