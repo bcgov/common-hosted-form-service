@@ -1,11 +1,16 @@
 <template>
   <BaseSecure :idp="IDP.IDIR">
-    <v-container fluid>
-      <span v-if="showDownloadLink">
+    <v-container fluid class="center_content">
+      <v-progress-circular
+        v-if="!showDownloadLink"
+        :size="50"
+        color="primary"
+        indeterminate
+      ></v-progress-circular>
+      <div v-if="showDownloadLink">
         If the file did not automatically download, click here:
         <a href="#" @click="getFile(id)">Download</a>
-      </span>
-      <span v-else> Try refreshing the page. </span>
+      </div>
     </v-container>
   </BaseSecure>
 </template>
