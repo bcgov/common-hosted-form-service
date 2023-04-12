@@ -6,12 +6,7 @@ const fileService = require('../file/service');
 module.exports = {
   export: async (req, res, next) => {
     try {
-      const result = await exportService.export(
-        req.params.formId,
-        req.query,
-        req.currentUser,
-        req.headers.referer
-      );
+      const result = await exportService.export(req.params.formId, req.query, req.currentUser, req.headers.referer);
       ['Content-Disposition', 'Content-Type'].forEach((h) => {
         res.setHeader(h, result.headers[h.toLowerCase()]);
       });
@@ -46,10 +41,7 @@ module.exports = {
   },
   readFormOptions: async (req, res, next) => {
     try {
-      const response = await service.readFormOptions(
-        req.params.formId,
-        req.query
-      );
+      const response = await service.readFormOptions(req.params.formId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -57,10 +49,7 @@ module.exports = {
   },
   readPublishedForm: async (req, res, next) => {
     try {
-      const response = await service.readPublishedForm(
-        req.params.formId,
-        req.query
-      );
+      const response = await service.readPublishedForm(req.params.formId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -68,11 +57,7 @@ module.exports = {
   },
   updateForm: async (req, res, next) => {
     try {
-      const response = await service.updateForm(
-        req.params.formId,
-        req.body,
-        req.currentUser
-      );
+      const response = await service.updateForm(req.params.formId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -80,11 +65,7 @@ module.exports = {
   },
   deleteForm: async (req, res, next) => {
     try {
-      const response = await service.deleteForm(
-        req.params.formId,
-        req.query,
-        req.currentUser
-      );
+      const response = await service.deleteForm(req.params.formId, req.query, req.currentUser);
       res.status(204).json(response);
     } catch (error) {
       next(error);
@@ -92,10 +73,7 @@ module.exports = {
   },
   listFormSubmissions: async (req, res, next) => {
     try {
-      const response = await service.listFormSubmissions(
-        req.params.formId,
-        req.query
-      );
+      const response = await service.listFormSubmissions(req.params.formId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -112,9 +90,7 @@ module.exports = {
   },
   readVersionFields: async (req, res, next) => {
     try {
-      const response = await service.readVersionFields(
-        req.params.formVersionId
-      );
+      const response = await service.readVersionFields(req.params.formVersionId);
       res.status(200).json(response.filter((f) => f !== 'submit'));
     } catch (error) {
       next(error);
@@ -122,12 +98,7 @@ module.exports = {
   },
   publishVersion: async (req, res, next) => {
     try {
-      const response = await service.publishVersion(
-        req.params.formId,
-        req.params.formVersionId,
-        req.query,
-        req.currentUser
-      );
+      const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.query, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -135,10 +106,7 @@ module.exports = {
   },
   listSubmissions: async (req, res, next) => {
     try {
-      const response = await service.listSubmissions(
-        req.params.formVersionId,
-        req.query
-      );
+      const response = await service.listSubmissions(req.params.formVersionId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -146,25 +114,12 @@ module.exports = {
   },
   createSubmission: async (req, res, next) => {
     try {
-      const response = await service.createSubmission(
-        req.params.formVersionId,
-        req.body,
-        req.currentUser
-      );
+      const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
       if (!req.body.draft) {
-        emailService
-          .submissionReceived(
-            req.params.formId,
-            response.id,
-            req.body,
-            req.headers.referer
-          )
-          .catch(() => {});
+        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch(() => {});
       }
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
-      fileService
-        .moveSubmissionFiles(response.id, req.currentUser)
-        .catch(() => {});
+      fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => {});
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -176,24 +131,17 @@ module.exports = {
       if (req.query.fields) {
         let splitFields = [];
         if (Array.isArray(req.query.fields)) {
-          splitFields = req.query.fields.flatMap((f) =>
-            f.split(',').map((s) => s.trim())
-          );
+          splitFields = req.query.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
         } else {
           splitFields = req.query.fields.split(',').map((s) => s.trim());
         }
 
         // Drop invalid fields
-        const validFields = await service.readVersionFields(
-          req.params.formVersionId
-        );
+        const validFields = await service.readVersionFields(req.params.formVersionId);
         fields = splitFields.filter((f) => validFields.includes(f));
       }
 
-      const response = await service.listSubmissionFields(
-        req.params.formVersionId,
-        fields
-      );
+      const response = await service.listSubmissionFields(req.params.formVersionId, fields);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -209,11 +157,7 @@ module.exports = {
   },
   createDraft: async (req, res, next) => {
     try {
-      const response = await service.createDraft(
-        req.params.formId,
-        req.body,
-        req.currentUser
-      );
+      const response = await service.createDraft(req.params.formId, req.body, req.currentUser);
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -229,11 +173,7 @@ module.exports = {
   },
   updateDraft: async (req, res, next) => {
     try {
-      const response = await service.updateDraft(
-        req.params.formVersionDraftId,
-        req.body,
-        req.currentUser
-      );
+      const response = await service.updateDraft(req.params.formVersionDraftId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -249,11 +189,7 @@ module.exports = {
   },
   publishDraft: async (req, res, next) => {
     try {
-      const response = await service.publishDraft(
-        req.params.formId,
-        req.params.formVersionDraftId,
-        req.currentUser
-      );
+      const response = await service.publishDraft(req.params.formId, req.params.formVersionDraftId, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -277,10 +213,7 @@ module.exports = {
   },
   createOrReplaceApiKey: async (req, res, next) => {
     try {
-      const response = await service.createOrReplaceApiKey(
-        req.params.formId,
-        req.currentUser
-      );
+      const response = await service.createOrReplaceApiKey(req.params.formId, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -296,9 +229,7 @@ module.exports = {
   },
   getFCProactiveHelpImageUrl: async (req, res, next) => {
     try {
-      const response = await service.getFCProactiveHelpImageUrl(
-        req.params.componentId
-      );
+      const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
       res.status(200).send(response);
     } catch (error) {
       next(error);

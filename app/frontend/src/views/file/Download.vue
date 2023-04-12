@@ -2,7 +2,8 @@
   <BaseSecure :idp="IDP.IDIR">
     <v-container fluid>
       <span v-if="showDownloadLink">
-        If the file did not automatically download, click here: <a href="#" @click="getFile(id)">Download</a>
+        If the file did not automatically download, click here:
+        <a href="#" @click="getFile(id)">Download</a>
       </span>
       <span v-else> Try refreshing the page. </span>
     </v-container>
@@ -46,9 +47,15 @@ export default {
     async getFile(fileId) {
       this.showDownloadLink = false;
       await this.downloadFile(fileId);
-      if (this.downloadedFile && this.downloadedFile.data && this.downloadedFile.headers) {
+      if (
+        this.downloadedFile &&
+        this.downloadedFile.data &&
+        this.downloadedFile.headers
+      ) {
         this.showDownloadLink = true;
-        const data = this.downloadedFile.headers['content-type'].includes('application/json')
+        const data = this.downloadedFile.headers['content-type'].includes(
+          'application/json'
+        )
           ? JSON.stringify(this.downloadedFile.data)
           : this.downloadedFile.data;
         const blob = new Blob([data], {
@@ -57,7 +64,9 @@ export default {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = this.getDisposition(this.downloadedFile.headers['content-disposition']);
+        a.download = this.getDisposition(
+          this.downloadedFile.headers['content-disposition']
+        );
         a.style.display = 'none';
         a.classList.add('hiddenDownloadTextElement');
         document.body.appendChild(a);
