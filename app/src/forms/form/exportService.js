@@ -5,7 +5,6 @@ const { Form, FormVersion, SubmissionData } = require('../common/models');
 const { Readable } = require('stream');
 const { unwind, flatten } = require('@json2csv/transforms');
 const { Transform } = require('@json2csv/node');
-const { Parser } = require('json2csv');
 const fs = require('fs-extra');
 const os = require('os');
 const config = require('config');
@@ -195,7 +194,11 @@ const service = {
         .on('data', (chunk) => {
           csv.push(chunk.toString());
         })
-        .on('error', (err) => console.error(err));
+        .on('error', (err) => {
+          throw new Problem(400, {
+            detail: `Error while parsing json chunk: ${err}`,
+          });
+        });
     } else {
       // If submission count is big we're start streams parsed chunks into the temp file
       // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
@@ -211,7 +214,9 @@ const service = {
         // Read file stats to get fie size
         fs.stat(pathToTmpFile, async (err, stats) => {
           if (err) {
-            console.log('Error while trying to fetch file stats');
+            throw new Problem(400, {
+              detail: `Error while trying to fetch file stats: ${err}`,
+            });
           } else {
             const fileData = {
               originalname: service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv),
@@ -239,16 +244,75 @@ const service = {
       },
     };
   },
-  _unFlattenSubmissionsCSVExport: async (form, data, columns, version) => {
+  _unFlattenSubmissionsCSVExport: async (form, data, columns, version, emailExport, currentUser, referer) => {
     let headers = await service._buildCsvHeaders(form, data, version, columns);
     const opts = {
       transforms: [flatten({ object: true, array: true, separator: '.' })],
       fields: headers,
     };
-    const parser = new Parser(opts);
-    const csv = parser.parse(data);
+    // const parser = new Parser(opts);
+    // const csv = parser.parse(data);
+
+    // to work with object chunk in pipe instead of Buffer
+    const transformOpts = {
+      objectMode: true,
+    };
+
+    const dataStream = Readable.from(data);
+    const json2csvParser = new Transform(opts, transformOpts);
+
+    let csv = [];
+    // If we're worrking with not too many submissions, we can process parsing right away without
+    // any memory constrains
+    if (!emailExport) {
+      dataStream
+        .pipe(json2csvParser)
+        .on('data', (chunk) => {
+          csv.push(chunk.toString());
+        })
+        .on('error', (err) => {
+          throw new Problem(400, {
+            detail: `Error while parsing json chunk: ${err}`,
+          });
+        });
+    } else {
+      // If submission count is big we're start streams parsed chunks into the temp file
+      // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
+      // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
+      // to use it in email for link generation for downloading...
+      const path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fs.realpathSync(os.tmpdir());
+      const pathToTmpFile = `${path}/${uuidv4()}.csv`;
+      const outputStream = fs.createWriteStream(pathToTmpFile);
+      dataStream.pipe(json2csvParser).pipe(outputStream);
+
+      // Creating FileStorage instance and uploading it, so we can download it later
+      outputStream.on('finish', () => {
+        // Read file stats to get fie size
+        fs.stat(pathToTmpFile, async (err, stats) => {
+          if (err) {
+            throw new Problem(400, {
+              detail: `Error while trying to fetch file stats: ${err}`,
+            });
+          } else {
+            const fileData = {
+              originalname: service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv),
+              mimetype: 'text/csv',
+              size: stats.size,
+              path: pathToTmpFile,
+            };
+            const fileCurrentUser = {
+              usernameIdp: currentUser.usernameIdp,
+            };
+            // Uploading to Object storage
+            const fileResult = await fileService.create(fileData, fileCurrentUser);
+            // Sending the email with link to uploaded export
+            emailService.submissionExportLink(form.id, null, { to: currentUser.email }, referer, fileResult.id);
+          }
+        });
+      });
+    }
     return {
-      data: csv,
+      data: csv.join(''),
       headers: {
         'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
         'content-type': 'text/csv',
