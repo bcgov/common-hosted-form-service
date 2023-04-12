@@ -17,9 +17,9 @@ class User extends Timestamps(Model) {
         modelClass: IdentityProvider,
         join: {
           from: 'user.idpCode',
-          to: 'identity_provider.code'
-        }
-      }
+          to: 'identity_provider.code',
+        },
+      },
     };
   }
 
@@ -45,11 +45,9 @@ class User extends Timestamps(Model) {
       },
       filterUsername(query, value, exact = false) {
         if (value) {
-          if (exact)
-            query.where('username', value);
-          else
-            // ilike is postgres case insensitive like
-            query.where('username', 'ilike', `%${value}%`);
+          if (exact) query.where('username', value);
+          // ilike is postgres case insensitive like
+          else query.where('username', 'ilike', `%${value}%`);
         }
       },
       filterFirstName(query, value) {
@@ -72,21 +70,17 @@ class User extends Timestamps(Model) {
       },
       filterEmail(query, value, exact = false) {
         if (value) {
-          if (exact)
-            query.where('email', value);
-          else
-            // ilike is postgres case insensitive like
-            query.where('email', 'ilike', `%${value}%`);
+          if (exact) query.where('email', value);
+          // ilike is postgres case insensitive like
+          else query.where('email', 'ilike', `%${value}%`);
         }
       },
       filterSearch(query, value) {
         // use this field 'search' to OR across many fields
         // must be written as subquery function to force parentheses grouping
         if (value) {
-          query.where(subquery => {
-            subquery.where('username', 'ilike', `%${value}%`)
-              .orWhere('fullName', 'ilike', `%${value}%`)
-              .orWhere('email', 'ilike', `%${value}%`);
+          query.where((subquery) => {
+            subquery.where('username', 'ilike', `%${value}%`).orWhere('fullName', 'ilike', `%${value}%`).orWhere('email', 'ilike', `%${value}%`);
           });
         }
       },
@@ -95,7 +89,7 @@ class User extends Timestamps(Model) {
       },
       orderLastFirstAscending(builder) {
         builder.orderByRaw('lower("lastName"), lower("firstName")');
-      }
+      },
     };
   }
 
@@ -113,9 +107,9 @@ class User extends Timestamps(Model) {
         fullName: { type: ['string', 'null'], maxLength: 255 },
         email: { type: ['string', 'null'], maxLength: 255 },
         idpCode: { type: ['string', 'null'], maxLength: 255 },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

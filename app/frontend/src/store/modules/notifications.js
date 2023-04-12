@@ -6,31 +6,31 @@ let nextId = 1;
 export default {
   namespaced: true,
   state: {
-    notifications: []
+    notifications: [],
   },
-  getters: {
-  },
+  getters: {},
   mutations: {
     PUSH(state, notification) {
       state.notifications.push({
         ...notification,
-        id: nextId++
+        id: nextId++,
       });
     },
     DELETE(state, notificationToRemove) {
       state.notifications = state.notifications.filter(
-        notification => notification.id !== notificationToRemove.id
+        (notification) => notification.id !== notificationToRemove.id
       );
-    }
+    },
   },
   actions: {
     addNotification({ commit }, notification) {
       if (notification.consoleError) console.error(notification.consoleError); // eslint-disable-line no-console
-      if (!notification.type) notification = { ...notification, ...NotificationTypes.ERROR }; // Error (red) by default
+      if (!notification.type)
+        notification = { ...notification, ...NotificationTypes.ERROR }; // Error (red) by default
       commit('PUSH', notification);
     },
     deleteNotification({ commit }, notificationToRemove) {
       commit('DELETE', notificationToRemove);
-    }
+    },
   },
 };

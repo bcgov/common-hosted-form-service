@@ -36,7 +36,6 @@ const fileSetup = (options) => {
 };
 
 module.exports.fileUpload = {
-
   init(options) {
     let { fileUploadsDir, maxFileSize, maxFileCount } = fileSetup(options);
 
@@ -45,21 +44,21 @@ module.exports.fileUpload = {
     storage = multer.diskStorage({
       destination: function (req, file, cb) {
         cb(null, fileUploadsDir);
-      }
+      },
     });
 
     // set up the multer
     if (maxFileCount > 1) {
       uploader = multer({
         storage: storage,
-        limits: { fileSize: maxFileSize, files: maxFileCount }
+        limits: { fileSize: maxFileSize, files: maxFileCount },
       }).array(formFieldName);
     } else {
       // just in case we set a negative number...
       maxFileCount = 1;
       uploader = multer({
         storage: storage,
-        limits: { fileSize: maxFileSize, files: maxFileCount }
+        limits: { fileSize: maxFileSize, files: maxFileCount },
       }).single(formFieldName);
     }
   },
@@ -105,6 +104,5 @@ module.exports.fileUpload = {
         next();
       }
     });
-
-  }
+  },
 };

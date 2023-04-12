@@ -19,15 +19,29 @@
           </p>
         </v-col>
         <!-- buttons -->
-        <v-col class="text-right d-print-none" cols="12" sm="6" order="1" order-sm="2">
+        <v-col
+          class="text-right d-print-none"
+          cols="12"
+          sm="6"
+          order="1"
+          order-sm="2"
+        >
           <span>
             <PrintOptions :submissionId="submissionId" />
           </span>
           <span>
             <v-tooltip bottom>
               <template #activator="{ on, attrs }">
-                <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
-                  <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+                <router-link
+                  :to="{ name: 'FormSubmissions', query: { f: form.id } }"
+                >
+                  <v-btn
+                    class="mx-1"
+                    color="primary"
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
                     <v-icon>list_alt</v-icon>
                   </v-btn>
                 </router-link>
@@ -42,14 +56,19 @@
     <br />
     <v-row>
       <!-- The form submission -->
-      <v-col cols="12" :md="form.enableStatusUpdates ? 8 : 12" class="pl-0 pt-0">
+      <v-col
+        cols="12"
+        :md="form.enableStatusUpdates ? 8 : 12"
+        class="pl-0 pt-0"
+      >
         <v-alert
           :value="!submissionReadOnly"
           :class="'d-print-none ' + NOTIFICATIONS_TYPES.INFO.class"
           :color="NOTIFICATIONS_TYPES.INFO.color"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
           transition="scale-transition"
-        >After editing, re-submit the form to save your changes.</v-alert>
+          >After editing, re-submit the form to save your changes.</v-alert
+        >
         <v-card outlined class="review-form">
           <v-row no-gutters>
             <v-col cols="12" sm="6">
@@ -81,7 +100,12 @@
                   <span>Edit This Submission</span>
                 </v-tooltip>
               </span>
-              <v-btn v-else outlined color="textLink" @click="toggleSubmissionEdit(false)">
+              <v-btn
+                v-else
+                outlined
+                color="textLink"
+                @click="toggleSubmissionEdit(false)"
+              >
                 <span>CANCEL</span>
               </v-btn>
             </v-col>

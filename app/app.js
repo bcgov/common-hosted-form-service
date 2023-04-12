@@ -12,17 +12,15 @@ const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
-
 const apiRouter = express.Router();
 const state = {
   connections: {
-    data: false
+    data: false,
   },
   ready: false,
-  shutdown: false
+  shutdown: false,
 };
 let probeId;
-
 const app = express();
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
@@ -77,7 +75,9 @@ app.use(config.get('server.basePath'), apiRouter);
 
 // Host the static frontend assets
 const staticFilesPath = config.get('frontend.basePath');
-app.use('/favicon.ico', (_req, res) => { res.redirect(`${staticFilesPath}/favicon.ico`); });
+app.use('/favicon.ico', (_req, res) => {
+  res.redirect(`${staticFilesPath}/favicon.ico`);
+});
 app.use(staticFilesPath, express.static(path.join(__dirname, 'frontend/dist')));
 
 // Handle 500
@@ -95,7 +95,7 @@ app.use((err, _req, res, _next) => {
     // Attempt to reset DB connection
     if (!state.shutdown) dataConnection.resetConnection();
     new Problem(500, 'Server Error', {
-      detail: (err.message) ? err.message : err
+      detail: err.message ? err.message : err,
     }).send(res);
   }
 });
@@ -105,7 +105,7 @@ app.use((req, res) => {
   if (req.originalUrl.startsWith(`${config.get('server.basePath')}/api`)) {
     // Return a 404 problem if attempting to access API
     new Problem(404, 'Page Not Found', {
-      detail: req.originalUrl
+      detail: req.originalUrl,
     }).send(res);
   } else {
     // Redirect any non-API requests to static frontend with redirect breadcrumb
@@ -115,7 +115,7 @@ app.use((req, res) => {
 });
 
 // Prevent unhandled errors from crashing application
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   if (err && err.stack) {
     log.error(err);
   }
@@ -164,17 +164,15 @@ function cleanup() {
  */
 function initializeConnections() {
   // Initialize connections and exit if unsuccessful
-  const tasks = [
-    dataConnection.checkAll()
-  ];
+  const tasks = [dataConnection.checkAll()];
 
   Promise.all(tasks)
-    .then(results => {
+    .then((results) => {
       state.connections.data = results[0];
 
       if (state.connections.data) log.info('DataConnection Reachable', { function: 'initializeConnections' });
     })
-    .catch(error => {
+    .catch((error) => {
       log.error(`Initialization failed: Database OK = ${state.connections.data}`, { function: 'initializeConnections' });
       log.error('Connection initialization failure', error.message, { function: 'initializeConnections' });
       if (!state.ready) {
@@ -183,7 +181,7 @@ function initializeConnections() {
       }
     })
     .finally(() => {
-      state.ready = Object.values(state.connections).every(x => x);
+      state.ready = Object.values(state.connections).every((x) => x);
       if (state.ready) {
         log.info('Service ready to accept traffic', { function: 'initializeConnections' });
         // Start periodic 10 second connection probe check
@@ -200,13 +198,11 @@ function initializeConnections() {
 function checkConnections() {
   const wasReady = state.ready;
   if (!state.shutdown) {
-    const tasks = [
-      dataConnection.checkConnection()
-    ];
+    const tasks = [dataConnection.checkConnection()];
 
-    Promise.all(tasks).then(results => {
+    Promise.all(tasks).then((results) => {
       state.connections.data = results[0];
-      state.ready = Object.values(state.connections).every(x => x);
+      state.ready = Object.values(state.connections).every((x) => x);
       if (!wasReady && state.ready) log.info('Service ready to accept traffic', { function: 'checkConnections' });
       log.verbose(state);
       if (!state.ready) {

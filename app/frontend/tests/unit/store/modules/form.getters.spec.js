@@ -13,7 +13,15 @@ describe('form getters', () => {
   const sampleState = {
     drafts: [],
     form: {
-      name: 'ABC'
+      name: 'ABC',
+      reminder : {
+        'enabled':false,
+        'allowAdditionalNotifications': true
+      },
+      schedule : {
+        'enabled':true,
+        'scheduleType':'manual'
+      }
     },
     formList: [
       {

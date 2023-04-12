@@ -1,19 +1,11 @@
 const { v4: uuidv4 } = require('uuid');
 
-const {
-  Form,
-  FormSubmissionUserPermissions,
-  PublicFormAccess,
-  SubmissionMetadata,
-  User,
-  UserFormAccess
-} = require('../common/models');
+const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
 
 const service = {
-
   createUser: async (data) => {
     let trx;
     try {
@@ -28,7 +20,7 @@ const service = {
         email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
-        idpCode: data.idp
+        idpCode: data.idp,
       };
 
       await User.query(trx).insert(obj);
@@ -42,9 +34,7 @@ const service = {
   },
 
   readUser: async (id) => {
-    return User.query()
-      .findById(id)
-      .throwIfNotFound();
+    return User.query().findById(id).throwIfNotFound();
   },
 
   updateUser: async (id, data) => {
@@ -61,7 +51,7 @@ const service = {
         email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
-        idpCode: data.idp
+        idpCode: data.idp,
       };
 
       await User.query(trx).patchAndFetchById(obj.id, update);
@@ -86,7 +76,7 @@ const service = {
         family_name: lastName,
         sub: keycloakId,
         name: fullName,
-        email
+        email,
       } = token.content;
 
       return {
@@ -98,7 +88,7 @@ const service = {
         fullName: fullName,
         email: email,
         idp: idp ? idp : '',
-        public: false
+        public: false,
       };
     } catch (e) {
       // any issues parsing the token, or if token doesn't exist, return a default "public" user
@@ -111,7 +101,7 @@ const service = {
         fullName: 'public',
         email: undefined,
         idp: 'public',
-        public: true
+        public: true,
       };
     }
   },
@@ -124,9 +114,7 @@ const service = {
     const obj = { ...userInfo };
 
     // if this user does not exists, add...
-    let user = await User.query()
-      .first()
-      .where('idpUserId', obj.idpUserId);
+    let user = await User.query().first().where('idpUserId', obj.idpUserId);
 
     if (!user) {
       // add to the system.
@@ -137,7 +125,7 @@ const service = {
     }
 
     // return with the db id...
-    return { id: user.id, usernameIdp: user.idpCode ? `${user.username}@${user.idpCode}` : user.username,  ...userInfo };
+    return { id: user.id, usernameIdp: user.idpCode ? `${user.username}@${user.idpCode}` : user.username, ...userInfo };
   },
 
   getUserForms: async (userInfo, params = {}) => {
@@ -145,19 +133,12 @@ const service = {
     let items = [];
     if (userInfo && userInfo.public) {
       // if the user is 'public', then we can only fetch public accessible forms...
-      items = await PublicFormAccess.query()
-        .modify('filterFormId', params.formId)
-        .modify('filterActive', params.active)
-        .modify('orderDefault');
+      items = await PublicFormAccess.query().modify('filterFormId', params.formId).modify('filterActive', params.active).modify('orderDefault');
       // ignore any passed in accessLevel params, only return public
       return service.filterForms(userInfo, items, ['public']);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
-      items = await UserFormAccess.query()
-        .modify('filterUserId', userInfo.id)
-        .modify('filterFormId', params.formId)
-        .modify('filterActive', params.active)
-        .modify('orderDefault');
+      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active).modify('orderDefault');
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },
@@ -168,7 +149,7 @@ const service = {
     // so we need a role, or a valid idp from login, or form needs to be public.
     let forms = [];
 
-    let filtered = items.filter(x => {
+    let filtered = items.filter((x) => {
       // include if user has idp, or form is public, or user has an explicit role.
       if (x.idps.includes(userInfo.idp) || x.idps.includes('public')) {
         // always give submitter permissions to launch by idp and public
@@ -180,7 +161,7 @@ const service = {
     });
 
     if (accessLevels && accessLevels.length) {
-      filtered.forEach(item => {
+      filtered.forEach((item) => {
         let hasPublic = false;
         let hasIdp = false;
         let hasTeam = false;
@@ -199,7 +180,7 @@ const service = {
         }
       });
     } else {
-      forms = filtered.map(item => service.formAccessToForm(item));
+      forms = filtered.map((item) => service.formAccessToForm(item));
     }
     return forms;
   },
@@ -217,7 +198,7 @@ const service = {
       published: item.published,
       versionUpdatedAt: item.versionUpdatedAt,
       roles: item.roles,
-      permissions: item.permissions
+      permissions: item.permissions,
     };
   },
 
@@ -244,25 +225,22 @@ const service = {
 
   getSubmissionForm: async (submissionId) => {
     // Get this submission data for the form Id
-    const meta = await SubmissionMetadata.query()
-      .where('submissionId', submissionId)
-      .first()
-      .throwIfNotFound();
+    const meta = await SubmissionMetadata.query().where('submissionId', submissionId).first().throwIfNotFound();
 
     // Get the form with IDP info
-    const form = await Form.query()
-      .findById(meta.formId)
-      .allowGraph('identityProviders')
-      .withGraphFetched('identityProviders(orderDefault)')
-      .throwIfNotFound();
+    const form = await Form.query().findById(meta.formId).allowGraph('identityProviders').withGraphFetched('identityProviders(orderDefault)').throwIfNotFound();
 
     return {
       submission: meta,
-      form: form
+      form: form,
     };
-  }
-  // ---------------------------------------------------------------------------------------------/Submission Data
+  },
 
+  getMultipleSubmission: async (submissionIds) => {
+    return await SubmissionMetadata.query().whereIn('submissionId', submissionIds);
+  },
+
+  // ---------------------------------------------------------------------------------------------/Submission Data
 };
 
 module.exports = service;

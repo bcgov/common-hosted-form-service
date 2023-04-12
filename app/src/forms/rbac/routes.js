@@ -49,8 +49,4 @@ routes.delete('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER
   await controller.removeMultiUsers(req, res, next);
 });
 
-
-
-
-
 module.exports = routes;

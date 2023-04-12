@@ -7,7 +7,6 @@ const storageService = require('./storage/storageService');
 const PERMANENT_STORAGE = config.get('files.permanent');
 
 const service = {
-
   create: async (data, currentUser) => {
     let trx;
     try {
@@ -38,9 +37,7 @@ const service = {
   },
 
   read: async (id) => {
-    return FileStorage.query()
-      .findById(id)
-      .throwIfNotFound();
+    return FileStorage.query().findById(id).throwIfNotFound();
   },
 
   delete: async (id) => {
@@ -49,9 +46,7 @@ const service = {
       trx = await FileStorage.startTransaction();
       const obj = await service.read(id);
 
-      await FileStorage.query(trx)
-        .deleteById(id)
-        .throwIfNotFound();
+      await FileStorage.query(trx).deleteById(id).throwIfNotFound();
 
       const result = await storageService.delete(obj);
       if (!result) {
@@ -84,7 +79,7 @@ const service = {
         await FileStorage.query(trx).patchAndFetchById(item.id, {
           storage: PERMANENT_STORAGE,
           path: newPath,
-          updatedBy: currentUser.usernameIdp
+          updatedBy: currentUser.usernameIdp,
         });
       }
       await trx.commit();
@@ -92,8 +87,7 @@ const service = {
       if (trx) await trx.rollback();
       throw err;
     }
-  }
-
+  },
 };
 
 module.exports = service;

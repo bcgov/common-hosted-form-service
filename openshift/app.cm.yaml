@@ -2,10 +2,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
+  app.kubernetes.io/component: app
   app.kubernetes.io/instance: "${APP_NAME}-${JOB_NAME}"
   app.kubernetes.io/managed-by: github
   app.kubernetes.io/name: nodejs
   app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
+  app: "${APP_NAME}-${JOB_NAME}"
   template: "chefs-app-cm-template"
 metadata:
   name: "chefs-app-cm"

@@ -17,8 +17,8 @@ export default {
   props: {
     msg: {
       default: 'Error: Something went wrong... :(',
-      type: String
-    }
+      type: String,
+    },
   },
   computed: {
     ...mapGetters('auth', ['authenticated', 'keycloakReady']),

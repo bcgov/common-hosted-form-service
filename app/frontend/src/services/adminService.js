@@ -16,11 +16,15 @@ export default {
    * @returns {Promise} An axios response
    */
   addFormUser(userId, formId, roles) {
-    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`, roles.map(role => ({
-      userId: userId,
-      formId: formId,
-      role: role
-    })), { params: { userId: userId } });
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`,
+      roles.map((role) => ({
+        userId: userId,
+        formId: formId,
+        role: role,
+      })),
+      { params: { userId: userId } }
+    );
   },
 
   /**
@@ -30,7 +34,9 @@ export default {
    * @returns {Promise} An axios response
    */
   deleteApiKey(formId) {
-    return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+    return appAxios().delete(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`
+    );
   },
 
   /**
@@ -40,7 +46,9 @@ export default {
    * @returns {Promise} An axios response
    */
   listForms(active = true) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}`, { params: { active: active } });
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}`, {
+      params: { active: active },
+    });
   },
 
   /**
@@ -60,7 +68,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readRoles(formId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/formUsers`);
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/formUsers`
+    );
   },
 
   /**
@@ -70,7 +80,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readApiDetails(formId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`
+    );
   },
 
   /**
@@ -80,7 +92,9 @@ export default {
    * @returns {Promise} An axios response
    */
   restoreForm(formId) {
-    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/restore`);
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/restore`
+    );
   },
 
   /**
@@ -91,7 +105,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readVersion(formId, formVersionId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`
+    );
   },
 
   //
@@ -124,9 +140,11 @@ export default {
    * @returns {Promise} An axios response
    */
   addFCProactiveHelp(data) {
-    return appAxios().post(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/object`, data);
+    return appAxios().post(
+      `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/object`,
+      data
+    );
   },
-
 
   /**
    * updateFormComponentsProactiveHelpStatus
@@ -137,18 +155,21 @@ export default {
    * @returns {Promise} An axios response
    */
   updateFCProactiveHelpStatus(componentId, publishStatus) {
-    return appAxios().put(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`);
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`
+    );
   },
-
 
   /**
    * @function getPresignedUrl
    * get signed image upload url
    * @param {Object} imageName component name and component image encoded into base64
    * @returns {Promise} An axios response
-  */
+   */
   async getFCProactiveHelpImageUrl(componentId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/imageUrl/${componentId}`);
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/imageUrl/${componentId}`
+    );
   },
 
   /**
@@ -156,9 +177,10 @@ export default {
    * @function listFCProactiveHelp
    * Reads all form components help information
    * @returns {Promise} An axios response
-  */
+   */
   async listFCProactiveHelp() {
-    return await appAxios().get(`${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`);
+    return await appAxios().get(
+      `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`
+    );
   },
 };
-

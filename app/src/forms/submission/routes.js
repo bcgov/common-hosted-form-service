@@ -2,7 +2,7 @@ const routes = require('express').Router();
 
 const controller = require('./controller');
 const P = require('../common/constants').Permissions;
-const { currentUser, hasSubmissionPermissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
 
 routes.use(currentUser);
 
@@ -18,14 +18,13 @@ routes.delete('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_DELETE
   await controller.delete(req, res, next);
 });
 
-routes.put('/:formSubmissionId/submissions/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), async (req, res, next) => {
+routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.restoreMutipleSubmissions(req, res, next);
 });
 
 routes.put('/:formSubmissionId/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), async (req, res, next) => {
   await controller.restore(req, res, next);
 });
-
 
 routes.get('/:formSubmissionId/options', async (req, res, next) => {
   await controller.readOptions(req, res, next);
@@ -59,15 +58,13 @@ routes.post('/:formSubmissionId/template/render', hasSubmissionPermissions(P.SUB
   await controller.templateUploadAndRender(req, res, next);
 });
 
-routes.delete('/:formSubmissionId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), async (req, res, next) => {
+routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.deleteMutipleSubmissions(req, res, next);
 });
-
 
 // Implement this when we want to fetch a specific audit row including the whole old submission record
 // routes.get('/:formSubmissionId/edits/:auditId', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
 //   await controller.listEdits(req, res, next);
 // });
-
 
 module.exports = routes;

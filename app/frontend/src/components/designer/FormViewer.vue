@@ -1,92 +1,113 @@
 <template>
   <div>
     <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-      <div v-if="displayTitle">
-        <div v-if="!isFormPublic(form)">
-          <FormViewerActions
-            :block="block"
-            :draftEnabled="form.enableSubmitterDraft"
-            :formId="form.id"
-            :isDraft="submissionRecord.draft"
-            :permissions="permissions"
-            :readOnly="readOnly"
-            :submissionId="submissionId"
-            :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
-            :bulkFile="bulkFile"
-            @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
-            @save-draft="saveDraft"
-            @switchView="bulkFile=!bulkFile"
-          />
-        </div>
-        <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }} </h1>
-      </div>
-      <div class="form-wrapper">
-        <v-alert
-          :value="saved || saving"
-          :class="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.class
-              : NOTIFICATIONS_TYPES.SUCCESS.class
-          "
-          :color="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.color
-              : NOTIFICATIONS_TYPES.SUCCESS.color
-          "
-          :icon="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.icon
-              : NOTIFICATIONS_TYPES.SUCCESS.icon
-          "
-          transition="scale-transition"
-        >
-          <div v-if="saving">
-            <v-progress-linear indeterminate />
-            Saving
+      <div v-if="isFormScheduleExpired">
+        <template>
+          <v-alert text prominent type="error">
+            {{
+              isLateSubmissionAllowed
+                ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
+                : formScheduleExpireMessage
+            }}
+          </v-alert>
+
+          <div v-if="isLateSubmissionAllowed">
+            <v-col cols="3" md="2">
+              <v-btn color="primary" @click="isFormScheduleExpired = false">
+                <span>Create late submission</span>
+              </v-btn>
+            </v-col>
           </div>
-          <div v-else>Draft Saved</div>
-        </v-alert>
-
-        <slot name="alert" v-bind:form="form" />
-
-        <BaseDialog
-          v-model="showSubmitConfirmDialog"
-          type="CONTINUE"
-          :enableCustomButton="canSaveDraft"
-          @close-dialog="showSubmitConfirmDialog = false"
-          @continue-dialog="continueSubmit"
-        >
-          <template #title>Please Confirm</template>
-          <template #text>Are you sure you wish to submit your form?</template>
-          <template #button-text-continue>
-            <span>Submit</span>
-          </template>
-        </BaseDialog>
-        <div v-if="allowSubmitterToUploadFile && bulkFile" >
-          <FormViewerDownloadButton
-            :response="sbdMessage"
-            :formElement="formElement"
-            :form="form"
-            :formSchema="formSchema"
-            :json_csv="json_csv"
-            @save-bulk-data="saveBulkData"
-            @reset-message="resetMessage"
-            @set-error="setError"
-            :formFields="formFields" />
+        </template>
+      </div>
+      <div v-else>
+        <div v-if="displayTitle">
+          <div v-if="!isFormPublic(form)">
+            <FormViewerActions
+              :block="block"
+              :draftEnabled="form.enableSubmitterDraft"
+              :formId="form.id"
+              :isDraft="submissionRecord.draft"
+              :permissions="permissions"
+              :readOnly="readOnly"
+              :submissionId="submissionId"
+              :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+              :bulkFile="bulkFile"
+              @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
+              @save-draft="saveDraft"
+              @switchView="bulkFile=!bulkFile"
+            />
+          </div>
+          <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }} </h1>
         </div>
-        <Form
-          v-if="!bulkFile"
-          ref="chefForm"
-          :form="formSchema"
-          :key="reRenderFormIo"
-          :submission="submission"
-          @submit="onSubmit"
-          @submitDone="onSubmitDone"
-          @submitButton="onSubmitButton"
-          @customEvent="onCustomEvent"
-          :options="viewerOptions"
-        />
-        <p v-if="version" class="text-right">Version: {{ version }}</p>
+        <div class="form-wrapper">
+          <v-alert
+            :value="saved || saving"
+            :class="
+              saving
+                ? NOTIFICATIONS_TYPES.INFO.class
+                : NOTIFICATIONS_TYPES.SUCCESS.class
+            "
+            :color="
+              saving
+                ? NOTIFICATIONS_TYPES.INFO.color
+                : NOTIFICATIONS_TYPES.SUCCESS.color
+            "
+            :icon="
+              saving
+                ? NOTIFICATIONS_TYPES.INFO.icon
+                : NOTIFICATIONS_TYPES.SUCCESS.icon
+            "
+            transition="scale-transition"
+          >
+            <div v-if="saving">
+              <v-progress-linear indeterminate />
+              Saving
+            </div>
+            <div v-else>Draft Saved</div>
+          </v-alert>
+
+          <slot name="alert" v-bind:form="form" />
+
+          <BaseDialog
+            v-model="showSubmitConfirmDialog"
+            type="CONTINUE"
+            :enableCustomButton="canSaveDraft"
+            @close-dialog="showSubmitConfirmDialog = false"
+            @continue-dialog="continueSubmit"
+          >
+            <template #title>Please Confirm</template>
+            <template #text>Are you sure you wish to submit your form?</template>
+            <template #button-text-continue>
+              <span>Submit</span>
+            </template>
+          </BaseDialog>
+          <div v-if="allowSubmitterToUploadFile && bulkFile" >
+            <FormViewerDownloadButton
+              :response="sbdMessage"
+              :formElement="formElement"
+              :form="form"
+              :formSchema="formSchema"
+              :json_csv="json_csv"
+              @save-bulk-data="saveBulkData"
+              @reset-message="resetMessage"
+              @set-error="setError"
+              :formFields="formFields" />
+          </div>
+          <Form
+            v-if="!bulkFile"
+            ref="chefForm"
+            :form="formSchema"
+            :key="reRenderFormIo"
+            :submission="submission"
+            @submit="onSubmit"
+            @submitDone="onSubmitDone"
+            @submitButton="onSubmitButton"
+            @customEvent="onCustomEvent"
+            :options="viewerOptions"
+          />
+          <p v-if="version" class="text-right">Version: {{ version }}</p>
+        </div>
       </div>
       <!-- <FormBulkDialog v-if="!submissionId && form.allowSubmitterToUploadFile" @leave-this-page="leaveThisPage" @set-bulk-file="setBulkFile"/> -->
       <BulkPrompt :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" @close-bulk-yes-or-no="closeBulkYesOrNo"/>
@@ -109,6 +130,8 @@ import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
 // import FormBulkDialog  from '@/components/designer/FormBulkDialog.vue';
 import BulkPrompt  from '@/components/designer/BulkPrompt.vue';
+
+import _ from 'lodash';
 
 export default {
   name: 'FormViewer',
@@ -140,6 +163,10 @@ export default {
     },
     submissionId: String,
     versionId: String,
+    isDuplicate: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -154,7 +181,7 @@ export default {
       saving: false,
       showSubmitConfirmDialog: false,
       submission: {
-        data: {},
+        data: { lateEntry: false },
       },
       submissionRecord: {},
       version: 0,
@@ -174,6 +201,10 @@ export default {
       },
       block:false,
       doYouWantToSaveTheDraft: false,
+      isFormScheduleExpired: false,
+      formScheduleExpireMessage:
+        'Form submission is not available as the scheduled submission period has expired.',
+      isLateSubmissionAllowed: false,
     };
   },
   computed: {
@@ -196,7 +227,7 @@ export default {
         componentOptions: {
           simplefile: {
             config: Vue.prototype.$config,
-            chefsToken: this.getCurrentAuthHeader
+            chefsToken: this.getCurrentAuthHeader,
           },
         },
         evalContext: {
@@ -210,7 +241,7 @@ export default {
         !this.readOnly &&
         this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
       );
-    }
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -224,14 +255,60 @@ export default {
       return `Bearer ${this.token}`;
     },
     async getFormData() {
+      function iterate(obj, stack, fields, propNeeded) {
+        //Get property path from nested object
+        for (let property in obj) {
+          if (typeof obj[property] == 'object') {
+            return iterate(
+              obj[property],
+              stack + '.' + property,
+              fields,
+              propNeeded
+            );
+          } else if (propNeeded === property) {
+            fields = fields + stack + '.' + property;
+            return fields;
+          }
+        }
+      }
+
+      function deleteFieldData(fieldcomponent, submission) {
+        if (
+          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
+        ) {
+          fieldcomponent.components.map((subComponent) => {
+            // Check if it's a Nested component
+            deleteFieldData(subComponent, submission);
+          });
+        } else if (!fieldcomponent?.validate?.isUseForCopy) {
+          _.unset(
+            submission,
+            iterate(submission, '', '', fieldcomponent.key).replace(/^\./, '')
+          );
+        }
+      }
+
       try {
         this.loadingSubmission = true;
         const response = await formService.getSubmission(this.submissionId);
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
         this.form = response.data.form;
-        this.formSchema = response.data.version.schema;
-        this.version = response.data.version.version;
+        if (!this.isDuplicate) {
+          //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
+          this.formSchema = response.data.version.schema;
+          this.version = response.data.version.version;
+        } else {
+          /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
+          if (
+            response.data?.version?.schema?.components &&
+            response.data?.version?.schema?.components.length
+          ) {
+            response.data.version.schema.components.map((component) => {
+              deleteFieldData(component, this.submission); //Delete all the fields data that are not enabled for duplication
+            });
+          }
+        }
         // Get permissions
         if (!this.staffEditMode && !isFormPublic(this.form)) {
           const permRes = await rbacService.getUserSubmissions({
@@ -292,9 +369,20 @@ export default {
           if (response.data.allowSubmitterToUploadFile && !this.draftId)
             this.jsonManager(response);
 
+          if (response.data.schedule && response.data.schedule.expire) {
+            let formScheduleStatus = response.data.schedule;
+            this.isFormScheduleExpired = formScheduleStatus.expire;
+            this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
+            this.formScheduleExpireMessage = formScheduleStatus.message;
+          }
+
         }
       } catch (error) {
         if (this.authenticated) {
+          this.isFormScheduleExpired = true;
+          this.isLateSubmissionAllowed = false;
+          this.formScheduleExpireMessage =
+            'An error occurred fetching this form';
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,
@@ -401,13 +489,19 @@ export default {
       }
     },
     async sendSubmission(isDraft, submission) {
+      submission.data.lateEntry =
+        this.form?.schedule?.expire !== undefined &&
+        this.form.schedule.expire === true
+          ? this.form.schedule.allowLateSubmissions
+          : false;
       const body = {
         draft: isDraft,
         submission: submission,
       };
 
       let response;
-      if (this.submissionId) {
+      //let's check if this is a submission from existing one, If isDuplicate then create new submission if now isDuplicate then update the submission
+      if (this.submissionId && !this.isDuplicate) {
         // Updating an existing submission
         response = await formService.updateSubmission(this.submissionId, body);
       } else {
@@ -520,12 +614,16 @@ export default {
           // store our submission result...
           this.submissionRecord = Object.assign(
             {},
-            this.submissionId ? response.data.submission : response.data
+            this.submissionId && this.isDuplicate //Check if this submission is creating with the existing one
+              ? response.data
+              : this.submissionId && !this.isDuplicate
+              ? response.data.submission
+              : response.data
           );
-          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
-          // console.error(response); // eslint-disable-line no-console
-          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
+          throw new Error(
+            `Failed response from submission endpoint. Response code: ${response.status}`
+          );
         }
       } catch (error) {
 
@@ -602,11 +700,15 @@ export default {
       this.doYouWantToSaveTheDraft = false;
     }
   },
-  created() {
-    if (this.submissionId) {
-      this.getFormData();
+  async created() {
+    if (this.submissionId && this.isDuplicate) {
+      //Run when make new submission from existing one called.
+      await this.getFormData();
+      await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
+    } else if (this.submissionId && !this.isDuplicate) {
+      await this.getFormData();
     } else {
-      this.getFormSchema();
+      await this.getFormSchema();
     }
     if (!this.preview && !this.readOnly) {
       window.onbeforeunload = () => true;

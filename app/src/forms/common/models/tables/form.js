@@ -20,7 +20,10 @@ class Form extends Timestamps(Model) {
   snake() {
     // like a slug, but not guaranteed to be unique (as names are not unique).
     // use this for file names or any other instances we want a standardized name without punctuation etc.
-    return this.name.replace(/\s+/g, '_').replace(/[^-_0-9a-z]/gi, '').toLowerCase();
+    return this.name
+      .replace(/\s+/g, '_')
+      .replace(/[^-_0-9a-z]/gi, '')
+      .toLowerCase();
   }
 
   static get virtualAttributes() {
@@ -39,17 +42,17 @@ class Form extends Timestamps(Model) {
         modelClass: FormVersionDraft,
         join: {
           from: 'form.id',
-          to: 'form_version_draft.formId'
-        }
+          to: 'form_version_draft.formId',
+        },
       },
       idpHints: {
         relation: Model.HasManyRelation,
         modelClass: FormIdentityProvider,
-        filter: query => query.select('code'),
+        filter: (query) => query.select('code'),
         join: {
           from: 'form.id',
-          to: 'form_identity_provider.formId'
-        }
+          to: 'form_identity_provider.formId',
+        },
       },
       identityProviders: {
         relation: Model.ManyToManyRelation,
@@ -58,10 +61,10 @@ class Form extends Timestamps(Model) {
           from: 'form.id',
           through: {
             from: 'form_identity_provider.formId',
-            to: 'form_identity_provider.code'
+            to: 'form_identity_provider.code',
           },
-          to: 'identity_provider.code'
-        }
+          to: 'identity_provider.code',
+        },
       },
       versions: {
         relation: Model.HasManyRelation,
@@ -108,14 +111,31 @@ class Form extends Timestamps(Model) {
       },
       orderNameAscending(builder) {
         builder.orderByRaw('lower("name")');
-      }
+      },
+      reminderEnabled(query) {
+        query.where('reminder_enabled', true);
+      },
     };
   }
 
   // exclude labels and submissionReceivedEmails arrays from explicit JSON conversion
   // encounter malformed array literal
   static get jsonAttributes() {
-    return ['id', 'name', 'description', 'active','allowSubmitterToUploadFile', 'showSubmissionConfirmation', 'enableStatusUpdates', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
+    return [
+      'id',
+      'name',
+      'description',
+      'active',
+      'allowSubmitterToUploadFile',
+      'showSubmissionConfirmation',
+      'enableStatusUpdates',
+      'schedule',
+      'reminder_enabled',
+      'createdBy',
+      'createdAt',
+      'updatedBy',
+      'updatedAt',
+    ];
   }
 
   static get jsonSchema() {
@@ -133,12 +153,14 @@ class Form extends Timestamps(Model) {
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         enableStatusUpdates: { type: 'boolean' },
         enableSubmitterDraft: { type: 'boolean' },
-        ...stamps
+        schedule: { type: 'object' },
+        reminder_enabled: { type: 'boolean' },
+        enableCopyExistingSubmission: { type: 'boolean' },
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = Form;

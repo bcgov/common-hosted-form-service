@@ -5,10 +5,7 @@ const { FormSubmissionUser, Permission } = require('../common/models');
 
 const service = {
   list: async () => {
-    return Permission.query()
-      .allowGraph('[roles]')
-      .withGraphFetched('roles(orderDefault)')
-      .modify('orderDefault');
+    return Permission.query().allowGraph('[roles]').withGraphFetched('roles(orderDefault)').modify('orderDefault');
   },
 
   create: async (data, currentUser) => {
@@ -30,11 +27,7 @@ const service = {
   },
 
   read: async (code) => {
-    return Permission.query()
-      .findOne('code', code)
-      .allowGraph('[roles]')
-      .withGraphFetched('roles(orderDefault)')
-      .throwIfNotFound();
+    return Permission.query().findOne('code', code).allowGraph('[roles]').withGraphFetched('roles(orderDefault)').throwIfNotFound();
   },
 
   update: async (code, data, currentUser) => {
@@ -48,7 +41,7 @@ const service = {
           display: data.display,
           description: data.description,
           active: data.active,
-          updatedBy: currentUser.usernameIdp
+          updatedBy: currentUser.usernameIdp,
         });
       }
       // clean out existing roles...
@@ -82,16 +75,14 @@ const service = {
 
       // DANGER - do not mess up the where clauses!
       // ALWAYS ensure submissionid is enforced and you know what KNEX is doing about chaining the where clauses as to if it's making an AND or an OR
-      const users = await FormSubmissionUser.query().select('userId')
-        .where('formSubmissionId', submissionId)
-        .whereIn('permission', [Permissions.SUBMISSION_READ]);
+      const users = await FormSubmissionUser.query().select('userId').where('formSubmissionId', submissionId).whereIn('permission', [Permissions.SUBMISSION_READ]);
 
-      const itemsToInsert = users.map(user => ({
+      const itemsToInsert = users.map((user) => ({
         id: uuidv4(),
         userId: user.userId,
         formSubmissionId: submissionId,
         permission: Permissions.SUBMISSION_UPDATE,
-        createdBy: currentUser.usernameIdp
+        createdBy: currentUser.usernameIdp,
       }));
 
       let result = undefined;
@@ -120,7 +111,8 @@ const service = {
 
       // DANGER - do not mess up the where clauses!
       // ALWAYS ensure submissionid is enforced and you know what KNEX is doing about chaining the where clauses as to if it's making an AND or an OR
-      const result = await FormSubmissionUser.query(trx).delete()
+      const result = await FormSubmissionUser.query(trx)
+        .delete()
         .where('formSubmissionId', submissionId)
         .whereIn('permission', [Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE]);
 

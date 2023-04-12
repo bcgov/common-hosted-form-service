@@ -1,7 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog
-      transition="dialog-top-transition" 
+    <v-dialog transition="dialog-top-transition"
       v-model="dialog"
       scrollable
       width="auto"
@@ -38,7 +37,7 @@ export default {
   data() {
     return {
       dialog: false,
-    };
+    }
   },
   computed: {
   },

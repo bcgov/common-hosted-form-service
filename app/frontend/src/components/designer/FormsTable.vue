@@ -8,7 +8,11 @@
       <!-- buttons -->
       <v-col
         v-if="user.idp === ID_PROVIDERS.IDIR"
-        class="text-right" cols="12" sm="6" order="1" order-sm="2"
+        class="text-right"
+        cols="12"
+        sm="6"
+        order="1"
+        order-sm="2"
       >
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
@@ -107,7 +111,7 @@
     <BaseDialog
       v-model="showDescriptionDialog"
       showCloseButton
-      @close-dialog="showDescriptionDialog = false;"
+      @close-dialog="showDescriptionDialog = false"
     >
       <template #title>
         <span class="pl-5">Description:</span>
@@ -116,7 +120,6 @@
         <slot name="formDescription">{{ formDescription }}</slot>
       </template>
     </BaseDialog>
-
   </div>
 </template>
 
@@ -136,7 +139,7 @@ export default {
       // Assigning width: '1%' to dynamically assign width to the Table's Columns as described by this post on Stack Overflow:
       // https://stackoverflow.com/a/51569928
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name', width: '1%', },
+        { text: 'Form Title', align: 'start', value: 'name', width: '1%' },
         {
           text: 'Actions',
           align: 'end',
@@ -175,8 +178,7 @@ export default {
       this.formId = formId;
       this.formDescription = formDescription;
       this.showDescriptionDialog = true;
-    }
-
+    },
   },
   async mounted() {
     await this.getFormsForCurrentUser();

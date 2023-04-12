@@ -21,14 +21,11 @@ class ChesService {
 
   async health() {
     try {
-      const response = await this.axios.get(
-        `${this.apiV1}/health`,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await this.axios.get(`${this.apiV1}/health`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data;
     } catch (e) {
       errorToProblem(SERVICE, e);
@@ -37,15 +34,12 @@ class ChesService {
 
   async statusQuery(params) {
     try {
-      const response = await this.axios.get(
-        `${this.apiV1}/status`,
-        {
-          params: params,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await this.axios.get(`${this.apiV1}/status`, {
+        params: params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data;
     } catch (e) {
       errorToProblem(SERVICE, e);
@@ -54,14 +48,11 @@ class ChesService {
 
   async cancelMsg(msgId) {
     try {
-      const response = await this.axios.delete(
-        `${this.apiV1}/cancel/${msgId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await this.axios.delete(`${this.apiV1}/cancel/${msgId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data;
     } catch (e) {
       errorToProblem(SERVICE, e);
@@ -70,15 +61,12 @@ class ChesService {
 
   async cancelQuery(params) {
     try {
-      const response = await this.axios.delete(
-        `${this.apiV1}/cancel`,
-        {
-          params: params,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await this.axios.delete(`${this.apiV1}/cancel`, {
+        params: params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data;
     } catch (e) {
       errorToProblem(SERVICE, e);
@@ -87,37 +75,29 @@ class ChesService {
 
   async send(email) {
     try {
-      const response = await this.axios.post(
-        `${this.apiV1}/email`,
-        email,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity
-        }
-      );
+      const response = await this.axios.post(`${this.apiV1}/email`, email, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      });
       return response.data;
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
   }
 
-
   async merge(data) {
+    // eslint-disable-next-line no-console
     try {
-      const response = await this.axios.post(
-        `${this.apiV1}/emailMerge`,
-        data,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity
-        }
-      );
+      const response = await this.axios.post(`${this.apiV1}/emailMerge`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      });
       return response.data;
     } catch (e) {
       errorToProblem(SERVICE, e);
@@ -126,23 +106,18 @@ class ChesService {
 
   async preview(data) {
     try {
-      const response = await this.axios.post(
-        `${this.apiV1}/emailMerge/preview`,
-        data,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity
-        }
-      );
+      const response = await this.axios.post(`${this.apiV1}/emailMerge/preview`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      });
       return response.data;
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
   }
-
 }
 
 const endpoint = config.get('serviceClient.commonServices.ches.endpoint');
@@ -150,5 +125,5 @@ const tokenEndpoint = config.get('serviceClient.commonServices.ches.tokenEndpoin
 const clientId = config.get('serviceClient.commonServices.ches.clientId');
 const clientSecret = config.get('serviceClient.commonServices.ches.clientSecret');
 
-let chesService = new ChesService({tokenUrl: tokenEndpoint, clientId: clientId, clientSecret: clientSecret, apiUrl: endpoint});
+let chesService = new ChesService({ tokenUrl: tokenEndpoint, clientId: clientId, clientSecret: clientSecret, apiUrl: endpoint });
 module.exports = chesService;

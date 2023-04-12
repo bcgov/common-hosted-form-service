@@ -116,7 +116,7 @@ export default {
     },
     customDialog() {
       this.$emit('custom-dialog');
-    }
+    },
   },
   props: {
     value: {
@@ -137,8 +137,8 @@ export default {
     },
     enableCustomButton: {
       default: false,
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
 };
 </script>

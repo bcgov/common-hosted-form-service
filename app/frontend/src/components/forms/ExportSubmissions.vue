@@ -23,7 +23,9 @@
       content-class="export-submissions-dlg"
     >
       <v-card>
-        <v-card-title class="text-h5 pb-0 titleObjectStyle">Export Submissions to File</v-card-title>
+        <v-card-title class="text-h5 pb-0 titleObjectStyle"
+          >Export Submissions to File</v-card-title
+        >
         <v-card-text>
           <hr
             style="
@@ -192,10 +194,11 @@
                     <span
                       class="radioboxLabelStyle"
                       style="display: flex; align-content: flex-start"
-                    >Template 1
+                      >Template 1
                       <div class="blueColorWrapper ml-1">
                         (Recommended)
-                      </div></span>
+                      </div></span
+                    >
                   </template>
                 </v-radio>
                 <v-radio label="B" value="flattenedWithFilled">
@@ -305,15 +308,15 @@ export default {
         const to =
           this.dateRange && this.endDate
             ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
-              .utc()
-              .format()
+                .utc()
+                .format()
             : undefined;
 
         const response = await formService.exportSubmissions(
           this.form.id,
           this.exportFormat,
           this.csvTemplates,
-          this.exportFormat==='csv'?this.versionSelected:undefined,
+          this.exportFormat === 'csv' ? this.versionSelected : undefined,
           {
             minDate: from,
             maxDate: to,

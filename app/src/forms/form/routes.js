@@ -134,7 +134,7 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
   await controller.deleteApiKey(req, res, next);
 });
 
-routes.get('/formcomponents/proactivehelp/list', async(req,res,next) => {
+routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
 

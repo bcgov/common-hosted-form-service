@@ -4,7 +4,7 @@ import {
   FormPermissions,
   FormManagePermissions,
   IdentityMode,
-  IdentityProviders
+  IdentityProviders,
 } from '@/utils/constants';
 
 //
@@ -18,9 +18,12 @@ import {
  * @returns {boolean} TRUE if they can
  */
 export function checkFormSubmit(userForm) {
-  return userForm &&
-    (userForm.idps && userForm.idps.includes(IdentityProviders.PUBLIC) ||
-      userForm.permissions && userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE));
+  return (
+    userForm &&
+    ((userForm.idps && userForm.idps.includes(IdentityProviders.PUBLIC)) ||
+      (userForm.permissions &&
+        userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)))
+  );
 }
 
 /**
@@ -30,7 +33,11 @@ export function checkFormSubmit(userForm) {
  * @returns {boolean} TRUE if they can
  */
 export function checkFormManage(userForm) {
-  return userForm && userForm.permissions && userForm.permissions.some(p => FormManagePermissions.includes(p));
+  return (
+    userForm &&
+    userForm.permissions &&
+    userForm.permissions.some((p) => FormManagePermissions.includes(p))
+  );
 }
 
 /**
@@ -42,9 +49,13 @@ export function checkFormManage(userForm) {
 export function checkSubmissionView(userForm) {
   const perms = [
     FormPermissions.SUBMISSION_READ,
-    FormPermissions.SUBMISSION_UPDATE
+    FormPermissions.SUBMISSION_UPDATE,
   ];
-  return userForm && userForm.permissions && userForm.permissions.some(p => perms.includes(p));
+  return (
+    userForm &&
+    userForm.permissions &&
+    userForm.permissions.some((p) => perms.includes(p))
+  );
 }
 
 /**
@@ -56,9 +67,10 @@ export function checkSubmissionView(userForm) {
 export async function preFlightAuth(options = {}, next) {
   // Support lambda functions (Consider making them util functions?)
   const getIdpHint = (values) => {
-    return (Array.isArray(values) && values.length) ? values[0] : undefined;
+    return Array.isArray(values) && values.length ? values[0] : undefined;
   };
-  const isValidIdp = (value) => Object.values(IdentityProviders).includes(value);
+  const isValidIdp = (value) =>
+    Object.values(IdentityProviders).includes(value);
 
   // Determine current form or submission idpHint if available
   let idpHint = undefined;
@@ -67,7 +79,9 @@ export async function preFlightAuth(options = {}, next) {
       const { data } = await formService.readFormOptions(options.formId);
       idpHint = getIdpHint(data.idpHints);
     } else if (options.submissionId) {
-      const { data } = await formService.getSubmissionOptions(options.submissionId);
+      const { data } = await formService.getSubmissionOptions(
+        options.submissionId
+      );
       idpHint = getIdpHint(data.form.idpHints);
     } else {
       throw new Error('Options missing both formId and submissionId');
@@ -114,6 +128,9 @@ export async function preFlightAuth(options = {}, next) {
  * @returns {boolean} TRUE if public
  */
 export function isFormPublic(form) {
-  return form &&
-    (form.identityProviders && form.identityProviders.some(i => i.code === IdentityMode.PUBLIC));
+  return (
+    form &&
+    form.identityProviders &&
+    form.identityProviders.some((i) => i.code === IdentityMode.PUBLIC)
+  );
 }

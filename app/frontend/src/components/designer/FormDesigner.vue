@@ -80,17 +80,19 @@
       class="form-designer"
       @formLoad="onFormLoad"
     />
-    <InformationLinkPreviewDialog :showDialog="showHelpLinkDialog"
-                                  @close-dialog="onShowClosePreveiwDialog"
-                                  :component="component"
-                                  :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"/>
+    <InformationLinkPreviewDialog
+      :showDialog="showHelpLinkDialog"
+      @close-dialog="onShowClosePreveiwDialog"
+      :component="component"
+      :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"
+    />
 
     <FloatButton
       placement="bottom-right"
       :baseFABItemsBGColor="'#ffffff'"
       :baseFABIconColor="'#1976D2'"
       :baseFABBorderColor="'#C0C0C0'"
-      :fabZIndex=1
+      :fabZIndex="1"
       :size="'small'"
       fabItemsGap="7px"
       @undo="onUndoClick"
@@ -102,8 +104,8 @@
       :isFormSaved="isFormSaved"
       :formId="formId"
       :draftId="draftId"
-      :undoEnabled="undoEnabled()===0?false : undoEnabled()"
-      :redoEnabled="redoEnabled()===0?false : redoEnabled()"
+      :undoEnabled="undoEnabled() === 0 ? false : undoEnabled()"
+      :redoEnabled="redoEnabled() === 0 ? false : redoEnabled()"
     />
   </div>
 </template>
@@ -121,14 +123,12 @@ import InformationLinkPreviewDialog from '@/components/infolinks/InformationLink
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
 
-
-
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
     FloatButton,
-    InformationLinkPreviewDialog
+    InformationLinkPreviewDialog,
   },
   props: {
     draftId: String,
@@ -141,11 +141,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    isSavedStatus:{
-      type:String,
-      default:'Save'
+    isSavedStatus: {
+      type: String,
+      default: 'Save',
     },
-    versionId: String
+    versionId: String,
   },
   data() {
     return {
@@ -157,8 +157,8 @@ export default {
       ],
       offset: true,
       savedStatus: this.isSavedStatus,
-      isFormSaved:!this.newVersion,
-      scrollTop:true,
+      isFormSaved: !this.newVersion,
+      scrollTop: true,
       advancedItems: [
         { text: 'Simple Mode', value: false },
         { text: 'Advanced Mode', value: true },
@@ -183,20 +183,23 @@ export default {
         redoClicked: false,
         undoClicked: false,
       },
-      showHelpLinkDialog:false,
-      component:{},
-      isComponentRemoved:false,
+      showHelpLinkDialog: false,
+      component: {},
+      isComponentRemoved: false,
     };
-
   },
 
   computed: {
-    ...mapGetters('form', ['fcProactiveHelpGroupList','fcProactiveHelpImageUrl']),
+    ...mapGetters('form', [
+      'fcProactiveHelpGroupList',
+      'fcProactiveHelpImageUrl',
+    ]),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapGetters('form', ['builder']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
+      'form.enableCopyExistingSubmission',
       'form.enableStatusUpdates',
       'form.idps',
       'form.name',
@@ -207,12 +210,11 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.versions',
-      'form.isDirty'
+      'form.isDirty',
     ]),
     ID_MODE() {
       return IdentityMode;
     },
-
 
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
@@ -270,18 +272,30 @@ export default {
             weight: 40,
             components: {
               // Need to re-define Formio basic fields here
-              textfield: true,
-              textarea: true,
-              number: true,
-              password: true,
-              checkbox: true,
-              selectboxes: true,
-              select: true,
-              radio: true,
-              button: true,
+              // To disable fields make it false here
+              // textfield: true,
+              // textarea: true,
+              // number: true,
+              // password: true,
+              // checkbox: true,
+              // selectboxes: true,
+              // select: true,
+              // radio: true,
+              // button: true,
+              email: false,
+              url: false,
+              phoneNumber: false,
+              tags: false,
+              address: false,
+              datetime: false,
+              day: false,
+              time: false,
+              currency: false,
+              survey: false,
+              signature: false,
               // Prevent duplicate appearance of orgbook component
               orgbook: false,
-              bcaddress:false
+              bcaddress: false,
             },
           },
           data: {
@@ -294,7 +308,7 @@ export default {
             components: {
               orgbook: true,
               simplefile: this.userType !== this.ID_MODE.PUBLIC,
-              bcaddress:true
+              bcaddress: true,
             },
           },
         },
@@ -307,9 +321,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm','setDirtyFlag','getFCProactiveHelpImageUrl']),
+    ...mapActions('form', [
+      'fetchForm',
+      'setDirtyFlag',
+      'getFCProactiveHelpImageUrl',
+    ]),
     ...mapActions('notifications', ['addNotification']),
-
 
     // TODO: Put this into vuex form module
     async getFormSchema() {
@@ -388,10 +405,8 @@ export default {
       this.onFormLoad();
     },
     onChangeMethod(changed, flags, modified) {
-
       // Don't call an unnecessary action if already dirty
       if (!this.isDirty) this.setDirtyFlag(true);
-
 
       this.onSchemaChange(changed, flags, modified);
     },
@@ -417,26 +432,30 @@ export default {
     onFormLoad() {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
-      if(Object.keys(this.fcProactiveHelpGroupList).length > 0) {
-        for (const  [groupName,elements] of Object.entries(this.fcProactiveHelpGroupList)) {
+      if (Object.keys(this.fcProactiveHelpGroupList).length > 0) {
+        for (const [groupName, elements] of Object.entries(
+          this.fcProactiveHelpGroupList
+        )) {
           let extractedElementsNames = this.extractPublishedElement(elements);
-          for (const [key,builderElements] of Object.entries(builder)) {
-            if(groupName===builderElements.title){
+          for (const [key, builderElements] of Object.entries(builder)) {
+            if (groupName === builderElements.title) {
               let containerId = `group-container-${key}`;
               let containerEl = document.getElementById(containerId);
-              if(containerEl){
-                for(let i=0; i<containerEl.children.length; i++){
+              if (containerEl) {
+                for (let i = 0; i < containerEl.children.length; i++) {
                   const self = this;
                   let elementName = containerEl.children[i].textContent.trim();
-                  if(extractedElementsNames.includes(elementName))
-                  {
+                  if (extractedElementsNames.includes(elementName)) {
                     // Append the info el
                     let child = document.createElement('i');
 
-                    child.setAttribute('class','fa fa-info-circle info-helper');
-                    child.style.float='right';
-                    child.style.fontSize='14px';
-                    child.addEventListener('click', function() {
+                    child.setAttribute(
+                      'class',
+                      'fa fa-info-circle info-helper'
+                    );
+                    child.style.float = 'right';
+                    child.style.fontSize = '14px';
+                    child.addEventListener('click', function () {
                       self.showHelperClicked(elementName, groupName);
                     });
                     containerEl.children[i].appendChild(child);
@@ -449,24 +468,25 @@ export default {
       }
     },
     extractPublishedElement(elements) {
-      let publishedComponentsNames=[];
-      for(let element of elements) {
-        if(element.status)
-        {
+      let publishedComponentsNames = [];
+      for (let element of elements) {
+        if (element.status) {
           publishedComponentsNames.push(element.componentName);
         }
       }
-      return  publishedComponentsNames;
+      return publishedComponentsNames;
     },
 
     async showHelperClicked(elementName, groupName) {
       const elements = this.fcProactiveHelpGroupList[groupName];
-      this.component = elements.find(element=>element.componentName===elementName);
+      this.component = elements.find(
+        (element) => element.componentName === elementName
+      );
       await this.getFCProactiveHelpImageUrl(this.component.id);
       this.onShowClosePreveiwDialog();
     },
-    onShowClosePreveiwDialog(){
-      this.showHelpLinkDialog=!this.showHelpLinkDialog;
+    onShowClosePreveiwDialog() {
+      this.showHelpLinkDialog = !this.showHelpLinkDialog;
     },
     // ----------------------------------------------------------------------------------/ FormIO Handlers
 
@@ -494,7 +514,11 @@ export default {
           }
         } else {
           // If we removed a component but not during an add action
-          if ((!this.patch.componentAddedStart && this.patch.componentRemovedStart) || this.patch.componentMovedStart) {
+          if (
+            (!this.patch.componentAddedStart &&
+              this.patch.componentRemovedStart) ||
+            this.patch.componentMovedStart
+          ) {
             // Component was removed or moved
             this.addPatchToHistory();
           }
@@ -508,15 +532,13 @@ export default {
       }
     },
     addPatchToHistory() {
-
-
       // Determine if there is even a difference with the action
-      const form = this.getPatch(this.patch.index+1);
+      const form = this.getPatch(this.patch.index + 1);
       const patch = compare(form, this.formSchema);
 
-      if(patch.length > 0) {
-        this.savedStatus='Save';
-        this.isFormSaved=false;
+      if (patch.length > 0) {
+        this.savedStatus = 'Save';
+        this.isFormSaved = false;
         // Remove any actions past the action we were on
         this.patch.index += 1;
         if (this.patch.history.length > 0) {
@@ -533,7 +555,6 @@ export default {
           this.patch.history.shift();
           --this.patch.index;
         }
-
       }
       this.resetHistoryFlags();
     },
@@ -555,19 +576,18 @@ export default {
     async undoPatchFromHistory() {
       // Only allow undo if there was an action made
       if (this.canUndoPatch()) {
-        this.savedStatus='Save';
-        this.isFormSaved=false;
+        this.savedStatus = 'Save';
+        this.isFormSaved = false;
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
-
       }
     },
     async redoPatchFromHistory() {
       // Only allow redo if there was an action made
       if (this.canRedoPatch()) {
-        this.savedStatus='Save';
-        this.isFormSaved=false;
+        this.savedStatus = 'Save';
+        this.isFormSaved = false;
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
@@ -579,10 +599,17 @@ export default {
       this.patch.componentRemovedStart = flag;
     },
     canUndoPatch() {
-      return this.patch.history.length && this.patch.index >= 0 && this.patch.index < this.patch.history.length;
+      return (
+        this.patch.history.length &&
+        this.patch.index >= 0 &&
+        this.patch.index < this.patch.history.length
+      );
     },
     canRedoPatch() {
-      return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
+      return (
+        this.patch.history.length &&
+        this.patch.index < this.patch.history.length - 1
+      );
     },
     undoEnabled() {
       return this.canUndoPatch();
@@ -600,14 +627,11 @@ export default {
       this.saving = true;
       await this.setDirtyFlag(false);
       try {
-
         this.saving = true;
-        this.savedStatus='Saving';
-
+        this.savedStatus = 'Saving';
 
         // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
         await this.setDirtyFlag(false);
-
 
         if (this.formId) {
           if (this.versionId) {
@@ -622,13 +646,12 @@ export default {
           await this.schemaCreateNew();
         }
 
-        this.savedStatus='Saved';
-        this.isFormSaved=true;
-
+        this.savedStatus = 'Saved';
+        this.isFormSaved = true;
       } catch (error) {
         await this.setDirtyFlag(true);
-        this.savedStatus='Not Saved';
-        this.isFormSaved=false;
+        this.savedStatus = 'Not Saved';
+        this.isFormSaved = false;
         this.addNotification({
           message:
             'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
@@ -636,12 +659,10 @@ export default {
         });
       } finally {
         this.saving = false;
-
       }
     },
     async onUndoClick() {
       this.undoPatchFromHistory();
-
     },
     async onRedoClick() {
       this.redoPatchFromHistory();
@@ -663,23 +684,26 @@ export default {
           userType: this.userType,
         }),
         enableSubmitterDraft: this.enableSubmitterDraft,
+        enableCopyExistingSubmission: this.enableCopyExistingSubmission,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
         allowSubmitterToUploadFile: this.allowSubmitterToUploadFile,
         submissionReceivedEmails: emailList,
+        reminder_enabled: false,
       });
 
       // Navigate back to this page with ID updated
-      this.$router.push({
-        name: 'FormDesigner',
-        query: {
-          f: response.data.id,
-          d: response.data.draft.id,
-          sv: true,
-          svs:'Saved'
-        },
-      }).catch(()=>{});
-
+      this.$router
+        .push({
+          name: 'FormDesigner',
+          query: {
+            f: response.data.id,
+            d: response.data.draft.id,
+            sv: true,
+            svs: 'Saved',
+          },
+        })
+        .catch(() => {});
     },
     async schemaCreateDraftFromVersion() {
       const { data } = await formService.createDraft(this.formId, {
@@ -693,7 +717,7 @@ export default {
           f: this.formId,
           d: data.id,
           sv: true,
-          svs:'Saved'
+          svs: 'Saved',
         },
       });
     },
@@ -705,9 +729,8 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true, svs:'Saved'},
+        query: { ...this.$route.query, sv: true, svs: 'Saved' },
       });
-
     },
   },
   created() {
@@ -715,7 +738,6 @@ export default {
       this.getFormSchema();
       this.fetchForm(this.formId);
     }
-
   },
 
   mounted() {
@@ -730,7 +752,6 @@ export default {
       this.reRenderFormIo += 1;
     },
   },
-
 };
 </script>
 
@@ -743,33 +764,31 @@ export default {
   pointer-events: none;
 }
 
-
-.formSubmit{
-  background-color:red;
+.formSubmit {
+  background-color: red;
 }
 
-.formExport{
- position: sticky;
- top:0;
-  right:0;
-
- position: -webkit-sticky;
-}
-
-.formImport{
+.formExport {
   position: sticky;
-  top:0;
-  right:0;
+  top: 0;
+  right: 0;
 
- position: -webkit-sticky;
+  position: -webkit-sticky;
 }
 
-.formSetting{
- position: sticky;
- top:0;
-  right:0;
+.formImport {
+  position: sticky;
+  top: 0;
+  right: 0;
 
- position: -webkit-sticky;
+  position: -webkit-sticky;
 }
 
+.formSetting {
+  position: sticky;
+  top: 0;
+  right: 0;
+
+  position: -webkit-sticky;
+}
 </style>

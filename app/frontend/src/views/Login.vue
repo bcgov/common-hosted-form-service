@@ -4,12 +4,7 @@
       <h1 class="my-6">Authenticate with:</h1>
       <v-row v-for="button in buttons" justify="center" :key="button.type">
         <v-col sm="3" v-if="buttonEnabled(button.type)">
-          <v-btn
-            block
-            color="primary"
-            @click="login(button.type)"
-            large
-          >
+          <v-btn block color="primary" @click="login(button.type)" large>
             <span>{{ button.label }}</span>
           </v-btn>
         </v-col>
@@ -37,7 +32,11 @@ export default {
   props: {
     idpHint: {
       type: Array,
-      default: () => [ IdentityProviders.IDIR, IdentityProviders.BCEIDBUSINESS, IdentityProviders.BCEIDBASIC ],
+      default: () => [
+        IdentityProviders.IDIR,
+        IdentityProviders.BCEIDBUSINESS,
+        IdentityProviders.BCEIDBASIC,
+      ],
     },
   },
   created() {
@@ -46,7 +45,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['authenticated', 'createLoginUrl', 'keycloakReady']),
-    buttons: () => ([
+    buttons: () => [
       {
         label: 'IDIR',
         type: IdentityProviders.IDIR,
@@ -59,7 +58,7 @@ export default {
         label: 'Business BCeID',
         type: IdentityProviders.BCEIDBUSINESS,
       },
-    ]),
+    ],
     IDPS() {
       return IdentityProviders;
     },
@@ -67,8 +66,8 @@ export default {
   methods: {
     ...mapActions('auth', ['login']),
     buttonEnabled(type) {
-      return ((this.idpHint) ? this.idpHint.includes(type) : false);
-    }
+      return this.idpHint ? this.idpHint.includes(type) : false;
+    },
   },
 };
 </script>

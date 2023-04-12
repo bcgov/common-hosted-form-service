@@ -47,7 +47,7 @@ export default {
 </script>
 
 <style scoped>
-  .target-notification >>> .v-alert__icon.v-icon:after {
-    display: none;
-  }
+.target-notification >>> .v-alert__icon.v-icon:after {
+  display: none;
+}
 </style>

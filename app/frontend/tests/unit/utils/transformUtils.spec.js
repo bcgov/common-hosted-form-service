@@ -1,4 +1,5 @@
 import { IdentityMode } from '@/utils/constants';
+import moment from 'moment';
 import * as transformUtils from '@/utils/transformUtils';
 
 describe('generateIdps', () => {
@@ -55,5 +56,17 @@ describe('parseIdps', () => {
       idps: ['foo', 'bar'],
       userType: IdentityMode.LOGIN,
     });
+  });
+});
+
+describe('calculateCloseDate', () => {
+  it('Returns Moment Object when supply Valid date(Moment OBJ),term(Int),interval(Str) as parameters.', () => {
+    expect(transformUtils.calculateCloseDate(moment(),2,'days')).toEqual(expect.any(String));
+  });
+});
+
+describe('getCalculatedCloseSubmissionDate', () => {
+  it('Returns Moment Object when supply Valid data as parameters.', () => {
+    expect(transformUtils.getCalculatedCloseSubmissionDate(moment('2022-11-01'),1,'days',4,'days',1,'months',moment('2023-02-03'))).toBeTruthy();
   });
 });

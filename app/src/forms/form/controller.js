@@ -7,7 +7,7 @@ module.exports = {
   export: async (req, res, next) => {
     try {
       const result = await exportService.export(req.params.formId, req.query);
-      ['Content-Disposition', 'Content-Type'].forEach(h => {
+      ['Content-Disposition', 'Content-Type'].forEach((h) => {
         res.setHeader(h, result.headers[h.toLowerCase()]);
       });
       return res.send(result.data);
@@ -90,7 +90,7 @@ module.exports = {
   readVersionFields: async (req, res, next) => {
     try {
       const response = await service.readVersionFields(req.params.formVersionId);
-      res.status(200).json(response.filter(f => f !== 'submit'));
+      res.status(200).json(response.filter((f) => f !== 'submit'));
     } catch (error) {
       next(error);
     }
@@ -115,10 +115,10 @@ module.exports = {
     try {
       const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
       if (!req.body.draft) {
-        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch(() => { });
+        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch(() => {});
       }
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
-      fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => { });
+      fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => {});
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -138,14 +138,14 @@ module.exports = {
       if (req.query.fields) {
         let splitFields = [];
         if (Array.isArray(req.query.fields)) {
-          splitFields = req.query.fields.flatMap(f => f.split(',').map(s => s.trim()));
+          splitFields = req.query.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
         } else {
-          splitFields = req.query.fields.split(',').map(s => s.trim());
+          splitFields = req.query.fields.split(',').map((s) => s.trim());
         }
 
         // Drop invalid fields
         const validFields = await service.readVersionFields(req.params.formVersionId);
-        fields = splitFields.filter(f => validFields.includes(f));
+        fields = splitFields.filter((f) => validFields.includes(f));
       }
 
       const response = await service.listSubmissionFields(req.params.formVersionId, fields);
@@ -234,21 +234,20 @@ module.exports = {
       next(error);
     }
   },
-  getFCProactiveHelpImageUrl:async(req, res, next)=> {
-    try{
+  getFCProactiveHelpImageUrl: async (req, res, next) => {
+    try {
       const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
       res.status(200).send(response);
-    } catch(error){
+    } catch (error) {
       next(error);
     }
   },
-  listFormComponentsProactiveHelp:async(req,res,next)=> {
-    try{
+  listFormComponentsProactiveHelp: async (req, res, next) => {
+    try {
       const response = await service.listFormComponentsProactiveHelp();
       res.status(200).json(response);
-    } catch(error){
+    } catch (error) {
       next(error);
     }
   },
-
 };

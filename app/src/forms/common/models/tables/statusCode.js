@@ -16,9 +16,9 @@ class StatusCode extends Timestamps(Model) {
         code: { type: 'string' },
         display: { type: 'string' },
         nextCodes: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

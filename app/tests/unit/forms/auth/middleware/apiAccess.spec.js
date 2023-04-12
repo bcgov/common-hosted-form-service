@@ -8,7 +8,7 @@ describe('apiAccess', () => {
   const token = Buffer.from(`${formId}:${secret}`).toString('base64');
   const authHeader = `Basic ${token}`;
 
-  const baseRes = { status: () => ({ json: () => { } }) };
+  const baseRes = { status: () => ({ json: () => {} }) };
 
   const next = jest.fn();
   const mockReadApiKey = jest.spyOn(service, 'readApiKey');
@@ -65,7 +65,7 @@ describe('apiAccess', () => {
   it('should not call readApiKey with invalid formId param', async () => {
     const req = {
       headers: { authorization: authHeader },
-      params: { formId: 'invalidForm' }
+      params: { formId: 'invalidForm' },
     };
     const res = { ...baseRes };
     await apiAccess(req, res, next);
@@ -79,7 +79,7 @@ describe('apiAccess', () => {
     mockReadApiKey.mockResolvedValue({ secret: 'invalidSecret' });
     const req = {
       headers: { authorization: authHeader },
-      params: { formId: formId }
+      params: { formId: formId },
     };
     const res = { ...baseRes };
     await apiAccess(req, res, next);
@@ -93,7 +93,7 @@ describe('apiAccess', () => {
     mockReadApiKey.mockResolvedValue({ secret: secret });
     const req = {
       headers: { authorization: authHeader },
-      params: { formId: formId }
+      params: { formId: formId },
     };
     const res = { ...baseRes };
     await apiAccess(req, res, next);

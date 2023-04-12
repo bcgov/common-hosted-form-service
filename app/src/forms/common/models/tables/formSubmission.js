@@ -27,7 +27,7 @@ class FormSubmission extends Timestamps(Model) {
       },
       orderDescending(builder) {
         builder.orderBy('createdAt', 'desc');
-      }
+      },
     };
   }
 
@@ -43,12 +43,11 @@ class FormSubmission extends Timestamps(Model) {
         draft: { type: 'boolean' },
         deleted: { type: 'boolean' },
         submission: { type: 'object' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = FormSubmission;

@@ -45,7 +45,6 @@
       </v-col>
     </v-row>
 
-
     <v-row no-gutters>
       <v-spacer />
       <v-col cols="4" sm="4">
@@ -92,43 +91,38 @@
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
-
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
           <v-btn
-            @click="showDeleteDialog=true, singleSubmissionDelete=false"
+            @click="(showDeleteDialog = true), (singleSubmissionDelete = false)"
             color="red"
-            :disabled="selectedSubmissions.length===0"
+            :disabled="selectedSubmissions.length === 0"
             icon
           >
-            <v-tooltip bottom >
+            <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon
-                  color="red"
-                  dark
-                  v-bind="attrs"
-                  v-on="on"
-                >remove_circle</v-icon>
+                <v-icon color="red" dark v-bind="attrs" v-on="on"
+                  >remove_circle</v-icon
+                >
               </template>
               <span>Delete selected submissions</span>
-            </v-tooltip >
+            </v-tooltip>
           </v-btn>
         </span>
         <span v-if="deletedOnly">
           <v-btn
-            @click="showRestoreDialog=true, singleSubmissionRestore=false"
+            @click="
+              (showRestoreDialog = true), (singleSubmissionRestore = false)
+            "
             color="red"
-            :disabled="selectedSubmissions.length===0"
+            :disabled="selectedSubmissions.length === 0"
             icon
           >
-            <v-tooltip bottom >
+            <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon
-                  color="green"
-                  dark
-                  v-bind="attrs"
-                  v-on="on"
-                >restore_from_trash</v-icon>
+                <v-icon color="green" dark v-bind="attrs" v-on="on"
+                  >restore_from_trash</v-icon
+                >
               </template>
               <span>Restore selected submissions</span>
             </v-tooltip>
@@ -166,12 +160,14 @@
       </template>
       <template #[`item.event`]="{ item }">
         <span>
-
           <v-tooltip bottom v-if="!item.deleted">
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showDeleteDialog=true,
-                        deleteItem=item, singleSubmissionDelete=true"
+                @click="
+                  (showDeleteDialog = true),
+                    (deleteItem = item),
+                    (singleSubmissionDelete = true)
+                "
                 color="red"
                 icon
                 v-bind="attrs"
@@ -187,12 +183,16 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="restoreItem=item; showRestoreDialog = true
-                        singleSubmissionRestore=true"
+                @click="
+                  restoreItem = item;
+                  showRestoreDialog = true;
+                  singleSubmissionRestore = true;
+                "
                 color="green"
                 icon
                 v-bind="attrs"
-                v-on="on">
+                v-on="on"
+              >
                 <v-icon>restore_from_trash</v-icon>
               </v-btn>
             </template>
@@ -210,7 +210,7 @@
     >
       <template #title>Confirm Deletion</template>
       <template #text>
-        {{singleSubmissionDelete?singleDeleteMessage:multiDeleteMessage}}
+        {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
       </template>
       <template #button-text-continue>
         <span>Delete</span>
@@ -224,7 +224,9 @@
     >
       <template #title>Confirm Restoration</template>
       <template #text>
-        {{singleSubmissionRestore?singleRestoreMessage:multiRestoreMessage}}
+        {{
+          singleSubmissionRestore ? singleRestoreMessage : multiRestoreMessage
+        }}
       </template>
       <template #button-text-continue>
         <span>Restore</span>
@@ -240,7 +242,9 @@
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title>Search and select columns to show under your dashboard</template>
+        <template #filter-title
+          >Search and select columns to show under your dashboard</template
+        >
       </BaseFilter>
     </v-dialog>
   </div>
@@ -254,7 +258,6 @@ import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faTrash);
-
 
 export default {
   name: 'SubmissionsTable',
@@ -274,15 +277,14 @@ export default {
       filterData: [],
       filterIgnore: [
         {
-          value: 'confirmationId'
+          value: 'confirmationId',
         },
         {
-          value: 'actions'
+          value: 'actions',
         },
         {
-          value: 'event'
-        }
-
+          value: 'event',
+        },
       ],
       loading: true,
       restoreItem: {},
@@ -290,17 +292,19 @@ export default {
       showColumnsDialog: false,
       showRestoreDialog: false,
       submissionTable: [],
-      submissionsCheckboxes:[],
-      showDeleteDialog:false,
+      submissionsCheckboxes: [],
+      showDeleteDialog: false,
       selectedSubmissions: [],
-      multiDeleteMessage:'Are you sure you wish to delete selected submissions?',
+      multiDeleteMessage:
+        'Are you sure you wish to delete selected submissions?',
       singleDeleteMessage: 'Are you sure you wish to delete this submission?',
-      multiRestoreMessage:'Are you sure you wish to restore these submissions?',
+      multiRestoreMessage:
+        'Are you sure you wish to restore these submissions?',
       singleRestoreMessage: 'Are you sure you wish to restore this submission?',
-      singleSubmissionDelete:false,
-      singleSubmissionRestore:false,
-      deleteItem:{},
-      switchSubmissionView:false,
+      singleSubmissionDelete: false,
+      singleSubmissionRestore: false,
+      deleteItem: {},
+      switchSubmissionView: false,
       switchSubmissionViewMessage: 'Show Deleted submissions',
     };
   },
@@ -314,9 +318,7 @@ export default {
       'roles',
       'deletedSubmissions',
     ]),
-    ...mapGetters('auth', [
-      'user'
-    ]),
+    ...mapGetters('auth', ['user']),
 
     checkFormManage() {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
@@ -329,9 +331,12 @@ export default {
         { text: 'Submitter', align: 'start', value: 'submitter' },
       ];
 
-      if(this.form && this.form.schedule && this.form.schedule.enabled){
+      if (this.form && this.form.schedule && this.form.schedule.enabled) {
         //push new header for late submission if Form is setup for scheduling
-        headers = [...headers,{ text: 'Late Submission', align: 'start', value: 'lateEntry' }];
+        headers = [
+          ...headers,
+          { text: 'Late Submission', align: 'start', value: 'lateEntry' },
+        ];
       }
       // If status flow enabled add that column
       if (this.showStatus) {
@@ -362,7 +367,7 @@ export default {
         value: 'actions',
         filterable: false,
         sortable: false,
-        width: '40px'
+        width: '40px',
       });
 
       // Actions column at the end
@@ -372,25 +377,36 @@ export default {
         value: 'event',
         filterable: false,
         sortable: false,
-        width: '40px'
+        width: '40px',
       });
 
-      return headers.filter(
-        (x) => x.value !== 'updatedAt' || this.deletedOnly
-      );
+      return headers.filter((x) => x.value !== 'updatedAt' || this.deletedOnly);
     },
 
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
-      if (this.filterData.length > 0) headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
+      if (this.filterData.length > 0)
+        headers = headers.filter(
+          (h) =>
+            this.filterData.some((fd) => fd.value === h.value) ||
+            this.filterIgnore.some((ign) => ign.value === h.value)
+        );
       return headers;
     },
     FILTER_HEADERS() {
-      let filteredHeader = this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value))
-        .concat(this.formFields.map((ff) => { return { text: ff, value: ff, align: 'end' }; }));
+      let filteredHeader = this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      ).concat(
+        this.formFields.map((ff) => {
+          return { text: ff, value: ff, align: 'end' };
+        })
+      );
 
-      return  filteredHeader.filter(function(item, index, inputArray) {
-        return inputArray.findIndex(arrayItem=>arrayItem.value===item.value) == index;
+      return filteredHeader.filter(function (item, index, inputArray) {
+        return (
+          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
+          index
+        );
       });
     },
     showStatus() {
@@ -441,11 +457,15 @@ export default {
     ...mapActions('notifications', ['addNotification']),
 
     async delSub() {
-      this.singleSubmissionDelete?this.deleteSingleSubs():this.deleteMultiSubs();
+      this.singleSubmissionDelete
+        ? this.deleteSingleSubs()
+        : this.deleteMultiSubs();
     },
 
     async restoreSub() {
-      this.singleSubmissionRestore?this.restoreSingleSub():this.restoreMultipleSubs();
+      this.singleSubmissionRestore
+        ? this.restoreSingleSub()
+        : this.restoreMultipleSubs();
     },
     async deleteSingleSubs() {
       this.showDeleteDialog = false;
@@ -453,9 +473,14 @@ export default {
       this.refreshSubmissions();
     },
     async deleteMultiSubs() {
-      let submissionsIdsToDelete = this.selectedSubmissions.map(submission=>submission.submissionId);
+      let submissionsIdsToDelete = this.selectedSubmissions.map(
+        (submission) => submission.submissionId
+      );
       this.showDeleteDialog = false;
-      await this.deleteMultiSubmissions(submissionsIdsToDelete);
+      await this.deleteMultiSubmissions({
+        submissionIds: submissionsIdsToDelete,
+        formId: this.formId,
+      });
       this.refreshSubmissions();
     },
 
@@ -468,11 +493,36 @@ export default {
         let criteria = {
           formId: this.formId,
           createdAt: Object.values({
-            minDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ? moment(this.userFormPreferences.preferences.filter[0], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().subtract(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
-            maxDate:this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter ?moment(this.userFormPreferences.preferences.filter[1], 'YYYY-MM-DD hh:mm:ss').utc().format() : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
+            minDate:
+              this.userFormPreferences &&
+              this.userFormPreferences.preferences &&
+              this.userFormPreferences.preferences.filter
+                ? moment(
+                    this.userFormPreferences.preferences.filter[0],
+                    'YYYY-MM-DD hh:mm:ss'
+                  )
+                    .utc()
+                    .format()
+                : moment()
+                    .subtract(50, 'years')
+                    .utc()
+                    .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+            maxDate:
+              this.userFormPreferences &&
+              this.userFormPreferences.preferences &&
+              this.userFormPreferences.preferences.filter
+                ? moment(
+                    this.userFormPreferences.preferences.filter[1],
+                    'YYYY-MM-DD hh:mm:ss'
+                  )
+                    .utc()
+                    .format()
+                : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
           }),
           deletedOnly: this.deletedOnly,
-          createdBy: (this.currentUserOnly) ? `${this.user.username}@${this.user.idp}` : ''
+          createdBy: this.currentUserOnly
+            ? `${this.user.username}@${this.user.idp}`
+            : '',
         };
         await this.fetchSubmissions(criteria);
         // Build up the list of forms for the table
@@ -490,7 +540,7 @@ export default {
                 submitter: s.createdBy,
                 versionId: s.formVersionId,
                 deleted: s.deleted,
-                lateEntry: s.lateEntry
+                lateEntry: s.lateEntry,
               };
               // Add any custom columns
               this.userColumns.forEach((col) => {
@@ -499,7 +549,9 @@ export default {
               return fields;
             });
           this.submissionTable = tableRows;
-          this.submissionsCheckboxes= new Array(this.submissionTable.length).fill(false);
+          this.submissionsCheckboxes = new Array(
+            this.submissionTable.length
+          ).fill(false);
         }
       } catch (error) {
         // Handled in state fetchSubmissions
@@ -526,14 +578,22 @@ export default {
     },
 
     async restoreSingleSub() {
-      await this.restoreSubmission({ submissionId: this.restoreItem.submissionId, deleted: false });
+      await this.restoreSubmission({
+        submissionId: this.restoreItem.submissionId,
+        deleted: false,
+      });
       this.showRestoreDialog = false;
       this.refreshSubmissions();
     },
     async restoreMultipleSubs() {
-      let submissionsIdsToRestore = this.selectedSubmissions.map(submission=>submission.submissionId);
+      let submissionsIdsToRestore = this.selectedSubmissions.map(
+        (submission) => submission.submissionId
+      );
       this.showRestoreDialog = false;
-      await this.restoreMultiSubmissions(submissionsIdsToRestore);
+      await this.restoreMultiSubmissions({
+        submissionIds: submissionsIdsToRestore,
+        formId: this.formId,
+      });
       this.refreshSubmissions();
       this.selectedSubmissions = [];
     },

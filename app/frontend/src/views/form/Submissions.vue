@@ -21,6 +21,6 @@ export default {
   },
   computed: {
     IDP: () => IdentityProviders,
-  }
+  },
 };
 </script>

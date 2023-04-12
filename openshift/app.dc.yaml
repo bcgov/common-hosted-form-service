@@ -232,10 +232,8 @@ objects:
                 - name: APITOKEN
                   valueFrom:
                     secretKeyRef:
-                      name: "chefs-${JOB_NAME}-secret"
                       key: mailapitoken
-                #- name: SERVER_HOST
-                #  value: "${SERVER_HOST}"
+                      name: "chefs-${JOB_NAME}-secret"
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:
