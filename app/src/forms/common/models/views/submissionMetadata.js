@@ -52,7 +52,7 @@ class SubmissionMetadata extends Model {
           query.where('version', value);
         }
       },
-      filterIdBulkFile(query, value){
+      filterIdBulkFile(query, value) {
         if (value) {
           query.where('idBulkFile', value);
         }

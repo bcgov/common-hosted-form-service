@@ -71,17 +71,17 @@ class Form extends Timestamps(Model) {
         modelClass: FormVersion,
         join: {
           from: 'form.id',
-          to: 'form_version.formId'
-        }
+          to: 'form_version.formId',
+        },
       },
       bulkFileStorages: {
         relation: Model.HasManyRelation,
         modelClass: BulkFileStorage,
         join: {
           from: 'form.id',
-          to: 'bulk_file_storage.formId'
-        }
-      }
+          to: 'bulk_file_storage.formId',
+        },
+      },
     };
   }
 

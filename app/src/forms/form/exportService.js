@@ -25,16 +25,15 @@ const service = {
 
       // if an input component (not hidden or a button)
       if (obj.key && obj.input && !obj.hidden && obj.type !== 'button') {
-
         // if the fieldname we want is defined in component's sub-values
         const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'address'];
         if (obj.type && componentsWithSubValues.includes(obj.type)) {
           // for survey component, get field name from obj.questions.value
           if (obj.type === 'survey') {
-            obj.questions.forEach(e => fields.push(`${obj.key}.${e.value}`));
+            obj.questions.forEach((e) => fields.push(`${obj.key}.${e.value}`));
           }
           // for checkboxes and selectboxes, get field name from obj.values.value
-          else if (obj.values) obj.values.forEach(e => fields.push(`${obj.key}.${e.value}`));
+          else if (obj.values) obj.values.forEach((e) => fields.push(`${obj.key}.${e.value}`));
           // else push the parent field
           else {
             fields.push(obj.key);
@@ -44,33 +43,28 @@ const service = {
         // get these sub-vales so they appear in ordered columns
         else if (obj.type === 'simplefile') {
           fields.push(`${obj.key}.url`, `${obj.key}.url`, `${obj.key}.data.id`, `${obj.key}.size`, `${obj.key}.storage`, `${obj.key}.originalName`);
-        }
-
-        /**
-         * component's 'tree' property is true for input components with child inputs,
-         * which we get recursively.
-         * also exclude fieldnames defined in submission
-         * eg datagrid, container, tree
-         */
-        else if (!obj.tree && !fieldsDefinedInSubmission.includes(obj.type)) {
+        } else if (!obj.tree && !fieldsDefinedInSubmission.includes(obj.type)) {
+          /**
+           * component's 'tree' property is true for input components with child inputs,
+           * which we get recursively.
+           * also exclude fieldnames defined in submission
+           * eg datagrid, container, tree
+           */
           // Add current field key
           fields.push(obj.key);
         }
-
       }
-
 
       // Recursively traverse children array levels
       Object.entries(obj).forEach(([k, v]) => {
         if (Array.isArray(v) && v.length) {
           // Enumerate children fields
-          const children = obj[k].flatMap(e => {
+          const children = obj[k].flatMap((e) => {
             const cFields = findFields(e);
             // Prepend current key to field name if component's 'tree' property is true
             // eg: datagrid1.textFieldInDataGrid1
             // TODO: find fields in 'table' component
-            return ((obj.tree) && !fieldsDefinedInSubmission.includes(obj.type)) ?
-              cFields.flatMap(c => `${obj.key}.${c}`) : cFields;
+            return obj.tree && !fieldsDefinedInSubmission.includes(obj.type) ? cFields.flatMap((c) => `${obj.key}.${c}`) : cFields;
           });
           if (children.length) {
             Array.prototype.push.apply(fields, children); // concat into first argument
@@ -130,7 +124,7 @@ const service = {
 
   _submissionsColumns: (form) => {
     // Custom columns not defined - return default column selection behavior
-    let columns = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email','idBulkFile'];
+    let columns = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'idBulkFile'];
     // if form has 'status updates' enabled in the form settings include these in export
     if (form.enableStatusUpdates) {
       columns = columns.concat(['status', 'assignee', 'assigneeEmail']);

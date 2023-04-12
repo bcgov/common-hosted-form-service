@@ -1,7 +1,6 @@
-
 exports.up = function (knex) {
-  return Promise.resolve()
-    .then(() => knex.schema.raw(`create or replace view form_vw as
+  return Promise.resolve().then(() =>
+    knex.schema.raw(`create or replace view form_vw as
     SELECT DISTINCT ON (lower(f.name::text), fv.version, f.id) f.id,
                                             f.name,
                                             f.active,
@@ -24,14 +23,13 @@ exports.up = function (knex) {
           LEFT OUTER JOIN identity_provider ip ON fip.code::text = ip.code::text
   GROUP BY f.id, f.name, f.active, f.description, f.labels, f."createdAt", f."createdBy", f."updatedAt",
           f."updatedBy", fv.id, fv.version, fv.published, fv."updatedAt"
-  ORDER BY lower(f.name::text), fv.version DESC, f.id`));
+  ORDER BY lower(f.name::text), fv.version DESC, f.id`)
+  );
 };
 
-
-
 exports.down = function (knex) {
-  return Promise.resolve()
-    .then(() => knex.schema.raw(`create or replace view form_vw as
+  return Promise.resolve().then(() =>
+    knex.schema.raw(`create or replace view form_vw as
     SELECT DISTINCT ON (lower(f.name::text), fv.version, f.id) f.id,
                                             f.name,
                                             f.active,
@@ -53,5 +51,6 @@ exports.down = function (knex) {
           LEFT OUTER JOIN identity_provider ip ON fip.code::text = ip.code::text
   GROUP BY f.id, f.name, f.active, f.description, f.labels, f."createdAt", f."createdBy", f."updatedAt",
           f."updatedBy", fv.id, fv.version, fv.published, fv."updatedAt"
-  ORDER BY lower(f.name::text), fv.version DESC, f.id`));
+  ORDER BY lower(f.name::text), fv.version DESC, f.id`)
+  );
 };

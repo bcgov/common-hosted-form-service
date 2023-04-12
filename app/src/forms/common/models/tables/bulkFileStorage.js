@@ -4,11 +4,9 @@ const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
 class BulkFileStorage extends Timestamps(Model) {
-
   static get tableName() {
     return 'bulk_file_storage';
   }
-
   static get modifiers() {
     return {
       filterSubmitterId(query, value) {
@@ -18,7 +16,7 @@ class BulkFileStorage extends Timestamps(Model) {
       },
       orderDescending(builder) {
         builder.orderBy('createdAt', 'desc');
-      }
+      },
     };
   }
 
@@ -30,9 +28,9 @@ class BulkFileStorage extends Timestamps(Model) {
         modelClass: FormSubmission,
         join: {
           from: 'bulk_file_storage.id',
-          to: 'form_submission.idBulkFile'
-        }
-      }
+          to: 'form_submission.idBulkFile',
+        },
+      },
     };
   }
 
@@ -46,9 +44,9 @@ class BulkFileStorage extends Timestamps(Model) {
         originalName: { type: 'string' },
         description: { type: 'string' },
         file: { type: 'binary' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }
