@@ -14,6 +14,7 @@ const fs = require('fs-extra');
 const os = require('os');
 const config = require('config');
 const fileService = require('../file/service');
+const emailService = require('../email/emailService');
 const { v4: uuidv4 } = require('uuid');
 
 const service = {
@@ -113,7 +114,9 @@ const service = {
     data = {},
     columns,
     version,
-    emailExport
+    emailExport,
+    currentUser,
+    referer
   ) => {
     // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map((obj) => {
@@ -130,7 +133,9 @@ const service = {
           exportTemplate,
           columns,
           formVersion,
-          emailExport
+          emailExport,
+          currentUser,
+          referer
         );
       }
       if (EXPORT_FORMATS.json === exportFormat) {
@@ -202,7 +207,9 @@ const service = {
     exportTemplate,
     columns,
     version,
-    emailExport
+    emailExport,
+    currentUser,
+    referer
   ) => {
     try {
       switch (exportTemplate) {
@@ -213,7 +220,9 @@ const service = {
             columns,
             false,
             version,
-            emailExport
+            emailExport,
+            currentUser,
+            referer
           );
         case 'flattenedWithFilled':
           return service._flattenSubmissionsCSVExport(
@@ -222,7 +231,9 @@ const service = {
             columns,
             true,
             version,
-            emailExport
+            emailExport,
+            currentUser,
+            referer
           );
         case 'unflattened':
           return service._unFlattenSubmissionsCSVExport(
@@ -230,7 +241,9 @@ const service = {
             data,
             columns,
             version,
-            emailExport
+            emailExport,
+            currentUser,
+            referer
           );
         default:
         // code block
@@ -247,7 +260,9 @@ const service = {
     columns,
     blankout,
     version,
-    emailExport
+    emailExport,
+    currentUser,
+    referer
   ) => {
     let pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, columns);
@@ -308,10 +323,21 @@ const service = {
               path: pathToTmpFile,
             };
             const fileCurrentUser = {
-              usernameIdp: form.createdBy,
+              usernameIdp: currentUser.usernameIdp,
             };
-            const result = await fileService.create(fileData, fileCurrentUser);
-            // do email stuff with use of file ID: result.id
+            // Uploading to Object storage
+            const fileResult = await fileService.create(
+              fileData,
+              fileCurrentUser
+            );
+            // Sending the email with link to uploaded export
+            emailService.submissionExportLink(
+              form.id,
+              null,
+              { to: currentUser.email },
+              referer,
+              fileResult.id
+            );
           }
         });
       });
@@ -359,7 +385,7 @@ const service = {
       .then((row) => row.schema);
   },
 
-  export: async (formId, params = {}) => {
+  export: async (formId, params = {}, currentUser = null, referer) => {
     // ok, let's determine what we are exporting and do it!!!!
     // what operation?
     // what output format?
@@ -384,7 +410,9 @@ const service = {
       data,
       columns,
       params.version,
-      params.emailExport
+      params.emailExport,
+      currentUser,
+      referer
     );
 
     return { data: result.data, headers: result.headers };
