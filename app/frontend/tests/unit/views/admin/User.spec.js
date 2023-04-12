@@ -20,7 +20,7 @@ describe('User.vue', () => {
       localVue,
       propsData: { u: 'u' },
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
     });
     await localVue.nextTick();
 

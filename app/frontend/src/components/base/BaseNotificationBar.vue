@@ -34,10 +34,7 @@ export default {
     },
   },
   mounted() {
-    this.timeout = setTimeout(
-      () => this.deleteNotification(this.notification),
-      10000
-    );
+    this.timeout = setTimeout(() => this.deleteNotification(this.notification), 10000);
   },
   beforeDestroy() {
     // Prevent memory leak if component destroyed before timeout up

@@ -2,24 +2,12 @@
   <div>
     <v-row no-gutters>
       <v-col cols="12" sm="8">
-        <v-checkbox
-          class="pl-3"
-          v-model="activeOnly"
-          label="Show deleted forms"
-          @click="refeshForms"
-        />
+        <v-checkbox class="pl-3" v-model="activeOnly" label="Show deleted forms" @click="refeshForms" />
       </v-col>
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-            class="pb-5"
-          />
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details class="pb-5" />
         </div>
       </v-col>
     </v-row>
@@ -35,12 +23,8 @@
       loading-text="Loading... Please wait"
       no-data-text="There are no forms in your system"
     >
-      <template #[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }} - {{ item.createdBy }}
-      </template>
-      <template #[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }} - {{ item.updatedBy }}
-      </template>
+      <template #[`item.createdAt`]="{ item }"> {{ item.createdAt | formatDateLong }} - {{ item.createdBy }} </template>
+      <template #[`item.updatedAt`]="{ item }"> {{ item.updatedAt | formatDateLong }} - {{ item.updatedBy }} </template>
       <template #[`item.actions`]="{ item }">
         <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
           <v-btn color="primary" text small>
@@ -93,9 +77,7 @@ export default {
   computed: {
     ...mapGetters('admin', ['formList']),
     calcHeaders() {
-      return this.headers.filter(
-        (x) => x.value !== 'updatedAt' || this.activeOnly
-      );
+      return this.headers.filter((x) => x.value !== 'updatedAt' || this.activeOnly);
     },
   },
   methods: {

@@ -34,9 +34,7 @@
         class="grey lighten-5"
       >
       </v-data-table>
-      <v-btn @click="savingFilterData" class="primary mt-3">{{
-        inputSaveButtonText
-      }}</v-btn>
+      <v-btn @click="savingFilterData" class="primary mt-3">{{ inputSaveButtonText }}</v-btn>
       <v-btn @click="cancelFilterData" class="mt-3 ml-3 primary--text" outlined>Cancel</v-btn>
     </v-card-text>
   </v-card>
@@ -48,9 +46,7 @@ export default {
   props: {
     inputHeaders: {
       type: Array,
-      default: () => [
-        { text: 'Column Name', align: 'start', sortable: true, value: 'text' },
-      ],
+      default: () => [{ text: 'Column Name', align: 'start', sortable: true, value: 'text' }],
     },
     // The data you will be filtering with
     inputData: {

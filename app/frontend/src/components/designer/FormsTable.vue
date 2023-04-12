@@ -6,14 +6,7 @@
         <h1>My Forms</h1>
       </v-col>
       <!-- buttons -->
-      <v-col
-        v-if="user.idp === ID_PROVIDERS.IDIR"
-        class="text-right"
-        cols="12"
-        sm="6"
-        order="1"
-        order-sm="2"
-      >
+      <v-col v-if="user.idp === ID_PROVIDERS.IDIR" class="text-right" cols="12" sm="6" order="1" order-sm="2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <router-link :to="{ name: 'FormCreate' }">
@@ -32,14 +25,7 @@
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-            class="pb-5"
-          />
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details class="pb-5" />
         </div>
       </v-col>
     </v-row>
@@ -75,31 +61,18 @@
         </router-link>
         <span v-else>{{ item.name }}</span>
         <!-- link to description in dialog -->
-        <v-icon
-          v-if="item.description.trim()"
-          @click="onDescriptionClick(item.id, item.description)"
-          small
-          class="description-icon ml-2 mr-4"
-          color="primary"
-        >
+        <v-icon v-if="item.description.trim()" @click="onDescriptionClick(item.id, item.description)" small class="description-icon ml-2 mr-4" color="primary">
           description
         </v-icon>
       </template>
       <template #[`item.actions`]="{ item }">
-        <router-link
-          v-if="checkFormManage(item)"
-          :to="{ name: 'FormManage', query: { f: item.id } }"
-        >
+        <router-link v-if="checkFormManage(item)" :to="{ name: 'FormManage', query: { f: item.id } }">
           <v-btn color="primary" text small>
             <v-icon class="mr-1">settings</v-icon>
             <span class="d-none d-sm-flex">Manage</span>
           </v-btn>
         </router-link>
-        <router-link
-          data-cy="formSubmissionsLink"
-          v-if="checkSubmissionView(item)"
-          :to="{ name: 'FormSubmissions', query: { f: item.id } }"
-        >
+        <router-link data-cy="formSubmissionsLink" v-if="checkSubmissionView(item)" :to="{ name: 'FormSubmissions', query: { f: item.id } }">
           <v-btn color="primary" text small>
             <v-icon class="mr-1">list_alt</v-icon>
             <span class="d-none d-sm-flex">Submissions</span>
@@ -108,11 +81,7 @@
       </template>
     </v-data-table>
 
-    <BaseDialog
-      v-model="showDescriptionDialog"
-      showCloseButton
-      @close-dialog="showDescriptionDialog = false"
-    >
+    <BaseDialog v-model="showDescriptionDialog" showCloseButton @close-dialog="showDescriptionDialog = false">
       <template #title>
         <span class="pl-5">Description:</span>
       </template>
@@ -126,11 +95,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { IdentityProviders } from '@/utils/constants';
-import {
-  checkFormManage,
-  checkFormSubmit,
-  checkSubmissionView,
-} from '@/utils/permissionUtils';
+import { checkFormManage, checkFormSubmit, checkSubmissionView } from '@/utils/permissionUtils';
 
 export default {
   name: 'FormsTable',
@@ -162,9 +127,7 @@ export default {
     filteredFormList() {
       // At this point, we're only showing forms you can manage or view submissions of here
       // This may get reconceptualized in the future to different pages or something
-      return this.formList.filter(
-        (f) => checkFormManage(f) || checkSubmissionView(f)
-      );
+      return this.formList.filter((f) => checkFormManage(f) || checkSubmissionView(f));
     },
     ID_PROVIDERS: () => IdentityProviders,
   },

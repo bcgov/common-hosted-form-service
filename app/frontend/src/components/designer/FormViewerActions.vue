@@ -6,21 +6,15 @@
       </v-btn>
     </v-col>
     <v-col class="text-right">
-
       <!-- Bulk button -->
       <span v-if="allowSubmitterToUploadFile" class="ml-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              @click="$emit('switchView')"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on">
+            <v-btn @click="$emit('switchView')" color="primary" icon v-bind="attrs" v-on="on">
               <v-icon>repeat</v-icon>
             </v-btn>
           </template>
-          <span>{{(bulkFile)?'Switch to sigle submission':'Switch to multiple submission'}}</span>
+          <span>{{ bulkFile ? 'Switch to sigle submission' : 'Switch to multiple submission' }}</span>
         </v-tooltip>
       </span>
 
@@ -28,13 +22,7 @@
       <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              @click="$emit('save-draft')"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn @click="$emit('save-draft')" color="primary" icon v-bind="attrs" v-on="on">
               <v-icon>save</v-icon>
             </v-btn>
           </template>
@@ -66,7 +54,6 @@
       <span v-if="submissionId && draftEnabled" class="ml-2">
         <ManageSubmissionUsers :isDraft="isDraft" :submissionId="submissionId" />
       </span>
-
     </v-col>
   </v-row>
 </template>
@@ -81,11 +68,11 @@ export default {
     ManageSubmissionUsers,
   },
   props: {
-    bulkFile:{
+    bulkFile: {
       type: Boolean,
       default: false,
     },
-    allowSubmitterToUploadFile:{
+    allowSubmitterToUploadFile: {
       type: Boolean,
       default: false,
     },
@@ -118,35 +105,32 @@ export default {
       return !this.readOnly;
     },
     showEditToggle() {
-      return (
-        this.readOnly &&
-        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
-      );
-    }
+      return this.readOnly && this.permissions.includes(FormPermissions.SUBMISSION_UPDATE);
+    },
   },
-  methods:{
-    switchView(){
+  methods: {
+    switchView() {
       this.$emit('switchView');
     },
-    goToAllSubmissionOrDraft(){
+    goToAllSubmissionOrDraft() {
       this.$emit('showdoYouWantToSaveTheDraftModal');
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
-   ul#menu li {
-    display:inline;
-    margin:1% ;
-    font-size:17px;
-   }
-   ul#menu li.active {
-    font-weight: bold;
-    border-bottom:3px solid #fcba19;
-   }
-   .element-right {
-    button {
-       float:right;
-    }
-   }
+ul#menu li {
+  display: inline;
+  margin: 1%;
+  font-size: 17px;
+}
+ul#menu li.active {
+  font-weight: bold;
+  border-bottom: 3px solid #fcba19;
+}
+.element-right {
+  button {
+    float: right;
+  }
+}
 </style>

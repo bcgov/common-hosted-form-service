@@ -11,7 +11,7 @@ const zeroUuid = '00000000-0000-0000-0000-000000000000';
 
 jest.mock('@/services/interceptors', () => {
   return {
-    appAxios: () => mockInstance
+    appAxios: () => mockInstance,
   };
 });
 
@@ -91,7 +91,6 @@ describe('Admin Service', () => {
     });
   });
 
-
   describe('admin/forms/{formId}/formUsers', () => {
     const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${zeroUuid}/formUsers`;
 
@@ -103,7 +102,6 @@ describe('Admin Service', () => {
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
-
 
   //
   // User
@@ -131,5 +129,4 @@ describe('Admin Service', () => {
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
-
 });

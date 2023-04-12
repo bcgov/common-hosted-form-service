@@ -2,13 +2,7 @@
   <span>
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          @click="dialog = true"
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
+        <v-btn color="primary" @click="dialog = true" icon v-bind="attrs" v-on="on">
           <v-icon>group</v-icon>
         </v-btn>
       </template>
@@ -21,10 +15,7 @@
           <v-radio-group v-model="selectedIdp" row>
             <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
             <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
-            <v-radio
-              label="Business BCeID"
-              :value="ID_PROVIDERS.BCEIDBUSINESS"
-            />
+            <v-radio label="Business BCeID" :value="ID_PROVIDERS.BCEIDBUSINESS" />
           </v-radio-group>
         </v-card-title>
 
@@ -50,19 +41,13 @@
                   <!-- no data -->
                   <template #no-data>
                     <div class="px-2">
-                      Can't find someone? They may not have logged into
-                      CHEFS.<br />
+                      Can't find someone? They may not have logged into CHEFS.<br />
                       Kindly send them a link to CHEFS and ask them to log in.
                     </div>
                   </template>
                   <!-- selected user -->
                   <template #selection="data">
-                    <span
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      close
-                      @click="data.select"
-                    >
+                    <span v-bind="data.attrs" :input-value="data.selected" close @click="data.select">
                       {{ data.item.fullName }}
                     </span>
                   </template>
@@ -76,9 +61,7 @@
                         <v-list-item-title>
                           {{ data.item.fullName }}
                         </v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ data.item.username }} ({{ data.item.idpCode }})
-                        </v-list-item-subtitle>
+                        <v-list-item-subtitle> {{ data.item.username }} ({{ data.item.idpCode }}) </v-list-item-subtitle>
                         <v-list-item-subtitle>
                           {{ data.item.email }}
                         </v-list-item-subtitle>
@@ -89,20 +72,12 @@
               </form>
             </v-col>
             <v-col cols="3">
-              <v-btn
-                color="primary"
-                :disabled="!userSearchSelection"
-                :loading="isLoadingDropdown"
-                @click="addUser"
-              >
+              <v-btn color="primary" :disabled="!userSearchSelection" :loading="isLoadingDropdown" @click="addUser">
                 <span>Add</span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else>
-            You can only invite and manage team members while this form is a
-            draft
-          </div>
+          <div v-else>You can only invite and manage team members while this form is a draft</div>
 
           <p class="mt-5">
             <strong>Team members for this submission:</strong>
@@ -125,12 +100,7 @@
                     <td>{{ item.username }}</td>
                     <td>{{ item.email }}</td>
                     <td v-if="isDraft">
-                      <v-btn
-                        color="red"
-                        icon
-                        :disabled="item.isOwner"
-                        @click="removeUser(item)"
-                      >
+                      <v-btn color="red" icon :disabled="item.isOwner" @click="removeUser(item)">
                         <v-icon>remove_circle</v-icon>
                       </v-btn>
                     </td>
@@ -174,12 +144,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import {
-  FormPermissions,
-  IdentityProviders,
-  NotificationTypes,
-  Regex,
-} from '@/utils/constants';
+import { FormPermissions, IdentityProviders, NotificationTypes, Regex } from '@/utils/constants';
 import { rbacService, userService } from '@/services';
 
 export default {
@@ -216,9 +181,7 @@ export default {
       return IdentityProviders;
     },
     autocompleteLabel() {
-      return this.selectedIdp == IdentityProviders.IDIR
-        ? 'Enter a name, e-mail, or username'
-        : 'Enter an exact e-mail or username.';
+      return this.selectedIdp == IdentityProviders.IDIR ? 'Enter a name, e-mail, or username' : 'Enter an exact e-mail or username.';
     },
   },
   methods: {
@@ -233,10 +196,7 @@ export default {
             message: `User ${this.userSearchSelection.username} is already in the list of team members.`,
           });
         } else {
-          this.modifyPermissions(id, [
-            FormPermissions.SUBMISSION_UPDATE,
-            FormPermissions.SUBMISSION_READ,
-          ]);
+          this.modifyPermissions(id, [FormPermissions.SUBMISSION_UPDATE, FormPermissions.SUBMISSION_READ]);
         }
       }
       // reset search field
@@ -245,9 +205,7 @@ export default {
     filterObject(item, queryText) {
       return Object.values(item)
         .filter((v) => v)
-        .some((v) =>
-          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
-        );
+        .some((v) => v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()));
     },
     async getSubmissionUsers() {
       this.isLoadingTable = true;
@@ -260,8 +218,7 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occured while trying to fetch users for this submission.',
+          message: 'An error occured while trying to fetch users for this submission.',
           consoleError: `Error getting users for ${this.submissionId}: ${error}`,
         });
       } finally {
@@ -271,9 +228,7 @@ export default {
     async modifyPermissions(userId, permissions) {
       this.isLoadingTable = true;
       try {
-        const selectedEmail = permissions.length
-          ? this.userSearchSelection.email
-          : this.userToDelete.email;
+        const selectedEmail = permissions.length ? this.userSearchSelection.email : this.userToDelete.email;
         // Add the selected user with read/update permissions on this submission
         const response = await rbacService.setSubmissionUserPermissions(
           { permissions: permissions },
@@ -287,15 +242,12 @@ export default {
           this.userTableList = this.transformResponseToTable(response.data);
           this.addNotification({
             ...NotificationTypes.SUCCESS,
-            message: permissions.length
-              ? `Sent invite email to ${selectedEmail}`
-              : `Sent uninvited email to ${selectedEmail}`,
+            message: permissions.length ? `Sent invite email to ${selectedEmail}` : `Sent uninvited email to ${selectedEmail}`,
           });
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occured while trying to update users for this submission.',
+          message: 'An error occured while trying to update users for this submission.',
           consoleError: `Error setting user permissions. Sub: ${this.submissionId} User: ${userId} Error: ${error}`,
         });
       } finally {
@@ -334,17 +286,10 @@ export default {
         // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
         let params = {};
         params.idpCode = this.selectedIdp;
-        if (
-          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
-          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
-        ) {
-          if (input.length < 6)
-            throw new Error(
-              'Search input for BCeID username/email must be greater than 6 characters.'
-            );
+        if (this.selectedIdp == IdentityProviders.BCEIDBASIC || this.selectedIdp == IdentityProviders.BCEIDBUSINESS) {
+          if (input.length < 6) throw new Error('Search input for BCeID username/email must be greater than 6 characters.');
           if (input.includes('@')) {
-            if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error('Email searches for BCeID must be exact.');
+            if (!new RegExp(Regex.EMAIL).test(input)) throw new Error('Email searches for BCeID must be exact.');
             else params.email = input;
           } else {
             params.username = input;

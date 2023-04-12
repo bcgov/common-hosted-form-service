@@ -13,8 +13,7 @@ export default {
       init: { onLoad: 'login-required' },
     };
     const options = Object.assign({}, defaultParams, params);
-    if (assertOptions(options).hasError)
-      throw new Error(`Invalid options given: ${assertOptions(options).error}`);
+    if (assertOptions(options).hasError) throw new Error(`Invalid options given: ${assertOptions(options).error}`);
 
     const watch = new Vue({
       data() {
@@ -77,8 +76,7 @@ function init(config, watch, options) {
   keycloak.onReady = function (authenticated) {
     updateWatchVariables(authenticated);
     watch.ready = true;
-    typeof options.onReady === 'function' &&
-      watch.$emit('ready', options.onReady.bind(this, keycloak));
+    typeof options.onReady === 'function' && watch.$emit('ready', options.onReady.bind(this, keycloak));
   };
   keycloak.onAuthSuccess = function () {
     // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.
@@ -92,9 +90,7 @@ function init(config, watch, options) {
     );
     watch.logoutFn = () => {
       clearInterval(updateTokenInterval);
-      keycloak.logout(
-        options.logout || { redirectUri: config['logoutRedirectUri'] }
-      );
+      keycloak.logout(options.logout || { redirectUri: config['logoutRedirectUri'] });
     };
   };
   keycloak.onAuthRefreshSuccess = function () {
@@ -173,11 +169,7 @@ function assertOptions(options) {
 }
 
 function _isObject(obj) {
-  return (
-    obj !== null &&
-    typeof obj === 'object' &&
-    Object.prototype.toString.call(obj) !== '[object Array]'
-  );
+  return obj !== null && typeof obj === 'object' && Object.prototype.toString.call(obj) !== '[object Array]';
 }
 
 function getConfig(config) {

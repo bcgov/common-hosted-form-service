@@ -9,7 +9,7 @@ describe('BasePrintButton.vue', () => {
 
   beforeEach(() => {
     printSpy.mockReset();
-    printSpy.mockImplementation(() => { });
+    printSpy.mockImplementation(() => {});
   });
 
   afterAll(() => {

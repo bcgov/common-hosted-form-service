@@ -13,7 +13,7 @@ describe('ManageLayout.vue', () => {
   const formActions = {
     fetchDrafts: jest.fn(),
     fetchForm: jest.fn(),
-    getFormPermissionsForUser: jest.fn()
+    getFormPermissionsForUser: jest.fn(),
   };
 
   beforeEach(() => {
@@ -25,9 +25,9 @@ describe('ManageLayout.vue', () => {
             form: mockFormGetter,
             permissions: mockPermissionsGetter,
           },
-          actions: formActions
-        }
-      }
+          actions: formActions,
+        },
+      },
     });
   });
 
@@ -43,7 +43,7 @@ describe('ManageLayout.vue', () => {
       localVue,
       propsData: { f: 'f' },
       store,
-      stubs: ['ManageFormActions', 'ManageForm']
+      stubs: ['ManageFormActions', 'ManageForm'],
     });
 
     expect(wrapper.html()).toMatch('Manage Form');
@@ -57,7 +57,7 @@ describe('ManageLayout.vue', () => {
       localVue,
       propsData: { f: formId },
       store,
-      stubs: ['ManageFormActions', 'ManageForm']
+      stubs: ['ManageFormActions', 'ManageForm'],
     });
 
     expect(formActions.fetchForm).toHaveBeenCalledTimes(1);
@@ -71,7 +71,7 @@ describe('ManageLayout.vue', () => {
       localVue,
       propsData: { f: 'f' },
       store,
-      stubs: ['ManageFormActions', 'ManageForm']
+      stubs: ['ManageFormActions', 'ManageForm'],
     });
 
     expect(wrapper.html()).toMatch('myForm');

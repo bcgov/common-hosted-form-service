@@ -23,8 +23,8 @@ describe('Developer.vue', () => {
         fullName: () => 'fullName',
         token: () => 'token',
         tokenParsed: () => ({}),
-        userName: () => 'userName'
-      }
+        userName: () => 'userName',
+      },
     });
   });
 
@@ -39,7 +39,7 @@ describe('Developer.vue', () => {
     const wrapper = shallowMount(Developer, {
       localVue,
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
     });
     await localVue.nextTick();
 
@@ -55,7 +55,7 @@ describe('Developer.vue', () => {
     const wrapper = shallowMount(Developer, {
       localVue,
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
     });
     await localVue.nextTick();
 

@@ -9,7 +9,7 @@ describe('Manage.vue', () => {
     const wrapper = shallowMount(Manage, {
       localVue,
       propsData: { f: 'f' },
-      stubs: ['BaseSecure', 'ManageLayout']
+      stubs: ['BaseSecure', 'ManageLayout'],
     });
 
     expect(wrapper.html()).toMatch('basesecure');

@@ -95,8 +95,8 @@ describe('preFlightAuth', () => {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        identityProvider: () => IdentityMode.PUBLIC
-      }
+        identityProvider: () => IdentityMode.PUBLIC,
+      },
     });
     readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityMode.PUBLIC] } });
 
@@ -114,8 +114,8 @@ describe('preFlightAuth', () => {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        identityProvider: () => IdentityProviders.IDIR
-      }
+        identityProvider: () => IdentityProviders.IDIR,
+      },
     });
     readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityProviders.IDIR] } });
 
@@ -133,8 +133,8 @@ describe('preFlightAuth', () => {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        identityProvider: () => IdentityProviders.IDIR
-      }
+        identityProvider: () => IdentityProviders.IDIR,
+      },
     });
     readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityProviders.BCEIDBASIC] } });
 
@@ -153,8 +153,8 @@ describe('preFlightAuth', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
-        authenticated: () => false
-      }
+        authenticated: () => false,
+      },
     });
     getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: [IdentityMode.PUBLIC] } } });
 
@@ -171,8 +171,8 @@ describe('preFlightAuth', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
-        authenticated: () => false
-      }
+        authenticated: () => false,
+      },
     });
     getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: [IdentityProviders.IDIR] } } });
 
@@ -190,8 +190,8 @@ describe('preFlightAuth', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
-        authenticated: () => false
-      }
+        authenticated: () => false,
+      },
     });
     getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: ['idp'] } } });
 

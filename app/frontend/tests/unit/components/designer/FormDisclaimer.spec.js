@@ -9,7 +9,7 @@ localVue.use(Vuetify);
 describe('FormDisclaimer.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(FormDisclaimer, {
-      localVue
+      localVue,
     });
     expect(wrapper.text()).toMatch('Disclaimer and statement of responsibility for Form Designers:');
   });

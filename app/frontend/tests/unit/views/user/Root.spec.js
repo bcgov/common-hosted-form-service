@@ -10,7 +10,7 @@ describe('Root.vue', () => {
   it('renders without error', async () => {
     const wrapper = shallowMount(Root, {
       localVue,
-      stubs: ['BaseSecure', 'router-link']
+      stubs: ['BaseSecure', 'router-link'],
     });
     await localVue.nextTick();
 

@@ -5,10 +5,7 @@
         <h1 class="my-8">401: Unauthorized. :(</h1>
         <p>You do not have permission to access this page.</p>
       </div>
-      <div
-        v-else-if="idp && !idp.includes(identityProvider)"
-        class="text-center"
-      >
+      <div v-else-if="idp && !idp.includes(identityProvider)" class="text-center">
         <h1 class="my-8">403: Forbidden. :(</h1>
         <p>This page requires {{ idp }} authentication.</p>
       </div>
@@ -31,13 +28,7 @@
   </div>
   <div v-else class="text-center">
     <h1 class="my-8">You must be logged in to use this feature.</h1>
-    <v-btn
-      v-if="keycloakReady"
-      color="primary"
-      class="login-btn"
-      @click="login"
-      large
-    >
+    <v-btn v-if="keycloakReady" color="primary" class="login-btn" @click="login" large>
       <span>Login</span>
     </v-btn>
   </div>
@@ -59,19 +50,9 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('auth', [
-      'authenticated',
-      'identityProvider',
-      'isAdmin',
-      'isUser',
-      'keycloakReady',
-    ]),
+    ...mapGetters('auth', ['authenticated', 'identityProvider', 'isAdmin', 'isUser', 'keycloakReady']),
     mailToLink() {
-      return `mailto:${
-        process.env.VUE_APP_CONTACT
-      }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
-        location
-      )}.`;
+      return `mailto:${process.env.VUE_APP_CONTACT}?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(location)}.`;
     },
     contactInfo() {
       return process.env.VUE_APP_CONTACT;
