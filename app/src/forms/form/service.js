@@ -244,9 +244,15 @@ const service = {
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
-      .modify('filterCreatedAt', params.createdAt[0], params.createdAt[1])
       .modify('orderDefault');
+<<<<<<< HEAD
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId','idBulkFile','originalName'];
+=======
+    if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
+      query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
+    }
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+>>>>>>> 7292acbb51c5e66bd712f848c70c7587f21f6888
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
