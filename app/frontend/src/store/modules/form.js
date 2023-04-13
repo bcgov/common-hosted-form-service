@@ -416,8 +416,8 @@ export default {
 
         const schedule = state.form.schedule.enabled
           ? {
-              ...state.form.schedule,
-            }
+            ...state.form.schedule,
+          }
           : {};
 
         // const reminder = state.form.schedule.enabled ?  : false ;
@@ -434,8 +434,8 @@ export default {
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
-          reminder_enabled: state.form.reminder_enabled,
-          enableCopyExistingSubmission: state.form.enableCopyExistingSubmission,
+          reminder_enabled: (state.form.reminder_enabled) ? state.form.reminder_enabled : false,
+          enableCopyExistingSubmission: (state.form.enableCopyExistingSubmission) ? state.form.enableCopyExistingSubmission : false,
         });
       } catch (error) {
         dispatch(
@@ -602,11 +602,11 @@ export default {
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
           : await formService.listSubmissions(formId, {
-              deleted: deletedOnly,
-              fields: fields,
-              createdBy: createdBy,
-              createdAt: createdAt,
-            });
+            deleted: deletedOnly,
+            fields: fields,
+            createdBy: createdBy,
+            createdAt: createdAt,
+          });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch(
