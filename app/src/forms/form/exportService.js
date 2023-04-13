@@ -16,8 +16,7 @@ const service = {
     return await flattenComponents(schema.components);
   },
 
-  _buildCsvHeaders: async (form,  data, version, fields) => {
-
+  _buildCsvHeaders: async (form, data, version, fields) => {
     /**
      * get column order to match field order in form design
      * object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
@@ -43,9 +42,9 @@ const service = {
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
-    if(fields) {
-      return await formSchemaheaders.filter(header=>{
-        if(Array.isArray(fields) && fields.includes(header)){
+    if (fields) {
+      return await formSchemaheaders.filter((header) => {
+        if (Array.isArray(fields) && fields.includes(header)) {
           return header;
         }
       });
@@ -82,7 +81,7 @@ const service = {
     return Form.query().findById(formId).throwIfNotFound();
   },
 
-  _getData: async(exportType, formVersion, form, params = {}) => {
+  _getData: async (exportType, formVersion, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
       return service._getSubmissions(form, params, formVersion);
     }
@@ -98,7 +97,7 @@ const service = {
 
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
-        let formVersion = version?parseInt(version):1;
+        let formVersion = version ? parseInt(version) : 1;
         return await service._formatSubmissionsCsv(form, formatted, exportTemplate, formVersion, fields);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
@@ -140,7 +139,7 @@ const service = {
         case 'flattenedWithSingleRow':
           return service._flattenedSingleRowSubmissionsCSVExport(form, data, version);
         case 'unflattened':
-          return service._unFlattenSubmissionsCSVExport(form, data,  version, fields);
+          return service._unFlattenSubmissionsCSVExport(form, data, version, fields);
         default:
         // code block
       }
@@ -149,7 +148,7 @@ const service = {
     }
   },
 
-  _flattenedSubmissionsCSVExport: async(form, data, version, blankout, fields) => {
+  _flattenedSubmissionsCSVExport: async (form, data, version, blankout, fields) => {
     let pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, fields);
 
@@ -168,7 +167,7 @@ const service = {
     };
   },
 
-  _unFlattenSubmissionsCSVExport: async(form, data, version, fields) => {
+  _unFlattenSubmissionsCSVExport: async (form, data, version, fields) => {
     let headers = await service._buildCsvHeaders(form, data, version, fields);
     const opts = {
       transforms: [transforms.flatten({ object: true, array: true, separator: '.' })],
@@ -185,11 +184,9 @@ const service = {
     };
   },
 
-  _flattenedSingleRowSubmissionsCSVExport: async(form, data) => {
+  _flattenedSingleRowSubmissionsCSVExport: async (form, data) => {
     const opts = {
-      transforms: [
-        transforms.flatten({ objects: true, arrays: true, separator: '.'}),
-      ],
+      transforms: [transforms.flatten({ objects: true, arrays: true, separator: '.' })],
     };
     const parser = new Parser(opts);
     const csv = parser.parse(data);
@@ -197,8 +194,8 @@ const service = {
       data: csv,
       headers: {
         'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-        'content-type': 'text/csv'
-      }
+        'content-type': 'text/csv',
+      },
     };
   },
 
@@ -212,10 +209,10 @@ const service = {
       .then((row) => row.schema);
   },
 
-  fieldsForCSVExport: async(formId, params={}) => {
+  fieldsForCSVExport: async (formId, params = {}) => {
     const form = await service._getForm(formId);
     const data = await service._getData(params.type, params.version, form, params);
-    const formatted = data.map(obj => {
+    const formatted = data.map((obj) => {
       const { submission, ...form } = obj;
       return Object.assign({ form: form }, submission);
     });
@@ -229,10 +226,10 @@ const service = {
     // what output format?
     const exportType = service._exportType(params);
     const exportFormat = service._exportFormat(params);
-    const exportTemplate = params.template?params.template:'flattenedWithFilled';
+    const exportTemplate = params.template ? params.template : 'flattenedWithFilled';
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, params.version, form, params);
-    const result = await service._formatData(exportFormat, exportType,exportTemplate, form, data, params.version, params.fields );
+    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.version, params.fields);
 
     return { data: result.data, headers: result.headers };
   },

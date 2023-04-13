@@ -11,7 +11,7 @@ import { IdentityProviders } from '@/utils/constants';
 export default {
   name: 'Export',
   components: {
-    ExportSubmissions
+    ExportSubmissions,
   },
   props: {
     f: {
@@ -21,6 +21,6 @@ export default {
   },
   computed: {
     IDP: () => IdentityProviders,
-  }
+  },
 };
 </script>

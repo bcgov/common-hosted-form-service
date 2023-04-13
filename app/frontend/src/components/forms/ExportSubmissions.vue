@@ -63,7 +63,6 @@
               </v-col>
             </v-row>
             <v-row v-if="exportFormat === 'csv'" class="mt-0">
-
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
                 <v-switch
@@ -87,7 +86,10 @@
                           single-line
                         >
                         </v-text-field>
-                        <div class=" subTitleObjectStyle"> {{ selected.length }} of {{ FILTER_HEADERS.length }} selected for exports</div>
+                        <div class="subTitleObjectStyle">
+                          {{ selected.length }} of
+                          {{ FILTER_HEADERS.length }} selected for exports
+                        </div>
                         <v-data-table
                           :headers="headers"
                           :search="inputFilter"
@@ -104,7 +106,9 @@
                           class="grey lighten-5 mt-2 submissions-table"
                         >
                           <!-- This will override select-all props and remove the checkbox from the header. It is meant to be empty-->
-                          <template v-slot:[`header.data-table-select`]></template>
+                          <template
+                            v-slot:[`header.data-table-select`]
+                          ></template>
                         </v-data-table>
                       </v-col>
                     </v-row>
@@ -320,7 +324,7 @@ export default {
           text: 'Submissions Fields',
           align: ' start',
           sortable: true,
-          value: 'name'
+          value: 'name',
         },
       ],
     };
@@ -368,12 +372,13 @@ export default {
         deleted: false,
         version: version,
       });
-      this.allDataFields = true,
-      this.selected.push(...this.FILTER_HEADERS);
+      (this.allDataFields = true), this.selected.push(...this.FILTER_HEADERS);
     },
     async callExport() {
-
-      let fieldToExport = this.selected.length>0?this.selected.map(field=>field.value):[''];
+      let fieldToExport =
+        this.selected.length > 0
+          ? this.selected.map((field) => field.value)
+          : [''];
       try {
         // UTC start of selected start date...
         const from =
@@ -425,7 +430,6 @@ export default {
             'An error occurred while attempting to export submissions for this form.',
           consoleError: `Error export submissions for ${this.form.id}: ${error}`,
         });
-
       }
     },
     canViewSubmissions() {
@@ -461,11 +465,10 @@ export default {
     },
 
     selected(oldValue, newValue) {
-      if(oldValue!==newValue) {
+      if (oldValue !== newValue) {
         if (this.selected.length === this.FILTER_HEADERS.length) {
           this.allDataFields = true;
-        }
-        else {
+        } else {
           this.allDataFields = false;
         }
       }
@@ -481,11 +484,7 @@ export default {
 };
 </script>
 
-
-
-
 <style scoped>
-
 .submissions-table {
   clear: both;
 }
