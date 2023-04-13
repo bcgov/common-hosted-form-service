@@ -353,7 +353,6 @@ export default {
       this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
       const form = this.$refs.chefForm.formio;
       this.formElement = form;
-      console.log(form);
       this.json_csv.data = [form.data, form.data];
       this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
     },
