@@ -51,6 +51,7 @@
             <v-row v-if="exportFormat === 'csv'" class="mt-5">
               <v-col cols="6">
                 <div class="subTitleObjectStyle">Form Version</div>
+                <div class="red--text mt-3" v-if="versionRequired">Version is required.</div>
                 <v-select
                   item-text="id"
                   item-value="version"
@@ -315,6 +316,7 @@ export default {
       select: ['Vuetify', 'Programming'],
       singleSelect: false,
       selected: [],
+      versionRequired:false,
       headers: [
         {
           text: 'Submissions Fields',
@@ -351,28 +353,39 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
     onAllDataFieldsSwitchChange() {
+      this.selected=[];
       if (this.allDataFields) {
         this.selected.push(...this.FILTER_HEADERS);
-      } else {
-        this.selected = [];
       }
     },
     async changeVersions(value) {
+      this.versionRequired=false;
       await this.refreshFormFields(value);
     },
     async refreshFormFields(version) {
-      await this.fetchFormCSVExportFields({
-        formId: this.formId,
-        type: 'submissions',
-        draft: false,
-        deleted: false,
-        version: version,
-      });
-      this.allDataFields = true,
-      this.selected.push(...this.FILTER_HEADERS);
+      this.selected=[];
+      if(version!=='') {
+        await this.fetchFormCSVExportFields({
+          formId: this.formId,
+          type: 'submissions',
+          draft: false,
+          deleted: false,
+          version: version,
+        });
+        this.allDataFields = true,
+        this.selected.push(...this.FILTER_HEADERS);
+      }
     },
     async callExport() {
+      if(this.exportFormat === 'csv' && this.versionSelected===''){
+        this.versionRequired=true;
+      }
+      else {
+        this.export();
+      }
 
+    },
+    async export() {
       let fieldToExport = this.selected.length>0?this.selected.map(field=>field.value):[''];
       try {
         // UTC start of selected start date...
@@ -442,10 +455,9 @@ export default {
           a.version < b.version ? -1 : a.version > b.version ? 1 : 0
         );
         this.versions.push(
-          ...this.form.versions.map((version) => version.version)
+          '',...this.form.versions.map((version) => version.version)
         );
-        this.versionSelected = this.versions[0];
-        this.refreshFormFields(this.versionSelected);
+        this.versionSelected = '';
       }
     },
   },
@@ -470,7 +482,11 @@ export default {
         }
       }
     },
-
+    exportFormat(value) {
+      if(value!=='json') {
+        this.versionRequired = false;
+      }
+    },
     dateRange(value) {
       if (!value) {
         this.endDate = moment(Date()).format('YYYY-MM-DD');
