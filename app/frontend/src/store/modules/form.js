@@ -414,11 +414,7 @@ export default {
             ? state.form.submissionReceivedEmails
             : [];
 
-        const schedule = state.form.schedule.enabled
-          ? {
-            ...state.form.schedule,
-          }
-          : {};
+        const schedule = state.form.schedule.enabled ? state.form.schedule : {};
 
         // const reminder = state.form.schedule.enabled ?  : false ;
 
@@ -434,8 +430,12 @@ export default {
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
-          reminder_enabled: (state.form.reminder_enabled) ? state.form.reminder_enabled : false,
-          enableCopyExistingSubmission: (state.form.enableCopyExistingSubmission) ? state.form.enableCopyExistingSubmission : false,
+          reminder_enabled: state.form.reminder_enabled
+            ? state.form.reminder_enabled
+            : false,
+          enableCopyExistingSubmission: state.form.enableCopyExistingSubmission
+            ? state.form.enableCopyExistingSubmission
+            : false,
         });
       } catch (error) {
         dispatch(
