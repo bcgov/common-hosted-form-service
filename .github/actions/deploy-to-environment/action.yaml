@@ -25,13 +25,16 @@ inputs:
   openshift_token:
     description: Openshift Service Account Token
     required: true
-  server_host:
-    description: Hostname the end users supposed to use to access the app
-    required: true
   route_path:
     description: Route Subpath Mount point
     required: true
     default: "/app"
+  server_host:
+    description: Hostname the end users supposed to use to access the app
+    required: true
+  mailjob_schedule:
+    description: Mail notification job schedule in crontab format
+    required: true
 
 runs:
   using: composite
@@ -71,7 +74,7 @@ runs:
       shell: bash
       run: >-
         oc get --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} secret chefs-${{ inputs.job_name }}-secret || oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.secret.yaml -p INSTANCE=${{ inputs.job_name }} | oc create --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
-
+    
     - name: Deploy app ConfigMaps
       shell: bash
       run: |
@@ -80,7 +83,7 @@ runs:
     - name: Deploy App
       shell: bash
       run: |
-        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.dc.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.acronym }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.dc.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=medis-${{ inputs.acronym }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
 
     - name: Wait on App
       shell: bash
@@ -90,4 +93,5 @@ runs:
     - name: Create Cron Jobs
       shell: bash
       run: |
-        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.cronjob.yaml -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f ./openshift/app.cronjob.yaml -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p ROUTE_PATH=${{ inputs.route_path }}  -p JOB_SCHEDULE="${{ inputs.mailjob_schedule }}" -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+
