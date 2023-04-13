@@ -17,44 +17,44 @@ In general, most of these npm run scripts can be prepended with `all:` in order 
 
 Migrate Database
 
-``` sh
+```sh
 npm run migrate
 ```
 
 Seed Database with Example Data
 
-``` sh
+```sh
 npm run seed:run
 ```
 
 ### Production Build and Run
 
-``` sh
+```sh
 npm run all:fresh-start
 ```
 
 ### Development Run
 
-``` sh
+```sh
 npm run serve
 ```
 
 Start a new terminal
 
-``` sh
+```sh
 cd frontend
 npm run serve
 ```
 
 ### Run application tests
 
-``` sh
+```sh
 npm run test
 ```
 
 ### Lints and fixes application files
 
-``` sh
+```sh
 npm run lint
 npm run lint-fix
 ```

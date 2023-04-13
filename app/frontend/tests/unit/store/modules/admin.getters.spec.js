@@ -16,10 +16,9 @@ describe('admin getters', () => {
     formList: [],
     user: {},
     userList: [],
-    fcProactiveHelp:[],
-    fcProactiveHelpGroupList:[]
+    fcProactiveHelp: [],
+    fcProactiveHelpGroupList: [],
   };
-
 
   beforeEach(() => {
     store = new Vuex.Store(cloneDeep(adminStore));
@@ -51,6 +50,8 @@ describe('admin getters', () => {
   });
 
   it('fcProactiveHelpGroupList should return the state fcProactiveHelpGroupList', () => {
-    expect(store.getters.fcProactiveHelpGroupList).toEqual(sampleState.fcProactiveHelpGroupList);
+    expect(store.getters.fcProactiveHelpGroupList).toEqual(
+      sampleState.fcProactiveHelpGroupList
+    );
   });
 });

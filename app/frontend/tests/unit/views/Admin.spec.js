@@ -14,8 +14,8 @@ describe('Admin.vue', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
-        isAdmin: () => false
-      }
+        isAdmin: () => false,
+      },
     });
   });
 
@@ -25,7 +25,7 @@ describe('Admin.vue', () => {
     const wrapper = shallowMount(Admin, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'router-view']
+      stubs: ['BaseSecure', 'router-view'],
     });
     await localVue.nextTick();
 

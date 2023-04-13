@@ -3,10 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
 
 describe('InformationLinkDialog.vue', () => {
-
   it('selectImage()', async () => {
-
-
     const event = {
       target: {
         files: [
@@ -21,22 +18,26 @@ describe('InformationLinkDialog.vue', () => {
 
     const wrapper = shallowMount(InformationLinkDialog);
 
-    const fileReaderSpy = jest.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementation(() => null);
-    const persistSpy = jest.spyOn(InformationLinkDialog.methods, 'uploadFCProactiveHelpImage');
+    const fileReaderSpy = jest
+      .spyOn(FileReader.prototype, 'readAsDataURL')
+      .mockImplementation(() => null);
+    const persistSpy = jest.spyOn(
+      InformationLinkDialog.methods,
+      'uploadFCProactiveHelpImage'
+    );
     wrapper.vm.selectImage(event);
     expect(fileReaderSpy).toHaveBeenCalledWith(event);
     expect(persistSpy).toHaveBeenCalledTimes(0);
   });
 
   it('resetDialog', async () => {
-
     const wrapper = shallowMount(InformationLinkDialog, {
       data() {
         return {
           description: 'dump text',
-          link:'url'
+          link: 'url',
         };
-      }
+      },
     });
 
     wrapper.vm.resetDialog();

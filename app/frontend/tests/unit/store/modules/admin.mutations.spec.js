@@ -31,7 +31,9 @@ describe('admin mutations', () => {
 
     expect(state.formList).toBeTruthy();
     expect(state.formList).toHaveLength(1);
-    expect(state.formList).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
+    expect(state.formList).toEqual(
+      expect.arrayContaining([expect.objectContaining(obj)])
+    );
   });
 
   it('SET_USER should update form state', () => {
@@ -48,12 +50,13 @@ describe('admin mutations', () => {
 
     expect(state.userList).toBeTruthy();
     expect(state.userList).toHaveLength(1);
-    expect(state.userList).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
+    expect(state.userList).toEqual(
+      expect.arrayContaining([expect.objectContaining(obj)])
+    );
   });
 
-
   it('SET_FCPROACTIVEHELP should update fcProactiveHelp state', () => {
-    const obj = { };
+    const obj = {};
     store.mutations.SET_FCPROACTIVEHELP(state, obj);
 
     expect(state.fcProactiveHelp).toBeTruthy();
@@ -65,8 +68,8 @@ describe('admin mutations', () => {
     store.mutations.SET_FCPROACTIVEHELPGROUPLIST(state, obj);
 
     expect(state.fcProactiveHelpGroupList).toBeTruthy();
-    expect(state.fcProactiveHelpGroupList).toEqual(expect.objectContaining(obj));
+    expect(state.fcProactiveHelpGroupList).toEqual(
+      expect.objectContaining(obj)
+    );
   });
-
-
 });
