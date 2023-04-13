@@ -1,16 +1,21 @@
 module.exports = {
   clearMocks: true,
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.{js,vue}', '!src/main.js', '!src/formio/**/*.*', '!src/plugins/*.*'],
+  collectCoverageFrom: [
+    'src/**/*.{js,vue}',
+    '!src/main.js',
+    '!src/formio/**/*.*',
+    '!src/plugins/*.*',
+  ],
   moduleFileExtensions: ['js', 'json', 'vue', 'jsx'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1'
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
   preset: '@vue/cli-plugin-unit-jest',
   setupFiles: ['<rootDir>/tests/unit/globalSetup.js'],
   snapshotSerializers: ['jest-serializer-vue'],
   testMatch: [
-    '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'
+    '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)',
   ],
   testURL: 'http://localhost/',
   transform: {
@@ -18,11 +23,11 @@ module.exports = {
     '^.+\\.vue$': 'vue-jest',
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$':
       'jest-transform-stub',
-    '^.+\\.jsx?$': 'babel-jest'
+    '^.+\\.jsx?$': 'babel-jest',
   },
   transformIgnorePatterns: ['/node_modules/'],
   watchPlugins: [
     'jest-watch-typeahead/filename',
-    'jest-watch-typeahead/testname'
-  ]
+    'jest-watch-typeahead/testname',
+  ],
 };

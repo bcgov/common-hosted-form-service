@@ -305,8 +305,6 @@ describe('readVersionFields', () => {
       ],
     };
 
-
-
     // mock readVersion function
     service.readVersion = jest.fn().mockReturnValue({ schema });
     // get fields

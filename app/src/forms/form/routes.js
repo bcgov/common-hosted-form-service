@@ -62,12 +62,9 @@ routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess,
   await controller.readFieldsForCSVExport(req, res, next);
 });
 
-
-
 // routes.put('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
 //   next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to modify form versions.' }));
 // });
-
 
 routes.post('/:formId/versions/:formVersionId/publish', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
   await controller.publishVersion(req, res, next);

@@ -14,31 +14,32 @@ describe('form getters', () => {
     drafts: [],
     form: {
       name: 'ABC',
-      reminder : {
-        'enabled':false,
-        'allowAdditionalNotifications': true
+      reminder: {
+        enabled: false,
+        allowAdditionalNotifications: true,
       },
-      schedule : {
-        'enabled':true,
-        'scheduleType':'manual'
-      }
+      schedule: {
+        enabled: true,
+        scheduleType: 'manual',
+      },
     },
     formList: [
       {
-        name: 'ABC'
-      }, {
-        name: 'XYZ'
-      }
+        name: 'ABC',
+      },
+      {
+        name: 'XYZ',
+      },
     ],
     formSubmission: {
       confirmationId: '1234',
       submission: {
-        data: { field: '123' }
-      }
+        data: { field: '123' },
+      },
     },
     permissions: ['SUBMIT', 'READ'],
     submissionList: ['test', 'sub'],
-    version: { type: 'form' }
+    version: { type: 'form' },
   };
 
   beforeEach(() => {
@@ -83,7 +84,9 @@ describe('form getters', () => {
   });
 
   it('userFormPreferences should return the state userFormPreferences', () => {
-    expect(store.getters.userFormPreferences).toEqual(sampleState.userFormPreferences);
+    expect(store.getters.userFormPreferences).toEqual(
+      sampleState.userFormPreferences
+    );
   });
 
   it('version should return the state version', () => {
@@ -91,10 +94,14 @@ describe('form getters', () => {
   });
 
   it('fcNamesProactiveHelpList should return the state fcNamesProactiveHelpList', () => {
-    expect(store.getters.fcNamesProactiveHelpList).toEqual(sampleState.fcNamesProactiveHelpList);
+    expect(store.getters.fcNamesProactiveHelpList).toEqual(
+      sampleState.fcNamesProactiveHelpList
+    );
   });
 
   it('fcProactiveHelpImageUrl should return the state fcProactiveHelpImageUrl', () => {
-    expect(store.getters.fcProactiveHelpImageUrl).toEqual(sampleState.fcProactiveHelpImageUrl);
+    expect(store.getters.fcProactiveHelpImageUrl).toEqual(
+      sampleState.fcProactiveHelpImageUrl
+    );
   });
 });

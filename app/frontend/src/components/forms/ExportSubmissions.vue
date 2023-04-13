@@ -51,7 +51,9 @@
             <v-row v-if="exportFormat === 'csv'" class="mt-5">
               <v-col cols="6">
                 <div class="subTitleObjectStyle">Form Version</div>
-                <div class="red--text mt-3" v-if="versionRequired">Version is required.</div>
+                <div class="red--text mt-3" v-if="versionRequired">
+                  Version is required.
+                </div>
                 <v-select
                   item-text="id"
                   item-value="version"
@@ -64,7 +66,6 @@
               </v-col>
             </v-row>
             <v-row v-if="exportFormat === 'csv'" class="mt-0">
-
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
                 <v-switch
@@ -88,7 +89,10 @@
                           single-line
                         >
                         </v-text-field>
-                        <div class=" subTitleObjectStyle"> {{ selected.length }} of {{ FILTER_HEADERS.length }} selected for exports</div>
+                        <div class="subTitleObjectStyle">
+                          {{ selected.length }} of
+                          {{ FILTER_HEADERS.length }} selected for exports
+                        </div>
                         <v-data-table
                           :headers="headers"
                           :search="inputFilter"
@@ -105,7 +109,9 @@
                           class="grey lighten-5 mt-2 submissions-table"
                         >
                           <!-- This will override select-all props and remove the checkbox from the header. It is meant to be empty-->
-                          <template v-slot:[`header.data-table-select`]></template>
+                          <template
+                            v-slot:[`header.data-table-select`]
+                          ></template>
                         </v-data-table>
                       </v-col>
                     </v-row>
@@ -316,13 +322,13 @@ export default {
       select: ['Vuetify', 'Programming'],
       singleSelect: false,
       selected: [],
-      versionRequired:false,
+      versionRequired: false,
       headers: [
         {
           text: 'Submissions Fields',
           align: ' start',
           sortable: true,
-          value: 'name'
+          value: 'name',
         },
       ],
     };
@@ -353,18 +359,18 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
     onAllDataFieldsSwitchChange() {
-      this.selected=[];
+      this.selected = [];
       if (this.allDataFields) {
         this.selected.push(...this.FILTER_HEADERS);
       }
     },
     async changeVersions(value) {
-      this.versionRequired=false;
+      this.versionRequired = false;
       await this.refreshFormFields(value);
     },
     async refreshFormFields(version) {
-      this.selected=[];
-      if(version!=='') {
+      this.selected = [];
+      if (version !== '') {
         await this.fetchFormCSVExportFields({
           formId: this.formId,
           type: 'submissions',
@@ -372,21 +378,21 @@ export default {
           deleted: false,
           version: version,
         });
-        this.allDataFields = true,
-        this.selected.push(...this.FILTER_HEADERS);
+        (this.allDataFields = true), this.selected.push(...this.FILTER_HEADERS);
       }
     },
     async callExport() {
-      if(this.exportFormat === 'csv' && this.versionSelected===''){
-        this.versionRequired=true;
-      }
-      else {
+      if (this.exportFormat === 'csv' && this.versionSelected === '') {
+        this.versionRequired = true;
+      } else {
         this.export();
       }
-
     },
     async export() {
-      let fieldToExport = this.selected.length>0?this.selected.map(field=>field.value):[''];
+      let fieldToExport =
+        this.selected.length > 0
+          ? this.selected.map((field) => field.value)
+          : [''];
       try {
         // UTC start of selected start date...
         const from =
@@ -438,7 +444,6 @@ export default {
             'An error occurred while attempting to export submissions for this form.',
           consoleError: `Error export submissions for ${this.form.id}: ${error}`,
         });
-
       }
     },
     canViewSubmissions() {
@@ -455,7 +460,8 @@ export default {
           a.version < b.version ? -1 : a.version > b.version ? 1 : 0
         );
         this.versions.push(
-          '',...this.form.versions.map((version) => version.version)
+          '',
+          ...this.form.versions.map((version) => version.version)
         );
         this.versionSelected = '';
       }
@@ -473,17 +479,16 @@ export default {
     },
 
     selected(oldValue, newValue) {
-      if(oldValue!==newValue) {
+      if (oldValue !== newValue) {
         if (this.selected.length === this.FILTER_HEADERS.length) {
           this.allDataFields = true;
-        }
-        else {
+        } else {
           this.allDataFields = false;
         }
       }
     },
     exportFormat(value) {
-      if(value!=='json') {
+      if (value !== 'json') {
         this.versionRequired = false;
       }
     },
@@ -497,11 +502,7 @@ export default {
 };
 </script>
 
-
-
-
 <style scoped>
-
 .submissions-table {
   clear: both;
 }

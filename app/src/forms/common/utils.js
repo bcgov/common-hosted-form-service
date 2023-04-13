@@ -424,7 +424,6 @@ const flattenComponents = (components, includeAll) => {
   return flattened.flatMap((path) => path);
 };
 
-
 const eachComponent = (components, fn, includeAll, path, parent, inRecursion) => {
   if (!components) return;
   path = path || '';

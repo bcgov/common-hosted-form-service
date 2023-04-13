@@ -1036,10 +1036,28 @@ describe(`DELETE ${basePath}/formId/apiKey`, () => {
 });
 
 describe(`GET ${basePath}/formId/csvexport/fields`, () => {
-
   it('should return 200', async () => {
-
-    const formFields = ['form.confirmationId', 'form.formName', 'form.version', 'form.createdAt', 'form.fullName', 'form.username', 'form.email', 'fishermansName', 'email', 'forWhichBcLakeRegionAreYouCompletingTheseQuestions', 'didYouFishAnyBcLakesThisYear', 'oneRowPerLake', 'oneRowPerLake.lakeName', 'oneRowPerLake.closestTown', 'oneRowPerLake.numberOfDays', 'oneRowPerLake.dataGrid', 'oneRowPerLake.dataGrid.fishType', 'oneRowPerLake.dataGrid.numberCaught', 'oneRowPerLake.dataGrid.numberKept'];
+    const formFields = [
+      'form.confirmationId',
+      'form.formName',
+      'form.version',
+      'form.createdAt',
+      'form.fullName',
+      'form.username',
+      'form.email',
+      'fishermansName',
+      'email',
+      'forWhichBcLakeRegionAreYouCompletingTheseQuestions',
+      'didYouFishAnyBcLakesThisYear',
+      'oneRowPerLake',
+      'oneRowPerLake.lakeName',
+      'oneRowPerLake.closestTown',
+      'oneRowPerLake.numberOfDays',
+      'oneRowPerLake.dataGrid',
+      'oneRowPerLake.dataGrid.fishType',
+      'oneRowPerLake.dataGrid.numberCaught',
+      'oneRowPerLake.dataGrid.numberKept',
+    ];
 
     // mock a success return value...
     exportService.fieldsForCSVExport = jest.fn().mockReturnValue(formFields);
@@ -1052,7 +1070,9 @@ describe(`GET ${basePath}/formId/csvexport/fields`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    exportService.fieldsForCSVExport = jest.fn(() => { throw new Problem(401); });
+    exportService.fieldsForCSVExport = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/formId/csvexport/fields`);
 
@@ -1062,7 +1082,9 @@ describe(`GET ${basePath}/formId/csvexport/fields`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    exportService.fieldsForCSVExport = jest.fn(() => { throw new Error(); });
+    exportService.fieldsForCSVExport = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/formId/csvexport/fields`);
 

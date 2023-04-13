@@ -8,7 +8,7 @@ describe('Success.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(Success, {
       localVue,
-      stubs: ['FormViewer']
+      stubs: ['FormViewer'],
     });
 
     expect(wrapper.html()).toMatch('formviewer');

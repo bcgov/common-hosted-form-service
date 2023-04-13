@@ -358,14 +358,13 @@ export default {
    * @returns {Promise} An axios response
    */
   readCSVExportFields(formId, type, draft, deleted, version) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/csvexport/fields`,{
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/csvexport/fields`, {
       params: {
         type: type,
         draft: draft,
-        deleted:deleted,
-        version: version
-      }
-
+        deleted: deleted,
+        version: version,
+      },
     });
   },
 
@@ -378,21 +377,27 @@ export default {
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, format,template,versionSelected, preference, fields, options = {}) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
-      {
-        params: {
-          format: format,
-          template:template,
-          version:versionSelected,
-          type: 'submissions',
-          preference:preference,
-          fields:fields,
-          ...options
-        },
-        responseType: 'blob'
-      }
-    );
+  exportSubmissions(
+    formId,
+    format,
+    template,
+    versionSelected,
+    preference,
+    fields,
+    options = {}
+  ) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`, {
+      params: {
+        format: format,
+        template: template,
+        version: versionSelected,
+        type: 'submissions',
+        preference: preference,
+        fields: fields,
+        ...options,
+      },
+      responseType: 'blob',
+    });
   },
 
   //

@@ -42,7 +42,9 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <router-link :to="{ name: 'SubmissionsExport', query: { f: formId } }">
+              <router-link
+                :to="{ name: 'SubmissionsExport', query: { f: formId } }"
+              >
                 <v-btn
                   class="mx-1"
                   color="primary"

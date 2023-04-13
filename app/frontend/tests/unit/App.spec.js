@@ -13,7 +13,14 @@ describe('App.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(App, {
       vuetify,
-      stubs: ['BaseNotificationContainer', 'BaseSecure', 'BCGovFooter', 'BCGovHeader', 'BCGovNavBar', 'router-view']
+      stubs: [
+        'BaseNotificationContainer',
+        'BaseSecure',
+        'BCGovFooter',
+        'BCGovHeader',
+        'BCGovNavBar',
+        'router-view',
+      ],
     });
 
     expect(wrapper.text()).toMatch('');

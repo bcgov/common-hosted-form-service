@@ -15,7 +15,9 @@ describe('notifications mutations', () => {
 
     expect(state.notifications).toBeTruthy();
     expect(state.notifications).toHaveLength(1);
-    expect(state.notifications).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
+    expect(state.notifications).toEqual(
+      expect.arrayContaining([expect.objectContaining(obj)])
+    );
   });
 
   it('DELETE should remove correct notification object', () => {

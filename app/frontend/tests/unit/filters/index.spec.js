@@ -45,6 +45,8 @@ describe('formatDateLong', () => {
     const result = filters.formatDateLong(now);
 
     expect(result).toBeTruthy();
-    expect(result).toMatch(moment(String(now)).format('MMMM D YYYY, h:mm:ss a'));
+    expect(result).toMatch(
+      moment(String(now)).format('MMMM D YYYY, h:mm:ss a')
+    );
   });
 });

@@ -2864,11 +2864,11 @@ components:
                         intervalType:
                           type: string
                           description: This contain a value that can be used with combination to another key i.e. term to calculate a period. Thats tells a form to be allowed a late submission for particular period.  40 Days, 3 Weeks, 1 Years etc.
-                closingMessageEnabled: 
+                closingMessageEnabled:
                   type: boolean
                   description: Set to true when custom closing message is enabled
                   example: true
-                openSubmissionDateTime: 
+                openSubmissionDateTime:
                   type: string
                   description: Contains open date of form schedule system.
                   example: '2022-12-22'
