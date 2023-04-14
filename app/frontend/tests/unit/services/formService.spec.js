@@ -460,5 +460,24 @@ describe('Form Service', () => {
       expect(mockAxios.history.put).toHaveLength(1);
     });
   });
+
+  describe('submissions/${formId}/csvexport/fields', () => {
+    let formId = 'd15a8c14-c78a-42fa-8afd-b3f1fed59159';
+
+    const endpoint = `${ApiRoutes.FORMS}/${formId}/csvexport/fields`;
+
+    it('calls to get submissions fields for csv export', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+      const result = await formService.readCSVExportFields(
+        formId,
+        'submissions',
+        false,
+        false,
+        1
+      );
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
 });
 

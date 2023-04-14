@@ -40,8 +40,25 @@
             </template>
             <span>Manage Form</span>
           </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link
+                :to="{ name: 'SubmissionsExport', query: { f: formId } }"
+              >
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>get_app</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>Export Submissions to File</span>
+          </v-tooltip>
         </span>
-        <ExportSubmissions />
       </v-col>
     </v-row>
 
@@ -254,17 +271,11 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 import moment from 'moment';
-import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
-
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faTrash);
-
 export default {
   name: 'SubmissionsTable',
-  components: {
-    ExportSubmissions,
-  },
   props: {
     formId: {
       type: String,
@@ -320,18 +331,15 @@ export default {
       'deletedSubmissions',
     ]),
     ...mapGetters('auth', ['user']),
-
     checkFormManage() {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
-
     DEFAULT_HEADERS() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
-        { text: 'Submission Date', align: 'start', value: 'date' },
-        { text: 'Submitter', align: 'start', value: 'submitter' },
+        { text: 'Submission Date', align: 'start', value: 'createdAt' },
+        { text: 'Submitter', align: 'start', value: 'createdBy' },
       ];
-
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
         //push new header for late submission if Form is setup for scheduling
         headers = [
@@ -344,10 +352,9 @@ export default {
         headers.splice(3, 0, {
           text: 'Status',
           align: 'start',
-          value: 'status',
+          value: 'formSubmissionStatusCodse',
         });
       }
-
       // Add any custom columns if the user has them
       const maxHeaderLength = 25;
       this.userColumns.forEach((col) => {
@@ -360,7 +367,6 @@ export default {
           value: col,
         });
       });
-
       // Actions column at the end
       headers.push({
         text: 'View',
@@ -370,7 +376,6 @@ export default {
         sortable: false,
         width: '40px',
       });
-
       // Actions column at the end
       headers.push({
         text: 'event',
@@ -380,10 +385,8 @@ export default {
         sortable: false,
         width: '40px',
       });
-
       return headers.filter((x) => x.value !== 'updatedAt' || this.deletedOnly);
     },
-
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
       if (this.filterData.length > 0)
@@ -402,7 +405,6 @@ export default {
           return { text: ff, value: ff, align: 'end' };
         })
       );
-
       return filteredHeader.filter(function (item, index, inputArray) {
         return (
           inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
@@ -456,13 +458,11 @@ export default {
       'updateFormPreferencesForCurrentUser',
     ]),
     ...mapActions('notifications', ['addNotification']),
-
     async delSub() {
       this.singleSubmissionDelete
         ? this.deleteSingleSubs()
         : this.deleteMultiSubs();
     },
-
     async restoreSub() {
       this.singleSubmissionRestore
         ? this.restoreSingleSub()
@@ -484,7 +484,6 @@ export default {
       });
       this.refreshSubmissions();
     },
-
     async populateSubmissionsTable() {
       try {
         this.loading = true;
@@ -534,11 +533,11 @@ export default {
             .map((s) => {
               const fields = {
                 confirmationId: s.confirmationId,
-                date: s.createdAt,
+                createdAt: s.createdAt,
                 formId: s.formId,
-                status: s.formSubmissionStatusCode,
+                formSubmissionStatusCodse: s.formSubmissionStatusCodse,
                 submissionId: s.submissionId,
-                submitter: s.createdBy,
+                createdBy: s.createdBy,
                 versionId: s.formVersionId,
                 deleted: s.deleted,
                 lateEntry: s.lateEntry,
@@ -560,7 +559,6 @@ export default {
         this.loading = false;
       }
     },
-
     async refreshSubmissions() {
       this.loading = true;
       Promise.all([
@@ -577,7 +575,6 @@ export default {
       });
       this.selectedSubmissions = [];
     },
-
     async restoreSingleSub() {
       await this.restoreSubmission({
         submissionId: this.restoreItem.submissionId,
@@ -604,10 +601,8 @@ export default {
         columns: [],
       };
       data.forEach((d) => {
-        if (this.formFields.includes(d.value))
-          preferences.columns.push(d.value);
+        preferences.columns.push(d.value);
       });
-
       await this.updateFormPreferencesForCurrentUser({
         formId: this.form.id,
         preferences: preferences,
@@ -616,7 +611,6 @@ export default {
       await this.populateSubmissionsTable();
     },
   },
-
   mounted() {
     this.refreshSubmissions();
   },
@@ -639,7 +633,6 @@ export default {
     padding-right: 16px;
   }
 }
-
 .submissions-table {
   clear: both;
 }
