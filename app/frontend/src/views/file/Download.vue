@@ -1,12 +1,13 @@
 <template>
   <BaseSecure :idp="IDP.IDIR">
-    <v-container fluid class="center_content">
+    <v-container fluid class="center_vertical_content">
       <v-progress-circular
         v-if="!showDownloadLink"
         :size="50"
         color="primary"
         indeterminate
       ></v-progress-circular>
+      <div v-if="!showDownloadLink">Preparing for download...</div>
       <div v-if="showDownloadLink">
         If the file did not automatically download, click here:
         <a href="#" @click="getFile(id)">Download</a>

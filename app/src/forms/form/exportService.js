@@ -154,11 +154,11 @@ const service = {
     try {
       switch (exportTemplate) {
         case 'flattenedWithBlankOut':
-          return service._flattenSubmissionsCSVExport(form, data, columns, false, version, emailExport, currentUser, referer);
+          return await service._flattenSubmissionsCSVExport(form, data, columns, false, version, emailExport, currentUser, referer);
         case 'flattenedWithFilled':
-          return service._flattenSubmissionsCSVExport(form, data, columns, true, version, emailExport, currentUser, referer);
+          return await service._flattenSubmissionsCSVExport(form, data, columns, true, version, emailExport, currentUser, referer);
         case 'unflattened':
-          return service._unFlattenSubmissionsCSVExport(form, data, columns, version, emailExport, currentUser, referer);
+          return await service._unFlattenSubmissionsCSVExport(form, data, columns, version, emailExport, currentUser, referer);
         default:
         // code block
       }
@@ -186,20 +186,8 @@ const service = {
     const json2csvParser = new Transform(opts, transformOpts);
 
     let csv = [];
-    // If we're worrking with not too many submissions, we can process parsing right away without
-    // any memory constrains
-    if (!emailExport) {
-      dataStream
-        .pipe(json2csvParser)
-        .on('data', (chunk) => {
-          csv.push(chunk.toString());
-        })
-        .on('error', (err) => {
-          throw new Problem(400, {
-            detail: `Error while parsing json chunk: ${err}`,
-          });
-        });
-    } else {
+
+    if (emailExport !== 'false') {
       // If submission count is big we're start streams parsed chunks into the temp file
       // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
       // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
@@ -234,15 +222,39 @@ const service = {
           }
         });
       });
+      return new Promise((resolve) =>
+        resolve({
+          data: null,
+          headers: {
+            'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
+            'content-type': 'text/csv',
+          },
+        })
+      );
     }
-
-    return {
-      data: csv.join(''),
-      headers: {
-        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-        'content-type': 'text/csv',
-      },
-    };
+    // If we're working with not too many submissions, we can process parsing right away without
+    // any memory constrains
+    return new Promise((resolve, reject) => {
+      dataStream
+        .pipe(json2csvParser)
+        .on('data', (chunk) => {
+          csv.push(chunk.toString());
+        })
+        .on('finish', () => {
+          resolve({
+            data: csv.join(''),
+            headers: {
+              'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
+              'content-type': 'text/csv',
+            },
+          });
+        })
+        .on('error', (err) => {
+          reject({
+            detail: `Error while parsing json chunk: ${err}`,
+          });
+        });
+    });
   },
   _unFlattenSubmissionsCSVExport: async (form, data, columns, version, emailExport, currentUser, referer) => {
     let headers = await service._buildCsvHeaders(form, data, version, columns);
@@ -250,8 +262,6 @@ const service = {
       transforms: [flatten({ object: true, array: true, separator: '.' })],
       fields: headers,
     };
-    // const parser = new Parser(opts);
-    // const csv = parser.parse(data);
 
     // to work with object chunk in pipe instead of Buffer
     const transformOpts = {
@@ -262,20 +272,8 @@ const service = {
     const json2csvParser = new Transform(opts, transformOpts);
 
     let csv = [];
-    // If we're worrking with not too many submissions, we can process parsing right away without
-    // any memory constrains
-    if (!emailExport) {
-      dataStream
-        .pipe(json2csvParser)
-        .on('data', (chunk) => {
-          csv.push(chunk.toString());
-        })
-        .on('error', (err) => {
-          throw new Problem(400, {
-            detail: `Error while parsing json chunk: ${err}`,
-          });
-        });
-    } else {
+
+    if (emailExport !== 'false') {
       // If submission count is big we're start streams parsed chunks into the temp file
       // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
       // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
@@ -310,14 +308,39 @@ const service = {
           }
         });
       });
+      return new Promise((resolve) =>
+        resolve({
+          data: null,
+          headers: {
+            'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
+            'content-type': 'text/csv',
+          },
+        })
+      );
     }
-    return {
-      data: csv.join(''),
-      headers: {
-        'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-        'content-type': 'text/csv',
-      },
-    };
+    // If we're working with not too many submissions, we can process parsing right away without
+    // any memory constrains
+    return new Promise((resolve, reject) => {
+      dataStream
+        .pipe(json2csvParser)
+        .on('data', (chunk) => {
+          csv.push(chunk.toString());
+        })
+        .on('finish', () => {
+          resolve({
+            data: csv.join(''),
+            headers: {
+              'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
+              'content-type': 'text/csv',
+            },
+          });
+        })
+        .on('error', (err) => {
+          reject({
+            detail: `Error while parsing json chunk: ${err}`,
+          });
+        });
+    });
   },
   _readLatestFormSchema: (formId, version) => {
     return FormVersion.query()

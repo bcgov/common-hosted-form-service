@@ -254,7 +254,7 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
-import { NotificationTypes } from '@/utils/constants';
+import { NotificationTypes, ExportLargeData } from '@/utils/constants';
 
 import {
   faXmark,
@@ -320,7 +320,10 @@ export default {
             : undefined;
 
         let emailExport = false;
-        if (this.submissionList.length > 500 || this.formFields.length > 70) {
+        if (
+          this.submissionList.length > ExportLargeData.MAX_RECORDS ||
+          this.formFields.length > ExportLargeData.MAX_FIELDS
+        ) {
           this.dialog = false;
           emailExport = true;
           this.addNotification({
