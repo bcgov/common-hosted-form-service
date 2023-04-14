@@ -15,7 +15,7 @@
       "path": "files"
     },
     "permanent": "objectStorage",
-    "localStorage" : {
+    "localStorage": {
       "path": ""
     },
     "objectStorage": {
@@ -27,7 +27,7 @@
   },
   "frontend": {
     "apiPath": "api/v1",
-    "basePath" : "/app",
+    "basePath": "/app",
     "keycloak": {
       "clientId": "chefs-frontend",
       "realm": "chefs",
@@ -36,7 +36,7 @@
   },
   "server": {
     "apiPath": "/api/v1",
-    "basePath" : "/app",
+    "basePath": "/app",
     "bodyLimit": "30mb",
     "keycloak": {
       "clientId": "chefs",
@@ -45,7 +45,7 @@
     },
     "logLevel": "http",
     "port": "8080",
-    "rateLimit" : {
+    "rateLimit": {
       "public": {
         "windowMs": "900000",
         "max": "100"
@@ -68,10 +68,10 @@
       }
     }
   },
-  "customBcAddressFormioComponent":{
-    "apikey":"xxxxxxxxxxxxxxx",
-    "bcAddressURL":"https://geocoder.api.gov.bc.ca/addresses.json",
-    "queryParameters":{
+  "customBcAddressFormioComponent": {
+    "apikey": "xxxxxxxxxxxxxxx",
+    "bcAddressURL": "https://geocoder.api.gov.bc.ca/addresses.json",
+    "queryParameters": {
       "echo": false,
       "brief": true,
       "minScore": 55,

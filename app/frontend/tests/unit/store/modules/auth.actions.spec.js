@@ -5,23 +5,23 @@ import store from '@/store/modules/auth';
 
 describe('auth actions', () => {
   const { location } = window;
-  const mockReplace = jest.fn(cb => {
+  const mockReplace = jest.fn((cb) => {
     cb();
   });
   const mockStore = {
     commit: jest.fn(),
     getters: {
       createLoginUrl: jest.fn(),
-      createLogoutUrl: jest.fn()
+      createLogoutUrl: jest.fn(),
     },
     rootGetters: {},
-    state: cloneDeep(store.state)
+    state: cloneDeep(store.state),
   };
 
   beforeAll(() => {
     delete window.location;
     window.location = {
-      replace: mockReplace
+      replace: mockReplace,
     };
     Vue.prototype.$config = { basePath: 'test' };
   });
@@ -138,6 +138,5 @@ describe('auth actions', () => {
       expect(window.location.replace).toHaveBeenCalledTimes(1);
       expect(mockStore.getters.createLogoutUrl).toHaveBeenCalledTimes(1);
     });
-
   });
 });

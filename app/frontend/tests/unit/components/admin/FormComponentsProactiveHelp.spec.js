@@ -7,7 +7,10 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe('FormComponentsProactiveHelp.vue', () => {
-  const extractGroupComponentsSpy = jest.spyOn(FormComponentsProactiveHelp.methods, 'extractGroupComponents');
+  const extractGroupComponentsSpy = jest.spyOn(
+    FormComponentsProactiveHelp.methods,
+    'extractGroupComponents'
+  );
   let store;
 
   beforeEach(() => {
@@ -18,13 +21,13 @@ describe('FormComponentsProactiveHelp.vue', () => {
       getters: {
         proactiveHelpInfoGroupObject: () => {},
         builder: () => {},
-      }
+      },
     });
     store.registerModule('admin', {
       namespaced: true,
       getters: {
         fcHelpInfo: () => {},
-      }
+      },
     });
   });
 
@@ -36,7 +39,7 @@ describe('FormComponentsProactiveHelp.vue', () => {
     const wrapper = shallowMount(FormComponentsProactiveHelp, {
       localVue,
       store,
-      stubs: ['GeneralLayout']
+      stubs: ['GeneralLayout'],
     });
 
     wrapper.vm.onExpansionPanelClick('Basic Layout');

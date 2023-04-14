@@ -19,7 +19,7 @@ describe('Root.vue', () => {
     const wrapper = shallowMount(Root, {
       localVue,
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
     });
     await localVue.nextTick();
 

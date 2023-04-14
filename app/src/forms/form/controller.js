@@ -243,4 +243,13 @@ module.exports = {
       next(error);
     }
   },
+
+  readFieldsForCSVExport: async (req, res, next) => {
+    try {
+      const response = await exportService.fieldsForCSVExport(req.params.formId, req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

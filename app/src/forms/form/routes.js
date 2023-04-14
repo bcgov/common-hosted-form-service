@@ -4,7 +4,7 @@ const routes = require('express').Router();
 const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
-
+const middleware = require('../common/middleware');
 const keycloak = require('../../components/keycloak');
 const controller = require('./controller');
 
@@ -56,6 +56,10 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
 
 routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readVersionFields(req, res, next);
+});
+
+routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.readFieldsForCSVExport(req, res, next);
 });
 
 // routes.put('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {

@@ -25,9 +25,7 @@
     "textField3": "abcdef",
     "radioGroup1": "radio1",
     "selectList1": "selection1",
-    "selectList2": [
-      "select1"
-    ],
+    "selectList2": ["select1"],
     "phoneNumber1": "(456) 000-0000",
     "phoneNumber2": "(123) 000-0000",
     "checkboxGroup1": {

@@ -372,6 +372,33 @@ export default {
         );
       }
     },
+    async fetchFormCSVExportFields(
+      { commit, dispatch },
+      { formId, type, draft, deleted, version }
+    ) {
+      try {
+        commit('SET_FORM_FIELDS', []);
+        const { data } = await formService.readCSVExportFields(
+          formId,
+          type,
+          draft,
+          deleted,
+          version
+        );
+        commit('SET_FORM_FIELDS', data);
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message:
+              'An error occurred while fetching the list of fields for this form.',
+            consoleError: `Error getting form ${formId}: ${error}`,
+          },
+          { root: true }
+        );
+      }
+    },
+
     async publishDraft({ dispatch }, { formId, draftId }) {
       try {
         await formService.publishDraft(formId, draftId);

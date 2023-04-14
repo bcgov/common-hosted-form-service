@@ -13,7 +13,7 @@
       "path": "files"
     },
     "permanent": "localStorage",
-    "localStorage" : {
+    "localStorage": {
       "path": ""
     },
     "objectStorage": {

@@ -1263,9 +1263,7 @@
                       "description": "",
                       "layoutFixed": false,
                       "placeholder": "",
-                      "defaultValue": [
-                        {}
-                      ],
+                      "defaultValue": [{}],
                       "dataGridLabel": false,
                       "labelPosition": "top",
                       "showCharCount": false,
@@ -3386,9 +3384,7 @@
           "description": "",
           "layoutFixed": false,
           "placeholder": "",
-          "defaultValue": [
-            {}
-          ],
+          "defaultValue": [{}],
           "dataGridLabel": false,
           "labelPosition": "top",
           "showCharCount": false,

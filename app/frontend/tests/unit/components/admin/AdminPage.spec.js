@@ -7,7 +7,7 @@ describe('AdminPage.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(AdminPage, {
       localVue,
-      stubs: ['AdminFormsTable', 'AdminUsersTable', 'Developer']
+      stubs: ['AdminFormsTable', 'AdminUsersTable', 'Developer'],
     });
 
     expect(wrapper.text()).toMatch('Forms');

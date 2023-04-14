@@ -16,11 +16,11 @@ describe('Login.vue', () => {
       getters: {
         authenticated: () => true,
         keycloakReady: () => true,
-        createLoginUrl: () => () => 'testurl'
+        createLoginUrl: () => () => 'testurl',
       },
       actions: {
-        login: () => jest.fn()
-      }
+        login: () => jest.fn(),
+      },
     });
   });
 
@@ -28,7 +28,7 @@ describe('Login.vue', () => {
     const wrapper = shallowMount(Login, {
       localVue,
       store,
-      stubs: ['router-link']
+      stubs: ['router-link'],
     });
     await localVue.nextTick();
 
