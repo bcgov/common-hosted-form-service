@@ -128,6 +128,20 @@ export default function getRouter(basePath = '/') {
             props: createProps,
           },
           {
+            path: 'export',
+            name: 'SubmissionsExport',
+            component: () =>
+              import(
+                /* webpackChunkName: "export" */ '@/views/form/Export.vue'
+              ),
+            meta: {
+              breadcrumbTitle: 'Submissions Export',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
             path: 'manage',
             name: 'FormManage',
             component: () =>
