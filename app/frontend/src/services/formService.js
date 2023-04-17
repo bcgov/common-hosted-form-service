@@ -347,7 +347,7 @@ export default {
     return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/edits`);
   },
 
-   /**
+  /**
    * @function readCSVExportFields
    * Get a list of valid form fields in this form version
    * @param {string} formId The form uuid
@@ -357,7 +357,7 @@ export default {
    * @param {string} version The form version
    * @returns {Promise} An axios response
    */
-   readCSVExportFields(formId, type, draft, deleted, version) {
+  readCSVExportFields(formId, type, draft, deleted, version) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/csvexport/fields`, {
       params: {
         type: type,
