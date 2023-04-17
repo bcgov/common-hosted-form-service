@@ -68,11 +68,6 @@
             <v-row v-if="exportFormat === 'csv'" class="mt-0">
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
-                <v-switch
-                  v-model="allDataFields"
-                  label="All data/fields`"
-                  @change="onAllDataFieldsSwitchChange"
-                ></v-switch>
                 <v-row v-if="exportFormat === 'csv'">
                   <v-col>
                     <v-row>
@@ -93,6 +88,7 @@
                           {{ selected.length }} of
                           {{ FILTER_HEADERS.length }} selected for exports
                         </div>
+
                         <v-data-table
                           :headers="headers"
                           :search="inputFilter"
@@ -107,12 +103,7 @@
                           disable-pagination
                           fixed-header
                           class="grey lighten-5 mt-2 submissions-table"
-                        >
-                          <!-- This will override select-all props and remove the checkbox from the header. It is meant to be empty-->
-                          <template
-                            v-slot:[`header.data-table-select`]
-                          ></template>
-                        </v-data-table>
+                        />
                       </v-col>
                     </v-row>
                   </v-col>
@@ -266,13 +257,6 @@
               >
                 <span>Export</span>
               </v-btn>
-              <v-btn
-                class="mb-5 cancelButtonStyle"
-                outlined
-                @click="dialog = false"
-              >
-                <span>Cancel</span>
-              </v-btn>
             </v-card-actions>
           </v-col>
         </v-row>
@@ -360,12 +344,6 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
-    onAllDataFieldsSwitchChange() {
-      this.selected = [];
-      if (this.allDataFields) {
-        this.selected.push(...this.FILTER_HEADERS);
-      }
-    },
     async changeVersions(value) {
       this.versionRequired = false;
       await this.refreshFormFields(value);
