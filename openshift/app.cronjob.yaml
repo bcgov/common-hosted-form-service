@@ -37,12 +37,12 @@ objects:
     metadata:
       name: "${APP_NAME}-cronjob-${JOB_NAME}"
     spec:
-      schedule: "0 8 * * *"
+      schedule: ${JOB_SCHEDULE}
       concurrencyPolicy: "Replace"
       startingDeadlineSeconds: 200
       suspend: false
       successfulJobsHistoryLimit: 3
-      failedJobsHistoryLimit: 1
+      failedJobsHistoryLimit: 2
       jobTemplate:
         spec:
           template:
@@ -79,6 +79,10 @@ parameters:
     description: Job identifier (i.e. 'pr-5' OR 'master')
     displayName: Job Branch Name
     required: true
+  - name: JOB_SCHEDULE
+    description: Job schedule defined in crontab format
+    displayName: Job Schedule
+    value: "0 8 * * *"
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace

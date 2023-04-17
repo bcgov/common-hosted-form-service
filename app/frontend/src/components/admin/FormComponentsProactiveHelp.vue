@@ -1,16 +1,7 @@
 <template>
   <div class="mt-5">
-    <v-expansion-panels
-      class="nrmc-expand-collapse"
-      flat
-      data-cy="info_link_expansion_panels"
-    >
-      <v-expansion-panel
-        flat
-        v-for="(groupName, index) in groupList"
-        :key="index"
-        @click="onExpansionPanelClick(groupName)"
-      >
+    <v-expansion-panels class="nrmc-expand-collapse" flat data-cy="info_link_expansion_panels">
+      <v-expansion-panel flat v-for="(groupName, index) in groupList" :key="index" @click="onExpansionPanelClick(groupName)">
         <v-expansion-panel-header>
           <div class="header">
             <strong>{{ groupName }}</strong>
@@ -20,11 +11,7 @@
           <GeneralLayout
             :groupName="groupName"
             :layoutList="groupComponentsList"
-            :componentsList="
-              fcProactiveHelpGroupList && fcProactiveHelpGroupList[groupName]
-                ? fcProactiveHelpGroupList[groupName]
-                : []
-            "
+            :componentsList="fcProactiveHelpGroupList && fcProactiveHelpGroupList[groupName] ? fcProactiveHelpGroupList[groupName] : []"
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -42,14 +29,7 @@ export default {
   data() {
     return {
       layout: {
-        'Basic Layout': [
-          'Text/Images',
-          'Columns - 2',
-          'Columns - 3',
-          'Columns - 4',
-          'Tabs',
-          'Panel',
-        ],
+        'Basic Layout': ['Text/Images', 'Columns - 2', 'Columns - 3', 'Columns - 4', 'Tabs', 'Panel'],
         'Basic Fields': [
           'Text Field',
           'Multi-line Text',
@@ -63,16 +43,7 @@ export default {
           'Date / Time',
           'Day',
         ],
-        'Advanced Layout': [
-          'HTML Element',
-          'Content',
-          'Columns',
-          'Field Set',
-          'Panel',
-          'Table',
-          'Tabs',
-          'Well',
-        ],
+        'Advanced Layout': ['HTML Element', 'Content', 'Columns', 'Field Set', 'Panel', 'Table', 'Tabs', 'Well'],
         'Advanced Fields': [
           'Text Field',
           'Email',
@@ -94,14 +65,7 @@ export default {
           'Survey',
           'Signature',
         ],
-        'Advanced Data': [
-          'Hidden',
-          'Container',
-          'Data Map',
-          'Data Grid',
-          'Edit Grid',
-          'Tree',
-        ],
+        'Advanced Data': ['Hidden', 'Container', 'Data Map', 'Data Grid', 'Edit Grid', 'Tree'],
         'BC Government': ['File Upload', 'Business Name Search', 'BC Address'],
       },
       isPanelOpened: new Map(),
@@ -113,10 +77,7 @@ export default {
     ...mapActions('admin', ['listFCProactiveHelp']),
 
     onExpansionPanelClick(groupName) {
-      if (
-        this.isPanelOpened.get(groupName) === undefined ||
-        !this.isPanelOpened.get(groupName)
-      ) {
+      if (this.isPanelOpened.get(groupName) === undefined || !this.isPanelOpened.get(groupName)) {
         this.isPanelOpened.set(groupName, true);
         this.groupComponentsList = this.extractGroupComponents(groupName);
       } else {

@@ -9,9 +9,7 @@ describe('Teams.vue', () => {
     const wrapper = shallowMount(Teams, {
       localVue,
       propsData: { f: 'f' },
-      stubs: [
-        'BaseSecure',
-        'TeamManagement']
+      stubs: ['BaseSecure', 'TeamManagement'],
     });
 
     expect(wrapper.html()).toMatch('teammanagement');

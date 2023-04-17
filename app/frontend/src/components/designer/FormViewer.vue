@@ -35,29 +35,17 @@
               :bulkFile="bulkFile"
               @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
               @save-draft="saveDraft"
-              @switchView="bulkFile=!bulkFile"
+              @switchView="bulkFile = !bulkFile"
             />
           </div>
-          <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }} </h1>
+          <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }}</h1>
         </div>
         <div class="form-wrapper">
           <v-alert
             :value="saved || saving"
-            :class="
-              saving
-                ? NOTIFICATIONS_TYPES.INFO.class
-                : NOTIFICATIONS_TYPES.SUCCESS.class
-            "
-            :color="
-              saving
-                ? NOTIFICATIONS_TYPES.INFO.color
-                : NOTIFICATIONS_TYPES.SUCCESS.color
-            "
-            :icon="
-              saving
-                ? NOTIFICATIONS_TYPES.INFO.icon
-                : NOTIFICATIONS_TYPES.SUCCESS.icon
-            "
+            :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
+            :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
+            :icon="saving ? NOTIFICATIONS_TYPES.INFO.icon : NOTIFICATIONS_TYPES.SUCCESS.icon"
             transition="scale-transition"
           >
             <div v-if="saving">
@@ -82,7 +70,7 @@
               <span>Submit</span>
             </template>
           </BaseDialog>
-          <div v-if="allowSubmitterToUploadFile && bulkFile" >
+          <div v-if="allowSubmitterToUploadFile && bulkFile">
             <FormViewerDownloadButton
               :response="sbdMessage"
               :formElement="formElement"
@@ -92,7 +80,8 @@
               @save-bulk-data="saveBulkData"
               @reset-message="resetMessage"
               @set-error="setError"
-              :formFields="formFields" />
+              :formFields="formFields"
+            />
           </div>
           <Form
             v-if="!bulkFile"
@@ -110,11 +99,9 @@
         </div>
       </div>
       <!-- <FormBulkDialog v-if="!submissionId && form.allowSubmitterToUploadFile" @leave-this-page="leaveThisPage" @set-bulk-file="setBulkFile"/> -->
-      <BulkPrompt :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" @close-bulk-yes-or-no="closeBulkYesOrNo"/>
+      <BulkPrompt :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" @close-bulk-yes-or-no="closeBulkYesOrNo" />
     </v-skeleton-loader>
-
   </div>
-
 </template>
 
 <script>
@@ -129,7 +116,7 @@ import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
 // import FormBulkDialog  from '@/components/designer/FormBulkDialog.vue';
-import BulkPrompt  from '@/components/designer/BulkPrompt.vue';
+import BulkPrompt from '@/components/designer/BulkPrompt.vue';
 
 import _ from 'lodash';
 
@@ -139,7 +126,7 @@ export default {
     BulkPrompt,
     Form,
     FormViewerActions,
-    FormViewerDownloadButton
+    FormViewerDownloadButton,
   },
   props: {
     displayTitle: {
@@ -187,23 +174,22 @@ export default {
       version: 0,
       versionIdToSubmitTo: this.versionId,
       allowSubmitterToUploadFile: false,
-      formFields : [],
-      json_csv : {
+      formFields: [],
+      json_csv: {
         data: [],
-        file_name: String
+        file_name: String,
       },
       bulkFile: false,
       formElement: undefined,
       sbdMessage: {
         message: String,
         error: Boolean,
-        upload_state:Number
+        upload_state: Number,
       },
-      block:false,
+      block: false,
       doYouWantToSaveTheDraft: false,
       isFormScheduleExpired: false,
-      formScheduleExpireMessage:
-        'Form submission is not available as the scheduled submission period has expired.',
+      formScheduleExpireMessage: 'Form submission is not available as the scheduled submission period has expired.',
       isLateSubmissionAllowed: false,
     };
   },
@@ -237,17 +223,14 @@ export default {
       };
     },
     canSaveDraft() {
-      return (
-        !this.readOnly &&
-        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
-      );
+      return !this.readOnly && this.permissions.includes(FormPermissions.SUBMISSION_UPDATE);
     },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     isFormPublic: isFormPublic,
     // setBulkFile
-    setBulkFile(state){
+    setBulkFile(state) {
       this.bulkFile = state;
     },
     // Get the data for a form submission
@@ -259,12 +242,7 @@ export default {
         //Get property path from nested object
         for (let property in obj) {
           if (typeof obj[property] == 'object') {
-            return iterate(
-              obj[property],
-              stack + '.' + property,
-              fields,
-              propNeeded
-            );
+            return iterate(obj[property], stack + '.' + property, fields, propNeeded);
           } else if (propNeeded === property) {
             fields = fields + stack + '.' + property;
             return fields;
@@ -273,18 +251,13 @@ export default {
       }
 
       function deleteFieldData(fieldcomponent, submission) {
-        if (
-          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
-        ) {
+        if (Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')) {
           fieldcomponent.components.map((subComponent) => {
             // Check if it's a Nested component
             deleteFieldData(subComponent, submission);
           });
         } else if (!fieldcomponent?.validate?.isUseForCopy) {
-          _.unset(
-            submission,
-            iterate(submission, '', '', fieldcomponent.key).replace(/^\./, '')
-          );
+          _.unset(submission, iterate(submission, '', '', fieldcomponent.key).replace(/^\./, ''));
         }
       }
 
@@ -300,10 +273,7 @@ export default {
           this.version = response.data.version.version;
         } else {
           /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
-          if (
-            response.data?.version?.schema?.components &&
-            response.data?.version?.schema?.components.length
-          ) {
+          if (response.data?.version?.schema?.components && response.data?.version?.schema?.components.length) {
             response.data.version.schema.components.map((component) => {
               deleteFieldData(component, this.submission); //Delete all the fields data that are not enabled for duplication
             });
@@ -334,9 +304,7 @@ export default {
           // If getting for a specific older version of the form
           response = await formService.readVersion(this.formId, this.versionId);
           if (!response.data || !response.data.schema) {
-            throw new Error(
-              `No schema in response. VersionId: ${this.versionId}`
-            );
+            throw new Error(`No schema in response. VersionId: ${this.versionId}`);
           }
           this.form = response.data;
           this.formSchema = response.data.schema;
@@ -351,14 +319,8 @@ export default {
         } else {
           // If getting the HEAD form version (IE making a new submission)
           response = await formService.readPublished(this.formId);
-          if (
-            !response.data ||
-            !response.data.versions ||
-            !response.data.versions[0]
-          ) {
-            throw new Error(
-              `No published version found in response. FormID: ${this.formId}`
-            );
+          if (!response.data || !response.data.versions || !response.data.versions[0]) {
+            throw new Error(`No published version found in response. FormID: ${this.formId}`);
           }
 
           this.form = response.data;
@@ -366,8 +328,7 @@ export default {
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
 
-          if (response.data.allowSubmitterToUploadFile && !this.draftId)
-            this.jsonManager(response);
+          if (response.data.allowSubmitterToUploadFile && !this.draftId) this.jsonManager(response);
 
           if (response.data.schedule && response.data.schedule.expire) {
             let formScheduleStatus = response.data.schedule;
@@ -375,14 +336,12 @@ export default {
             this.isLateSubmissionAllowed = formScheduleStatus.allowLateSubmissions;
             this.formScheduleExpireMessage = formScheduleStatus.message;
           }
-
         }
       } catch (error) {
         if (this.authenticated) {
           this.isFormScheduleExpired = true;
           this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage =
-            'An error occurred fetching this form';
+          this.formScheduleExpireMessage = 'An error occurred fetching this form';
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,
@@ -390,39 +349,34 @@ export default {
         }
       }
     },
-    jsonManager(response){
+    jsonManager(response) {
       this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
       const form = this.$refs.chefForm.formio;
       this.formElement = form;
-      this.json_csv.data = [form.data, form.data] ;
-      this.json_csv.file_name= 'template_'+this.form.name+'_'+Date.now();
+      this.json_csv.data = [form.data, form.data];
+      this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
     },
-    resetMessage(){
+    resetMessage() {
       this.sbdMessage.message = undefined;
       this.sbdMessage.error = false;
       this.sbdMessage.upload_state = 0;
       this.block = false;
     },
-    async saveBulkData(submissions){
+    async saveBulkData(submissions) {
       const payload = {
         draft: true,
-        submission: Object.freeze({ data : submissions }),
+        submission: Object.freeze({ data: submissions }),
       };
       this.block = true;
       this.sendMultisubmissionData(payload);
     },
-    async sendMultisubmissionData(body){
-
+    async sendMultisubmissionData(body) {
       try {
-        let response = await formService.createBulkSubmission(
-          this.formId,
-          this.versionIdToSubmitTo,
-          body
-        );
+        let response = await formService.createBulkSubmission(this.formId, this.versionIdToSubmitTo, body);
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...
-          this.sbdMessage.message ='Your multiple submissions upload has been  successful!';
+          this.sbdMessage.message = 'Your multiple submissions upload has been  successful!';
           this.sbdMessage.error = false;
           this.sbdMessage.upload_state = 10;
           this.block = false;
@@ -431,7 +385,7 @@ export default {
             ...NotificationTypes.SUCCESS,
           });
           this.leaveThisPage();
-        // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
+          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
           // console.error(response); // eslint-disable-line no-console
           this.sbdMessage.message = `Failed response from submission endpoint. Response code: ${response.status}`;
@@ -446,12 +400,12 @@ export default {
         this.sbdMessage.upload_state = 10;
         this.block = false;
         this.addNotification({
-          message: this.sbdMessage.message ,
+          message: this.sbdMessage.message,
           consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
         });
       }
     },
-    setError(data){
+    setError(data) {
       this.sbdMessage = data;
     },
     // Custom Event triggered from buttons with Action type "Event"
@@ -490,10 +444,7 @@ export default {
     },
     async sendSubmission(isDraft, submission) {
       submission.data.lateEntry =
-        this.form?.schedule?.expire !== undefined &&
-        this.form.schedule.expire === true
-          ? this.form.schedule.allowLateSubmissions
-          : false;
+        this.form?.schedule?.expire !== undefined && this.form.schedule.expire === true ? this.form.schedule.allowLateSubmissions : false;
       const body = {
         draft: isDraft,
         submission: submission,
@@ -506,11 +457,7 @@ export default {
         response = await formService.updateSubmission(this.submissionId, body);
       } else {
         // Adding a new submission
-        response = await formService.createSubmission(
-          this.formId,
-          this.versionIdToSubmitTo,
-          body
-        );
+        response = await formService.createSubmission(this.formId, this.versionIdToSubmitTo, body);
       }
       return response;
     },
@@ -621,12 +568,9 @@ export default {
               : response.data
           );
         } else {
-          throw new Error(
-            `Failed response from submission endpoint. Response code: ${response.status}`
-          );
+          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
-
         errMsg = 'An error occurred submitting this form';
       }
       return errMsg;
@@ -652,29 +596,27 @@ export default {
     },
 
     onCustomEvent(event) {
-      alert(
-        `Custom button events not supported yet. Event Type: ${event.type}`
-      );
+      alert(`Custom button events not supported yet. Event Type: ${event.type}`);
     },
-    showdoYouWantToSaveTheDraftModal(){
-      if(!this.bulkFile ){
+    showdoYouWantToSaveTheDraftModal() {
+      if (!this.bulkFile) {
         this.doYouWantToSaveTheDraft = true;
       } else {
         this.leaveThisPage();
       }
     },
-    goTo(path, params){
+    goTo(path, params) {
       this.$router.push({
         name: path,
-        query: params
+        query: params,
       });
     },
-    leaveThisPage(){
-      this.goTo('UserSubmissions', { f: this.form.id } );
+    leaveThisPage() {
+      this.goTo('UserSubmissions', { f: this.form.id });
     },
-    saveDraftFromModal(event){
+    saveDraftFromModal(event) {
       this.doYouWantToSaveTheDraft = false;
-      if(event){
+      if (event) {
         this.saveDraftFromModalNow();
       } else {
         this.leaveThisPage();
@@ -696,9 +638,9 @@ export default {
         });
       }
     },
-    closeBulkYesOrNo(){
+    closeBulkYesOrNo() {
       this.doYouWantToSaveTheDraft = false;
-    }
+    },
   },
   async created() {
     if (this.submissionId && this.isDuplicate) {

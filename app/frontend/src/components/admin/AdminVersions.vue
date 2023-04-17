@@ -1,9 +1,5 @@
 <template>
-  <v-data-table
-    class="submissions-table"
-    :headers="headers"
-    :items="versionList"
-  >
+  <v-data-table class="submissions-table" :headers="headers" :items="versionList">
     <!-- Version  -->
     <template #[`item.version`]="{ item }">
       <span> Version {{ item.version }} </span>
@@ -30,14 +26,7 @@
       <span>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              class="mx-1"
-              icon
-              @click="onExportClick(item.id, item.isDraft)"
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn color="primary" class="mx-1" icon @click="onExportClick(item.id, item.isDraft)" v-bind="attrs" v-on="on">
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
@@ -103,9 +92,7 @@ export default {
       }
 
       const a = document.createElement('a');
-      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(this.formSchema)
-      )}`;
+      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.formSchema))}`;
       a.download = `${snek}_schema.json`;
       a.style.display = 'none';
       a.classList.add('hiddenDownloadTextElement');

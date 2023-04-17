@@ -16,9 +16,7 @@ import { IdentityMode } from '@/utils/constants';
 export function generateIdps({ idps, userType }) {
   let identityProviders = [];
   if (userType === IdentityMode.LOGIN && idps && idps.length) {
-    identityProviders = identityProviders.concat(
-      idps.map((i) => ({ code: i }))
-    );
+    identityProviders = identityProviders.concat(idps.map((i) => ({ code: i })));
   } else if (userType === IdentityMode.PUBLIC) {
     identityProviders.push({ code: IdentityMode.PUBLIC });
   }
@@ -53,12 +51,9 @@ export function parseIdps(identityProviders) {
  * @param {Object[]} formSchemaComponents An array of Components
  */
 export function attachAttributesToLinks(formSchemaComponents) {
-  const simpleContentComponents = formioUtils.searchComponents(
-    formSchemaComponents,
-    {
-      type: 'simplecontent',
-    }
-  );
+  const simpleContentComponents = formioUtils.searchComponents(formSchemaComponents, {
+    type: 'simplecontent',
+  });
   const advancedContent = formioUtils.searchComponents(formSchemaComponents, {
     type: 'content',
   });
@@ -66,10 +61,7 @@ export function attachAttributesToLinks(formSchemaComponents) {
 
   combinedLinks.forEach((component) => {
     if (component.html && component.html.includes('<a ')) {
-      component.html = component.html.replace(
-        /<a(?![^>]+target=)/g,
-        '<a target="_blank" rel="noopener"'
-      );
+      component.html = component.html.replace(/<a(?![^>]+target=)/g, '<a target="_blank" rel="noopener"');
     }
   });
 }
@@ -124,12 +116,8 @@ export function getAvailableDates(
         availableDates.push(
           Object({
             startDate: substartDate.format('YYYY-MM-DD HH:MM:SS'),
-            closeDate: newDate
-              .add(keepAliveFor, keepAliveForInterval)
-              .format('YYYY-MM-DD HH:MM:SS'),
-            graceDate: newDate
-              .add(allowLateTerm, allowLateInterval)
-              .format('YYYY-MM-DD HH:MM:SS'),
+            closeDate: newDate.add(keepAliveFor, keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
+            graceDate: newDate.add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS'),
           })
         );
       }
@@ -137,25 +125,13 @@ export function getAvailableDates(
     }
   }
 
-  if (
-    term == null &&
-    interval == null &&
-    keepAliveFor &&
-    keepAliveForInterval
-  ) {
+  if (term == null && interval == null && keepAliveFor && keepAliveForInterval) {
     let newDates = substartDate.clone();
     availableDates.push(
       Object({
         startDate: substartDate.format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: newDates
-          .add(keepAliveFor, keepAliveForInterval)
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate:
-          allowLateTerm && allowLateInterval
-            ? newDates
-                .add(allowLateTerm, allowLateInterval)
-                .format('YYYY-MM-DD HH:MM:SS')
-            : null,
+        closeDate: newDates.add(keepAliveFor, keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
+        graceDate: allowLateTerm && allowLateInterval ? newDates.add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS') : null,
       })
     );
   }
@@ -189,28 +165,14 @@ export function getCalculatedCloseSubmissionDate(
   const openDate = moment(openedDate).clone();
   let calculatedCloseDate = moment(openDate);
   repeatSubmissionUntil = moment(repeatSubmissionUntil);
-  if (
-    !allowLateTerm &&
-    !allowLateInterval &&
-    !repeatSubmissionTerm &&
-    !repeatSubmissionInterval
-  ) {
-    calculatedCloseDate = openDate
-      .add(keepOpenForTerm, keepOpenForInterval)
-      .format('YYYY-MM-DD HH:MM:SS');
+  if (!allowLateTerm && !allowLateInterval && !repeatSubmissionTerm && !repeatSubmissionInterval) {
+    calculatedCloseDate = openDate.add(keepOpenForTerm, keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
   } else {
-    if (
-      repeatSubmissionTerm &&
-      repeatSubmissionInterval &&
-      repeatSubmissionUntil
-    ) {
+    if (repeatSubmissionTerm && repeatSubmissionInterval && repeatSubmissionUntil) {
       calculatedCloseDate = repeatSubmissionUntil;
     }
     if (allowLateTerm && allowLateInterval) {
-      calculatedCloseDate = calculatedCloseDate
-        .add(keepOpenForTerm, keepOpenForInterval)
-        .add(allowLateTerm, allowLateInterval)
-        .format('YYYY-MM-DD HH:MM:SS');
+      calculatedCloseDate = calculatedCloseDate.add(keepOpenForTerm, keepOpenForInterval).add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
     }
   }
   return calculatedCloseDate;
@@ -226,15 +188,9 @@ export function getCalculatedCloseSubmissionDate(
  * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years, that tells form to be allowed for late submission for a particular period
  * @param {String} allowLateInterval A string of days,Weeks,months, that tells form to be allowed for late submission for a particular period
  */
-export function calculateCloseDate(
-  subCloseDate = moment(),
-  allowLateTerm = null,
-  allowLateInterval = null
-) {
+export function calculateCloseDate(subCloseDate = moment(), allowLateTerm = null, allowLateInterval = null) {
   let closeDate = moment(subCloseDate);
-  const closeDateRet = closeDate
-    .add(allowLateTerm, allowLateInterval)
-    .format('YYYY-MM-DD HH:MM:SS');
+  const closeDateRet = closeDate.add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
   return closeDateRet;
 }
 

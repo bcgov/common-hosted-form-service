@@ -25,9 +25,7 @@ export function formatDate(value) {
  */
 export function formatDateLong(value, withComma = true) {
   if (value) {
-    return moment(String(value)).format(
-      `MMMM D YYYY${withComma ? ',' : ''} h:mm:ss a`
-    );
+    return moment(String(value)).format(`MMMM D YYYY${withComma ? ',' : ''} h:mm:ss a`);
   }
 }
 

@@ -1,10 +1,6 @@
 <template>
   <div class="notification-container">
-    <BaseNotificationBar
-      v-for="notification in notifications"
-      :key="notification.id"
-      :notification="notification"
-    />
+    <BaseNotificationBar v-for="notification in notifications" :key="notification.id" :notification="notification" />
   </div>
 </template>
 

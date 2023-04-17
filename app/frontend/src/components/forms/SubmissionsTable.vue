@@ -10,14 +10,7 @@
         <span v-if="checkFormManage">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <v-btn
-                @click="showColumnsDialog = true"
-                class="mx-1"
-                color="primary"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
+              <v-btn @click="showColumnsDialog = true" class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
@@ -26,14 +19,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  :disabled="!formId"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
+                <v-btn class="mx-1" color="primary" :disabled="!formId" icon v-bind="attrs" v-on="on">
                   <v-icon>settings</v-icon>
                 </v-btn>
               </router-link>
@@ -48,32 +34,15 @@
     <v-row no-gutters>
       <v-spacer />
       <v-col cols="4" sm="4">
-        <v-checkbox
-          class="pl-3"
-          v-model="deletedOnly"
-          label="Show deleted submissions"
-          @click="refreshSubmissions"
-        />
+        <v-checkbox class="pl-3" v-model="deletedOnly" label="Show deleted submissions" @click="refreshSubmissions" />
       </v-col>
       <v-col cols="4" sm="4">
-        <v-checkbox
-          class="pl-3"
-          v-model="currentUserOnly"
-          label="Show my submissions"
-          @click="refreshSubmissions"
-        />
+        <v-checkbox class="pl-3" v-model="currentUserOnly" label="Show my submissions" @click="refreshSubmissions" />
       </v-col>
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div class="submissions-search">
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-            class="pb-5"
-          />
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details class="pb-5" />
         </div>
       </v-col>
     </v-row>
@@ -93,36 +62,20 @@
     >
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
-          <v-btn
-            @click="(showDeleteDialog = true), (singleSubmissionDelete = false)"
-            color="red"
-            :disabled="selectedSubmissions.length === 0"
-            icon
-          >
+          <v-btn @click="(showDeleteDialog = true), (singleSubmissionDelete = false)" color="red" :disabled="selectedSubmissions.length === 0" icon>
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon color="red" dark v-bind="attrs" v-on="on"
-                  >remove_circle</v-icon
-                >
+                <v-icon color="red" dark v-bind="attrs" v-on="on">remove_circle</v-icon>
               </template>
               <span>Delete selected submissions</span>
             </v-tooltip>
           </v-btn>
         </span>
         <span v-if="deletedOnly">
-          <v-btn
-            @click="
-              (showRestoreDialog = true), (singleSubmissionRestore = false)
-            "
-            color="red"
-            :disabled="selectedSubmissions.length === 0"
-            icon
-          >
+          <v-btn @click="(showRestoreDialog = true), (singleSubmissionRestore = false)" color="red" :disabled="selectedSubmissions.length === 0" icon>
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon color="green" dark v-bind="attrs" v-on="on"
-                  >restore_from_trash</v-icon
-                >
+                <v-icon color="green" dark v-bind="attrs" v-on="on">restore_from_trash</v-icon>
               </template>
               <span>Restore selected submissions</span>
             </v-tooltip>
@@ -162,17 +115,7 @@
         <span>
           <v-tooltip bottom v-if="!item.deleted">
             <template #activator="{ on, attrs }">
-              <v-btn
-                @click="
-                  (showDeleteDialog = true),
-                    (deleteItem = item),
-                    (singleSubmissionDelete = true)
-                "
-                color="red"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
+              <v-btn @click="(showDeleteDialog = true), (deleteItem = item), (singleSubmissionDelete = true)" color="red" icon v-bind="attrs" v-on="on">
                 <v-icon>remove_circle</v-icon>
               </v-btn>
             </template>
@@ -202,12 +145,7 @@
       </template>
     </v-data-table>
 
-    <BaseDialog
-      v-model="showDeleteDialog"
-      type="CONTINUE"
-      @close-dialog="showDeleteDialog = false"
-      @continue-dialog="delSub"
-    >
+    <BaseDialog v-model="showDeleteDialog" type="CONTINUE" @close-dialog="showDeleteDialog = false" @continue-dialog="delSub">
       <template #title>Confirm Deletion</template>
       <template #text>
         {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
@@ -216,17 +154,10 @@
         <span>Delete</span>
       </template>
     </BaseDialog>
-    <BaseDialog
-      v-model="showRestoreDialog"
-      type="CONTINUE"
-      @close-dialog="showRestoreDialog = false"
-      @continue-dialog="restoreSub"
-    >
+    <BaseDialog v-model="showRestoreDialog" type="CONTINUE" @close-dialog="showRestoreDialog = false" @continue-dialog="restoreSub">
       <template #title>Confirm Restoration</template>
       <template #text>
-        {{
-          singleSubmissionRestore ? singleRestoreMessage : multiRestoreMessage
-        }}
+        {{ singleSubmissionRestore ? singleRestoreMessage : multiRestoreMessage }}
       </template>
       <template #button-text-continue>
         <span>Restore</span>
@@ -242,9 +173,7 @@
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title
-          >Search and select columns to show under your dashboard</template
-        >
+        <template #filter-title>Search and select columns to show under your dashboard</template>
       </BaseFilter>
     </v-dialog>
   </div>
@@ -295,11 +224,9 @@ export default {
       submissionsCheckboxes: [],
       showDeleteDialog: false,
       selectedSubmissions: [],
-      multiDeleteMessage:
-        'Are you sure you wish to delete selected submissions?',
+      multiDeleteMessage: 'Are you sure you wish to delete selected submissions?',
       singleDeleteMessage: 'Are you sure you wish to delete this submission?',
-      multiRestoreMessage:
-        'Are you sure you wish to restore these submissions?',
+      multiRestoreMessage: 'Are you sure you wish to restore these submissions?',
       singleRestoreMessage: 'Are you sure you wish to restore this submission?',
       singleSubmissionDelete: false,
       singleSubmissionRestore: false,
@@ -309,15 +236,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', [
-      'form',
-      'formFields',
-      'permissions',
-      'submissionList',
-      'userFormPreferences',
-      'roles',
-      'deletedSubmissions',
-    ]),
+    ...mapGetters('form', ['form', 'formFields', 'permissions', 'submissionList', 'userFormPreferences', 'roles', 'deletedSubmissions']),
     ...mapGetters('auth', ['user']),
 
     checkFormManage() {
@@ -333,10 +252,7 @@ export default {
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
         //push new header for late submission if Form is setup for scheduling
-        headers = [
-          ...headers,
-          { text: 'Late Submission', align: 'start', value: 'lateEntry' },
-        ];
+        headers = [...headers, { text: 'Late Submission', align: 'start', value: 'lateEntry' }];
       }
       // If status flow enabled add that column
       if (this.showStatus) {
@@ -351,10 +267,7 @@ export default {
       const maxHeaderLength = 25;
       this.userColumns.forEach((col) => {
         headers.push({
-          text:
-            col.length > maxHeaderLength
-              ? `${col.substring(0, maxHeaderLength)}...`
-              : col,
+          text: col.length > maxHeaderLength ? `${col.substring(0, maxHeaderLength)}...` : col,
           align: 'end',
           value: col,
         });
@@ -386,42 +299,27 @@ export default {
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
       if (this.filterData.length > 0)
-        headers = headers.filter(
-          (h) =>
-            this.filterData.some((fd) => fd.value === h.value) ||
-            this.filterIgnore.some((ign) => ign.value === h.value)
-        );
+        headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
       return headers;
     },
     FILTER_HEADERS() {
-      let filteredHeader = this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      ).concat(
+      let filteredHeader = this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value)).concat(
         this.formFields.map((ff) => {
           return { text: ff, value: ff, align: 'end' };
         })
       );
 
       return filteredHeader.filter(function (item, index, inputArray) {
-        return (
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          index
-        );
+        return inputArray.findIndex((arrayItem) => arrayItem.value === item.value) == index;
       });
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
     },
     userColumns() {
-      if (
-        this.userFormPreferences &&
-        this.userFormPreferences.preferences &&
-        this.userFormPreferences.preferences.columns
-      ) {
+      if (this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.columns) {
         // Compare saved user prefs against the current form versions component names and remove any discrepancies
-        return this.userFormPreferences.preferences.columns.filter(
-          (x) => this.formFields.indexOf(x) !== -1
-        );
+        return this.userFormPreferences.preferences.columns.filter((x) => this.formFields.indexOf(x) !== -1);
       } else {
         return [];
       }
@@ -457,15 +355,11 @@ export default {
     ...mapActions('notifications', ['addNotification']),
 
     async delSub() {
-      this.singleSubmissionDelete
-        ? this.deleteSingleSubs()
-        : this.deleteMultiSubs();
+      this.singleSubmissionDelete ? this.deleteSingleSubs() : this.deleteMultiSubs();
     },
 
     async restoreSub() {
-      this.singleSubmissionRestore
-        ? this.restoreSingleSub()
-        : this.restoreMultipleSubs();
+      this.singleSubmissionRestore ? this.restoreSingleSub() : this.restoreMultipleSubs();
     },
     async deleteSingleSubs() {
       this.showDeleteDialog = false;
@@ -473,9 +367,7 @@ export default {
       this.refreshSubmissions();
     },
     async deleteMultiSubs() {
-      let submissionsIdsToDelete = this.selectedSubmissions.map(
-        (submission) => submission.submissionId
-      );
+      let submissionsIdsToDelete = this.selectedSubmissions.map((submission) => submission.submissionId);
       this.showDeleteDialog = false;
       await this.deleteMultiSubmissions({
         submissionIds: submissionsIdsToDelete,
@@ -494,35 +386,16 @@ export default {
           formId: this.formId,
           createdAt: Object.values({
             minDate:
-              this.userFormPreferences &&
-              this.userFormPreferences.preferences &&
-              this.userFormPreferences.preferences.filter
-                ? moment(
-                    this.userFormPreferences.preferences.filter[0],
-                    'YYYY-MM-DD hh:mm:ss'
-                  )
-                    .utc()
-                    .format()
-                : moment()
-                    .subtract(50, 'years')
-                    .utc()
-                    .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+              this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter
+                ? moment(this.userFormPreferences.preferences.filter[0], 'YYYY-MM-DD hh:mm:ss').utc().format()
+                : moment().subtract(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
             maxDate:
-              this.userFormPreferences &&
-              this.userFormPreferences.preferences &&
-              this.userFormPreferences.preferences.filter
-                ? moment(
-                    this.userFormPreferences.preferences.filter[1],
-                    'YYYY-MM-DD hh:mm:ss'
-                  )
-                    .utc()
-                    .format()
+              this.userFormPreferences && this.userFormPreferences.preferences && this.userFormPreferences.preferences.filter
+                ? moment(this.userFormPreferences.preferences.filter[1], 'YYYY-MM-DD hh:mm:ss').utc().format()
                 : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
           }),
           deletedOnly: this.deletedOnly,
-          createdBy: this.currentUserOnly
-            ? `${this.user.username}@${this.user.idp}`
-            : '',
+          createdBy: this.currentUserOnly ? `${this.user.username}@${this.user.idp}` : '',
         };
         await this.fetchSubmissions(criteria);
         // Build up the list of forms for the table
@@ -549,9 +422,7 @@ export default {
               return fields;
             });
           this.submissionTable = tableRows;
-          this.submissionsCheckboxes = new Array(
-            this.submissionTable.length
-          ).fill(false);
+          this.submissionsCheckboxes = new Array(this.submissionTable.length).fill(false);
         }
       } catch (error) {
         // Handled in state fetchSubmissions
@@ -586,9 +457,7 @@ export default {
       this.refreshSubmissions();
     },
     async restoreMultipleSubs() {
-      let submissionsIdsToRestore = this.selectedSubmissions.map(
-        (submission) => submission.submissionId
-      );
+      let submissionsIdsToRestore = this.selectedSubmissions.map((submission) => submission.submissionId);
       this.showRestoreDialog = false;
       await this.restoreMultiSubmissions({
         submissionIds: submissionsIdsToRestore,
@@ -603,8 +472,7 @@ export default {
         columns: [],
       };
       data.forEach((d) => {
-        if (this.formFields.includes(d.value))
-          preferences.columns.push(d.value);
+        if (this.formFields.includes(d.value)) preferences.columns.push(d.value);
       });
 
       await this.updateFormPreferencesForCurrentUser({
