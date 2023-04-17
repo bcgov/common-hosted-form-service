@@ -602,11 +602,11 @@ export default {
         const response = userView
           ? await rbacService.getUserSubmissions({ formId: formId })
           : await formService.listSubmissions(formId, {
-            deleted: deletedOnly,
-            fields: fields,
-            createdBy: createdBy,
-            createdAt: createdAt,
-          });
+              deleted: deletedOnly,
+              fields: fields,
+              createdBy: createdBy,
+              createdAt: createdAt,
+            });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch(
