@@ -20,12 +20,7 @@ module.exports = {
     parser: 'babel-eslint',
   },
   rules: {
-    'prettier/prettier': [
-      'error',
-      {
-        endOfLine: 'auto',
-      },
-    ],
+    'prettier/prettier':'error',
     'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'eol-last': ['error', 'always'],
     'linebreak-style': ['error', 'unix'],
