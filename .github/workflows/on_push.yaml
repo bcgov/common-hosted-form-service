@@ -57,6 +57,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          mailjob_schedule: ${{ vars.MAILJOB_SCHEDULE }}
 
   deploy-test:
     name: Deploy to Test
@@ -84,6 +85,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          mailjob_schedule: ${{ vars.MAILJOB_SCHEDULE }}
 
   deploy-prod:
     name: Deploy to Prod
@@ -112,3 +114,4 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          mailjob_schedule: ${{ vars.MAILJOB_SCHEDULE }}
