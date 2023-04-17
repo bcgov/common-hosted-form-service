@@ -109,7 +109,7 @@ export default function getRouter(basePath = '/') {
               ),
             meta: {
               breadcrumbTitle: 'Form Designer',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: true,
               hasLogin: true,
             },
           },
