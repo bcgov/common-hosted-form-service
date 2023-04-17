@@ -468,7 +468,6 @@ const service = {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
-      
       /* 
       //Future use to validate submission data on backend side.
 
@@ -478,7 +477,7 @@ const service = {
         throw new Problem(422, `Validation Error`, report);
       }
       */
-     
+
       const { identityProviders } = await service.readForm(formVersion.formId);
 
       trx = await FormSubmission.startTransaction();
@@ -570,15 +569,17 @@ const service = {
 
       let validationResults = [];
       let anyError = false;
-      await Promise.all(submissionDataArray.map(async (singleData,index) => {
-        const report = await validator.validate(singleData, formVersion.schema);
-        if(report !== null) {
-          anyError = true;
-          validationResults[index] = new Problem(422, `Validation Error`, {report});
-        }
-      }));
-      
-      if(anyError){
+      await Promise.all(
+        submissionDataArray.map(async (singleData, index) => {
+          const report = await validator.validate(singleData, formVersion.schema);
+          if (report !== null) {
+            anyError = true;
+            validationResults[index] = new Problem(422, `Validation Error`, { report });
+          }
+        })
+      );
+
+      if (anyError) {
         return validationResults; //As we need all or nothing to be saved, So if a single draft entry do not validated then just return report without saving any submission.
       }
 

@@ -5,14 +5,14 @@ const Validator = require('formio/src/resources/Validator.js');
  */
 
 function validate(data, schema) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const validator = new Validator(schema);
     validator.validate({ data }, (err) => {
-        resolve(err);
+      resolve(err);
     });
   });
 }
 
 module.exports = {
-  validate
+  validate,
 };
