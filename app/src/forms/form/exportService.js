@@ -120,19 +120,23 @@ const service = {
       .modify('orderDefault');
     if (params.columns) {
       for (let index in submissionData) {
-        let keys = Object.keys(submissionData[index].submission);
-        for (let key of keys) {
-          if (Array.isArray(params.columns) && !params.columns.includes(key)) {
-            delete submissionData[index].submission[key];
+        if (submissionData[index].submission) {
+          let keys = Object.keys(submissionData[index].submission);
+          for (let key of keys) {
+            if (Array.isArray(params.columns) && !params.columns.includes(key)) {
+              delete submissionData[index].submission[key];
+            }
           }
         }
       }
     } else {
       for (let index in submissionData) {
-        let keys = Object.keys(submissionData[index].submission);
-        for (let key of keys) {
-          if (key === 'submit') {
-            delete submissionData[index].submission[key];
+        if (submissionData[index].submission) {
+          let keys = Object.keys(submissionData[index].submission);
+          for (let key of keys) {
+            if (key === 'submit') {
+              delete submissionData[index].submission[key];
+            }
           }
         }
       }
