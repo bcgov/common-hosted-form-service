@@ -308,4 +308,27 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
   });
+  it('fetchFormCSVExportFields should commit to SET_FORM_FIELDS', async () => {
+    formService.readCSVExportFields.mockRejectedValue('');
+    await store.actions.fetchFormCSVExportFields(mockStore, {
+      formId: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
+      type: false,
+      draft: false,
+      deleted: false,
+      version: 2,
+    });
+
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith(
+      'SET_FORM_FIELDS',
+      expect.any(Object)
+    );
+    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+    expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    expect(mockStore.dispatch).toHaveBeenCalledWith(
+      'notifications/addNotification',
+      expect.any(Object),
+      expect.any(Object)
+    );
+  });
 });
