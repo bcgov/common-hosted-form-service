@@ -40,8 +40,25 @@
             </template>
             <span>Manage Form</span>
           </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link
+                :to="{ name: 'SubmissionsExport', query: { f: formId } }"
+              >
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>get_app</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>Export Submissions to Files</span>
+          </v-tooltip>
         </span>
-        <ExportSubmissions />
       </v-col>
     </v-row>
 
@@ -254,7 +271,6 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 import moment from 'moment';
-import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
 
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -262,9 +278,6 @@ library.add(faTrash);
 
 export default {
   name: 'SubmissionsTable',
-  components: {
-    ExportSubmissions,
-  },
   props: {
     formId: {
       type: String,
