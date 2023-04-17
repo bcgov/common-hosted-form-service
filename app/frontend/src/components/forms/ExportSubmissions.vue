@@ -251,7 +251,7 @@
 
             <v-card-actions class="mt-5">
               <v-btn
-                class="mb-5 mr-5 exportButtonStyle"
+                class="mb-5 exportButtonStyle"
                 color="primary"
                 @click="callExport"
               >
