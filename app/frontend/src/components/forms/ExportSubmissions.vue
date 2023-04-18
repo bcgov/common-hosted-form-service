@@ -320,7 +320,6 @@ export default {
             : undefined;
 
         let emailExport = false;
-        console.log(this.formFields.length);
         if (
           this.submissionList.length > ExportLargeData.MAX_RECORDS ||
           this.formFields.length > ExportLargeData.MAX_FIELDS
