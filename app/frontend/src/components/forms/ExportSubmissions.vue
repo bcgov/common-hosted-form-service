@@ -445,12 +445,12 @@ export default {
           this.versions.push('');
         } else {
           versions.sort((a, b) => b.published - a.published);
-          await this.refreshFormFields(this.versions[0]);
         }
         this.versions.push(
           ...this.form.versions.map((version) => version.version)
         );
         this.versionSelected = this.versions[0];
+        await this.refreshFormFields(this.versionSelected);
       }
     },
   },
