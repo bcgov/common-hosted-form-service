@@ -245,19 +245,16 @@
                 </v-radio-group>
               </v-col>
             </v-row>
-            <div class="mt-6 mb-0 fileLabelStyle">
+            <div class="mt-5 fileLabelStyle">
               File Name and Type: <strong>{{ fileName }}</strong>
             </div>
-
-            <v-card-actions class="mt-5">
-              <v-btn
-                class="mb-5 exportButtonStyle"
-                color="primary"
-                @click="callExport"
-              >
-                <span>Export</span>
-              </v-btn>
-            </v-card-actions>
+            <v-btn
+              class="mb-5 mt-5 exportButtonStyle"
+              color="primary"
+              @click="callExport"
+            >
+              <span>Export</span>
+            </v-btn>
           </v-col>
         </v-row>
       </v-col>
