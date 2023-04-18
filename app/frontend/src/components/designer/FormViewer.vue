@@ -313,7 +313,8 @@ export default {
             !response.data.versions[0]
           ) {
             throw new Error(
-              `No published version found in response. FormID: ${this.formId}`
+              'The form owner has not published the form, and it is not ' +
+                'available for submissions.'
             );
           }
           this.form = response.data;
@@ -333,8 +334,7 @@ export default {
         if (this.authenticated) {
           this.isFormScheduleExpired = true;
           this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage =
-            'An error occurred fetching this form';
+          this.formScheduleExpireMessage = error.message;
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,
