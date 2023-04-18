@@ -84,7 +84,10 @@
                           single-line
                         >
                         </v-text-field>
-                        <div class="subTitleObjectStyle">
+                        <div
+                          class="subTitleObjectStyle"
+                          style="font-size: 14px !important"
+                        >
                           {{ selected.length }} of
                           {{ FILTER_HEADERS.length }} selected for exports
                         </div>
@@ -102,7 +105,7 @@
                           mobile
                           disable-pagination
                           fixed-header
-                          class="grey lighten-5 mt-2 submissions-table"
+                          class="grey lighten-5 mt-3 submissions-table"
                         />
                       </v-col>
                     </v-row>
@@ -305,7 +308,7 @@ export default {
       versionRequired: false,
       headers: [
         {
-          text: 'Submissions Fields',
+          text: 'Select all fields',
           align: ' start',
           sortable: true,
           value: 'name',
@@ -430,15 +433,23 @@ export default {
     },
     async updateVersions() {
       this.versions = [];
-      if (this.form && this.form.versions) {
-        this.form.versions.sort((a, b) =>
-          a.version < b.version ? -1 : a.version > b.version ? 1 : 0
+      if (this.form && Array.isArray(this.form.versions)) {
+        let versions = this.form.versions;
+        const isFormNotPublished = versions.every(
+          (version) => !version.published
         );
+        if (isFormNotPublished) {
+          versions.sort((a, b) =>
+            a.version < b.version ? -1 : a.version > b.version ? 1 : 0
+          );
+          this.versions.push('');
+        } else {
+          versions.sort((a, b) => b.published - a.published);
+        }
         this.versions.push(
-          '',
           ...this.form.versions.map((version) => version.version)
         );
-        this.versionSelected = '';
+        this.versionSelected = this.versions[0];
       }
     },
   },
