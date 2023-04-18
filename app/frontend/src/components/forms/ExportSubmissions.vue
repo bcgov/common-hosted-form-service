@@ -443,6 +443,7 @@ export default {
             a.version < b.version ? -1 : a.version > b.version ? 1 : 0
           );
           this.versions.push('');
+          await this.refreshFormFields(this.versions[0]);
         } else {
           versions.sort((a, b) => b.published - a.published);
         }
