@@ -231,7 +231,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('notifications', ['addNotification', 'clearNotification']),
+    ...mapActions('notifications', ['addNotification']),
     isFormPublic: isFormPublic,
     // setBulkFile
     setBulkFile(state) {
@@ -353,14 +353,6 @@ export default {
         }
       }
     },
-    bulkSwitcher() {
-      try {
-        if (this.bulkState != undefined) this.bulkFile = parseInt(this.bulkState) == 0 ? false : true;
-        else this.bulkFile = false;
-      } catch (error) {
-        this.bulkFile = false;
-      }
-    },
     jsonManager(response) {
       this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
       const form = this.$refs.chefForm.formio;
@@ -368,7 +360,6 @@ export default {
       form.on('render', () => {
         this.json_csv.data = [form.data, form.data];
         this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
-        this.bulkSwitcher();
       });
       form.on('change', (e) => {
         if (e.changed != undefined) {
@@ -626,27 +617,7 @@ export default {
         this.showdoYouWantToSaveTheDraftModalForSwitch();
         return;
       }
-      const state = this.bulkFile ? '0' : '1';
-      this.finalizeSwitch(state);
-    },
-    finalizeSwitch(state) {
-      if (state == 1) {
-        this.saving = false;
-        this.$router.push({
-          name: 'FormSubmitBulkFile',
-          query: {
-            f: this.formId,
-            b: state,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: 'FormSubmit',
-          query: {
-            f: this.formId,
-          },
-        });
-      }
+      this.bulkFile = !this.bulkFile;
     },
     showdoYouWantToSaveTheDraftModalForSwitch() {
       this.saveDraftState = 1;
@@ -674,8 +645,7 @@ export default {
       if (this.saveDraftState == 0 || this.bulkFile) {
         this.goTo('UserSubmissions', { f: this.form.id });
       } else {
-        this.clearNotification();
-        this.finalizeSwitch('1');
+        this.bulkFile = !this.bulkFile;
       }
     },
     saveDraftFromModal(event) {
@@ -691,6 +661,7 @@ export default {
       try {
         this.saving = true;
         await this.sendSubmission(true, this.submission);
+        this.saving = false;
         // Creating a new submission in draft state
         // Go to the user form draft page
         this.leaveThisPage();
@@ -719,14 +690,6 @@ export default {
         window.onbeforeunload = () => true;
       }
       this.resetMessage();
-    },
-  },
-  watch: {
-    '$route.query': {
-      immediate: true,
-      handler() {
-        this.bulkSwitcher();
-      },
     },
   },
   async created() {

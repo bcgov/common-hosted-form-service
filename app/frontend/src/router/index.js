@@ -156,19 +156,6 @@ export default function getRouter(basePath = '/') {
             },
           },
           {
-            path: 'submitBulkFile',
-            name: 'FormSubmitBulkFile',
-            component: () => import(/* webpackChunkName: "submit" */ '@/views/form/Submit.vue'),
-            meta: {
-              breadcrumbTitle: 'Submit Form',
-              formSubmitMode: false,
-            },
-            props: createProps,
-            beforeEnter(to, _from, next) {
-              preFlightAuth({ formId: to.query.f }, next);
-            },
-          },
-          {
             path: 'success',
             name: 'FormSuccess',
             component: () => import(/* webpackChunkName: "submit" */ '@/views/form/Success.vue'),
