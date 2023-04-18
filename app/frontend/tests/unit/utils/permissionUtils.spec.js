@@ -85,9 +85,102 @@ describe('preFlightAuth', () => {
     expect(mockNext).toHaveBeenCalledTimes(0);
     expect(dispatchSpy).toHaveBeenCalledTimes(2);
     expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
-    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate');
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate', expect.undefined);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it('should create custom error message if form is 404', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        identityProvider: () => IdentityMode.PUBLIC
+      }
+    });
+
+    readFormOptionsSpy.mockImplementation(() => {
+      const error = new Error('Not Found');
+      error.response = {
+        status: 404
+      };
+
+      throw error;
+    });
+
+    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
+
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification',
+      expect.any(Object));
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate',
+      expect.any(String));
+    expect(mockNext).toHaveBeenCalledTimes(0);
+  });
+
+  it('should not create custom error message if form is 500', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        identityProvider: () => IdentityMode.PUBLIC
+      }
+    });
+
+    readFormOptionsSpy.mockImplementation(() => {
+      const error = new Error('Not Found');
+      error.response = {
+        status: 500
+      };
+
+      throw error;
+    });
+
+    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
+
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification',
+      expect.any(Object));
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate',
+      expect.undefined);
+    expect(mockNext).toHaveBeenCalledTimes(0);
+  });
+
+  it('should not create custom error message if sub is missing', async () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        identityProvider: () => IdentityMode.PUBLIC
+      }
+    });
+
+    readFormOptionsSpy.mockImplementation(() => {
+      const error = new Error('Not Found');
+      error.response = {
+        status: 404
+      };
+
+      throw error;
+    });
+
+    await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
+
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification',
+      expect.any(Object));
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate',
+      expect.undefined);
+    expect(mockNext).toHaveBeenCalledTimes(0);
   });
 
   it('should call readFormOptions and next callback if authenticated and public', async () => {
