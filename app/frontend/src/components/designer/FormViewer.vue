@@ -35,7 +35,7 @@
               :bulkFile="bulkFile"
               @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
               @save-draft="saveDraft"
-              @switchView="bulkFile = !bulkFile"
+              @switchView="switchView"
             />
           </div>
           <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }}</h1>
@@ -129,6 +129,7 @@ export default {
     FormViewerDownloadButton,
   },
   props: {
+    bulkState: String,
     displayTitle: {
       type: Boolean,
       default: false,
@@ -157,6 +158,7 @@ export default {
   },
   data() {
     return {
+      isFormReady: false,
       confirmSubmit: false,
       currentForm: {},
       forceNewTabLinks: true,
@@ -191,6 +193,8 @@ export default {
       isFormScheduleExpired: false,
       formScheduleExpireMessage: 'Form submission is not available as the scheduled submission period has expired.',
       isLateSubmissionAllowed: false,
+      saveDraftState: 0,
+      formDataEntered: false,
     };
   },
   computed: {
@@ -227,7 +231,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('notifications', ['addNotification']),
+    ...mapActions('notifications', ['addNotification', 'clearNotification']),
     isFormPublic: isFormPublic,
     // setBulkFile
     setBulkFile(state) {
@@ -349,12 +353,31 @@ export default {
         }
       }
     },
+    bulkSwitcher() {
+      try {
+        if (this.bulkState != undefined) this.bulkFile = parseInt(this.bulkState) == 0 ? false : true;
+        else this.bulkFile = false;
+      } catch (error) {
+        this.bulkFile = false;
+      }
+    },
     jsonManager(response) {
       this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
       const form = this.$refs.chefForm.formio;
       this.formElement = form;
-      this.json_csv.data = [form.data, form.data];
-      this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
+      form.on('render', () => {
+        this.json_csv.data = [form.data, form.data];
+        this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
+        this.bulkSwitcher();
+      });
+      form.on('change', (e) => {
+        if (e.changed != undefined) {
+          this.formDataEntered = true;
+        }
+        if (!this.isFormReady && form.submission) {
+          this.isFormReady = true;
+        }
+      });
     },
     resetMessage() {
       this.sbdMessage.message = undefined;
@@ -598,9 +621,45 @@ export default {
     onCustomEvent(event) {
       alert(`Custom button events not supported yet. Event Type: ${event.type}`);
     },
+    switchView() {
+      if (!this.bulkFile) {
+        this.showdoYouWantToSaveTheDraftModalForSwitch();
+        return;
+      }
+      const state = this.bulkFile ? '0' : '1';
+      this.finalizeSwitch(state);
+    },
+    finalizeSwitch(state) {
+      if (state == 1) {
+        this.saving = false;
+        this.$router.push({
+          name: 'FormSubmitBulkFile',
+          query: {
+            f: this.formId,
+            b: state,
+          },
+        });
+      } else {
+        this.$router.push({
+          name: 'FormSubmit',
+          query: {
+            f: this.formId,
+          },
+        });
+      }
+    },
+    showdoYouWantToSaveTheDraftModalForSwitch() {
+      this.saveDraftState = 1;
+      if (this.formDataEntered) {
+        this.doYouWantToSaveTheDraft = true;
+      } else {
+        this.leaveThisPage();
+      }
+    },
     showdoYouWantToSaveTheDraftModal() {
       if (!this.bulkFile) {
         this.doYouWantToSaveTheDraft = true;
+        this.saveDraftState = 0;
       } else {
         this.leaveThisPage();
       }
@@ -612,7 +671,12 @@ export default {
       });
     },
     leaveThisPage() {
-      this.goTo('UserSubmissions', { f: this.form.id });
+      if (this.saveDraftState == 0 || this.bulkFile) {
+        this.goTo('UserSubmissions', { f: this.form.id });
+      } else {
+        this.clearNotification();
+        this.finalizeSwitch('1');
+      }
     },
     saveDraftFromModal(event) {
       this.doYouWantToSaveTheDraft = false;
@@ -641,21 +705,32 @@ export default {
     closeBulkYesOrNo() {
       this.doYouWantToSaveTheDraft = false;
     },
+    async init() {
+      if (this.submissionId && this.isDuplicate) {
+        //Run when make new submission from existing one called.
+        await this.getFormData();
+        await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
+      } else if (this.submissionId && !this.isDuplicate) {
+        await this.getFormData();
+      } else {
+        await this.getFormSchema();
+      }
+      if (!this.preview && !this.readOnly) {
+        window.onbeforeunload = () => true;
+      }
+      this.resetMessage();
+    },
+  },
+  watch: {
+    '$route.query': {
+      immediate: true,
+      handler() {
+        this.bulkSwitcher();
+      },
+    },
   },
   async created() {
-    if (this.submissionId && this.isDuplicate) {
-      //Run when make new submission from existing one called.
-      await this.getFormData();
-      await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
-    } else if (this.submissionId && !this.isDuplicate) {
-      await this.getFormData();
-    } else {
-      await this.getFormSchema();
-    }
-    if (!this.preview && !this.readOnly) {
-      window.onbeforeunload = () => true;
-    }
-    this.resetMessage();
+    this.init();
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change

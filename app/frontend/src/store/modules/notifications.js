@@ -19,6 +19,9 @@ export default {
     DELETE(state, notificationToRemove) {
       state.notifications = state.notifications.filter((notification) => notification.id !== notificationToRemove.id);
     },
+    CLEAR(state) {
+      state.notifications = [];
+    },
   },
   actions: {
     addNotification({ commit }, notification) {
@@ -28,6 +31,9 @@ export default {
     },
     deleteNotification({ commit }, notificationToRemove) {
       commit('DELETE', notificationToRemove);
+    },
+    clearNotification({ commit }) {
+      commit('CLEAR');
     },
   },
 };
