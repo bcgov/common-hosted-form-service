@@ -109,7 +109,7 @@ export default function getRouter(basePath = '/') {
               ),
             meta: {
               breadcrumbTitle: 'Form Designer',
-              requiresAuth: true,
+              requiresAuth: IdentityProviders.IDIR,
               hasLogin: true,
             },
           },
@@ -136,7 +136,7 @@ export default function getRouter(basePath = '/') {
               ),
             meta: {
               breadcrumbTitle: 'Submissions Export',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: true,
               hasLogin: true,
             },
             props: createProps,

@@ -65,7 +65,10 @@
                 ></v-select>
               </v-col>
             </v-row>
-            <v-row v-if="exportFormat === 'csv'" class="mt-0">
+            <v-row
+              v-if="exportFormat === 'csv' && showFieldsOptions"
+              class="mt-0"
+            >
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
                 <v-row v-if="exportFormat === 'csv'">
@@ -200,7 +203,10 @@
                 </div>
               </v-col>
             </v-row>
-            <v-row v-if="exportFormat === 'csv'" class="mt-0 pt-0">
+            <v-row
+              v-if="exportFormat === 'csv' && showFieldsOptions"
+              class="mt-0 pt-0"
+            >
               <v-col>
                 <div style="display: flex; align-content: flex-start">
                   <div class="subTitleObjectStyle mr-1">CSV Format</div>
@@ -304,6 +310,7 @@ export default {
       inputFilter: '',
       select: ['Vuetify', 'Programming'],
       singleSelect: false,
+      showFieldsOptions: false,
       selected: [],
       versionRequired: false,
       headers: [
@@ -346,6 +353,9 @@ export default {
     ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
     async changeVersions(value) {
       this.versionRequired = false;
+      value !== ''
+        ? (this.showFieldsOptions = true)
+        : (this.showFieldsOptions = false);
       await this.refreshFormFields(value);
     },
     async refreshFormFields(version) {
@@ -442,8 +452,10 @@ export default {
           versions.sort((a, b) =>
             a.version < b.version ? -1 : a.version > b.version ? 1 : 0
           );
+          this.showFieldsOptions = false;
           this.versions.push('');
         } else {
+          this.showFieldsOptions = true;
           versions.sort((a, b) => b.published - a.published);
         }
         this.versions.push(
