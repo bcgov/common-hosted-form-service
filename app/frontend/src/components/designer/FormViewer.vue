@@ -416,9 +416,7 @@ export default {
         this.sbdMessage.error = true;
         this.sbdMessage.upload_state = 10;
         this.block = false;
-        console.log(error);
         this.sbdMessage.response = error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
-        console.log(this.sbdMessage.response);
         this.addNotification({
           message: this.sbdMessage.message,
           consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
