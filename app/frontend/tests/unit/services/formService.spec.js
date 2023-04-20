@@ -312,15 +312,15 @@ describe('Form Service', () => {
     });
   });
 
-  describe('forms/{formId}/export', () => {
-    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/export`;
+  describe('forms/{formId}/export/fields', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/export/fields`;
 
     it('calls get on endpoint', async () => {
-      mockAxios.onGet(endpoint).reply(200);
+      mockAxios.onPost(endpoint).reply(200);
 
       const result = await formService.exportSubmissions(zeroUuid, 'csv');
       expect(result).toBeTruthy();
-      expect(mockAxios.history.get).toHaveLength(1);
+      expect(mockAxios.history.post).toHaveLength(1);
     });
   });
 

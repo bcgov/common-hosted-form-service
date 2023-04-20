@@ -386,8 +386,9 @@ export default {
     fields,
     options = {}
   ) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`, {
-      params: {
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/export/fields`,
+      {
         format: format,
         template: template,
         version: versionSelected,
@@ -396,8 +397,10 @@ export default {
         fields: fields,
         ...options,
       },
-      responseType: 'blob',
-    });
+      {
+        responseType: 'blob',
+      }
+    );
   },
 
   //
