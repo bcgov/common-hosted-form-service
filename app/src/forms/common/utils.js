@@ -516,17 +516,19 @@ const unwindPath = (schema) => {
   for (let obj of schema) {
     const findField = (obj, keyPath) => {
       let keys = keyPath;
-      Object.keys(obj).forEach((key) => {
-        if (Array.isArray(obj[key]) && !key.includes('address')) {
-          path.push(keys !== undefined ? keys + '.' + key : key);
-          for (let value of obj[key]) {
-            findField(value, keys !== undefined ? keys + '.' + key : key);
+      if (!_.isUndefined(obj) && !_.isNull(obj)) {
+        Object.keys(obj).forEach((key) => {
+          if (Array.isArray(obj[key]) && !key.includes('address')) {
+            path.push(keys !== undefined ? keys + '.' + key : key);
+            for (let value of obj[key]) {
+              findField(value, keys !== undefined ? keys + '.' + key : key);
+            }
           }
-        }
-        if (obj[key] instanceof Object && !key.includes('address')) {
-          findField(obj[key], keys !== undefined ? keys + '.' + key : key);
-        }
-      });
+          if (obj[key] instanceof Object && !key.includes('address')) {
+            findField(obj[key], keys !== undefined ? keys + '.' + key : key);
+          }
+        });
+      }
     };
     findField(obj, undefined);
   }
@@ -535,20 +537,25 @@ const unwindPath = (schema) => {
 
 const submissionHeaders = (obj) => {
   let objectMap = new Set();
+
   const findField = (obj, keyPath) => {
-    Object.keys(obj).forEach((key) => {
-      if (Array.isArray(obj[key])) {
-        for (let value of obj[key]) {
-          findField(value, keyPath ? keyPath + '.' + key : key);
+    if (_.isUndefined(obj) || _.isNull(obj)) {
+      objectMap.add(keyPath);
+    } else {
+      Object.keys(obj).forEach((key) => {
+        if (_.isString(obj) || _.isNumber(obj) || _.isDate(obj[key])) {
+          if (key !== 'submit') {
+            objectMap.add(keyPath ? keyPath + '.' + key : key);
+          }
+        } else if (Array.isArray(obj[key])) {
+          for (let value of obj[key]) {
+            findField(value, keyPath ? keyPath + '.' + key : key);
+          }
+        } else if (_.isPlainObject(obj[key])) {
+          findField(obj[key], keyPath ? keyPath + '.' + key : key);
         }
-      } else if (_.isPlainObject(obj[key])) {
-        findField(obj[key], keyPath ? keyPath + '.' + key : key);
-      } else if (_.isString(obj[key]) || _.isNumber(obj[key]) || _.isPlainObject(obj[key]) || _.isDate(obj[key])) {
-        if (key !== 'submit') {
-          objectMap.add(keyPath ? keyPath + '.' + key : key);
-        }
-      }
-    });
+      });
+    }
   };
 
   findField(obj, undefined);
