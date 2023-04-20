@@ -15,6 +15,18 @@ module.exports = {
       next(error);
     }
   },
+
+  exportWithFields: async (req, res, next) => {
+    try {
+      const result = await exportService.export(req.params.formId, req.body);
+      ['Content-Disposition', 'Content-Type'].forEach((h) => {
+        res.setHeader(h, result.headers[h.toLowerCase()]);
+      });
+      return res.send(result.data);
+    } catch (error) {
+      next(error);
+    }
+  },
   listForms: async (req, res, next) => {
     try {
       const response = await service.listForms(req.query);

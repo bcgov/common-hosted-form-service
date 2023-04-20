@@ -4,6 +4,7 @@ const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
 const { transforms } = require('json2csv');
 const { Parser } = require('json2csv');
+const _ = require('lodash');
 
 const service = {
   /**
@@ -108,7 +109,12 @@ const service = {
   },
 
   _getSubmissions: async (form, params, version) => {
-    let preference = params.preference ? JSON.parse(params.preference) : undefined;
+    //let preference = params.preference ? JSON.parse(params.preference) : undefined;
+    let preference;
+    if (params.preference && _.isString(params.preference)) {
+      preference = JSON.parse(params.preference);
+    }
+    preference = params.preference;
     // params for this export include minDate and maxDate (full timestamp dates).
     let submissionData = await SubmissionData.query()
       .column(service._submissionsColumns(form, params))

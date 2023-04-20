@@ -467,9 +467,7 @@ export default {
     },
   },
   async mounted() {
-    this.fetchForm(this.formId).then(() => {
-      this.updateVersions();
-    });
+    this.fetchForm(this.formId);
   },
   watch: {
     startDate() {
@@ -485,9 +483,11 @@ export default {
       }
     },
     exportFormat(value) {
-      if (value !== 'json') {
+      if (value === 'json') {
+        this.selected = [];
         this.versionRequired = false;
       }
+      this.updateVersions();
     },
     dateRange(value) {
       if (!value) {

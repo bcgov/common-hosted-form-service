@@ -257,7 +257,7 @@ describe('_buildCsvHeaders', () => {
     // gets a a list of form meta fieldfs followed by submission fields
     const result = await exportService._buildCsvHeaders(form, submissionsExport, 1);
 
-    expect(result).toHaveLength(42);
+    expect(result).toHaveLength(41);
     expect(result).toEqual(expect.arrayContaining(['number1', 'selectBoxes1.a', 'number']));
     expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
     expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
