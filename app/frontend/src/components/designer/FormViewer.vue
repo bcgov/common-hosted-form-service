@@ -187,6 +187,7 @@ export default {
         message: String,
         error: Boolean,
         upload_state: Number,
+        response: [],
       },
       block: false,
       doYouWantToSaveTheDraft: false,
@@ -374,6 +375,7 @@ export default {
       this.sbdMessage.message = undefined;
       this.sbdMessage.error = false;
       this.sbdMessage.upload_state = 0;
+      this.sbdMessage.response = [];
       this.block = false;
     },
     async saveBulkData(submissions) {
@@ -393,31 +395,46 @@ export default {
           this.sbdMessage.message = 'Your multiple submissions upload has been  successful!';
           this.sbdMessage.error = false;
           this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = [];
           this.block = false;
           this.addNotification({
             message: this.sbdMessage.message,
             ...NotificationTypes.SUCCESS,
           });
           this.leaveThisPage();
-          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
           // console.error(response); // eslint-disable-line no-console
           this.sbdMessage.message = `Failed response from submission endpoint. Response code: ${response.status}`;
           this.sbdMessage.error = true;
           this.sbdMessage.upload_state = 10;
           this.block = false;
+          this.sbdMessage.response = [];
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
-        this.sbdMessage.message = 'An error occurred submitting this form';
+        this.sbdMessage.message = error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
         this.sbdMessage.error = true;
         this.sbdMessage.upload_state = 10;
         this.block = false;
+        console.log(error);
+        this.sbdMessage.response = error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
+        console.log(this.sbdMessage.response);
         this.addNotification({
           message: this.sbdMessage.message,
           consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
         });
       }
+    },
+    async formatResponse(response) {
+      let newResponse = [];
+      await response.forEach((item, index) => {
+        const error = {
+          index,
+          errors: item.details,
+        };
+        newResponse.push(error);
+      });
+      return newResponse;
     },
     setError(data) {
       this.sbdMessage = data;

@@ -468,7 +468,7 @@ const service = {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
-      /* 
+      /*
       //Future use to validate submission data on backend side.
 
       const report = await validator.validate(data.submission.data, formVersion.schema);
@@ -574,13 +574,14 @@ const service = {
           const report = await validator.validate(singleData, formVersion.schema);
           if (report !== null) {
             anyError = true;
-            validationResults[index] = new Problem(422, `Validation Error`, { report });
+            validationResults[index] = report;
           }
         })
       );
 
       if (anyError) {
-        return validationResults; //As we need all or nothing to be saved, So if a single draft entry do not validated then just return report without saving any submission.
+        //As we need all or nothing to be saved, So if a single draft entry do not validated then just return report without saving any submission.
+        throw new Problem(422, `Validation failed`, { reports: validationResults });
       }
 
       // let's create multiple submissions with same metadata

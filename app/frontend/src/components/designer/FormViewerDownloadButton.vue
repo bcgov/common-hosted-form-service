@@ -51,11 +51,11 @@
               <v-icon v-if="!response.error" color="green">check</v-icon>
               {{ response.message }}
             </p>
-            <ul v-if="response.error && globalError.length > 0" class="list-error">
-              <li v-for="item in globalError" v-bind:key="item.index">
+            <ul v-if="response.error && response.response.length > 0" class="list-error">
+              <li v-for="item in response.response" v-bind:key="item.index">
                 Submission {{ item.index + 1 }}
                 <ul v-if="item.errors.length > 0">
-                  <li v-for="(error, index) in item.errors" v-bind:key="index">{{ error }}</li>
+                  <li v-for="(error, index) in item.errors" v-bind:key="index">({{ error.context.key }})-{{ error.message }}</li>
                 </ul>
               </li>
             </ul>
@@ -89,6 +89,7 @@ export default {
       message: String,
       error: Boolean,
       upload_state: Number,
+      response: [],
     },
     json_csv: {
       data: [],
@@ -250,29 +251,10 @@ export default {
     },
     endValidation() {
       this.progress = false;
-      // this.globalError = [{
-      //   index: 0,
-      //   errors:  [
-      //     'Error 1 ','Error 2 '
-      //   ]
-      // },
-      // {
-      //   index: 1,
-      //   errors:  [
-      //     'Error 1 ','Error 2 '
-      //   ]
-      // },
-      // {
-      //   index: 2,
-      //   errors:  [
-      //     'Error 1 ','Error 2 '
-      //   ]
-      // }
-      // ];
       if (this.globalError.length == 0) {
         this.$emit('save-bulk-data', this.Json);
       } else {
-        this.$emit('set-error', { message: this.ERROR.ERROR_AFTER_VALIDATE, error: true, upload_state: 10 });
+        this.$emit('set-error', { message: this.ERROR.ERROR_AFTER_VALIDATE, error: true, upload_state: 10, response: this.globalError });
       }
     },
     resetUpload() {
