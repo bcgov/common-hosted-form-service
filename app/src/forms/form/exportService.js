@@ -148,14 +148,14 @@ const service = {
   _formatSubmissionsCsv: async (form, data, exportTemplate, version, fields) => {
     try {
       switch (exportTemplate) {
-        case 'flattenedWithBlankOut':
-          return service._flattenSubmissionsCSVExport(form, data, version, true, fields);
-        case 'flattenedWithFilled':
-          return service._flattenSubmissionsCSVExport(form, data, version, false, fields);
-        case 'unflattened':
-          return service._unFlattenSubmissionsCSVExport(form, data, version, fields);
-        case 'flattenedWithSingleRow':
-          return service._flattenedSingleRowSubmissionsCSVExport(form, data, version);
+        case 'multiRowEmptySpacesCSVExport':
+          return service._multiRowsCSVExport(form, data, version, true, fields);
+        case 'multiRowBackFilledCSVExport':
+          return service._multiRowsCSVExport(form, data, version, false, fields);
+        case 'singleRowCSVExport':
+          return service._singleRowCSVExport(form, data, version, fields);
+        case 'unFormattedCSVExport':
+          return service._unFormattedCSVExport(form, data, version);
         default:
         // code block
       }
@@ -163,7 +163,7 @@ const service = {
       throw new Problem(500, { detail: `Could not make a csv export of submissions for this form. ${e.message}` });
     }
   },
-  _flattenSubmissionsCSVExport: async (form, data, version, blankout, fields) => {
+  _multiRowsCSVExport: async (form, data, version, blankout, fields) => {
     let pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, fields);
 
@@ -181,11 +181,9 @@ const service = {
       },
     };
   },
-  _unFlattenSubmissionsCSVExport: async (form, data, version, fields) => {
-    let headers = await service._buildCsvHeaders(form, data, version, fields);
+  _singleRowCSVExport: async (form, data) => {
     const opts = {
-      transforms: [transforms.flatten({ object: true, array: true, separator: '.' })],
-      fields: headers,
+      transforms: [transforms.flatten({ objects: true, arrays: true, separator: '.' })],
     };
     const parser = new Parser(opts);
     const csv = parser.parse(data);
@@ -197,9 +195,11 @@ const service = {
       },
     };
   },
-  _flattenedSingleRowSubmissionsCSVExport: async (form, data) => {
+  _unFormattedCSVExport: async (form, data, version, fields) => {
+    let headers = await service._buildCsvHeaders(form, data, version, fields);
     const opts = {
-      transforms: [transforms.flatten({ objects: true, arrays: true, separator: '.' })],
+      transforms: [transforms.flatten({ object: true, array: true, separator: '.' })],
+      fields: headers,
     };
     const parser = new Parser(opts);
     const csv = parser.parse(data);
