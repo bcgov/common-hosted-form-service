@@ -210,51 +210,65 @@
               <v-col>
                 <div style="display: flex; align-content: flex-start">
                   <div class="subTitleObjectStyle mr-1">CSV Format</div>
-                  (<a
-                    :href="githubLink"
-                    class="preview_info_link_field"
-                    :target="'_blank'"
-                  >
-                    Learn more
-                    <font-awesome-icon
-                      icon="fa-solid fa-square-arrow-up-right" /></a
-                  >)
                 </div>
 
-                <v-radio-group v-model="csvTemplates" hide-details="auto">
-                  <v-radio label="A" value="flattenedWithBlankOut">
+                <v-radio-group v-model="csvFormats" hide-details="auto">
+                  <v-radio
+                    label="A"
+                    value="multiRowEmptySpacesCSVExport"
+                    style="display: flex; align-content: flex-start"
+                  >
                     <template v-slot:label>
                       <span
                         class="radioboxLabelStyle"
                         style="display: flex; align-content: flex-start"
                       >
-                        Template 1
+                        1 - Multi-row per submission without filling empty
+                        spaces
                         <div class="blueColorWrapper ml-1">
                           (Recommended)
                         </div></span
                       >
                     </template>
                   </v-radio>
-                  <v-radio label="B" value="flattenedWithFilled">
+                  <v-radio
+                    label="B"
+                    value="multiRowBackFilledCSVExport"
+                    class="mt-2"
+                    style="display: flex; align-content: flex-start"
+                  >
                     <template v-slot:label>
-                      <span class="radioboxLabelStyle">Template 2 </span>
+                      <span class="radioboxLabelStyle">
+                        2 - Multi-row per submission with backfilled empty
+                        spaces
+                      </span>
                     </template>
-                    <sup>Betas</sup>
                   </v-radio>
-                  <v-radio label="C" value="flattenedWithSingleRow">
+                  <v-radio
+                    label="C"
+                    class="mt-2"
+                    value="singleRowCSVExport"
+                    style="display: flex; align-content: flex-start"
+                  >
                     <template v-slot:label>
-                      <span class="radioboxLabelStyle">Template 3 </span>
+                      <span class="radioboxLabelStyle"
+                        >3 - Single row per submission
+                      </span>
                     </template>
                   </v-radio>
-                  <v-radio label="C" value="unflattened">
+                  <v-radio label="D" value="unFormattedCSVExport" class="mt-2">
                     <template v-slot:label>
-                      <span class="radioboxLabelStyle">Template 4 </span>
+                      <span
+                        class="radioboxLabelStyle"
+                        style="display: flex; align-content: flex-start"
+                        >4 - Unformatted Submissions</span
+                      >
                     </template>
                   </v-radio>
                 </v-radio-group>
               </v-col>
             </v-row>
-            <div class="mt-5 fileLabelStyle">
+            <div class="mt-7 fileLabelStyle">
               File Name and Type: <strong>{{ fileName }}</strong>
             </div>
             <v-btn
@@ -304,7 +318,7 @@ export default {
       startDateMenu: false,
       versionSelected: 0,
       versionSelectedId: '',
-      csvTemplates: 'flattenedWithBlankOut',
+      csvFormats: 'flattenedWithBlankOut',
       versions: [],
       allDataFields: true,
       inputFilter: '',
@@ -399,7 +413,7 @@ export default {
         const response = await formService.exportSubmissions(
           this.form.id,
           this.exportFormat,
-          this.csvTemplates,
+          this.csvFormats,
           this.exportFormat === 'csv' ? this.versionSelected : undefined,
           {
             minDate: from,
