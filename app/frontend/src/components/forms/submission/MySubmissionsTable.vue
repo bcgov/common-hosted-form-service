@@ -109,6 +109,7 @@
             (h) => !filterIgnore.some((fd) => fd.value === h.value)
           )
         "
+        :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -213,6 +214,11 @@ export default {
             this.filterIgnore.some((ign) => ign.value === h.value)
         );
       return headers;
+    },
+    PRESELECTED_DATA() {
+      return this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;

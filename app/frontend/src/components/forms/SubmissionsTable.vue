@@ -239,6 +239,7 @@
         inputItemKey="value"
         inputSaveButtonText="Save"
         :inputData="FILTER_HEADERS"
+        :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -328,9 +329,47 @@ export default {
     DEFAULT_HEADERS() {
       let headers = [
         { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
-        { text: 'Submission Date', align: 'start', value: 'date' },
-        { text: 'Submitter', align: 'start', value: 'submitter' },
       ];
+
+      if (this.userFormPreferences?.preferences?.columns) {
+        if (this.userFormPreferences.preferences.columns.includes('date')) {
+          headers = [
+            ...headers,
+            {
+              text: 'Submission Date',
+              align: 'start',
+              value: 'date',
+            },
+          ];
+        }
+
+        if (
+          this.userFormPreferences.preferences.columns.includes('submitter')
+        ) {
+          headers = [
+            ...headers,
+            {
+              text: 'Submitter',
+              align: 'start',
+              value: 'submitter',
+            },
+          ];
+        }
+      } else {
+        headers = [
+          ...headers,
+          {
+            text: 'Submission Date',
+            align: 'start',
+            value: 'date',
+          },
+          {
+            text: 'Submitter',
+            align: 'start',
+            value: 'submitter',
+          },
+        ];
+      }
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
         //push new header for late submission if Form is setup for scheduling
@@ -403,12 +442,45 @@ export default {
         })
       );
 
+      filteredHeader = [
+        {
+          text: 'Submission Date',
+          align: 'start',
+          value: 'date',
+        },
+        {
+          text: 'Submitter',
+          align: 'start',
+          value: 'submitter',
+        },
+        ...filteredHeader,
+      ];
+
       return filteredHeader.filter(function (item, index, inputArray) {
         return (
           inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
           index
         );
       });
+    },
+    PRESELECTED_DATA() {
+      let preselectedData = [];
+      if (this.userFormPreferences?.preferences?.columns) {
+        preselectedData = this.userFormPreferences.preferences.columns.map(
+          (column) => {
+            return {
+              align: 'end',
+              text: column,
+              value: column,
+            };
+          }
+        );
+      } else {
+        preselectedData = this.DEFAULT_HEADERS.filter(
+          (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+        );
+      }
+      return preselectedData;
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
@@ -567,15 +639,20 @@ export default {
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
         this.fetchForm(this.formId).then(async () => {
-          await this.fetchFormFields({
-            formId: this.formId,
-            formVersionId: this.form.versions[0].id,
-          });
+          if (this.form.versions?.length > 0) {
+            await this.fetchFormFields({
+              formId: this.formId,
+              formVersionId: this.form.versions[0].id,
+            });
+          }
         }),
-      ]).then(async () => {
-        await this.populateSubmissionsTable();
-      });
-      this.selectedSubmissions = [];
+      ])
+        .then(async () => {
+          await this.populateSubmissionsTable();
+        })
+        .finally(() => {
+          this.selectedSubmissions = [];
+        });
     },
 
     async restoreSingleSub() {
@@ -604,8 +681,7 @@ export default {
         columns: [],
       };
       data.forEach((d) => {
-        if (this.formFields.includes(d.value))
-          preferences.columns.push(d.value);
+        preferences.columns.push(d.value);
       });
 
       await this.updateFormPreferencesForCurrentUser({
