@@ -1,18 +1,22 @@
-const Validator = require('formio/src/resources/Validator.js');
-
 /**
  * This function will be used to validate submission data
  */
 
-function validate(data, schema) {
+const validateData = (data, validator) => {
   return new Promise((resolve) => {
-    const validator = new Validator(schema);
-    validator.validate({ data }, (err) => {
-      resolve(err);
-    });
+    validator.validate(
+      { data },
+      (err) => {
+        console.log(err);
+        resolve(err);
+      },
+      (e) => {
+        console.log('catch', e);
+      }
+    );
   });
-}
+};
 
 module.exports = {
-  validate,
+  validateData,
 };

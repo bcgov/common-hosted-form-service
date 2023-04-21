@@ -2,8 +2,9 @@ const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 const { validateScheduleObject } = require('../common/utils');
-const validator = require('../common/validator');
-
+const { validateData } = require('../common/validator');
+const Validator = require('formio/src/resources/Validator.js');
+// const validatorService = require('./validatorService');
 const {
   FileStorage,
   Form,
@@ -567,11 +568,28 @@ const service = {
 
       let recordsToInsert = [];
 
+      // let results = await validatorService._init(formVersion.schema, submissionDataArray);
+      // let validationResults = results[0];
+      // let anyError = results[1];
+
       let validationResults = [];
       let anyError = false;
+
+      // await Promise.all(
+      //   submissionDataArray.map(async (singleData, index) => {
+      //     const report = await validator.validate(singleData, formVersion.schema);
+      //     if (report !== null) {
+      //       anyError = true;
+      //       validationResults[index] = report;
+      //     }
+      //   })
+      // );
+
+      const validator = new Validator(formVersion.schema);
+
       await Promise.all(
         submissionDataArray.map(async (singleData, index) => {
-          const report = await validator.validate(singleData, formVersion.schema);
+          const report = await validateData(singleData, validator);
           if (report !== null) {
             anyError = true;
             validationResults[index] = report;
