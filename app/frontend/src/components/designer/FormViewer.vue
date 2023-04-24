@@ -312,10 +312,16 @@ export default {
             !response.data.versions ||
             !response.data.versions[0]
           ) {
-            throw new Error(
-              'The form owner has not published the form, and it is not ' +
-                'available for submissions.'
-            );
+            this.$router.push({
+              name: 'Alert',
+              params: {
+                message:
+                  'The form owner has not published the form, and it is not ' +
+                  'available for submissions.',
+                type: 'info',
+              },
+            });
+            return;
           }
           this.form = response.data;
           this.version = response.data.versions[0].version;

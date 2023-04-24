@@ -85,6 +85,20 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
+        path: '/alert',
+        name: 'Alert',
+        component: () =>
+          import(
+            /* webpackChunkName: "alert" */
+            '@/components/bcgov/BCGovAlertBanner.vue'
+          ),
+        meta: {
+          formSubmitMode: true,
+          hasLogin: true,
+        },
+        props: createProps,
+      },
+      {
         path: '/error',
         name: 'Error',
         component: () =>
