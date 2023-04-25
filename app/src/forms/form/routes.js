@@ -26,7 +26,7 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
   await controller.export(req, res, next);
 });
 
-routes.post('/:formId/export/fields', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.exportWithFields(req, res, next);
 });
 
