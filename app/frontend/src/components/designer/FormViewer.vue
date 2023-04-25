@@ -44,11 +44,6 @@
               ? NOTIFICATIONS_TYPES.INFO.class
               : NOTIFICATIONS_TYPES.SUCCESS.class
           "
-          :color="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.color
-              : NOTIFICATIONS_TYPES.SUCCESS.color
-          "
           :icon="
             saving
               ? NOTIFICATIONS_TYPES.INFO.icon
