@@ -13,12 +13,7 @@
           Set up Form
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step
-          :complete="creatorStep > 2"
-          :editable="true"
-          step="2"
-          class="pr-1"
-        >
+        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
           Design Form
         </v-stepper-step>
         <v-divider />
