@@ -42,11 +42,15 @@ export default {
       return false; // There are roles to check, but nothing in token to check against
     },
     identityProvider: () =>
-      Vue.prototype.$keycloak.tokenParsed.identity_provider,
+      Vue.prototype.$keycloak.tokenParsed
+        ? Vue.prototype.$keycloak.tokenParsed.identity_provider
+        : null,
     isAdmin: (_state, getters) => getters.hasResourceRoles('chefs', ['admin']),
     isUser: (_state, getters) => getters.hasResourceRoles('chefs', ['user']),
     keycloakReady: () => Vue.prototype.$keycloak.ready,
     keycloakSubject: () => Vue.prototype.$keycloak.subject,
+    identityProviderIdentity: () =>
+      Vue.prototype.$keycloak.tokenParsed.idp_userid,
     moduleLoaded: () => !!Vue.prototype.$keycloak,
     realmAccess: () => Vue.prototype.$keycloak.tokenParsed.realm_access,
     redirectUri: (state) => state.redirectUri,
@@ -62,16 +66,14 @@ export default {
         fullName: '',
         email: '',
         idp: 'public',
-        public: !getters.authenticated
-      };      
-
+        public: !getters.authenticated,
+      };
       if (getters.authenticated) {
-        if (getters.tokenParsed.identity_provider_identity) {
-          user.username = getters.tokenParsed.identity_provider_identity;
+        if (getters.tokenParsed.idp_username) {
+          user.username = getters.tokenParsed.idp_username;
         } else {
           user.username = getters.tokenParsed.preferred_username;
         }
-      
         user.firstName = getters.tokenParsed.given_name;
         user.lastName = getters.tokenParsed.family_name;
         user.fullName = getters.tokenParsed.name;
@@ -116,7 +118,10 @@ export default {
         } else {
           // Navigate to internal login page if no idpHint specified
           const router = getRouter(Vue.prototype.$config.basePath);
-          router.replace({ name: 'Login' });
+          router.replace({
+            name: 'Login',
+            params: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
+          });
         }
       }
     },

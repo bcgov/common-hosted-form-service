@@ -1,0 +1,32 @@
+{
+  "id":"11111111-1111-1111-1111-111111111112",
+  "usernameIdp":"7ddfdd92d0c64cfc8d96a29a8a5bdcd7@idir@idir",
+  "idpUserId": "ao9rsqw60nvf24pemkdik5e3fmo2kb6l",
+  "username":"7ddfdd92d0c64cfc8d96a29a8a5bdcd7@idir",
+  "firstName":"Jason",
+  "lastName":"Chung",
+  "fullName":"Jason Chung",
+  "email":"jason.chung@gov.bc.ca",
+  "idp":"idir",
+  "public":false,
+  "forms":[
+    {
+      "formId":"11111111-1111-1111-1111-111111111111",
+      "formName":"a",
+      "formDescription":"",
+      "labels":null,
+      "idps":[],
+      "active":true,
+      "formVersionId":null,
+      "version":null,
+      "published":null,
+      "versionUpdatedAt":null,
+      "roles":[
+        "form_designer","form_submitter","owner","submission_reviewer","team_manager"
+      ],
+      "permissions":[
+        "design_create","design_delete","design_read","design_update","form_api_create","form_api_delete","form_api_read","form_api_update","form_delete","form_read","form_update","submission_create","submission_delete","submission_read","submission_update","team_read","team_update"
+      ]
+    }
+  ]
+}

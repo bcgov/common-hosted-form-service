@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
 
-import { formService, rbacService, userService } from '@/services';
+import { formService, rbacService, userService, adminService } from '@/services';
 import store from '@/store/modules/form';
 
 jest.mock('@/services');
@@ -176,6 +176,20 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
 
+    it('deleteMultiSubmissions should dispatch to notifications/addNotification', async () => {
+      formService.deleteMultipleSubmissions.mockRejectedValue('');
+      await store.actions.deleteMultiSubmissions(mockStore, ['sId']);
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('restoreMultiSubmissions should dispatch to notifications/addNotification', async () => {
+      formService.restoreMutipleSubmissions.mockRejectedValue('');
+      await store.actions.restoreMultiSubmissions(mockStore, ['sId']);
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
     it('fetchSubmission should commit to SET_FORMSUBMISSION', async () => {
       formService.getSubmission.mockResolvedValue({ data: { submission: {}, form: {} } });
       await store.actions.fetchSubmission(mockStore, { submissionId: 'sId' });
@@ -200,7 +214,7 @@ describe('form actions', () => {
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'createdBy': '' });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -211,7 +225,7 @@ describe('form actions', () => {
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'createdBy': '' });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -235,7 +249,7 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'createdBy': '' });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -254,6 +268,42 @@ describe('form actions', () => {
 
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_FORMSUBMISSION', expect.any(Object));
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+  });
+  describe('form components proactive help', () => {
+    it('listFCProactiveHelp should commit to SET_FCPROACTIVEHELPGROUPLIST', async () => {
+      adminService.listFCProactiveHelp.mockResolvedValue({ data: [] });
+      await store.actions.listFCProactiveHelp(mockStore);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPLIST', expect.any(Object));
+    });
+
+    it('listFCProactiveHelp should dispatch to notifications/addNotification', async () => {
+      adminService.listFCProactiveHelp.mockRejectedValue('');
+      await store.actions.listFCProactiveHelp(mockStore);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPLIST', expect.any(Object));
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('getFCProactiveHelpImageUrl should commit to SET_FCPROACTIVEHELPIMAGEURL', async () => {
+      adminService.getFCProactiveHelpImageUrl.mockResolvedValue({ data: {} });
+      await store.actions.getFCProactiveHelpImageUrl(mockStore);
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPIMAGEURL', expect.any(Object));
+    });
+
+    it('getFCProactiveHelpImageUrl should dispatch to notifications/addNotification', async () => {
+      adminService.getFCProactiveHelpImageUrl.mockRejectedValue('');
+      await store.actions.getFCProactiveHelpImageUrl(mockStore);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPIMAGEURL', expect.any(Object));
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });

@@ -4,13 +4,7 @@
     <h4>User Details</h4>
     <pre>{{ user }}</pre>
 
-    <v-btn
-      color="primary"
-      text
-      small
-      :href="userUrl"
-      target="_blank"
-    >
+    <v-btn color="primary" text small :href="userUrl" target="_blank">
       <span>Open SSO console</span>
     </v-btn>
   </div>

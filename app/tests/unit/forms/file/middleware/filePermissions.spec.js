@@ -6,7 +6,7 @@ const userAccess = require('../../../../../src/forms/auth/middleware/userAccess'
 
 const testRes = {
   writeHead: jest.fn(),
-  end: jest.fn()
+  end: jest.fn(),
 };
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
 const oneUuid = '11111111-1111-1111-1111-111111111111';
@@ -21,8 +21,8 @@ describe('currentFileRecord', () => {
   it('403s if there is no current user on the request scope', async () => {
     const testReq = {
       params: {
-        id: zeroUuid
-      }
+        id: zeroUuid,
+      },
     };
 
     const nxt = jest.fn();
@@ -32,17 +32,15 @@ describe('currentFileRecord', () => {
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
     expect(readFileSpy).toHaveBeenCalledTimes(0);
-
-
   });
 
   it('403s if there is no file ID on the request scope', async () => {
     const testReq = {
       params: {},
       currentUser: {
-        keycloakId: zeroUuid,
+        idpUserId: zeroUuid,
         username: 'jsmith@idir',
-      }
+      },
     };
 
     const nxt = jest.fn();
@@ -54,14 +52,13 @@ describe('currentFileRecord', () => {
     expect(readFileSpy).toHaveBeenCalledTimes(0);
   });
 
-
   it('403s if there is no file record to be found', async () => {
     const testReq = {
       params: { id: zeroUuid },
       currentUser: {
-        keycloakId: oneUuid,
+        idpUserId: oneUuid,
         username: 'jsmith@idir',
-      }
+      },
     };
 
     const nxt = jest.fn();
@@ -81,9 +78,9 @@ describe('currentFileRecord', () => {
     const testReq = {
       params: { id: zeroUuid },
       currentUser: {
-        keycloakId: oneUuid,
+        idpUserId: oneUuid,
         username: 'jsmith@idir',
-      }
+      },
     };
 
     const nxt = jest.fn();
@@ -103,12 +100,12 @@ describe('currentFileRecord', () => {
     const testReq = {
       params: { id: zeroUuid },
       currentUser: {
-        keycloakId: oneUuid,
+        idpUserId: oneUuid,
         username: 'jsmith@idir',
-      }
+      },
     };
     const testRecord = {
-      name: 'test'
+      name: 'test',
     };
 
     const nxt = jest.fn();
@@ -123,16 +120,14 @@ describe('currentFileRecord', () => {
     expect(nxt).toHaveBeenCalledWith();
     expect(testReq.currentFileRecord).toEqual(testRecord);
   });
-
 });
 
 describe('hasFileCreate', () => {
-
   it('403s if there is no current user on the request scope', async () => {
     const testReq = {
       headers: {
-        authorization: 'Bearer hjvds0uds'
-      }
+        authorization: 'Bearer hjvds0uds',
+      },
     };
 
     const nxt = jest.fn();
@@ -142,15 +137,14 @@ describe('hasFileCreate', () => {
     expect(testReq.currentUser).toEqual(undefined);
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Invalid authorization credentials.' }));
-
   });
 
   it('403s if the current user is not an actual user (IE, public)', async () => {
     const testReq = {
       currentUser: {
-        keycloakId: undefined,
+        idpUserId: undefined,
         username: 'public',
-      }
+      },
     };
 
     const nxt = jest.fn();
@@ -160,15 +154,14 @@ describe('hasFileCreate', () => {
     expect(testReq.currentUser).toEqual(testReq.currentUser);
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Invalid authorization credentials.' }));
-
   });
 
   it('passes if a authed user is on the request', async () => {
     const testReq = {
       currentUser: {
-        keycloakId: zeroUuid,
+        idpUserId: zeroUuid,
         username: 'jsmith@idir',
-      }
+      },
     };
 
     const nxt = jest.fn();
@@ -178,10 +171,8 @@ describe('hasFileCreate', () => {
     expect(testReq.currentUser).toEqual(testReq.currentUser);
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith();
-
   });
 });
-
 
 describe('hasFilePermissions', () => {
   const perm = 'submission_read';
@@ -211,9 +202,9 @@ describe('hasFilePermissions', () => {
     const nxt = jest.fn();
     const req = {
       currentUser: {
-        keycloakId: undefined,
+        idpUserId: undefined,
         username: 'public',
-      }
+      },
     };
 
     mw(req, testRes, nxt);
@@ -226,12 +217,12 @@ describe('hasFilePermissions', () => {
     const nxt = jest.fn();
     const req = {
       currentUser: {
-        keycloakId: zeroUuid,
+        idpUserId: zeroUuid,
         username: 'jsmith@idir',
       },
       currentFileRecord: {
         name: 'unsubmitted file',
-      }
+      },
     };
 
     mw(req, testRes, nxt);
@@ -249,13 +240,13 @@ describe('hasFilePermissions', () => {
     const req = {
       query: {},
       currentUser: {
-        keycloakId: zeroUuid,
+        idpUserId: zeroUuid,
         username: 'jsmith@idir',
       },
       currentFileRecord: {
         formSubmissionId: oneUuid,
         name: 'unsubmitted file',
-      }
+      },
     };
 
     mw(req, testRes, nxt);

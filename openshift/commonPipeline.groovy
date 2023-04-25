@@ -63,6 +63,7 @@ def runStageDeploy(String stageEnv, String projectEnv, String hostEnv, String pa
       echo "Checking for ConfigMaps and Secrets in project ${openshift.project()}..."
       if(!(openshift.selector('cm', "${APP_NAME}-frontend-config").exists() &&
       openshift.selector('cm', "${APP_NAME}-sc-config").exists() &&
+      openshift.selector('cm', "${APP_NAME}-custombcaddressformiocomponent-config").exists() &&
       openshift.selector('cm', "${APP_NAME}-server-config").exists() &&
       openshift.selector('cm', "fluent-bit-config").exists() &&
       openshift.selector('secret', "${APP_NAME}-keycloak-secret").exists() &&

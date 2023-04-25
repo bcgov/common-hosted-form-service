@@ -1,0 +1,107 @@
+name: owasp-zap-scan
+env:
+  ZAP_SCAN_TYPE: full
+  # Check dev environment for now
+  ZAP_TARGET_URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}
+  ZAP_DURATION: 2
+  ZAP_MAX_DURATION: 10
+  # PUBLISH RESULTS TO WEBPAGE
+  ## Creates a pre-signed URL with the results...
+  ZAP_GCP_PUBLISH: false
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_call:
+    inputs:
+      ZAP_SCAN_TYPE:
+        required: true
+        type: string
+      ZAP_TARGET_URL:
+        required: true
+        type: string
+      ZAP_DURATION:
+        required: true
+        type: string
+      ZAP_MAX_DURATION:
+        required: true
+        type: string
+      ZAP_GCP_PUBLISH:
+        required: true
+        type: boolean
+      ZAP_GCP_PROJECT:
+        required: false
+        type: string
+      ZAP_GCP_BUCKET:
+        required: false
+        type: string
+    secrets:
+      GCP_SA_KEY:
+        required: false
+jobs:
+  owasp-zap-scan:
+    runs-on: ubuntu-latest
+    name: OWASP ZAP Scan
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Cloud SDK
+        if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: ">= 416.0.0"
+          project_id: ${{ env.ZAP_GCP_PROJECT }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: ZAP Base Scan
+        if: ${{ env.ZAP_SCAN_TYPE == 'base' }}
+        uses: zaproxy/action-baseline@v0.6.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "owasp/zap2docker-stable"
+          target: ${{ env.ZAP_TARGET_URL }}
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-a -d -T ${{ env.ZAP_MAX_DURATION }} -m ${{ env.ZAP_DURATION }}"
+          issue_title: OWAP Baseline
+      - name: ZAP Full Scan
+        if: ${{ env.ZAP_SCAN_TYPE == 'full' }}
+        uses: zaproxy/action-full-scan@v0.3.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "owasp/zap2docker-stable"
+          target: ${{ env.ZAP_TARGET_URL }}
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-a -d -T ${{ env.ZAP_MAX_DURATION }} -m ${{ env.ZAP_DURATION }}"
+      - name: Create Artifact Directory
+        if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}
+        run: |
+          mkdir -p public/zap
+      - name: Publish Reports to Github
+        uses: actions/download-artifact@v2
+        with:
+          name: zap_scan
+          path: public/zap
+      - name: Rename Markdown
+        if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}
+        run: |
+          mv public/zap/report_md.md public/zap/README.md
+      - name: ZAP Results
+        uses: JamesIves/github-pages-deploy-action@4.1.6
+        with:
+          branch: zap-scan
+          folder: public/zap
+      - name: GCP Publish Results URL
+        if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}
+        run: |
+          echo "$GCP_SA_KEY" > gcp-sa-key.json
+          gsutil mb gs://${{ env.ZAP_GCP_BUCKET }} || echo "Bucket already exists..."
+          gsutil cp public/zap/report_html.html gs://${{ env.ZAP_GCP_BUCKET }}
+          echo "URL expires in 10 minutes..."
+          gsutil signurl -d 10m gcp-sa-key.json gs://${{ env.ZAP_GCP_BUCKET }}/report_html.html
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}

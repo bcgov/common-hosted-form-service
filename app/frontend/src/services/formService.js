@@ -58,11 +58,11 @@ export default {
   },
 
   /**
-  * @function getStatusCodes
-  * Get the statuses that are available to a form
-  * @param {string} formId The form identifier
-  * @returns {Promise} An axios response
-  */
+   * @function getStatusCodes
+   * Get the statuses that are available to a form
+   * @param {string} formId The form identifier
+   * @returns {Promise} An axios response
+   */
   getStatusCodes(formId) {
     return appAxios().get(`/forms/${formId}/statusCodes`);
   },
@@ -90,7 +90,9 @@ export default {
    * @returns {Promise} An axios response
    */
   deleteDraft(formId, formVersionDraftId) {
-    return appAxios().delete(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`);
+    return appAxios().delete(
+      `${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`
+    );
   },
 
   /**
@@ -111,7 +113,9 @@ export default {
    * @returns {Promise} An axios response
    */
   publishDraft(formId, formVersionDraftId) {
-    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}/publish`);
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}/publish`
+    );
   },
 
   /**
@@ -122,7 +126,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readDraft(formId, formVersionDraftId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`);
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`
+    );
   },
 
   /**
@@ -134,7 +140,10 @@ export default {
    * @returns {Promise} An axios response
    */
   updateDraft(formId, formVersionDraftId, data) {
-    return appAxios().put(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`, data);
+    return appAxios().put(
+      `${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`,
+      data
+    );
   },
 
   //
@@ -159,7 +168,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readVersion(formId, formVersionId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`
+    );
   },
 
   /**
@@ -170,17 +181,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readVersionFields(formId, formVersionId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/fields`);
-  },
-
-  /**
-   * @function listVersions
-   * Get the versions for a form
-   * @param {string} formId The form uuid
-   * @returns {Promise} An axios response
-   */
-  listVersions(formId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions`);
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/fields`
+    );
   },
 
   /**
@@ -192,11 +195,15 @@ export default {
    * @returns {Promise} An axios response
    */
   publishVersion(formId, formVersionId, publish) {
-    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/publish`, null, {
-      params: {
-        unpublish: !publish,
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/publish`,
+      null,
+      {
+        params: {
+          unpublish: !publish,
+        },
       }
-    });
+    );
   },
 
   /**
@@ -208,7 +215,10 @@ export default {
    * @returns {Promise} An axios response
    */
   updateVersion(formId, formVersionId, data) {
-    return appAxios().put(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`, data);
+    return appAxios().put(
+      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`,
+      data
+    );
   },
 
   //
@@ -224,7 +234,10 @@ export default {
    * @returns {Promise} An axios response
    */
   createSubmission(formId, versionId, requestBody) {
-    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`, requestBody);
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`,
+      requestBody
+    );
   },
 
   /**
@@ -238,6 +251,46 @@ export default {
   },
 
   /**
+   * @function deleteMultipleSubmissions
+   * Soft delete a specific submission
+   * @param {array} submissionIds The form submission identifier
+   * @returns {Promise} An axios response
+   */
+  deleteMultipleSubmissions(submissionId, formId, requestBody) {
+    return appAxios().delete(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions`,
+      requestBody
+    );
+  },
+
+  /**
+   * @function restoreSubmission
+   * Restores an existing submission
+   * @param {string} submissionId The form uuid
+   * @param {Object} requestBody The form data for the submission
+   * @returns {Promise} An axios response
+   */
+  restoreSubmission(submissionId, requestBody) {
+    return appAxios().put(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/restore`,
+      requestBody
+    );
+  },
+
+  /**
+   * @function restoreMutipleSubmissions
+   * Restores an existing submission
+   * @param {string} submissionId The form uuid
+   * @returns {Promise} An axios response
+   */
+  restoreMutipleSubmissions(submissionId, formId, requestBody) {
+    return appAxios().put(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions/restore`,
+      requestBody
+    );
+  },
+
+  /**
    * @function updateSubmission
    * Update an existing submission
    * @param {string} submissionId The form uuid
@@ -245,7 +298,10 @@ export default {
    * @returns {Promise} An axios response
    */
   updateSubmission(submissionId, requestBody) {
-    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}`, requestBody);
+    return appAxios().put(
+      `${ApiRoutes.SUBMISSION}/${submissionId}`,
+      requestBody
+    );
   },
 
   /**
@@ -276,7 +332,9 @@ export default {
    * @returns {Promise} An axios response
    */
   listSubmissions(formId, params = {}) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/submissions`, { params });
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/submissions`, {
+      params,
+    });
   },
 
   /**
@@ -293,82 +351,100 @@ export default {
    * @function exportSubmissions
    * Get the export file for a range of form submittions
    * @param {string} formId The form uuid
+   * @param {Array} preference selected fields by the user
    * @param {string} format The export file format csv or json
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(formId, format, options = {}) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`,
-      {
-        params: {
-          format: format,
-          type: 'submissions',
-          ...options
-        },
-        responseType: 'blob'
-      }
-    );
+  exportSubmissions(
+    formId,
+    format,
+    template,
+    versionSelected,
+    preference,
+    options = {}
+  ) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`, {
+      params: {
+        format: format,
+        template: template,
+        version: versionSelected,
+        type: 'submissions',
+        preference: preference,
+        ...options,
+      },
+      responseType: 'blob',
+    });
   },
-
 
   //
   // Notes and Status
   //
 
   /**
-  * @function getSubmissionNotes
-  * Get the notes associated with the submission
-  * @param {string} submissionId The form submission identifier
-  * @returns {Promise} An axios response
-  */
+   * @function getSubmissionNotes
+   * Get the notes associated with the submission
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
   getSubmissionNotes(submissionId) {
     return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/notes`);
   },
 
   /**
-  * @function addNote
-  * Add a new notes to the submission
-  * @param {string} submissionId The form submission identifier
+   * @function addNote
+   * Add a new notes to the submission
+   * @param {string} submissionId The form submission identifier
    * @param {Object} data The request body
-  * @returns {Promise} An axios response
-  */
+   * @returns {Promise} An axios response
+   */
   addNote(submissionId, data) {
-    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/notes`, data);
+    return appAxios().post(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/notes`,
+      data
+    );
   },
 
   /**
-  * @function getSubmissionStatuses
-  * Get the current status history associated with the submission
-  * @param {string} submissionId The form submission identifier
-  * @returns {Promise} An axios response
-  */
+   * @function getSubmissionStatuses
+   * Get the current status history associated with the submission
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
   getSubmissionStatuses(submissionId) {
     return appAxios().get(`${ApiRoutes.SUBMISSION}/${submissionId}/status`);
   },
 
   /**
-  * @function docGen
-  * Upload a template to generate PDF from CDOGS API
-  * @param {string} submissionId The form submission identifier
-  * @param {Object} body The request body
-  * @returns {Promise} An axios response
-  */
+   * @function docGen
+   * Upload a template to generate PDF from CDOGS API
+   * @param {string} submissionId The form submission identifier
+   * @param {Object} body The request body
+   * @returns {Promise} An axios response
+   */
   docGen(submissionId, body) {
-    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/template/render`, body, {
-      responseType: 'arraybuffer', // Needed for binaries unless you want pain
-      timeout: 30000, // Override default timeout as this call could take a while
-    });
+    return appAxios().post(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`,
+      body,
+      {
+        responseType: 'arraybuffer', // Needed for binaries unless you want pain
+        timeout: 30000, // Override default timeout as this call could take a while
+      }
+    );
   },
 
   /**
-  * @function updateSubmissionStatus
-  * Add a new status entry to the submission
-  * @param {string} submissionId The form submission identifier
-  * @param {Object} data The request body
-  * @returns {Promise} An axios response
-  */
+   * @function updateSubmissionStatus
+   * Add a new status entry to the submission
+   * @param {string} submissionId The form submission identifier
+   * @param {Object} data The request body
+   * @returns {Promise} An axios response
+   */
   updateSubmissionStatus(submissionId, data) {
-    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/status`, data);
+    return appAxios().post(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/status`,
+      data
+    );
   },
 
   //
@@ -376,13 +452,40 @@ export default {
   //
 
   /**
-  * @function requestReceiptEmail
-  * Send a receipt email
-  * @param {string} submissionId The submission uuid
-  * @param {Object} requestBody The body for the api call: { to }
-  * @returns {Promise} An axios response
-  */
+   * @function requestReceiptEmail
+   * Send a receipt email
+   * @param {string} submissionId The submission uuid
+   * @param {Object} requestBody The body for the api call: { to }
+   * @returns {Promise} An axios response
+   */
   requestReceiptEmail(submissionId, requestBody) {
-    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/email`, requestBody);
+    return appAxios().post(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/email`,
+      requestBody
+    );
+  },
+
+  /**
+   * listFormComponentsProactiveHelp
+   * @function listFCProactiveHelp
+   * Reads all form components help information
+   * @returns {Promise} An axios response
+   */
+  async listFCProactiveHelp() {
+    return await appAxios().get(
+      `${ApiRoutes.FORMS}/formcomponents/proactivehelp/list`
+    );
+  },
+
+  /**
+   * @function getPresignedUrl
+   * get signed image upload url
+   * @param {Object} imageName component name and component image encoded into base64
+   * @returns {Promise} An axios response
+   */
+  async getFCProactiveHelpImageUrl(componentId) {
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`
+    );
   },
 };

@@ -16,16 +16,21 @@ export function appAxios(timeout = 10000) {
 
   const instance = axios.create(axiosOptions);
 
-  instance.interceptors.request.use(cfg => {
-    if (Vue.prototype.$keycloak &&
-      Vue.prototype.$keycloak.ready &&
-      Vue.prototype.$keycloak.authenticated) {
-      cfg.headers.Authorization = `Bearer ${Vue.prototype.$keycloak.token}`;
+  instance.interceptors.request.use(
+    (cfg) => {
+      if (
+        Vue.prototype.$keycloak &&
+        Vue.prototype.$keycloak.ready &&
+        Vue.prototype.$keycloak.authenticated
+      ) {
+        cfg.headers.Authorization = `Bearer ${Vue.prototype.$keycloak.token}`;
+      }
+      return Promise.resolve(cfg);
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return Promise.resolve(cfg);
-  }, error => {
-    return Promise.reject(error);
-  });
+  );
 
   return instance;
 }

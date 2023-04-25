@@ -1,5 +1,5 @@
 const emailService = require('../email/emailService');
-const formService = require('../../../../app/src/forms/submission/service');
+const formService = require('../submission/service');
 const service = require('./service');
 module.exports = {
   list: async (req, res, next) => {
@@ -10,7 +10,7 @@ module.exports = {
       next(error);
     }
   },
-  create:  async (req, res, next) => {
+  create: async (req, res, next) => {
     try {
       const response = await service.create(req.body);
       res.status(201).json(response);
@@ -18,7 +18,7 @@ module.exports = {
       next(error);
     }
   },
-  read:  async (req, res, next) => {
+  read: async (req, res, next) => {
     try {
       const response = await service.read(req.params.id);
       res.status(200).json(response);
@@ -26,7 +26,7 @@ module.exports = {
       next(error);
     }
   },
-  update:  async (req, res, next) => {
+  update: async (req, res, next) => {
     try {
       const response = await service.update(req.params.id, req.body);
       res.status(200).json(response);
@@ -34,7 +34,7 @@ module.exports = {
       next(error);
     }
   },
-  delete:  async (req, res, next) => {
+  delete: async (req, res, next) => {
     try {
       const response = await service.delete(req.params.id);
       res.status(200).json(response);
@@ -42,7 +42,7 @@ module.exports = {
       next(error);
     }
   },
-  getCurrentUser:  async (req, res, next) => {
+  getCurrentUser: async (req, res, next) => {
     try {
       const response = await service.getCurrentUser(req.currentUser, req.query);
       // don't want this going out, only need deleted forms on current user in middleware.
@@ -52,7 +52,7 @@ module.exports = {
       next(error);
     }
   },
-  getCurrentUserSubmissions:  async (req, res, next) => {
+  getCurrentUserSubmissions: async (req, res, next) => {
     try {
       const response = await service.getCurrentUserSubmissions(req.currentUser, req.query);
       res.status(200).json(response);
@@ -60,7 +60,7 @@ module.exports = {
       next(error);
     }
   },
-  getFormUsers:  async (req, res, next) => {
+  getFormUsers: async (req, res, next) => {
     try {
       const response = await service.getFormUsers(req.query);
       res.status(200).json(response);
@@ -68,7 +68,7 @@ module.exports = {
       next(error);
     }
   },
-  setFormUsers:  async (req, res, next) => {
+  setFormUsers: async (req, res, next) => {
     try {
       const response = await service.setFormUsers(req.query.formId, req.query.userId, req.body, req.currentUser);
       res.status(200).json(response);
@@ -76,7 +76,15 @@ module.exports = {
       next(error);
     }
   },
-  getSubmissionUsers:  async (req, res, next) => {
+  removeMultiUsers: async (req, res, next) => {
+    try {
+      const response = await service.removeMultiUsers(req.query.formId, req.body);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getSubmissionUsers: async (req, res, next) => {
     try {
       const response = await service.getSubmissionUsers(req.query);
       res.status(200).json(response);
@@ -84,7 +92,7 @@ module.exports = {
       next(error);
     }
   },
-  setSubmissionUserPermissions:  async (req, res, next) => {
+  setSubmissionUserPermissions: async (req, res, next) => {
     try {
       const submission = await formService.read(req.query.formSubmissionId, req.currentUser);
       const response = await service.modifySubmissionUser(req.query.formSubmissionId, req.query.userId, req.body, req.currentUser);
@@ -101,7 +109,7 @@ module.exports = {
       next(error);
     }
   },
-  getUserForms:  async (req, res, next) => {
+  getUserForms: async (req, res, next) => {
     try {
       const response = await service.getUserForms(req.query);
       res.status(200).json(response);
@@ -109,7 +117,7 @@ module.exports = {
       next(error);
     }
   },
-  setUserForms:  async (req, res, next) => {
+  setUserForms: async (req, res, next) => {
     try {
       const response = await service.setUserForms(req.query.userId, req.query.formId, req.body, req.currentUser);
       res.status(200).json(response);
@@ -117,13 +125,13 @@ module.exports = {
       next(error);
     }
   },
-  getIdentityProviders:  async (req, res, next) => {
+
+  getIdentityProviders: async (req, res, next) => {
     try {
       const response = await service.getIdentityProviders(req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
-
+  },
 };

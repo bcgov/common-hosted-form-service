@@ -1,0 +1,96 @@
+[{
+	"id": "15331e9f-4cc9-4405-baba-f0a1983edfab",
+	"formVersionId": "b9851b87-8063-4794-993c-386a8b5bdb0a",
+	"formModuleVersionId": "44826149-17e4-403e-8b95-8017b7d14de0",
+	"createdBy": "7ddfdd92d0c64cfc8d96a29a8a5bdcd7@idir@idir",
+	"createdAt": "2022-07-06T18:18:17.164Z",
+	"updatedBy": null,
+	"updatedAt": "2022-07-06T18:18:17.160Z",
+	"formModuleVersion": {
+		"id": "44826149-17e4-403e-8b95-8017b7d14de0",
+		"formModuleId": "bbaf9835-87ea-4a0e-9681-1d4355ad70b7",
+		"externalUris": ["https://jasonchung1871.github.io/chefs_modules/bcgov-formio-components.css", "https://jasonchung1871.github.io/chefs_modules/bcgov-formio-components.use.min.js"],
+		"importData": {
+			"components": {
+				"builderCategories": {
+					"layoutControls": {
+						"title": "Basic Layout",
+						"default": true,
+						"weight": 10
+					},
+					"entryControls": {
+						"title": "Basic Fields",
+						"weight": 20
+					},
+					"layout": {
+						"title": "Advanced Layout",
+						"weight": 30
+					},
+					"advanced": {
+						"title": "Advanced Fields",
+						"weight": 40
+					},
+					"data": {
+						"title": "Advanced Data",
+						"weight": 50
+					},
+					"customControls": {
+						"title": "BC Government",
+						"weight": 60
+					}
+				},
+				"builder": {
+					"layoutControls": {
+						"simplecols2": true,
+						"simplecols3": true,
+						"simplecols4": true,
+						"simplecontent": true,
+						"simplefieldset": false,
+						"simpleheading": false,
+						"simplepanel": true,
+						"simpleparagraph": false,
+						"simpletabs": true
+					},
+					"entryControls": {
+						"simplecheckbox": true,
+						"simplecheckboxes": true,
+						"simpledatetime": true,
+						"simpleday": true,
+						"simpleemail": true,
+						"simplenumber": true,
+						"simplephonenumber": true,
+						"simpleradios": true,
+						"simpleselect": true,
+						"simpletextarea": true,
+						"simpletextfield": true,
+						"simpletime": false
+					},
+					"advanced": {
+						"textfield": true,
+						"textarea": true,
+						"number": true,
+						"password": true,
+						"checkbox": true,
+						"selectboxes": true,
+						"select": true,
+						"radio": true,
+						"button": true,
+						"orgbook": false
+					},
+					"customControls": {
+						"orgbook": true,
+						"simplefile": {
+							"userType": {
+								"blacklist": ["public"]
+							}
+						}
+					}
+				}
+			}
+		},
+		"createdBy": "999-dev-seed-data",
+		"createdAt": "2022-07-04T18:51:43.611Z",
+		"updatedBy": null,
+		"updatedAt": "2022-07-04T18:51:43.611Z"
+	}
+}]

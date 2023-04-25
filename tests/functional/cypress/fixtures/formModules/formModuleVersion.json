@@ -1,0 +1,13 @@
+{
+  "id":"a06683f9-f0cf-45c6-b339-5f975693be29",
+  "formModuleId":"8876372f-eaf6-4b54-9364-14b0db363d10",
+  "externalUris":[
+    "https://jasonchung1871.github.io/chefs_modules/bcgov-formio-components.css",
+    "https://jasonchung1871.github.io/chefs_modules/bcgov-formio-components.use.min.js"
+  ],
+  "importData":{"components":{"builderCategories":{"layoutControls":{"title":"Basic Layout","default":true,"weight":10},"entryControls":{"title":"Basic Fields","weight":20},"layout":{"title":"Advanced Layout","weight":30},"advanced":{"title":"Advanced Fields","weight":40},"data":{"title":"Advanced Data","weight":50},"customControls":{"title":"BC Government","weight":60}},"builder":{"layoutControls":{"simplecols2":true,"simplecols3":true,"simplecols4":true,"simplecontent":true,"simplefieldset":false,"simpleheading":false,"simplepanel":true,"simpleparagraph":false,"simpletabs":true},"entryControls":{"simplecheckbox":true,"simplecheckboxes":true,"simpledatetime":true,"simpleday":true,"simpleemail":true,"simplenumber":true,"simplephonenumber":true,"simpleradios":true,"simpleselect":true,"simpletextarea":true,"simpletextfield":true,"simpletime":false},"advanced":{"textfield":true,"textarea":true,"number":true,"password":true,"checkbox":true,"selectboxes":true,"select":true,"radio":true,"button":true,"orgbook":false},"customControls":{"orgbook":true,"simplefile":{"userType":{"blacklist":["public"]}}}}}},
+  "createdBy":"test",
+  "createdAt":"2022-07-04T18:51:43.611Z",
+  "updatedBy":null,
+  "updatedAt":"2022-07-04T18:51:43.611Z"
+}

@@ -1,73 +1,87 @@
 const { v4: uuidv4 } = require('uuid');
 
 const { Statuses } = require('../common/constants');
-const {
-  Form,
-  FormVersion,
-  FormSubmission,
-  FormSubmissionStatus,
-  Note,
-  SubmissionAudit,
-  SubmissionMetadata
-} = require('../common/models');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 const emailService = require('../email/emailService');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 
 const service = {
-
   // -------------------------------------------------------------------------------------------------------
   // Submissions
   // -------------------------------------------------------------------------------------------------------
   _fetchSubmissionData: async (formSubmissionId) => {
-    const meta = await SubmissionMetadata.query()
-      .where('submissionId', formSubmissionId)
-      .first()
-      .throwIfNotFound();
+    const meta = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first().throwIfNotFound();
 
     return await Promise.all([
-      FormSubmission.query()
-        .findById(meta.submissionId)
-        .throwIfNotFound(),
-      FormVersion.query()
-        .findById(meta.formVersionId)
-        .throwIfNotFound(),
-      Form.query()
-        .findById(meta.formId)
-        .allowGraph('identityProviders')
-        .withGraphFetched('identityProviders(orderDefault)')
-        .throwIfNotFound()
-    ]).then(data => {
+      FormSubmission.query().findById(meta.submissionId).throwIfNotFound(),
+      FormVersion.query().findById(meta.formVersionId).throwIfNotFound(),
+      Form.query().findById(meta.formId).allowGraph('identityProviders').withGraphFetched('identityProviders(orderDefault)').throwIfNotFound(),
+    ]).then((data) => {
       return {
         submission: data[0],
         version: data[1],
-        form: data[2]
+        form: data[2],
       };
     });
   },
 
+  // -------------------------------------------------------------------------------------------------------
+  // Submissions
+  // -------------------------------------------------------------------------------------------------------
+  _fetchSpecificSubmissionData: async (formSubmissionIds) => {
+    const meta = await SubmissionMetadata.query().whereIn('submissionId', formSubmissionIds);
+
+    if (meta.length > 0) {
+      let submissionIds = meta.map((SubmissionMetadata) => SubmissionMetadata.submissionId);
+      let formVersionId = [...new Set(meta.map((SubmissionMetadata) => SubmissionMetadata.formVersionId))].at(0);
+      let formId = [...new Set(meta.map((SubmissionMetadata) => SubmissionMetadata.formId))].at(0);
+      return await Promise.all([
+        FormSubmission.query().findByIds(submissionIds).throwIfNotFound(),
+        FormVersion.query().findByIds(formVersionId).throwIfNotFound(),
+        Form.query().findByIds(formId).allowGraph('identityProviders').withGraphFetched('identityProviders(orderDefault)').throwIfNotFound(),
+      ]).then((data) => {
+        return {
+          submission: data[0],
+          version: data[1],
+          form: data[2],
+        };
+      });
+    }
+    return [];
+  },
+
   read: (formSubmissionId) => service._fetchSubmissionData(formSubmissionId),
+
+  readSubmissionData: (formSubmissionIds) => service._fetchSpecificSubmissionData(formSubmissionIds),
 
   update: async (formSubmissionId, data, currentUser, referrer, etrx = undefined) => {
     let trx;
     try {
       trx = etrx ? etrx : await FormSubmission.startTransaction();
 
-      if (!data.draft) {
-        // Write a SUBMITTED status only if this is in REVISING state OR is a brand new submission
-        const statuses = await FormSubmissionStatus.query()
-          .modify('filterSubmissionId', formSubmissionId)
-          .modify('orderDescending');
-        if (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING) {
-          await service.changeStatusState(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser, trx);
-          // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
-          const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
-          emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => { });
+      // If we're restoring a submission
+      if (data['deleted'] !== undefined && typeof data.deleted == 'boolean') {
+        await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: data.deleted, updatedBy: currentUser.usernameIdp });
+      } else {
+        if (!data.draft) {
+          // Write a SUBMITTED status only if this is in REVISING state OR is a brand new submission
+          const statuses = await FormSubmissionStatus.query().modify('filterSubmissionId', formSubmissionId).modify('orderDescending');
+          if (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING) {
+            await service.changeStatusState(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser, trx);
+            // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
+            const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
+            emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => {});
+          }
         }
-      }
 
-      // Patch the submission record with the updated changes
-      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { draft: data.draft, submission: data.submission, updatedBy: currentUser.usernameIdp });
+        // Patch the submission record with the updated changes
+        await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
+          draft: data.draft,
+          submission: data.submission,
+          updatedBy: currentUser.usernameIdp,
+        });
+      }
 
       if (!etrx) await trx.commit();
 
@@ -95,7 +109,7 @@ const service = {
 
       const result = await FormSubmission.query(trx).patchAndFetchById(submissionId, {
         draft: draft,
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
       });
 
       if (!etrx) await trx.commit();
@@ -112,7 +126,54 @@ const service = {
       trx = await FormSubmission.startTransaction();
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
         deleted: true,
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
+      });
+      await trx.commit();
+      return await service.read(formSubmissionId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  deleteMutipleSubmissions: async (submissionIds, currentUser) => {
+    let trx;
+    try {
+      trx = await FormSubmission.startTransaction();
+      await FormSubmission.query(trx).patch({ deleted: true, updatedBy: currentUser.usernameIdp }).whereIn('id', submissionIds);
+      await trx.commit();
+      return await service.readSubmissionData(submissionIds);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  restoreMutipleSubmissions: async (submissionIds, currentUser) => {
+    let trx;
+    try {
+      trx = await FormSubmission.startTransaction();
+      await FormSubmission.query(trx)
+        .patch({
+          deleted: false,
+          updatedBy: currentUser.usernameIdp,
+        })
+        .whereIn('id', submissionIds);
+      await trx.commit();
+      return await service.readSubmissionData(submissionIds);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  restore: async (formSubmissionId, data, currentUser) => {
+    let trx;
+    try {
+      trx = await FormSubmission.startTransaction();
+      await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
+        deleted: data.deleted,
+        updatedBy: currentUser.usernameIdp,
       });
       await trx.commit();
       return await service.read(formSubmissionId);
@@ -123,23 +184,20 @@ const service = {
   },
 
   readOptions: async (formSubmissionId) => {
-    const meta = await SubmissionMetadata.query()
-      .where('submissionId', formSubmissionId)
-      .first()
-      .throwIfNotFound();
+    const meta = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first().throwIfNotFound();
 
     const form = await formService.readFormOptions(meta.formId);
 
     return {
       submission: {
         id: meta.submissionId,
-        formVersionId: meta.formId
+        formVersionId: meta.formId,
       },
       version: {
         id: meta.formVersionId,
-        formId: meta.formId
+        formId: meta.formId,
       },
-      form: form
+      form: form,
     };
   },
 
@@ -166,7 +224,7 @@ const service = {
         submissionStatusId: data.submissionStatusId,
         note: data.note,
         userId: data.userId,
-        createdBy: currentUser.usernameIdp
+        createdBy: currentUser.usernameIdp,
       });
       await trx.commit();
 
@@ -184,18 +242,14 @@ const service = {
 
   /** Get notes for a specific submission */
   getNotes: (formSubmissionId) => {
-    return Note.query()
-      .modify('filterSubmissionId', formSubmissionId)
-      .modify('orderDefault');
+    return Note.query().modify('filterSubmissionId', formSubmissionId).modify('orderDefault');
   },
 
   /** Get a specific note */
   getNote: (noteId) => {
-    return Note.query()
-      .modify('filterId', noteId);
+    return Note.query().modify('filterId', noteId);
   },
   // -------------------------------------------------------------------------------------------------/Notes
-
 
   // -------------------------------------------------------------------------------------------------------
   // Status
@@ -207,10 +261,7 @@ const service = {
    * @returns The current status object
    */
   getStatus: (formSubmissionId) => {
-    return FormSubmissionStatus.query()
-      .modify('filterSubmissionId', formSubmissionId)
-      .withGraphFetched('user')
-      .modify('orderDescending');
+    return FormSubmissionStatus.query().modify('filterSubmissionId', formSubmissionId).withGraphFetched('user').modify('orderDescending');
   },
 
   /**
@@ -277,7 +328,7 @@ const service = {
         code: data.code,
         assignedToUserId: data.assignedToUserId,
         actionDate: data.actionDate,
-        createdBy: currentUser.usernameIdp
+        createdBy: currentUser.usernameIdp,
       });
 
       if (!etrx) await trx.commit();

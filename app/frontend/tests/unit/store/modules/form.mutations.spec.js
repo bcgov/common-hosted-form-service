@@ -53,13 +53,6 @@ describe('form mutations', () => {
     expect(state.form).toEqual(expect.objectContaining(obj));
   });
 
-  it('SET_FORM_DIRTY should update form state', () => {
-    const obj = true;
-    store.mutations.SET_FORM_DIRTY(state, obj);
-
-    expect(state.form).toBeTruthy();
-    expect(state.form.isDirty).toBeTruthy();
-  });
 
   it('SET_FORM_PERMISSIONS should update permissions state', () => {
     const obj = { foo: 'bar' };
@@ -120,5 +113,21 @@ describe('form mutations', () => {
 
     expect(state.version).toBeTruthy();
     expect(state.version).toEqual(obj);
+  });
+
+  it('SET_FCPROACTIVEHELPGROUPLIST get form state', () => {
+    const obj = {};
+    store.mutations.SET_FCPROACTIVEHELPGROUPLIST(state, obj);
+
+    expect(state.fcProactiveHelpGroupList).toBeTruthy();
+    expect(state.fcProactiveHelpGroupList).toEqual(obj);
+  });
+
+  it('SET_FCPROACTIVEHELPIMAGEURL get form state', () => {
+    const obj = '';
+    store.mutations.SET_FCPROACTIVEHELPIMAGEURL(state, obj);
+
+    expect(state.fcProactiveHelpImageUrl).toEqual('');
+    expect(state.fcProactiveHelpImageUrl).toEqual(obj);
   });
 });

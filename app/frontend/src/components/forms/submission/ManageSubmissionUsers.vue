@@ -16,7 +16,17 @@
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card>
-        <v-card-title class="text-h5 pb-0"> Manage Team Members </v-card-title>
+        <v-card-title class="text-h5 pb-0">
+          Manage Team Members
+          <v-radio-group v-model="selectedIdp" row>
+            <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
+            <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
+            <v-radio
+              label="Business BCeID"
+              :value="ID_PROVIDERS.BCEIDBUSINESS"
+            />
+          </v-radio-group>
+        </v-card-title>
 
         <v-card-text>
           <hr />
@@ -32,7 +42,7 @@
                   :filter="filterObject"
                   hide-details
                   :items="userSearchResults"
-                  label="Enter a name, e-mail, or username"
+                  :label="autocompleteLabel"
                   :loading="isLoadingDropdown"
                   return-object
                   :search-input.sync="findUsers"
@@ -40,9 +50,9 @@
                   <!-- no data -->
                   <template #no-data>
                     <div class="px-2">
-                      Can't find someone? They may not have joined the site.<br />
-                      Kindly send them a link to the site and ask them to log
-                      in.
+                      Can't find someone? They may not have logged into
+                      CHEFS.<br />
+                      Kindly send them a link to CHEFS and ask them to log in.
                     </div>
                   </template>
                   <!-- selected user -->
@@ -144,7 +154,8 @@
         @close-dialog="showDeleteDialog = false"
         @continue-dialog="
           modifyPermissions(userToDelete.id, []);
-          showDeleteDialog = false;"
+          showDeleteDialog = false;
+        "
       >
         <template #title>Remove {{ userToDelete.username }}</template>
         <template #text>
@@ -163,7 +174,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import { FormPermissions, IdentityProviders, NotificationTypes } from '@/utils/constants';
+import {
+  FormPermissions,
+  IdentityProviders,
+  NotificationTypes,
+  Regex,
+} from '@/utils/constants';
 import { rbacService, userService } from '@/services';
 
 export default {
@@ -189,12 +205,21 @@ export default {
       // search box
       findUsers: null,
       isLoadingDropdown: false,
+      selectedIdp: IdentityProviders.IDIR,
       userSearchResults: [],
       userSearchSelection: null,
     };
   },
   computed: {
     ...mapGetters('form', ['form']),
+    ID_PROVIDERS() {
+      return IdentityProviders;
+    },
+    autocompleteLabel() {
+      return this.selectedIdp == IdentityProviders.IDIR
+        ? 'Enter a name, e-mail, or username'
+        : 'Enter an exact e-mail or username.';
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -296,22 +321,41 @@ export default {
     },
   },
   watch: {
+    selectedIdp(newIdp, oldIdp) {
+      if (newIdp !== oldIdp) {
+        this.userSearchResults = [];
+      }
+    },
     // Get a list of user objects from database
     async findUsers(input) {
       if (!input) return;
       this.isLoadingDropdown = true;
       try {
         // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
-        const idp =
-          this.form.identityProviders && this.form.identityProviders.length
-            ? this.form.identityProviders[0].code
-            : IdentityProviders.IDIR;
-        const response = await userService.getUsers({
-          search: input,
-          idpCode: idp,
-        });
+        let params = {};
+        params.idpCode = this.selectedIdp;
+        if (
+          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
+          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
+        ) {
+          if (input.length < 6)
+            throw new Error(
+              'Search input for BCeID username/email must be greater than 6 characters.'
+            );
+          if (input.includes('@')) {
+            if (!new RegExp(Regex.EMAIL).test(input))
+              throw new Error('Email searches for BCeID must be exact.');
+            else params.email = input;
+          } else {
+            params.username = input;
+          }
+        } else {
+          params.search = input;
+        }
+        const response = await userService.getUsers(params);
         this.userSearchResults = response.data;
       } catch (error) {
+        // this.userSearchResults = [];
         console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
       } finally {
         this.isLoadingDropdown = false;

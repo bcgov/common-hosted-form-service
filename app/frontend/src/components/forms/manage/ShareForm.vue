@@ -4,6 +4,7 @@
       <template #activator="{ on, attrs }">
         <v-btn
           class="mx-1"
+          data-cy="shareFormButton"
           color="primary"
           @click="dialog = true"
           icon
@@ -59,6 +60,7 @@
                     icon
                     target="_blank"
                     v-bind="attrs"
+                    data-cy="shareFormLinkButton"
                     v-on="on"
                   >
                     <v-icon class="mr-1">open_in_new</v-icon>
@@ -145,7 +147,7 @@ export default {
   },
   methods: {
     downloadQr() {
-      var link = document.createElement('a');
+      let link = document.createElement('a');
       link.download = 'qrcode.png';
       link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
       link.click();

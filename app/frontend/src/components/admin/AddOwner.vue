@@ -59,7 +59,7 @@ export default {
         await this.addFormUser({
           userId: this.userGuid,
           formId: this.formId,
-          roles: [FormRoleCodes.OWNER]
+          roles: [FormRoleCodes.OWNER],
         });
       }
     },

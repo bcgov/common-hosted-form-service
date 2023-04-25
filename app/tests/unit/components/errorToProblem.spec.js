@@ -7,15 +7,15 @@ describe('errorToProblem', () => {
     const e = {
       response: {
         data: { detail: 'detail' },
-        status: 422
-      }
+        status: 422,
+      },
     };
     expect(() => errorToProblem(SERVICE, e)).toThrow('422');
   });
 
   it('should throw a 502', () => {
     const e = {
-      message: 'msg'
+      message: 'msg',
     };
     expect(() => errorToProblem(SERVICE, e)).toThrow('502');
   });

@@ -30,6 +30,16 @@ userAccess.hasSubmissionPermissions = jest.fn(() => {
     next();
   });
 });
+userAccess.hasFormRoles = jest.fn(() => {
+  return jest.fn((req, res, next) => {
+    next();
+  });
+});
+userAccess.hasRolePermissions = jest.fn(() => {
+  return jest.fn((req, res, next) => {
+    next();
+  });
+});
 
 const emailService = require('../../../../../app/src/forms/email/emailService');
 const formService = require('../../../../../app/src/forms/submission/service');
@@ -38,7 +48,6 @@ const formService = require('../../../../../app/src/forms/submission/service');
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/rbac/service');
-
 
 //
 // mocks are in place, create the router
@@ -54,7 +63,6 @@ afterEach(() => {
 });
 
 describe(`GET ${basePath}/current`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.getCurrentUser = jest.fn().mockReturnValue({});
@@ -67,7 +75,9 @@ describe(`GET ${basePath}/current`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.getCurrentUser = jest.fn(() => { throw new Problem(401); });
+    service.getCurrentUser = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/current`);
 
@@ -77,18 +87,18 @@ describe(`GET ${basePath}/current`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.getCurrentUser = jest.fn(() => { throw new Error(); });
+    service.getCurrentUser = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/current`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`GET ${basePath}/current/submissions`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.getCurrentUserSubmissions = jest.fn().mockReturnValue({});
@@ -101,7 +111,9 @@ describe(`GET ${basePath}/current/submissions`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.getCurrentUserSubmissions = jest.fn(() => { throw new Problem(401); });
+    service.getCurrentUserSubmissions = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/current/submissions`);
 
@@ -111,18 +123,18 @@ describe(`GET ${basePath}/current/submissions`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.getCurrentUserSubmissions = jest.fn(() => { throw new Error(); });
+    service.getCurrentUserSubmissions = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/current/submissions`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`GET ${basePath}/idps`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.getIdentityProviders = jest.fn().mockReturnValue([]);
@@ -135,7 +147,9 @@ describe(`GET ${basePath}/idps`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.getIdentityProviders = jest.fn(() => { throw new Problem(401); });
+    service.getIdentityProviders = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/idps`);
 
@@ -145,18 +159,18 @@ describe(`GET ${basePath}/idps`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.getIdentityProviders = jest.fn(() => { throw new Error(); });
+    service.getIdentityProviders = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/idps`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`GET ${basePath}/forms`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.getFormUsers = jest.fn().mockReturnValue([]);
@@ -169,7 +183,9 @@ describe(`GET ${basePath}/forms`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.getFormUsers = jest.fn(() => { throw new Problem(401); });
+    service.getFormUsers = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/forms`);
 
@@ -179,18 +195,18 @@ describe(`GET ${basePath}/forms`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.getFormUsers = jest.fn(() => { throw new Error(); });
+    service.getFormUsers = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/forms`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`PUT ${basePath}/forms`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.setFormUsers = jest.fn().mockReturnValue([]);
@@ -203,7 +219,9 @@ describe(`PUT ${basePath}/forms`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.setFormUsers = jest.fn(() => { throw new Problem(401); });
+    service.setFormUsers = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).put(`${basePath}/forms`);
 
@@ -213,18 +231,18 @@ describe(`PUT ${basePath}/forms`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.setFormUsers = jest.fn(() => { throw new Error(); });
+    service.setFormUsers = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).put(`${basePath}/forms`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`GET ${basePath}/users`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.getUserForms = jest.fn().mockReturnValue([]);
@@ -237,7 +255,9 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.getUserForms = jest.fn(() => { throw new Problem(401); });
+    service.getUserForms = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/users`);
 
@@ -247,18 +267,18 @@ describe(`GET ${basePath}/users`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.getUserForms = jest.fn(() => { throw new Error(); });
+    service.getUserForms = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/users`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`PUT ${basePath}/users`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.setUserForms = jest.fn().mockReturnValue([]);
@@ -271,7 +291,9 @@ describe(`PUT ${basePath}/users`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.setUserForms = jest.fn(() => { throw new Problem(401); });
+    service.setUserForms = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).put(`${basePath}/users`);
 
@@ -281,19 +303,18 @@ describe(`PUT ${basePath}/users`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.setUserForms = jest.fn(() => { throw new Error(); });
+    service.setUserForms = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).put(`${basePath}/users`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
-
 describe(`GET ${basePath}/submissions`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.getSubmissionUsers = jest.fn().mockReturnValue([]);
@@ -306,7 +327,9 @@ describe(`GET ${basePath}/submissions`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.getSubmissionUsers = jest.fn(() => { throw new Problem(401); });
+    service.getSubmissionUsers = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/submissions`);
 
@@ -316,18 +339,18 @@ describe(`GET ${basePath}/submissions`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.getSubmissionUsers = jest.fn(() => { throw new Error(); });
+    service.getSubmissionUsers = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/submissions`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`PUT ${basePath}/submissions`, () => {
-
   it('should return 200', async () => {
     formService.read = jest.fn().mockReturnValue([]);
     // mock a success return value...
@@ -347,7 +370,9 @@ describe(`PUT ${basePath}/submissions`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.modifySubmissionUser = jest.fn(() => { throw new Problem(401); });
+    service.modifySubmissionUser = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).put(`${basePath}/submissions`);
 
@@ -357,12 +382,13 @@ describe(`PUT ${basePath}/submissions`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.modifySubmissionUser = jest.fn(() => { throw new Error(); });
+    service.modifySubmissionUser = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).put(`${basePath}/submissions`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });

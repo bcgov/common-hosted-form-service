@@ -1,7 +1,14 @@
 <template>
   <BaseSecure :idp="IDP.IDIR">
-    <v-stepper v-model="creatorStep" class="elevation-0 d-flex flex-column" alt-labels>
-      <v-stepper-header style="width:40%;" class="elevation-0 px-0 align-self-center" >
+    <v-stepper
+      v-model="creatorStep"
+      class="elevation-0 d-flex flex-column"
+      alt-labels
+    >
+      <v-stepper-header
+        style="width: 40%"
+        class="elevation-0 px-0 align-self-center"
+      >
         <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
           Set up Form
         </v-stepper-step>
@@ -31,8 +38,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
+import { mapGetters, mapActions } from 'vuex';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import { IdentityProviders } from '@/utils/constants';
 
@@ -43,7 +49,7 @@ export default {
   },
   data() {
     return {
-      creatorStep: 2
+      creatorStep: 2,
     };
   },
   props: {
@@ -51,6 +57,20 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
+    svs: String,
+    nv: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
+  },
+
+  methods: {
+    ...mapActions('form', ['listFCProactiveHelp', 'deleteCurrentForm']),
   },
   computed: {
     ...mapGetters('form', ['form']),
@@ -59,11 +79,14 @@ export default {
   beforeRouteLeave(_to, _from, next) {
     this.form.isDirty
       ? next(
-        window.confirm(
-          'Do you really want to leave this page? Changes you made will not be saved.'
+          window.confirm(
+            'Do you really want to leave this page? Changes you made will not be saved.'
+          )
         )
-      )
       : next();
+  },
+  beforeMount() {
+    this.listFCProactiveHelp();
   },
 };
 </script>

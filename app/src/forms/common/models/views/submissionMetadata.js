@@ -54,7 +54,16 @@ class SubmissionMetadata extends Model {
       },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
-      }
+      },
+      filterCreatedAt(query, minDate, maxDate) {
+        if (minDate && maxDate) {
+          query.whereBetween('createdAt', [minDate, maxDate]);
+        } else if (minDate) {
+          query.where('createdAt', '>=', minDate);
+        } else if (maxDate) {
+          query.where('createdAt', '<=', maxDate);
+        }
+      },
     };
   }
 }

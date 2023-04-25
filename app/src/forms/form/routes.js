@@ -46,10 +46,6 @@ routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P
   await controller.listFormSubmissions(req, res, next);
 });
 
-routes.get('/:formId/versions', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
-  await controller.listVersions(req, res, next);
-});
-
 // routes.post('/:formId/versions', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
 //   next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to create form versions.' }));
 // });
@@ -128,6 +124,14 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
 
 routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (req, res, next) => {
   await controller.deleteApiKey(req, res, next);
+});
+
+routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
+  await controller.listFormComponentsProactiveHelp(req, res, next);
+});
+
+routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
+  await controller.getFCProactiveHelpImageUrl(req, res, next);
 });
 
 module.exports = routes;

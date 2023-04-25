@@ -126,12 +126,12 @@ const EditFormUtils = {
 
     return {
       type: 'panel',
-      title: title,
+      title: `${title}`,
       theme: 'default',
       collapsible: true,
       collapsed: true,
       key: `${property}Panel`,
-      weight: weight,
+      weight: `${weight}`,
       components
     };
   }

@@ -15,7 +15,7 @@ module.exports = {
 
   read: async (req, res, next) => {
     try {
-      const response = await service.read(req.params.userId);
+      const response = await service.readSafe(req.params.userId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -48,7 +48,7 @@ module.exports = {
       const response = await service.readUserPreferences(req.currentUser);
       res.status(200).json({
         forms: response,
-        preferences: {}
+        preferences: {},
       });
     } catch (error) {
       next(error);
@@ -60,7 +60,7 @@ module.exports = {
       const response = await service.updateUserPreferences(req.currentUser, req.body);
       res.status(200).json({
         forms: response,
-        preferences: {}
+        preferences: {},
       });
     } catch (error) {
       next(error);

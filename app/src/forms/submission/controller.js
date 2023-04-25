@@ -28,6 +28,32 @@ module.exports = {
       next(error);
     }
   },
+  deleteMutipleSubmissions: async (req, res, next) => {
+    try {
+      let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
+      const response = await service.deleteMutipleSubmissions(submissionIds, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  restoreMutipleSubmissions: async (req, res, next) => {
+    try {
+      let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
+      const response = await service.restoreMutipleSubmissions(submissionIds, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  restore: async (req, res, next) => {
+    try {
+      const response = await service.restore(req.params.formSubmissionId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   readOptions: async (req, res, next) => {
     try {
       const response = await service.readOptions(req.params.formSubmissionId);
@@ -62,18 +88,17 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
-      const tasks = [
-        service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser),
-        service.read(req.params.formSubmissionId)
-      ];
+      const tasks = [service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser), service.read(req.params.formSubmissionId)];
       const [response, submission] = await Promise.all(tasks);
       // send an email (async in the background)
       if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
-        emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
+        emailService
+          .statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer)
+          .catch(() => {});
       } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmail) {
-        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
+        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
       } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmail) {
-        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
+        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
       }
       res.status(200).json(response);
     } catch (error) {
@@ -96,10 +121,13 @@ module.exports = {
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];
 
-      res.status(status).set({
-        'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
-        'Content-Type': headers['content-type']
-      }).send(data);
+      res
+        .status(status)
+        .set({
+          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Type': headers['content-type'],
+        })
+        .send(data);
     } catch (error) {
       next(error);
     }

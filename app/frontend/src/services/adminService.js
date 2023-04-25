@@ -1,5 +1,6 @@
 import { appAxios } from '@/services/interceptors';
 import { ApiRoutes } from '@/utils/constants';
+//import axios from 'axios';
 
 export default {
   //
@@ -15,11 +16,15 @@ export default {
    * @returns {Promise} An axios response
    */
   addFormUser(userId, formId, roles) {
-    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`, roles.map(role => ({
-      userId: userId,
-      formId: formId,
-      role: role
-    })), { params: { userId: userId } });
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/addUser`,
+      roles.map((role) => ({
+        userId: userId,
+        formId: formId,
+        role: role,
+      })),
+      { params: { userId: userId } }
+    );
   },
 
   /**
@@ -29,7 +34,9 @@ export default {
    * @returns {Promise} An axios response
    */
   deleteApiKey(formId) {
-    return appAxios().delete(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+    return appAxios().delete(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`
+    );
   },
 
   /**
@@ -39,7 +46,9 @@ export default {
    * @returns {Promise} An axios response
    */
   listForms(active = true) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}`, { params: { active: active } });
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}`, {
+      params: { active: active },
+    });
   },
 
   /**
@@ -59,7 +68,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readRoles(formId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/formUsers`);
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/formUsers`
+    );
   },
 
   /**
@@ -69,7 +80,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readApiDetails(formId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`
+    );
   },
 
   /**
@@ -79,7 +92,9 @@ export default {
    * @returns {Promise} An axios response
    */
   restoreForm(formId) {
-    return appAxios().put(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/restore`);
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/restore`
+    );
   },
 
   /**
@@ -90,7 +105,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readVersion(formId, formVersionId) {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`
+    );
   },
 
   //
@@ -113,5 +130,57 @@ export default {
    */
   readUser(userId) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`);
+  },
+
+  /**
+   * addFormComponentsProactiveHelp
+   * @function addFCProactiveHelp
+   * Create a new Form
+   * @param {Object} data An Object containing each form component help information
+   * @returns {Promise} An axios response
+   */
+  addFCProactiveHelp(data) {
+    return appAxios().post(
+      `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/object`,
+      data
+    );
+  },
+
+  /**
+   * updateFormComponentsProactiveHelpStatus
+   * @function updateFCProactiveHelpStatus
+   * Update publish status of each Form Components Help Link Information
+   * @param {boolean} publishStatus This is used to determine if the help link information is published or not
+   * @param {string} componentId component id
+   * @returns {Promise} An axios response
+   */
+  updateFCProactiveHelpStatus(componentId, publishStatus) {
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/${publishStatus}/${componentId}`
+    );
+  },
+
+  /**
+   * @function getPresignedUrl
+   * get signed image upload url
+   * @param {Object} imageName component name and component image encoded into base64
+   * @returns {Promise} An axios response
+   */
+  async getFCProactiveHelpImageUrl(componentId) {
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/imageUrl/${componentId}`
+    );
+  },
+
+  /**
+   * listFormComponentsProactiveHelp
+   * @function listFCProactiveHelp
+   * Reads all form components help information
+   * @returns {Promise} An axios response
+   */
+  async listFCProactiveHelp() {
+    return await appAxios().get(
+      `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`
+    );
   },
 };

@@ -3,11 +3,19 @@ import NativePromise from 'native-promise-only';
 
 const chefs = (formio) => {
   const addHeaders = (xhr, options) => {
-    if (options && options.headers) {
-      Object.keys(options.headers).forEach(k => {
-        const v = options.headers[k];
-        xhr.setRequestHeader(k, v);
-      });
+    if (options) {
+      if (options.headers) {
+        Object.keys(options.headers).forEach(k => {
+          const v = options.headers[k];
+          xhr.setRequestHeader(k, v);
+        });
+      }
+
+      // Allow manual setting of any supplied headers above, but need to get the latest
+      // token from the containing app to deal with expiries and override auth
+      if (options.chefsToken) {
+        xhr.setRequestHeader('Authorization', options.chefsToken())
+      }
     }
   };
 
@@ -91,9 +99,9 @@ const chefs = (formio) => {
     title: 'CHEFS',
     name: 'chefs',
     uploadFile(file, name, dir, progressCallback, url, options, fileKey) {
-      const uploadRequest = function(form) {
+      const uploadRequest = function (form) {
         return xhrRequest(url, name, {}, {
-          [fileKey]:file,
+          [fileKey]: file,
           name,
           dir
         }, options, progressCallback).then(response => {
@@ -104,7 +112,7 @@ const chefs = (formio) => {
             url: `${url}/${response.data.id}`,
             size: response.data.size,
             type: response.data.mimetype,
-            data: {id: response.data.id}
+            data: { id: response.data.id }
           };
         });
       };
@@ -146,9 +154,9 @@ const chefs = (formio) => {
           // IE/EDGE doesn't send all response headers
           if (xhr.getResponseHeader('content-disposition')) {
             const contentDisposition = xhr.getResponseHeader('content-disposition');
-            fileName = contentDisposition.substring(contentDisposition.indexOf('=')+1);
+            fileName = contentDisposition.substring(contentDisposition.indexOf('=') + 1);
           } else {
-            fileName = 'unnamed.' + contentType.substring(contentType.indexOf('/')+1);
+            fileName = 'unnamed.' + contentType.substring(contentType.indexOf('/') + 1);
           }
 
           const url = window.URL.createObjectURL(blob);

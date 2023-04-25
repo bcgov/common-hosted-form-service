@@ -6,7 +6,14 @@
         <h1>My Forms</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <v-col
+        v-if="user.idp === ID_PROVIDERS.IDIR"
+        class="text-right"
+        cols="12"
+        sm="6"
+        order="1"
+        order-sm="2"
+      >
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <router-link :to="{ name: 'FormCreate' }">
@@ -49,6 +56,7 @@
     >
       <template #[`item.name`]="{ item }">
         <router-link
+          v-if="item.published"
           :to="{
             name: 'FormSubmit',
             query: { f: item.id },
@@ -59,12 +67,13 @@
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">{{ item.name }}</span>
             </template>
-            <span>
+            <span v-if="item.published">
               View Form
               <v-icon>open_in_new</v-icon>
             </span>
           </v-tooltip>
         </router-link>
+        <span v-else>{{ item.name }}</span>
         <!-- link to description in dialog -->
         <v-icon
           v-if="item.description.trim()"
@@ -87,6 +96,7 @@
           </v-btn>
         </router-link>
         <router-link
+          data-cy="formSubmissionsLink"
           v-if="checkSubmissionView(item)"
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
@@ -101,7 +111,7 @@
     <BaseDialog
       v-model="showDescriptionDialog"
       showCloseButton
-      @close-dialog="showDescriptionDialog = false;"
+      @close-dialog="showDescriptionDialog = false"
     >
       <template #title>
         <span class="pl-5">Description:</span>
@@ -110,12 +120,12 @@
         <slot name="formDescription">{{ formDescription }}</slot>
       </template>
     </BaseDialog>
-
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { IdentityProviders } from '@/utils/constants';
 import {
   checkFormManage,
   checkFormSubmit,
@@ -129,7 +139,7 @@ export default {
       // Assigning width: '1%' to dynamically assign width to the Table's Columns as described by this post on Stack Overflow:
       // https://stackoverflow.com/a/51569928
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name', width: '1%', },
+        { text: 'Form Title', align: 'start', value: 'name', width: '1%' },
         {
           text: 'Actions',
           align: 'end',
@@ -148,6 +158,7 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['formList']),
+    ...mapGetters('auth', ['user']),
     filteredFormList() {
       // At this point, we're only showing forms you can manage or view submissions of here
       // This may get reconceptualized in the future to different pages or something
@@ -155,6 +166,7 @@ export default {
         (f) => checkFormManage(f) || checkSubmissionView(f)
       );
     },
+    ID_PROVIDERS: () => IdentityProviders,
   },
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),
@@ -166,8 +178,7 @@ export default {
       this.formId = formId;
       this.formDescription = formDescription;
       this.showDescriptionDialog = true;
-    }
-
+    },
   },
   async mounted() {
     await this.getFormsForCurrentUser();

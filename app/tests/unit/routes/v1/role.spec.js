@@ -26,7 +26,6 @@ userAccess.currentUser = jest.fn((req, res, next) => {
 //
 const service = require('../../../../src/forms/role/service');
 
-
 //
 // mocks are in place, create the router
 //
@@ -41,7 +40,6 @@ afterEach(() => {
 });
 
 describe(`GET ${basePath}`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.list = jest.fn().mockReturnValue([]);
@@ -54,7 +52,9 @@ describe(`GET ${basePath}`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.list = jest.fn(() => { throw new Problem(401); });
+    service.list = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}`);
 
@@ -64,18 +64,18 @@ describe(`GET ${basePath}`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.list = jest.fn(() => { throw new Error(); });
+    service.list = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`POST ${basePath}`, () => {
-
   it('should return 201', async () => {
     // mock a success return value...
     service.create = jest.fn().mockReturnValue({});
@@ -88,7 +88,9 @@ describe(`POST ${basePath}`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.create = jest.fn(() => { throw new Problem(401); });
+    service.create = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).post(`${basePath}`);
 
@@ -98,18 +100,18 @@ describe(`POST ${basePath}`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.create = jest.fn(() => { throw new Error(); });
+    service.create = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).post(`${basePath}`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`GET ${basePath}/role`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.read = jest.fn().mockReturnValue([]);
@@ -122,7 +124,9 @@ describe(`GET ${basePath}/role`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.read = jest.fn(() => { throw new Problem(401); });
+    service.read = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/role`);
 
@@ -132,18 +136,18 @@ describe(`GET ${basePath}/role`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.read = jest.fn(() => { throw new Error(); });
+    service.read = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/role`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`PUT ${basePath}/role`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.update = jest.fn().mockReturnValue([]);
@@ -156,7 +160,9 @@ describe(`PUT ${basePath}/role`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.update = jest.fn(() => { throw new Problem(401); });
+    service.update = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).put(`${basePath}/role`);
 
@@ -166,12 +172,13 @@ describe(`PUT ${basePath}/role`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.update = jest.fn(() => { throw new Error(); });
+    service.update = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).put(`${basePath}/role`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });

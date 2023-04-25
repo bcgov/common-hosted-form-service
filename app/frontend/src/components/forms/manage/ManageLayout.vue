@@ -27,7 +27,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 import ManageForm from '@/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '@/components/forms/manage/ManageFormActions.vue';
-import { IdentityProviders } from '@/utils/constants';
+import { FormPermissions, IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'ManageLayout',
@@ -44,7 +44,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form']),
+    ...mapGetters('form', ['form', 'permissions']),
     IDP: () => IdentityProviders,
   },
   methods: {
@@ -59,10 +59,11 @@ export default {
     await Promise.all([
       // Get the form for this management page
       this.fetchForm(this.f),
-      this.fetchDrafts(this.f),
       // Get the permissions for this form
       this.getFormPermissionsForUser(this.f),
     ]);
+    if (this.permissions.includes(FormPermissions.DESIGN_READ))
+      await this.fetchDrafts(this.f);
     this.loading = false;
   },
 };

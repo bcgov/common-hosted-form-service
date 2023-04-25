@@ -13,8 +13,8 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   contact:
-    name: NR Common Service Showcase
-    email: NR.CommonServiceShowcase@gov.bc.ca
+    name: Forminators
+    email: submit.digital@gov.bc.ca
 externalDocs:
   description: Project Readmes
   url: https://github.com/bcgov/common-hosted-form-service
@@ -328,6 +328,13 @@ paths:
             type: string
           description: the category of data exported
           example: submissions
+          required: true
+        - in: query
+          name: version
+          schema:
+            type: string
+          description: The form version number. If the export format is json and not csv, then setting this to 0 will export all versions.
+          example: 1
           required: true
         - in: query
           name: minDate
@@ -1715,10 +1722,10 @@ paths:
             type: string
           description: user ID
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -1936,10 +1943,10 @@ paths:
             type: string
           description: user id
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -2074,10 +2081,10 @@ paths:
         - User
       parameters:
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -2645,10 +2652,10 @@ components:
           type: string
           description: ID of the user
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-        keycloakId:
+        idpUserId:
           type: string
-          description: ID of the user
-          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+          description: ID of the user provided by the identity provider
+          example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
         username:
           type: string
           description: Username of this user
@@ -2794,6 +2801,84 @@ components:
             enableSubmitterDraft:
               type: boolean
               example: true
+            reminder_enabled:
+              type: boolean
+              example: true
+              description: Allow form to send reminder email to all submitters
+            schedule:
+              type: Object
+              description: Contains schedule related data
+              properties:
+                enabled:
+                  type: boolean
+                  description: Used to indicate if schedule feature enabled or not
+                  example: true
+                scheduleType:
+                  type: string
+                  description: Shows type of Schedule setting choose by form designed. Could be period,closingDate,manual
+                  example: period
+                closingMessage:
+                  type: string
+                  description: This string contain custom closing message message set by form designer that shows on frontend when a form is expired for a particular period.
+                  example: This Form is expired.
+                keepOpenForTerm:
+                  type: string
+                  description: This contain a value that can be used with combination to another key i.e. keepOpenForInterval to calculate a period. Thats tells a form to be keep open for particular period.  40 Days, 3 Weeks, 1 Years etc.
+                  example: '15'
+                keepOpenForInterval:
+                  type: string
+                  description: This contain a value that can be used with combination to another key i.e. keepOpenForTerm to calculate a period. Thats tells a form to be keep open for particular period.  40 Days, 3 Weeks, 1 Years etc.
+                  example: '15'
+                repeatSubmission:
+                  type: Object
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Used to indicate if repeatition of scheduling a form enabled or not
+                      example: true
+                    everyTerm:
+                      type: string
+                      description: This contain a value that can be used with combination to another key i.e. everyIntervalType to calculate a period. Thats tells a form to be schedule a form repetition after particular period.  40 Days, 3 Weeks, 1 Years etc.
+                      example: '15'
+                    repeatUntil:
+                      type: string
+                      description: Contains end date for repeatition of form schedule.
+                      example: '2023-12-22'
+                    everyIntervalType:
+                      type: string
+                      description: This contain a value that can be used with combination to another key i.e. everyTerm to calculate a period. Thats tells a form to be schedule a form repetition after particular period.  40 Days, 3 Weeks, 1 Years etc.
+                      example: '15'
+                allowLateSubmissions:
+                  type: Object
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Used to indicate if late submission allowed on a form or not, Will be true if enabled
+                      example: true
+                    forNext:
+                      type: Object
+                      properties:
+                        term:
+                          type: string
+                          description: This contain a value that can be used with combination to another key i.e. intervalType to calculate a period. Thats tells a form to be allowed a late submission for particular period.  40 Days, 3 Weeks, 1 Years etc.
+                        intervalType:
+                          type: string
+                          description: This contain a value that can be used with combination to another key i.e. term to calculate a period. Thats tells a form to be allowed a late submission for particular period.  40 Days, 3 Weeks, 1 Years etc.
+                closingMessageEnabled: 
+                  type: boolean
+                  description: Set to true when custom closing message is enabled
+                  example: true
+                openSubmissionDateTime: 
+                  type: string
+                  description: Contains open date of form schedule system.
+                  example: '2022-12-22'
+                closeSubmissionDateTime:
+                  type: string
+                  description: Contains closing date of form schedule system when type of ScheduleType set to closingDate.
+                  example: '2022-12-22'
+            enableCopyExistingSubmission:
+              type: boolean
+              example: false
     FormCore:
       type: object
       properties:
@@ -3344,10 +3429,10 @@ components:
               type: string
               description: ID of the user
               example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-            keycloakID:
+            idpUserId:
               type: string
-              description: ID of the user in the external Keycloak system
-              example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+              description: ID of the user in the external identity provider system
+              example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
             username:
               type: string
               description: Username of this user
@@ -3375,10 +3460,10 @@ components:
           type: string
           description: ID of the user
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-        keycloakId:
+        idpUserId:
           type: string
-          description: ID of the user
-          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+          description: ID of the user in the external identity provider system
+          example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
         username:
           type: string
           description: Username of this user

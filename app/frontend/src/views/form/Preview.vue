@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR">
+  <BaseSecure :idp="[IDP.IDIR]">
     <h1>
       PREVIEW
       <v-tooltip bottom>
@@ -9,7 +9,8 @@
           </v-icon>
         </template>
         <span>
-          This shows a preview of the form version design and behaviour as your submitters will see it. You cannot submit the form from this page.
+          This shows a preview of the form version design and behaviour as your
+          submitters will see it. You cannot submit the form from this page.
         </span>
       </v-tooltip>
     </h1>
@@ -34,6 +35,6 @@ export default {
   },
   computed: {
     IDP: () => IdentityProviders,
-  }
+  },
 };
 </script>

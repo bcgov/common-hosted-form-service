@@ -3,14 +3,8 @@
     <div v-if="keycloakReady && !authenticated">
       <h1 class="my-6">Authenticate with:</h1>
       <v-row v-for="button in buttons" justify="center" :key="button.type">
-        <v-col sm="3">
-          <v-btn
-            block
-            color="primary"
-            @click="login(button.type)"
-            :disabled="button.disabled"
-            large
-          >
+        <v-col sm="3" v-if="buttonEnabled(button.type)">
+          <v-btn block color="primary" @click="login(button.type)" large>
             <span>{{ button.label }}</span>
           </v-btn>
         </v-col>
@@ -37,36 +31,43 @@ export default {
   name: 'Login',
   props: {
     idpHint: {
-      type: String,
-      default: undefined,
+      type: Array,
+      default: () => [
+        IdentityProviders.IDIR,
+        IdentityProviders.BCEIDBUSINESS,
+        IdentityProviders.BCEIDBASIC,
+      ],
     },
   },
   created() {
     // If component gets idpHint, invoke login flow via vuex
-    if (this.idpHint) this.login(this.idpHint);
+    if (this.idpHint && this.idpHint.length === 1) this.login(this.idpHint[0]);
   },
   computed: {
     ...mapGetters('auth', ['authenticated', 'createLoginUrl', 'keycloakReady']),
-    buttons: () => ([
+    buttons: () => [
       {
-        disabled: false,
         label: 'IDIR',
         type: IdentityProviders.IDIR,
       },
       {
-        disabled: false,
         label: 'Basic BCeID',
         type: IdentityProviders.BCEIDBASIC,
       },
       {
-        disabled: false,
         label: 'Business BCeID',
         type: IdentityProviders.BCEIDBUSINESS,
       },
-    ]),
+    ],
+    IDPS() {
+      return IdentityProviders;
+    },
   },
   methods: {
-    ...mapActions('auth', ['login'])
+    ...mapActions('auth', ['login']),
+    buttonEnabled(type) {
+      return this.idpHint ? this.idpHint.includes(type) : false;
+    },
   },
 };
 </script>

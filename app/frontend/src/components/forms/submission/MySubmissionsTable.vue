@@ -10,6 +10,21 @@
         <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
+              <v-btn
+                @click="showColumnsDialog = true"
+                class="mx-1"
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>view_column</v-icon>
+              </v-btn>
+            </template>
+            <span>Select Columns</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
               <router-link
                 :to="{
                   name: 'FormSubmit',
@@ -56,7 +71,7 @@
     <!-- table header -->
     <v-data-table
       class="submissions-table"
-      :headers="headers"
+      :headers="HEADERS"
       item-key="title"
       :items="submissionTable"
       :search="search"
@@ -65,21 +80,43 @@
       no-data-text="You have no submissions"
     >
       <template #[`item.lastEdited`]="{ item }">
-        {{ item.lastEdited | formatDateLong }}
+        {{ item.lastEdited | formatDateLong(false) }}
       </template>
       <template #[`item.submittedDate`]="{ item }">
-        {{ item.submittedDate | formatDateLong }}
+        {{ item.submittedDate | formatDateLong(false) }}
       </template>
       <template #[`item.completedDate`]="{ item }">
-        {{ item.completedDate | formatDateLong }}
+        {{ item.completedDate | formatDateLong(false) }}
       </template>
       <template #[`item.actions`]="{ item }">
         <MySubmissionsActions
           @draft-deleted="populateSubmissionsTable"
           :submission="item"
+          :formId="formId"
+          :isCopyFromExistingSubmissionEnabled="
+            isCopyFromExistingSubmissionEnabled
+          "
         />
       </template>
     </v-data-table>
+    <v-dialog v-model="showColumnsDialog" width="700">
+      <BaseFilter
+        inputFilterPlaceholder="Search submission fields"
+        inputItemKey="value"
+        inputSaveButtonText="Save"
+        :inputData="
+          DEFAULT_HEADERS.filter(
+            (h) => !filterIgnore.some((fd) => fd.value === h.value)
+          )
+        "
+        @saving-filter-data="updateFilter"
+        @cancel-filter-data="showColumnsDialog = false"
+      >
+        <template #filter-title
+          >Search and select columns to show under your dashboard</template
+        >
+      </BaseFilter>
+    </v-dialog>
   </div>
 </template>
 
@@ -101,6 +138,17 @@ export default {
   },
   data() {
     return {
+      headers: [],
+      filterData: [],
+      filterIgnore: [
+        {
+          value: 'confirmationId',
+        },
+        {
+          value: 'actions',
+        },
+      ],
+      showColumnsDialog: false,
       submissionTable: [],
       loading: true,
       search: '',
@@ -108,13 +156,32 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['form', 'submissionList', 'permissions']),
-    headers() {
+    ...mapGetters('auth', ['user']),
+    DEFAULT_HEADERS() {
       let headers = [
-        { text: 'Confirmation Id', align: 'start', value: 'confirmationId' },
-        { text: 'Status', align: 'start', value: 'status' },
+        {
+          text: 'Confirmation Id',
+          align: 'start',
+          value: 'confirmationId',
+          sortable: true,
+        },
+        {
+          text: 'Created By',
+          value: 'createdBy',
+          sortable: true,
+        },
+        {
+          text: 'Status Updated By',
+          value: 'username',
+          sortable: true,
+        },
+        {
+          text: 'Status',
+          value: 'status',
+          sortable: true,
+        },
         {
           text: 'Submission Date',
-          align: 'start',
           value: 'submittedDate',
           sortable: true,
         },
@@ -124,23 +191,27 @@ export default {
           value: 'actions',
           filterable: false,
           sortable: false,
+          width: '140px',
         },
       ];
       if (this.showDraftLastEdited || !this.formId) {
-        headers.splice(2, 0, {
+        headers.splice(headers.length - 1, 0, {
           text: 'Draft Last Edited',
           align: 'start',
           value: 'lastEdited',
           sortable: true,
         });
       }
-      if (!this.formId) {
-        headers.splice(0, 0, {
-          text: 'Form Title',
-          align: 'start',
-          value: 'name',
-        });
-      }
+      return headers;
+    },
+    HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+      if (this.filterData.length > 0)
+        headers = headers.filter(
+          (h) =>
+            this.filterData.some((fd) => fd.value === h.value) ||
+            this.filterIgnore.some((ign) => ign.value === h.value)
+        );
       return headers;
     },
     showStatus() {
@@ -149,6 +220,9 @@ export default {
     showDraftLastEdited() {
       return this.form && this.form.enableSubmitterDraft;
     },
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
+    },
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
@@ -156,9 +230,10 @@ export default {
     // Status columns in the table
     getCurrentStatus(record) {
       // Current status is most recent status (top in array, query returns in status created desc)
-      const status = record.submissionStatus && record.submissionStatus[0]
-        ? record.submissionStatus[0].code
-        : 'N/A';
+      const status =
+        record.submissionStatus && record.submissionStatus[0]
+          ? record.submissionStatus[0].code
+          : 'N/A';
       if (record.draft && status !== 'REVISING') {
         return 'DRAFT';
       } else {
@@ -190,18 +265,28 @@ export default {
             permissions: s.permissions,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
-            submittedDate: this.getStatusDate(s, 'SUBMITTED')
+            submittedDate: this.getStatusDate(s, 'SUBMITTED'),
+            createdBy: s.submission.createdBy,
+            username:
+              s.submissionStatus && s.submissionStatus.length > 0
+                ? s.submissionStatus[0].createdBy
+                : '',
           };
         });
         this.submissionTable = tableRows;
       }
       this.loading = false;
     },
+
+    async updateFilter(data) {
+      this.filterData = data;
+      this.showColumnsDialog = false;
+    },
   },
 
-  mounted() {
-    this.fetchForm(this.formId);
-    this.populateSubmissionsTable();
+  async mounted() {
+    await this.fetchForm(this.formId);
+    await this.populateSubmissionsTable();
   },
 };
 </script>

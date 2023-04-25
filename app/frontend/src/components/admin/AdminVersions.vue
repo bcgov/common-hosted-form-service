@@ -6,9 +6,7 @@
   >
     <!-- Version  -->
     <template #[`item.version`]="{ item }">
-      <span>
-        Version {{ item.version }}
-      </span>
+      <span> Version {{ item.version }} </span>
     </template>
 
     <!-- Status  -->

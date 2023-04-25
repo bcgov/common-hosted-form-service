@@ -5,9 +5,12 @@
         <h1 class="my-8">401: Unauthorized. :(</h1>
         <p>You do not have permission to access this page.</p>
       </div>
-      <div v-else-if="idp && identityProvider !== idp" class="text-center">
+      <div
+        v-else-if="idp && !idp.includes(identityProvider)"
+        class="text-center"
+      >
         <h1 class="my-8">403: Forbidden. :(</h1>
-        <p>This page requires {{ idp.toUpperCase() }} authentication.</p>
+        <p>This page requires {{ idp }} authentication.</p>
       </div>
       <slot v-else />
     </div>
@@ -16,7 +19,7 @@
       <h1 class="my-8">401: Unauthorized. :(</h1>
       <p>
         Your account is not set up correctly.<br />Please contact
-        <a :href="mailToLink">NR.CommonServiceShowcase@gov.bc.ca</a>
+        <a :href="mailToLink">{{ contactInfo }}</a>
       </p>
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" large>
@@ -51,9 +54,9 @@ export default {
       default: false,
     },
     idp: {
-      type: String,
-      default: undefined
-    }
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
     ...mapGetters('auth', [
@@ -64,9 +67,14 @@ export default {
       'keycloakReady',
     ]),
     mailToLink() {
-      return `mailto:NR.CommonServiceShowcase@gov.bc.ca?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
+      return `mailto:${
+        process.env.VUE_APP_CONTACT
+      }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
         location
       )}.`;
+    },
+    contactInfo() {
+      return process.env.VUE_APP_CONTACT;
     },
   },
   methods: mapActions('auth', ['login']),
