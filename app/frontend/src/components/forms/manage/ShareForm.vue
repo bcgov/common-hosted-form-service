@@ -26,7 +26,6 @@
           <v-alert
             :value="warning"
             :class="NOTIFICATIONS_TYPES.WARNING.class"
-            :color="NOTIFICATIONS_TYPES.WARNING.color"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             transition="scale-transition"
           >
