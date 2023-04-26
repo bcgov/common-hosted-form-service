@@ -355,6 +355,17 @@ export default {
             },
           ];
         }
+
+        if (this.userFormPreferences.preferences.columns.includes('status')) {
+          headers = [
+            ...headers,
+            {
+              text: 'Status',
+              align: 'start',
+              value: 'status',
+            },
+          ];
+        }
       } else {
         headers = [
           ...headers,
@@ -369,6 +380,17 @@ export default {
             value: 'submitter',
           },
         ];
+        // If status flow enabled add that column
+        if (this.showStatus) {
+          headers = [
+            ...headers,
+            {
+              text: 'Status',
+              align: 'start',
+              value: 'status',
+            },
+          ];
+        }
       }
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
@@ -377,14 +399,6 @@ export default {
           ...headers,
           { text: 'Late Submission', align: 'start', value: 'lateEntry' },
         ];
-      }
-      // If status flow enabled add that column
-      if (this.showStatus) {
-        headers.splice(3, 0, {
-          text: 'Status',
-          align: 'start',
-          value: 'status',
-        });
       }
 
       // Add any custom columns if the user has them
@@ -441,6 +455,18 @@ export default {
           return { text: ff, value: ff, align: 'end' };
         })
       );
+
+      // If status flow enabled add that column
+      if (this.showStatus) {
+        filteredHeader = [
+          {
+            text: 'Status',
+            align: 'start',
+            value: 'status',
+          },
+          ...filteredHeader,
+        ];
+      }
 
       filteredHeader = [
         {
