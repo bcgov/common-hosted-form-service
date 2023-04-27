@@ -379,6 +379,11 @@ export default {
             align: 'start',
             value: 'submitter',
           },
+          {
+            text: 'Status',
+            align: 'start',
+            value: 'status',
+          },
         ];
         // If status flow enabled add that column
         if (this.showStatus) {
@@ -478,6 +483,11 @@ export default {
           text: 'Submitter',
           align: 'start',
           value: 'submitter',
+        },
+        {
+          text: 'Status',
+          align: 'start',
+          value: 'status',
         },
         ...filteredHeader,
       ];
