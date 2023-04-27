@@ -2,7 +2,7 @@ const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 const { validateScheduleObject } = require('../common/utils');
-const validator = require('../common/validator');
+const validationService = require('./validationService');
 
 const {
   FileStorage,
@@ -571,7 +571,7 @@ const service = {
       let anyError = false;
       await Promise.all(
         submissionDataArray.map(async (singleData, index) => {
-          const report = await validator.validate(singleData, formVersion.schema);
+          const report = await validationService.validate(singleData, formVersion.schema);
           if (report !== null) {
             anyError = true;
             validationResults[index] = report;
