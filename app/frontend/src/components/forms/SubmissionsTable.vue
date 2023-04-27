@@ -379,18 +379,12 @@ export default {
             align: 'start',
             value: 'submitter',
           },
+          {
+            text: 'Status',
+            align: 'start',
+            value: 'status',
+          },
         ];
-        // If status flow enabled add that column
-        if (this.showStatus) {
-          headers = [
-            ...headers,
-            {
-              text: 'Status',
-              align: 'start',
-              value: 'status',
-            },
-          ];
-        }
       }
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
@@ -456,18 +450,6 @@ export default {
         })
       );
 
-      // If status flow enabled add that column
-      if (this.showStatus) {
-        filteredHeader = [
-          {
-            text: 'Status',
-            align: 'start',
-            value: 'status',
-          },
-          ...filteredHeader,
-        ];
-      }
-
       filteredHeader = [
         {
           text: 'Submission Date',
@@ -478,6 +460,11 @@ export default {
           text: 'Submitter',
           align: 'start',
           value: 'submitter',
+        },
+        {
+          text: 'Status',
+          align: 'start',
+          value: 'status',
         },
         ...filteredHeader,
       ];
