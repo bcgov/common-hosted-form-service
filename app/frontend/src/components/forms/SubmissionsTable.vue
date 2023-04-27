@@ -385,6 +385,17 @@ export default {
             value: 'status',
           },
         ];
+        // If status flow enabled add that column
+        if (this.showStatus) {
+          headers = [
+            ...headers,
+            {
+              text: 'Status',
+              align: 'start',
+              value: 'status',
+            },
+          ];
+        }
       }
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
@@ -449,6 +460,18 @@ export default {
           return { text: ff, value: ff, align: 'end' };
         })
       );
+
+      // If status flow enabled add that column
+      if (this.showStatus) {
+        filteredHeader = [
+          {
+            text: 'Status',
+            align: 'start',
+            value: 'status',
+          },
+          ...filteredHeader,
+        ];
+      }
 
       filteredHeader = [
         {

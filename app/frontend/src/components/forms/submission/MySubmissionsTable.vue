@@ -197,6 +197,12 @@ export default {
       ];
       if (this.showDraftLastEdited || !this.formId) {
         headers.splice(headers.length - 1, 0, {
+          text: 'Draft Updated By',
+          align: 'start',
+          value: 'updatedBy',
+          sortable: true,
+        });
+        headers.splice(headers.length - 1, 0, {
           text: 'Draft Last Edited',
           align: 'start',
           value: 'lastEdited',
@@ -266,13 +272,14 @@ export default {
         const tableRows = this.submissionList.map((s) => {
           return {
             confirmationId: s.confirmationId,
-            lastEdited: s.draft ? s.updatedAt : undefined,
             name: s.name,
             permissions: s.permissions,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
             submittedDate: this.getStatusDate(s, 'SUBMITTED'),
             createdBy: s.submission.createdBy,
+            updatedBy: s.draft ? s.submission.updatedBy : undefined,
+            lastEdited: s.draft ? s.submission.updatedAt : undefined,
             username:
               s.submissionStatus && s.submissionStatus.length > 0
                 ? s.submissionStatus[0].createdBy
