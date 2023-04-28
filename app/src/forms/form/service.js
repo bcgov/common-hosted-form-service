@@ -132,6 +132,7 @@ const service = {
       if (scheduleData.status !== 'success') {
         throw new Problem(422, `${scheduleData.message}`);
       }
+      console.log(data);
       const upd = {
         name: data.name,
         description: data.description,
@@ -567,35 +568,22 @@ const service = {
       delete recordWithoutData.submission.data;
 
       let recordsToInsert = [];
-
-      // let results = await validatorService._init(formVersion.schema, submissionDataArray);
-      // let validationResults = results[0];
-      // let anyError = results[1];
-
       let validationResults = [];
       let anyError = false;
-
-      // await Promise.all(
-      //   submissionDataArray.map(async (singleData, index) => {
-      //     const report = await validator.validate(singleData, formVersion.schema);
-      //     if (report !== null) {
-      //       anyError = true;
-      //       validationResults[index] = report;
-      //     }
-      //   })
-      // );
-
-      const validator = new Validator(formVersion.schema);
-
-      await Promise.all(
-        submissionDataArray.map(async (singleData, index) => {
-          const report = await validateData(singleData, validator);
-          if (report !== null) {
-            anyError = true;
-            validationResults[index] = report;
-          }
-        })
-      );
+      try {
+        const validator = new Validator(formVersion.schema);
+        await Promise.all(
+          submissionDataArray.map(async (singleData, index) => {
+            const report = await validateData(singleData, validator);
+            if (report !== null) {
+              anyError = true;
+              validationResults[index] = report;
+            }
+          })
+        );
+      } catch (error) {
+        throw new Problem(500, `Validation failed`, error);
+      }
 
       if (anyError) {
         //As we need all or nothing to be saved, So if a single draft entry do not validated then just return report without saving any submission.

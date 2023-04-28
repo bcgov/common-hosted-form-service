@@ -1,7 +1,3 @@
-/**
- * This function will be used to validate submission data
- */
-
 const validateData = (data, validator) => {
   return new Promise((resolve) => {
     validator.validate(

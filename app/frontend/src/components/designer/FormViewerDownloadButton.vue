@@ -35,10 +35,10 @@
             </template>
           </v-progress-linear>
           <v-row class="fileinfo">
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="8">
               <label class="label-left">{{ file.name }}</label>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <label class="label-right">{{ fileSize }}</label>
             </v-col>
           </v-row>
@@ -51,17 +51,28 @@
               <v-icon v-if="!response.error" color="green">check</v-icon>
               {{ response.message }}
             </p>
-            <ul v-if="response.error && response.response.length > 0" class="list-error">
-              <li v-for="item in response.response" v-bind:key="item.index">
-                Submission {{ item.index + 1 }}
-                <ul v-if="item.errors.length > 0">
-                  <li v-for="(error, index) in item.errors" v-bind:key="index">({{ error.context.key }})-{{ error.message }}</li>
-                </ul>
-              </li>
-            </ul>
           </div>
         </div>
-        <v-row v-if="file && !progress">
+        <v-row class="p-1">
+          <v-col cols="12" md="12">
+            <hr v-if="response.error && response.response.length > 0" />
+            <p style="text-align: justify" v-if="response.error && response.response.length > 0">
+              Please download the submission report and ensure that the data is enteres correctly.
+              <span class="link">
+                <vue-blob-json-csv
+                  tag-name="i"
+                  file-type="csv"
+                  :file-name="response.file_name"
+                  title="Download report "
+                  :data="response.response"
+                  confirm="Do you want to download it?"
+                />
+                <v-icon class="mr-1" color="#003366">download</v-icon>
+              </span>
+            </p>
+          </v-col>
+        </v-row>
+        <v-row v-if="file && !progress && response.error && response.response.length > 0">
           <v-col cols="12" md="12">
             <span class="m-2 pull-right">
               <v-btn @click="resetUpload" color="primary">
@@ -90,6 +101,7 @@ export default {
       error: Boolean,
       upload_state: Number,
       response: [],
+      file_name: String,
     },
     json_csv: {
       data: [],
@@ -109,13 +121,14 @@ export default {
       index: 0,
       globalError: [],
       progress: false,
+      report_file_name: undefined,
       ERROR: {
         UPLOAD_MULTIPLE_FILE_ERROR: 'Sorry, you can upload only one file',
         DRAG_MULPLE_FILE_ERROR: 'Sorry, you can drag only one file',
         FILE_FORMAT_ERROR: 'Sorry, we only accept json files',
         FILE_SIZE_ERROR: 'Max file size allowed is 5MB',
-        PARSE_JSON_ERROR: 'An unexpected error occurred',
-        JSON_OBJECT_NOT_ARRAY: 'An unexpected error occurred.',
+        PARSE_JSON_ERROR: 'We can not parse json data from the file',
+        JSON_OBJECT_NOT_ARRAY: 'Wrong json file format',
         JSON_ARRAY_EMPTY: 'This json file is empty.',
         ERROR_WHILE_VALIDATE: 'There is something wrong with this file',
         ERROR_WHILE_CHECKVALIDITY: 'There is something wrong with this file',
@@ -289,8 +302,8 @@ export default {
   }
   .worker-zone {
     position: relative;
-    max-width: 38%;
-    min-height: 64px;
+    width: 38%;
+    min-height: 200px;
     padding: 0.05%;
     text-align: center;
     font-family: 'Quicksand', sans-serif;
@@ -307,12 +320,12 @@ export default {
       margin-right: auto;
       display: inline-block;
       padding: 0;
-      padding-top: 2%;
+      padding-top: 1%;
+      margin-bottom: -5%;
       .fileinfo {
-        position: relative;
         width: 100%;
         margin-top: 0.5%;
-        padding: 1px;
+        padding: 0.5px;
         label {
           font-size: 12px;
           color: #38598a;
@@ -334,12 +347,13 @@ export default {
       margin-right: auto;
       display: inline-block;
       text-align: left;
-      margin-bottom: 0;
+      margin-bottom: 0%;
       .message-block {
         position: relative;
         width: 100%;
         display: inline-block;
         padding: 0;
+        margin-bottom: -7%;
         //border: 1px solid #003366;
         .success-text {
           color: #38598a;
@@ -368,21 +382,11 @@ export default {
             padding: 0;
           }
         }
-        .list-error {
-          color: #003366;
-          font-size: 15px;
-          ul {
-            li {
-              color: #38598a;
-              font-size: 12px;
-            }
-          }
-        }
       }
       hr {
         margin: none;
-        margin-top: -0.5%;
-        margin-bottom: -0.5%;
+        margin-top: -0.1%;
+        margin-bottom: -0.1%;
       }
       .alert-text {
         width: 100%;

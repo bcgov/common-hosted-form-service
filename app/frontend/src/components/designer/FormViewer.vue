@@ -188,6 +188,7 @@ export default {
         error: Boolean,
         upload_state: Number,
         response: [],
+        file_name: String,
       },
       block: false,
       doYouWantToSaveTheDraft: false,
@@ -376,6 +377,7 @@ export default {
       this.sbdMessage.error = false;
       this.sbdMessage.upload_state = 0;
       this.sbdMessage.response = [];
+      this.sbdMessage.file_name = undefined;
       this.block = false;
     },
     async saveBulkData(submissions) {
@@ -426,11 +428,18 @@ export default {
     async formatResponse(response) {
       let newResponse = [];
       await response.forEach((item, index) => {
-        const error = {
-          index,
-          errors: item.details,
-        };
-        newResponse.push(error);
+        if (item != null && item != undefined) {
+          item.details.forEach((obj) => {
+            const error = {
+              ' Submission': index,
+              ' key': obj.context.key,
+              ' label': obj.context.label,
+              ' validator': obj.context.validator,
+              error: obj.message,
+            };
+            newResponse.push(error);
+          });
+        }
       });
       return newResponse;
     },
@@ -644,8 +653,9 @@ export default {
     },
     showdoYouWantToSaveTheDraftModal() {
       if (!this.bulkFile) {
-        this.doYouWantToSaveTheDraft = true;
         this.saveDraftState = 0;
+        if (this.submissionId == undefined) this.doYouWantToSaveTheDraft = true;
+        else this.leaveThisPage();
       } else {
         this.leaveThisPage();
       }
