@@ -2,9 +2,8 @@ const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 const { validateScheduleObject } = require('../common/utils');
-const { validateData } = require('../common/validator');
-const Validator = require('formio/src/resources/Validator.js');
-// const validatorService = require('./validatorService');
+const validationService = require('./validationService');
+
 const {
   FileStorage,
   Form,
@@ -570,20 +569,15 @@ const service = {
       let recordsToInsert = [];
       let validationResults = [];
       let anyError = false;
-      try {
-        const validator = new Validator(formVersion.schema);
-        await Promise.all(
-          submissionDataArray.map(async (singleData, index) => {
-            const report = await validateData(singleData, validator);
-            if (report !== null) {
-              anyError = true;
-              validationResults[index] = report;
-            }
-          })
-        );
-      } catch (error) {
-        throw new Problem(500, `Validation failed`, error);
-      }
+      await Promise.all(
+        submissionDataArray.map(async (singleData, index) => {
+          const report = await validationService.validate(singleData, formVersion.schema);
+          if (report !== null) {
+            anyError = true;
+            validationResults[index] = report;
+          }
+        })
+      );
 
       if (anyError) {
         //As we need all or nothing to be saved, So if a single draft entry do not validated then just return report without saving any submission.
