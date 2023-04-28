@@ -77,7 +77,7 @@
                 <qrcode-vue
                   :value="formLink"
                   :size="qrSize"
-                  renderAs="canvas"
+                  render-as="canvas"
                   :level="qrLevel"
                 />
               </div>
