@@ -29,7 +29,7 @@
       </div>
       <div v-if="file" class="worker-zone">
         <div class="wz-top">
-          <v-progress-linear v-model="value" color="blue-grey" height="25">
+          <v-progress-linear v-model="value" class="loading" rounded height="15">
             <template v-slot:default="{ value }">
               <strong>{{ value }}%</strong>
             </template>
@@ -290,6 +290,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.loading {
+  background-color: #38598a;
+  border-color: #003366;
+  strong {
+    color: white;
+    font-size: 13px;
+  }
+}
 .file-upload {
   position: relative;
   width: 100%;

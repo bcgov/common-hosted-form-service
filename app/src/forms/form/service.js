@@ -131,7 +131,6 @@ const service = {
       if (scheduleData.status !== 'success') {
         throw new Problem(422, `${scheduleData.message}`);
       }
-      console.log(data);
       const upd = {
         name: data.name,
         description: data.description,

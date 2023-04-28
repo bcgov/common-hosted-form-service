@@ -419,6 +419,7 @@ export default {
         this.sbdMessage.upload_state = 10;
         this.block = false;
         this.sbdMessage.response = error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
+        this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
         this.addNotification({
           message: this.sbdMessage.message,
           consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
@@ -430,13 +431,13 @@ export default {
       await response.forEach((item, index) => {
         if (item != null && item != undefined) {
           item.details.forEach((obj) => {
-            const error = {
-              ' Submission': index,
+            const error = Object({
+              ' submission': index,
               ' key': obj.context.key,
               ' label': obj.context.label,
               ' validator': obj.context.validator,
-              error: obj.message,
-            };
+              error_message: obj.message,
+            });
             newResponse.push(error);
           });
         }
