@@ -12,7 +12,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:prettier/recommended',
   ],
-  plugins: ['vuetify', 'prettier'],
+  plugins: ['prettier'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -56,9 +56,6 @@ module.exports = {
       },
     ],
     'vue/no-spaces-around-equal-signs-in-attribute': ['error'],
-    'vuetify/no-deprecated-classes': 'error',
-    'vuetify/grid-unknown-attributes': 'error',
-    'vuetify/no-legacy-grid': 'error',
   },
   overrides: [
     {

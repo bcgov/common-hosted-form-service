@@ -6,7 +6,7 @@
           color="primary"
           :disabled="disabled"
           icon
-          v-clipboard:copy="copyText"
+          v-clipboard="copyText"
           v-clipboard:success="clipboardSuccessHandler"
           v-clipboard:error="clipboardErrorHandler"
           v-bind="attrs"
@@ -24,7 +24,7 @@
 <script>
 import { mapActions } from 'vuex';
 import Vue from 'vue';
-import VueClipboard from 'vue-clipboard2';
+import { Clipboard as VueClipboard } from 'v-clipboard';
 import { NotificationTypes } from '@/utils/constants';
 
 VueClipboard.config.autoSetContainer = true;
