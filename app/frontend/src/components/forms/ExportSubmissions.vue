@@ -223,12 +223,8 @@
                         class="radioboxLabelStyle"
                         style="display: flex; align-content: flex-start"
                       >
-                        1 - Multi-row per submission without filling empty
-                        spaces
-                        <div class="blueColorWrapper ml-1">
-                          (Recommended)
-                        </div></span
-                      >
+                        1 - Multiple rows per submission with identation spaces
+                      </span>
                     </template>
                   </v-radio>
                   <v-radio
@@ -239,8 +235,7 @@
                   >
                     <template v-slot:label>
                       <span class="radioboxLabelStyle">
-                        2 - Multi-row per submission with backfilled empty
-                        spaces
+                        2 - Multiple rows per submission
                       </span>
                     </template>
                   </v-radio>
@@ -261,8 +256,8 @@
                       <span
                         class="radioboxLabelStyle"
                         style="display: flex; align-content: flex-start"
-                        >4 - Unformatted Submissions</span
-                      >
+                        >4 - Unformatted
+                      </span>
                     </template>
                   </v-radio>
                 </v-radio-group>
@@ -318,7 +313,7 @@ export default {
       startDateMenu: false,
       versionSelected: 0,
       versionSelectedId: '',
-      csvFormats: 'flattenedWithBlankOut',
+      csvFormats: 'multiRowEmptySpacesCSVExport',
       versions: [],
       allDataFields: true,
       inputFilter: '',
