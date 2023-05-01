@@ -328,7 +328,7 @@ export default {
           emailExport = true;
           this.addNotification({
             ...NotificationTypes.SUCCESS,
-            message: `Export in progress... An email will be send to ${this.email} containing a link to download your data when it is ready.`,
+            message: `Export in progress... An email will be sent to ${this.email} containing a link to download your data when it is ready.`,
           });
         }
         const response = await formService.exportSubmissions(
