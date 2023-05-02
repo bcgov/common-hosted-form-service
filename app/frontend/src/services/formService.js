@@ -362,7 +362,8 @@ export default {
     template,
     versionSelected,
     preference,
-    options = {}
+    options = {},
+    emailExport = false
   ) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/export`, {
       params: {
@@ -371,6 +372,7 @@ export default {
         version: versionSelected,
         type: 'submissions',
         preference: preference,
+        emailExport,
         ...options,
       },
       responseType: 'blob',
