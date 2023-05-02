@@ -4,7 +4,7 @@
       <span>Logout</span>
     </v-btn>
     <v-btn v-else-if="hasLogin" dark outlined @click="login()">
-      <span>Login</span>
+      <span>{{ $t('homePage.login') }}</span>
     </v-btn>
   </div>
 </template>
