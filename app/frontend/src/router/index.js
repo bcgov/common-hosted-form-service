@@ -110,6 +110,26 @@ export default function getRouter(basePath = '/') {
         props: createProps,
       },
       {
+        path: '/file',
+        component: () =>
+          import(/* webpackChunkName: "file" */ '@/views/File.vue'),
+        children: [
+          {
+            path: 'download',
+            name: 'Download',
+            component: () =>
+              import(
+                /* webpackChunkName: "download" */ '@/views/file/Download.vue'
+              ),
+            meta: {
+              requiresAuth: true,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+        ],
+      },
+      {
         path: '/form',
         component: () =>
           import(/* webpackChunkName: "form" */ '@/views/Form.vue'),
