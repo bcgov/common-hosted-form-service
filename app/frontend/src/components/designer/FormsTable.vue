@@ -77,10 +77,10 @@
         <!-- link to description in dialog -->
         <v-icon
           v-if="item.description.trim()"
-          @click="onDescriptionClick(item.id, item.description)"
           small
           class="description-icon ml-2 mr-4"
           color="primary"
+          @click="onDescriptionClick(item.id, item.description)"
         >
           description
         </v-icon>
@@ -96,8 +96,8 @@
           </v-btn>
         </router-link>
         <router-link
-          data-cy="formSubmissionsLink"
           v-if="checkSubmissionView(item)"
+          data-cy="formSubmissionsLink"
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
@@ -110,7 +110,7 @@
 
     <BaseDialog
       v-model="showDescriptionDialog"
-      showCloseButton
+      show-close-button
       @close-dialog="showDescriptionDialog = false"
     >
       <template #title>
@@ -168,6 +168,10 @@ export default {
     },
     ID_PROVIDERS: () => IdentityProviders,
   },
+  async mounted() {
+    await this.getFormsForCurrentUser();
+    this.loading = false;
+  },
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),
     checkFormManage: checkFormManage,
@@ -179,10 +183,6 @@ export default {
       this.formDescription = formDescription;
       this.showDescriptionDialog = true;
     },
-  },
-  async mounted() {
-    await this.getFormsForCurrentUser();
-    this.loading = false;
   },
 };
 </script>

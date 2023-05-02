@@ -11,6 +11,13 @@ import { IdentityProviders } from '@/utils/constants';
 export default {
   name: 'FormManage',
   components: { ManageLayout },
+  provide() {
+    return {
+      fd: this.fd,
+      draftId: this.d,
+      formId: this.f,
+    };
+  },
   props: {
     f: {
       type: String,
@@ -22,13 +29,6 @@ export default {
     fd: {
       type: String,
     },
-  },
-  provide() {
-    return {
-      fd: this.fd,
-      draftId: this.d,
-      formId: this.f,
-    };
   },
   computed: {
     IDP: () => IdentityProviders,

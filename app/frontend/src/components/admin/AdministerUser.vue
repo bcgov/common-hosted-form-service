@@ -27,11 +27,11 @@ export default {
       return `${this.$config.keycloak.serverUrl}/admin/${this.$config.keycloak.realm}/console/#/realms/${this.$config.keycloak.realm}/users/${this.user.keycloakId}`;
     },
   },
-  methods: {
-    ...mapActions('admin', ['readUser']),
-  },
   async mounted() {
     await this.readUser(this.userId);
+  },
+  methods: {
+    ...mapActions('admin', ['readUser']),
   },
 };
 </script>

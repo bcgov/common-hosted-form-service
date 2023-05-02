@@ -1,5 +1,5 @@
 <template>
-  <UserSubmission :saved="sv" :submissionId="s" :readOnly="false" />
+  <UserSubmission :saved="sv" :submission-id="s" :read-only="false" />
 </template>
 
 <script>

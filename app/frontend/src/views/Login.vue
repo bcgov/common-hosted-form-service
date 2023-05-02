@@ -2,9 +2,9 @@
   <v-container class="text-center">
     <div v-if="keycloakReady && !authenticated">
       <h1 class="my-6">Authenticate with:</h1>
-      <v-row v-for="button in buttons" justify="center" :key="button.type">
-        <v-col sm="3" v-if="buttonEnabled(button.type)">
-          <v-btn block color="primary" @click="login(button.type)" large>
+      <v-row v-for="button in buttons" :key="button.type" justify="center">
+        <v-col v-if="buttonEnabled(button.type)" sm="3">
+          <v-btn block color="primary" large @click="login(button.type)">
             <span>{{ button.label }}</span>
           </v-btn>
         </v-col>
@@ -39,10 +39,6 @@ export default {
       ],
     },
   },
-  created() {
-    // If component gets idpHint, invoke login flow via vuex
-    if (this.idpHint && this.idpHint.length === 1) this.login(this.idpHint[0]);
-  },
   computed: {
     ...mapGetters('auth', ['authenticated', 'createLoginUrl', 'keycloakReady']),
     buttons: () => [
@@ -62,6 +58,10 @@ export default {
     IDPS() {
       return IdentityProviders;
     },
+  },
+  created() {
+    // If component gets idpHint, invoke login flow via vuex
+    if (this.idpHint && this.idpHint.length === 1) this.login(this.idpHint[0]);
   },
   methods: {
     ...mapActions('auth', ['login']),

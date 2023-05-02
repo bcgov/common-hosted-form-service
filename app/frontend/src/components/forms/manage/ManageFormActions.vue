@@ -1,7 +1,7 @@
 <template>
   <div>
     <span>
-      <ShareForm :formId="form.id" :warning="!isPublished" />
+      <ShareForm :form-id="form.id" :warning="!isPublished" />
     </span>
 
     <span v-if="canViewSubmissions">
@@ -36,9 +36,9 @@
           <v-btn
             class="mx-1"
             color="red"
-            @click="showDeleteDialog = true"
             icon
             v-bind="attrs"
+            @click="showDeleteDialog = true"
             v-on="on"
           >
             <v-icon>delete</v-icon>

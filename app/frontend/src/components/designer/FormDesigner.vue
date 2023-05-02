@@ -11,10 +11,10 @@
           <template #activator="{ on, attrs }">
             <v-btn
               class="mx-1"
-              @click="onExportClick"
               color="primary"
               icon
               v-bind="attrs"
+              @click="onExportClick"
               v-on="on"
             >
               <v-icon>get_app</v-icon>
@@ -26,19 +26,19 @@
           <template #activator="{ on, attrs }">
             <v-btn
               class="mx-1"
-              @click="$refs.uploader.click()"
               color="primary"
               icon
               v-bind="attrs"
+              @click="$refs.uploader.click()"
               v-on="on"
             >
               <v-icon>publish</v-icon>
               <input
-                class="d-none"
-                @change="loadFile"
                 ref="uploader"
+                class="d-none"
                 type="file"
                 accept=".json"
+                @change="loadFile"
               />
             </v-btn>
           </template>
@@ -51,7 +51,7 @@
       </v-col>
       <!-- version number-->
       <v-col cols="12" order="4">
-        <em>Version: {{ this.displayVersion }}</em>
+        <em>Version: {{ displayVersion }}</em>
       </v-col>
     </v-row>
     <BaseInfoCard class="my-6">
@@ -68,52 +68,51 @@
       </p>
     </BaseInfoCard>
     <FormBuilder
-      :form="formSchema"
       :key="reRenderFormIo"
-      :options="designerOptions"
       ref="formioForm"
+      :form="formSchema"
+      :options="designerOptions"
+      class="form-designer"
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
-      class="form-designer"
       @formLoad="onFormLoad"
     />
     <InformationLinkPreviewDialog
-      :showDialog="showHelpLinkDialog"
-      @close-dialog="onShowClosePreveiwDialog"
+      :show-dialog="showHelpLinkDialog"
       :component="component"
-      :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"
+      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
+      @close-dialog="onShowClosePreveiwDialog"
     />
 
     <FloatButton
       placement="bottom-right"
-      :baseFABItemsBGColor="'#ffffff'"
-      :baseFABIconColor="'#1976D2'"
-      :baseFABBorderColor="'#C0C0C0'"
-      :fabZIndex="1"
+      :base-f-a-b-items-b-g-color="'#ffffff'"
+      :base-f-a-b-icon-color="'#1976D2'"
+      :base-f-a-b-border-color="'#C0C0C0'"
+      :fab-z-index="1"
       :size="'small'"
-      fabItemsGap="7px"
+      fab-items-gap="7px"
+      :saving="saving"
+      :saved-status="savedStatus"
+      :saved="saved"
+      :is-form-saved="isFormSaved"
+      :form-id="formId"
+      :draft-id="draftId"
+      :undo-enabled="undoEnabled() === 0 ? false : undoEnabled()"
+      :redo-enabled="redoEnabled() === 0 ? false : redoEnabled()"
       @undo="onUndoClick"
       @redo="onRedoClick"
       @save="submitFormSchema"
-      :saving="saving"
-      :savedStatus="savedStatus"
-      :saved="saved"
-      :isFormSaved="isFormSaved"
-      :formId="formId"
-      :draftId="draftId"
-      :undoEnabled="undoEnabled() === 0 ? false : undoEnabled()"
-      :redoEnabled="redoEnabled() === 0 ? false : redoEnabled()"
     />
   </div>
 </template>
 
 <script>
-//import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
-import { FormBuilder } from 'vue-formio';
+import { FormBuilder } from '@formio/vue';
 import { mapFields } from 'vuex-map-fields';
 import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@/plugins/templateExtensions';
@@ -318,6 +317,25 @@ export default {
         },
       };
     },
+  },
+  watch: {
+    // if form userType (public, idir, team, etc) changes, re-render the form builder
+    userType() {
+      this.reRenderFormIo += 1;
+    },
+  },
+  created() {
+    if (this.formId) {
+      this.getFormSchema();
+      this.fetchForm(this.formId);
+    }
+  },
+
+  mounted() {
+    if (!this.formId) {
+      // We are creating a new form, so we obtain the original schema here.
+      this.patch.originalSchema = deepClone(this.formSchema);
+    }
   },
   methods: {
     ...mapActions('form', [
@@ -731,25 +749,6 @@ export default {
         name: 'FormDesigner',
         query: { ...this.$route.query, sv: true, svs: 'Saved' },
       });
-    },
-  },
-  created() {
-    if (this.formId) {
-      this.getFormSchema();
-      this.fetchForm(this.formId);
-    }
-  },
-
-  mounted() {
-    if (!this.formId) {
-      // We are creating a new form, so we obtain the original schema here.
-      this.patch.originalSchema = deepClone(this.formSchema);
-    }
-  },
-  watch: {
-    // if form userType (public, idir, team, etc) changes, re-render the form builder
-    userType() {
-      this.reRenderFormIo += 1;
     },
   },
 };

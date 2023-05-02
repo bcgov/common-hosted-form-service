@@ -9,10 +9,10 @@
           <template #activator="{ on, attrs }">
             <v-btn
               class="mx-1"
-              @click="showNoteField = true"
               color="primary"
               icon
               v-bind="attrs"
+              @click="showNoteField = true"
               v-on="on"
             >
               <v-icon>add_circle</v-icon>
@@ -37,7 +37,7 @@
       />
       <v-row>
         <v-col cols="12" sm="6" xl="4">
-          <v-btn block color="primary" @click="showNoteField = false" outlined>
+          <v-btn block color="primary" outlined @click="showNoteField = false">
             <span>Cancel</span>
           </v-btn>
         </v-col>
@@ -56,9 +56,9 @@
     </v-form>
 
     <ul class="mt-5">
-      <li class="mb-2" v-for="note in notes" :key="note.noteId">
+      <li v-for="note in notes" :key="note.noteId" class="mb-2">
         <strong>
-          {{ note.createdAt | formatDateLong }} -
+          {{ $filters.formatDateLong(note.createdAt) }} -
           {{ note.createdBy }}
         </strong>
         <br />
@@ -89,6 +89,9 @@ export default {
       notes: [],
       showNoteField: false,
     };
+  },
+  mounted() {
+    this.getNotes();
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -130,9 +133,6 @@ export default {
         this.loading = false;
       }
     },
-  },
-  mounted() {
-    this.getNotes();
   },
 };
 </script>

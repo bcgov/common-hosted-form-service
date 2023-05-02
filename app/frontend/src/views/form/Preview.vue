@@ -3,7 +3,7 @@
     <h1>
       PREVIEW
       <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
           <v-icon color="primary" class="mt-n1 ml-1" v-bind="attrs" v-on="on">
             help_outline
           </v-icon>
@@ -14,7 +14,7 @@
         </span>
       </v-tooltip>
     </h1>
-    <FormViewer :draftId="d" :formId="f" preview :versionId="v" />
+    <FormViewer :draft-id="d" :form-id="f" preview :version-id="v" />
   </BaseSecure>
 </template>
 
@@ -25,13 +25,13 @@ import { IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormPreview',
+  components: {
+    FormViewer,
+  },
   props: {
     d: String,
     f: String,
     v: String,
-  },
-  components: {
-    FormViewer,
   },
   computed: {
     IDP: () => IdentityProviders,

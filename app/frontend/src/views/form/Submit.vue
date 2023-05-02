@@ -1,5 +1,5 @@
 <template>
-  <FormViewer :formId="f" displayTitle />
+  <FormViewer :form-id="f" display-title />
 </template>
 
 <script>

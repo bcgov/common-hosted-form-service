@@ -19,8 +19,8 @@
             <v-col>
               <div
                 style="margin: 0px; padding: 0px"
-                v-text="'Learn More Link field cannot be empty.'"
                 class="red--text"
+                v-text="'Learn More Link field cannot be empty.'"
               />
             </v-col>
           </v-row>
@@ -28,8 +28,8 @@
             <v-col>
               <div
                 style="margin: 0px; padding: 0px"
-                v-text="'Large image. Image size cannot be large than .5mb'"
                 class="red--text"
+                v-text="'Large image. Image size cannot be large than .5mb'"
               />
             </v-col>
           </v-row>
@@ -38,7 +38,7 @@
             <span class="text-decoration-underline mr-2 blackColorWrapper">
               Component Name:
             </span>
-            <span v-text="componentName_" class="blueColorWrapper" />
+            <span class="blueColorWrapper" v-text="componentName_" />
           </v-row>
           <v-row class="mt-1" no-gutters>
             <v-col>
@@ -48,10 +48,10 @@
                 </p>
                 <v-col cols="5">
                   <v-text-field
+                    v-model="moreHelpInfoLink"
                     dense
                     enable
                     style="width: 100%"
-                    v-model="moreHelpInfoLink"
                     flat
                     :disabled="!isLinkEnabled"
                     :value="moreHelpInfoLink"
@@ -63,7 +63,7 @@
                   </v-text-field>
                 </v-col>
                 <v-checkbox v-model="isLinkEnabled" class="checkbox_data_cy">
-                  <template v-slot:label>
+                  <template #label>
                     <span class="v-label">{{
                       !isLinkEnabled
                         ? 'Click to enable link'
@@ -81,8 +81,8 @@
             </v-col>
             <v-col cols="12" sm="12" md="12">
               <v-textarea
-                clear-icon="mdi-close-circle"
                 v-model="description"
+                clear-icon="mdi-close-circle"
                 outlined
                 hide-details
                 clearable
@@ -124,15 +124,15 @@
                 <div>
                   <v-btn
                     class="mr-4 saveButtonWrapper"
-                    @click="submit"
                     data-cy="more_help_info_link_save_button"
+                    @click="submit"
                   >
                     Save
                   </v-btn>
                   <v-btn
                     class="cancelButtonWrapper"
-                    @click="onCloseDialog"
                     data-cy="more_help_info_link_cancel_button"
+                    @click="onCloseDialog"
                   >
                     Cancel
                   </v-btn>
@@ -155,6 +155,13 @@ import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'InformationLinkDialog',
+  props: {
+    showDialog: { type: Boolean, required: true },
+    component: { type: Object },
+    componentName: { type: String, require: true, default: '' },
+    groupName: { type: String, require: true },
+  },
+  emits: ['close-dialog'],
   data() {
     return {
       errors: [],
@@ -191,11 +198,16 @@ export default {
       linkError: false,
     };
   },
-  props: {
-    showDialog: { type: Boolean, required: true },
-    component: { type: Object },
-    componentName: { type: String, require: true, default: '' },
-    groupName: { type: String, require: true },
+  computed: {
+    ...mapGetters('admin', ['fcHelpInfoImageUpload', 'fcProactiveHelpVersion']),
+  },
+  watch: {
+    showDialog() {
+      this.dialog = this.showDialog;
+    },
+    componentName() {
+      this.componentName_ = this.componentName;
+    },
   },
   methods: {
     ...mapActions('admin', [
@@ -265,17 +277,6 @@ export default {
       this.description = '';
       this.link = '';
     },
-  },
-  watch: {
-    showDialog() {
-      this.dialog = this.showDialog;
-    },
-    componentName() {
-      this.componentName_ = this.componentName;
-    },
-  },
-  computed: {
-    ...mapGetters('admin', ['fcHelpInfoImageUpload', 'fcProactiveHelpVersion']),
   },
 };
 </script>

@@ -1,4 +1,5 @@
 // Sourced from https://github.com/fredicious/vue-keycloak-js
+import { getCurrentInstance } from 'vue';
 import Keycloak from 'keycloak-js';
 
 let installed = false;
@@ -51,11 +52,15 @@ export default {
         };
       },
     });
-    Object.defineProperty(Vue.prototype, '$keycloak', {
-      get() {
-        return watch;
-      },
-    });
+    Object.defineProperty(
+      getCurrentInstance().config.globalProperties,
+      '$keycloak',
+      {
+        get() {
+          return watch;
+        },
+      }
+    );
     getConfig(options.config)
       .then((config) => {
         init(config, watch, options);

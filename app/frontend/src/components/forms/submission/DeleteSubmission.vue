@@ -3,11 +3,11 @@
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
-          @click="showDeleteDialog = true"
           color="red"
           :disabled="disabled"
           icon
           v-bind="attrs"
+          @click="showDeleteDialog = true"
           v-on="on"
         >
           <v-icon>delete</v-icon>
@@ -52,6 +52,7 @@ export default {
       required: true,
     },
   },
+  emits: ['deleted'],
   data() {
     return {
       showDeleteDialog: false,

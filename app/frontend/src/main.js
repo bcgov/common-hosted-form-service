@@ -4,33 +4,47 @@ import '@/assets/scss/style.scss';
 
 import axios from 'axios';
 import NProgress from 'nprogress';
-import Vue from 'vue';
+import { createApp } from 'vue';
 
 import App from '@/App.vue';
-import '@/filters';
+import { formatDate, formatDateLong } from '@/filters';
 import auth from '@/store/modules/auth.js';
 import getRouter from '@/router';
 import store from '@/store';
+
+// The Vue instance
+const app = createApp({
+  render: (h) => h(App),
+});
+
+app.config.globalProperties.$filters = {
+  formatDate,
+  formatDateLong,
+};
 
 // Add our custom components to the formio instance
 // importing the main formio dependency (whether through vue-formio or directly)
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
 import BcGovFormioComponents from '@/formio/lib';
-import { Formio } from 'vue-formio';
+import { Formio } from '@formio/vue';
 Formio.use(BcGovFormioComponents);
 
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 /* add font awesome icon component */
-Vue.component('font-awesome-icon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
-Vue.config.productionTip = false;
+app.use(vuetify);
 
-NProgress.configure({ showSpinner: false });
-NProgress.start();
+/* import clipboard */
+import { Clipboard as VueClipboard } from 'vue3-clipboard';
+app.use(VueClipboard, {
+  autoSetContainer: true,
+  appendToBody: true,
+});
 
 // Globally register all components with base in the name
 const requireComponent = require.context(
@@ -44,13 +58,18 @@ requireComponent.keys().forEach((fileName) => {
     .split('/')
     .pop()
     .replace(/\.\w+$/, '');
-  Vue.component(componentName, componentConfig.default || componentConfig);
+  app.component(componentName, componentConfig.default || componentConfig);
 });
+
+NProgress.configure({ showSpinner: false });
+NProgress.start();
 
 // IE11 Detection (https://stackoverflow.com/a/21825207)
 if (!!window.MSInputMethodContext && !!document.documentMode) {
   document.write(`<div style="padding-top: 5em; text-align: center;">
-    <h1>We're sorry but ${process.env.VUE_APP_TITLE} is not supported in Internet Explorer.</h1>
+    <h1>We're sorry but ${
+      import.meta.env.VITE_TITLE
+    } is not supported in Internet Explorer.</h1>
     <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
   </div>`);
   NProgress.done();
@@ -67,12 +86,10 @@ if (!!window.MSInputMethodContext && !!document.documentMode) {
 function initializeApp(kcSuccess = false, basePath = '/') {
   if (kcSuccess && !store.hasModule('auth')) store.registerModule('auth', auth);
 
-  new Vue({
-    router: getRouter(basePath),
-    store,
-    vuetify,
-    render: (h) => h(App),
-  }).$mount('#app');
+  app.use(getRouter(basePath));
+  app.use(store);
+
+  app.mount('#app');
 
   NProgress.done();
 }
@@ -84,9 +101,9 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 async function loadConfig() {
   // App publicPath is ./ - so use relative path here, will hit the backend server using relative path to root.
   const configUrl =
-    process.env.NODE_ENV === 'production'
+    import.meta.env.NODE_ENV === 'production'
       ? 'config'
-      : `${process.env.BASE_URL}/config`;
+      : `${import.meta.env.BASE_URL}/config`;
   const storageKey = 'config';
   try {
     // Get configuration if it isn't already in session storage
@@ -97,7 +114,7 @@ async function loadConfig() {
 
     // Mount the configuration as a prototype for easier access from Vue
     const config = JSON.parse(sessionStorage.getItem(storageKey));
-    Vue.prototype.$config = Object.freeze(config);
+    app.config.globalProperties.$config = Object.freeze(config);
 
     if (
       !config ||
@@ -123,7 +140,7 @@ async function loadConfig() {
  * @param {object} config A config object
  */
 function loadKeycloak(config) {
-  Vue.use(VueKeycloakJs, {
+  app.use(VueKeycloakJs, {
     init: { onLoad: 'check-sso' },
     config: {
       clientId: config.keycloak.clientId,

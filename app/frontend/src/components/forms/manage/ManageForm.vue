@@ -5,17 +5,17 @@
       flat
       class="nrmc-expand-collapse"
     >
-      <v-expansion-panel flat v-if="canEditForm">
+      <v-expansion-panel v-if="canEditForm" flat>
         <!-- Form Settings -->
         <v-expansion-panel-header>
-          <template v-slot:actions>
+          <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
             <strong>Form Settings</strong>
             <span>
               <small>
-                Created: {{ form.createdAt | formatDate }} ({{
+                Created: {{ $filters.formatDate(form.createdAt) }} ({{
                   form.createdBy
                 }})
               </small>
@@ -24,7 +24,7 @@
                 small
                 icon
                 color="primary"
-                @click.native.stop="enableSettingsEdit"
+                @click.stop="enableSettingsEdit"
               >
                 <v-icon>edit</v-icon>
               </v-btn>
@@ -34,8 +34,8 @@
         <v-expansion-panel-content>
           <v-form
             ref="settingsForm"
-            :disabled="formSettingsDisabled"
             v-model="settingsFormValid"
+            :disabled="formSettingsDisabled"
             lazy-validation
           >
             <FormSettings :disabled="formSettingsDisabled" />
@@ -55,26 +55,26 @@
 
     <!-- Api Key -->
     <v-expansion-panels
+      v-if="canManageAPI"
       v-model="apiKeyPanel"
       flat
       class="nrmc-expand-collapse"
-      v-if="canManageAPI"
     >
       <v-expansion-panel flat>
         <v-expansion-panel-header>
-          <template v-slot:actions>
+          <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
             <strong>API Key</strong>
             <span v-if="apiKey">
               <small v-if="apiKey.updatedBy">
-                Updated: {{ apiKey.updatedAt | formatDate }} ({{
+                Updated: {{ $filters.formatDate(apiKey.updatedAt) }} ({{
                   apiKey.updatedBy
                 }})
               </small>
               <small v-else>
-                Created: {{ apiKey.createdAt | formatDate }} ({{
+                Created: {{ $filters.formatDate(apiKey.createdAt) }} ({{
                   apiKey.createdBy
                 }})
               </small>
@@ -95,7 +95,7 @@
     >
       <v-expansion-panel flat>
         <v-expansion-panel-header>
-          <template v-slot:actions>
+          <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">

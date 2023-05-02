@@ -14,11 +14,11 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
                 class="mx-1"
                 color="primary"
                 icon
                 v-bind="attrs"
+                @click="showColumnsDialog = true"
                 v-on="on"
               >
                 <v-icon>view_column</v-icon>
@@ -64,9 +64,9 @@
     </v-row>
 
     <v-data-table
+      v-model="selectedUsers"
       class="team-table"
       show-select
-      v-model="selectedUsers"
       :single-select="false"
       :headers="HEADERS"
       :items="tableData"
@@ -78,24 +78,24 @@
       dense
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
-      <template v-for="h in HEADERS" v-slot:[`header.${h.value}`]="{ HEADERS }">
+      <template v-for="h in HEADERS" #[`header.${h.value}`]="{ HEADERS }">
         <v-tooltip v-if="roleOrder.includes(h.value)" :key="h.value" bottom>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <span v-on="on">{{ h.text }}</span>
           </template>
           <span>{{ h.description }}</span>
         </v-tooltip>
         <span v-else :key="h.value">{{ h.text }}</span>
       </template>
-      <template v-slot:[`header.actions`]>
+      <template #[`header.actions`]>
         <v-btn
-          @click="onRemoveClick(selectedUsers)"
           color="red"
           :disabled="updating || selectedUsers.length < 1"
           icon
+          @click="onRemoveClick(selectedUsers)"
         >
           <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-icon color="red" dark v-bind="attrs" v-on="on"
                 >remove_circle</v-icon
               >
@@ -104,28 +104,25 @@
           </v-tooltip>
         </v-btn>
       </template>
-      <template
-        v-for="role in roleList"
-        v-slot:[`item.${role.code}`]="{ item }"
-      >
+      <template v-for="role in roleList" #[`item.${role.code}`]="{ item }">
         <v-checkbox
           v-if="!disableRole(role.code, item, userType)"
+          :key="role.code"
           v-model="item[role.code]"
           v-ripple
           :disabled="updating"
-          :key="role.code"
           @click="onCheckboxToggle(item.userId)"
         ></v-checkbox>
       </template>
-      <template v-slot:[`item.actions`]="{ item }">
+      <template #[`item.actions`]="{ item }">
         <v-btn
-          @click="onRemoveClick(item)"
           color="red"
           icon
           :disabled="updating"
+          @click="onRemoveClick(item)"
         >
           <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-icon color="red" dark v-bind="attrs" v-on="on"
                 >remove_circle</v-icon
               >
@@ -153,15 +150,15 @@
 
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
-        inputFilterPlaceholder="Search team management fields"
-        inputItemKey="value"
-        inputSaveButtonText="Save"
-        :inputData="
+        input-filter-placeholder="Search team management fields"
+        input-item-key="value"
+        input-save-button-text="Save"
+        :input-data="
           DEFAULT_HEADERS.filter(
             (h) => !filterIgnore.some((fd) => fd.value === h.value)
           )
         "
-        :preselectedData="PRESELECTED_DATA"
+        :preselected-data="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -196,6 +193,27 @@ export default {
       type: String,
       required: true,
     },
+  },
+  data() {
+    return {
+      formUsers: [],
+      filterData: [],
+      filterIgnore: [
+        {
+          value: 'actions',
+        },
+      ],
+      isAddingUsers: false,
+      loading: true,
+      roleList: [],
+      selectedUsers: [],
+      itemsToDelete: [],
+      search: '',
+      showDeleteDialog: false,
+      showColumnsDialog: false,
+      tableData: [],
+      updating: false,
+    };
   },
   computed: {
     ...mapFields('form', ['form.userType']),
@@ -254,26 +272,14 @@ export default {
       );
     },
   },
-  data() {
-    return {
-      formUsers: [],
-      filterData: [],
-      filterIgnore: [
-        {
-          value: 'actions',
-        },
-      ],
-      isAddingUsers: false,
-      loading: true,
-      roleList: [],
-      selectedUsers: [],
-      itemsToDelete: [],
-      search: '',
-      showDeleteDialog: false,
-      showColumnsDialog: false,
-      tableData: [],
-      updating: false,
-    };
+  async mounted() {
+    // TODO: Make sure vuex fetchForm has been called at least once before this
+    await Promise.all([
+      this.fetchForm(this.formId),
+      this.getFormPermissionsForUser(this.formId),
+      this.getRolesList(),
+    ]);
+    await this.getFormUsers(), (this.loading = false);
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'getFormPermissionsForUser']),
@@ -553,15 +559,6 @@ export default {
       this.filterData = data;
       this.showColumnsDialog = false;
     },
-  },
-  async mounted() {
-    // TODO: Make sure vuex fetchForm has been called at least once before this
-    await Promise.all([
-      this.fetchForm(this.formId),
-      this.getFormPermissionsForUser(this.formId),
-      this.getRolesList(),
-    ]);
-    await this.getFormUsers(), (this.loading = false);
   },
 };
 </script>

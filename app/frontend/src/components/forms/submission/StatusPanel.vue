@@ -15,12 +15,12 @@
           <v-col cols="12">
             <label>Assign or Update Status</label>
             <v-select
+              v-model="statusToSet"
               dense
               outlined
               :items="items"
               item-text="display"
               item-value="code"
-              v-model="statusToSet"
               :rules="[(v) => !!v || 'Status is required']"
               @change="onStatusChange(statusToSet)"
             />
@@ -43,8 +43,8 @@
                   </v-tooltip>
                 </label>
                 <v-autocomplete
-                  autocomplete="autocomplete_off"
                   v-model="assignee"
+                  autocomplete="autocomplete_off"
                   clearable
                   dense
                   :filter="autoCompleteFilter"
@@ -74,8 +74,12 @@
                     </template>
                     <template v-else>
                       <v-list-item-content>
+                        <!-- Look into replacing this as we are assuming the data we receive is sanitized -->
+                        <!-- eslint-disable vue/no-v-html -->
                         <v-list-item-title v-html="data.item.fullName" />
+                        <!-- eslint-disable vue/no-v-html -->
                         <v-list-item-subtitle v-html="data.item.username" />
+                        <!-- eslint-disable vue/no-v-html -->
                         <v-list-item-subtitle v-html="data.item.email" />
                       </v-list-item-content>
                     </template>
@@ -143,14 +147,14 @@
 
                 <v-card-text>
                   <hr />
-                  <StatusTable :submissionId="submissionId" />
+                  <StatusTable :submission-id="submissionId" />
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
                   <v-btn
-                    @click="historyDialog = false"
                     class="mb-5 close-dlg"
                     color="primary"
+                    @click="historyDialog = false"
                   >
                     <span>CLOSE</span>
                   </v-btn>
@@ -162,7 +166,7 @@
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
             <v-btn
               block
-              :disabled="!this.statusToSet"
+              :disabled="!statusToSet"
               color="primary"
               v-on="on"
               @click="updateStatus"
@@ -184,6 +188,9 @@ import StatusTable from '@/components/forms/submission/StatusTable';
 
 export default {
   name: 'StatusPanel',
+  components: {
+    StatusTable,
+  },
   props: {
     formId: {
       type: String,
@@ -194,9 +201,7 @@ export default {
       required: true,
     },
   },
-  components: {
-    StatusTable,
-  },
+  emits: ['draft-enabled', 'note-updated'],
   data() {
     return {
       // TODO: use a better name than "on" if possible, check multiple usage in template though...
@@ -243,6 +248,9 @@ export default {
       });
       return obj[this.statusToSet] ? obj[this.statusToSet] : obj['DEFAULT'];
     },
+  },
+  created() {
+    this.getStatus();
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -418,9 +426,6 @@ export default {
         this.error = 'An error occured while trying to update the status';
       }
     },
-  },
-  created() {
-    this.getStatus();
   },
 };
 </script>

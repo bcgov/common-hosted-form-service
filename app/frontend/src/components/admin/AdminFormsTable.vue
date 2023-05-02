@@ -3,8 +3,8 @@
     <v-row no-gutters>
       <v-col cols="12" sm="8">
         <v-checkbox
-          class="pl-3"
           v-model="activeOnly"
+          class="pl-3"
           label="Show deleted forms"
           @click="refeshForms"
         />
@@ -36,10 +36,10 @@
       no-data-text="There are no forms in your system"
     >
       <template #[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }} - {{ item.createdBy }}
+        {{ $filters.formatDateLong(item.createdAt) }} - {{ item.createdBy }}
       </template>
       <template #[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }} - {{ item.updatedBy }}
+        {{ $filters.formatDateLong(item.updatedAt) }} - {{ item.updatedBy }}
       </template>
       <template #[`item.actions`]="{ item }">
         <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
@@ -98,6 +98,10 @@ export default {
       );
     },
   },
+  async mounted() {
+    await this.getForms();
+    this.loading = false;
+  },
   methods: {
     ...mapActions('admin', ['getForms']),
     async refeshForms() {
@@ -105,10 +109,6 @@ export default {
       await this.getForms(!this.activeOnly);
       this.loading = false;
     },
-  },
-  async mounted() {
-    await this.getForms();
-    this.loading = false;
   },
 };
 </script>

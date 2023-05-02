@@ -11,7 +11,7 @@
       class="status-table"
     >
       <template #[`item.createdAt`]="{ item }">
-        <span>{{ item.createdAt | formatDate }}</span>
+        <span>{{ $filters.formatDate(item.createdAt) }}</span>
       </template>
 
       <template #[`item.user`]="{ item }">{{
@@ -43,6 +43,9 @@ export default {
     statuses: [],
     loading: true,
   }),
+  mounted() {
+    this.getData();
+  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     async getData() {
@@ -61,9 +64,6 @@ export default {
         this.loading = false;
       }
     },
-  },
-  mounted() {
-    this.getData();
   },
 };
 </script>

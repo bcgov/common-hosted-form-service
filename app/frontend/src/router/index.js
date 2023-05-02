@@ -1,12 +1,9 @@
 import NProgress from 'nprogress';
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import VueRouter, { createWebHistory } from 'vue-router';
 
 import store from '@/store';
 import { IdentityProviders } from '@/utils/constants';
 import { preFlightAuth } from '@/utils/permissionUtils';
-
-Vue.use(VueRouter);
 
 let isFirstTransition = true;
 let router = undefined;
@@ -30,9 +27,9 @@ export default function getRouter(basePath = '/') {
   if (router) return router;
 
   // Create new router definition
-  router = new VueRouter({
+  router = VueRouter.createRouter({
     base: basePath,
-    mode: 'history',
+    history: createWebHistory(),
     routes: [
       {
         path: '/',
@@ -369,7 +366,7 @@ export default function getRouter(basePath = '/') {
       },
       {
         path: '/404',
-        alias: '*',
+        alias: '/:pathMatch(.*)*',
         name: 'NotFound',
         component: () =>
           import(/* webpackChunkName: "not-found" */ '@/views/NotFound.vue'),
@@ -426,7 +423,7 @@ export default function getRouter(basePath = '/') {
     }
 
     // Update document title if applicable
-    document.title = to.meta.title ? to.meta.title : process.env.VUE_APP_TITLE;
+    document.title = to.meta.title ? to.meta.title : import.meta.env.VITE_TITLE;
     next();
   });
 

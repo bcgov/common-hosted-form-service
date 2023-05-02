@@ -16,9 +16,9 @@ Entries in the JSON file are deployed with the application. Entries in the .env 
 
 | Name | Description | Example |
 |---|---|---|
-| VUE_APP_TITLE | The application title | Common Hosted Forms Service |
-| VUE_APP_CONTACT | Contact information such as email | submit.digital@gov.bc.ca |
-| VUE_APP_FRONTEND_BASEPATH | The path to the Vue application | /app |
+| VITE_TITLE | The application title | Common Hosted Forms Service |
+| VITE_CONTACT | Contact information such as email | submit.digital@gov.bc.ca |
+| VITE_FRONTEND_BASEPATH | The path to the Vue application | /app |
 
 ### Project setup
 

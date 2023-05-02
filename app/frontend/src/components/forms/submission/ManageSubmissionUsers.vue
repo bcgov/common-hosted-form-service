@@ -4,9 +4,9 @@
       <template #activator="{ on, attrs }">
         <v-btn
           color="primary"
-          @click="dialog = true"
           icon
           v-bind="attrs"
+          @click="dialog = true"
           v-on="on"
         >
           <v-icon>group</v-icon>
@@ -35,8 +35,9 @@
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
-                  autocomplete="autocomplete_off"
                   v-model="userSearchSelection"
+                  v-model:search-input="findUsers"
+                  autocomplete="autocomplete_off"
                   clearable
                   dense
                   :filter="filterObject"
@@ -45,7 +46,6 @@
                   :label="autocompleteLabel"
                   :loading="isLoadingDropdown"
                   return-object
-                  :search-input.sync="findUsers"
                 >
                   <!-- no data -->
                   <template #no-data>
@@ -116,11 +116,11 @@
                     <th class="text-left">Name</th>
                     <th class="text-left">Username</th>
                     <th class="text-left">Email</th>
-                    <th class="text-left" v-if="isDraft">Actions</th>
+                    <th v-if="isDraft" class="text-left">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr :key="item.userId" v-for="item in userTableList">
+                  <tr v-for="item in userTableList" :key="item.userId">
                     <td>{{ item.fullName }}</td>
                     <td>{{ item.username }}</td>
                     <td>{{ item.email }}</td>
@@ -221,6 +221,51 @@ export default {
         : 'Enter an exact e-mail or username.';
     },
   },
+  watch: {
+    selectedIdp(newIdp, oldIdp) {
+      if (newIdp !== oldIdp) {
+        this.userSearchResults = [];
+      }
+    },
+    // Get a list of user objects from database
+    async findUsers(input) {
+      if (!input) return;
+      this.isLoadingDropdown = true;
+      try {
+        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
+        let params = {};
+        params.idpCode = this.selectedIdp;
+        if (
+          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
+          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
+        ) {
+          if (input.length < 6)
+            throw new Error(
+              'Search input for BCeID username/email must be greater than 6 characters.'
+            );
+          if (input.includes('@')) {
+            if (!new RegExp(Regex.EMAIL).test(input))
+              throw new Error('Email searches for BCeID must be exact.');
+            else params.email = input;
+          } else {
+            params.username = input;
+          }
+        } else {
+          params.search = input;
+        }
+        const response = await userService.getUsers(params);
+        this.userSearchResults = response.data;
+      } catch (error) {
+        // this.userSearchResults = [];
+        console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
+      } finally {
+        this.isLoadingDropdown = false;
+      }
+    },
+  },
+  created() {
+    this.getSubmissionUsers();
+  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     // show users in dropdown that have a text match on multiple properties
@@ -319,51 +364,6 @@ export default {
         })
         .sort((a, b) => b.isOwner - a.isOwner);
     },
-  },
-  watch: {
-    selectedIdp(newIdp, oldIdp) {
-      if (newIdp !== oldIdp) {
-        this.userSearchResults = [];
-      }
-    },
-    // Get a list of user objects from database
-    async findUsers(input) {
-      if (!input) return;
-      this.isLoadingDropdown = true;
-      try {
-        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
-        let params = {};
-        params.idpCode = this.selectedIdp;
-        if (
-          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
-          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
-        ) {
-          if (input.length < 6)
-            throw new Error(
-              'Search input for BCeID username/email must be greater than 6 characters.'
-            );
-          if (input.includes('@')) {
-            if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error('Email searches for BCeID must be exact.');
-            else params.email = input;
-          } else {
-            params.username = input;
-          }
-        } else {
-          params.search = input;
-        }
-        const response = await userService.getUsers(params);
-        this.userSearchResults = response.data;
-      } catch (error) {
-        // this.userSearchResults = [];
-        console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
-      } finally {
-        this.isLoadingDropdown = false;
-      }
-    },
-  },
-  created() {
-    this.getSubmissionUsers();
   },
 };
 </script>

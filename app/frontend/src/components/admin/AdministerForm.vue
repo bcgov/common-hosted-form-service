@@ -8,9 +8,9 @@
       <v-btn
         color="primary"
         class="mt-0"
-        @click="showRestoreDialog = true"
         text
         small
+        @click="showRestoreDialog = true"
       >
         <v-icon class="mr-1">build_circle</v-icon>
         <span class="d-none d-sm-flex">Restore this form</span>
@@ -50,7 +50,7 @@
 
     <div v-if="form.active" class="mt-12">
       <h4>Assign A New Owner</h4>
-      <AddOwner :formId="form.id" />
+      <AddOwner :form-id="form.id" />
     </div>
 
     <BaseDialog
@@ -125,6 +125,18 @@ export default {
   computed: {
     ...mapGetters('admin', ['form', 'roles', 'apiKey']),
   },
+  async mounted() {
+    await Promise.all([
+      this.readForm(this.formId),
+      this.readApiDetails(this.formId),
+      this.readRoles(this.formId),
+    ]);
+
+    this.formDetails = { ...this.form };
+    delete this.formDetails.versions;
+
+    this.loading = false;
+  },
   methods: {
     ...mapActions('admin', [
       'deleteApiKey',
@@ -143,18 +155,6 @@ export default {
       this.restoreInProgress = false;
       this.showRestoreDialog = false;
     },
-  },
-  async mounted() {
-    await Promise.all([
-      this.readForm(this.formId),
-      this.readApiDetails(this.formId),
-      this.readRoles(this.formId),
-    ]);
-
-    this.formDetails = { ...this.form };
-    delete this.formDetails.versions;
-
-    this.loading = false;
   },
 };
 </script>

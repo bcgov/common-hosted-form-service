@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-hover>
-      <template v-slot:default="{ hover }">
+      <template #default="{ hover }">
         <v-img
           :class="`elevation-${hover ? 24 : 6}`"
           class="thumbnail"

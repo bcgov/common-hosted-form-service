@@ -4,10 +4,10 @@
       <template #activator="{ on, attrs }">
         <v-btn
           class="mx-1"
-          @click="dialog = true"
           color="primary"
           icon
           v-bind="attrs"
+          @click="dialog = true"
           v-on="on"
         >
           <v-icon>print</v-icon>
@@ -48,6 +48,7 @@
             to have a structured version
           </p>
           <v-file-input
+            v-model="templateForm.files"
             counter
             :clearable="true"
             label="Upload template file"
@@ -56,16 +57,15 @@
             required
             mandatory
             show-size
-            v-model="templateForm.files"
           />
           <v-card-actions>
             <v-tooltip top>
               <template #activator="{ on }">
                 <v-btn
+                  id="file-input-submit"
                   color="primary"
                   class="btn-file-input-submit"
                   :disabled="!templateForm.files"
-                  id="file-input-submit"
                   :loading="loading"
                   @click="generate"
                   v-on="on"
@@ -89,6 +89,9 @@ import { formService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
+  props: {
+    submissionId: String,
+  },
   data() {
     return {
       dialog: false,
@@ -101,12 +104,20 @@ export default {
       },
     };
   },
-  props: {
-    submissionId: String,
-  },
   computed: {
     files() {
       return this.templateForm.files;
+    },
+  },
+  watch: {
+    files() {
+      if (this.templateForm.files && this.templateForm.files instanceof File) {
+        const { name, extension } = this.splitFileName(this.files.name);
+        if (!this.templateForm.outputFileName) {
+          this.templateForm.outputFileName = name;
+        }
+        this.templateForm.contentFileType = extension;
+      }
     },
   },
   methods: {
@@ -212,17 +223,6 @@ export default {
           fileType: contentFileType,
         },
       };
-    },
-  },
-  watch: {
-    files() {
-      if (this.templateForm.files && this.templateForm.files instanceof File) {
-        const { name, extension } = this.splitFileName(this.files.name);
-        if (!this.templateForm.outputFileName) {
-          this.templateForm.outputFileName = name;
-        }
-        this.templateForm.contentFileType = extension;
-      }
     },
   },
 };

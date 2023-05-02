@@ -24,13 +24,13 @@
       <div v-if="displayTitle">
         <div v-if="!isFormPublic(form)">
           <FormViewerActions
-            :draftEnabled="form.enableSubmitterDraft"
-            :copyExistingSubmission="form.enableCopyExistingSubmission"
-            :formId="form.id"
-            :isDraft="submissionRecord.draft"
+            :draft-enabled="form.enableSubmitterDraft"
+            :copy-existing-submission="form.enableCopyExistingSubmission"
+            :form-id="form.id"
+            :is-draft="submissionRecord.draft"
             :permissions="permissions"
-            :readOnly="readOnly"
-            :submissionId="submissionId"
+            :read-only="readOnly"
+            :submission-id="submissionId"
             @save-draft="saveDraft"
           />
         </div>
@@ -63,12 +63,12 @@
           <div v-else>Draft Saved</div>
         </v-alert>
 
-        <slot name="alert" v-bind:form="form" />
+        <slot name="alert" :form="form" />
 
         <BaseDialog
           v-model="showSubmitConfirmDialog"
           type="CONTINUE"
-          :enableCustomButton="canSaveDraft"
+          :enable-custom-button="canSaveDraft"
           @close-dialog="showSubmitConfirmDialog = false"
           @continue-dialog="continueSubmit"
         >
@@ -80,14 +80,14 @@
         </BaseDialog>
 
         <Form
-          :form="formSchema"
           :key="reRenderFormIo"
+          :form="formSchema"
           :submission="submission"
+          :options="viewerOptions"
           @submit="onSubmit"
           @submitDone="onSubmitDone"
           @submitButton="onSubmitButton"
           @customEvent="onCustomEvent"
-          :options="viewerOptions"
         />
         <p v-if="version" class="text-right">Version: {{ version }}</p>
       </div>
@@ -96,9 +96,8 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
-import { Form } from 'vue-formio';
+import { Form } from '@formio/vue';
 
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
@@ -143,6 +142,7 @@ export default {
       default: false,
     },
   },
+  emits: ['submission-updated'],
   data() {
     return {
       confirmSubmit: false,
@@ -186,7 +186,7 @@ export default {
         // pass in options for custom components to use
         componentOptions: {
           simplefile: {
-            config: Vue.prototype.$config,
+            config: this.$config,
             chefsToken: this.getCurrentAuthHeader,
           },
         },
@@ -202,6 +202,27 @@ export default {
         this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
       );
     },
+  },
+  async created() {
+    if (this.submissionId && this.isDuplicate) {
+      //Run when make new submission from existing one called.
+      await this.getFormData();
+      await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
+    } else if (this.submissionId && !this.isDuplicate) {
+      await this.getFormData();
+    } else {
+      await this.getFormSchema();
+    }
+    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
+    if (!this.preview && !this.readOnly) {
+      window.onbeforeunload = () => true;
+    }
+  },
+  beforeUpdate() {
+    // This needs to be ran whenever we have a formSchema change
+    if (this.forceNewTabLinks) {
+      attachAttributesToLinks(this.formSchema.components);
+    }
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -543,27 +564,6 @@ export default {
         `Custom button events not supported yet. Event Type: ${event.type}`
       );
     },
-  },
-  async created() {
-    if (this.submissionId && this.isDuplicate) {
-      //Run when make new submission from existing one called.
-      await this.getFormData();
-      await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
-    } else if (this.submissionId && !this.isDuplicate) {
-      await this.getFormData();
-    } else {
-      await this.getFormSchema();
-    }
-    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-    if (!this.preview && !this.readOnly) {
-      window.onbeforeunload = () => true;
-    }
-  },
-  beforeUpdate() {
-    // This needs to be ran whenever we have a formSchema change
-    if (this.forceNewTabLinks) {
-      attachAttributesToLinks(this.formSchema.components);
-    }
   },
 };
 </script>

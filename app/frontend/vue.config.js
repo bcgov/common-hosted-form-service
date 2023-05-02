@@ -1,4 +1,4 @@
-process.env.VUE_APP_VERSION = require('./package.json').version;
+import.meta.env.VITE_VERSION = require('./package.json').version;
 
 const proxyObject = {
   target: 'http://localhost:8080',
@@ -7,7 +7,7 @@ const proxyObject = {
 };
 
 module.exports = {
-  publicPath: process.env.VUE_APP_FRONTEND_BASEPATH ? process.env.VUE_APP_FRONTEND_BASEPATH : '/app',
+  publicPath: import.meta.env.VITE_FRONTEND_BASEPATH ? import.meta.env.VITE_FRONTEND_BASEPATH : '/app',
   'transpileDependencies': [
     'vuetify'
   ],

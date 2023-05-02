@@ -6,10 +6,11 @@ module.exports = {
     es6: true,
     jest: true,
     node: true,
+    es2022: true,
   },
   extends: [
-    'plugin:vue/essential',
     'eslint:recommended',
+    'plugin:vue/vue3-recommended',
     'plugin:prettier/recommended',
   ],
   plugins: ['prettier'],
@@ -17,11 +18,6 @@ module.exports = {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
     _: false,
-  },
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2018,
-    parser: 'babel-eslint',
   },
   rules: {
     'prettier/prettier': 'error',
@@ -56,6 +52,14 @@ module.exports = {
       },
     ],
     'vue/no-spaces-around-equal-signs-in-attribute': ['error'],
+    'vue/require-default-prop': 'off',
+    /* This is necessary until we have packages that conform to this */
+    'vue/v-on-event-hyphenation': [ "off", {
+      autofix: false,
+    }],
+    'vue/no-lone-template': 'off',
+    /* Should probably remove this and fix the existing issues */
+    'vue/no-template-shadow': 'off',
   },
   overrides: [
     {

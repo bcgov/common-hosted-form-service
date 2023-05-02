@@ -6,9 +6,9 @@
           class="mx-1"
           data-cy="shareFormButton"
           color="primary"
-          @click="dialog = true"
           icon
           v-bind="attrs"
+          @click="dialog = true"
           v-on="on"
         >
           <v-icon class="mr-1">share</v-icon>
@@ -48,8 +48,8 @@
             <template #append-outer>
               <BaseCopyToClipboard
                 class="mt-n1"
-                :copyText="formLink"
-                tooltipText="Copy URL to clipboard"
+                :copy-text="formLink"
+                tooltip-text="Copy URL to clipboard"
               />
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
@@ -88,8 +88,8 @@
                   <v-btn
                     color="primary"
                     icon
-                    @click="downloadQr"
                     v-bind="attrs"
+                    @click="downloadQr"
                     v-on="on"
                   >
                     <v-icon>get_app</v-icon>
@@ -139,7 +139,9 @@ export default {
   computed: {
     formLink() {
       // TODO: Consider using vue-router to generate this url string instead
-      return `${window.location.origin}${process.env.BASE_URL}form/submit?f=${this.formId}`;
+      return `${window.location.origin}${
+        import.meta.env.BASE_URL
+      }form/submit?f=${this.formId}`;
     },
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;

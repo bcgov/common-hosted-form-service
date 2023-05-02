@@ -16,12 +16,12 @@
 
     <!-- Created date  -->
     <template #[`item.createdAt`]="{ item }">
-      {{ item.createdAt | formatDateLong }}
+      {{ $filters.formatDateLong(item.createdAt) }}
     </template>
 
     <!-- Updated at  -->
     <template #[`item.updatedAt`]="{ item }">
-      {{ item.updatedAt | formatDateLong }}
+      {{ $filters.formatDateLong(item.updatedAt) }}
     </template>
 
     <!-- Actions -->
@@ -34,8 +34,8 @@
               color="primary"
               class="mx-1"
               icon
-              @click="onExportClick(item.id, item.isDraft)"
               v-bind="attrs"
+              @click="onExportClick(item.id, item.isDraft)"
               v-on="on"
             >
               <v-icon>get_app</v-icon>

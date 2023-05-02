@@ -64,9 +64,14 @@ export default {
     FormSettings,
     FormDisclaimer,
   },
-  computed: {
-    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
-    IDP: () => IdentityProviders,
+  beforeRouteLeave(_to, _from, next) {
+    this.isDirty
+      ? next(
+          window.confirm(
+            'Do you really want to leave this page? Changes you made will not be saved.'
+          )
+        )
+      : next();
   },
   data() {
     return {
@@ -77,11 +82,14 @@ export default {
       ],
     };
   },
-  methods: {
-    ...mapActions('form', ['listFCProactiveHelp', 'resetForm']),
-    reRenderFormDesigner() {
-      this.creatorStep = 2;
-      this.$refs.formDesigner.onFormLoad();
+  computed: {
+    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
+    IDP: () => IdentityProviders,
+  },
+  watch: {
+    idps() {
+      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
+        this.$refs.settingsForm.validate();
     },
   },
   created() {
@@ -93,21 +101,12 @@ export default {
       this.$refs.formDesigner.onFormLoad();
     });
   },
-  watch: {
-    idps() {
-      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
-        this.$refs.settingsForm.validate();
+  methods: {
+    ...mapActions('form', ['listFCProactiveHelp', 'resetForm']),
+    reRenderFormDesigner() {
+      this.creatorStep = 2;
+      this.$refs.formDesigner.onFormLoad();
     },
-  },
-
-  beforeRouteLeave(_to, _from, next) {
-    this.isDirty
-      ? next(
-          window.confirm(
-            'Do you really want to leave this page? Changes you made will not be saved.'
-          )
-        )
-      : next();
   },
 };
 </script>

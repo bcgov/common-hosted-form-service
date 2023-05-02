@@ -2,7 +2,7 @@
   <v-dialog
     :max-width="width"
     persistent
-    v-bind:value="value"
+    :value="value"
     @click:outside="closeDialog"
     @keydown.esc="closeDialog"
   >
@@ -82,11 +82,11 @@
             </slot>
           </v-btn>
           <v-btn
+            v-if="enableCustomButton"
             class="mb-5 mr-5"
             color="primary"
             depressed
             @click="customDialog"
-            v-if="enableCustomButton"
           >
             <slot name="button-text-custom">
               <span>Custom</span>
@@ -106,20 +106,6 @@
 <script>
 export default {
   name: 'BaseDialog',
-  methods: {
-    closeDialog() {
-      this.$emit('close-dialog');
-    },
-    continueDialog() {
-      this.$emit('continue-dialog');
-    },
-    deleteDialog() {
-      this.$emit('delete-dialog');
-    },
-    customDialog() {
-      this.$emit('custom-dialog');
-    },
-  },
   props: {
     value: {
       default: false,
@@ -140,6 +126,21 @@ export default {
     enableCustomButton: {
       default: false,
       type: Boolean,
+    },
+  },
+  emits: ['close-dialog', 'continue-dialog', 'delete-dialog', 'custom-dialog'],
+  methods: {
+    closeDialog() {
+      this.$emit('close-dialog');
+    },
+    continueDialog() {
+      this.$emit('continue-dialog');
+    },
+    deleteDialog() {
+      this.$emit('delete-dialog');
+    },
+    customDialog() {
+      this.$emit('custom-dialog');
     },
   },
 };

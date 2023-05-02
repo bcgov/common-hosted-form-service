@@ -1,6 +1,6 @@
 <template>
   <div>
-    <MySubmissionsTable :formId="f" />
+    <MySubmissionsTable :form-id="f" />
   </div>
 </template>
 
@@ -9,14 +9,14 @@ import MySubmissionsTable from '@/components/forms/submission/MySubmissionsTable
 
 export default {
   name: 'Submissions',
+  components: {
+    MySubmissionsTable,
+  },
   props: {
     f: {
       type: String,
       required: true,
     },
-  },
-  components: {
-    MySubmissionsTable,
   },
 };
 </script>

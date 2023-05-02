@@ -84,10 +84,10 @@
       </router-link>
       <DeleteSubmission
         v-if="submission.status !== 'REVISING'"
-        @deleted="draftDeleted"
         :disabled="!hasDeletePerm()"
-        isDraft
-        :submissionId="submission.submissionId"
+        is-draft
+        :submission-id="submission.submissionId"
+        @deleted="draftDeleted"
       />
     </span>
   </span>
@@ -113,6 +113,7 @@ export default {
       required: true,
     },
   },
+  emits: ['draft-deleted'],
   computed: {
     ...mapGetters('form', ['form']),
     isCopyFromExistingSubmissionEnabled() {

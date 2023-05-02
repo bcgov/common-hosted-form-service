@@ -4,8 +4,8 @@
     :icon="notification.icon"
     prominent
     dismissible
-    @input="alertClosed"
     transition="slide-y-transition"
+    @input="alertClosed"
   >
     {{ notification.message }}
   </v-alert>
@@ -20,6 +20,7 @@ export default {
       class: Object,
       icon: Object,
       message: Object,
+      type: Object,
     },
   },
   data() {
@@ -27,21 +28,21 @@ export default {
       timeout: null,
     };
   },
-  methods: {
-    ...mapActions('notifications', ['deleteNotification']),
-    alertClosed() {
-      this.deleteNotification(this.notification);
-    },
-  },
   mounted() {
     this.timeout = setTimeout(
       () => this.deleteNotification(this.notification),
       10000
     );
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // Prevent memory leak if component destroyed before timeout up
     clearTimeout(this.timeout);
+  },
+  methods: {
+    ...mapActions('notifications', ['deleteNotification']),
+    alertClosed() {
+      this.deleteNotification(this.notification);
+    },
   },
 };
 </script>

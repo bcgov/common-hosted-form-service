@@ -1,6 +1,6 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
-    <SubmissionsTable :formId="f" />
+    <SubmissionsTable :form-id="f" />
   </BaseSecure>
 </template>
 
@@ -10,14 +10,14 @@ import { IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'Submissions',
+  components: {
+    SubmissionsTable,
+  },
   props: {
     f: {
       type: String,
       required: true,
     },
-  },
-  components: {
-    SubmissionsTable,
   },
   computed: {
     IDP: () => IdentityProviders,

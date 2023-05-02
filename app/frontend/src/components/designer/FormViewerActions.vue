@@ -13,10 +13,10 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="$emit('save-draft')"
               color="primary"
               icon
               v-bind="attrs"
+              @click="$emit('save-draft')"
               v-on="on"
             >
               <v-icon>save</v-icon>
@@ -50,8 +50,8 @@
       <!-- Go to draft edit -->
       <span v-if="submissionId" class="ml-2">
         <ManageSubmissionUsers
-          :isDraft="isDraft"
-          :submissionId="submissionId"
+          :is-draft="isDraft"
+          :submission-id="submissionId"
         />
       </span>
     </v-col>
@@ -92,6 +92,7 @@ export default {
       default: undefined,
     },
   },
+  emits: ['save-draft'],
   computed: {
     canSaveDraft() {
       return !this.readOnly;
