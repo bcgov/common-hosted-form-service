@@ -1,4 +1,5 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import { rbacService } from '@/services';
@@ -41,7 +42,7 @@ describe('Developer.vue', () => {
       store,
       stubs: ['BaseSecure']
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.text()).toMatch('Developer Resources');
     expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);
@@ -57,7 +58,7 @@ describe('Developer.vue', () => {
       store,
       stubs: ['BaseSecure']
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.text()).toMatch('Developer Resources');
     expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);

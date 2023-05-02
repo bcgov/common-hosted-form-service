@@ -1,4 +1,5 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import User from '@/views/admin/User.vue';
@@ -22,7 +23,7 @@ describe('User.vue', () => {
       store,
       stubs: ['BaseSecure']
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.text()).toMatch('Admin');
   });

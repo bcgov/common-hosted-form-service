@@ -1,4 +1,5 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import Login from '@/views/Login.vue';
@@ -30,7 +31,7 @@ describe('Login.vue', () => {
       store,
       stubs: ['router-link']
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.html()).toMatch('router-link');
   });

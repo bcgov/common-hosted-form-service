@@ -1,4 +1,5 @@
 import { shallowMount, createLocalVue, RouterLinkStub } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
 
@@ -23,7 +24,7 @@ describe('FloatButton.vue', () => {
 
 
     wrapper.vm.$emit('undo');
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(wrapper.emitted().undo).toBeTruthy();
     expect(wrapper.emitted().undo.length).toBe(1);
@@ -41,7 +42,7 @@ describe('FloatButton.vue', () => {
 
 
     wrapper.vm.$emit('redo');
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(wrapper.emitted().redo).toBeTruthy();
     expect(wrapper.emitted().redo.length).toBe(1);
@@ -60,7 +61,7 @@ describe('FloatButton.vue', () => {
 
 
     wrapper.vm.$emit('save');
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(wrapper.emitted().save).toBeTruthy();
     expect(wrapper.emitted().save.length).toBe(1);
@@ -86,7 +87,7 @@ describe('FloatButton.vue', () => {
 
     await wrapper.findComponent({ref:'publishRouterLink'}).trigger('click');
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(wrapper.findComponent({ref:'publishRouterLink'}).props().to).toStrictEqual(mockRoute);
 
@@ -113,7 +114,7 @@ describe('FloatButton.vue', () => {
 
     await wrapper.findComponent({ref:'settingsRouterLink'}).trigger('click');
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(wrapper.findComponent({ref:'settingsRouterLink'}).props().to).toStrictEqual(mockRoute);
 

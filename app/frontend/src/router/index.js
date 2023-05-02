@@ -1,5 +1,5 @@
 import NProgress from 'nprogress';
-import VueRouter, { createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 import store from '@/store';
 import { IdentityProviders } from '@/utils/constants';
@@ -27,22 +27,22 @@ export default function getRouter(basePath = '/') {
   if (router) return router;
 
   // Create new router definition
-  router = VueRouter.createRouter({
-    base: basePath,
-    history: createWebHistory(),
+  router = createRouter({
+    history: createWebHistory(basePath),
     routes: [
       {
         path: '/',
-        redirect: { name: 'About' },
-      },
-      {
-        path: '/',
-        name: 'About',
+        name: 'Home',
         component: () =>
           import(/* webpackChunkName: "about" */ '@/views/About.vue'),
         meta: {
           hasLogin: true,
         },
+      },
+      {
+        path: '/about',
+        redirect: { name: 'Home' },
+        name: 'About',
       },
       {
         path: '/admin',

@@ -288,8 +288,8 @@ export default {
 </script>
 
 <style scoped>
-.v-radio >>> label,
-.v-radio >>> i.v-icon {
+.v-radio :deep(label),
+.v-radio :deep(i.v-icon) {
   color: white !important;
   font-weight: bold;
 }

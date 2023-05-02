@@ -69,10 +69,10 @@ export default {
 </script>
 
 <style scoped>
-.status-table >>> tbody tr:nth-of-type(odd) {
+.status-table :deep(tbody) tr:nth-of-type(odd) {
   background-color: #f5f5f5;
 }
-.status-table >>> thead tr th {
+.status-table :deep(thead) tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

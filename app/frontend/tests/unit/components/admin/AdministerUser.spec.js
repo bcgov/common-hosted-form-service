@@ -1,5 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import AdministerUser from '@/components/admin/AdministerUser.vue';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 const localVue = createLocalVue();
@@ -45,7 +46,7 @@ describe('AdministerUser.vue', () => {
       },
       propsData: { userId: 'me' }
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.text()).toMatch('alice');
     expect(wrapper.html()).toMatch('servU/admin/theRealm/console/#/realms/theRealm/users/1');

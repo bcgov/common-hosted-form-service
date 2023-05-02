@@ -25,7 +25,7 @@
           class="d-flex"
           contain
           height="3.5rem"
-          src="@/assets/images/bc_logo.svg"
+          src="BCLogo"
           width="10rem"
         />
       </a>
@@ -43,12 +43,14 @@
 </template>
 
 <script>
-import PrintLogo from '@/assets/images/bc_logo_print.svg';
+import BCLogo from '@//assets/images/bc_logo.svg';
+import PrintLogo from '@//assets/images/bc_logo_print.svg';
 
 export default {
   name: 'BCGovHeader',
   data() {
     return {
+      BCLogo: BCLogo,
       PrintLogo: PrintLogo,
     };
   },
@@ -67,7 +69,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/scss/style.scss';
+@import '../../assets/scss/style.scss';
 
 .gov-header {
   .printHeader {

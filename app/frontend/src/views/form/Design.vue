@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { nextTick } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import { IdentityProviders } from '@/utils/constants';
@@ -48,7 +49,7 @@ export default {
     IDP: () => IdentityProviders,
   },
   mounted() {
-    this.$nextTick(() => {
+    nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
   },
