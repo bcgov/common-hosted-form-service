@@ -1,5 +1,5 @@
 const Validator = require('formio/src/resources/Validator.js');
-const util = require('formio/src/util/util');
+// const util = require('formio/src/util/util');
 
 /**
  * As per new usage of validator.js we Need param (ie: router) to create
@@ -29,32 +29,91 @@ const hook = require('formio/src/util/hook')(router.formio);
 
 function validate(data, schema) {
   return new Promise((resolve) => {
+    /*
+    let dataGridComponents = [];
     let inputComponents = []; //Array to be used for push all the components that are type of input.
     let inputComponentsTypes = [
       //All component types that we want to check validation on.
       'password',
+      'simplepasswordadvanced',
+
       'select',
-      'textfield',
-      'number',
-      'simpletextfield',
-      'textarea',
       'simpleselect',
-      'simpledatetime',
-      'simpletextarea',
-      'datetime',
+      'simpleselectadvanced',
+      'simpleselectboxesadvanced',
+      
+      'textfield',
+      'simpletextfield',
+      'simpletextfieldadvanced',
+
+      'number',
       'simplenumber',
+      'simplenumberadvanced',
+
+      'textarea',
+      'simpletextarea',
+      'simpletextareaadvanced',
+      
+      'datetime',
+      'simpledatetime',
+      'simpledatetimeadvanced',
+      
+      'radio',
+      'simpleradios',
+      'simpleradioadvanced',
+
+      'simplecheckbox',
+      'simplecheckboxes',
+      'simplecheckboxadvanced',
+      
+      'simpleemail',
+      'simpleemailadvanced',
+      
+      'simpleparagraph',
+      'simplephonenumber',
+      
+      'simpletime',
+      'simpletimeadvanced',
+
+      'simpleurladvanced',
+      'simplephonenumberadvanced',
+      
+      'simpledayadvanced'
     ];
-    util.eachComponent(schema.components, function (component) {
-      //Iterate each Form component
+
+    function pushInputComponent(component) {
       if (util.isInputComponent(component) && inputComponentsTypes.includes(component.type)) {
         //Check if component is desired type and is a input type component
         inputComponents.push(component); //if needed component then let's add it to an array for validation check
       }
+    }
+
+    function extractGridData(data,dataGridComponents) {
+      dataGridComponents.map((dgc) => {
+        //Object.assign(data, dgc);
+        data = {
+          ...data,
+          ...data[dgc][0]
+        }
+      });
+      return data;
+    }
+
+    util.eachComponent(schema.components, function (component) {
+      //Iterate each Form component
+      pushInputComponent(component);
+      if(component.type === 'datagrid'){
+        dataGridComponents.push(component.key);
+      }
     });
+    // console.log(dataGridComponents);
+    // console.log('extractGridData(data,dataGridComponents)-',extractGridData(data,dataGridComponents));
+    */
+
     //This is wrapper of hook to supply to validator class as per new usage by formio validator.js
-    hook.alter('validateSubmissionForm', inputComponents, { data }, async () => {
+    hook.alter('validateSubmissionForm', schema, { data }, async () => {
       // eslint-disable-line max-statements
-      const validator = new Validator({ ...schema, components: inputComponents }, {}, null, null, hook);
+      const validator = new Validator(schema, {}, null, null, hook);
       validator.validate({ data }, (err) => {
         resolve(err);
       });
