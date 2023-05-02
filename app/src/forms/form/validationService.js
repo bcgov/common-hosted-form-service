@@ -1,5 +1,5 @@
 const Validator = require('formio/src/resources/Validator.js');
-const util = require('formio/src/util/util');
+// const util = require('formio/src/util/util');
 
 /**
  * As per new usage of validator.js we Need param (ie: router) to create
@@ -109,7 +109,7 @@ function validate(data, schema) {
     // console.log(dataGridComponents);
     // console.log('extractGridData(data,dataGridComponents)-',extractGridData(data,dataGridComponents));
     */
-   
+
     //This is wrapper of hook to supply to validator class as per new usage by formio validator.js
     hook.alter('validateSubmissionForm', schema, { data }, async () => {
       // eslint-disable-line max-statements
