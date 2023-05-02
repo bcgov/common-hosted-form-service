@@ -270,7 +270,7 @@ const service = {
     try {
       const protocol = 'https://';
       const basePath = config.get('frontend.basePath');
-      const host = import.meta.env.SERVER_HOST;
+      const host = process.env.SERVER_HOST;
       return `${protocol}${host}${basePath}`;
     } catch (error) {
       log.error(error.message, {

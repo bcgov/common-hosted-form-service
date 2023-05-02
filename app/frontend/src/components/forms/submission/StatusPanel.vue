@@ -184,7 +184,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import { FormPermissions } from '@/utils/constants';
 import { formService, rbacService } from '@/services';
-import StatusTable from '@/components/forms/submission/StatusTable';
+import StatusTable from '@/components/forms/submission/StatusTable.vue';
 
 export default {
   name: 'StatusPanel',

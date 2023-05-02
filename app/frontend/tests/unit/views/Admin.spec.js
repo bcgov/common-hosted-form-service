@@ -1,4 +1,5 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import Admin from '@/views/Admin.vue';
@@ -27,7 +28,7 @@ describe('Admin.vue', () => {
       store,
       stubs: ['BaseSecure', 'router-view']
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.html()).toMatch('router-view');
   });

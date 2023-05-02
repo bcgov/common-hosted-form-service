@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { nextTick } from 'vue';
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
@@ -97,7 +98,7 @@ export default {
   },
   mounted() {
     this.listFCProactiveHelp();
-    this.$nextTick(() => {
+    nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
   },

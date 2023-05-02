@@ -5,7 +5,7 @@ routes.use('/reminder', (req, res, next) => {
   // eslint-disable-next-line no-empty
   try {
     if (req.method == 'GET') {
-      const apikeyEnv = import.meta.env.APITOKEN;
+      const apikeyEnv = process.env.APITOKEN;
       const apikeyIncome = req.headers.apikey;
       if (apikeyEnv == apikeyIncome && (apikeyIncome == undefined || apikeyIncome == '')) return res.status(401).json({ message: 'No API key provided' });
       if (apikeyIncome === apikeyEnv) {

@@ -1,4 +1,5 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import Root from '@/views/user/Root.vue';
@@ -12,7 +13,7 @@ describe('Root.vue', () => {
       localVue,
       stubs: ['BaseSecure', 'router-link']
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.text()).toMatch('User');
   });

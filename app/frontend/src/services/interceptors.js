@@ -18,6 +18,7 @@ export function appAxios(timeout = 10000) {
 
   instance.interceptors.request.use(
     (cfg) => {
+      console.log(getCurrentInstance());
       if (
         getCurrentInstance().config.globalProperties.$keycloak &&
         getCurrentInstance().config.globalProperties.$keycloak.ready &&

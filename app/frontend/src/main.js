@@ -4,7 +4,7 @@ import '@/assets/scss/style.scss';
 
 import axios from 'axios';
 import NProgress from 'nprogress';
-import { createApp } from 'vue';
+import { createApp, h } from 'vue';
 
 import App from '@/App.vue';
 import { formatDate, formatDateLong } from '@/filters';
@@ -14,7 +14,7 @@ import store from '@/store';
 
 // The Vue instance
 const app = createApp({
-  render: (h) => h(App),
+  render: () => h(App),
 });
 
 app.config.globalProperties.$filters = {
@@ -40,13 +40,14 @@ import vuetify from '@/plugins/vuetify';
 app.use(vuetify);
 
 /* import clipboard */
-import { Clipboard as VueClipboard } from 'vue3-clipboard';
-app.use(VueClipboard, {
+import Clipboard from 'vue3-clipboard';
+app.use(Clipboard, {
   autoSetContainer: true,
   appendToBody: true,
 });
 
 // Globally register all components with base in the name
+/*
 const requireComponent = require.context(
   '@/components',
   true,
@@ -60,6 +61,19 @@ requireComponent.keys().forEach((fileName) => {
     .replace(/\.\w+$/, '');
   app.component(componentName, componentConfig.default || componentConfig);
 });
+*/
+const modules = import.meta.glob('@/components/**/*.(vue|js)');
+for (const path in modules) {
+  if (path.includes('Base')) {
+    modules[path]().then((mod) => {
+      const componentName = mod.default.__file
+        .split('/')
+        .pop()
+        .replace(/\.\w+$/, '');
+      app.component(componentName, mod.default);
+    });
+  }
+}
 
 NProgress.configure({ showSpinner: false });
 NProgress.start();
@@ -84,9 +98,13 @@ if (!!window.MSInputMethodContext && !!document.documentMode) {
  * @param {string} [basepath='/'] base server path
  */
 function initializeApp(kcSuccess = false, basePath = '/') {
-  if (kcSuccess && !store.hasModule('auth')) store.registerModule('auth', auth);
+  if (kcSuccess && !store.hasModule('auth')) {
+    store.registerModule('auth', auth(app));
+  }
 
-  app.use(getRouter(basePath));
+  const router = getRouter(basePath);
+  app.use(router);
+  router.app = app;
   app.use(store);
 
   app.mount('#app');
@@ -101,7 +119,7 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 async function loadConfig() {
   // App publicPath is ./ - so use relative path here, will hit the backend server using relative path to root.
   const configUrl =
-    import.meta.env.NODE_ENV === 'production'
+    import.meta.env.MODE === 'production'
       ? 'config'
       : `${import.meta.env.BASE_URL}/config`;
   const storageKey = 'config';

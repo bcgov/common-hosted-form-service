@@ -1,5 +1,10 @@
 {
   "include": [
     "./src/**/*"
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*", "./dist/*"]
+    }
+  }
 }

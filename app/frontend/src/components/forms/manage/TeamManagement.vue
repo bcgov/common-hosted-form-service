@@ -571,17 +571,17 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .team-table >>> th {
+  .team-table :deep(th) {
     vertical-align: top;
   }
 }
-.team-table >>> thead tr th {
+.team-table :deep(thead) tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;
 }
 /* remove extra padding on data-table rows for mobile view */
-.team-table >>> thead.v-data-table-header-mobile th,
+.team-table :deep(thead.v-data-table-header-mobile) th,
 .team-table tr.v-data-table__mobile-table-row td {
   padding: 0;
 }

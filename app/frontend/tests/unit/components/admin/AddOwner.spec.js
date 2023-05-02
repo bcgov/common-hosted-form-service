@@ -1,5 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import AddOwner from '@/components/admin/AddOwner.vue';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 const localVue = createLocalVue();
@@ -41,7 +42,7 @@ describe('AddOwner.vue', () => {
         }
       },
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.text()).toMatch('This should only be done');
   });

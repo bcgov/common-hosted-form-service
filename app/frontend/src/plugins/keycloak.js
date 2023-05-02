@@ -1,11 +1,12 @@
 // Sourced from https://github.com/fredicious/vue-keycloak-js
-import { getCurrentInstance } from 'vue';
 import Keycloak from 'keycloak-js';
+import mitt from 'mitt';
+import { defineComponent } from 'vue';
 
 let installed = false;
 
 export default {
-  install: function (Vue, params = {}) {
+  install: function (app, params = {}) {
     if (installed) return;
     installed = true;
 
@@ -17,7 +18,8 @@ export default {
     if (assertOptions(options).hasError)
       throw new Error(`Invalid options given: ${assertOptions(options).error}`);
 
-    const watch = new Vue({
+    const watch = defineComponent({
+      emits: ['ready'],
       data() {
         return {
           ready: false,
@@ -52,15 +54,11 @@ export default {
         };
       },
     });
-    Object.defineProperty(
-      getCurrentInstance().config.globalProperties,
-      '$keycloak',
-      {
-        get() {
-          return watch;
-        },
-      }
-    );
+    Object.defineProperty(app.config.globalProperties, '$keycloak', {
+      get() {
+        return watch;
+      },
+    });
     getConfig(options.config)
       .then((config) => {
         init(config, watch, options);
@@ -72,10 +70,12 @@ export default {
 };
 
 function init(config, watch, options) {
+  const emitter = mitt();
   const ctor = sanitizeConfig(config);
   const keycloak = Keycloak(ctor);
 
-  watch.$once('ready', function (cb) {
+  emitter.on('ready', (cb) => {
+    emitter.off('*');
     cb && cb();
   });
 
@@ -83,7 +83,7 @@ function init(config, watch, options) {
     updateWatchVariables(authenticated);
     watch.ready = true;
     typeof options.onReady === 'function' &&
-      watch.$emit('ready', options.onReady.bind(this, keycloak));
+      emitter.emit('ready', options.onReady.bind(this, keycloak));
   };
   keycloak.onAuthSuccess = function () {
     // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.

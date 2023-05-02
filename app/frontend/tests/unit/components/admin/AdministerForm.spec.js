@@ -1,5 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import AdministerForm from '@/components/admin/AdministerForm.vue';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 const localVue = createLocalVue();
@@ -44,7 +45,7 @@ describe('AdministerForm.vue', () => {
       propsData: { formId: 'f' },
       stubs: ['BaseDialog', 'AdminVersions', 'VueJsonPretty']
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.text()).toMatch('tehForm');
     expect(actions.readForm).toHaveBeenCalledTimes(1);

@@ -159,7 +159,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~vuetify/src/styles/settings/_variables';
+@import '@vuetify/lib/styles/settings/_variables';
 
 .qrCodeContainer {
   @media #{map-get($display-breakpoints, 'sm-and-up')} {

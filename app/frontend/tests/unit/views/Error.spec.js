@@ -1,4 +1,5 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import Error from '@/views/Error.vue';
@@ -28,7 +29,7 @@ describe('Error.vue', () => {
       localVue,
       store
     });
-    await localVue.nextTick();
+    await nextTick();
 
     expect(wrapper.html()).toMatch('Error: Something went wrong... :(');
     expect(wrapper.html()).toMatch('Logout');

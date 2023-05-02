@@ -42,7 +42,7 @@ const log = createLogger({
   level: config.get('server.logLevel'),
 });
 
-if (import.meta.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   log.add(new transports.Console({ handleExceptions: true }));
 } else {
   log.add(new NullTransport());

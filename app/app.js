@@ -27,7 +27,7 @@ app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
 
 // Skip if running tests
-if (import.meta.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   // Initialize connections and exit if unsuccessful
   initializeConnections();
   app.use(httpLogger);

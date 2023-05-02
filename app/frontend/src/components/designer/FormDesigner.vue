@@ -755,8 +755,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~font-awesome/css/font-awesome.min.css';
-@import '~formiojs/dist/formio.builder.min.css';
+@import '@font-awesome/css/font-awesome.min.css';
+@import '@formiojs/dist/formio.builder.min.css';
 
 /* disable router-link */
 .disabled-router {

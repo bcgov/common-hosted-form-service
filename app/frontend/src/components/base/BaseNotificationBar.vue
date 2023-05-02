@@ -48,7 +48,7 @@ export default {
 </script>
 
 <style scoped>
-.target-notification >>> .v-alert__icon.v-icon:after {
+.target-notification :deep(.v-alert__icon.v-icon):after {
   display: none;
 }
 </style>
