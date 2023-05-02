@@ -1,7 +1,7 @@
 import 'nprogress/nprogress.css';
 import '@bcgov/bc-sans/css/BCSans.css';
 import '@/assets/scss/style.scss';
-
+import i18n from '@/internationalization';
 import axios from 'axios';
 import NProgress from 'nprogress';
 import Vue from 'vue';
@@ -69,6 +69,7 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 
   new Vue({
     router: getRouter(basePath),
+    i18n,
     store,
     vuetify,
     render: (h) => h(App),

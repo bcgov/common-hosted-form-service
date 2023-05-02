@@ -1,37 +1,37 @@
 <template>
   <v-footer :class="{ 'gov-footer': true, 'd-print-none': formSubmitMode }">
     <v-btn text id="footer-home" href="https://www.gov.bc.ca/">
-      <span>Home</span>
+      <span>{{ $t('homePage.footerHome') }}</span>
     </v-btn>
     <v-btn
       text
       id="footer-about"
       href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
     >
-      <span>About gov.bc.ca</span>
+      <span>{{ $t('homePage.footerAbout') }}</span>
     </v-btn>
     <v-btn text id="footer-disclaimer" href="http://gov.bc.ca/disclaimer">
-      <span>Disclaimer</span>
+      <span>{{ $t('homePage.footerDisclaimer') }}</span>
     </v-btn>
     <v-btn text id="footer-privacy" href="http://gov.bc.ca/privacy">
-      <span>Privacy</span>
+      <span>{{ $t('homePage.footerPrivacy') }}</span>
     </v-btn>
     <v-btn
       text
       id="footer-accessibility"
       href="http://gov.bc.ca/webaccessibility"
     >
-      <span>Accessibility</span>
+      <span>{{ $t('homePage.footerAccessibility') }}</span>
     </v-btn>
     <v-btn text id="footer-copyright" href="http://gov.bc.ca/copyright">
-      <span>Copyright</span>
+      <span>{{ $t('homePage.footerCopyRight') }}</span>
     </v-btn>
     <v-btn
       text
       id="footer-contact"
       href="https://www2.gov.bc.ca/gov/content/home/contact-us"
     >
-      <span>Contact Us</span>
+      <span>{{ $t('homePage.footerContactUs') }}</span>
     </v-btn>
   </v-footer>
 </template>
