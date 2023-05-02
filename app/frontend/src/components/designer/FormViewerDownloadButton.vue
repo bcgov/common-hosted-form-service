@@ -4,13 +4,13 @@
       <BaseInfoCard v-if="json_csv.data" class="mb-4">
         <h4 class="primary--text"><v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!</h4>
         <p class="my-2">
-          In order to successfully complete bulk submissions, please download the instructions and the template.
+          To ensure successful uploading of multiple drafts, please download and utilize the provided template.
           <span class="link">
             <vue-blob-json-csv
               tag-name="i"
               file-type="json"
               :file-name="json_csv.file_name"
-              title="Download   "
+              title="Download "
               :data="json_csv.data"
               confirm="Do you want to download it?"
             />
@@ -57,7 +57,7 @@
           <v-col cols="12" md="12">
             <hr v-if="response.error && response.response.length > 0" />
             <p style="text-align: justify" v-if="response.error && response.response.length > 0">
-              Please download the submission report and ensure that the data is enteres correctly.
+              Please download the draft submission report and ensure that the data is entered correctly.
               <span class="link">
                 <vue-blob-json-csv
                   tag-name="i"
@@ -252,7 +252,7 @@ export default {
             this.endValidation();
           }
         }.bind(this),
-        25
+        12
       );
     },
     pourcentage(i) {
@@ -291,7 +291,7 @@ export default {
 
 <style lang="scss" scoped>
 .loading {
-  background-color: #38598a;
+  background-color: #5072a6;
   border-color: #003366;
   strong {
     color: white;
@@ -310,7 +310,7 @@ export default {
   }
   .worker-zone {
     position: relative;
-    width: 38%;
+    width: 380px;
     min-height: 200px;
     padding: 0.05%;
     text-align: center;
@@ -322,7 +322,7 @@ export default {
     -webkit-box-shadow: -4px 18px 126px -71px rgba(0, 0, 0, 0.62);
     -moz-box-shadow: -4px 18px 126px -71px rgba(0, 0, 0, 0.62);
     .wz-top {
-      width: 98%;
+      width: 360px;
       min-height: 48px;
       margin-left: auto;
       margin-right: auto;
@@ -413,7 +413,7 @@ export default {
   }
   .drop-zone {
     position: relative;
-    max-width: 38%;
+    max-width: 380px;
     min-height: 200px;
     padding: 3%;
     text-align: center;

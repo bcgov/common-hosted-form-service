@@ -10,7 +10,6 @@
                 : formScheduleExpireMessage
             }}
           </v-alert>
-
           <div v-if="isLateSubmissionAllowed">
             <v-col cols="3" md="2">
               <v-btn color="primary" @click="isFormScheduleExpired = false">
@@ -42,6 +41,7 @@
         </div>
         <div class="form-wrapper">
           <v-alert
+            class="mt-2 mb-2"
             :value="saved || saving"
             :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
             :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
@@ -93,6 +93,7 @@
             @submitDone="onSubmitDone"
             @submitButton="onSubmitButton"
             @customEvent="onCustomEvent"
+            @change="formChange"
             :options="viewerOptions"
           />
           <p v-if="version" class="text-right">Version: {{ version }}</p>
@@ -158,7 +159,6 @@ export default {
   },
   data() {
     return {
-      isFormReady: false,
       confirmSubmit: false,
       currentForm: {},
       forceNewTabLinks: true,
@@ -333,9 +333,6 @@ export default {
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
-
-          if (response.data.allowSubmitterToUploadFile && !this.draftId) this.jsonManager(response);
-
           if (response.data.schedule && response.data.schedule.expire) {
             let formScheduleStatus = response.data.schedule;
             this.isFormScheduleExpired = formScheduleStatus.expire;
@@ -343,6 +340,7 @@ export default {
             this.formScheduleExpireMessage = formScheduleStatus.message;
           }
         }
+        this.listenFormChangeEvent(response);
       } catch (error) {
         if (this.authenticated) {
           this.isFormScheduleExpired = true;
@@ -355,22 +353,19 @@ export default {
         }
       }
     },
-    jsonManager(response) {
+    async listenFormChangeEvent(response) {
       this.allowSubmitterToUploadFile = response.data.allowSubmitterToUploadFile;
-      const form = this.$refs.chefForm.formio;
-      this.formElement = form;
-      form.on('render', () => {
-        this.json_csv.data = [form.data, form.data];
-        this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
-      });
-      form.on('change', (e) => {
-        if (e.changed != undefined) {
-          this.formDataEntered = true;
-        }
-        if (!this.isFormReady && form.submission) {
-          this.isFormReady = true;
-        }
-      });
+      if (this.allowSubmitterToUploadFile && !this.draftId) this.jsonManager();
+    },
+    formChange(e) {
+      if (e.changed != undefined) {
+        this.formDataEntered = true;
+      }
+    },
+    jsonManager() {
+      this.formElement = this.$refs.chefForm.formio;
+      this.json_csv.data = [this.formElement.data, this.formElement.data];
+      this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
     },
     resetMessage() {
       this.sbdMessage.message = undefined;
@@ -390,15 +385,17 @@ export default {
     },
     async sendMultisubmissionData(body) {
       try {
+        this.saving = true;
         let response = await formService.createBulkSubmission(this.formId, this.versionIdToSubmitTo, body);
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...
-          this.sbdMessage.message = 'Your multiple submissions upload has been  successful!';
+          this.sbdMessage.message = 'Your multiple draft upload has been successful!';
           this.sbdMessage.error = false;
           this.sbdMessage.upload_state = 10;
           this.sbdMessage.response = [];
           this.block = false;
+          this.saving = false;
           this.addNotification({
             message: this.sbdMessage.message,
             ...NotificationTypes.SUCCESS,
@@ -411,6 +408,7 @@ export default {
           this.sbdMessage.upload_state = 10;
           this.block = false;
           this.sbdMessage.response = [];
+          this.saving = false;
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
@@ -420,6 +418,7 @@ export default {
         this.block = false;
         this.sbdMessage.response = error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
         this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
+        this.saving = false;
         this.addNotification({
           message: this.sbdMessage.message,
           consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
@@ -655,7 +654,7 @@ export default {
     showdoYouWantToSaveTheDraftModal() {
       if (!this.bulkFile) {
         this.saveDraftState = 0;
-        if (this.submissionId == undefined) this.doYouWantToSaveTheDraft = true;
+        if (this.submissionId == undefined || this.formDataEntered) this.doYouWantToSaveTheDraft = true;
         else this.leaveThisPage();
       } else {
         this.leaveThisPage();
@@ -706,7 +705,8 @@ export default {
       if (this.submissionId && this.isDuplicate) {
         //Run when make new submission from existing one called.
         await this.getFormData();
-        await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
+        //We need this to be called as well, because we need latest version of form
+        await this.getFormSchema();
       } else if (this.submissionId && !this.isDuplicate) {
         await this.getFormData();
       } else {
