@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h1 class="mt-6">Administer Form</h1>
-    <AdministerForm :formId="f" />
+    <AdministerForm :form-id="f" />
   </v-container>
 </template>
 

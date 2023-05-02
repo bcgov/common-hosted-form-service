@@ -28,7 +28,7 @@
       loading-text="Loading... Please wait"
     >
       <template #[`item.created`]="{ item }">
-        {{ item.createdAt | formatDate }}
+        {{ $filters.formatDate(item.createdAt) }}
       </template>
       <template #[`item.actions`]="{ item }">
         <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
@@ -69,12 +69,12 @@ export default {
   computed: {
     ...mapGetters('admin', ['userList']),
   },
-  methods: {
-    ...mapActions('admin', ['getUsers']),
-  },
   async mounted() {
     await this.getUsers();
     this.loading = false;
+  },
+  methods: {
+    ...mapActions('admin', ['getUsers']),
   },
 };
 </script>

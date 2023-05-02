@@ -16,18 +16,18 @@
         <h4>
           JWT Contents
           <BaseCopyToClipboard
-            :copyText="JSON.stringify(tokenParsed)"
-            snackBarText="JWT Contents copied to clipboard"
-            tooltipText="Copy JWT Contents to clipboard"
+            :copy-text="JSON.stringify(tokenParsed)"
+            snack-bar-text="JWT Contents copied to clipboard"
+            tooltip-text="Copy JWT Contents to clipboard"
           />
         </h4>
         <vue-json-pretty :data="tokenParsed" />
         <h4>
           JWT Token
           <BaseCopyToClipboard
-            :copyText="token"
-            snackBarText="JWT Token copied to clipboard"
-            tooltipText="Copy JWT Token to clipboard"
+            :copy-text="token"
+            snack-bar-text="JWT Token copied to clipboard"
+            tooltip-text="Copy JWT Token to clipboard"
           />
         </h4>
         <div style="word-break: break-all">{{ token }}</div>
@@ -38,9 +38,9 @@
         <h4>
           /rbac/current
           <BaseCopyToClipboard
-            :copyText="JSON.stringify(apiRes)"
-            snackBarText="RBAC Response copied to clipboard"
-            tooltipText="Copy RBAC Response to clipboard"
+            :copy-text="JSON.stringify(apiRes)"
+            snack-bar-text="RBAC Response copied to clipboard"
+            tooltip-text="Copy RBAC Response to clipboard"
           />
         </h4>
         <vue-json-pretty :data="apiRes" />

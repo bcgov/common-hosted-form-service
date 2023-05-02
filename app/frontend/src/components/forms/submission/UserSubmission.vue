@@ -1,10 +1,10 @@
 <template>
   <v-skeleton-loader :loading="loading" type="article">
     <FormViewer
-      displayTitle
-      :readOnly="readOnly"
+      display-title
+      :read-only="readOnly"
       :saved="saved"
-      :submissionId="submissionId"
+      :submission-id="submissionId"
     />
   </v-skeleton-loader>
 </template>
@@ -33,10 +33,10 @@ export default {
     };
   },
   computed: mapGetters('form', ['formSubmission']),
-  methods: mapActions('form', ['fetchSubmission']),
   async mounted() {
     await this.fetchSubmission({ submissionId: this.submissionId });
     this.loading = false;
   },
+  methods: mapActions('form', ['fetchSubmission']),
 };
 </script>

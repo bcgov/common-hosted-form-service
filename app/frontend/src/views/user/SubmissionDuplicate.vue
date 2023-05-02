@@ -1,9 +1,9 @@
 <template>
   <UserDuplicateSubmission
     :saved="sv"
-    :submissionId="s"
-    :formId="f"
-    :readOnly="false"
+    :submission-id="s"
+    :form-id="f"
+    :read-only="false"
   />
 </template>
 

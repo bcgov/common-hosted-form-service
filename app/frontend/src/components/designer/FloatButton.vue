@@ -21,13 +21,14 @@
       </v-avatar>
     </div>
     <div
+      v-if="isFABActionsOpen"
       :style="[
         { display: 'flex', flexDirection: fabItemsDirection, gap: fabItemsGap },
       ]"
-      v-if="isFABActionsOpen"
     >
       <router-link
         ref="publishRouterLink"
+        v-slot="{ navigate }"
         data-cy="publishRouterLink"
         class="fabAction"
         :to="{
@@ -35,39 +36,42 @@
           query: { f: formId, fd: 'formDesigner', d: draftId },
         }"
         :class="{ 'disabled-router': !formId }"
-        tag="div"
       >
-        <div v-text="'Publish'" />
-        <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
-          <v-icon
-            :color="
-              saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
-            "
-            :size="fabItemsIconsSize"
-          >
-            upload_file
-          </v-icon>
-        </v-avatar>
+        <div role="link" @click="navigate">
+          <div v-text="'Publish'" />
+          <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
+            <v-icon
+              :color="
+                saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
+              "
+              :size="fabItemsIconsSize"
+            >
+              upload_file
+            </v-icon>
+          </v-avatar>
+        </div>
       </router-link>
       <router-link
+        ref="settingsRouterLink"
+        v-slot="{ navigate }"
         class="fabAction"
         data-cy="settingsRouterLink"
-        ref="settingsRouterLink"
         :to="{ name: 'FormManage', query: { f: formId } }"
         :class="{ 'disabled-router': !formId }"
-        tag="div"
       >
-        <div v-text="'Manage'" />
-        <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
-          <v-icon
-            :color="
-              saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
-            "
-            :size="fabItemsIconsSize"
-          >
-            settings
-          </v-icon>
-        </v-avatar>
+        <div role="link" @click="navigate">
+          <div v-text="'Manage'" />
+          <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
+            <v-icon
+              :color="
+                saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
+              "
+              :size="fabItemsIconsSize"
+            >
+              settings
+            </v-icon>
+          </v-avatar>
+        </div>
       </router-link>
 
       <div
@@ -111,10 +115,10 @@
         </v-avatar>
       </div>
       <div
-        class="fabAction"
         ref="previewRouterLink"
-        @click="gotoPreview"
+        class="fabAction"
         :class="{ 'disabled-router': !formId || !draftId }"
+        @click="gotoPreview"
       >
         <div v-text="'Preview'" />
         <v-avatar class="fabItems" :size="fabItemsSize">
@@ -127,19 +131,19 @@
         </v-avatar>
       </div>
       <div
+        ref="saveButton"
         class="fabAction"
         data-cy="saveButton"
-        ref="saveButton"
         :class="{ 'disabled-router': isFormSaved }"
       >
-        <div>{{ this.savedStatus }}</div>
+        <div>{{ savedStatus }}</div>
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
           @click="toParent('save')"
         >
           <v-icon
-            v-if="!this.saving"
+            v-if="!saving"
             :color="!isFormSaved ? fabItemsColor : disabledFabItemsColor"
             :size="fabItemsIconsSize"
             dark
@@ -148,7 +152,7 @@
           </v-icon>
 
           <v-progress-circular
-            v-if="this.saving"
+            v-if="saving"
             indeterminate
             color="#1A5A96"
             size="25"
@@ -165,7 +169,7 @@
         </v-avatar>
       </div>
     </div>
-    <div class="fabAction" v-if="!isFABActionsOpen">
+    <div v-if="!isFABActionsOpen" class="fabAction">
       <div>{{ scrollName }}</div>
       <v-avatar class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
         <v-icon :color="fabItemsColor" :size="fabItemsIconsSize">
@@ -179,29 +183,6 @@
 <script>
 export default {
   name: 'FloatButton',
-  data() {
-    return {
-      fabItemsDirection: 'column-reverse',
-      isFABActionsOpen: true,
-      fabItemsPosition: {},
-      fabItemsSize: 36,
-      fabItemsIconsSize: 31,
-
-      //base fab item variable start
-      baseFABItemName: 'Collapse',
-      baseIconName: 'close',
-      baseIconColor: '#ffffff', //end
-
-      // fab items icons variables start
-      fabItemsColor: '#1A5A96',
-      fabItemsInvertedColor: '#ffffff',
-      disabledInvertedFabItemsColor: '#ffffff',
-      disabledFabItemsColor: '#707070C1', // end
-
-      scrollIconName: 'south',
-      scrollName: 'Bottom',
-    };
-  },
   props: {
     formId: String,
     draftId: String,
@@ -248,6 +229,45 @@ export default {
         );
       },
     },
+  },
+  data() {
+    return {
+      fabItemsDirection: 'column-reverse',
+      isFABActionsOpen: true,
+      fabItemsPosition: {},
+      fabItemsSize: 36,
+      fabItemsIconsSize: 31,
+
+      //base fab item variable start
+      baseFABItemName: 'Collapse',
+      baseIconName: 'close',
+      baseIconColor: '#ffffff', //end
+
+      // fab items icons variables start
+      fabItemsColor: '#1A5A96',
+      fabItemsInvertedColor: '#ffffff',
+      disabledInvertedFabItemsColor: '#ffffff',
+      disabledFabItemsColor: '#707070C1', // end
+
+      scrollIconName: 'south',
+      scrollName: 'Bottom',
+    };
+  },
+  watch: {
+    size() {
+      this.setSizes();
+    },
+  },
+  mounted() {
+    window.scrollTo(0, 0);
+    this.setPosition();
+    this.setSizes();
+  },
+  created() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  unmounted() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
     toParent(name) {
@@ -397,22 +417,6 @@ export default {
       this.scrollIconName = 'north';
       this.scrollName = 'Top';
     },
-  },
-  watch: {
-    size() {
-      this.setSizes();
-    },
-  },
-  mounted() {
-    window.scrollTo(0, 0);
-    this.setPosition();
-    this.setSizes();
-  },
-  created() {
-    window.addEventListener('scroll', this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener('scroll', this.handleScroll);
   },
 };
 </script>

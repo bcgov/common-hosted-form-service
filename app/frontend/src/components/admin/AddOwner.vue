@@ -9,15 +9,15 @@
     <v-row class="mt-4">
       <v-col cols="9" sm="6" md="6" lg="4">
         <v-text-field
-          label="User ID (guid)"
           v-model="userGuid"
+          label="User ID (guid)"
           :rules="userGuidRules"
           hint="To find the User ID needed you can go to the 'USERS' tab in the Admin portal and search for them."
           persistent-hint
         />
       </v-col>
       <v-col cols="3" md="2">
-        <v-btn color="primary" @click="addOwner" :disabled="!valid">
+        <v-btn color="primary" :disabled="!valid" @click="addOwner">
           <span>Add owner</span>
         </v-btn>
       </v-col>

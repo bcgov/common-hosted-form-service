@@ -1,6 +1,6 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
-    <TeamManagement :formId="f" />
+    <TeamManagement :form-id="f" />
   </BaseSecure>
 </template>
 

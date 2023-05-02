@@ -1,14 +1,14 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
     <FormDesigner
-      class="mt-6"
-      :draftId="d"
-      :formId="f"
-      :saved="JSON.parse(sv)"
-      :versionId="v"
       ref="formDesigner"
-      :isSavedStatus="svs"
-      :newVersion="nv"
+      class="mt-6"
+      :draft-id="d"
+      :form-id="f"
+      :saved="JSON.parse(sv)"
+      :version-id="v"
+      :is-saved-status="svs"
+      :new-version="nv"
     />
   </BaseSecure>
 </template>
@@ -23,6 +23,15 @@ export default {
   components: {
     FormDesigner,
   },
+  beforeRouteLeave(_to, _from, next) {
+    this.form.isDirty
+      ? next(
+          window.confirm(
+            'Do you really want to leave this page? Changes you made will not be saved.'
+          )
+        )
+      : next();
+  },
   props: {
     d: String,
     f: String,
@@ -34,30 +43,20 @@ export default {
       default: false,
     },
   },
+  computed: {
+    ...mapGetters('form', ['form']),
+    IDP: () => IdentityProviders,
+  },
   mounted() {
     this.$nextTick(() => {
       this.$refs.formDesigner.onFormLoad();
     });
   },
-
-  methods: {
-    ...mapActions('form', ['listFCProactiveHelp', 'deleteCurrentForm']),
-  },
-  computed: {
-    ...mapGetters('form', ['form']),
-    IDP: () => IdentityProviders,
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.form.isDirty
-      ? next(
-          window.confirm(
-            'Do you really want to leave this page? Changes you made will not be saved.'
-          )
-        )
-      : next();
-  },
   beforeMount() {
     this.listFCProactiveHelp();
+  },
+  methods: {
+    ...mapActions('form', ['listFCProactiveHelp', 'deleteCurrentForm']),
   },
 };
 </script>

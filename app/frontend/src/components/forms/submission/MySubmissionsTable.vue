@@ -11,11 +11,11 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
                 class="mx-1"
                 color="primary"
                 icon
                 v-bind="attrs"
+                @click="showColumnsDialog = true"
                 v-on="on"
               >
                 <v-icon>view_column</v-icon>
@@ -80,36 +80,36 @@
       no-data-text="You have no submissions"
     >
       <template #[`item.lastEdited`]="{ item }">
-        {{ item.lastEdited | formatDateLong(false) }}
+        {{ $filters.formatDateLong(item.lastEdited, false) }}
       </template>
       <template #[`item.submittedDate`]="{ item }">
-        {{ item.submittedDate | formatDateLong(false) }}
+        {{ $filters.formatDateLong(item.submittedDate, false) }}
       </template>
       <template #[`item.completedDate`]="{ item }">
-        {{ item.completedDate | formatDateLong(false) }}
+        {{ $filters.formatDateLong(item.completedDate, false) }}
       </template>
       <template #[`item.actions`]="{ item }">
         <MySubmissionsActions
-          @draft-deleted="populateSubmissionsTable"
           :submission="item"
-          :formId="formId"
-          :isCopyFromExistingSubmissionEnabled="
+          :form-id="formId"
+          :is-copy-from-existing-submission-enabled="
             isCopyFromExistingSubmissionEnabled
           "
+          @draft-deleted="populateSubmissionsTable"
         />
       </template>
     </v-data-table>
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
-        inputFilterPlaceholder="Search submission fields"
-        inputItemKey="value"
-        inputSaveButtonText="Save"
-        :inputData="
+        input-filter-placeholder="Search submission fields"
+        input-item-key="value"
+        input-save-button-text="Save"
+        :input-data="
           DEFAULT_HEADERS.filter(
             (h) => !filterIgnore.some((fd) => fd.value === h.value)
           )
         "
-        :preselectedData="PRESELECTED_DATA"
+        :preselected-data="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -236,6 +236,10 @@ export default {
       return this.form && this.form.enableCopyExistingSubmission;
     },
   },
+  async mounted() {
+    await this.fetchForm(this.formId);
+    await this.populateSubmissionsTable();
+  },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
 
@@ -295,11 +299,6 @@ export default {
       this.filterData = data;
       this.showColumnsDialog = false;
     },
-  },
-
-  async mounted() {
-    await this.fetchForm(this.formId);
-    await this.populateSubmissionsTable();
   },
 };
 </script>

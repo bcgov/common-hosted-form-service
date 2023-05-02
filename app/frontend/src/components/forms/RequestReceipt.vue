@@ -22,18 +22,18 @@
           @submit.prevent
         >
           <v-text-field
+            v-model="to"
             dense
             flat
             solid
             outlined
             label="Send to E-mail Address"
             :rules="emailRules"
-            v-model="to"
             data-test="text-form-to"
           />
         </v-form>
       </template>
-      <template v-slot:button-text-continue>
+      <template #button-text-continue>
         <span>SEND</span>
       </template>
     </BaseDialog>
@@ -48,12 +48,29 @@ import { formService } from '@/services';
 
 export default {
   name: 'RequestReceipt',
+  props: {
+    email: {
+      type: String,
+      required: true,
+    },
+    formName: {
+      type: String,
+      required: true,
+    },
+    submissionId: {
+      type: String,
+      required: true,
+    },
+  },
   data: () => ({
     emailRules: [(v) => !!v || 'E-mail is required'],
     showDialog: false,
     to: '',
     valid: false,
   }),
+  mounted() {
+    this.resetDialog();
+  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     displayDialog() {
@@ -82,23 +99,6 @@ export default {
     resetDialog() {
       this.to = this.email;
       this.valid = false;
-    },
-  },
-  mounted() {
-    this.resetDialog();
-  },
-  props: {
-    email: {
-      type: String,
-      required: true,
-    },
-    formName: {
-      type: String,
-      required: true,
-    },
-    submissionId: {
-      type: String,
-      required: true,
     },
   },
 };

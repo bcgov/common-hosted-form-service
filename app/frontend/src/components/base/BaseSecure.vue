@@ -35,8 +35,8 @@
       v-if="keycloakReady"
       color="primary"
       class="login-btn"
-      @click="login"
       large
+      @click="login"
     >
       <span>Login</span>
     </v-btn>
@@ -68,13 +68,13 @@ export default {
     ]),
     mailToLink() {
       return `mailto:${
-        process.env.VUE_APP_CONTACT
+        import.meta.env.VITE_CONTACT
       }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
         location
       )}.`;
     },
     contactInfo() {
-      return process.env.VUE_APP_CONTACT;
+      return import.meta.env.VITE_CONTACT;
     },
   },
   methods: mapActions('auth', ['login']),

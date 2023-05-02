@@ -22,11 +22,11 @@
         </v-text-field>
       </div>
       <v-data-table
+        v-model="selectedData"
         fixed-header
         show-select
         hide-default-footer
         height="300px"
-        v-model="selectedData"
         :headers="inputHeaders"
         :items="inputData"
         :item-key="inputItemKey"
@@ -34,10 +34,10 @@
         class="grey lighten-5"
       >
       </v-data-table>
-      <v-btn @click="savingFilterData" class="primary mt-3">{{
+      <v-btn class="primary mt-3" @click="savingFilterData">{{
         inputSaveButtonText
       }}</v-btn>
-      <v-btn @click="cancelFilterData" class="mt-3 ml-3 primary--text" outlined
+      <v-btn class="mt-3 ml-3 primary--text" outlined @click="cancelFilterData"
         >Cancel</v-btn
       >
     </v-card-text>
@@ -84,6 +84,7 @@ export default {
       default: 'Filter',
     },
   },
+  emits: ['saving-filter-data', 'cancel-filter-data'],
   data() {
     return {
       selectedData: this.preselectedData,

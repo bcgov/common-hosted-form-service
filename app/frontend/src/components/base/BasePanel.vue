@@ -1,6 +1,6 @@
 <template>
   <v-card outlined flat>
-    <v-card-title v-if="this.$slots.title">
+    <v-card-title v-if="$slots.title">
       <slot name="title" />
     </v-card-title>
     <v-card-text>

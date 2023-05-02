@@ -39,8 +39,8 @@
               color="primary"
               text
               small
-              @click="onOpenPreviewDialog(item.componentName)"
               :disabled="canDisabled(item.componentName)"
+              @click="onOpenPreviewDialog(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-eye" />
               <span class="d-none d-sm-flex" style="font-size: 16px"
@@ -57,10 +57,10 @@
               :disabled="canDisabled(item.componentName)"
             >
               <v-switch
+                v-model="publish[index]"
                 small
                 color="success"
                 :input-value="isComponentPublish(item.componentName, index)"
-                v-model="publish[index]"
                 @change="onSwitchChange(item.componentName, index)"
               ></v-switch>
               <span
@@ -74,19 +74,19 @@
       </template>
     </v-data-table>
     <InformationLinkDialog
-      :showDialog="showDialog"
       v-if="showDialog"
-      :groupName="groupName"
-      :componentName="componentName"
-      @close-dialog="onDialog"
+      :show-dialog="showDialog"
+      :group-name="groupName"
+      :component-name="componentName"
       :component="component"
+      @close-dialog="onDialog"
     />
     <InformationLinkPreviewDialog
-      :showDialog="showPreviewDialog"
       v-if="showPreviewDialog"
-      @close-dialog="onPreviewDialog"
-      :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"
+      :show-dialog="showPreviewDialog"
+      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
       :component="component"
+      @close-dialog="onPreviewDialog"
     />
   </div>
 </template>
@@ -103,6 +103,17 @@ library.add(faPenToSquare, faEye);
 export default {
   name: 'GeneralLayout',
   components: { InformationLinkDialog, InformationLinkPreviewDialog },
+  props: {
+    layoutList: {
+      type: Array,
+      required: true,
+    },
+    componentsList: {
+      type: Array,
+      default: () => [],
+    },
+    groupName: String,
+  },
   data() {
     return {
       loading: false,
@@ -133,17 +144,6 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['fcProactiveHelpImageUrl']),
-  },
-  props: {
-    layoutList: {
-      type: Array,
-      required: true,
-    },
-    componentsList: {
-      type: Array,
-      default: () => [],
-    },
-    groupName: String,
   },
   methods: {
     ...mapActions('admin', [

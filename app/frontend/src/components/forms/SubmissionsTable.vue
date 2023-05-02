@@ -11,11 +11,11 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
                 class="mx-1"
                 color="primary"
                 icon
                 v-bind="attrs"
+                @click="showColumnsDialog = true"
                 v-on="on"
               >
                 <v-icon>view_column</v-icon>
@@ -49,16 +49,16 @@
       <v-spacer />
       <v-col cols="4" sm="4">
         <v-checkbox
-          class="pl-3"
           v-model="deletedOnly"
+          class="pl-3"
           label="Show deleted submissions"
           @click="refreshSubmissions"
         />
       </v-col>
       <v-col cols="4" sm="4">
         <v-checkbox
-          class="pl-3"
           v-model="currentUserOnly"
+          class="pl-3"
           label="Show my submissions"
           @click="refreshSubmissions"
         />
@@ -80,6 +80,7 @@
 
     <!-- table header -->
     <v-data-table
+      v-model="selectedSubmissions"
       class="submissions-table"
       :headers="HEADERS"
       item-key="submissionId"
@@ -87,20 +88,19 @@
       :search="search"
       :loading="loading"
       :show-select="!switchSubmissionView"
-      v-model="selectedSubmissions"
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
-      <template v-slot:[`header.event`]>
+      <template #[`header.event`]>
         <span v-if="!deletedOnly">
           <v-btn
-            @click="(showDeleteDialog = true), (singleSubmissionDelete = false)"
             color="red"
             :disabled="selectedSubmissions.length === 0"
             icon
+            @click="(showDeleteDialog = true), (singleSubmissionDelete = false)"
           >
             <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
+              <template #activator="{ on, attrs }">
                 <v-icon color="red" dark v-bind="attrs" v-on="on"
                   >remove_circle</v-icon
                 >
@@ -111,15 +111,15 @@
         </span>
         <span v-if="deletedOnly">
           <v-btn
-            @click="
-              (showRestoreDialog = true), (singleSubmissionRestore = false)
-            "
             color="red"
             :disabled="selectedSubmissions.length === 0"
             icon
+            @click="
+              (showRestoreDialog = true), (singleSubmissionRestore = false)
+            "
           >
             <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
+              <template #activator="{ on, attrs }">
                 <v-icon color="green" dark v-bind="attrs" v-on="on"
                   >restore_from_trash</v-icon
                 >
@@ -131,7 +131,7 @@
       </template>
 
       <template #[`item.date`]="{ item }">
-        {{ item.date | formatDateLong }}
+        {{ $filters.formatDateLong(item.date) }}
       </template>
       <template #[`item.status`]="{ item }">
         {{ item.status }}
@@ -160,17 +160,17 @@
       </template>
       <template #[`item.event`]="{ item }">
         <span>
-          <v-tooltip bottom v-if="!item.deleted">
+          <v-tooltip v-if="!item.deleted" bottom>
             <template #activator="{ on, attrs }">
               <v-btn
+                color="red"
+                icon
+                v-bind="attrs"
                 @click="
                   (showDeleteDialog = true),
                     (deleteItem = item),
                     (singleSubmissionDelete = true)
                 "
-                color="red"
-                icon
-                v-bind="attrs"
                 v-on="on"
               >
                 <v-icon>remove_circle</v-icon>
@@ -183,14 +183,14 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
+                color="green"
+                icon
+                v-bind="attrs"
                 @click="
                   restoreItem = item;
                   showRestoreDialog = true;
                   singleSubmissionRestore = true;
                 "
-                color="green"
-                icon
-                v-bind="attrs"
                 v-on="on"
               >
                 <v-icon>restore_from_trash</v-icon>
@@ -235,11 +235,11 @@
 
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
-        inputFilterPlaceholder="Search submission fields"
-        inputItemKey="value"
-        inputSaveButtonText="Save"
-        :inputData="FILTER_HEADERS"
-        :preselectedData="PRESELECTED_DATA"
+        input-filter-placeholder="Search submission fields"
+        input-item-key="value"
+        input-save-button-text="Save"
+        :input-data="FILTER_HEADERS"
+        :preselected-data="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -549,6 +549,9 @@ export default {
       }
     },
   },
+  mounted() {
+    this.refreshSubmissions();
+  },
   methods: {
     ...mapActions('form', [
       'fetchForm',
@@ -727,10 +730,6 @@ export default {
       this.showColumnsDialog = false;
       await this.populateSubmissionsTable();
     },
-  },
-
-  mounted() {
-    this.refreshSubmissions();
   },
 };
 </script>

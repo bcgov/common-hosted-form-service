@@ -1,34 +1,34 @@
 <template>
   <v-footer :class="{ 'gov-footer': true, 'd-print-none': formSubmitMode }">
-    <v-btn text id="footer-home" href="https://www.gov.bc.ca/">
+    <v-btn id="footer-home" text href="https://www.gov.bc.ca/">
       <span>Home</span>
     </v-btn>
     <v-btn
-      text
       id="footer-about"
+      text
       href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
     >
       <span>About gov.bc.ca</span>
     </v-btn>
-    <v-btn text id="footer-disclaimer" href="http://gov.bc.ca/disclaimer">
+    <v-btn id="footer-disclaimer" text href="http://gov.bc.ca/disclaimer">
       <span>Disclaimer</span>
     </v-btn>
-    <v-btn text id="footer-privacy" href="http://gov.bc.ca/privacy">
+    <v-btn id="footer-privacy" text href="http://gov.bc.ca/privacy">
       <span>Privacy</span>
     </v-btn>
     <v-btn
-      text
       id="footer-accessibility"
+      text
       href="http://gov.bc.ca/webaccessibility"
     >
       <span>Accessibility</span>
     </v-btn>
-    <v-btn text id="footer-copyright" href="http://gov.bc.ca/copyright">
+    <v-btn id="footer-copyright" text href="http://gov.bc.ca/copyright">
       <span>Copyright</span>
     </v-btn>
     <v-btn
-      text
       id="footer-contact"
+      text
       href="https://www2.gov.bc.ca/gov/content/home/contact-us"
     >
       <span>Contact Us</span>

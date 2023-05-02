@@ -71,7 +71,7 @@
 
       <!-- Created date  -->
       <template #[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.createdAt) }}
       </template>
 
       <!-- Created by  -->
@@ -114,8 +114,8 @@
                 color="primary"
                 class="mx-1"
                 icon
-                @click="onExportClick(item.id, item.isDraft)"
                 v-bind="attrs"
+                @click="onExportClick(item.id, item.isDraft)"
                 v-on="on"
               >
                 <v-icon>get_app</v-icon>
@@ -296,6 +296,12 @@ export default {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
   },
+  created() {
+    //check if the navigation to this page is from FormDesigner
+    if (this.fd) {
+      this.turnOnPublish();
+    }
+  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('form', [
@@ -432,12 +438,6 @@ export default {
         });
       }
     },
-  },
-  created() {
-    //check if the navigation to this page is from FormDesigner
-    if (this.fd) {
-      this.turnOnPublish();
-    }
   },
 };
 </script>

@@ -6,9 +6,9 @@
       data-cy="info_link_expansion_panels"
     >
       <v-expansion-panel
-        flat
         v-for="(groupName, index) in groupList"
         :key="index"
+        flat
         @click="onExpansionPanelClick(groupName)"
       >
         <v-expansion-panel-header>
@@ -18,9 +18,9 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <GeneralLayout
-            :groupName="groupName"
-            :layoutList="groupComponentsList"
-            :componentsList="
+            :group-name="groupName"
+            :layout-list="groupComponentsList"
+            :components-list="
               fcProactiveHelpGroupList && fcProactiveHelpGroupList[groupName]
                 ? fcProactiveHelpGroupList[groupName]
                 : []
@@ -109,6 +109,20 @@ export default {
       panelHeadStyle: new Map(),
     };
   },
+  computed: {
+    ...mapGetters('admin', ['fcProactiveHelp', 'fcProactiveHelpGroupList']),
+    groupList() {
+      return this.extractGroups();
+    },
+  },
+  watch: {
+    fcProactiveHelp() {
+      this.listFCProactiveHelp();
+    },
+  },
+  mounted() {
+    this.listFCProactiveHelp();
+  },
   methods: {
     ...mapActions('admin', ['listFCProactiveHelp']),
 
@@ -154,20 +168,6 @@ export default {
       }
       return groupComponents;
     },
-  },
-  computed: {
-    ...mapGetters('admin', ['fcProactiveHelp', 'fcProactiveHelpGroupList']),
-    groupList() {
-      return this.extractGroups();
-    },
-  },
-  watch: {
-    fcProactiveHelp() {
-      this.listFCProactiveHelp();
-    },
-  },
-  mounted() {
-    this.listFCProactiveHelp();
   },
 };
 </script>

@@ -8,7 +8,7 @@
           <h1>{{ form.name }}</h1>
           <p>
             <strong>Submitted:</strong>
-            {{ formSubmission.createdAt | formatDateLong }}
+            {{ $filters.formatDateLong(formSubmission.createdAt) }}
             <br />
             <strong>Confirmation ID:</strong>
             {{ formSubmission.confirmationId }}
@@ -27,7 +27,7 @@
           order-sm="2"
         >
           <span>
-            <PrintOptions :submissionId="submissionId" />
+            <PrintOptions :submission-id="submissionId" />
           </span>
           <span>
             <v-tooltip bottom>
@@ -49,7 +49,7 @@
               <span>View All Submissions</span>
             </v-tooltip>
           </span>
-          <DeleteSubmission @deleted="onDelete" :submissionId="submissionId" />
+          <DeleteSubmission :submission-id="submissionId" @deleted="onDelete" />
         </v-col>
       </v-row>
     </div>
@@ -82,16 +82,16 @@
               sm="6"
             >
               <span v-if="submissionReadOnly">
-                <AuditHistory :submissionId="submissionId" />
+                <AuditHistory :submission-id="submissionId" />
                 <v-tooltip bottom>
                   <template #activator="{ on, attrs }">
                     <v-btn
                       class="mx-1"
-                      @click="toggleSubmissionEdit(true)"
                       color="primary"
                       :disabled="isDraft"
                       icon
                       v-bind="attrs"
+                      @click="toggleSubmissionEdit(true)"
                       v-on="on"
                     >
                       <v-icon>mode_edit</v-icon>
@@ -111,11 +111,11 @@
             </v-col>
           </v-row>
           <FormViewer
-            :displayTitle="false"
             :key="reRenderSubmission"
-            :readOnly="submissionReadOnly"
-            :staffEditMode="true"
-            :submissionId="submissionId"
+            :display-title="false"
+            :read-only="submissionReadOnly"
+            :staff-edit-mode="true"
+            :submission-id="submissionId"
             @submission-updated="toggleSubmissionEdit(false)"
           />
         </v-card>
@@ -133,14 +133,14 @@
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Status</h2>
           <StatusPanel
-            :submissionId="submissionId"
-            :formId="form.id"
+            :submission-id="submissionId"
+            :form-id="form.id"
             @note-updated="refreshNotes"
             @draft-enabled="setDraft"
           />
         </v-card>
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
-          <NotesPanel :submissionId="submissionId" ref="notesPanel" />
+          <NotesPanel ref="notesPanel" :submission-id="submissionId" />
         </v-card>
       </v-col>
     </v-row>
@@ -185,6 +185,12 @@ export default {
       return NotificationTypes;
     },
   },
+  async mounted() {
+    await this.fetchSubmission({ submissionId: this.submissionId });
+    // get current user's permissions on associated form
+    await this.getFormPermissionsForUser(this.form.id);
+    this.loading = false;
+  },
   methods: {
     ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
     onDelete() {
@@ -205,12 +211,6 @@ export default {
       this.submissionReadOnly = !editing;
       this.reRenderSubmission += 1;
     },
-  },
-  async mounted() {
-    await this.fetchSubmission({ submissionId: this.submissionId });
-    // get current user's permissions on associated form
-    await this.getFormPermissionsForUser(this.form.id);
-    this.loading = false;
   },
 };
 </script>

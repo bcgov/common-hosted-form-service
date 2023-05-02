@@ -10,8 +10,8 @@
           <v-row justify="center" align="center">
             <v-col cols="12" sm="12">
               <v-radio-group
-                class="ml-3 my-0"
                 v-model="selectedIdp"
+                class="ml-3 my-0"
                 row
                 dense
                 fluid
@@ -30,8 +30,9 @@
         <v-row class="p-3">
           <v-col cols="12">
             <v-autocomplete
-              autocomplete="autocomplete_off"
               v-model="model"
+              v-model:search-input="searchUsers"
+              autocomplete="autocomplete_off"
               clearable
               dense
               :filter="filterObject"
@@ -40,7 +41,6 @@
               :label="autocompleteLabel"
               :loading="isLoading"
               return-object
-              :search-input.sync="searchUsers"
             >
               <!-- no data -->
               <template #no-data>
@@ -143,11 +143,11 @@
         <template #activator="{ on, attrs }">
           <v-btn
             class="mx-1"
-            @click="addingUsers = true"
             color="primary"
             :disabled="disabled"
             icon
             v-bind="attrs"
+            @click="addingUsers = true"
             v-on="on"
           >
             <v-icon>person_add</v-icon>
@@ -172,6 +172,7 @@ export default {
       default: false,
     },
   },
+  emits: ['new-users', 'adding-users'],
   data() {
     return {
       addingUsers: false,
@@ -183,28 +184,6 @@ export default {
       selectedRoles: [],
       showError: false,
     };
-  },
-  methods: {
-    // show users in dropdown that have a text match on multiple properties
-    filterObject(item, queryText) {
-      return Object.values(item)
-        .filter((v) => v)
-        .some((v) =>
-          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
-        );
-    },
-    save() {
-      if (this.selectedRoles.length === 0) {
-        this.showError = true;
-        return;
-      }
-      this.showError = false;
-      // emit user (object) to the parent component
-      this.$emit('new-users', [this.model], this.selectedRoles);
-      // reset search field
-      this.model = null;
-      this.addingUsers = false;
-    },
   },
   computed: {
     ...mapFields('form', ['form.idps']),
@@ -281,6 +260,28 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+  },
+  methods: {
+    // show users in dropdown that have a text match on multiple properties
+    filterObject(item, queryText) {
+      return Object.values(item)
+        .filter((v) => v)
+        .some((v) =>
+          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+        );
+    },
+    save() {
+      if (this.selectedRoles.length === 0) {
+        this.showError = true;
+        return;
+      }
+      this.showError = false;
+      // emit user (object) to the parent component
+      this.$emit('new-users', [this.model], this.selectedRoles);
+      // reset search field
+      this.model = null;
+      this.addingUsers = false;
     },
   },
 };

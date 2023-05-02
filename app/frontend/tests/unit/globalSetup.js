@@ -1,4 +1,4 @@
-import Vue from 'vue';
-import Vuetify from 'vuetify';
+import { config } from '@vue/test-utils';
+import { createVuetify } from 'vuetify';
 
-Vue.use(Vuetify);
+config.plugins.VueWrapper.install(createVuetify());

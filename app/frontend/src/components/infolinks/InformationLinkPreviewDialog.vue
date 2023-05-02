@@ -22,12 +22,12 @@
               </div>
             </v-col>
           </v-row>
-          <v-row class="mt-6" v-if="fcProactiveHelpImageUrl">
+          <v-row v-if="fcProactiveHelpImageUrl" class="mt-6">
             <v-col md="6">
               <div
+                ref="preview_text_field"
                 class="text"
                 data-cy="preview_text_field"
-                ref="preview_text_field"
               >
                 {{ component && component.description }}
               </div>
@@ -39,12 +39,12 @@
               ></v-img>
             </v-col>
           </v-row>
-          <v-row class="mt-6" v-else>
+          <v-row v-else class="mt-6">
             <v-col cols="12">
               <div
+                ref="preview_text_field"
                 class="text"
                 data-cy="preview_text_field"
-                ref="preview_text_field"
               >
                 {{ component && component.description }}
               </div>
@@ -85,25 +85,25 @@ library.add(faXmark, faSquareArrowUpRight);
 
 export default {
   name: 'InformationLinkPreviewDialog',
-
-  data() {
-    return {
-      dialog: this.showDialog,
-    };
-  },
   props: {
     showDialog: { type: Boolean, required: true },
     component: { type: Object },
     fcProactiveHelpImageUrl: undefined,
   },
-  methods: {
-    onCloseDialog() {
-      this.$emit('close-dialog');
-    },
+  emits: ['close-dialog'],
+  data() {
+    return {
+      dialog: this.showDialog,
+    };
   },
   watch: {
     showDialog() {
       this.dialog = this.showDialog;
+    },
+  },
+  methods: {
+    onCloseDialog() {
+      this.$emit('close-dialog');
     },
   },
 };

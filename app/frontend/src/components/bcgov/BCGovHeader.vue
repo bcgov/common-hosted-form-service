@@ -56,7 +56,7 @@ export default {
     appTitle() {
       return this.$route && this.$route.meta && this.$route.meta.title
         ? this.$route.meta.title
-        : process.env.VUE_APP_TITLE;
+        : import.meta.env.VITE_TITLE;
     },
     formSubmitMode() {
       // hide header content on form submitter pages

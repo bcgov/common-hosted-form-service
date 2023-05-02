@@ -3,12 +3,12 @@
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
+          v-clipboard:copy="copyText"
+          v-clipboard:success="clipboardSuccessHandler"
+          v-clipboard:error="clipboardErrorHandler"
           color="primary"
           :disabled="disabled"
           icon
-          v-clipboard="copyText"
-          v-clipboard:success="clipboardSuccessHandler"
-          v-clipboard:error="clipboardErrorHandler"
           v-bind="attrs"
           v-on="on"
         >
@@ -23,12 +23,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import Vue from 'vue';
-import { Clipboard as VueClipboard } from 'v-clipboard';
 import { NotificationTypes } from '@/utils/constants';
-
-VueClipboard.config.autoSetContainer = true;
-Vue.use(VueClipboard);
 
 export default {
   name: 'BaseCopyToClipboard',
@@ -53,6 +48,7 @@ export default {
       default: 'Copy to Clipboard',
     },
   },
+  emits: ['copied'],
   data() {
     return {
       clipSnackbar: {

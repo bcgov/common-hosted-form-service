@@ -68,9 +68,9 @@
           <BaseCopyToClipboard
             :disabled="!canReadSecret || !showSecret"
             class="ml-2"
-            :copyText="secret"
-            snackBarText="Secret copied to clipboard"
-            tooltipText="Copy secret to clipboard"
+            :copy-text="secret"
+            snack-bar-text="Secret copied to clipboard"
+            tooltip-text="Copy secret to clipboard"
           />
 
           <v-tooltip bottom>
@@ -166,6 +166,11 @@ export default {
       return this.apiKey && this.apiKey.secret ? this.apiKey.secret : undefined;
     },
   },
+  created() {
+    if (this.canGenerateKey) {
+      this.readKey();
+    }
+  },
   methods: {
     ...mapActions('form', ['deleteApiKey', 'generateApiKey', 'readApiKey']),
     async createKey() {
@@ -189,11 +194,6 @@ export default {
     showHideKey() {
       this.showSecret = !this.showSecret;
     },
-  },
-  created() {
-    if (this.canGenerateKey) {
-      this.readKey();
-    }
   },
 };
 </script>

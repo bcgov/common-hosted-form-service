@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Vue from 'vue';
+import { getCurrentInstance } from 'vue';
 
 /**
  * @function appAxios
@@ -9,8 +9,8 @@ import Vue from 'vue';
  */
 export function appAxios(timeout = 10000) {
   const axiosOptions = { timeout: timeout };
-  if (Vue.prototype.$config) {
-    const config = Vue.prototype.$config;
+  if (getCurrentInstance().config.globalProperties.$config) {
+    const config = getCurrentInstance().config.globalProperties.$config;
     axiosOptions.baseURL = `${config.basePath}/${config.apiPath}`;
   }
 
@@ -19,11 +19,13 @@ export function appAxios(timeout = 10000) {
   instance.interceptors.request.use(
     (cfg) => {
       if (
-        Vue.prototype.$keycloak &&
-        Vue.prototype.$keycloak.ready &&
-        Vue.prototype.$keycloak.authenticated
+        getCurrentInstance().config.globalProperties.$keycloak &&
+        getCurrentInstance().config.globalProperties.$keycloak.ready &&
+        getCurrentInstance().config.globalProperties.$keycloak.authenticated
       ) {
-        cfg.headers.Authorization = `Bearer ${Vue.prototype.$keycloak.token}`;
+        cfg.headers.Authorization = `Bearer ${
+          getCurrentInstance().config.globalProperties.$keycloak.token
+        }`;
       }
       return Promise.resolve(cfg);
     },

@@ -13,7 +13,7 @@
       </v-col>
       <!-- form name -->
       <v-col cols="12" order="3">
-        <h3>{{ this.form.name }}</h3>
+        <h3>{{ form.name }}</h3>
       </v-col>
     </v-row>
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
@@ -47,13 +47,6 @@ export default {
     ...mapGetters('form', ['form', 'permissions']),
     IDP: () => IdentityProviders,
   },
-  methods: {
-    ...mapActions('form', [
-      'fetchDrafts',
-      'fetchForm',
-      'getFormPermissionsForUser',
-    ]),
-  },
   async mounted() {
     this.loading = true;
     await Promise.all([
@@ -65,6 +58,13 @@ export default {
     if (this.permissions.includes(FormPermissions.DESIGN_READ))
       await this.fetchDrafts(this.f);
     this.loading = false;
+  },
+  methods: {
+    ...mapActions('form', [
+      'fetchDrafts',
+      'fetchForm',
+      'getFormPermissionsForUser',
+    ]),
   },
 };
 </script>

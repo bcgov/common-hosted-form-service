@@ -36,7 +36,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           app_title: Common Hosted Forms - PR-${{ github.event.number }}
           route_path: /pr-${{ github.event.number }}
-          app_contact: ${{ secrets.VUE_APP_CONTACT }}
+          app_contact: ${{ secrets.VITE_CONTACT }}
 
   deploy-pr-dev:
     name: Deploy Pull Request to Dev

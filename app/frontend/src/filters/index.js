@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import moment from 'moment';
 
 //
@@ -30,7 +29,3 @@ export function formatDateLong(value, withComma = true) {
     );
   }
 }
-
-// Define Global Vue Filters
-Vue.filter('formatDate', formatDate);
-Vue.filter('formatDateLong', formatDateLong);

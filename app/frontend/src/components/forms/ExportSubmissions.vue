@@ -4,10 +4,10 @@
       <template #activator="{ on, attrs }">
         <v-btn
           class="mx-1"
-          @click="openExportDialog"
           color="primary"
           icon
           v-bind="attrs"
+          @click="openExportDialog"
           v-on="on"
         >
           <v-icon>get_app</v-icon>
@@ -41,7 +41,7 @@
               <p class="subTitleObjectStyle">Select the submission date</p>
               <v-radio-group v-model="dataFields" hide-details="auto">
                 <v-radio label="All data/fields" :value="false">
-                  <template v-slot:label>
+                  <template #label>
                     <span class="radioboxLabelStyle">All data/fields</span>
                   </template>
                 </v-radio>
@@ -60,12 +60,12 @@
               <p class="subTitleObjectStyle">Select the submission date</p>
               <v-radio-group v-model="dateRange" hide-details="auto">
                 <v-radio label="All" :value="false">
-                  <template v-slot:label>
+                  <template #label>
                     <span class="radioboxLabelStyle">All</span>
                   </template>
                 </v-radio>
                 <v-radio label="Select Date range" :value="true">
-                  <template v-slot:label>
+                  <template #label>
                     <span class="radioboxLabelStyle">Select date range</span>
                   </template>
                 </v-radio>
@@ -85,24 +85,24 @@
                   offset-y
                   min-width="290px"
                 >
-                  <template v-slot:activator="{ on }">
+                  <template #activator="{ on }">
                     <label>From</label>
                     <v-text-field
                       v-model="startDate"
                       placeholder="yyyy-mm-dd"
                       append-icon="event"
-                      v-on:click:append="startDateMenu = true"
                       readonly
-                      v-on="on"
                       dense
                       outlined
+                      @click:append="startDateMenu = true"
+                      v-on="on"
                     ></v-text-field>
                   </template>
                   <v-date-picker
                     v-model="startDate"
                     data-test="picker-form-startDate"
-                    @input="startDateMenu = false"
                     :max="maxDate"
+                    @input="startDateMenu = false"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -117,24 +117,24 @@
                   offset-y
                   min-width="290px"
                 >
-                  <template v-slot:activator="{ on }">
+                  <template #activator="{ on }">
                     <label>To</label>
                     <v-text-field
                       v-model="endDate"
                       placeholder="yyyy-mm-dd"
                       append-icon="event"
-                      v-on:click:append="endDateMenu = true"
                       readonly
-                      v-on="on"
                       dense
                       outlined
+                      @click:append="endDateMenu = true"
+                      v-on="on"
                     ></v-text-field>
                   </template>
                   <v-date-picker
                     v-model="endDate"
                     data-test="picker-form-endDate"
-                    @input="endDateMenu = false"
                     :min="startDate"
+                    @input="endDateMenu = false"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -146,26 +146,26 @@
           </p>
           <v-radio-group v-model="exportFormat" hide-details="auto">
             <v-radio label="JSON" value="json">
-              <template v-slot:label>
+              <template #label>
                 <span class="radioboxLabelStyle">JSON</span>
               </template>
             </v-radio>
             <v-radio label="CSV" value="csv">
-              <template v-slot:label>
+              <template #label>
                 <span class="radioboxLabelStyle">CSV</span>
               </template>
             </v-radio>
           </v-radio-group>
-          <v-row class="mt-5" v-if="exportFormat === 'csv'">
+          <v-row v-if="exportFormat === 'csv'" class="mt-5">
             <v-col cols="6">
               <div class="subTitleObjectStyle">
                 Select the submission version
               </div>
               <v-select
+                v-model="versionSelected"
                 item-text="id"
                 item-value="version"
                 :items="versions"
-                v-model="versionSelected"
                 class="mt-0"
                 style="width: 25%; margin-top: 0px"
               ></v-select>
@@ -190,7 +190,7 @@
 
               <v-radio-group v-model="csvTemplates" hide-details="auto">
                 <v-radio label="A" value="flattenedWithBlankOut">
-                  <template v-slot:label>
+                  <template #label>
                     <span
                       class="radioboxLabelStyle"
                       style="display: flex; align-content: flex-start"
@@ -202,13 +202,13 @@
                   </template>
                 </v-radio>
                 <v-radio label="B" value="flattenedWithFilled">
-                  <template v-slot:label>
+                  <template #label>
                     <span class="radioboxLabelStyle">Template 2 </span>
                   </template>
                   <sup>Betas</sup>
                 </v-radio>
                 <v-radio label="C" value="unflattened">
-                  <template v-slot:label>
+                  <template #label>
                     <span class="radioboxLabelStyle">Template 3 </span>
                   </template>
                 </v-radio>
@@ -291,6 +291,20 @@ export default {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
   },
+  watch: {
+    startDate() {
+      this.endDate = moment(Date()).format('YYYY-MM-DD');
+    },
+    async exportFormat() {
+      this.updateVersions();
+    },
+    dateRange(value) {
+      if (!value) {
+        this.endDate = moment(Date()).format('YYYY-MM-DD');
+        this.startDate = moment(Date()).format('YYYY-MM-DD');
+      }
+    },
+  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     async openExportDialog() {
@@ -362,20 +376,6 @@ export default {
         } else {
           this.versionSelected = this.versions.sort((a, b) => a < b)[0];
         }
-      }
-    },
-  },
-  watch: {
-    startDate() {
-      this.endDate = moment(Date()).format('YYYY-MM-DD');
-    },
-    async exportFormat() {
-      this.updateVersions();
-    },
-    dateRange(value) {
-      if (!value) {
-        this.endDate = moment(Date()).format('YYYY-MM-DD');
-        this.startDate = moment(Date()).format('YYYY-MM-DD');
       }
     },
   },

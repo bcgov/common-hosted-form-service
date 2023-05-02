@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormViewer :submissionId="s" :readOnly="true" displayTitle>
+    <FormViewer :submission-id="s" :read-only="true" display-title>
       <template #alert="{ form }">
         <div class="mb-5">
           <h1 class="mb-5">
@@ -21,8 +21,8 @@
             <RequestReceipt
               class="d-print-none"
               :email="email"
-              :formName="form.name"
-              :submissionId="s"
+              :form-name="form.name"
+              :submission-id="s"
             />
           </div>
           <hr />
@@ -40,12 +40,12 @@ import RequestReceipt from '@/components/forms/RequestReceipt.vue';
 
 export default {
   name: 'FormView',
-  props: {
-    s: String,
-  },
   components: {
     FormViewer,
     RequestReceipt,
+  },
+  props: {
+    s: String,
   },
   computed: mapGetters('auth', ['email']),
 };

@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import { getCurrentInstance } from 'vue';
 import getRouter from '@/router';
 
 /**
@@ -22,16 +22,23 @@ export default {
     redirectUri: undefined,
   },
   getters: {
-    authenticated: () => Vue.prototype.$keycloak.authenticated,
+    authenticated: () =>
+      getCurrentInstance().config.globalProperties.$keycloak.authenticated,
     createLoginUrl: () => (options) =>
-      Vue.prototype.$keycloak.createLoginUrl(options),
+      getCurrentInstance().config.globalProperties.$keycloak.createLoginUrl(
+        options
+      ),
     createLogoutUrl: () => (options) =>
-      Vue.prototype.$keycloak.createLogoutUrl(options),
+      getCurrentInstance().config.globalProperties.$keycloak.createLogoutUrl(
+        options
+      ),
     email: () =>
-      Vue.prototype.$keycloak.tokenParsed
-        ? Vue.prototype.$keycloak.tokenParsed.email
+      getCurrentInstance().config.globalProperties.$keycloak.tokenParsed
+        ? getCurrentInstance().config.globalProperties.$keycloak.tokenParsed
+            .email
         : '',
-    fullName: () => Vue.prototype.$keycloak.fullName,
+    fullName: () =>
+      getCurrentInstance().config.globalProperties.$keycloak.fullName,
     hasResourceRoles: (_state, getters) => (resource, roles) => {
       if (!getters.authenticated) return false;
       if (!roles.length) return true; // No roles to check against
@@ -42,22 +49,33 @@ export default {
       return false; // There are roles to check, but nothing in token to check against
     },
     identityProvider: () =>
-      Vue.prototype.$keycloak.tokenParsed
-        ? Vue.prototype.$keycloak.tokenParsed.identity_provider
+      getCurrentInstance().config.globalProperties.$keycloak.tokenParsed
+        ? getCurrentInstance().config.globalProperties.$keycloak.tokenParsed
+            .identity_provider
         : null,
     isAdmin: (_state, getters) => getters.hasResourceRoles('chefs', ['admin']),
     isUser: (_state, getters) => getters.hasResourceRoles('chefs', ['user']),
-    keycloakReady: () => Vue.prototype.$keycloak.ready,
-    keycloakSubject: () => Vue.prototype.$keycloak.subject,
+    keycloakReady: () =>
+      getCurrentInstance().config.globalProperties.$keycloak.ready,
+    keycloakSubject: () =>
+      getCurrentInstance().config.globalProperties.$keycloak.subject,
     identityProviderIdentity: () =>
-      Vue.prototype.$keycloak.tokenParsed.idp_userid,
-    moduleLoaded: () => !!Vue.prototype.$keycloak,
-    realmAccess: () => Vue.prototype.$keycloak.tokenParsed.realm_access,
+      getCurrentInstance().config.globalProperties.$keycloak.tokenParsed
+        .idp_userid,
+    moduleLoaded: () =>
+      !!getCurrentInstance().config.globalProperties.$keycloak,
+    realmAccess: () =>
+      getCurrentInstance().config.globalProperties.$keycloak.tokenParsed
+        .realm_access,
     redirectUri: (state) => state.redirectUri,
-    resourceAccess: () => Vue.prototype.$keycloak.tokenParsed.resource_access,
-    token: () => Vue.prototype.$keycloak.token,
-    tokenParsed: () => Vue.prototype.$keycloak.tokenParsed,
-    userName: () => Vue.prototype.$keycloak.userName,
+    resourceAccess: () =>
+      getCurrentInstance().config.globalProperties.$keycloak.tokenParsed
+        .resource_access,
+    token: () => getCurrentInstance().config.globalProperties.$keycloak.token,
+    tokenParsed: () =>
+      getCurrentInstance().config.globalProperties.$keycloak.tokenParsed,
+    userName: () =>
+      getCurrentInstance().config.globalProperties.$keycloak.userName,
     user: (_state, getters) => {
       const user = {
         username: '',
@@ -92,7 +110,9 @@ export default {
   actions: {
     // TODO: Ideally move this to notifications module, but some strange interactions with lazy loading in unit tests
     errorNavigate(_store, msg) {
-      const router = getRouter(Vue.prototype.$config.basePath);
+      const router = getRouter(
+        getCurrentInstance().config.globalProperties.$config.basePath
+      );
       router.replace({ name: 'Error', params: { msg: msg } });
     },
     login({ commit, getters, rootGetters }, idpHint = undefined) {
@@ -117,7 +137,9 @@ export default {
           window.location.replace(getters.createLoginUrl(options));
         } else {
           // Navigate to internal login page if no idpHint specified
-          const router = getRouter(Vue.prototype.$config.basePath);
+          const router = getRouter(
+            getCurrentInstance().config.globalProperties.$config.basePath
+          );
           router.replace({
             name: 'Login',
             params: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
@@ -129,7 +151,9 @@ export default {
       if (getters.keycloakReady) {
         window.location.replace(
           getters.createLogoutUrl({
-            redirectUri: `${location.origin}/${Vue.prototype.$config.basePath}`,
+            redirectUri: `${location.origin}/${
+              getCurrentInstance().config.globalProperties.$config.basePath
+            }`,
           })
         );
       }

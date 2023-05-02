@@ -1,0 +1,265 @@
+
+> common-hosted-form-service-frontend@1.2.0 lint
+> eslint 'src/**/*.{js,vue}'
+
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/admin/AdminFormsTable.vue
+  112:15  error  'value' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  113:14  error  'formatDateLong' is not defined                                          no-undef
+  113:28  error  Insert `;`                                                               prettier/prettier
+  113:28  error  Missing semicolon                                                        semi
+  115:15  error  'value' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  115:23  error  Replace `⏎⏎····}` with `},`                                              prettier/prettier
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/admin/AdminUsersTable.vue
+  31:12  error    Filters are deprecated                                                    vue/no-deprecated-filter
+  75:3   warning  The "mounted" property should be above the "methods" property on line 72  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/admin/AdminVersions.vue
+  19:10  error  Filters are deprecated  vue/no-deprecated-filter
+  24:10  error  Filters are deprecated  vue/no-deprecated-filter
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/admin/AdministerForm.vue
+  147:3  warning  The "mounted" property should be above the "methods" property on line 128  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/admin/AdministerUser.vue
+  33:3  warning  The "mounted" property should be above the "methods" property on line 30  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/admin/FormComponentsProactiveHelp.vue
+  158:3  warning  The "computed" property should be above the "methods" property on line 112  vue/order-in-components
+  164:3  warning  The "watch" property should be above the "methods" property on line 112     vue/order-in-components
+  169:3  warning  The "mounted" property should be above the "methods" property on line 112   vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/base/BaseCopyToClipboard.vue
+  31:5   warning  Prop 'buttonText' requires default value to be set                        vue/require-default-prop
+  62:18  warning  The "copied" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/base/BaseDialog.vue
+  133:18  warning  The "close-dialog" event has been triggered but not declared on `emits` option     vue/require-explicit-emits
+  136:18  warning  The "continue-dialog" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+  139:18  warning  The "delete-dialog" event has been triggered but not declared on `emits` option    vue/require-explicit-emits
+  142:18  warning  The "custom-dialog" event has been triggered but not declared on `emits` option    vue/require-explicit-emits
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/base/BaseFilter.vue
+  96:18  warning  The "saving-filter-data" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+  99:18  warning  The "cancel-filter-data" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/base/BaseImagePopout.vue
+  34:5  warning  Prop 'width' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/base/BaseNotificationBar.vue
+  19:5  warning  Prop 'notification' requires default value to be set                            vue/require-default-prop
+  19:5  warning  Prop "notification" should define at least its type                             vue/require-prop-types
+  36:3  warning  The "mounted" property should be above the "methods" property on line 30        vue/order-in-components
+  42:3  warning  The "beforeUnmount" property should be above the "methods" property on line 30  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/designer/FloatButton.vue
+   38:9  error    'tag' property on 'router-link' component is deprecated. Use scoped slots instead  vue/no-deprecated-router-link-tag-prop
+   58:9  error    'tag' property on 'router-link' component is deprecated. Use scoped slots instead  vue/no-deprecated-router-link-tag-prop
+  183:5  warning  Prop 'formId' requires default value to be set                                     vue/require-default-prop
+  184:5  warning  Prop 'draftId' requires default value to be set                                    vue/require-default-prop
+  202:5  warning  Prop 'savedStatus' requires default value to be set                                vue/require-default-prop
+  219:5  warning  Prop 'positionOffset' requires default value to be set                             vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/designer/FormDesigner.vue
+   79:7  warning  v-on event '@addComponent' must be hyphenated                              vue/v-on-event-hyphenation
+   80:7  warning  v-on event '@removeComponent' must be hyphenated                           vue/v-on-event-hyphenation
+   81:7  warning  v-on event '@formLoad' must be hyphenated                                  vue/v-on-event-hyphenation
+  133:5  warning  Prop 'draftId' requires default value to be set                            vue/require-default-prop
+  134:5  warning  Prop 'formId' requires default value to be set                             vue/require-default-prop
+  147:5  warning  Prop 'versionId' requires default value to be set                          vue/require-default-prop
+  735:3  warning  The "watch" property should be above the "methods" property on line 321    vue/order-in-components
+  741:3  warning  The "created" property should be above the "methods" property on line 321  vue/order-in-components
+  748:3  warning  The "mounted" property should be above the "methods" property on line 321  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/designer/FormSettings.vue
+  349:17  warning  `<template>` require directive                  vue/no-lone-template
+  625:18  warning  `<template>` require directive                  vue/no-lone-template
+  877:5   warning  Prop 'formId' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/designer/FormViewer.vue
+    4:7   warning  `<template>` require directive                                                        vue/no-lone-template
+   88:11  warning  v-on event '@submitDone' must be hyphenated                                           vue/v-on-event-hyphenation
+   89:11  warning  v-on event '@submitButton' must be hyphenated                                         vue/v-on-event-hyphenation
+   90:11  warning  v-on event '@customEvent' must be hyphenated                                          vue/v-on-event-hyphenation
+  123:5   warning  Prop 'draftId' requires default value to be set                                       vue/require-default-prop
+  124:5   warning  Prop 'formId' requires default value to be set                                        vue/require-default-prop
+  138:5   warning  Prop 'submissionId' requires default value to be set                                  vue/require-default-prop
+  139:5   warning  Prop 'versionId' requires default value to be set                                     vue/require-default-prop
+  528:20  warning  The "submission-updated" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+  546:3   warning  The "created" property should be above the "methods" property on line 205             vue/order-in-components
+  561:3   warning  The "beforeUpdate" property should be above the "methods" property on line 205        vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/designer/FormViewerActions.vue
+  19:29  warning  The "save-draft" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+  83:5   warning  Prop 'permissions' requires default value to be set                           vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/designer/FormsTable.vue
+  183:3  warning  The "mounted" property should be above the "methods" property on line 171  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/ExportSubmissions.vue
+  368:3  warning  The "watch" property should be above the "methods" property on line 294  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/FormSubmission.vue
+   11:16  error    Filters are deprecated                                                     vue/no-deprecated-filter
+  172:5   warning  Prop 'submissionId' requires default value to be set                       vue/require-default-prop
+  209:3   warning  The "mounted" property should be above the "methods" property on line 188  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/PrintOptions.vue
+   93:5  warning  Prop 'submissionId' requires default value to be set                     vue/require-default-prop
+  217:3  warning  The "watch" property should be above the "methods" property on line 112  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/RequestReceipt.vue
+  87:3  warning  The "mounted" property should be above the "methods" property on line 57  vue/order-in-components
+  90:3  warning  The "props" property should be above the "data" property on line 51       vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/SubmissionsTable.vue
+  134:12  error    Filters are deprecated                                                     vue/no-deprecated-filter
+  732:3   warning  The "mounted" property should be above the "methods" property on line 552  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/manage/AddTeamMember.vue
+  203:18  warning  The "new-users" event has been triggered but not declared on `emits` option     vue/require-explicit-emits
+  209:3   warning  The "computed" property should be above the "methods" property on line 187      vue/order-in-components
+  235:3   warning  The "watch" property should be above the "methods" property on line 187         vue/order-in-components
+  249:18  warning  The "adding-users" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/manage/ApiKey.vue
+  193:3  warning  The "created" property should be above the "methods" property on line 169  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/manage/ManageForm.vue
+  18:29  error  Filters are deprecated                                vue/no-deprecated-filter
+  27:24  error  '.native' modifier on 'v-on' directive is deprecated  vue/no-deprecated-v-on-native-modifier
+  72:29  error  Filters are deprecated                                vue/no-deprecated-filter
+  77:29  error  Filters are deprecated                                vue/no-deprecated-filter
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/manage/ManageLayout.vue
+  57:3  warning  The "mounted" property should be above the "methods" property on line 50  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/manage/ManageVersions.vue
+   74:12  error    Filters are deprecated                                                     vue/no-deprecated-filter
+  436:3   warning  The "created" property should be above the "methods" property on line 299  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/manage/ShareForm.vue
+  142:42  error  Replace `import.meta.env.BASE_URL` with `⏎········import.meta.env.BASE_URL⏎······`  prettier/prettier
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/manage/TeamManagement.vue
+   81:64  warning  Variable 'HEADERS' is already declared in the upper scope                  vue/no-template-shadow
+  254:3   warning  The "data" property should be above the "computed" property on line 197    vue/order-in-components
+  554:3   warning  The "mounted" property should be above the "methods" property on line 275  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/AuditHistory.vue
+  38:18  error  Filters are deprecated  vue/no-deprecated-filter
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/DeleteSubmission.vue
+  66:18  warning  The "deleted" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/ManageSubmissionUsers.vue
+  113:15  warning  `<template>` require directive                                             vue/no-lone-template
+  323:3   warning  The "watch" property should be above the "methods" property on line 224    vue/order-in-components
+  365:3   warning  The "created" property should be above the "methods" property on line 224  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/MySubmissionsActions.vue
+  124:18  warning  The "draft-deleted" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/MySubmissionsTable.vue
+   83:12  error    Filters are deprecated                                                     vue/no-deprecated-filter
+   86:12  error    Filters are deprecated                                                     vue/no-deprecated-filter
+   89:12  error    Filters are deprecated                                                     vue/no-deprecated-filter
+  300:3   warning  The "mounted" property should be above the "methods" property on line 239  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/NotesPanel.vue
+   61:14  error    Filters are deprecated                                                    vue/no-deprecated-filter
+  134:3   warning  The "mounted" property should be above the "methods" property on line 93  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/StatusPanel.vue
+   33:45  warning  Variable 'on' is already declared in the upper scope                             vue/no-template-shadow
+   77:44  warning  'v-html' directive can lead to XSS attack                                        vue/no-v-html
+   78:47  warning  'v-html' directive can lead to XSS attack                                        vue/no-v-html
+   79:47  warning  'v-html' directive can lead to XSS attack                                        vue/no-v-html
+  135:39  warning  Variable 'on' is already declared in the upper scope                             vue/no-template-shadow
+  311:20  warning  The "draft-enabled" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+  411:24  warning  The "note-updated" event has been triggered but not declared on `emits` option   vue/require-explicit-emits
+  422:3   warning  The "created" property should be above the "methods" property on line 247        vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/StatusTable.vue
+  14:18  error    Filters are deprecated                                                    vue/no-deprecated-filter
+  65:3   warning  The "mounted" property should be above the "methods" property on line 46  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/UserDuplicateSubmission.vue
+  25:5  warning  Prop 'submissionId' requires default value to be set                      vue/require-default-prop
+  26:5  warning  Prop 'formId' requires default value to be set                            vue/require-default-prop
+  40:3  warning  The "mounted" property should be above the "methods" property on line 39  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/forms/submission/UserSubmission.vue
+  23:5  warning  Prop 'submissionId' requires default value to be set                      vue/require-default-prop
+  37:3  warning  The "mounted" property should be above the "methods" property on line 36  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/infolinks/GeneralLayout.vue
+   15:11  warning  `<template>` require directive                                        vue/no-lone-template
+  137:3   warning  The "props" property should be above the "data" property on line 106  vue/order-in-components
+  146:5   warning  Prop 'groupName' requires default value to be set                     vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/infolinks/InformationLinkDialog.vue
+  160:5   warning  Prop 'component' requires default value to be set                               vue/require-default-prop
+  162:5   warning  Prop 'groupName' requires default value to be set                               vue/require-default-prop
+  208:18  warning  The "close-dialog" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+  269:3   warning  The "watch" property should be above the "methods" property on line 200         vue/order-in-components
+  277:3   warning  The "computed" property should be above the "watch" property on line 269        vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/components/infolinks/InformationLinkPreviewDialog.vue
+   90:5   warning  Prop 'component' requires default value to be set                               vue/require-default-prop
+  106:18  warning  The "close-dialog" event has been triggered but not declared on `emits` option  vue/require-explicit-emits
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/Login.vue
+  46:3  warning  The "computed" property should be above the "created" property on line 42  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/admin/Form.vue
+  17:5  warning  Prop 'f' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/admin/User.vue
+  17:5  warning  Prop 'u' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/form/Create.vue
+   71:3  warning  The "data" property should be above the "computed" property on line 67          vue/order-in-components
+   87:3  warning  The "watch" property should be above the "methods" property on line 80          vue/order-in-components
+   93:3  warning  The "created" property should be above the "methods" property on line 80        vue/order-in-components
+   96:3  warning  The "mounted" property should be above the "methods" property on line 80        vue/order-in-components
+  103:3  warning  The "beforeRouteLeave" property should be above the "data" property on line 71  vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/form/Design.vue
+  27:5  warning  Prop 'd' requires default value to be set                                        vue/require-default-prop
+  28:5  warning  Prop 'f' requires default value to be set                                        vue/require-default-prop
+  30:5  warning  Prop 'v' requires default value to be set                                        vue/require-default-prop
+  31:5  warning  Prop 'svs' requires default value to be set                                      vue/require-default-prop
+  46:3  warning  The "computed" property should be above the "mounted" property on line 37        vue/order-in-components
+  50:3  warning  The "beforeRouteLeave" property should be above the "props" property on line 26  vue/order-in-components
+  59:3  warning  The "beforeMount" property should be above the "methods" property on line 43     vue/order-in-components
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/form/Manage.vue
+  26:5  warning  Prop 'd' requires default value to be set   vue/require-default-prop
+  29:5  warning  Prop 'fd' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/form/Preview.vue
+  32:5  warning  Prop 'd' requires default value to be set  vue/require-default-prop
+  33:5  warning  Prop 'f' requires default value to be set  vue/require-default-prop
+  34:5  warning  Prop 'v' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/form/Submit.vue
+  14:5  warning  Prop 'f' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/form/Success.vue
+  48:5  warning  Prop 's' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/form/View.vue
+  17:5  warning  Prop 's' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/user/SubmissionDraftEdit.vue
+  14:5  warning  Prop 's' requires default value to be set  vue/require-default-prop
+
+/Users/jachung/Documents/GitHub/common-hosted-form-service/app/frontend/src/views/user/SubmissionDuplicate.vue
+  18:5  warning  Prop 's' requires default value to be set  vue/require-default-prop
+  19:5  warning  Prop 'f' requires default value to be set  vue/require-default-prop
+
+✖ 149 problems (25 errors, 124 warnings)
+  4 errors and 0 warnings potentially fixable with the `--fix` option.
+

@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h1 class="mt-6">Administer User</h1>
-    <AdministerUser :userId="u" />
+    <AdministerUser :user-id="u" />
   </v-container>
 </template>
 

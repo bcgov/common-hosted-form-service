@@ -4,10 +4,10 @@
       <template #activator="{ on, attrs }">
         <v-btn
           class="mx-1"
-          @click="loadHistory"
           color="primary"
           icon
           v-bind="attrs"
+          @click="loadHistory"
           v-on="on"
         >
           <v-icon>history</v-icon>
@@ -35,7 +35,7 @@
             class="status-table"
           >
             <template #[`item.actionTimestamp`]="{ item }">
-              {{ item.actionTimestamp | formatDateLong }}
+              {{ $filters.formatDateLong(item.actionTimestamp) }}
             </template>
           </v-data-table>
         </v-card-text>
