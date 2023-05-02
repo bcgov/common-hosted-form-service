@@ -412,11 +412,13 @@ export default {
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
-        this.sbdMessage.message = error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
+        this.sbdMessage.message =
+          error.response.data == undefined || error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
         this.sbdMessage.error = true;
         this.sbdMessage.upload_state = 10;
         this.block = false;
-        this.sbdMessage.response = error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
+        this.sbdMessage.response =
+          error.response.data == undefined || error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
         this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
         this.saving = false;
         this.addNotification({
@@ -430,13 +432,24 @@ export default {
       await response.forEach((item, index) => {
         if (item != null && item != undefined) {
           item.details.forEach((obj) => {
-            const error = Object({
-              ' submission': index,
-              ' key': obj.context.key,
-              ' label': obj.context.label,
-              ' validator': obj.context.validator,
-              error_message: obj.message,
-            });
+            let error = {};
+            if (obj.context != undefined) {
+              error = Object({
+                ' submission': index,
+                ' key': obj.context.key,
+                ' label': obj.context.label,
+                ' validator': obj.context.validator,
+                error_message: obj.message,
+              });
+            } else {
+              error = Object({
+                ' submission': index,
+                ' key': null,
+                ' label': null,
+                ' validator': null,
+                error_message: obj.message,
+              });
+            }
             newResponse.push(error);
           });
         }
