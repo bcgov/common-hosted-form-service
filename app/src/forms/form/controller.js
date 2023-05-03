@@ -18,7 +18,7 @@ module.exports = {
 
   exportWithFields: async (req, res, next) => {
     try {
-      const result = await exportService.export(req.params.formId, req.body);
+      const result = await exportService.export(req.params.formId, req.body, req.currentUser, req.headers.referer);
       ['Content-Disposition', 'Content-Type'].forEach((h) => {
         res.setHeader(h, result.headers[h.toLowerCase()]);
       });
