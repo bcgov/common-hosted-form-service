@@ -412,20 +412,29 @@ export default {
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
       } catch (error) {
-        this.sbdMessage.message =
-          error.response.data == undefined || error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
-        this.sbdMessage.error = true;
-        this.sbdMessage.upload_state = 10;
-        this.block = false;
-        this.sbdMessage.response =
-          error.response.data == undefined || error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
-        this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
         this.saving = false;
+        this.block = false;
+        this.setFinalError(error);
         this.addNotification({
           message: this.sbdMessage.message,
           consoleError: `Error saving files. Filename: ${this.json_csv.file_name}. Error: ${error}`,
         });
       }
+    },
+    async setFinalError(error) {
+      if (error.response.data != undefined ) {
+          this.sbdMessage.message = error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
+          this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
+      } else {
+          this.sbdMessage.message = 'An error occurred submitting this form';
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response =  [{ error_message: 'An error occurred submitting this form' }];
+          this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
+     }
     },
     async formatResponse(response) {
       let newResponse = [];
