@@ -3,6 +3,7 @@ import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import {
   apiKeyService,
   formService,
+  fileService,
   rbacService,
   userService,
 } from '@/services';
@@ -77,6 +78,10 @@ export default {
     fcProactiveHelpGroupList: {},
     imageList: new Map(),
     fcProactiveHelpImageUrl: '',
+    downloadedFile: {
+      data: null,
+      headers: null,
+    },
   },
   getters: {
     getField, // vuex-map-fields
@@ -96,6 +101,7 @@ export default {
     builder: (state) => state.builder,
     fcProactiveHelpGroupList: (state) => state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
+    downloadedFile: (state) => state.downloadedFile,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -150,6 +156,12 @@ export default {
     },
     SET_FCPROACTIVEHELPIMAGEURL(state, fcProactiveHelpImageUrl) {
       state.fcProactiveHelpImageUrl = fcProactiveHelpImageUrl;
+    },
+    SET_DOWNLOADEDFILE_DATA(state, downloadedFile) {
+      state.downloadedFile.data = downloadedFile;
+    },
+    SET_DOWNLOADEDFILE_HEADERS(state, headers) {
+      state.downloadedFile.headers = headers;
     },
   },
   actions: {
@@ -785,6 +797,24 @@ export default {
       if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       window.onbeforeunload = isDirty ? () => true : null;
       commit('SET_FORM_DIRTY', isDirty);
+    },
+    async downloadFile({ commit, dispatch }, fileId) {
+      try {
+        commit('SET_DOWNLOADEDFILE_DATA', null);
+        commit('SET_DOWNLOADEDFILE_HEADERS', null);
+        const response = await fileService.getFile(fileId);
+        commit('SET_DOWNLOADEDFILE_DATA', response.data);
+        commit('SET_DOWNLOADEDFILE_HEADERS', response.headers);
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: 'An error occurred while downloading file',
+            consoleError: 'Error downloading file',
+          },
+          { root: true }
+        );
+      }
     },
   },
 };

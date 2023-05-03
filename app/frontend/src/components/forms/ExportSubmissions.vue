@@ -284,7 +284,12 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
-import { FormPermissions } from '@/utils/constants';
+import {
+  NotificationTypes,
+  ExportLargeData,
+  FormPermissions,
+} from '@/utils/constants';
+
 import {
   faXmark,
   faSquareArrowUpRight,
@@ -343,7 +348,10 @@ export default {
       'userFormPreferences',
       'permissions',
       'formFields',
+      'submissionList',
     ]),
+
+    ...mapGetters('auth', ['email']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
@@ -405,6 +413,19 @@ export default {
                 .utc()
                 .format()
             : undefined;
+
+        let emailExport = false;
+        if (
+          this.submissionList.length > ExportLargeData.MAX_RECORDS ||
+          this.formFields.length > ExportLargeData.MAX_FIELDS
+        ) {
+          this.dialog = false;
+          emailExport = true;
+          this.addNotification({
+            ...NotificationTypes.SUCCESS,
+            message: `Export in progress... An email will be sent to ${this.email} containing a link to download your data when it is ready.`,
+          });
+        }
         const response = await formService.exportSubmissions(
           this.form.id,
           this.exportFormat,
@@ -416,9 +437,11 @@ export default {
             // deleted: true,
             // drafts: true
           },
-          fieldToExport
+          fieldToExport,
+          emailExport
         );
-        if (response && response.data) {
+
+        if (response && response.data && !emailExport) {
           const blob = new Blob([response.data], {
             type: response.headers['content-type'],
           });
@@ -432,7 +455,7 @@ export default {
           a.click();
           document.body.removeChild(a);
           this.dialog = false;
-        } else {
+        } else if (response && !response.data && !emailExport) {
           throw new Error('No data in response from exportSubmissions call');
         }
       } catch (error) {
@@ -536,6 +559,7 @@ export default {
   letter-spacing: 0px !important;
   color: #000000 !important;
 }
+
 .subTitleObjectStyle {
   text-align: left !important;
   font-style: normal !important;
@@ -546,6 +570,7 @@ export default {
   letter-spacing: 0px !important;
   color: #000000 !important;
 }
+
 .radioboxLabelStyle {
   text-align: left !important;
   font-style: normal !important;

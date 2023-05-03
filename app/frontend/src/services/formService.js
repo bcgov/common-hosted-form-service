@@ -384,6 +384,7 @@ export default {
     versionSelected,
     preference,
     fields,
+    emailExport = false,
     options = {}
   ) {
     return appAxios().post(
@@ -395,6 +396,7 @@ export default {
         type: 'submissions',
         preference: preference,
         fields: fields,
+        emailExport,
         ...options,
       },
       {
@@ -431,7 +433,7 @@ export default {
     );
   },
 
-  /**
+  /**a
    * @function getSubmissionStatuses
    * Get the current status history associated with the submission
    * @param {string} submissionId The form submission identifier
