@@ -85,6 +85,20 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
+        path: '/alert',
+        name: 'Alert',
+        component: () =>
+          import(
+            /* webpackChunkName: "alert" */
+            '@/components/bcgov/BCGovAlertBanner.vue'
+          ),
+        meta: {
+          formSubmitMode: true,
+          hasLogin: true,
+        },
+        props: createProps,
+      },
+      {
         path: '/error',
         name: 'Error',
         component: () =>
@@ -94,6 +108,26 @@ export default function getRouter(basePath = '/') {
           hasLogin: true,
         },
         props: createProps,
+      },
+      {
+        path: '/file',
+        component: () =>
+          import(/* webpackChunkName: "file" */ '@/views/File.vue'),
+        children: [
+          {
+            path: 'download',
+            name: 'Download',
+            component: () =>
+              import(
+                /* webpackChunkName: "download" */ '@/views/file/Download.vue'
+              ),
+            meta: {
+              requiresAuth: true,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+        ],
       },
       {
         path: '/form',

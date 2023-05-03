@@ -80,13 +80,13 @@
       no-data-text="You have no submissions"
     >
       <template #[`item.lastEdited`]="{ item }">
-        {{ item.lastEdited | formatDateLong(false) }}
+        {{ item.lastEdited | formatDateLong }}
       </template>
       <template #[`item.submittedDate`]="{ item }">
-        {{ item.submittedDate | formatDateLong(false) }}
+        {{ item.submittedDate | formatDateLong }}
       </template>
       <template #[`item.completedDate`]="{ item }">
-        {{ item.completedDate | formatDateLong(false) }}
+        {{ item.completedDate | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
         <MySubmissionsActions
@@ -109,6 +109,7 @@
             (h) => !filterIgnore.some((fd) => fd.value === h.value)
           )
         "
+        :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -220,6 +221,11 @@ export default {
         );
       return headers;
     },
+    PRESELECTED_DATA() {
+      return this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
+    },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
     },
@@ -235,7 +241,8 @@ export default {
 
     // Status columns in the table
     getCurrentStatus(record) {
-      // Current status is most recent status (top in array, query returns in status created desc)
+      // Current status is most recent status (top in array, query returns in
+      // status created desc)
       const status =
         record.submissionStatus && record.submissionStatus[0]
           ? record.submissionStatus[0].code

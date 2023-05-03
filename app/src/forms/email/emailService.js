@@ -330,10 +330,7 @@ const service = {
    */
   statusCompleted: async (formId, currentStatus, submissionUserEmail, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, {
-        submissionUserEmail,
-        emailContent,
-      });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, { submissionUserEmail, emailContent });
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {
@@ -357,10 +354,7 @@ const service = {
    */
   statusRevising: async (formId, currentStatus, submissionUserEmail, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, {
-        submissionUserEmail,
-        emailContent,
-      });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, { submissionUserEmail, emailContent });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
@@ -413,9 +407,7 @@ const service = {
    */
   submissionConfirmation: async (formId, submissionId, body, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, {
-        body: body,
-      });
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, { body: body });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
@@ -443,6 +435,54 @@ const service = {
       log.error(e.message, {
         function: obj.state,
         formId: obj.form.id,
+      });
+      throw e;
+    }
+  },
+
+  /**
+   * @function submissionExportLink
+   * Email with the link to the Form submissions export file
+   * @param {string} formId
+   * @param {string} submissionId
+   * @param {object} body
+   * @param {string} referer
+   * @param {string} fileId
+   * @returns The result of the email merge operation
+   */
+  submissionExportLink: async (formId, submissionId, body, referer, fileId) => {
+    try {
+      const form = await formService.readForm(formId);
+      const contextToVal = [body.to];
+      const userTypePath = 'file/download';
+      const bodyTemplate = 'file-download-ready.html';
+      const configData = {
+        bodyTemplate: bodyTemplate,
+        title: `${form.name} submissions export`,
+        subject: `${form.name} submissions export`,
+        priority: 'normal',
+        messageLinkText: 'You can download your submissions exports by visiting the following link:',
+        form,
+      };
+      const contexts = [
+        {
+          context: {
+            form: configData.form,
+            messageLinkText: configData.messageLinkText,
+            messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?id=${fileId}`,
+            title: configData.title,
+          },
+          to: contextToVal,
+        },
+      ];
+
+      return service._sendEmailTemplate(configData, contexts);
+    } catch (e) {
+      log.error(e.message, {
+        function: EmailTypes.SUBMISSION_EXPORT,
+        formId: formId,
+        body: body,
+        referer: referer,
       });
       throw e;
     }
