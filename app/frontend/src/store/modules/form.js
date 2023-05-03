@@ -68,6 +68,7 @@ export default {
         data: {},
       },
     },
+
     permissions: [],
     roles: [],
     submissionList: [],
@@ -77,6 +78,7 @@ export default {
     fcProactiveHelpGroupList: {},
     imageList: new Map(),
     fcProactiveHelpImageUrl: '',
+    multiLanguage: '',
   },
   getters: {
     getField, // vuex-map-fields
@@ -96,6 +98,7 @@ export default {
     builder: (state) => state.builder,
     fcProactiveHelpGroupList: (state) => state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
+    multiLanguage: (state) => state.multiLanguage,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -150,6 +153,9 @@ export default {
     },
     SET_FCPROACTIVEHELPIMAGEURL(state, fcProactiveHelpImageUrl) {
       state.fcProactiveHelpImageUrl = fcProactiveHelpImageUrl;
+    },
+    SET_MULTI_LANGUAGE(state, multiLanguage) {
+      state.multiLanguage = multiLanguage;
     },
   },
   actions: {
@@ -785,6 +791,9 @@ export default {
       if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       window.onbeforeunload = isDirty ? () => true : null;
       commit('SET_FORM_DIRTY', isDirty);
+    },
+    async setMultiLanguage({ commit }, multiLanguage) {
+      commit('SET_MULTI_LANGUAGE', multiLanguage);
     },
   },
 };

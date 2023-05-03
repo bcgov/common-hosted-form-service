@@ -11,7 +11,7 @@ describe('GeneralLayout.vue', () => {
   it('isComponentPublish()', async () => {
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
-      stubs: ['InformationLinkDialog','InformationLinkPreviewDialog'],
+      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
       propsData: {
         componentsList: {
           type:Array,
@@ -39,7 +39,7 @@ describe('GeneralLayout.vue', () => {
 
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
-      stubs: ['InformationLinkDialog','InformationLinkPreviewDialog'],
+      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
       propsData: {
         componentsList: {
           type:Array,
@@ -63,7 +63,7 @@ describe('GeneralLayout.vue', () => {
 
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
-      stubs: ['InformationLinkDialog','InformationLinkPreviewDialog'],
+      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
       propsData: {
         componentsList: {
           type:Array,
@@ -86,7 +86,7 @@ describe('GeneralLayout.vue', () => {
 
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
-      stubs: ['InformationLinkDialog','InformationLinkPreviewDialog'],
+      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
       propsData: {
         componentsList: {
           type:Array,

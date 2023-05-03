@@ -154,7 +154,7 @@ library.add(faCloudArrowUp);
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: 'InformationLinkDialog',
+  name: 'ProactiveHelpDialog',
   data() {
     return {
       errors: [],

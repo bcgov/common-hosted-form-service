@@ -80,7 +80,7 @@
       class="form-designer"
       @formLoad="onFormLoad"
     />
-    <InformationLinkPreviewDialog
+    <ProactiveHelpPreviewDialog
       :showDialog="showHelpLinkDialog"
       @close-dialog="onShowClosePreveiwDialog"
       :component="component"
@@ -119,16 +119,17 @@ import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
+import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
+import formioIl8next from '@/internationalization/formio/formio.json';
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
     FloatButton,
-    InformationLinkPreviewDialog,
+    ProactiveHelpPreviewDialog,
   },
   props: {
     draftId: String,
@@ -193,9 +194,10 @@ export default {
     ...mapGetters('form', [
       'fcProactiveHelpGroupList',
       'fcProactiveHelpImageUrl',
+      'multiLanguage',
+      'builder',
     ]),
     ...mapGetters('auth', ['tokenParsed', 'user']),
-    ...mapGetters('form', ['builder']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
@@ -211,6 +213,7 @@ export default {
       'form.versions',
       'form.isDirty',
     ]),
+
     ID_MODE() {
       return IdentityMode;
     },
@@ -311,6 +314,8 @@ export default {
             },
           },
         },
+        language: this.multiLanguage,
+        i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
           token: this.tokenParsed,
@@ -749,6 +754,9 @@ export default {
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
+      this.reRenderFormIo += 1;
+    },
+    multiLanguage() {
       this.reRenderFormIo += 1;
     },
   },
