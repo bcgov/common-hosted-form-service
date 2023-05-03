@@ -42,6 +42,7 @@ export default {
   data: () => {
     return {
       language: 'English',
+      lang: 'fr',
       languageIndex: 0,
       items: [
         { title: 'English', keyword: 'en' },
@@ -51,10 +52,12 @@ export default {
   },
 
   methods: {
-    ...mapActions('auth', ['login', 'logout']),
+    ...mapActions('form', ['setMultiLanguage']),
     languageSelected(lang) {
       this.language = lang.title;
       this.$root.$i18n.locale = lang.keyword;
+      this.$vuetify.lang.current = lang.keyword;
+      this.setMultiLanguage(lang.keyword);
     },
   },
 };

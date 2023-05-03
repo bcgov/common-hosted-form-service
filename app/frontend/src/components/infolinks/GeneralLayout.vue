@@ -73,7 +73,7 @@
         </div>
       </template>
     </v-data-table>
-    <InformationLinkDialog
+    <ProactiveHelpDialog
       :showDialog="showDialog"
       v-if="showDialog"
       :groupName="groupName"
@@ -81,7 +81,7 @@
       @close-dialog="onDialog"
       :component="component"
     />
-    <InformationLinkPreviewDialog
+    <ProactiveHelpPreviewDialog
       :showDialog="showPreviewDialog"
       v-if="showPreviewDialog"
       @close-dialog="onPreviewDialog"
@@ -95,14 +95,14 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { mapActions, mapGetters } from 'vuex';
 import { faPenToSquare, faEye } from '@fortawesome/free-solid-svg-icons';
-import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
-import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
+import ProactiveHelpDialog from '@/components/infolinks/ProactiveHelpDialog.vue';
+import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
 
 library.add(faPenToSquare, faEye);
 
 export default {
   name: 'GeneralLayout',
-  components: { InformationLinkDialog, InformationLinkPreviewDialog },
+  components: { ProactiveHelpDialog, ProactiveHelpPreviewDialog },
   data() {
     return {
       loading: false,

@@ -27,6 +27,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
+console.log('------------>>>aa--->> ', vuetify);
 Vue.config.productionTip = false;
 
 NProgress.configure({ showSpinner: false });

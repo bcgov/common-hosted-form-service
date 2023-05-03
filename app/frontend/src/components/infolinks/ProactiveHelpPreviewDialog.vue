@@ -84,7 +84,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark, faSquareArrowUpRight);
 
 export default {
-  name: 'InformationLinkPreviewDialog',
+  name: 'ProactiveHelpPreviewDialog',
 
   data() {
     return {

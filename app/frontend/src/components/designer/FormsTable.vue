@@ -3,7 +3,7 @@
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>My Forms</h1>
+        <h1>{{ $t('formsTable.myForms') }}</h1>
       </v-col>
       <!-- buttons -->
       <v-col
@@ -22,7 +22,7 @@
               </v-btn>
             </router-link>
           </template>
-          <span>Create a New Form</span>
+          <span>{{ $t('formsTable.createNewForm') }}</span>
         </v-tooltip>
       </v-col>
     </v-row>
@@ -35,7 +35,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            :label="$t('formsTable.createNewForm')"
             single-line
             hide-details
             class="pb-5"
