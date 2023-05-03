@@ -358,7 +358,8 @@ export default {
       if (this.allowSubmitterToUploadFile && !this.draftId) this.jsonManager();
     },
     formChange(e) {
-      if (e.changed != undefined) {
+      console.log(e);
+      if (e.changed != undefined && !e.changed.flags.fromSubmission) {
         this.formDataEntered = true;
       }
     },
@@ -422,19 +423,19 @@ export default {
       }
     },
     async setFinalError(error) {
-      if (error.response.data != undefined ) {
-          this.sbdMessage.message = error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
-          this.sbdMessage.error = true;
-          this.sbdMessage.upload_state = 10;
-          this.sbdMessage.response = error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
-          this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
+      if (error.response.data != undefined) {
+        this.sbdMessage.message = error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
+        this.sbdMessage.error = true;
+        this.sbdMessage.upload_state = 10;
+        this.sbdMessage.response = error.response.data.reports == undefined ? [] : await this.formatResponse(error.response.data.reports);
+        this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
       } else {
-          this.sbdMessage.message = 'An error occurred submitting this form';
-          this.sbdMessage.error = true;
-          this.sbdMessage.upload_state = 10;
-          this.sbdMessage.response =  [{ error_message: 'An error occurred submitting this form' }];
-          this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
-     }
+        this.sbdMessage.message = 'An error occurred submitting this form';
+        this.sbdMessage.error = true;
+        this.sbdMessage.upload_state = 10;
+        this.sbdMessage.response = [{ error_message: 'An error occurred submitting this form' }];
+        this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
+      }
     },
     async formatResponse(response) {
       let newResponse = [];
@@ -473,6 +474,7 @@ export default {
       try {
         this.saving = true;
         const response = await this.sendSubmission(true, this.submission);
+        this.formDataEntered = false;
         if (this.submissionId) {
           // Editing an existing draft
           // Update this route with saved flag

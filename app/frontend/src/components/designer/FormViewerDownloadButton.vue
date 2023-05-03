@@ -7,7 +7,7 @@
           To ensure successful uploading of multiple drafts, please download and utilize the provided template.
           <span class="link">
             <vue-blob-json-csv
-              tag-name="i"
+              tag-name="b"
               file-type="json"
               :file-name="json_csv.file_name"
               title="Download "
@@ -43,24 +43,23 @@
             </v-col>
           </v-row>
         </div>
-        <div class="wz-bottom">
-          <div class="message-block" v-if="!progress && response.upload_state == 10">
+        <v-row class="p-1">
+          <v-col cols="12" md="12" class="message-block" v-if="!progress && response.upload_state == 10">
+            <hr v-if="response.error && response.response.length > 0" />
             <span>Report: </span>
             <p :class="txt_color">
               <v-icon v-if="response.error" color="red">close</v-icon>
               <v-icon v-if="!response.error" color="green">check</v-icon>
               {{ response.message }}
             </p>
-          </div>
-        </div>
-        <v-row class="p-1">
+          </v-col>
           <v-col cols="12" md="12">
-            <hr v-if="response.error && response.response.length > 0" />
-            <p style="text-align: justify" v-if="response.error && response.response.length > 0">
+            <p style="text-align: justify; line-height: 1.2" v-if="response.error && response.response.length > 0">
               Please download the draft submission report and ensure that the data is entered correctly.
+              <br />
               <span class="link">
                 <vue-blob-json-csv
-                  tag-name="i"
+                  tag-name="b"
                   file-type="csv"
                   :file-name="response.file_name"
                   title="Download report "
@@ -71,10 +70,8 @@
               </span>
             </p>
           </v-col>
-        </v-row>
-        <v-row v-if="file && !progress && response.error && response.response.length > 0">
-          <v-col cols="12" md="12">
-            <span class="m-2 pull-right">
+          <v-col cols="12" md="12" v-if="file && !progress && response.error && response.response.length > 0">
+            <span class="m-1 pull-right">
               <v-btn @click="resetUpload" color="primary">
                 <span>Upload new file</span>
               </v-btn>
@@ -308,11 +305,15 @@ export default {
     width: 100%;
     color: #38598a;
   }
+  .link {
+    cursor: pointer;
+    b {
+      color: #003366;
+    }
+  }
   .worker-zone {
-    position: relative;
     width: 380px;
-    min-height: 200px;
-    padding: 0.05%;
+    min-height: 150px;
     text-align: center;
     font-family: 'Quicksand', sans-serif;
     font-size: 16px;
@@ -321,15 +322,16 @@ export default {
     box-shadow: -4px 18px 126px -71px rgba(0, 0, 0, 0.62);
     -webkit-box-shadow: -4px 18px 126px -71px rgba(0, 0, 0, 0.62);
     -moz-box-shadow: -4px 18px 126px -71px rgba(0, 0, 0, 0.62);
+    display: inline-block;
     .wz-top {
-      width: 360px;
-      min-height: 48px;
+      position: relative;
+      width: 98%;
+      min-height: 40px;
       margin-left: auto;
       margin-right: auto;
       display: inline-block;
       padding: 0;
       padding-top: 1%;
-      margin-bottom: -5%;
       .fileinfo {
         width: 100%;
         margin-top: 0.5%;
@@ -348,65 +350,45 @@ export default {
         }
       }
     }
-    .wz-bottom {
-      width: 98%;
-      min-height: 48px;
-      margin-left: auto;
-      margin-right: auto;
-      display: inline-block;
-      text-align: left;
-      margin-bottom: 0%;
-      .message-block {
-        position: relative;
-        width: 100%;
-        display: inline-block;
-        padding: 0;
-        margin-bottom: -7%;
-        //border: 1px solid #003366;
-        .success-text {
-          color: #38598a;
-        }
-        .fail-text {
-          color: rgb(233, 50, 78);
-        }
-        span {
-          font-weight: bold;
-          color: #003366;
-          float: left;
-          width: 12%;
-          margin: 0.5%;
-          padding: none;
-          font-size: 17px;
-        }
-        p {
-          float: right;
-          width: 84%;
-          margin: 0.5%;
-          text-align: left;
-          padding: 0;
-          font-size: 15px;
-          i {
-            margin: 0;
-            padding: 0;
-          }
-        }
-      }
+    .message-block {
+      width: 100%;
+      height: auto;
+      display: inline;
+      margin-bottom: -5%;
       hr {
         margin: none;
-        margin-top: -0.1%;
-        margin-bottom: -0.1%;
+        margin-top: -4%;
+        margin-bottom: 3%;
       }
-      .alert-text {
-        width: 100%;
-        height: 30px;
-        display: inline-block;
-        padding: 0%;
-        margin: 0%;
-        font-weight: 300;
-        span {
-          font-size: 14px;
-          font-weight: bold;
-          color: #38598a;
+      //border: 1px solid #003366;
+      .success-text {
+        color: #38598a;
+      }
+      .fail-text {
+        color: rgb(233, 50, 78);
+      }
+      span {
+        font-weight: bold;
+        color: #003366;
+        float: left;
+        width: 12%;
+        padding: none;
+        font-size: 15px;
+      }
+      p {
+        float: right;
+        width: 84%;
+        margin-top: -0.5%;
+        text-align: left;
+        padding: 0;
+        font-size: 15px;
+        i {
+          position: relative;
+          margin: 0;
+          margin-top: -0.5%;
+          padding: 0;
+          line-height: 100%;
+          font-size: 20px;
         }
       }
     }
