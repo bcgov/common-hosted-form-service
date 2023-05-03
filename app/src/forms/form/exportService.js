@@ -2,8 +2,6 @@ const Problem = require('api-problem');
 const { flattenComponents, unwindPath, submissionHeaders } = require('../common/utils');
 const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
-const { transforms } = require('json2csv');
-const { Parser } = require('json2csv');
 const _ = require('lodash');
 const { Readable } = require('stream');
 const { unwind, flatten } = require('@json2csv/transforms');
@@ -58,7 +56,6 @@ const service = {
         }
       });
     }
-    console.log('--------->>>> ', formSchemaheaders);
     return formSchemaheaders;
   },
 
@@ -97,7 +94,7 @@ const service = {
     }
     return {};
   },
- _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, columns, version, emailExport, currentUser, referer) => {
+  _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, columns, version, emailExport, currentUser, referer) => {
     // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map((obj) => {
       const { submission, ...form } = obj;
@@ -107,7 +104,7 @@ const service = {
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
         let formVersion = version ? parseInt(version) : 1;
-        return await service._formatSubmissionsCsv(form, formatted, exportTemplate, columns, version, emailExport, currentUser, referer);
+        return await service._formatSubmissionsCsv(form, formatted, exportTemplate, columns, formVersion, emailExport, currentUser, referer);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
         return await service._formatSubmissionsJson(form, formatted);
@@ -154,7 +151,7 @@ const service = {
       },
     };
   },
-  _formatSubmissionsCsv: async (form, data, exportTemplate, fields, version,  emailExport, currentUser, referer) => {
+  _formatSubmissionsCsv: async (form, data, exportTemplate, fields, version, emailExport, currentUser, referer) => {
     try {
       switch (exportTemplate) {
         case 'multiRowEmptySpacesCSVExport':
@@ -164,7 +161,7 @@ const service = {
         case 'singleRowCSVExport':
           return service._singleRowCSVExport(form, data, currentUser, emailExport, referer);
         case 'unFormattedCSVExport':
-          return service._unFormattedCSVExport(form, data,  emailExport, currentUser, referer);
+          return service._unFormattedCSVExport(form, data, emailExport, currentUser, referer);
         default:
         // code block
       }
@@ -183,23 +180,22 @@ const service = {
       fields: headers,
     };
 
-    return service._submissionCSVExport(opts, form, data,  emailExport, currentUser, referer);
+    return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
   },
-  _singleRowCSVExport: async (form, data,  currentUser, emailExport, referer) => {
+  _singleRowCSVExport: async (form, data, currentUser, emailExport, referer) => {
     const opts = {
       transforms: [flatten({ objects: true, arrays: true, separator: '.' })],
     };
 
-    return service._submissionCSVExport(opts,form, data,  emailExport, currentUser, referer);
+    return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
   },
-  _unFormattedCSVExport: async (form, data,  emailExport, currentUser, referer) => {
-
-   return service._submissionCSVExport({}, form, data,  emailExport, currentUser, referer);
+  _unFormattedCSVExport: async (form, data, emailExport, currentUser, referer) => {
+    return service._submissionCSVExport({}, form, data, emailExport, currentUser, referer);
   },
 
-  _submissionCSVExport(opts, form, data,  emailExport, currentUser, referer) {
-     // to work with object chunk in pipe instead of Buffer
-     const transformOpts = {
+  _submissionCSVExport(opts, form, data, emailExport, currentUser, referer) {
+    // to work with object chunk in pipe instead of Buffer
+    const transformOpts = {
       objectMode: true,
     };
 
@@ -308,7 +304,7 @@ const service = {
     const exportTemplate = params.template ? params.template : 'multiRowEmptySpacesCSVExport';
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, params.version, form, params);
-    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version,  params.emailExport, currentUser, referer);
+    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version, params.emailExport, currentUser, referer);
     return { data: result.data, headers: result.headers };
   },
 };
