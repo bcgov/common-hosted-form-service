@@ -11,6 +11,7 @@ export const ApiRoutes = Object.freeze({
   ROLES: '/roles',
   SUBMISSION: '/submissions',
   USERS: '/users',
+  FILES: '/files',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */
@@ -108,4 +109,10 @@ export const ScheduleType = Object.freeze({
   MANUAL: 'manual', // Requires Login
   CLOSINGDATE: 'closingDate', // Anonymous
   PERIOD: 'period', // Specific People
+});
+
+/** Constants for Export large data submission feature */
+export const ExportLargeData = Object.freeze({
+  MAX_RECORDS: 300, // Maximum number of submissions after that we gonna upload the export to Cloud and send user a download link via email
+  MAX_FIELDS: 30, // Maximum number of fields in a form after that we gonna upload the export to Cloud and send user a download link via email
 });
