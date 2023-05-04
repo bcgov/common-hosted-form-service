@@ -35,17 +35,15 @@
             </template>
           </v-progress-linear>
           <v-row class="fileinfo">
-            <v-col cols="12" md="8">
+            <v-col cols="12" md="12">
               <label class="label-left">{{ file.name }}</label>
-            </v-col>
-            <v-col cols="12" md="4">
               <label class="label-right">{{ fileSize }}</label>
             </v-col>
           </v-row>
         </div>
         <v-row class="p-1">
           <v-col cols="12" md="12" class="message-block" v-if="!progress && response.upload_state == 10">
-            <hr v-if="response.error && response.response.length > 0" />
+            <hr v-if="response.error" />
             <span>Report: </span>
             <p :class="txt_color">
               <v-icon v-if="response.error" color="red">close</v-icon>
@@ -325,7 +323,7 @@ export default {
     display: inline-block;
     .wz-top {
       position: relative;
-      width: 98%;
+      width: 370px;
       min-height: 40px;
       margin-left: auto;
       margin-right: auto;
@@ -333,12 +331,12 @@ export default {
       padding: 0;
       padding-top: 1%;
       .fileinfo {
-        width: 100%;
         margin-top: 0.5%;
-        padding: 0.5px;
+        padding-top: 0.5px;
         label {
           font-size: 12px;
           color: #38598a;
+          line-height: 100%;
         }
         .label-right {
           text-align: right;
