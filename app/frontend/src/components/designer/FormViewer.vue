@@ -358,7 +358,6 @@ export default {
       if (this.allowSubmitterToUploadFile && !this.draftId) this.jsonManager();
     },
     formChange(e) {
-      console.log(e);
       if (e.changed != undefined && !e.changed.flags.fromSubmission) {
         this.formDataEntered = true;
       }
