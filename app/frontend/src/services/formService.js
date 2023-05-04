@@ -433,7 +433,7 @@ export default {
     );
   },
 
-  /**a
+  /**
    * @function getSubmissionStatuses
    * Get the current status history associated with the submission
    * @param {string} submissionId The form submission identifier
