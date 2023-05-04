@@ -59,6 +59,8 @@
     "Save": "Save",
     "Cancel": "Cancel",
     "Remove": "Remove",
+    "The following variables are available in all scripts.":"The following variables are available in all scripts.",
+
 
     "Display": "Display",
     "Label": "Label",
@@ -90,7 +92,66 @@
     "Default Value":"Default Value",
     "Text Case": "Text Case",
     "Mixed (Allow upper and lower case)": "Mixed (Allow upper and lower case)",
-    "Uppercase" : "Uppercase"
+    "Uppercase": "Uppercase",
+    "Lowercase":"Lowercase",
+    "Allow value propagation":"Allow value propagation",
+    "Required": "Required",
+    "Custom Error Message": "Custom Error Message",
+    "Minimum Length": "Minimum Length",
+    "Maximum Length": "Maximum Length",
+    "This component should Display:": "This component should Display:",
+    "When the form component:": "When the form component:",
+    "Has the value:": "Has the value:",
+    "The decoded JWT token for the authenticated user.": "The decoded JWT token for the authenticated user.",
+    "The current logged in user": "The current logged in user",
+    "The complete form JSON object": "The complete form JSON object",
+    "The complete submission object.": "The complete submission object.",
+    "The complete submission data object.": "The complete submission data object.",
+    "Contextual \"row\" data, used within DataGrid, EditGrid, and Container components": "Contextual \"row\" data, used within DataGrid, EditGrid, and Container components",
+    "The current component JSON": "The current component JSON",
+    "The current component instance.": "The current component instance.",
+    "The current value of the component.": "The current value of the component.",
+    "The moment.js library for date manipulation.": "The moment.js library for date manipulation.",
+    "An instance of Lodash.": "An instance of Lodash.",
+    "An instance of the FormioUtils object.": "An instance of the FormioUtils object.",
+    "An alias for \"utils\"." :"An alias for \"utils\".",
+    "Enter custom javascript code.": "Enter custom javascript code.",
+    "You must assign the show variable a boolean result.": "You must assign the show variable a boolean result.",
+    "Note: Advanced Conditional logic will override the results of the Simple Conditional logic.": "Note: Advanced Conditional logic will override the results of the Simple Conditional logic.",
+    "Example":"Example",
+    "Click here for an example": "Click here for an example",
+    "Execute custom logic using JSONLogic.":"Execute custom logic using JSONLogic.",
+    "token": "token",
+    "user": "user",
+    "form": "form",
+    "submission": "submission",
+    "data": "data",
+    "row": "row",
+    "component": "component",
+    "instance": "instance",
+    "value": "value",
+    "moment": "moment",
+    "utils": "utils",
+    "util":"util",
+    "Error Message": "Error Message",
+    "Insert": "Insert",
+    "Name": "Name",
+    "Selector": "Selector",
+    "Template": "Template",
+    "Style": "Style",
+    "Color": "Color",
+    "Update On":"Update On",
+    "Black List": "Black List"
+
+
+
+
+
+
+
+
+
+
 
 
   },
@@ -154,6 +215,7 @@
     "Save": "Sauvegarder",
     "Cancel": "Annuler",
     "Remove": "Retirer",
+    "The following variables are available in all scripts.":"Les variables suivantes sont disponibles dans tous les scripts.",
 
     "Columns - 2 Component": "Colonnes - 2 composants",
     "The label for this field that will appear next to it": "L'étiquette de ce champ qui apparaîtra à côté"
