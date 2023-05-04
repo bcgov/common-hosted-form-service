@@ -41,9 +41,12 @@ jobs:
             ${{ runner.os }}-app-${{ env.cache-name }}-
             ${{ runner.os }}-app-
             ${{ runner.os }}-
+      # To Remove before deploy      
       - name: Upgrade npm
+        if: matrix.version >= 14
         run: npm install -g npm@latest      
       - name: Npm version
+        if: matrix.version >= 14
         run: npm -v
       - name: Delete node_modules and package-lock.json
         run: |
@@ -51,6 +54,7 @@ jobs:
          rm -f package-lock.json
       - name: Install dependencies and generate package-lock.json
         run: npm install
+      # -----------------------   
       - name: Install dependencies
         if: steps.cache-app.outputs.cache-hit != 'true'
         run: npm ci
@@ -108,9 +112,12 @@ jobs:
             ${{ runner.os }}-frontend-${{ env.cache-name }}-
             ${{ runner.os }}-frontend-
             ${{ runner.os }}-
+       # To Remove before deploy        
       - name: Upgrade npm
+        if: matrix.version >= 14
         run: npm install -g npm@latest      
       - name: npm version
+        if: matrix.version >= 14
         run: npm -v
       - name: Delete node_modules and package-lock.json
         run: |
@@ -119,6 +126,7 @@ jobs:
       - name: Install dependencies and generate package-lock.json
         run: npm install
       - name: Install dependencies
+       # -------------------------
         if: steps.cache-frontend.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test
