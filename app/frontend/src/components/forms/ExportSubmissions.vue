@@ -322,7 +322,6 @@ export default {
       versions: [],
       allDataFields: true,
       inputFilter: '',
-      select: ['Vuetify', 'Programming'],
       singleSelect: false,
       showFieldsOptions: false,
       selected: [],
