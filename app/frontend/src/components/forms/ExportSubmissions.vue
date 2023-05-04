@@ -223,7 +223,7 @@
                         class="radioboxLabelStyle"
                         style="display: flex; align-content: flex-start"
                       >
-                        1 - Multiple rows per submission with identation
+                        1 - Multiple rows per submission with indentation
                       </span>
                     </template>
                   </v-radio>
