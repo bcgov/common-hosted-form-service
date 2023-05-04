@@ -92,7 +92,7 @@
                           style="font-size: 14px !important"
                         >
                           {{ selected.length }} of
-                          {{ FILTER_HEADERS.length }} selected for exports
+                          {{ FILTER_HEADERS.length }} selected for export
                         </div>
 
                         <v-data-table
@@ -223,7 +223,7 @@
                         class="radioboxLabelStyle"
                         style="display: flex; align-content: flex-start"
                       >
-                        1 - Multiple rows per submission with identation spaces
+                        1 - Multiple rows per submission with identation
                       </span>
                     </template>
                   </v-radio>
