@@ -7,7 +7,7 @@
             <h1>Export Submissions to File</h1>
           </v-col>
           <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-            <span v-if="canViewSubmissions">
+            <span>
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
                   <router-link
@@ -284,11 +284,7 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
-import {
-  NotificationTypes,
-  ExportLargeData,
-  FormPermissions,
-} from '@/utils/constants';
+import { NotificationTypes, ExportLargeData } from '@/utils/constants';
 
 import {
   faXmark,
@@ -465,13 +461,7 @@ export default {
         });
       }
     },
-    canViewSubmissions() {
-      const perms = [
-        FormPermissions.SUBMISSION_READ,
-        FormPermissions.SUBMISSION_UPDATE,
-      ];
-      return this.permissions.some((p) => perms.includes(p));
-    },
+
     async updateVersions() {
       this.versions = [];
       if (this.form && Array.isArray(this.form.versions)) {
