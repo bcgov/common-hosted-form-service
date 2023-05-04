@@ -41,6 +41,8 @@ jobs:
             ${{ runner.os }}-app-${{ env.cache-name }}-
             ${{ runner.os }}-app-
             ${{ runner.os }}-
+      - name: Clear npm cache
+        run: npm cache clean --force
       - name: Install dependencies
         if: steps.cache-app.outputs.cache-hit != 'true'
         run: npm ci
@@ -98,6 +100,8 @@ jobs:
             ${{ runner.os }}-frontend-${{ env.cache-name }}-
             ${{ runner.os }}-frontend-
             ${{ runner.os }}-
+      - name: Clear npm cache
+        run: npm cache clean --force
       - name: Install dependencies
         if: steps.cache-frontend.outputs.cache-hit != 'true'
         run: npm ci
