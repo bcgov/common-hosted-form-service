@@ -120,8 +120,10 @@ const service = {
     let preference;
     if (params.preference && _.isString(params.preference)) {
       preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
     }
-    preference = params.preference;
+
     // params for this export include minDate and maxDate (full timestamp dates).
     let submissionData = await SubmissionData.query()
       .column(service._submissionsColumns(form, params))
