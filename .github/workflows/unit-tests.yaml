@@ -53,7 +53,7 @@ jobs:
          rm -rf node_modules
          rm -f package-lock.json
       - name: Install dependencies and generate package-lock.json
-        run: npm install
+        run: npm install 
       # -----------------------   
       - name: Install dependencies
         if: steps.cache-app.outputs.cache-hit != 'true'
@@ -128,7 +128,7 @@ jobs:
         # -------------------------
       - name: Install dependencies
         if: steps.cache-frontend.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --force
       - name: Test
         run: npm run test
         env:
