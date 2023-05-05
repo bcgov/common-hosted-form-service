@@ -401,7 +401,6 @@ export default {
           });
           this.leaveThisPage();
         } else {
-          // console.error(response); // eslint-disable-line no-console
           this.sbdMessage.message = `Failed response from submission endpoint. Response code: ${response.status}`;
           this.sbdMessage.error = true;
           this.sbdMessage.upload_state = 10;
@@ -439,11 +438,12 @@ export default {
           this.sbdMessage.response = [{ error_message: 'An error occurred submitting this form' }];
           this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
         }
-      } catch (error) {
-        this.sbdMessage.message = error;
+      } catch (error_2) {
+        this.sbdMessage.message = 'An error occurred submitting this form';
         this.sbdMessage.error = true;
         this.sbdMessage.upload_state = 10;
-        this.sbdMessage.response = [{ error_message: error }];
+        this.sbdMessage.response = [{ error_message: 'An error occurred submitting this form' }];
+        console.error(error, error_2);
         this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
       }
     },
