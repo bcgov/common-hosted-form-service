@@ -73,6 +73,7 @@ routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPe
 });
 
 routes.post('/:formId/versions/:formVersionId/bulksubmissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
+  req.setTimeout(30 * 1000); //use req. this sets timeout to 30 seconds
   await controller.createBulkSubmission(req, res, next);
 });
 

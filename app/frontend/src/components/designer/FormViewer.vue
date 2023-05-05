@@ -406,7 +406,8 @@ export default {
           this.sbdMessage.error = true;
           this.sbdMessage.upload_state = 10;
           this.block = false;
-          this.sbdMessage.response = [];
+          this.sbdMessage.response = [{ error_message: 'An error occurred submitting this form' }];
+          this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
           this.saving = false;
           throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
         }
@@ -421,20 +422,28 @@ export default {
       }
     },
     async setFinalError(error) {
-      if (error.response.data != undefined) {
-        this.sbdMessage.message = error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
+      try {
+        if (error.response.data != undefined) {
+          this.sbdMessage.message = error.response.data.title == undefined ? 'An error occurred submitting this form' : error.response.data.title;
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response =
+            error.response.data.reports == undefined
+              ? [{ error_message: 'An error occurred submitting this form' }]
+              : await this.formatResponse(error.response.data.reports);
+          this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
+        } else {
+          this.sbdMessage.message = 'An error occurred submitting this form';
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = [{ error_message: 'An error occurred submitting this form' }];
+          this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
+        }
+      } catch (error) {
+        this.sbdMessage.message = error;
         this.sbdMessage.error = true;
         this.sbdMessage.upload_state = 10;
-        this.sbdMessage.response =
-          error.response.data.reports == undefined
-            ? [{ error_message: 'An error occurred submitting this form' }]
-            : await this.formatResponse(error.response.data.reports);
-        this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
-      } else {
-        this.sbdMessage.message = 'An error occurred submitting this form';
-        this.sbdMessage.error = true;
-        this.sbdMessage.upload_state = 10;
-        this.sbdMessage.response = [{ error_message: 'An error occurred submitting this form' }];
+        this.sbdMessage.response = [{ error_message: error }];
         this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
       }
     },

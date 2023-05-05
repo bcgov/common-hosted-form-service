@@ -126,6 +126,7 @@ jobs:
       - name: Install dependencies and generate package-lock.json
         run: npm install --force
         # -------------------------
+      # uncomment this before deploy  
       # - name: Install dependencies
       #   if: steps.cache-frontend.outputs.cache-hit != 'true'
       #   run: npm ci --force
