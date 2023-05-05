@@ -70,20 +70,34 @@
               <span>Submit</span>
             </template>
           </BaseDialog>
-          <div v-if="allowSubmitterToUploadFile && bulkFile">
-            <FormViewerDownloadButton
-              :response="sbdMessage"
-              :formElement="formElement"
-              :form="form"
-              :formSchema="formSchema"
-              :json_csv="json_csv"
-              @save-bulk-data="saveBulkData"
-              @reset-message="resetMessage"
-              @set-error="setError"
-              :formFields="formFields"
-            />
-          </div>
+          <v-alert
+            v-if="isLoading && !bulkFile && submissionId == undefined"
+            class="mt-2 mb-2"
+            :value="isLoading"
+            :class="NOTIFICATIONS_TYPES.INFO.class"
+            :color="NOTIFICATIONS_TYPES.INFO.color"
+            :icon="NOTIFICATIONS_TYPES.INFO.icon"
+            transition="scale-transition"
+          >
+            <div color="info" icon="$info">
+              <v-progress-linear :indeterminate="true" color="blue-grey lighten-4" height="5"></v-progress-linear>
+              Please wait while the form is rendering !!!
+            </div>
+          </v-alert>
+          <FormViewerDownloadButton
+            v-if="!isLoading && allowSubmitterToUploadFile && bulkFile"
+            :response="sbdMessage"
+            :formElement="formElement"
+            :form="form"
+            :formSchema="formSchema"
+            :json_csv="json_csv"
+            @save-bulk-data="saveBulkData"
+            @reset-message="resetMessage"
+            @set-error="setError"
+            :formFields="formFields"
+          />
           <Form
+            class="mt-4"
             v-if="!bulkFile"
             ref="chefForm"
             :form="formSchema"
@@ -95,6 +109,7 @@
             @customEvent="onCustomEvent"
             @change="formChange"
             :options="viewerOptions"
+            @render="onFormRender"
           />
           <p v-if="version" class="text-right">Version: {{ version }}</p>
         </div>
@@ -196,6 +211,7 @@ export default {
       isLateSubmissionAllowed: false,
       saveDraftState: 0,
       formDataEntered: false,
+      isLoading: true,
     };
   },
   computed: {
@@ -443,7 +459,6 @@ export default {
         this.sbdMessage.error = true;
         this.sbdMessage.upload_state = 10;
         this.sbdMessage.response = [{ error_message: 'An error occurred submitting this form' }];
-        console.error(error, error_2);
         this.sbdMessage.file_name = 'error_report_' + this.form.name + '_' + Date.now();
       }
     },
@@ -532,6 +547,9 @@ export default {
         response = await formService.createSubmission(this.formId, this.versionIdToSubmitTo, body);
       }
       return response;
+    },
+    onFormRender() {
+      if (this.isLoading) this.isLoading = false;
     },
 
     // -----------------------------------------------------------------------------------------
