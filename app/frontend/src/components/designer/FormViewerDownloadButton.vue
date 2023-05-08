@@ -240,7 +240,6 @@ export default {
               });
             }
           } catch (error) {
-            console.log(error);
             errors.push({ submission: this.index, message: this.ERROR.ERROR_WHILE_CHECKVALIDITY });
           }
           this.index++;
