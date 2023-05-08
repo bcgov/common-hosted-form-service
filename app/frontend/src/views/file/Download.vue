@@ -1,6 +1,7 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR">
+  <BaseSecure :idp="[IDP.IDIR]">
     <v-container fluid class="center_vertical_content">
+      <h1>CHEFS Data Export</h1>
       <v-progress-circular
         v-if="!showDownloadLink"
         :size="50"
@@ -8,9 +9,10 @@
         indeterminate
       ></v-progress-circular>
       <div v-if="!showDownloadLink">Preparing for download...</div>
-      <div v-if="showDownloadLink">
-        If the file did not automatically download, click here:
-        <a href="#" @click="getFile(id)">Download</a>
+      <div class="mt-5 center_vertical_content" v-if="showDownloadLink">
+        <v-icon class="mb-2" size="90">file_download</v-icon><br />
+        If your file does not automatically download
+        <a href="#" @click="getFile(id)">click here to try again</a>
       </div>
     </v-container>
   </BaseSecure>
