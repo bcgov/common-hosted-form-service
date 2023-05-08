@@ -226,7 +226,7 @@ export default {
    * @returns {Promise} An axios response
    */
   createBulkSubmission(formId, versionId, requestBody) {
-    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/bulksubmissions`, requestBody);
+    return appAxios(30000).post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/bulksubmissions`, requestBody);
   },
 
   /**
