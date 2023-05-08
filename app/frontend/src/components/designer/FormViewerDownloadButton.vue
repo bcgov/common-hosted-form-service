@@ -216,7 +216,7 @@ export default {
         this.index = 0;
         this.max = 100;
         this.progress = true;
-        this.validate(this.Json[this.index]);
+        this.validate(this.Json[this.index], []);
       } catch (error) {
         this.resetUpload();
         this.$emit('set-error', { error: true, message: this.ERROR.ERROR_WHILE_VALIDATE });
@@ -224,27 +224,32 @@ export default {
         return;
       }
     },
-    validate(element) {
+    validate(element, errors) {
       const timer = setTimeout(
         function () {
           try {
-            let validationResult = this.formElement.checkValidity(element);
+            let newForm = this.formElement;
+            newForm.data = element;
+            newForm.submission.data = element;
+            newForm.triggerChange();
+            let validationResult = newForm.checkValidity();
             if (!validationResult) {
-              this.globalError.push({
-                index: this.index,
+              errors.push({
+                submission: this.index,
                 errors: validationResult.errors,
               });
             }
           } catch (error) {
-            this.addNotification({ message: this.ERROR.ERROR_WHILE_CHECKVALIDITY, consoleError: error });
+            console.log(error);
+            errors.push({ submission: this.index, message: this.ERROR.ERROR_WHILE_CHECKVALIDITY });
           }
           this.index++;
           this.value = this.pourcentage(this.index);
           clearTimeout(timer);
           if (this.index < this.Json.length) {
-            this.validate(this.Json[this.index]);
+            this.validate(this.Json[this.index], errors);
           } else {
-            this.endValidation();
+            this.endValidation(errors);
           }
         }.bind(this),
         12
@@ -257,8 +262,9 @@ export default {
       }
       return 0;
     },
-    endValidation() {
+    endValidation(errors) {
       this.progress = false;
+      this.globalError = errors;
       if (this.globalError.length == 0) {
         this.$emit('save-bulk-data', this.Json);
       } else {

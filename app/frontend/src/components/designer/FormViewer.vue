@@ -81,7 +81,7 @@
           >
             <div color="info" icon="$info">
               <v-progress-linear :indeterminate="true" color="blue-grey lighten-4" height="5"></v-progress-linear>
-              Please wait while the form is rendering !!!
+              Please wait while the form is loading !!!
             </div>
           </v-alert>
           <FormViewerDownloadButton
