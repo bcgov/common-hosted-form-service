@@ -1034,3 +1034,102 @@ describe(`DELETE ${basePath}/formId/apiKey`, () => {
     expect(response.body).toBeTruthy();
   });
 });
+describe(`GET ${basePath}/formId/csvexport/fields`, () => {
+  it('should return 200', async () => {
+    const formFields = [
+      'form.confirmationId',
+      'form.formName',
+      'form.version',
+      'form.createdAt',
+      'form.fullName',
+      'form.username',
+      'form.email',
+      'fishermansName',
+      'email',
+      'forWhichBcLakeRegionAreYouCompletingTheseQuestions',
+      'didYouFishAnyBcLakesThisYear',
+      'oneRowPerLake',
+      'oneRowPerLake.lakeName',
+      'oneRowPerLake.closestTown',
+      'oneRowPerLake.numberOfDays',
+      'oneRowPerLake.dataGrid',
+      'oneRowPerLake.dataGrid.fishType',
+      'oneRowPerLake.dataGrid.numberCaught',
+      'oneRowPerLake.dataGrid.numberKept',
+    ];
+
+    // mock a success return value...
+    exportService.fieldsForCSVExport = jest.fn().mockReturnValue(formFields);
+
+    const response = await request(app).get(`${basePath}/formId/csvexport/fields`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    exportService.fieldsForCSVExport = jest.fn(() => {
+      throw new Problem(401);
+    });
+
+    const response = await request(app).get(`${basePath}/formId/csvexport/fields`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    exportService.fieldsForCSVExport = jest.fn(() => {
+      throw new Error();
+    });
+
+    const response = await request(app).get(`${basePath}/formId/csvexport/fields`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
+describe(`GET ${basePath}/formId/export/fields`, () => {
+  it('should return 200', async () => {
+    // mock a success return value...
+    exportService.export = jest.fn().mockReturnValue({
+      data: {},
+      headers: {
+        'content-disposition': 'attachment; filename="not-real.csv"',
+        'content-type': 'text/csv',
+      },
+    });
+
+    const response = await request(app).post(`${basePath}/formId/export/fields`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    exportService.export = jest.fn(() => {
+      throw new Problem(401);
+    });
+
+    const response = await request(app).post(`${basePath}/formId/export/fields`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    exportService.export = jest.fn(() => {
+      throw new Error();
+    });
+
+    const response = await request(app).post(`${basePath}/formId/export/fields`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});

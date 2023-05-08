@@ -257,12 +257,85 @@ describe('_buildCsvHeaders', () => {
     // gets a a list of form meta fieldfs followed by submission fields
     const result = await exportService._buildCsvHeaders(form, submissionsExport, 1);
 
-    expect(result).toHaveLength(42);
+    expect(result).toHaveLength(41);
     expect(result).toEqual(expect.arrayContaining(['number1', 'selectBoxes1.a', 'number']));
     expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
     expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
 
     // restore mocked function to it's original implementation
     exportService._readLatestFormSchema.mockRestore();
+  });
+});
+
+describe('', () => {
+  it('should return right number of fields with columns for csv export', async () => {
+    // form schema from db
+    const submission = require('../../../fixtures/submission/kitchen_sink_submission_extract_field_csv_export.json');
+
+    const form = {
+      id: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
+      name: 'Fisheries',
+      description: '',
+      active: true,
+      labels: [],
+      createdBy: 'AIDOWU@idir',
+      createdAt: '2023-03-29T14:09:28.457Z',
+      updatedBy: 'AIDOWU@idir',
+      updatedAt: '2023-04-10T16:19:43.491Z',
+      showSubmissionConfirmation: true,
+      submissionReceivedEmails: [],
+      enableStatusUpdates: false,
+      enableSubmitterDraft: true,
+      schedule: {},
+      reminder_enabled: false,
+      enableCopyExistingSubmission: false,
+    };
+
+    const params = {
+      type: 'submissions',
+      draft: false,
+      deleted: false,
+      version: 1,
+    };
+
+    const formFields = [
+      'form.confirmationId',
+      'form.formName',
+      'form.version',
+      'form.createdAt',
+      'form.fullName',
+      'form.username',
+      'form.email',
+      'fishermansName',
+      'email',
+      'forWhichBcLakeRegionAreYouCompletingTheseQuestions',
+      'didYouFishAnyBcLakesThisYear',
+      'oneRowPerLake',
+      'oneRowPerLake.lakeName',
+      'oneRowPerLake.closestTown',
+      'oneRowPerLake.numberOfDays',
+      'oneRowPerLake.dataGrid',
+      'oneRowPerLake.dataGrid.fishType',
+      'oneRowPerLake.dataGrid.numberCaught',
+      'oneRowPerLake.dataGrid.numberKept',
+    ];
+
+    // mock readVersion function
+    exportService._getForm = jest.fn().mockReturnValue(form);
+
+    exportService._getData = jest.fn().mockReturnValue(submission);
+
+    exportService._buildCsvHeaders = jest.fn().mockReturnValue(formFields);
+
+    // get fields
+    const fields = await exportService.fieldsForCSVExport('bd4dcf26-65bd-429b-967f-125500bfd8a4', params);
+
+    expect(exportService._getForm).toHaveBeenCalledWith('bd4dcf26-65bd-429b-967f-125500bfd8a4');
+    expect(exportService._getData).toHaveBeenCalledWith(params.type, params.version, form, params);
+    expect(exportService._getForm).toHaveBeenCalledTimes(1);
+    expect(exportService._getData).toHaveBeenCalledTimes(1);
+    expect(exportService._buildCsvHeaders).toHaveBeenCalledTimes(1);
+    // test cases
+    expect(fields.length).toEqual(19);
   });
 });
