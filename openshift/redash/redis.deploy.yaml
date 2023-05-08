@@ -1,0 +1,138 @@
+---
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  app.kubernetes.io/component: database
+  app.kubernetes.io/instance: ${NAME}-redis
+  app.kubernetes.io/managed-by: kubectl
+  app.kubernetes.io/name: redis
+  app.kubernetes.io/part-of: redash
+metadata:
+  name: ${NAME}
+objects:
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-redis
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        app.kubernetes.io/instance: ${NAME}-redis
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/component: database
+            app.kubernetes.io/instance: ${NAME}-redis
+            app.kubernetes.io/managed-by: kubectl
+            app.kubernetes.io/name: redis
+            app.kubernetes.io/part-of: redash
+        spec:
+          containers:
+            - env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: REDIS_PASSWORD
+                      name: ${NAME}-redis
+              image: redis:7.0.11-alpine
+              imagePullPolicy: Always
+              name: ${NAME}-redis
+              ports:
+                - containerPort: 6379
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                successThreshold: 1
+                tcpSocket:
+                  port: 6379
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  memory: ${REDIS_MEMORY_LIMIT}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+                - name: ${NAME}-redis-volume
+                  mountPath: /data
+          volumes:
+            - name: ${NAME}-redis-volume
+              persistentVolumeClaim:
+                claimName: ${NAME}-redis
+        restartPolicy: Always
+        terminationGracePeriodSeconds: 30
+        dnsPolicy: ClusterFirst
+        securityContext: {}
+        schedulerName: default-scheduler
+      triggers:
+        - type: ConfigChange
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-redis
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${REDIS_VOLUME_CAPACITY}
+      storageClassName: netapp-file-standard
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-redis
+    spec:
+      ports:
+        - name: 6379-tcp
+          port: 6379
+          protocol: TCP
+          targetPort: 6379
+      selector:
+        app.kubernetes.io/instance: ${NAME}-redis
+      type: ClusterIP
+      sessionAffinity: None
+    status:
+      loadBalancer: {}
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: allow-${NAME}-to-redis
+    spec:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: ${NAME}-redis
+      ingress:
+        - ports:
+            - protocol: TCP
+              port: 6379
+          from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: chefs
+      policyTypes:
+        - Ingress
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the objects defined in this template.
+    required: true
+    value: chefs-redash
+  - name: REDIS_MEMORY_LIMIT
+    displayName: Redis Memory Limit
+    description: The memory limit for Redis
+    required: true
+    value: 512Mi
+  - name: REDIS_VOLUME_CAPACITY
+    displayName: Redis Volume Capacity
+    description: The volume capacity for Redis
+    required: true
+    value: 2Gi
+  - name: IMAGE_REGISTRY
+    description: The base docker registry
+    displayName: Docker Image Registry
+    required: true
+    value: image-registry.openshift-image-registry.svc:5000
