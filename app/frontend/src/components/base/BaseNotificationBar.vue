@@ -7,7 +7,7 @@
     @input="alertClosed"
     transition="slide-y-transition"
   >
-    <h2 v-if="notification.title">{{ notification.title }}</h2>
+    <h3 v-if="notification.title">{{ notification.title }}</h3>
     {{ notification.message }}
   </v-alert>
 </template>
