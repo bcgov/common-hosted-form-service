@@ -88,6 +88,7 @@
           @submitButton="onSubmitButton"
           @customEvent="onCustomEvent"
           :options="viewerOptions"
+          :language="multiLanguage"
         />
         <p v-if="version" class="text-right">Version: {{ version }}</p>
       </div>
@@ -169,6 +170,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
+    ...mapGetters('form', ['multiLanguage']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -201,6 +203,12 @@ export default {
         !this.readOnly &&
         this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
       );
+    },
+  },
+  watch: {
+    multiLanguage() {
+      console.log('++++++++++>>> ', this.multiLanguage);
+      this.reRenderFormIo += 1;
     },
   },
   methods: {

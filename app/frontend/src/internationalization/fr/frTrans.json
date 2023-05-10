@@ -5,7 +5,9 @@
     "Search": "Recherche",
     "manage": "Gérer",
     "submissions": "Soumissions",
-    "formTitle": "Titre du formulaire"
+    "formTitle": "Titre du formulaire",
+    "viewForm": "Afficher le formulaire",
+    "description": "description"
   },
   "manageLayout": {
     "manageForm":"Gérer le formulaire"

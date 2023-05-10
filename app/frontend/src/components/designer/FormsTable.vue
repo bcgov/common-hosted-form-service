@@ -3,7 +3,7 @@
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>{{ $t('formsTable.myForms') }}</h1>
+        <h1>{{ $t('trans.formsTable.myForms') }}</h1>
       </v-col>
       <!-- buttons -->
       <v-col
@@ -22,7 +22,7 @@
               </v-btn>
             </router-link>
           </template>
-          <span>{{ $t('formsTable.createNewForm') }}</span>
+          <span>{{ $t('trans.formsTable.createNewForm') }}</span>
         </v-tooltip>
       </v-col>
     </v-row>
@@ -35,7 +35,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            :label="$t('formsTable.createNewForm')"
+            :label="$t('trans.formsTable.createNewForm')"
             single-line
             hide-details
             class="pb-5"
@@ -68,7 +68,7 @@
               <span v-bind="attrs" v-on="on">{{ item.name }}</span>
             </template>
             <span v-if="item.published">
-              View Form
+              {{ $t('trans.formsTable.viewForm') }}
               <v-icon>open_in_new</v-icon>
             </span>
           </v-tooltip>
@@ -82,7 +82,7 @@
           class="description-icon ml-2 mr-4"
           color="primary"
         >
-          description
+          {{ $t('trans.formsTable.description') }}
         </v-icon>
       </template>
       <template #[`item.actions`]="{ item }">
@@ -92,7 +92,9 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">settings</v-icon>
-            <span class="d-none d-sm-flex">Manage</span>
+            <span class="d-none d-sm-flex">{{
+              $t('trans.formsTable.manage')
+            }}</span>
           </v-btn>
         </router-link>
         <router-link
@@ -102,7 +104,9 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">list_alt</v-icon>
-            <span class="d-none d-sm-flex">Submissions</span>
+            <span class="d-none d-sm-flex">{{
+              $t('trans.formsTable.submissions')
+            }}</span>
           </v-btn>
         </router-link>
       </template>
