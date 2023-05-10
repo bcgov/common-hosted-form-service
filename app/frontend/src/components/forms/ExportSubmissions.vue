@@ -411,8 +411,9 @@ export default {
 
         let emailExport = false;
         if (
-          this.submissionList.length > ExportLargeData.MAX_RECORDS ||
-          this.formFields.length > ExportLargeData.MAX_FIELDS
+          (this.submissionList.length > ExportLargeData.MAX_RECORDS ||
+            this.formFields.length > ExportLargeData.MAX_FIELDS) &&
+          this.exportFormat !== 'json'
         ) {
           this.dialog = false;
           emailExport = true;
