@@ -1,0 +1,65 @@
+{
+  "formsTable": {
+    "myForms": "My Forms",
+    "createNewForm":"Create a New Form",
+    "search": "Search",
+    "manage": "Manage",
+    "submissions": "Submissions",
+    "formTitle": "Form Title"
+  },
+  "manageLayout": {
+    "manageForm":"Manage Form"
+  },
+  "shareForm": {
+    "shareForm": "Share Form",
+    "shareLink": "Share Link",
+    "copyQRCode": "Copy the link below or download the QR code.",
+    "warningMessage": "There is no published version of the form at this time. The link below will not be reachable until a version is published.",
+    "openThisForm": "Open this form",
+    "downloadQRCode": "Download QR Code",
+    "close": "Close",
+    "copyURLToClipboard": "Copy URL to clipboard"
+  },
+  "manageFormActions": {
+    "viewSubmissions": "View Submissions",
+    "teamManagement": "Team Management",
+    "deleteForm": "Delete Form",
+    "confirmDeletion": "Confirm Deletion",
+    "deleteMessageA": "Are you sure you wish to delete",
+    "deleteMessageB":"This form will no longer be accessible.",
+    "delete": "Delete"
+  },
+  "manageForm": {
+    "formSettings": "Form Settings",
+    "apiKey": "Api Key",
+    "updated": "Updated",
+    "created": "Created",
+    "formDesignHistory": "Form Design History",
+    "totalVersions": "Total Versions",
+    "status": "Status",
+    "update": "Update",
+    "cancel": "Cancel"
+  },
+  "formSettings": {
+    "formTitle": "Form Title",
+    "formDescription": "Form Description",
+    "formAccess": "Form Access",
+    "info": "If you will be using this form to gather information from the general public on topics that are of general interest to the public, you are required to contact the GCPE so that your engagement can be listed on",
+    "important": "IMPORTANT",
+    "idimNotifyA": "You must notify the Identity Information Management(IDIM) team by email",
+    "idimNotifyB": "your intent to leverage BCeID to verify theidentities of your form submitters.",
+    "referenceGuideA": "Please reference our",
+    "referenceGuideB": "user guide",
+    "referenceGuideC": "for more details",
+    "specificTeamMembers": "Specific Team Members",
+    "formFunctionality": "Form Functionality",
+    "formSubmissinScheduleMsg": "The Form Submissions Schedule will be available in the Form Settings after the form is published.",
+    "formSubmissionsSchedule": "Form Submissions Schedule",
+    "experimental": "Experimental",
+    "learnMore": "Learn more",
+    "afterSubmission": "After Submission",
+    "submissionConfirmation":"Show the submission confirmation details",
+    "theConfirmationID": "the Confirmation ID",
+    "infoB": "the option for the user to email themselves a submission confirmation"
+  }
+}

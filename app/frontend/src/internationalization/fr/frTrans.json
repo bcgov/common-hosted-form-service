@@ -1,0 +1,66 @@
+{
+  "formsTable": {
+    "myForms": "Mes formulaires",
+    "createNewForm": "Créer un nouveau formulaire",
+    "Search": "Recherche",
+    "manage": "Gérer",
+    "submissions": "Soumissions",
+    "formTitle": "Titre du formulaire"
+  },
+  "manageLayout": {
+    "manageForm":"Gérer le formulaire"
+  },
+  "shareForm": {
+    "shareForm": "Formulaire de partage",
+    "shareLink": "Lien de partage",
+    "copyQRCode": "Copiez le lien ci-dessous ou téléchargez le code QR.",
+    "warningMessage": "Il n'y a pas de version publiée du formulaire pour le moment. Le lien ci-dessous ne sera pas accessible tant qu'une version n'aura pas été publiée.",
+    "openThisForm": "Ouvrir ce formulaire",
+    "downloadQRCode": "Télécharger le code QR",
+    "close": "Fermer",
+    "copyURLToClipboard": "Copier l'URL dans le presse-papiers"
+  },
+  "manageFormActions": {
+    "viewSubmissions": "Voir les soumissions",
+    "teamManagement": "Gestion d'équipe",
+    "deleteForm": "Supprimer le formulaire",
+    "confirmDeletion": "Confirmer la suppression",
+    "deleteMessageA": "Êtes-vous sûr de vouloir supprimer",
+    "deleteMessageB":"Ce formulaire ne sera plus accessible.",
+    "delete": "Supprimer"
+  },
+  "manageForm": {
+    "formSettings": "Paramètres du formulaire",
+    "apiKey": "clé API",
+    "updated": "Mis à jour",
+    "created": "Créé",
+    "formDesignHistory": "Historique de la conception du formulaire",
+    "totalVersions": "Versions totales",
+    "status": "Statut",
+    "update": "Mise à jour",
+    "cancel": "Annuler"
+  },
+  "formSettings": {
+    "formTitle": "Titre du formulaire",
+    "formDescription": "Description du formulaire",
+    "formAccess": "Accès au formulaire",
+    "info": "Si vous utilisez ce formulaire pour recueillir des informations auprès du grand public sur des sujets d'intérêt général public, vous êtes tenu de contacter le GCPE afin que votre l'engagement peut être inscrit sur",
+    "important": "IMPORTANTE",
+    "idimNotifyA": "Vous devez notifier la gestion des informations d'identité(IDIM) par email",
+    "idimNotifyB": "votre intention d'utiliser BCeID pour vérifier les identités de vos soumissionnaires de formulaire.",
+    "referenceGuideA": "Veuillez vous référer à notre",
+    "referenceGuideB": "mode d'emploi",
+    "referenceGuideC": "pour plus de détails",
+    "specificTeamMembers": "Membres spécifiques de l'équipe",
+    "formFunctionality": "Fonctionnalité du formulaire",
+    "formSubmissinScheduleMsg":"Le calendrier de soumission des formulaires sera disponible dans les paramètres du formulaire après la publication du formulaire.",
+    "formSubmissionsSchedule": "Calendrier de soumission des formulaires",
+    "experimental": "Expérimental",
+    "learnMore": "Apprendre encore plus",
+    "afterSubmission": "Après la soumission",
+    "submissionConfirmation":"Afficher les détails de la confirmation de soumission",
+    "theConfirmationID": "l'identifiant de confirmation",
+    "infoB": "la possibilité pour l'utilisateur de s'envoyer par e-mail une confirmation de soumission"
+
+  }
+}
