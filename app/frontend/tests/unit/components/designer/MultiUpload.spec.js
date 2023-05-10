@@ -284,7 +284,7 @@ describe('FormViewerMultiUpload.vue', () => {
  });
 
  describe('#parseFile', () => {
-  it('should fail when json file is ok but but data format is wrong', () => {
+  it('should fail when json file is ok but data format is wrong', () => {
 
     const wrapper = shallowMount(FormViewerMultiUpload, {
       localVue,
