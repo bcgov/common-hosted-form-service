@@ -5,7 +5,9 @@
     "search": "Search",
     "manage": "Manage",
     "submissions": "Submissions",
-    "formTitle": "Form Title"
+    "formTitle": "Form Title",
+    "viewForm": "View Form",
+    "description": "description"
   },
   "manageLayout": {
     "manageForm":"Manage Form"
