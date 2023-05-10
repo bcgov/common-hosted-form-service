@@ -3,13 +3,13 @@
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>Form Title</template>
+          <template #title>{{ $t('trans.formSettings.formTitle') }}</template>
           <v-text-field
             dense
             flat
             solid
             outlined
-            label="Form Title"
+            :label="$t('trans.formSettings.formTitle')"
             data-test="text-name"
             v-model="name"
             :rules="nameRules"
@@ -20,7 +20,7 @@
             flat
             solid
             outlined
-            label="Form Description"
+            :label="$t('trans.formSettings.formDescription')"
             data-test="text-description"
             v-model="description"
             :rules="descriptionRules"
@@ -30,7 +30,7 @@
 
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>Form Access</template>
+          <template #title>{{ $t('trans.formSettings.formAccess') }}</template>
           <v-radio-group
             class="my-0"
             v-model="userType"
@@ -46,13 +46,11 @@
             <v-expand-transition>
               <BaseInfoCard v-if="userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
                 <h4 class="primary--text">
-                  <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+                  <v-icon class="mr-1" color="primary">info</v-icon
+                  >{{ $t('trans.formSettings.important') }}!
                 </h4>
                 <p class="mt-2 mb-0">
-                  If you will be using this form to gather information from the
-                  general public on topics that are of general interest to the
-                  public, you are required to contact the GCPE so that your
-                  engagement can be listed on
+                  {{ $t('trans.formSettings.info') }}
                   <a
                     href="https://engage.gov.bc.ca/govtogetherbc/"
                     target="_blank"
@@ -96,23 +94,21 @@
                     >
                       <h4 class="primary--text">
                         <v-icon class="mr-1" color="primary">info</v-icon
-                        >IMPORTANT!
+                        >{{ $t('trans.formSettings.important') }}!
                       </h4>
                       <p class="my-2">
-                        You must notify the Identity Information Management
-                        (IDIM) team by email (<a
+                        {{ $t('trans.formSettings.idimNotifyA') }} (<a
                           href="mailto:IDIM.Consulting@gov.bc.ca"
                           >IDIM.Consulting@gov.bc.ca</a
-                        >) your intent to leverage BCeID to verify the
-                        identities of your form submitters.
+                        >) {{ $t('trans.formSettings.idimNotifyB') }}
                       </p>
                       <p class="mt-2 mb-0">
-                        Please reference our
+                        {{ $t('trans.formSettings.referenceGuideA') }}
                         <a
                           href="https://github.com/bcgov/common-hosted-form-service/wiki/Accessing-forms#Notify-the-idim-team-if-you-are-using-bceid"
-                          >user guide</a
+                          >{{ $t('trans.formSettings.referenceGuideB') }}</a
                         >
-                        for more details.
+                        {{ $t('trans.formSettings.referenceGuideC') }}.
                       </p>
                     </BaseInfoCard>
                   </v-expand-transition>
@@ -120,7 +116,7 @@
               </v-row>
             </v-expand-transition>
             <v-radio
-              label="Specific Team Members (You can specify users on the form's management screen once created.)"
+              :label="$t('trans.formSettings.specificTeamMembers')"
               value="team"
             />
           </v-radio-group>
@@ -131,7 +127,9 @@
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>Form Functionality</template>
+          <template #title>{{
+            $t('trans.formSettings.formFunctionality')
+          }}</template>
           <v-checkbox
             class="my-0"
             v-model="enableSubmitterDraft"
@@ -156,8 +154,7 @@
 
           <v-checkbox v-if="!isFormPublished" disabled class="my-0">
             <template #label>
-              The Form Submissions Schedule will be available in the Form
-              Settings after the form is published.
+              {{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
             </template>
           </v-checkbox>
 
@@ -167,7 +164,7 @@
             v-model="schedule.enabled"
           >
             <template #label>
-              Form Submissions Schedule
+              {{ $t('trans.formSettings.formSubmissionsSchedule') }}
               <v-tooltip bottom close-delay="2500">
                 <template v-slot:activator="{ on, attrs }">
                   <font-awesome-icon
@@ -179,13 +176,13 @@
                   />
                 </template>
                 <span
-                  >Experimental
+                  >{{ $t('trans.formSettings.experimental') }}
                   <a
                     :href="githubLinkScheduleAndReminderFeature"
                     class="preview_info_link_field_white"
                     :target="'_blank'"
                   >
-                    Learn more
+                    {{ $t('trans.formSettings.learnMore') }}
                     <font-awesome-icon
                       icon="fa-solid fa-square-arrow-up-right" /></a
                 ></span>
@@ -214,13 +211,13 @@
                   />
                 </template>
                 <span
-                  >Experimental
+                  >{{ $t('trans.formSettings.experimental') }}
                   <a
                     :href="githubLinkCopyFromExistingFeature"
                     class="preview_info_link_field_white"
                     :target="'_blank'"
                   >
-                    Learn more
+                    {{ $t('trans.formSettings.learnMore') }}
                     <font-awesome-icon
                       icon="fa-solid fa-square-arrow-up-right" /></a
                 ></span>
@@ -232,10 +229,12 @@
 
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>After Submission</template>
+          <template #title>{{
+            $t('trans.formSettings.afterSubmission')
+          }}</template>
           <v-checkbox class="my-0" v-model="showSubmissionConfirmation">
             <template #label>
-              Show the submission confirmation details
+              {{ $t('trans.formSettings.submissionConfirmation') }}
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
@@ -247,10 +246,9 @@
                   this form will see on successful submission. <br />
                   If checked, it will display
                   <ul>
-                    <li>the Confirmation ID</li>
+                    <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
                     <li>
-                      the option for the user to email themselves a submission
-                      confirmation
+                      {{ $t('trans.formSettings.infoB') }}
                     </li>
                   </ul>
                 </span>
