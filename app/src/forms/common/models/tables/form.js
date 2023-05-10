@@ -35,7 +35,6 @@ class Form extends Timestamps(Model) {
     const FormVersion = require('./formVersion');
     const FormVersionDraft = require('./formVersionDraft');
     const IdentityProvider = require('./identityProvider');
-    const BulkFileStorage = require('./bulkFileStorage');
     return {
       drafts: {
         relation: Model.HasManyRelation,
@@ -72,14 +71,6 @@ class Form extends Timestamps(Model) {
         join: {
           from: 'form.id',
           to: 'form_version.formId',
-        },
-      },
-      bulkFileStorages: {
-        relation: Model.HasManyRelation,
-        modelClass: BulkFileStorage,
-        join: {
-          from: 'form.id',
-          to: 'bulk_file_storage.formId',
         },
       },
     };

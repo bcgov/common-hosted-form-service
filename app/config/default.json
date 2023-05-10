@@ -1,6 +1,6 @@
 {
   "db": {
-    "database": "chefs",
+    "database": "chefs_bulk",
     "host": "localhost",
     "port": "5432",
     "username": "app"

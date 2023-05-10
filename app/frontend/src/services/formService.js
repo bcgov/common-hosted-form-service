@@ -225,8 +225,8 @@ export default {
    * @param {Object} requestBody The files data for multi submission
    * @returns {Promise} An axios response
    */
-  createBulkSubmission(formId, versionId, requestBody) {
-    return appAxios(30000).post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/bulksubmissions`, requestBody);
+  createMultiSubmission(formId, versionId, requestBody) {
+    return appAxios(30000).post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/multiSubmission`, requestBody);
   },
 
   /**

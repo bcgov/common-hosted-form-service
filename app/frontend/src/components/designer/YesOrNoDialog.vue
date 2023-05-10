@@ -19,7 +19,7 @@
 </template>
 <script>
 export default {
-  name: 'BulkPrompt',
+  name: 'YesOrNoDialog',
   components: {},
   props: {
     doYouWantToSaveTheDraft: Boolean,

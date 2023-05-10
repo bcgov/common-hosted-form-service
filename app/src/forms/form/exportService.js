@@ -124,7 +124,7 @@ const service = {
 
   _submissionsColumns: (form) => {
     // Custom columns not defined - return default column selection behavior
-    let columns = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'idBulkFile'];
+    let columns = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email'];
     // if form has 'status updates' enabled in the form settings include these in export
     if (form.enableStatusUpdates) {
       columns = columns.concat(['status', 'assignee', 'assigneeEmail']);

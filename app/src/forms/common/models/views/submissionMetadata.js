@@ -52,11 +52,6 @@ class SubmissionMetadata extends Model {
           query.where('version', value);
         }
       },
-      filterIdBulkFile(query, value) {
-        if (value) {
-          query.where('idBulkFile', value);
-        }
-      },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
       },

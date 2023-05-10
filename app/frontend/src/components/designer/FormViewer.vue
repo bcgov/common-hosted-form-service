@@ -84,7 +84,7 @@
               Please wait while the form is loading !!!
             </div>
           </v-alert>
-          <FormViewerDownloadButton
+          <FormViewerMultiUpload
             v-if="!isLoading && allowSubmitterToUploadFile && bulkFile"
             :response="sbdMessage"
             :formElement="formElement"
@@ -114,7 +114,7 @@
           <p v-if="version" class="text-right">Version: {{ version }}</p>
         </div>
       </div>
-      <BulkPrompt :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" @close-bulk-yes-or-no="closeBulkYesOrNo" />
+      <YesOrNoDialog :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft" @save-draft="saveDraftFromModal" @close-bulk-yes-or-no="closeBulkYesOrNo" />
     </v-skeleton-loader>
   </div>
 </template>
@@ -126,22 +126,21 @@ import { Form } from 'vue-formio';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
-import FormViewerDownloadButton from '@/components/designer/FormViewerDownloadButton.vue';
+import FormViewerMultiUpload from '@/components/designer/FormViewerMultiUpload.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
-// import FormBulkDialog  from '@/components/designer/FormBulkDialog.vue';
-import BulkPrompt from '@/components/designer/BulkPrompt.vue';
+import YesOrNoDialog from '@/components/designer/YesOrNoDialog.vue';
 
 import _ from 'lodash';
 
 export default {
   name: 'FormViewer',
   components: {
-    BulkPrompt,
+    YesOrNoDialog,
     Form,
     FormViewerActions,
-    FormViewerDownloadButton,
+    FormViewerMultiUpload,
   },
   props: {
     bulkState: String,
@@ -396,12 +395,12 @@ export default {
         submission: Object.freeze({ data: submissions }),
       };
       this.block = true;
-      this.sendMultisubmissionData(payload);
+      this.sendMultiSubmissionData(payload);
     },
-    async sendMultisubmissionData(body) {
+    async sendMultiSubmissionData(body) {
       try {
         this.saving = true;
-        let response = await formService.createBulkSubmission(this.formId, this.versionIdToSubmitTo, body);
+        let response = await formService.createMultiSubmission(this.formId, this.versionIdToSubmitTo, body);
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...

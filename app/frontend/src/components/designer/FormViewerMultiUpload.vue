@@ -81,7 +81,7 @@
   </div>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 export default {
   name: 'FormViewerDownloadButton',
   components: {},
@@ -117,6 +117,7 @@ export default {
       globalError: [],
       progress: false,
       report_file_name: undefined,
+      max_file_size: 5,
       ERROR: {
         UPLOAD_MULTIPLE_FILE_ERROR: 'Sorry, you can upload only one file',
         DRAG_MULPLE_FILE_ERROR: 'Sorry, you can drag only one file',
@@ -132,7 +133,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
     txt_color() {
       if (!this.error) return 'success-text';
       else return 'fail-text';
@@ -154,9 +154,8 @@ export default {
         this.addNotification({ message: this.ERROR.UPLOAD_MULTIPLE_FILE_ERROR, consoleError: this.ERROR.UPLOAD_MULTIPLE_FILE_ERROR });
         return;
       }
-      let droppedFiles = type == 0 ? e.dataTransfer.files : this.$refs.file.files;
-
-      if (!droppedFiles) return;
+      let droppedFiles = type == 0 ? e.dataTransfer.files : e.target.files;
+      if (!droppedFiles || droppedFiles == undefined) return;
 
       if (droppedFiles.length > 1) {
         this.addNotification({ message: this.ERROR.DRAG_MULPLE_FILE_ERROR, consoleError: this.ERROR.DRAG_MULPLE_FILE_ERROR });
@@ -166,8 +165,8 @@ export default {
         this.addNotification({ message: this.ERROR.FILE_FORMAT_ERROR, consoleError: this.ERROR.FILE_FORMAT_ERROR });
         return;
       }
-      let size = droppedFiles[0] / (1024 * 1024);
-      if (size > 5) {
+      let size = droppedFiles[0].size / (1024 * 1024);
+      if (size > this.max_file_size) {
         this.addNotification({ message: this.ERROR.FILE_SIZE_ERROR, consoleError: this.ERROR.FILE_SIZE_ERROR });
         return;
       }
@@ -284,8 +283,6 @@ export default {
       this.$emit('reset-message');
     },
   },
-  created() {},
-  beforeUpdate() {},
 };
 </script>
 

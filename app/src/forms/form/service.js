@@ -2,7 +2,6 @@ const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 const { validateScheduleObject } = require('../common/utils');
-const validationService = require('./validationService');
 
 const {
   FileStorage,
@@ -238,7 +237,6 @@ const service = {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
-      .modify('filterIdBulkFile', params.idBulkFile)
       .modify('filterConfirmationId', params.confirmationId)
       .modify('filterDraft', params.draft)
       .modify('filterDeleted', params.deleted)
@@ -249,7 +247,7 @@ const service = {
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId', 'idBulkFile', 'originalName'];
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
@@ -336,15 +334,6 @@ const service = {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
-      /*
-      //Future use to validate submission data on backend side.
-
-      const report = await validator.validate(data.submission.data, formVersion.schema);
-
-      if(report !== null) {
-        throw new Problem(422, `Validation Error`, report);
-      }
-      */
 
       const { identityProviders } = await service.readForm(formVersion.formId);
 
@@ -417,7 +406,7 @@ const service = {
       throw err;
     }
   },
-  createBulkSubmission: async (formVersionId, data, currentUser) => {
+  createMultiSubmission: async (formVersionId, data, currentUser) => {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
@@ -434,26 +423,10 @@ const service = {
       delete recordWithoutData.submission.data;
 
       let recordsToInsert = [];
-      let validationResults = [];
-      let anyError = false;
-      await Promise.all(
-        submissionDataArray.map(async (singleData, index) => {
-          const report = await validationService.validate(singleData, formVersion.schema);
-          if (report !== null) {
-            anyError = true;
-            validationResults[index] = report;
-          }
-        })
-      );
-
-      if (anyError) {
-        //As we need all or nothing to be saved, So if a single draft entry do not validated then just return report without saving any submission.
-        throw new Problem(422, `Validation failed`, { reports: validationResults });
-      }
-
+      let submissionId;
       // let's create multiple submissions with same metadata
       submissionDataArray.map((singleData) => {
-        let submissionId = uuidv4();
+        submissionId = uuidv4();
         recordsToInsert.push({
           ...recordWithoutData,
           id: submissionId,
