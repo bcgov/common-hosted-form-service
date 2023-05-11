@@ -1,4 +1,5 @@
 import store from '@/store/modules/notifications';
+import { NotificationTypes } from '@/utils/constants';
 
 describe('notifications actions', () => {
   const mockStore = {
@@ -22,6 +23,37 @@ describe('notifications actions', () => {
     };
     store.actions.addNotification(mockStore, obj);
     expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('PUSH', {
+      type: 'error',
+      class: 'alert-error',
+      icon: 'error',
+      ...obj,
+    });
+  });
+
+  it('addNotification as warning should commit to PUSH', () => {
+    const obj = {
+      message: 'foo',
+      consoleError: 'bar',
+      ...NotificationTypes.WARNING,
+    };
+    store.actions.addNotification(mockStore, obj);
+    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('PUSH', {
+      type: 'warning',
+      class: 'warning-error',
+      icon: 'warning',
+      ...obj,
+    });
+  });
+
+  it('addNotification without consoleError should commit to PUSH', () => {
+    const obj = {
+      message: 'foo',
+    };
+    store.actions.addNotification(mockStore, obj);
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledWith('PUSH', {
       type: 'error',

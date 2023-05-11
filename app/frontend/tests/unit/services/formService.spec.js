@@ -311,15 +311,15 @@ describe('Form Service', () => {
     });
   });
 
-  describe('forms/{formId}/export', () => {
-    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/export`;
+  describe('forms/{formId}/export/fields', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/export/fields`;
 
     it('calls get on endpoint', async () => {
-      mockAxios.onGet(endpoint).reply(200);
+      mockAxios.onPost(endpoint).reply(200);
 
       const result = await formService.exportSubmissions(zeroUuid, 'csv');
       expect(result).toBeTruthy();
-      expect(mockAxios.history.get).toHaveLength(1);
+      expect(mockAxios.history.post).toHaveLength(1);
     });
   });
 
@@ -450,6 +450,24 @@ describe('Form Service', () => {
       const result = await formService.restoreMutipleSubmissions(submissionId, formId, { submissionIds });
       expect(result).toBeTruthy();
       expect(mockAxios.history.put).toHaveLength(1);
+    });
+  });
+  describe('submissions/${formId}/csvexport/fields', () => {
+    let formId = 'd15a8c14-c78a-42fa-8afd-b3f1fed59159';
+
+    const endpoint = `${ApiRoutes.FORMS}/${formId}/csvexport/fields`;
+
+    it('calls to get submissions fields for csv export', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+      const result = await formService.readCSVExportFields(
+        formId,
+        'submissions',
+        false,
+        false,
+        1
+      );
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
     });
   });
 });

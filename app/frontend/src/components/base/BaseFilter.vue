@@ -56,6 +56,11 @@ export default {
         { text: 'Example Text 2', value: 'exampleText2' },
       ],
     },
+    // The default selected data
+    preselectedData: {
+      type: Array,
+      default: () => [],
+    },
     inputItemKey: {
       type: String,
       default: 'value',
@@ -75,7 +80,7 @@ export default {
   },
   data() {
     return {
-      selectedData: [],
+      selectedData: this.preselectedData,
       inputFilter: '',
     };
   },

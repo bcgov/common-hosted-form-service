@@ -1,59 +1,72 @@
 <template>
-  <div>
-    <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-      <div v-if="isFormScheduleExpired">
-        <template>
-          <v-alert text prominent type="error">
-            {{
-              isLateSubmissionAllowed
-                ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
-                : formScheduleExpireMessage
-            }}
-          </v-alert>
-          <div v-if="isLateSubmissionAllowed">
-            <v-col cols="3" md="2">
-              <v-btn color="primary" @click="isFormScheduleExpired = false">
-                <span>Create late submission</span>
-              </v-btn>
-            </v-col>
-          </div>
-        </template>
-      </div>
-      <div v-else>
-        <div v-if="displayTitle">
-          <div v-if="!isFormPublic(form)">
-            <FormViewerActions
-              :block="block"
-              :draftEnabled="form.enableSubmitterDraft"
-              :formId="form.id"
-              :isDraft="submissionRecord.draft"
-              :permissions="permissions"
-              :readOnly="readOnly"
-              :submissionId="submissionId"
-              :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
-              :bulkFile="bulkFile"
-              @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
-              @save-draft="saveDraft"
-              @switchView="switchView"
-            />
-          </div>
-          <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }}</h1>
+  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+    <div v-if="isFormScheduleExpired">
+      <template>
+        <v-alert text prominent type="error">
+          {{
+            isLateSubmissionAllowed
+              ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
+              : formScheduleExpireMessage
+          }}
+        </v-alert>
+
+        <div v-if="isLateSubmissionAllowed">
+          <v-col cols="3" md="2">
+            <v-btn color="primary" @click="isFormScheduleExpired = false">
+              <span>Create late submission</span>
+            </v-btn>
+          </v-col>
         </div>
-        <div class="form-wrapper">
-          <v-alert
-            class="mt-2 mb-2"
-            :value="saved || saving"
-            :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
-            :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
-            :icon="saving ? NOTIFICATIONS_TYPES.INFO.icon : NOTIFICATIONS_TYPES.SUCCESS.icon"
-            transition="scale-transition"
-          >
-            <div v-if="saving">
-              <v-progress-linear indeterminate />
-              Saving
-            </div>
-            <div v-else>Draft Saved</div>
-          </v-alert>
+      </template>
+    </div>
+
+    <div v-else>
+      <div v-if="displayTitle">
+        <div v-if="!isFormPublic(form)">
+          <FormViewerActions
+            :block="block"
+            :draftEnabled="form.enableSubmitterDraft"
+            :copyExistingSubmission="form.enableCopyExistingSubmission"
+            :formId="form.id"
+            :isDraft="submissionRecord.draft"
+            :permissions="permissions"
+            :readOnly="readOnly"
+            :submissionId="submissionId"
+            :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+            :bulkFile="bulkFile"
+            @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
+            @save-draft="saveDraft"
+            @switchView="switchView"
+          />
+        </div>
+        <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }}</h1>
+      </div>
+      <div class="form-wrapper">
+        <v-alert
+          :value="saved || saving"
+          :class="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.class
+              : NOTIFICATIONS_TYPES.SUCCESS.class
+          "
+          :color="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.color
+              : NOTIFICATIONS_TYPES.SUCCESS.color
+          "
+          :icon="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.icon
+              : NOTIFICATIONS_TYPES.SUCCESS.icon
+          "
+          transition="scale-transition"
+        >
+          <div v-if="saving">
+            <v-progress-linear indeterminate />
+            Saving
+          </div>
+          <div v-else>Draft Saved</div>
+        </v-alert>
 
           <slot name="alert" v-bind:form="form" />
 
@@ -103,12 +116,12 @@
             :form="formSchema"
             :key="reRenderFormIo"
             :submission="submission"
+            :options="viewerOptions"
             @submit="onSubmit"
             @submitDone="onSubmitDone"
             @submitButton="onSubmitButton"
             @customEvent="onCustomEvent"
             @change="formChange"
-            :options="viewerOptions"
             @render="onFormRender"
           />
           <p v-if="version" class="text-right">Version: {{ version }}</p>
@@ -339,8 +352,21 @@ export default {
         } else {
           // If getting the HEAD form version (IE making a new submission)
           response = await formService.readPublished(this.formId);
-          if (!response.data || !response.data.versions || !response.data.versions[0]) {
-            throw new Error(`No published version found in response. FormID: ${this.formId}`);
+          if (
+            !response.data ||
+            !response.data.versions ||
+            !response.data.versions[0]
+          ) {
+            this.$router.push({
+              name: 'Alert',
+              params: {
+                message:
+                  'The form owner has not published the form, and it is not ' +
+                  'available for submissions.',
+                type: 'info',
+              },
+            });
+            return;
           }
 
           this.form = response.data;
@@ -359,7 +385,7 @@ export default {
         if (this.authenticated) {
           this.isFormScheduleExpired = true;
           this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage = 'An error occurred fetching this form';
+          this.formScheduleExpireMessage = error.message;
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,

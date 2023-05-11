@@ -60,14 +60,14 @@
       no-data-text="You have no submissions"
     >
       <template #[`item.lastEdited`]="{ item }">
-        {{ item.lastEdited | formatDateLong(false) }}
+        {{ item.lastEdited | formatDateLong }}
       </template>
       <template #[`item.submittedDate`]="{ item }">
-        {{ item.submittedDate | formatDateLong(false) }}
+        {{ item.submittedDate | formatDateLong }}
       </template>
 
       <template #[`item.completedDate`]="{ item }">
-        {{ item.completedDate | formatDateLong(false) }}
+        {{ item.completedDate | formatDateLong }}
       </template>
       <template #[`item.actions`]="{ item }">
         <MySubmissionsActions
@@ -83,7 +83,12 @@
         inputFilterPlaceholder="Search submission fields"
         inputItemKey="value"
         inputSaveButtonText="Save"
-        :inputData="DEFAULT_HEADERS.filter((h) => !filterIgnore.some((fd) => fd.value === h.value))"
+        :inputData="
+          DEFAULT_HEADERS.filter(
+            (h) => !filterIgnore.some((fd) => fd.value === h.value)
+          )
+        "
+        :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -169,6 +174,12 @@ export default {
       ];
       if (this.showDraftLastEdited || !this.formId) {
         headers.splice(headers.length - 1, 0, {
+          text: 'Draft Updated By',
+          align: 'start',
+          value: 'updatedBy',
+          sortable: true,
+        });
+        headers.splice(headers.length - 1, 0, {
           text: 'Draft Last Edited',
           align: 'start',
           value: 'lastEdited',
@@ -182,6 +193,11 @@ export default {
       if (this.filterData.length > 0)
         headers = headers.filter((h) => this.filterData.some((fd) => fd.value === h.value) || this.filterIgnore.some((ign) => ign.value === h.value));
       return headers;
+    },
+    PRESELECTED_DATA() {
+      return this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
@@ -198,8 +214,12 @@ export default {
 
     // Status columns in the table
     getCurrentStatus(record) {
-      // Current status is most recent status (top in array, query returns in status created desc)
-      const status = record.submissionStatus && record.submissionStatus[0] ? record.submissionStatus[0].code : 'N/A';
+      // Current status is most recent status (top in array, query returns in
+      // status created desc)
+      const status =
+        record.submissionStatus && record.submissionStatus[0]
+          ? record.submissionStatus[0].code
+          : 'N/A';
       if (record.draft && status !== 'REVISING') {
         return 'DRAFT';
       } else {
@@ -224,14 +244,18 @@ export default {
         const tableRows = this.submissionList.map((s) => {
           return {
             confirmationId: s.confirmationId,
-            lastEdited: s.draft ? s.updatedAt : undefined,
             name: s.name,
             permissions: s.permissions,
             status: this.getCurrentStatus(s),
             submissionId: s.formSubmissionId,
             submittedDate: this.getStatusDate(s, 'SUBMITTED'),
             createdBy: s.submission.createdBy,
-            username: s.submissionStatus && s.submissionStatus.length > 0 ? s.submissionStatus[0].createdBy : '',
+            updatedBy: s.draft ? s.submission.updatedBy : undefined,
+            lastEdited: s.draft ? s.submission.updatedAt : undefined,
+            username:
+              s.submissionStatus && s.submissionStatus.length > 0
+                ? s.submissionStatus[0].createdBy
+                : '',
           };
         });
         this.submissionTable = tableRows;

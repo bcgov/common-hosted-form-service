@@ -44,8 +44,9 @@ on:
         required: false
 jobs:
   owasp-zap-scan:
-    runs-on: ubuntu-latest
     name: OWASP ZAP Scan
+    if: "! github.event.pull_request.head.repo.fork"
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

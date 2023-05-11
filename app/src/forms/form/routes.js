@@ -1,6 +1,6 @@
 const config = require('config');
 const routes = require('express').Router();
-
+const middleware = require('../common/middleware');
 const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
@@ -24,6 +24,10 @@ routes.get('/:formId', apiAccess, hasFormPermissions(P.FORM_READ), async (req, r
 
 routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.export(req, res, next);
+});
+
+routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.exportWithFields(req, res, next);
 });
 
 routes.get('/:formId/options', async (req, res, next) => {
@@ -131,6 +135,10 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
 
 routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
+});
+
+routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.readFieldsForCSVExport(req, res, next);
 });
 
 routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {

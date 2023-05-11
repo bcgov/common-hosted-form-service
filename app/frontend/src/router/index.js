@@ -74,6 +74,20 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
+        path: '/alert',
+        name: 'Alert',
+        component: () =>
+          import(
+            /* webpackChunkName: "alert" */
+            '@/components/bcgov/BCGovAlertBanner.vue'
+          ),
+        meta: {
+          formSubmitMode: true,
+          hasLogin: true,
+        },
+        props: createProps,
+      },
+      {
         path: '/error',
         name: 'Error',
         component: () => import(/* webpackChunkName: "error" */ '@/views/Error.vue'),
@@ -82,6 +96,26 @@ export default function getRouter(basePath = '/') {
           hasLogin: true,
         },
         props: createProps,
+      },
+      {
+        path: '/file',
+        component: () =>
+          import(/* webpackChunkName: "file" */ '@/views/File.vue'),
+        children: [
+          {
+            path: 'download',
+            name: 'Download',
+            component: () =>
+              import(
+                /* webpackChunkName: "download" */ '@/views/file/Download.vue'
+              ),
+            meta: {
+              requiresAuth: true,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+        ],
       },
       {
         path: '/form',
@@ -104,6 +138,20 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Form Designer',
               requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
+            path: 'export',
+            name: 'SubmissionsExport',
+            component: () =>
+              import(
+                /* webpackChunkName: "export" */ '@/views/form/Export.vue'
+              ),
+            meta: {
+              breadcrumbTitle: 'Submissions Export',
+              requiresAuth: true,
               hasLogin: true,
             },
             props: createProps,
