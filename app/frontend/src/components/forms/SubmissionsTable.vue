@@ -38,8 +38,25 @@
             </template>
             <span>Manage Form</span>
           </v-tooltip>
+          <v-tooltip location="bottom">
+            <template #activator="{ on, attrs }">
+              <router-link
+                :to="{ name: 'SubmissionsExport', query: { f: formId } }"
+              >
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>get_app</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>Export Submissions to Files</span>
+          </v-tooltip>
         </span>
-        <ExportSubmissions />
       </v-col>
     </v-row>
 
@@ -249,7 +266,6 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@src/utils/constants';
 import moment from 'moment';
-import ExportSubmissions from '@src/components/forms/ExportSubmissions.vue';
 
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -257,9 +273,6 @@ library.add(faTrash);
 
 export default {
   name: 'SubmissionsTable',
-  components: {
-    ExportSubmissions,
-  },
   props: {
     formId: {
       type: String,
@@ -379,17 +392,6 @@ export default {
             key: 'status',
           },
         ];
-        // If status flow enabled add that column
-        if (this.showStatus) {
-          headers = [
-            ...headers,
-            {
-              title: 'Status',
-              align: 'start',
-              key: 'status',
-            },
-          ];
-        }
       }
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
@@ -454,18 +456,6 @@ export default {
           return { title: ff, key: ff, align: 'end' };
         })
       );
-
-      // If status flow enabled add that column
-      if (this.showStatus) {
-        filteredHeader = [
-          {
-            title: 'Status',
-            align: 'start',
-            key: 'status',
-          },
-          ...filteredHeader,
-        ];
-      }
 
       filteredHeader = [
         {

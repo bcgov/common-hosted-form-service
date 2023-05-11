@@ -28,6 +28,11 @@ class FormVersion extends Timestamps(Model) {
       selectWithoutSchema(builder) {
         builder.select('id', 'formId', 'version', 'published', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt');
       },
+      filterVersion(query, value) {
+        if (value && value > 0) {
+          query.where('version', value);
+        }
+      },
       filterFormId(query, value) {
         if (value !== undefined) {
           query.where('formId', value);

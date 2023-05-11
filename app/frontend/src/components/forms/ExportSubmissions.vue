@@ -1,258 +1,301 @@
 <template>
-  <span>
-    <v-tooltip location="bottom">
-      <template #activator="{ props }">
-        <v-btn
-          class="mx-1"
-          color="primary"
-          icon
-          v-bind="props"
-          @click="openExportDialog"
-        >
-          <v-icon>get_app</v-icon>
-        </v-btn>
-      </template>
-      <span>Export Submissions to File</span>
-    </v-tooltip>
-
-    <v-dialog
-      v-if="dialog"
-      v-model="dialog"
-      width="900"
-      content-class="export-submissions-dlg"
-    >
-      <v-card>
-        <v-card-title class="text-h5 pb-0 titleObjectStyle"
-          >Export Submissions to File</v-card-title
-        >
-        <v-card-text>
-          <hr
-            style="
-              height: 2px;
-              border: none;
-              background-color: #707070c1;
-              margin-top: 5px;
-            "
-          />
-
-          <v-row>
-            <v-col>
-              <p class="subTitleObjectStyle">Select the submission date</p>
-              <v-radio-group v-model="dataFields" hide-details="auto">
-                <v-radio label="All data/fields" :value="false">
-                  <template #label>
-                    <span class="radioboxLabelStyle">All data/fields</span>
-                  </template>
-                </v-radio>
-                <!--<v-radio label="Select Date Range" :value="true">
-                  <template v-slot:label>
-                    <span class="radioboxLabelStyle">Selected data/fields</span>
-                    <v-icon class="ml-3" color="#003366"> view_week</v-icon>
-                  </template>
-                </v-radio>
-                -->
-              </v-radio-group>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <p class="subTitleObjectStyle">Select the submission date</p>
-              <v-radio-group v-model="dateRange" hide-details="auto">
-                <v-radio label="All" :value="false">
-                  <template #label>
-                    <span class="radioboxLabelStyle">All</span>
-                  </template>
-                </v-radio>
-                <v-radio label="Select Date range" :value="true">
-                  <template #label>
-                    <span class="radioboxLabelStyle">Select date range</span>
-                  </template>
-                </v-radio>
-              </v-radio-group>
-            </v-col>
-          </v-row>
-
-          <div v-if="dateRange">
+  <div>
+    <v-row class="mt-6" no-gutters>
+      <v-col>
+        <v-row>
+          <v-col cols="12" sm="6" order="2" order-sm="1">
+            <h1>Export Submissions to File</h1>
+          </v-col>
+          <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+            <span>
+              <v-tooltip location="bottom">
+                <template #activator="{ on, attrs }">
+                  <router-link
+                    :to="{ name: 'FormSubmissions', query: { f: form.id } }"
+                  >
+                    <v-btn
+                      class="mx-1"
+                      color="primary"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon class="mr-1">list_alt</v-icon>
+                    </v-btn>
+                  </router-link>
+                </template>
+                <span>View Submissions</span>
+              </v-tooltip>
+            </span>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
             <v-row>
-              <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
-                <v-menu
-                  v-model="startDateMenu"
-                  data-test="menu-form-startDate"
-                  :close-on-content-click="true"
-                  transition="scale-transition"
-                  min-width="290px"
-                >
-                  <template #activator="{ props }">
-                    <label>From</label>
-                    <v-text-field
-                      v-model="startDate"
-                      placeholder="yyyy-mm-dd"
-                      append-icon="event"
-                      readonly
-                      density="compact"
-                      variant="outlined"
-                      @click:append="startDateMenu = true"
-                      v-bind="props"
-                    ></v-text-field>
-                  </template>
-                  <v-text-field
-                    v-model="startDate"
-                    type="date"
-                    data-test="picker-form-startDate"
-                    :max="maxDate"
-                    @update:modelValue="startDateMenu = false"
-                  ></v-text-field>
-                </v-menu>
-              </v-col>
-
-              <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
-                <v-menu
-                  v-model="endDateMenu"
-                  data-test="menu-form-endDate"
-                  :close-on-content-click="true"
-                  transition="scale-transition"
-                  min-width="290px"
-                >
-                  <template #activator="{ props }">
-                    <label>To</label>
-                    <v-text-field
-                      v-model="endDate"
-                      placeholder="yyyy-mm-dd"
-                      append-icon="event"
-                      readonly
-                      density="compact"
-                      variant="outlined"
-                      @click:append="endDateMenu = true"
-                      v-bind="props"
-                    ></v-text-field>
-                  </template>
-                  <v-text-field
-                    type="date"
-                    v-model="endDate"
-                    data-test="picker-form-endDate"
-                    :min="startDate"
-                    @update:modelValue="endDateMenu = false"
-                  ></v-text-field>
-                </v-menu>
+              <v-col>
+                <p class="subTitleObjectStyle">File Type</p>
+                <v-radio-group v-model="exportFormat" hide-details="auto">
+                  <v-radio label="JSON" value="json">
+                    <template v-slot:label>
+                      <span class="radioboxLabelStyle">JSON</span>
+                    </template>
+                  </v-radio>
+                  <v-radio label="CSV" value="csv">
+                    <template v-slot:label>
+                      <span class="radioboxLabelStyle">CSV</span>
+                    </template>
+                  </v-radio>
+                </v-radio-group>
               </v-col>
             </v-row>
-          </div>
-
-          <p class="subTitleObjectStyle" :class="!dateRange ? 'mt-5' : ''">
-            Select your export options
-          </p>
-          <v-radio-group v-model="exportFormat" hide-details="auto">
-            <v-radio label="JSON" value="json">
-              <template #label>
-                <span class="radioboxLabelStyle">JSON</span>
-              </template>
-            </v-radio>
-            <v-radio label="CSV" value="csv">
-              <template #label>
-                <span class="radioboxLabelStyle">CSV</span>
-              </template>
-            </v-radio>
-          </v-radio-group>
-          <v-row v-if="exportFormat === 'csv'" class="mt-5">
-            <v-col cols="6">
-              <div class="subTitleObjectStyle">
-                Select the submission version
-              </div>
-              <v-select
-                v-model="versionSelected"
-                item-title="id"
-                item-value="version"
-                :items="versions"
-                class="mt-0"
-                style="width: 25%; margin-top: 0px"
-              ></v-select>
-            </v-col>
-          </v-row>
-          <v-row v-if="exportFormat === 'csv'" class="mt-0">
-            <v-col>
-              <div style="display: flex; align-content: flex-start">
-                <div class="subTitleObjectStyle mr-1">
-                  Select the export template
+            <v-row v-if="exportFormat === 'csv'" class="mt-5">
+              <v-col cols="6">
+                <div class="subTitleObjectStyle">Form Version</div>
+                <div class="text-red mt-3" v-if="versionRequired">
+                  Version is required.
                 </div>
-                (<a
-                  :href="githubLink"
-                  class="preview_info_link_field"
-                  :target="'_blank'"
-                >
-                  Learn more
-                  <font-awesome-icon
-                    icon="fa-solid fa-square-arrow-up-right" /></a
-                >)
-              </div>
+                <v-select
+                  item-title="id"
+                  item-value="version"
+                  v-model="versionSelected"
+                  :items="versions"
+                  @update:model-value="changeVersions"
+                  class="mt-0"
+                  style="width: 25%; margin-top: 0px"
+                ></v-select>
+              </v-col>
+            </v-row>
+            <v-row
+              v-if="exportFormat === 'csv' && showFieldsOptions"
+              class="mt-0"
+            >
+              <v-col>
+                <p class="subTitleObjectStyle">Data Fields</p>
+                <v-row v-if="exportFormat === 'csv'">
+                  <v-col>
+                    <v-row>
+                      <v-col cols="7">
+                        <v-text-field
+                          v-model="inputFilter"
+                          placeholder="Search Fields"
+                          clearable
+                          color="primary"
+                          prepend-inner-icon="search"
+                          variant="filled"
+                          density="compact"
+                          class="mt-3 submissions-table"
+                          single-line
+                        >
+                        </v-text-field>
+                        <div
+                          class="subTitleObjectStyle"
+                          style="font-size: 14px !important"
+                        >
+                          {{ selected.length }} of
+                          {{ FILTER_HEADERS.length }} selected for export
+                        </div>
 
-              <v-radio-group v-model="csvTemplates" hide-details="auto">
-                <v-radio label="A" value="flattenedWithBlankOut">
-                  <template #label>
-                    <span
-                      class="radioboxLabelStyle"
-                      style="display: flex; align-content: flex-start"
-                      >Template 1
-                      <div class="blueColorWrapper ml-1">
-                        (Recommended)
-                      </div></span
-                    >
-                  </template>
-                </v-radio>
-                <v-radio label="B" value="flattenedWithFilled">
-                  <template #label>
-                    <span class="radioboxLabelStyle">Template 2 </span>
-                  </template>
-                  <sup>Betas</sup>
-                </v-radio>
-                <v-radio label="C" value="unflattened">
-                  <template #label>
-                    <span class="radioboxLabelStyle">Template 3 </span>
-                  </template>
-                </v-radio>
-              </v-radio-group>
-            </v-col>
-          </v-row>
-          <div class="mt-6 mb-0 fileLabelStyle">
-            File Name and Type: <strong>{{ fileName }}</strong>
-          </div>
-          <div class="fileLabelStyle" :style="{ color: '#70707063' }">
-            <small class="text--disabled">
-              * The export data feature works well for simple form designs that
-              don't contain complex nested arrays of form components. If you
-              make changes to your form design the structure of your export will
-              also change. We therefore caution against implementing automation
-              with other systems without accounting for these factors.
-            </small>
-          </div>
-        </v-card-text>
+                        <v-data-table
+                          :headers="headers"
+                          :search="inputFilter"
+                          show-select
+                          hide-default-footer
+                          v-model="selected"
+                          disable-sort
+                          :items="FILTER_HEADERS"
+                          item-key="name"
+                          height="300px"
+                          mobile
+                          disable-pagination
+                          fixed-header
+                          class="bg-grey-lighten-5 mt-3 submissions-table"
+                        />
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="mt-4">
+              <v-col>
+                <p class="subTitleObjectStyle">Submission Date</p>
+                <v-radio-group v-model="dateRange" hide-details="auto">
+                  <v-radio label="All" :value="false">
+                    <template v-slot:label>
+                      <span class="radioboxLabelStyle">All</span>
+                    </template>
+                  </v-radio>
+                  <v-radio label="Select Date range" :value="true">
+                    <template v-slot:label>
+                      <span class="radioboxLabelStyle">Select date range</span>
+                    </template>
+                  </v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+            <v-row class="mt-5">
+              <v-col>
+                <div v-if="dateRange">
+                  <v-row>
+                    <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
+                      <v-menu
+                        v-model="startDateMenu"
+                        data-test="menu-form-startDate"
+                        :close-on-content-click="true"
+                        transition="scale-transition"
+                        min-width="290px"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <label>From</label>
+                          <v-text-field
+                            v-model="startDate"
+                            placeholder="yyyy-mm-dd"
+                            append-icon="event"
+                            v-on:click:append="startDateMenu = true"
+                            readonly
+                            v-on="on"
+                            density="compact"
+                            variant="outlined"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker
+                          v-model="startDate"
+                          data-test="picker-form-startDate"
+                          @input="startDateMenu = false"
+                          :max="maxDate"
+                        ></v-date-picker>
+                      </v-menu>
+                    </v-col>
+                    <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
+                      <v-menu
+                        v-model="endDateMenu"
+                        data-test="menu-form-endDate"
+                        :close-on-content-click="true"
+                        transition="scale-transition"
+                        min-width="290px"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <label>To</label>
+                          <v-text-field
+                            v-model="endDate"
+                            placeholder="yyyy-mm-dd"
+                            append-icon="event"
+                            v-on:click:append="endDateMenu = true"
+                            readonly
+                            v-on="on"
+                            density="compact"
+                            variant="outlined"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker
+                          v-model="endDate"
+                          data-test="picker-form-endDate"
+                          @input="endDateMenu = false"
+                          :min="startDate"
+                        ></v-date-picker>
+                      </v-menu>
+                    </v-col>
+                  </v-row>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row
+              v-if="exportFormat === 'csv' && showFieldsOptions"
+              class="mt-0 pt-0"
+            >
+              <v-col>
+                <div style="display: flex; align-content: flex-start">
+                  <div class="subTitleObjectStyle mr-1">CSV Format</div>
+                </div>
 
-        <v-card-actions class="justify-center">
-          <v-btn
-            class="mb-5 mr-5 exportButtonStyle"
-            color="primary"
-            @click="callExport"
-          >
-            <span>Export</span>
-          </v-btn>
-          <v-btn
-            class="mb-5 cancelButtonStyle"
-            variant="outlined"
-            @click="dialog = false"
-          >
-            <span>Cancel</span>
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </span>
+                <v-radio-group v-model="csvFormats" hide-details="auto">
+                  <v-radio
+                    label="A"
+                    value="multiRowEmptySpacesCSVExport"
+                    style="display: flex; align-content: flex-start"
+                  >
+                    <template v-slot:label>
+                      <span
+                        class="radioboxLabelStyle"
+                        style="display: flex; align-content: flex-start"
+                      >
+                        1 - Multiple rows per submission with indentation
+                      </span>
+                    </template>
+                  </v-radio>
+                  <v-radio
+                    label="B"
+                    value="multiRowBackFilledCSVExport"
+                    class="mt-2"
+                    style="display: flex; align-content: flex-start"
+                  >
+                    <template v-slot:label>
+                      <span class="radioboxLabelStyle">
+                        2 - Multiple rows per submission
+                      </span>
+                    </template>
+                  </v-radio>
+                  <v-radio
+                    label="C"
+                    class="mt-2"
+                    value="singleRowCSVExport"
+                    style="display: flex; align-content: flex-start"
+                  >
+                    <template v-slot:label>
+                      <span class="radioboxLabelStyle"
+                        >3 - Single row per submission
+                      </span>
+                    </template>
+                  </v-radio>
+                  <v-radio label="D" value="unFormattedCSVExport" class="mt-2">
+                    <template v-slot:label>
+                      <span
+                        class="radioboxLabelStyle"
+                        style="display: flex; align-content: flex-start"
+                        >4 - Unformatted
+                      </span>
+                    </template>
+                  </v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+            <div class="mt-7 fileLabelStyle">
+              File Name and Type: <strong>{{ fileName }}</strong>
+            </div>
+            <v-btn
+              class="mb-5 mt-5 exportButtonStyle"
+              color="primary"
+              @click="callExport"
+            >
+              <span>Export</span>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@src/services/formService.js';
+import { NotificationTypes, ExportLargeData } from '@src/utils/constants';
 
+import {
+  faXmark,
+  faSquareArrowUpRight,
+} from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+library.add(faXmark, faSquareArrowUpRight);
 export default {
+  name: 'ExportSubmissions',
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       githubLink:
@@ -265,9 +308,24 @@ export default {
       exportFormat: 'json',
       startDate: moment(Date()).format('YYYY-MM-DD'),
       startDateMenu: false,
-      versionSelected: 1,
-      csvTemplates: 'flattenedWithBlankOut',
+      versionSelected: 0,
+      versionSelectedId: '',
+      csvFormats: 'multiRowEmptySpacesCSVExport',
       versions: [],
+      allDataFields: true,
+      inputFilter: '',
+      singleSelect: false,
+      showFieldsOptions: false,
+      selected: [],
+      versionRequired: false,
+      headers: [
+        {
+          text: 'Select all fields',
+          align: ' start',
+          sortable: true,
+          value: 'name',
+        },
+      ],
     };
   },
   computed: {
@@ -276,17 +334,31 @@ export default {
       let momentString = momentObj.format('YYYY-MM-DD');
       return momentString;
     },
-    ...mapGetters('form', ['form', 'userFormPreferences']),
+    ...mapGetters('form', [
+      'form',
+      'userFormPreferences',
+      'permissions',
+      'formFields',
+      'submissionList',
+    ]),
+
+    ...mapGetters('auth', ['email']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
+    },
+    FILTER_HEADERS() {
+      if (this.versionSelected !== '') {
+        return this.formFields.map((field) => ({
+          name: field,
+          value: field,
+        }));
+      }
+      return [];
     },
   },
   watch: {
     startDate() {
       this.endDate = moment(Date()).format('YYYY-MM-DD');
-    },
-    async exportFormat() {
-      this.updateVersions();
     },
     dateRange(value) {
       if (!value) {
@@ -294,14 +366,58 @@ export default {
         this.startDate = moment(Date()).format('YYYY-MM-DD');
       }
     },
+    selected(oldValue, newValue) {
+      if (oldValue !== newValue) {
+        if (this.selected.length === this.FILTER_HEADERS.length) {
+          this.allDataFields = true;
+        } else {
+          this.allDataFields = false;
+        }
+      }
+    },
+    exportFormat(value) {
+      if (value === 'json') {
+        this.selected = [];
+        this.versionRequired = false;
+      }
+      this.updateVersions();
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    async openExportDialog() {
-      this.dialog = true;
-      this.updateVersions();
+    ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
+    async changeVersions(value) {
+      this.versionRequired = false;
+      value !== ''
+        ? (this.showFieldsOptions = true)
+        : (this.showFieldsOptions = false);
+      await this.refreshFormFields(value);
+    },
+    async refreshFormFields(version) {
+      this.selected = [];
+      if (version !== '') {
+        await this.fetchFormCSVExportFields({
+          formId: this.formId,
+          type: 'submissions',
+          draft: false,
+          deleted: false,
+          version: version,
+        });
+        (this.allDataFields = true), this.selected.push(...this.FILTER_HEADERS);
+      }
     },
     async callExport() {
+      if (this.exportFormat === 'csv' && this.versionSelected === '') {
+        this.versionRequired = true;
+      } else {
+        this.export();
+      }
+    },
+    async export() {
+      let fieldToExport =
+        this.selected.length > 0
+          ? this.selected.map((field) => field.value)
+          : [''];
       try {
         // UTC start of selected start date...
         const from =
@@ -316,10 +432,22 @@ export default {
                 .format()
             : undefined;
 
+        let emailExport = false;
+        if (
+          this.submissionList.length > ExportLargeData.MAX_RECORDS ||
+          this.formFields.length > ExportLargeData.MAX_FIELDS
+        ) {
+          this.dialog = false;
+          emailExport = true;
+          this.addNotification({
+            ...NotificationTypes.SUCCESS,
+            message: `Export in progress... An email will be sent to ${this.email} containing a link to download your data when it is ready.`,
+          });
+        }
         const response = await formService.exportSubmissions(
           this.form.id,
           this.exportFormat,
-          this.csvTemplates,
+          this.csvFormats,
           this.exportFormat === 'csv' ? this.versionSelected : undefined,
           {
             minDate: from,
@@ -327,10 +455,11 @@ export default {
             // deleted: true,
             // drafts: true
           },
-          this.dataFields ? this.userFormPreferences.preferences : undefined
+          fieldToExport,
+          emailExport
         );
 
-        if (response && response.data) {
+        if (response && response.data && !emailExport) {
           const blob = new Blob([response.data], {
             type: response.headers['content-type'],
           });
@@ -344,7 +473,7 @@ export default {
           a.click();
           document.body.removeChild(a);
           this.dialog = false;
-        } else {
+        } else if (response && !response.data && !emailExport) {
           throw new Error('No data in response from exportSubmissions call');
         }
       } catch (error) {
@@ -355,23 +484,56 @@ export default {
         });
       }
     },
-    updateVersions() {
+
+    async updateVersions() {
       this.versions = [];
-      if (this.form && this.form.versions) {
+      if (this.form && Array.isArray(this.form.versions)) {
+        let versions = this.form.versions;
+        const isFormNotPublished = versions.every(
+          (version) => !version.published
+        );
+        if (isFormNotPublished) {
+          versions.sort((a, b) =>
+            a.version < b.version ? -1 : a.version > b.version ? 1 : 0
+          );
+          this.showFieldsOptions = false;
+          this.versions.push('');
+        } else {
+          this.showFieldsOptions = true;
+          versions.sort((a, b) => b.published - a.published);
+        }
         this.versions.push(
           ...this.form.versions.map((version) => version.version)
         );
-        if (this.exportFormat === 'json') {
-          this.versions.push('All');
-        } else {
-          this.versionSelected = this.versions.sort((a, b) => a < b)[0];
-        }
+        this.versionSelected = this.versions[0];
+        await this.refreshFormFields(this.versionSelected);
       }
     },
   },
+  async mounted() {
+    this.fetchForm(this.formId);
+  },
 };
 </script>
-<style lang="scss" scoped>
+
+<style scoped>
+.submissions-table {
+  clear: both;
+}
+@media (max-width: 1263px) {
+  .submissions-table >>> th {
+    vertical-align: top;
+  }
+}
+/* Want to use scss but the world hates me */
+.submissions-table >>> tbody tr:nth-of-type(odd) {
+  background-color: #f5f5f5;
+}
+.submissions-table >>> thead tr th {
+  font-weight: normal;
+  color: #003366 !important;
+  font-size: 1.1em !important;
+}
 .titleObjectStyle {
   text-align: left !important;
   font-style: normal !important;
@@ -382,9 +544,9 @@ export default {
   letter-spacing: 0px !important;
   color: #000000 !important;
 }
+
 .subTitleObjectStyle {
   text-align: left !important;
-  text-decoration: underline !important;
   font-style: normal !important;
   font-size: 18px !important;
   font-variant: normal !important;
@@ -393,6 +555,7 @@ export default {
   letter-spacing: 0px !important;
   color: #000000 !important;
 }
+
 .radioboxLabelStyle {
   text-align: left !important;
   font-style: normal !important;
@@ -403,7 +566,6 @@ export default {
   letter-spacing: 0px !important;
   color: #000000 !important;
 }
-
 .fileLabelStyle {
   text-align: left !important;
   font-style: normal !important;
@@ -414,7 +576,6 @@ export default {
   letter-spacing: 0px !important;
   color: #000000 !important;
 }
-
 .exportButtonStyle {
   width: 80px !important;
   background: #003366 0% 0% no-repeat padding-box !important;
@@ -429,7 +590,6 @@ export default {
   color: #ffffff !important;
   text-transform: capitalize !important;
 }
-
 .cancelButtonStyle {
   width: 80px !important;
   background: #ffffff 0% 0% no-repeat padding-box !important;
@@ -444,7 +604,6 @@ export default {
   color: #38598a !important;
   text-transform: capitalize !important;
 }
-
 .blueColorWrapper {
   text-align: left !important;
   font-style: normal !important;

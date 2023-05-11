@@ -98,6 +98,13 @@ const createStore = (app) => {
         const router = getRouter(app.config.globalProperties.$config.basePath);
         router.replace({ name: 'Error', params: { msg: msg } });
       },
+      alertNavigate(_store, { type, message }) {
+        const router = getRouter(app.config.globalProperties.$config.basePath);
+        router.replace({
+          name: 'Alert',
+          params: { message: message, type: type },
+        });
+      },
       login({ commit, getters, rootGetters }, idpHint = undefined) {
         if (getters.keycloakReady) {
           // Use existing redirect uri if available

@@ -6,7 +6,19 @@ const fileService = require('../file/service');
 module.exports = {
   export: async (req, res, next) => {
     try {
-      const result = await exportService.export(req.params.formId, req.query);
+      const result = await exportService.export(req.params.formId, req.query, req.currentUser, req.headers.referer);
+      ['Content-Disposition', 'Content-Type'].forEach((h) => {
+        res.setHeader(h, result.headers[h.toLowerCase()]);
+      });
+      return res.send(result.data);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  exportWithFields: async (req, res, next) => {
+    try {
+      const result = await exportService.export(req.params.formId, req.body, req.currentUser, req.headers.referer);
       ['Content-Disposition', 'Content-Type'].forEach((h) => {
         res.setHeader(h, result.headers[h.toLowerCase()]);
       });
@@ -231,6 +243,14 @@ module.exports = {
     try {
       const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
       res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  readFieldsForCSVExport: async (req, res, next) => {
+    try {
+      const response = await exportService.fieldsForCSVExport(req.params.formId, req.query);
+      res.status(200).json(response);
     } catch (error) {
       next(error);
     }
