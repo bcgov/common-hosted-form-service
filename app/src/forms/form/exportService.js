@@ -235,7 +235,7 @@ const service = {
               usernameIdp: currentUser.usernameIdp,
             };
             // Uploading to Object storage
-            const fileResult = await fileService.create(fileData, fileCurrentUser);
+            const fileResult = await fileService.create(fileData, fileCurrentUser, 'exports');
             // Sending the email with link to uploaded export
             emailService.submissionExportLink(form.id, null, { to: currentUser.email }, referer, fileResult.id);
           }
