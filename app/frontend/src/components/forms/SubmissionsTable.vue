@@ -28,16 +28,8 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
-              <router-link
-                :to="{ name: 'SubmissionsExport', query: { f: formId } }"
-              >
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
+              <router-link :to="{ name: 'SubmissionsExport', query: { f: formId } }">
+                <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                   <v-icon>get_app</v-icon>
                 </v-btn>
               </router-link>
@@ -259,9 +251,7 @@ export default {
     },
 
     DEFAULT_HEADERS() {
-      let headers = [
-        { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
-      ];
+      let headers = [{ text: 'Confirmation ID', align: 'start', value: 'confirmationId' }];
 
       if (this.userFormPreferences?.preferences?.columns) {
         if (this.userFormPreferences.preferences.columns.includes('date')) {
@@ -275,9 +265,7 @@ export default {
           ];
         }
 
-        if (
-          this.userFormPreferences.preferences.columns.includes('submitter')
-        ) {
+        if (this.userFormPreferences.preferences.columns.includes('submitter')) {
           headers = [
             ...headers,
             {
@@ -396,19 +384,15 @@ export default {
     PRESELECTED_DATA() {
       let preselectedData = [];
       if (this.userFormPreferences?.preferences?.columns) {
-        preselectedData = this.userFormPreferences.preferences.columns.map(
-          (column) => {
-            return {
-              align: 'end',
-              text: column,
-              value: column,
-            };
-          }
-        );
+        preselectedData = this.userFormPreferences.preferences.columns.map((column) => {
+          return {
+            align: 'end',
+            text: column,
+            value: column,
+          };
+        });
       } else {
-        preselectedData = this.DEFAULT_HEADERS.filter(
-          (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-        );
+        preselectedData = this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value));
       }
       return preselectedData;
     },

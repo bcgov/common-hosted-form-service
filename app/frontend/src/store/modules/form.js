@@ -1,12 +1,6 @@
 import { getField, updateField } from 'vuex-map-fields';
 import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import {
-  apiKeyService,
-  formService,
-  fileService,
-  rbacService,
-  userService,
-} from '@/services';
+import { apiKeyService, formService, fileService, rbacService, userService } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 
 const genInitialSchedule = () => ({
@@ -576,36 +570,23 @@ export default {
         );
       }
     },
-    async fetchFormCSVExportFields(
-      { commit, dispatch },
-      { formId, type, draft, deleted, version }
-    ) {
+    async fetchFormCSVExportFields({ commit, dispatch }, { formId, type, draft, deleted, version }) {
       try {
         commit('SET_FORM_FIELDS', []);
-        const { data } = await formService.readCSVExportFields(
-          formId,
-          type,
-          draft,
-          deleted,
-          version
-        );
+        const { data } = await formService.readCSVExportFields(formId, type, draft, deleted, version);
         commit('SET_FORM_FIELDS', data);
       } catch (error) {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while fetching the list of fields for this form.',
+            message: 'An error occurred while fetching the list of fields for this form.',
             consoleError: `Error getting form ${formId}: ${error}`,
           },
           { root: true }
         );
       }
     },
-    async fetchSubmissions(
-      { commit, dispatch, state },
-      { formId, userView, deletedOnly = false, createdBy = '', createdAt }
-    ) {
+    async fetchSubmissions({ commit, dispatch, state }, { formId, userView, deletedOnly = false, createdBy = '', createdAt }) {
       try {
         commit('SET_SUBMISSIONLIST', []);
         // Get list of active submissions for this form (for either all submissions, or just single user)

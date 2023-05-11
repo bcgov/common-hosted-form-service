@@ -1,72 +1,60 @@
 <template>
-  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-    <div v-if="isFormScheduleExpired">
-      <template>
-        <v-alert text prominent type="error">
-          {{
-            isLateSubmissionAllowed
-              ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
-              : formScheduleExpireMessage
-          }}
-        </v-alert>
-
-        <div v-if="isLateSubmissionAllowed">
-          <v-col cols="3" md="2">
-            <v-btn color="primary" @click="isFormScheduleExpired = false">
-              <span>Create late submission</span>
-            </v-btn>
-          </v-col>
-        </div>
-      </template>
-    </div>
-
-    <div v-else>
-      <div v-if="displayTitle">
-        <div v-if="!isFormPublic(form)">
-          <FormViewerActions
-            :block="block"
-            :draftEnabled="form.enableSubmitterDraft"
-            :copyExistingSubmission="form.enableCopyExistingSubmission"
-            :formId="form.id"
-            :isDraft="submissionRecord.draft"
-            :permissions="permissions"
-            :readOnly="readOnly"
-            :submissionId="submissionId"
-            :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
-            :bulkFile="bulkFile"
-            @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
-            @save-draft="saveDraft"
-            @switchView="switchView"
-          />
-        </div>
-        <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }}</h1>
-      </div>
-      <div class="form-wrapper">
-        <v-alert
-          :value="saved || saving"
-          :class="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.class
-              : NOTIFICATIONS_TYPES.SUCCESS.class
-          "
-          :color="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.color
-              : NOTIFICATIONS_TYPES.SUCCESS.color
-          "
-          :icon="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.icon
-              : NOTIFICATIONS_TYPES.SUCCESS.icon
-          "
-          transition="scale-transition"
-        >
-          <div v-if="saving">
-            <v-progress-linear indeterminate />
-            Saving
+  <div>
+    <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+      <div v-if="isFormScheduleExpired">
+        <template>
+          <v-alert text prominent type="error">
+            {{
+              isLateSubmissionAllowed
+                ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
+                : formScheduleExpireMessage
+            }}
+          </v-alert>
+          <div v-if="isLateSubmissionAllowed">
+            <v-col cols="3" md="2">
+              <v-btn color="primary" @click="isFormScheduleExpired = false">
+                <span>Create late submission</span>
+              </v-btn>
+            </v-col>
           </div>
-          <div v-else>Draft Saved</div>
-        </v-alert>
+        </template>
+      </div>
+      <div v-else>
+        <div v-if="displayTitle">
+          <div v-if="!isFormPublic(form)">
+            <FormViewerActions
+              :block="block"
+              :draftEnabled="form.enableSubmitterDraft"
+              :formId="form.id"
+              :isDraft="submissionRecord.draft"
+              :permissions="permissions"
+              :readOnly="readOnly"
+              :submissionId="submissionId"
+              :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+              :bulkFile="bulkFile"
+              :copyExistingSubmission="form.enableCopyExistingSubmission"
+              @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
+              @save-draft="saveDraft"
+              @switchView="switchView"
+            />
+          </div>
+          <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }}</h1>
+        </div>
+        <div class="form-wrapper">
+          <v-alert
+            class="mt-2 mb-2"
+            :value="saved || saving"
+            :class="saving ? NOTIFICATIONS_TYPES.INFO.class : NOTIFICATIONS_TYPES.SUCCESS.class"
+            :color="saving ? NOTIFICATIONS_TYPES.INFO.color : NOTIFICATIONS_TYPES.SUCCESS.color"
+            :icon="saving ? NOTIFICATIONS_TYPES.INFO.icon : NOTIFICATIONS_TYPES.SUCCESS.icon"
+            transition="scale-transition"
+          >
+            <div v-if="saving">
+              <v-progress-linear indeterminate />
+              Saving
+            </div>
+            <div v-else>Draft Saved</div>
+          </v-alert>
 
           <slot name="alert" v-bind:form="form" />
 
@@ -352,17 +340,11 @@ export default {
         } else {
           // If getting the HEAD form version (IE making a new submission)
           response = await formService.readPublished(this.formId);
-          if (
-            !response.data ||
-            !response.data.versions ||
-            !response.data.versions[0]
-          ) {
+          if (!response.data || !response.data.versions || !response.data.versions[0]) {
             this.$router.push({
               name: 'Alert',
               params: {
-                message:
-                  'The form owner has not published the form, and it is not ' +
-                  'available for submissions.',
+                message: 'The form owner has not published the form, and it is not available for submissions.',
                 type: 'info',
               },
             });

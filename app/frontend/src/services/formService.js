@@ -354,16 +354,7 @@ export default {
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(
-    formId,
-    format,
-    template,
-    versionSelected,
-    preference,
-    fields,
-    emailExport = false,
-    options = {}
-  ) {
+  exportSubmissions(formId, format, template, versionSelected, preference, fields, emailExport = false, options = {}) {
     return appAxios().post(
       `${ApiRoutes.FORMS}/${formId}/export/fields`,
       {

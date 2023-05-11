@@ -56,9 +56,7 @@ function getErrorMessage(options, error) {
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
-      errorMessage =
-        'The form is currently unavailable. This may be due to an incorrect ' +
-        'link, or the form may have been deleted by its owner.';
+      errorMessage = 'The form is currently unavailable. This may be due to an incorrect ' + 'link, or the form may have been deleted by its owner.';
     }
   }
 
@@ -103,9 +101,7 @@ export async function preFlightAuth(options = {}, next) {
     } else {
       store.dispatch('notifications/addNotification', {
         message: 'An error occurred while loading this form.',
-        consoleError: `Error while loading ${JSON.stringify(
-          options
-        )}: ${error}`,
+        consoleError: `Error while loading ${JSON.stringify(options)}: ${error}`,
       });
 
       store.dispatch('auth/errorNavigate');

@@ -15,12 +15,7 @@
         <v-card-text>
           <hr />
           <p class="mb-5">Copy the link below or download the QR code.</p>
-          <v-alert
-            :value="warning"
-            :class="NOTIFICATIONS_TYPES.WARNING.class"
-            :icon="NOTIFICATIONS_TYPES.WARNING.icon"
-            transition="scale-transition"
-          >
+          <v-alert :value="warning" :class="NOTIFICATIONS_TYPES.WARNING.class" :icon="NOTIFICATIONS_TYPES.WARNING.icon" transition="scale-transition">
             There is no published version of the form at this time. The link below will not be reachable until a version is published.
           </v-alert>
           <v-text-field readonly dense flat outlined label="URL" data-test="text-shareUrl" :value="formLink">

@@ -99,16 +99,12 @@ export default function getRouter(basePath = '/') {
       },
       {
         path: '/file',
-        component: () =>
-          import(/* webpackChunkName: "file" */ '@/views/File.vue'),
+        component: () => import(/* webpackChunkName: "file" */ '@/views/File.vue'),
         children: [
           {
             path: 'download',
             name: 'Download',
-            component: () =>
-              import(
-                /* webpackChunkName: "download" */ '@/views/file/Download.vue'
-              ),
+            component: () => import(/* webpackChunkName: "download" */ '@/views/file/Download.vue'),
             meta: {
               requiresAuth: true,
               hasLogin: true,
@@ -145,10 +141,7 @@ export default function getRouter(basePath = '/') {
           {
             path: 'export',
             name: 'SubmissionsExport',
-            component: () =>
-              import(
-                /* webpackChunkName: "export" */ '@/views/form/Export.vue'
-              ),
+            component: () => import(/* webpackChunkName: "export" */ '@/views/form/Export.vue'),
             meta: {
               breadcrumbTitle: 'Submissions Export',
               requiresAuth: true,

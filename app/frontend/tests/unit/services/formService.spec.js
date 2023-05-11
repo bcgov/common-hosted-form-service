@@ -459,13 +459,7 @@ describe('Form Service', () => {
 
     it('calls to get submissions fields for csv export', async () => {
       mockAxios.onGet(endpoint).reply(200);
-      const result = await formService.readCSVExportFields(
-        formId,
-        'submissions',
-        false,
-        false,
-        1
-      );
+      const result = await formService.readCSVExportFields(formId, 'submissions', false, false, 1);
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });

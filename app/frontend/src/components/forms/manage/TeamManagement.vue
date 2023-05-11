@@ -108,11 +108,7 @@
         inputFilterPlaceholder="Search team management fields"
         inputItemKey="value"
         inputSaveButtonText="Save"
-        :inputData="
-          DEFAULT_HEADERS.filter(
-            (h) => !filterIgnore.some((fd) => fd.value === h.value)
-          )
-        "
+        :inputData="DEFAULT_HEADERS.filter((h) => !filterIgnore.some((fd) => fd.value === h.value))"
         :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
@@ -180,9 +176,7 @@ export default {
       return headers;
     },
     PRESELECTED_DATA() {
-      return this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      );
+      return this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value));
     },
   },
   data() {

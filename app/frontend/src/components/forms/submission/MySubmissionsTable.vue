@@ -83,11 +83,7 @@
         inputFilterPlaceholder="Search submission fields"
         inputItemKey="value"
         inputSaveButtonText="Save"
-        :inputData="
-          DEFAULT_HEADERS.filter(
-            (h) => !filterIgnore.some((fd) => fd.value === h.value)
-          )
-        "
+        :inputData="DEFAULT_HEADERS.filter((h) => !filterIgnore.some((fd) => fd.value === h.value))"
         :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
@@ -195,9 +191,7 @@ export default {
       return headers;
     },
     PRESELECTED_DATA() {
-      return this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      );
+      return this.DEFAULT_HEADERS.filter((h) => !this.filterIgnore.some((fd) => fd.value === h.value));
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
@@ -216,10 +210,7 @@ export default {
     getCurrentStatus(record) {
       // Current status is most recent status (top in array, query returns in
       // status created desc)
-      const status =
-        record.submissionStatus && record.submissionStatus[0]
-          ? record.submissionStatus[0].code
-          : 'N/A';
+      const status = record.submissionStatus && record.submissionStatus[0] ? record.submissionStatus[0].code : 'N/A';
       if (record.draft && status !== 'REVISING') {
         return 'DRAFT';
       } else {
@@ -252,10 +243,7 @@ export default {
             createdBy: s.submission.createdBy,
             updatedBy: s.draft ? s.submission.updatedBy : undefined,
             lastEdited: s.draft ? s.submission.updatedAt : undefined,
-            username:
-              s.submissionStatus && s.submissionStatus.length > 0
-                ? s.submissionStatus[0].createdBy
-                : '',
+            username: s.submissionStatus && s.submissionStatus.length > 0 ? s.submissionStatus[0].createdBy : '',
           };
         });
         this.submissionTable = tableRows;

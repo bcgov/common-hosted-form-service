@@ -321,16 +321,9 @@ describe('form actions', () => {
     });
 
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith(
-      'SET_FORM_FIELDS',
-      expect.any(Object)
-    );
+    expect(mockStore.commit).toHaveBeenCalledWith('SET_FORM_FIELDS', expect.any(Object));
     expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
     expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
-    expect(mockStore.dispatch).toHaveBeenCalledWith(
-      'notifications/addNotification',
-      expect.any(Object),
-      expect.any(Object)
-    );
+    expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
   });
 });

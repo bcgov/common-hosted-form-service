@@ -1,10 +1,6 @@
 import { formService } from '@/services';
 import store from '@/store';
-import {
-  FormPermissions,
-  IdentityProviders,
-  IdentityMode,
-} from '@/utils/constants';
+import { FormPermissions, IdentityProviders, IdentityMode } from '@/utils/constants';
 import * as permissionUtils from '@/utils/permissionUtils';
 
 describe('checkFormSubmit', () => {
@@ -21,9 +17,7 @@ describe('checkFormSubmit', () => {
   });
 
   it('should be true when idps is public', () => {
-    expect(
-      permissionUtils.checkFormSubmit({ idps: [IdentityProviders.PUBLIC] })
-    ).toBeTruthy();
+    expect(permissionUtils.checkFormSubmit({ idps: [IdentityProviders.PUBLIC] })).toBeTruthy();
   });
 
   it('should be true when permissions is submission creator', () => {
@@ -99,10 +93,7 @@ describe('checkSubmissionView', () => {
 describe('preFlightAuth', () => {
   const mockNext = jest.fn();
   const dispatchSpy = jest.spyOn(store, 'dispatch');
-  const getSubmissionOptionsSpy = jest.spyOn(
-    formService,
-    'getSubmissionOptions'
-  );
+  const getSubmissionOptionsSpy = jest.spyOn(formService, 'getSubmissionOptions');
   const readFormOptionsSpy = jest.spyOn(formService, 'readFormOptions');
 
   beforeEach(() => {
@@ -125,10 +116,7 @@ describe('preFlightAuth', () => {
     await permissionUtils.preFlightAuth({}, mockNext);
     expect(mockNext).toHaveBeenCalledTimes(0);
     expect(dispatchSpy).toHaveBeenCalledTimes(2);
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      'notifications/addNotification',
-      expect.any(Object)
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
     expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate');
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
@@ -158,10 +146,7 @@ describe('preFlightAuth', () => {
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
     expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      'auth/alertNavigate',
-      expect.any(Object)
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/alertNavigate', expect.any(Object));
     expect(mockNext).toHaveBeenCalledTimes(0);
   });
 
@@ -189,10 +174,7 @@ describe('preFlightAuth', () => {
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
     expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      'auth/alertNavigate',
-      expect.any(Object)
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/alertNavigate', expect.any(Object));
     expect(mockNext).toHaveBeenCalledTimes(0);
   });
 
@@ -220,10 +202,7 @@ describe('preFlightAuth', () => {
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
     expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
     expect(dispatchSpy).toHaveBeenCalledTimes(2);
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      'notifications/addNotification',
-      expect.any(Object)
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
     expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate');
     expect(mockNext).toHaveBeenCalledTimes(0);
   });
@@ -252,10 +231,7 @@ describe('preFlightAuth', () => {
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
     expect(dispatchSpy).toHaveBeenCalledTimes(2);
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      'notifications/addNotification',
-      expect.any(Object)
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
     expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate');
     expect(mockNext).toHaveBeenCalledTimes(0);
   });
@@ -318,14 +294,8 @@ describe('preFlightAuth', () => {
 
     expect(mockNext).toHaveBeenCalledTimes(0);
     expect(dispatchSpy).toHaveBeenCalledTimes(2);
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      'notifications/addNotification',
-      expect.any(Object)
-    );
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      'auth/errorNavigate',
-      expect.any(String)
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate', expect.any(String));
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
     expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
@@ -366,10 +336,7 @@ describe('preFlightAuth', () => {
 
     expect(mockNext).toHaveBeenCalledTimes(0);
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      'auth/login',
-      IdentityProviders.IDIR
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith('auth/login', IdentityProviders.IDIR);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
@@ -417,10 +384,7 @@ describe('isFormPublic', () => {
   it('should be true when idps includes public', () => {
     expect(
       permissionUtils.isFormPublic({
-        identityProviders: [
-          { code: IdentityMode.LOGIN },
-          { code: IdentityMode.PUBLIC },
-        ],
+        identityProviders: [{ code: IdentityMode.LOGIN }, { code: IdentityMode.PUBLIC }],
       })
     ).toBeTruthy();
   });
@@ -428,10 +392,7 @@ describe('isFormPublic', () => {
   it('should be false when idps has something else', () => {
     expect(
       permissionUtils.isFormPublic({
-        identityProviders: [
-          { code: IdentityMode.TEAM },
-          { code: IdentityMode.LOGIN },
-        ],
+        identityProviders: [{ code: IdentityMode.TEAM }, { code: IdentityMode.LOGIN }],
       })
     ).toBeFalsy();
   });
