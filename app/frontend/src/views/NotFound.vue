@@ -2,8 +2,8 @@
   <v-container class="text-center">
     <h1 class="my-6">404: Page not found. :(</h1>
     <router-link :to="{ name: 'About' }">
-      <v-btn color="primary" large>
-        <v-icon left>home</v-icon>
+      <v-btn color="primary" size="large">
+        <v-icon start>home</v-icon>
         <span>About</span>
       </v-btn>
     </router-link>

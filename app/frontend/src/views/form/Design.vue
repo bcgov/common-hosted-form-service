@@ -16,8 +16,8 @@
 <script>
 import { nextTick } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
-import FormDesigner from '@/components/designer/FormDesigner.vue';
-import { IdentityProviders } from '@/utils/constants';
+import FormDesigner from '@src/components/designer/FormDesigner.vue';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'FormDesign',

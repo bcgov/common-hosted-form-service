@@ -6,10 +6,9 @@
           <template #title>Form Title</template>
           <v-text-field
             v-model="name"
-            dense
-            flat
+            density="compact"
             solid
-            outlined
+            variant="outlined"
             label="Form Title"
             data-test="text-name"
             :rules="nameRules"
@@ -17,10 +16,9 @@
 
           <v-text-field
             v-model="description"
-            dense
-            flat
+            density="compact"
             solid
-            outlined
+            variant="outlined"
             label="Form Description"
             data-test="text-description"
             :rules="descriptionRules"
@@ -36,7 +34,7 @@
             class="my-0"
             :mandatory="false"
             :rules="loginRequiredRules"
-            @change="userTypeChanged"
+            @update:model-value="userTypeChanged"
           >
             <v-radio
               class="mb-4"
@@ -45,7 +43,7 @@
             />
             <v-expand-transition>
               <BaseInfoCard v-if="userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
-                <h4 class="primary--text">
+                <h4 class="text-primary">
                   <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
                 </h4>
                 <p class="mt-2 mb-0">
@@ -58,7 +56,7 @@
                     target="_blank"
                   >
                     govTogetherBC.
-                    <v-icon small color="primary">open_in_new</v-icon>
+                    <v-icon size="small" color="primary">open_in_new</v-icon>
                   </a>
                 </p>
               </BaseInfoCard>
@@ -94,7 +92,7 @@
                       "
                       class="mr-4"
                     >
-                      <h4 class="primary--text">
+                      <h4 class="text-primary">
                         <v-icon class="mr-1" color="primary">info</v-icon
                         >IMPORTANT!
                       </h4>
@@ -154,7 +152,12 @@
             </template>
           </v-checkbox>
 
-          <v-checkbox v-if="!isFormPublished" disabled class="my-0">
+          <v-checkbox
+            v-if="!isFormPublished"
+            v-model="schedule.enabled"
+            disabled
+            class="my-0"
+          >
             <template #label>
               The Form Submissions Schedule will be available in the Form
               Settings after the form is published.
@@ -168,14 +171,13 @@
           >
             <template #label>
               Form Submissions Schedule
-              <v-tooltip bottom close-delay="2500">
-                <template #activator="{ on, attrs }">
+              <v-tooltip location="bottom" close-delay="2500">
+                <template #activator="{ attrs }">
                   <font-awesome-icon
                     icon="fa-solid fa-flask"
                     color="primary"
                     class="ml-3"
                     v-bind="attrs"
-                    v-on="on"
                   />
                 </template>
                 <span
@@ -203,14 +205,13 @@
                 >Submitters can
                 <strong>Copy an existing submission</strong></span
               >
-              <v-tooltip bottom close-delay="2500">
-                <template #activator="{ on, attrs }">
+              <v-tooltip location="bottom" close-delay="2500">
+                <template #activator="{ attrs }">
                   <font-awesome-icon
                     icon="fa-solid fa-flask"
                     color="primary"
                     class="ml-3"
                     v-bind="attrs"
-                    v-on="on"
                   />
                 </template>
                 <span
@@ -236,9 +237,9 @@
           <v-checkbox v-model="showSubmissionConfirmation" class="my-0">
             <template #label>
               Show the submission confirmation details
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
-                  <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-icon color="primary" class="ml-3" v-bind="props">
                     help_outline
                   </v-icon>
                 </template>
@@ -261,9 +262,9 @@
           <v-checkbox v-model="sendSubRecieviedEmail" class="my-0">
             <template #label>
               Send my team a notification email
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
-                  <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-icon color="primary" class="ml-3" v-bind="props">
                     help_outline
                   </v-icon>
                 </template>
@@ -278,29 +279,26 @@
           <v-combobox
             v-if="sendSubRecieviedEmail"
             v-model="submissionReceivedEmails"
+            :hide-no-data="false"
             :rules="emailArrayRules"
-            dense
-            flat
             solid
-            outlined
+            variant="outlined"
             hide-selected
             clearable
             hint="Add one or more valid email addresses"
             label="Notification Email Addresses"
             multiple
-            small-chips
-            deletable-chips
+            chips
+            closable-chips
             :delimiters="[' ', ',']"
             append-icon=""
           >
             <template #no-data>
               <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    Press <kbd>enter</kbd> or <kbd>,</kbd> or
-                    <kbd>space</kbd> to add multiple email addresses
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-title>
+                  Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to
+                  add multiple email addresses
+                </v-list-item-title>
               </v-list-item>
             </template>
           </v-combobox>
@@ -313,36 +311,17 @@
             <template #title>Form Schedule Settings</template>
             <v-row class="m-0">
               <v-col cols="8" md="8" class="pl-0 pr-0 pb-0">
-                <v-menu
-                  v-model="openSubmissionDateDraw"
-                  data-test="menu-form-openSubmissionDateDraw"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="290px"
-                >
-                  <template #activator="{ on }">
-                    <v-text-field
-                      v-model="schedule.openSubmissionDateTime"
-                      placeholder="yyyy-mm-dd"
-                      append-icon="event"
-                      label="Open submissions"
-                      dense
-                      outlined
-                      :rules="scheduleOpenDate"
-                      @click:append="openSubmissionDateDraw = true"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="schedule.openSubmissionDateTime"
-                    data-test="picker-form-openSubmissionDateDraw"
-                    @change="openDateTypeChanged"
-                    @input="openSubmissionDateDraw = false"
-                  >
-                  </v-date-picker>
-                </v-menu>
+                <v-text-field
+                  v-model="schedule.openSubmissionDateTime"
+                  type="date"
+                  placeholder="yyyy-mm-dd"
+                  append-icon="event"
+                  label="Open submissions"
+                  density="compact"
+                  variant="outlined"
+                  :rules="scheduleOpenDate"
+                  @change="openDateTypeChanged"
+                ></v-text-field>
               </v-col>
 
               <v-col cols="12" md="12" class="p-0">
@@ -357,7 +336,7 @@
                       v-model="schedule.scheduleType"
                       class="my-0"
                       :rules="scheduleTypedRules"
-                      @change="scheduleTypeChanged"
+                      @update:model-value="scheduleTypeChanged"
                     >
                       <v-radio
                         class="mx-2"
@@ -385,35 +364,16 @@
                 md="8"
                 class="pl-0 pr-0 pb-0"
               >
-                <v-menu
-                  v-model="closeSubmissionDateDraw"
-                  data-test="menu-form-closeSubmissionDateDraw"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="290px"
-                >
-                  <template #activator="{ on }">
-                    <v-text-field
-                      v-model="schedule.closeSubmissionDateTime"
-                      placeholder="yyyy-mm-dd"
-                      append-icon="event"
-                      label="Close submissions"
-                      dense
-                      outlined
-                      :rules="scheduleCloseDate"
-                      @click:append="closeSubmissionDateDraw = true"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="schedule.closeSubmissionDateTime"
-                    data-test="picker-form-closeSubmissionDateDraw"
-                    @input="closeSubmissionDateDraw = false"
-                  >
-                  </v-date-picker>
-                </v-menu>
+                <v-text-field
+                  type="date"
+                  v-model="schedule.closeSubmissionDateTime"
+                  placeholder="yyyy-mm-dd"
+                  append-icon="event"
+                  label="Close submissions"
+                  density="compact"
+                  variant="outlined"
+                  :rules="scheduleCloseDate"
+                ></v-text-field>
               </v-col>
 
               <v-col
@@ -425,12 +385,11 @@
                 <v-text-field
                   v-model="schedule.keepOpenForTerm"
                   label="Keep open for"
-                  value="0"
+                  model-value="0"
                   type="number"
-                  dense
-                  flat
+                  density="compact"
                   solid
-                  outlined
+                  variant="outlined"
                   class="m-0 p-0"
                   :rules="roundNumber"
                 ></v-text-field>
@@ -446,10 +405,9 @@
                   v-model="schedule.keepOpenForInterval"
                   :items="['days', 'weeks', 'months', 'quarters', 'years']"
                   label="Period"
-                  dense
-                  flat
+                  density="compact"
                   solid
-                  outlined
+                  variant="outlined"
                   class="mr-2 pl-2"
                   :rules="intervalType"
                 ></v-select>
@@ -468,14 +426,9 @@
             >
               <template #label>
                 Allow late submissions
-                <v-tooltip bottom>
-                  <template #activator="{ on, attrs }">
-                    <v-icon
-                      color="primary"
-                      class="ml-3"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
+                <v-tooltip location="bottom">
+                  <template #activator="{ props }">
+                    <v-icon color="primary" class="ml-3" v-bind="props">
                       help_outline
                     </v-icon>
                   </template>
@@ -501,12 +454,11 @@
                   <v-text-field
                     v-model="schedule.allowLateSubmissions.forNext.term"
                     label="After close date for"
-                    value="0"
+                    model-value="0"
                     type="number"
-                    dense
-                    flat
+                    density="compact"
                     solid
-                    outlined
+                    variant="outlined"
                     class="m-0 p-0"
                     :rules="roundNumber"
                   >
@@ -517,10 +469,9 @@
                     v-model="schedule.allowLateSubmissions.forNext.intervalType"
                     :items="['days', 'weeks', 'months', 'quarters', 'years']"
                     label="Period"
-                    dense
-                    flat
+                    density="compact"
                     solid
-                    outlined
+                    variant="outlined"
                     class="mr-1 pl-2"
                     :rules="intervalType"
                   ></v-select>
@@ -532,7 +483,7 @@
               v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD"
               v-model="schedule.repeatSubmission.enabled"
               class="my-0 pt-0"
-              @change="repeatSubmissionChanged"
+              @update:model-value="repeatSubmissionChanged"
             >
               <template #label> Repeat period </template>
             </v-checkbox>
@@ -548,12 +499,11 @@
                   <v-text-field
                     v-model="schedule.repeatSubmission.everyTerm"
                     label="Every"
-                    value="0"
+                    model-value="0"
                     type="number"
-                    dense
-                    flat
+                    density="compact"
                     solid
-                    outlined
+                    variant="outlined"
                     class="m-0 p-0"
                     :rules="repeatTerm"
                   ></v-text-field>
@@ -564,44 +514,25 @@
                     v-model="schedule.repeatSubmission.everyIntervalType"
                     :items="AVAILABLE_PERIOD_OPTIONS"
                     label="Period"
-                    dense
-                    flat
+                    density="compact"
                     solid
-                    outlined
+                    variant="outlined"
                     class="mr-2 pl-2"
                     :rules="repeatIntervalType"
                   ></v-select>
                 </v-col>
 
                 <v-col cols="4" class="m-0 p-0">
-                  <v-menu
-                    v-model="repeatUntil"
-                    data-test="menu-form-repeatUntil"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="290px"
-                  >
-                    <template #activator="{ on }">
-                      <v-text-field
-                        v-model="schedule.repeatSubmission.repeatUntil"
-                        placeholder="yyyy-mm-dd"
-                        append-icon="event"
-                        label="Repeat until"
-                        dense
-                        outlined
-                        :rules="repeatUntilDate"
-                        @click:append="repeatUntil = true"
-                        v-on="on"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="schedule.repeatSubmission.repeatUntil"
-                      data-test="picker-form-repeatUntil"
-                      @input="repeatUntil = false"
-                    ></v-date-picker>
-                  </v-menu>
+                  <v-text-field
+                    type="date"
+                    v-model="schedule.repeatSubmission.repeatUntil"
+                    placeholder="yyyy-mm-dd"
+                    append-icon="event"
+                    label="Repeat until"
+                    density="compact"
+                    variant="outlined"
+                    :rules="repeatUntilDate"
+                  ></v-text-field>
                 </v-col>
               </v-row>
             </v-expand-transition>
@@ -680,14 +611,9 @@
                   <b>{{ schedule.repeatSubmission.everyIntervalType }}</b> until
                   <b>{{ schedule.repeatSubmission.repeatUntil }}</b
                   >.
-                  <v-tooltip bottom>
-                    <template #activator="{ on, attrs }">
-                      <v-icon
-                        color="primary"
-                        class="ml-3"
-                        v-bind="attrs"
-                        v-on="on"
-                      >
+                  <v-tooltip location="bottom">
+                    <template #activator="{ props }">
+                      <v-icon color="primary" class="ml-3" v-bind="props">
                         help_outline
                       </v-icon>
                     </template>
@@ -748,14 +674,9 @@
                 >
                   <template #label>
                     Set custom closing message
-                    <v-tooltip bottom>
-                      <template #activator="{ on, attrs }">
-                        <v-icon
-                          color="primary"
-                          class="ml-3"
-                          v-bind="attrs"
-                          v-on="on"
-                        >
+                    <v-tooltip location="bottom">
+                      <template #activator="{ props }">
+                        <v-icon color="primary" class="ml-3" v-bind="props">
                           help_outline
                         </v-icon>
                       </template>
@@ -775,11 +696,10 @@
                       <template #title>Closing Message</template>
                       <v-textarea
                         v-model="schedule.closingMessage"
-                        dense
+                        density="compact"
                         rows="2"
-                        flat
                         solid
-                        outlined
+                        variant="outlined"
                         label="Closing Message"
                         data-test="text-name"
                         :rules="closeMessage"
@@ -809,13 +729,12 @@
                       >
                         <template #label>
                           Enable automatic reminder notification
-                          <v-tooltip close-delay="2500" bottom>
-                            <template #activator="{ on, attrs }">
+                          <v-tooltip close-delay="2500" location="bottom">
+                            <template #activator="{ props }">
                               <v-icon
                                 color="primary"
                                 class="ml-3"
-                                v-bind="attrs"
-                                v-on="on"
+                                v-bind="props"
                               >
                                 help_outline
                               </v-icon>
@@ -856,12 +775,12 @@ import {
   IdentityProviders,
   Regex,
   ScheduleType,
-} from '@/utils/constants';
+} from '@src/utils/constants';
 import {
   getAvailableDates,
   calculateCloseDate,
   isDateValidForMailNotification,
-} from '@/utils/transformUtils';
+} from '@src/utils/transformUtils';
 import moment from 'moment';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -885,7 +804,6 @@ export default {
         'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
       repeatUntil: false,
       closeSubmissionDateDraw: false,
-      openSubmissionDateDraw: false,
       enableReminderDraw: true,
       valid: false,
       // Validation

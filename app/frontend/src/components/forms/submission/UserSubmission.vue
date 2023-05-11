@@ -12,7 +12,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import FormViewer from '@/components/designer/FormViewer.vue';
+import FormViewer from '@src/components/designer/FormViewer.vue';
 
 export default {
   name: 'UserSubmission',

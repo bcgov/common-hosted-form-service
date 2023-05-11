@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import FormSubmission from '@/components/forms/submission/UserSubmission.vue';
+import FormSubmission from '@src/components/forms/submission/UserSubmission.vue';
 
 export default {
   name: 'UserSubmissionView',

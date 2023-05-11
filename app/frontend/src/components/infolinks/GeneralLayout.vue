@@ -10,24 +10,24 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template #[`item.componentName`]="{ item }">
+      <template v-slot:item.componentName="{ item }">
         <div>
           <template>
             <div style="text-transform: capitalize label">
-              {{ item.componentName }}
+              {{ item.raw.componentName }}
             </div>
           </template>
         </div>
       </template>
-      <template #[`item.actions`]="{ item, index }">
+      <template v-slot:item.actions="{ item, index }">
         <div class="d-flex flex-row justify-end align-center actions">
           <div>
             <v-btn
               data-cy="edit_button"
               color="primary"
-              small
-              text
-              @click="onOpenDialog(item.componentName)"
+              size="small"
+              variant="text"
+              @click="onOpenDialog(item.raw.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
               <span class="d-none d-sm-flex" style="font-size: 16px">EDIT</span>
@@ -37,10 +37,10 @@
             <v-btn
               data-cy="preview_button"
               color="primary"
-              text
-              small
-              :disabled="canDisabled(item.componentName)"
-              @click="onOpenPreviewDialog(item.componentName)"
+              variant="text"
+              size="small"
+              :disabled="canDisabled(item.raw.componentName)"
+              @click="onOpenPreviewDialog(item.raw.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-eye" />
               <span class="d-none d-sm-flex" style="font-size: 16px"
@@ -52,16 +52,18 @@
             <v-btn
               data-cy="status_button"
               color="primary"
-              text
-              small
-              :disabled="canDisabled(item.componentName)"
+              variant="text"
+              size="small"
+              :disabled="canDisabled(item.raw.componentName)"
             >
               <v-switch
                 v-model="publish[index]"
                 small
                 color="success"
-                :input-value="isComponentPublish(item.componentName, index)"
-                @change="onSwitchChange(item.componentName, index)"
+                :model-value="isComponentPublish(item.raw.componentName, index)"
+                @update:model-value="
+                  onSwitchChange(item.raw.componentName, index)
+                "
               ></v-switch>
               <span
                 style="width: 120px !important; font-size: 16px"
@@ -92,13 +94,9 @@
 </template>
 
 <script>
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { mapActions, mapGetters } from 'vuex';
-import { faPenToSquare, faEye } from '@fortawesome/free-solid-svg-icons';
-import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
-import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
-
-library.add(faPenToSquare, faEye);
+import InformationLinkDialog from '@src/components/infolinks/InformationLinkDialog.vue';
+import InformationLinkPreviewDialog from '@src/components/infolinks/InformationLinkPreviewDialog.vue';
 
 export default {
   name: 'GeneralLayout',
@@ -126,15 +124,15 @@ export default {
       listLength: this.componentsList.length,
       headers: [
         {
-          text: 'Form Title',
+          title: 'Form Title',
           align: 'start',
-          value: 'componentName',
+          key: 'componentName',
           width: '1%',
         },
         {
-          text: 'Actions',
+          title: 'Actions',
           align: 'end',
-          value: 'actions',
+          key: 'actions',
           filterable: false,
           sortable: false,
           width: '1%',

@@ -10,12 +10,12 @@
       item-key="statusId"
       class="status-table"
     >
-      <template #[`item.createdAt`]="{ item }">
-        <span>{{ $filters.formatDate(item.createdAt) }}</span>
+      <template v-slot:item.createdAt="{ item }">
+        <span>{{ $filters.formatDate(item.raw.createdAt) }}</span>
       </template>
 
-      <template #[`item.user`]="{ item }">{{
-        item.user ? item.user.fullName : ''
+      <template v-slot:item.user="{ item }">{{
+        item.user ? item.raw.user.fullName : ''
       }}</template>
     </v-data-table>
   </v-container>
@@ -23,7 +23,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { formService } from '@/services';
+import { formService } from '@src/services';
 
 export default {
   name: 'StatusTable',
@@ -35,10 +35,10 @@ export default {
   },
   data: () => ({
     headers: [
-      { text: 'Status', value: 'code' },
-      { text: 'Date Status Changed', align: 'start', value: 'createdAt' },
-      { text: 'Assignee', value: 'user' },
-      { text: 'Updated By', value: 'createdBy' },
+      { title: 'Status', key: 'code' },
+      { title: 'Date Status Changed', align: 'start', key: 'createdAt' },
+      { title: 'Assignee', key: 'user' },
+      { title: 'Updated By', key: 'createdBy' },
     ],
     statuses: [],
     loading: true,

@@ -35,15 +35,19 @@
       loading-text="Loading... Please wait"
       no-data-text="There are no forms in your system"
     >
-      <template #[`item.createdAt`]="{ item }">
-        {{ $filters.formatDateLong(item.createdAt) }} - {{ item.createdBy }}
+      <template v-slot:item.createdAt="{ item }">
+        {{ $filters.formatDateLong(item.raw.createdAt) }} -
+        {{ item.raw.createdBy }}
       </template>
-      <template #[`item.updatedAt`]="{ item }">
-        {{ $filters.formatDateLong(item.updatedAt) }} - {{ item.updatedBy }}
+      <template v-slot:item.updatedAt="{ item }">
+        {{ $filters.formatDateLong(item.raw.updatedAt) }} -
+        {{ item.raw.updatedBy }}
       </template>
-      <template #[`item.actions`]="{ item }">
-        <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
-          <v-btn color="primary" text small>
+      <template v-slot:item.actions="{ item }">
+        <router-link
+          :to="{ name: 'AdministerForm', query: { f: item.raw.id } }"
+        >
+          <v-btn color="primary" variant="text" size="small">
             <v-icon class="mr-1">build_circle</v-icon>
             <span class="d-none d-sm-flex">Admin</span>
           </v-btn>
@@ -52,11 +56,11 @@
         <router-link
           :to="{
             name: 'FormSubmit',
-            query: { f: item.id },
+            query: { f: item.raw.id },
           }"
           target="_blank"
         >
-          <v-btn color="primary" text small>
+          <v-btn color="primary" variant="text" size="small">
             <v-icon class="mr-1">note_add</v-icon>
             <span class="d-none d-sm-flex">Launch</span>
           </v-btn>
@@ -75,13 +79,13 @@ export default {
     return {
       activeOnly: false,
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name' },
-        { text: 'Created', align: 'start', value: 'createdAt' },
-        { text: 'Deleted', align: 'start', value: 'updatedAt' },
+        { title: 'Form Title', align: 'start', key: 'name' },
+        { title: 'Created', align: 'start', key: 'createdAt' },
+        { title: 'Deleted', align: 'start', key: 'updatedAt' },
         {
-          text: 'Actions',
+          title: 'Actions',
           align: 'end',
-          value: 'actions',
+          key: 'actions',
           filterable: false,
           sortable: false,
         },
@@ -94,7 +98,7 @@ export default {
     ...mapGetters('admin', ['formList']),
     calcHeaders() {
       return this.headers.filter(
-        (x) => x.value !== 'updatedAt' || this.activeOnly
+        (x) => x.key !== 'updatedAt' || this.activeOnly
       );
     },
   },

@@ -1,14 +1,13 @@
 <template>
   <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
         <v-btn
           class="mx-1"
           color="primary"
           icon
-          v-bind="attrs"
+          v-bind="props"
           @click="dialog = true"
-          v-on="on"
         >
           <v-icon>print</v-icon>
         </v-btn>
@@ -59,8 +58,8 @@
             show-size
           />
           <v-card-actions>
-            <v-tooltip top>
-              <template #activator="{ on }">
+            <v-tooltip location="top">
+              <template #activator="{ props }">
                 <v-btn
                   id="file-input-submit"
                   color="primary"
@@ -68,9 +67,9 @@
                   :disabled="!templateForm.files"
                   :loading="loading"
                   @click="generate"
-                  v-on="on"
+                  v-bind="props"
                 >
-                  <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
+                  <v-icon :start="$vuetify.display.smAndUp">save</v-icon>
                   <span>Template Print</span>
                 </v-btn>
               </template>
@@ -85,8 +84,8 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { formService } from '@/services';
-import { NotificationTypes } from '@/utils/constants';
+import { formService } from '@src/services';
+import { NotificationTypes } from '@src/utils/constants';
 
 export default {
   props: {

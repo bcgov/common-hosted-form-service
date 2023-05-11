@@ -1,5 +1,5 @@
-import { NotificationTypes } from '@/utils/constants';
-import { adminService } from '@/services';
+import { NotificationTypes } from '@src/utils/constants';
+import { adminService } from '@src/services';
 
 /**
  * Admin Module

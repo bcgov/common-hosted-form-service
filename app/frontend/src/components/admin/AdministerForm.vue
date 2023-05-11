@@ -3,13 +3,13 @@
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 
-    <div v-if="form.active === false" class="red--text mb-6">
+    <div v-if="form.active === false" class="text-red mb-6">
       (DELETED)
       <v-btn
         color="primary"
         class="mt-0"
-        text
-        small
+        variant="text"
+        size="small"
         @click="showRestoreDialog = true"
       >
         <v-icon class="mr-1">build_circle</v-icon>
@@ -94,8 +94,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import AddOwner from './AddOwner.vue';
-import AdminVersions from './AdminVersions.vue';
+import AddOwner from '@src/components/admin/AddOwner.vue';
+import AdminVersions from '@src/components/admin/AdminVersions.vue';
 
 import VueJsonPretty from 'vue-json-pretty';
 

@@ -22,8 +22,8 @@
         <a :href="mailToLink">{{ contactInfo }}</a>
       </p>
       <router-link :to="{ name: 'About' }">
-        <v-btn color="primary" class="about-btn" large>
-          <v-icon left>home</v-icon>
+        <v-btn color="primary" class="about-btn" size="large">
+          <v-icon start>home</v-icon>
           <span>About</span>
         </v-btn>
       </router-link>
@@ -35,7 +35,7 @@
       v-if="keycloakReady"
       color="primary"
       class="login-btn"
-      large
+      size="large"
       @click="login"
     >
       <span>Login</span>

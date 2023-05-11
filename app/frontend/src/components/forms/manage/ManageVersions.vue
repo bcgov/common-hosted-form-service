@@ -1,7 +1,7 @@
 <template>
   <div>
     <BaseInfoCard class="my-4">
-      <h4 class="primary--text">
+      <h4 class="text-primary">
         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
       </h4>
       <p>
@@ -23,26 +23,31 @@
       :items="versionList"
     >
       <!-- Version  -->
-      <template #[`item.version`]="{ item }">
+      <template v-slot:item.version="{ item }">
         <router-link
           :to="
-            item.isDraft
-              ? { name: 'FormPreview', query: { f: item.formId, d: item.id } }
-              : { name: 'FormPreview', query: { f: item.formId, v: item.id } }
+            item.raw.isDraft
+              ? {
+                  name: 'FormPreview',
+                  query: { f: item.raw.formId, d: item.raw.id },
+                }
+              : {
+                  name: 'FormPreview',
+                  query: { f: item.raw.formId, v: item.raw.id },
+                }
           "
           class="mx-5"
           target="_blank"
         >
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span v-bind="props">
                 Version {{ item.version }}
                 <v-chip
-                  v-if="item.isDraft"
+                  v-if="item.raw.isDraft"
                   color="secondary"
                   class="mb-5 px-1"
                   x-small
-                  text-color="black"
                 >
                   Draft
                 </v-chip>
@@ -57,47 +62,47 @@
       </template>
 
       <!-- Status  -->
-      <template #[`item.status`]="{ item }">
+      <template v-slot:item.status="{ item }">
         <v-switch
           data-cy="formPublishedSwitch"
           color="success"
-          value
-          :input-value="item.published"
-          :label="item.published ? 'Published' : 'Unpublished'"
+          :model-value="item.raw.published"
+          :label="item.raw.published ? 'Published' : 'Unpublished'"
           :disabled="!canPublish"
-          @change="togglePublish($event, item.id, item.version, item.isDraft)"
+          @update:change="
+            togglePublish(
+              $event,
+              item.raw.id,
+              item.raw.version,
+              item.raw.isDraft
+            )
+          "
         />
       </template>
 
       <!-- Created date  -->
-      <template #[`item.createdAt`]="{ item }">
-        {{ $filters.formatDateLong(item.createdAt) }}
+      <template v-slot:item.createdAt="{ item }">
+        {{ $filters.formatDateLong(item.raw.createdAt) }}
       </template>
 
       <!-- Created by  -->
-      <template #[`item.createdBy`]="{ item }">
-        {{ item.createdBy }}
+      <template v-slot:item.createdBy="{ item }">
+        {{ item.raw.createdBy }}
       </template>
 
       <!-- Actions -->
-      <template #[`item.action`]="{ item }">
+      <template v-slot:item.action="{ item }">
         <!-- Edit draft version -->
-        <span v-if="item.isDraft">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+        <span v-if="item.raw.isDraft">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <router-link
                 :to="{
                   name: 'FormDesigner',
-                  query: { d: item.id, f: item.formId, nf: false },
+                  query: { d: item.raw.id, f: item.raw.formId, nf: false },
                 }"
               >
-                <v-btn
-                  color="primary"
-                  class="mx-1"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
+                <v-btn color="primary" class="mx-1" icon v-bind="props">
                   <v-icon>edit</v-icon>
                 </v-btn>
               </router-link>
@@ -108,15 +113,14 @@
 
         <!-- export -->
         <span>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <v-btn
                 color="primary"
                 class="mx-1"
                 icon
-                v-bind="attrs"
-                @click="onExportClick(item.id, item.isDraft)"
-                v-on="on"
+                v-bind="props"
+                @click="onExportClick(item.raw.id, item.raw.isDraft)"
               >
                 <v-icon>get_app</v-icon>
               </v-btn>
@@ -126,16 +130,16 @@
         </span>
 
         <!-- create new version -->
-        <span v-if="!item.isDraft">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">
+        <span v-if="!item.raw.isDraft">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span v-bind="props">
                 <v-btn
                   color="primary"
                   class="mx-1"
                   :disabled="hasDraft"
                   icon
-                  @click="createVersion(item.formId, item.id)"
+                  @click="createVersion(item.raw.formId, item.raw.id)"
                 >
                   <v-icon>add</v-icon>
                 </v-btn>
@@ -146,16 +150,16 @@
               a new version.
             </span>
             <span v-else>
-              Use version {{ item.version }} as the base for a new version
+              Use version {{ item.raw.version }} as the base for a new version
             </span>
           </v-tooltip>
         </span>
 
         <!-- delete draft version -->
         <span v-else>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span v-bind="props">
                 <v-btn
                   color="red"
                   class="mx-1"
@@ -225,8 +229,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { formService } from '@/services';
-import { FormPermissions } from '@/utils/constants';
+import { formService } from '@src/services';
+import { FormPermissions } from '@src/utils/constants';
 
 export default {
   name: 'ManageVersions',
@@ -234,14 +238,14 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Version', align: 'start', value: 'version' },
-        { text: 'Status', align: 'start', value: 'status' },
-        { text: 'Date Created', align: 'start', value: 'createdAt' },
-        { text: 'Created By', align: 'start', value: 'createdBy' },
+        { title: 'Version', align: 'start', key: 'version' },
+        { title: 'Status', align: 'start', key: 'status' },
+        { title: 'Date Created', align: 'start', key: 'createdAt' },
+        { title: 'Created By', align: 'start', key: 'createdBy' },
         {
-          text: 'Actions',
+          title: 'Actions',
           align: 'end',
-          value: 'action',
+          key: 'action',
           filterable: false,
           sortable: false,
           width: 200,
@@ -317,7 +321,7 @@ export default {
       } else {
         this.$router.push({
           name: 'FormDesigner',
-          query: { f: formId, v: versionId, nv: true },
+          query: { f: formId, v: versionId, newVersion: true },
         });
       }
     },

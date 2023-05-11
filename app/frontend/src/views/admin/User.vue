@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import AdministerUser from '@/components/admin/AdministerUser.vue';
+import AdministerUser from '@src/components/admin/AdministerUser.vue';
 
 export default {
   name: 'AdminUserView',

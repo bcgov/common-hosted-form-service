@@ -1,19 +1,19 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
     <h1 class="my-6 text-center">Create New Form</h1>
-    <v-stepper v-model="creatorStep" class="elevation-0">
-      <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
+    <BaseStepper :creatorStep="creatorStep" class="elevation-0">
+      <BaseStepperHeader class="elevation-0 px-0">
+        <BaseStepperStep :complete="creatorStep > 1" :step="1" class="pl-1">
           Set up Form
-        </v-stepper-step>
-        <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
+        </BaseStepperStep>
+        <span class="divider"></span>
+        <BaseStepperStep :complete="creatorStep > 2" :step="2" class="pl-1">
           Design Form
-        </v-stepper-step>
-      </v-stepper-header>
+        </BaseStepperStep>
+      </BaseStepperHeader>
 
-      <v-stepper-items>
-        <v-stepper-content step="1" class="pa-1">
+      <BaseStepperItems>
+        <BaseStepperContent :step="1" class="pa-1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
             <h1>Form Settings</h1>
             <FormSettings />
@@ -23,29 +23,25 @@
               <FormDisclaimer />
 
               <v-checkbox
+                v-model="checkbox"
                 :rules="disclaimerRules"
-                required
+                required="true"
                 label="I agree to the disclaimer and statement of responsibility for Form Designers"
               />
             </BasePanel>
           </v-form>
-          <v-btn
-            class="py-4"
-            color="primary"
-            :disabled="!settingsFormValid"
-            @click="reRenderFormDesigner"
-          >
+          <v-btn class="py-4" color="primary" @click="reRenderFormDesigner">
             <span>Continue</span>
           </v-btn>
-        </v-stepper-content>
-        <v-stepper-content step="2" class="pa-1">
+        </BaseStepperContent>
+        <BaseStepperContent :step="2" class="pa-1">
           <FormDesigner ref="formDesigner" />
-          <v-btn class="my-4" outlined @click="creatorStep = 1">
+          <v-btn class="my-4" variant="outlined" @click="creatorStep = 1">
             <span>Back</span>
           </v-btn>
-        </v-stepper-content>
-      </v-stepper-items>
-    </v-stepper>
+        </BaseStepperContent>
+      </BaseStepperItems>
+    </BaseStepper>
   </BaseSecure>
 </template>
 
@@ -53,10 +49,10 @@
 import { nextTick } from 'vue';
 import { mapActions } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import FormDesigner from '@/components/designer/FormDesigner.vue';
-import FormSettings from '@/components/designer/FormSettings.vue';
-import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
-import { IdentityMode, IdentityProviders } from '@/utils/constants';
+import FormDesigner from '@src/components/designer/FormDesigner.vue';
+import FormSettings from '@src/components/designer/FormSettings.vue';
+import FormDisclaimer from '@src/components/designer/FormDisclaimer.vue';
+import { IdentityMode, IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'FormCreate',
@@ -78,6 +74,7 @@ export default {
     return {
       creatorStep: 1,
       settingsFormValid: false,
+      checkbox: false,
       disclaimerRules: [
         (v) => !!v || 'You must agree to the privacy disclaimer shown above.',
       ],
@@ -89,8 +86,9 @@ export default {
   },
   watch: {
     idps() {
-      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
+      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm) {
         this.$refs.settingsForm.validate();
+      }
     },
   },
   created() {
@@ -116,7 +114,12 @@ export default {
 /* unset 'overflow: hidden' from all parents of FormDesigner, so FormDesigner's 'sticky' components menu sticks. */
 .v-stepper,
 .v-stepper__items,
-.v-stepper ::v-deep .v-stepper__wrapper {
+.v-stepper ::deep .v-stepper__wrapper {
   overflow: initial !important;
+}
+span.divider {
+  flex-grow: 1;
+  border-bottom: 1px solid lightgray;
+  margin: 10px 0px;
 }
 </style>

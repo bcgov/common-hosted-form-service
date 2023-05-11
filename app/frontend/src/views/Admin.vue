@@ -13,8 +13,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import admin from '@/store/modules/admin.js';
-import { IdentityProviders } from '@/utils/constants';
+import admin from '@src/store/modules/admin.js';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'Admin',

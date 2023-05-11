@@ -1,14 +1,13 @@
 <template>
   <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
         <v-btn
           class="mx-1"
           color="primary"
           icon
-          v-bind="attrs"
+          v-bind="props"
           @click="openExportDialog"
-          v-on="on"
         >
           <v-icon>get_app</v-icon>
         </v-btn>
@@ -80,30 +79,29 @@
                   v-model="startDateMenu"
                   data-test="menu-form-startDate"
                   :close-on-content-click="true"
-                  :nudge-right="40"
                   transition="scale-transition"
-                  offset-y
                   min-width="290px"
                 >
-                  <template #activator="{ on }">
+                  <template #activator="{ props }">
                     <label>From</label>
                     <v-text-field
                       v-model="startDate"
                       placeholder="yyyy-mm-dd"
                       append-icon="event"
                       readonly
-                      dense
-                      outlined
+                      density="compact"
+                      variant="outlined"
                       @click:append="startDateMenu = true"
-                      v-on="on"
+                      v-bind="props"
                     ></v-text-field>
                   </template>
-                  <v-date-picker
+                  <v-text-field
                     v-model="startDate"
+                    type="date"
                     data-test="picker-form-startDate"
                     :max="maxDate"
-                    @input="startDateMenu = false"
-                  ></v-date-picker>
+                    @update:modelValue="startDateMenu = false"
+                  ></v-text-field>
                 </v-menu>
               </v-col>
 
@@ -112,30 +110,29 @@
                   v-model="endDateMenu"
                   data-test="menu-form-endDate"
                   :close-on-content-click="true"
-                  :nudge-right="40"
                   transition="scale-transition"
-                  offset-y
                   min-width="290px"
                 >
-                  <template #activator="{ on }">
+                  <template #activator="{ props }">
                     <label>To</label>
                     <v-text-field
                       v-model="endDate"
                       placeholder="yyyy-mm-dd"
                       append-icon="event"
                       readonly
-                      dense
-                      outlined
+                      density="compact"
+                      variant="outlined"
                       @click:append="endDateMenu = true"
-                      v-on="on"
+                      v-bind="props"
                     ></v-text-field>
                   </template>
-                  <v-date-picker
+                  <v-text-field
+                    type="date"
                     v-model="endDate"
                     data-test="picker-form-endDate"
                     :min="startDate"
-                    @input="endDateMenu = false"
-                  ></v-date-picker>
+                    @update:modelValue="endDateMenu = false"
+                  ></v-text-field>
                 </v-menu>
               </v-col>
             </v-row>
@@ -163,7 +160,7 @@
               </div>
               <v-select
                 v-model="versionSelected"
-                item-text="id"
+                item-title="id"
                 item-value="version"
                 :items="versions"
                 class="mt-0"
@@ -239,7 +236,7 @@
           </v-btn>
           <v-btn
             class="mb-5 cancelButtonStyle"
-            outlined
+            variant="outlined"
             @click="dialog = false"
           >
             <span>Cancel</span>
@@ -253,14 +250,7 @@
 <script>
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
-import formService from '@/services/formService.js';
-
-import {
-  faXmark,
-  faSquareArrowUpRight,
-} from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faXmark, faSquareArrowUpRight);
+import formService from '@src/services/formService.js';
 
 export default {
   data() {

@@ -17,10 +17,10 @@
 </template>
 
 <script>
-import BaseNotificationContainer from '@/components/base/BaseNotificationContainer.vue';
-import BCGovHeader from '@/components/bcgov/BCGovHeader.vue';
-import BCGovFooter from '@/components/bcgov/BCGovFooter.vue';
-import BCGovNavBar from '@/components/bcgov/BCGovNavBar.vue';
+import BaseNotificationContainer from '@src/components/base/BaseNotificationContainer.vue';
+import BCGovHeader from '@src/components/bcgov/BCGovHeader.vue';
+import BCGovFooter from '@src/components/bcgov/BCGovFooter.vue';
+import BCGovNavBar from '@src/components/bcgov/BCGovNavBar.vue';
 
 export default {
   name: 'App',

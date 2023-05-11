@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import SubmissionsTable from '@/components/forms/SubmissionsTable.vue';
-import { IdentityProviders } from '@/utils/constants';
+import SubmissionsTable from '@src/components/forms/SubmissionsTable.vue';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'Submissions',

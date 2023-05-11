@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import AdministerForm from '@/components/admin/AdministerForm.vue';
+import AdministerForm from '@src/components/admin/AdministerForm.vue';
 
 export default {
   name: 'AdminFormView',

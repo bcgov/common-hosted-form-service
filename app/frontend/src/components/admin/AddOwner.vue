@@ -28,7 +28,7 @@
 <script>
 import { mapActions } from 'vuex';
 
-import { FormRoleCodes } from '@/utils/constants';
+import { FormRoleCodes } from '@src/utils/constants';
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
 
 export default {
@@ -55,7 +55,8 @@ export default {
   methods: {
     ...mapActions('admin', ['addFormUser', 'readRoles']),
     async addOwner() {
-      if (this.$refs.addUserForm.validate()) {
+      const { valid } = this.$refs.addUserForm.validate();
+      if (valid) {
         await this.addFormUser({
           userId: this.userGuid,
           formId: this.formId,

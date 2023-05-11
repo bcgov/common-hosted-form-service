@@ -1,13 +1,9 @@
 <template>
   <div>
-    <v-expansion-panels
-      v-model="settingsPanel"
-      flat
-      class="nrmc-expand-collapse"
-    >
+    <v-expansion-panels v-model="settingsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel v-if="canEditForm" flat>
         <!-- Form Settings -->
-        <v-expansion-panel-header>
+        <v-expansion-panel-title>
           <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
@@ -21,7 +17,7 @@
               </small>
               <v-btn
                 v-if="canEditForm"
-                small
+                size="small"
                 icon
                 color="primary"
                 @click.stop="enableSettingsEdit"
@@ -30,8 +26,8 @@
               </v-btn>
             </span>
           </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
           <v-form
             ref="settingsForm"
             v-model="settingsFormValid"
@@ -45,11 +41,11 @@
             <v-btn class="mr-5" color="primary" @click="updateSettings">
               <span>Update</span>
             </v-btn>
-            <v-btn outlined @click="cancelSettingsEdit">
+            <v-btn variant="outlined" @click="cancelSettingsEdit">
               <span>Cancel</span>
             </v-btn>
           </div>
-        </v-expansion-panel-content>
+        </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
 
@@ -57,11 +53,10 @@
     <v-expansion-panels
       v-if="canManageAPI"
       v-model="apiKeyPanel"
-      flat
       class="nrmc-expand-collapse"
     >
       <v-expansion-panel flat>
-        <v-expansion-panel-header>
+        <v-expansion-panel-title>
           <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
@@ -80,21 +75,17 @@
               </small>
             </span>
           </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
           <ApiKey />
-        </v-expansion-panel-content>
+        </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
 
     <!-- Form Design -->
-    <v-expansion-panels
-      v-model="versionsPanel"
-      flat
-      class="nrmc-expand-collapse"
-    >
+    <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel flat>
-        <v-expansion-panel-header>
+        <v-expansion-panel-title>
           <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
@@ -111,10 +102,10 @@
               </span>
             </div>
           </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
           <ManageVersions />
-        </v-expansion-panel-content>
+        </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
   </div>
@@ -123,10 +114,10 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import { FormPermissions, NotificationTypes } from '@/utils/constants';
-import ApiKey from '@/components/forms/manage/ApiKey.vue';
-import FormSettings from '@/components/designer/FormSettings.vue';
-import ManageVersions from '@/components/forms/manage/ManageVersions.vue';
+import { FormPermissions, NotificationTypes } from '@src/utils/constants';
+import ApiKey from '@src/components/forms/manage/ApiKey.vue';
+import FormSettings from '@src/components/designer/FormSettings.vue';
+import ManageVersions from '@src/components/forms/manage/ManageVersions.vue';
 
 export default {
   name: 'ManageForm',
@@ -194,7 +185,9 @@ export default {
     },
     async updateSettings() {
       try {
-        if (this.$refs.settingsForm.validate()) {
+        const { valid } = await this.$refs.settingsForm.validate();
+
+        if (valid) {
           await this.updateForm();
           this.formSettingsDisabled = true;
           this.addNotification({

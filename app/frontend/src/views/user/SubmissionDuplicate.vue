@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import UserDuplicateSubmission from '@/components/forms/submission/UserDuplicateSubmission.vue';
+import UserDuplicateSubmission from '@src/components/forms/submission/UserDuplicateSubmission.vue';
 export default {
   name: 'SubmissionDuplicate',
   components: {

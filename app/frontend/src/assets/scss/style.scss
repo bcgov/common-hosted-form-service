@@ -2,16 +2,11 @@
  * BCGov Style
  * This globally extends the base Vuetify style
  */
- @use 'vuetify' with (
-  $utilities: false,
-  $color-pack: false,
-);
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
 @import url('https://fonts.googleapis.com/css?family=Material+Icons');
 @import '../../../node_modules/material-design-icons-iconfont/dist/material-design-icons.css';
-@import '../../../node_modules/bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
-@import '../../../node_modules/vuetify/lib/styles/main.sass';
-@import '../../../node_modules/vue-json-pretty/lib/styles.css';
+@import 'vuetify/_tools.scss';
+@import 'vuetify/_settings.scss';
 
 // Variables
 $bcgov-blue: #003366;
@@ -191,11 +186,11 @@ a,
 // Customized expand/collapse section
 .nrmc-expand-collapse {
   min-height: 50px;
-  .v-expansion-panel--active > .v-expansion-panel-header {
+  .v-expansion-panel--active > .v-expansion-panel-title {
     min-height: 50px;
   }
 
-  .v-expansion-panel-header {
+  .v-expansion-panel-title {
     padding: 10px;
     background-color: $bcgov-grey;
     .icon {
@@ -210,7 +205,7 @@ a,
     }
   }
 
-  .v-expansion-panel-content__wrap {
+  .v-expansion-panel-text__wrap {
     padding-top: 8px;
   }
 }

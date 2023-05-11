@@ -1,7 +1,7 @@
 <template>
   <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
         <v-btn
           v-clipboard:copy="copyText"
           v-clipboard:success="clipboardSuccessHandler"
@@ -9,8 +9,7 @@
           color="primary"
           :disabled="disabled"
           icon
-          v-bind="attrs"
-          v-on="on"
+          v-bind="props"
         >
           <v-icon class="mr-1">file_copy</v-icon>
           <span v-if="buttonText">{{ buttonText }}</span>
@@ -23,7 +22,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { NotificationTypes } from '@/utils/constants';
+import { NotificationTypes } from '@src/utils/constants';
 
 export default {
   name: 'BaseCopyToClipboard',

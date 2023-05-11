@@ -1,14 +1,13 @@
 <template>
   <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
         <v-btn
           color="red"
           :disabled="disabled"
           icon
-          v-bind="attrs"
+          v-bind="props"
           @click="showDeleteDialog = true"
-          v-on="on"
         >
           <v-icon>delete</v-icon>
         </v-btn>

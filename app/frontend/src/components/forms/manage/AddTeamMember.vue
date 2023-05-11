@@ -1,10 +1,12 @@
+<!-- eslint-disable vue/no-v-model-argument -->
 <template>
   <span>
     <span v-if="addingUsers" style="margin-right: 656px" elevation="1">
       <v-sheet
         elevation="1"
         class="float-right"
-        style="position: absolute; width: 669px"
+        position="absolute"
+        style="width: 669px"
       >
         <v-sheet style="background-color: #38598a" elevation="1">
           <v-row justify="center" align="center">
@@ -13,7 +15,7 @@
                 v-model="selectedIdp"
                 class="ml-3 my-0"
                 row
-                dense
+                density="compact"
                 fluid
                 hide-details
               >
@@ -31,53 +33,38 @@
           <v-col cols="12">
             <v-autocomplete
               v-model="model"
-              v-model:search-input="searchUsers"
-              autocomplete="autocomplete_off"
-              clearable
-              dense
-              :filter="filterObject"
-              hide-details
+              v-model:search="searchUsers"
               :items="items"
+              chips
+              closable-chips
+              clearable
+              item-title="fullName"
+              density="compact"
+              :custom-filter="filterObject"
+              hide-details
               :label="autocompleteLabel"
               :loading="isLoading"
               return-object
             >
               <!-- no data -->
-              <template #no-data>
+              <template v-slot:no-data>
                 <div class="px-2">
                   Can't find someone? They may not have logged into CHEFS.<br />
                   Kindly send them a link to CHEFS and ask them to log in.
                 </div>
               </template>
-              <!-- selected user -->
-              <template #selection="data">
-                <span
-                  v-bind="data.attrs"
-                  :input-value="data.selected"
-                  close
-                  @click="data.select"
-                >
-                  {{ data.item.fullName }}
-                </span>
+              <template v-slot:chip="{ props, item }">
+                <v-chip v-bind="props" :text="item?.raw?.fullName"></v-chip>
               </template>
+
               <!-- users found in dropdown -->
-              <template #item="data">
-                <template v-if="typeof data.item !== 'object'">
-                  <v-list-item-content v-text="data.item" />
-                </template>
-                <template v-else>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ data.item.fullName }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ data.item.username }} ({{ data.item.idpCode }})
-                    </v-list-item-subtitle>
-                    <v-list-item-subtitle>
-                      {{ data.item.email }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </template>
+              <template v-slot:item="{ props, item }">
+                <v-list-item
+                  v-bind="props"
+                  :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
+                  :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
+                >
+                </v-list-item>
               </template>
             </v-autocomplete>
           </v-col>
@@ -87,7 +74,7 @@
             <v-chip-group
               v-model="selectedRoles"
               multiple
-              active-class="primary--text"
+              selected-class="text-primary"
               fluid
               column
               class="py-0 mx-3"
@@ -98,7 +85,7 @@
                 :key="role"
                 :value="role"
                 filter
-                outlined
+                variant="outlined"
               >
                 {{ role }}
               </v-chip>
@@ -118,7 +105,7 @@
               <span>Add</span>
             </v-btn>
             <v-btn
-              outlined
+              variant="outlined"
               class="ml-2"
               @click="
                 addingUsers = false;
@@ -131,7 +118,7 @@
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="red--text"
+            <span class="text-red"
               >You must select at least one role to add this user.</span
             >
           </v-col>
@@ -139,16 +126,15 @@
       </v-sheet>
     </span>
     <span v-else>
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
           <v-btn
             class="mx-1"
             color="primary"
             :disabled="disabled"
             icon
-            v-bind="attrs"
+            v-bind="props"
             @click="addingUsers = true"
-            v-on="on"
           >
             <v-icon>person_add</v-icon>
           </v-btn>
@@ -162,8 +148,8 @@
 <script>
 import { mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { FormRoleCodes, IdentityProviders, Regex } from '@/utils/constants';
-import { userService } from '@/services';
+import { FormRoleCodes, IdentityProviders, Regex } from '@src/utils/constants';
+import userService from '@src/services/userService';
 
 export default {
   props: {
@@ -177,12 +163,12 @@ export default {
     return {
       addingUsers: false,
       isLoading: false,
-      items: [],
       model: null,
       searchUsers: null,
       selectedIdp: IdentityProviders.IDIR,
       selectedRoles: [],
       showError: false,
+      entries: [],
     };
   },
   computed: {
@@ -210,12 +196,14 @@ export default {
         ? 'Enter a name, e-mail, or username'
         : 'Enter an exact e-mail or username';
     },
+    items() {
+      return this.entries;
+    },
   },
   watch: {
     selectedIdp(newIdp, oldIdp) {
       if (newIdp !== oldIdp) {
-        this.items = [];
-        this.model = null;
+        this.entries = [];
         this.showError = false;
       }
     },
@@ -253,9 +241,9 @@ export default {
           params.search = input;
         }
         const response = await userService.getUsers(params);
-        this.items = response.data;
+        this.entries = response.data;
       } catch (error) {
-        this.items = [];
+        this.entries = [];
         console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
       } finally {
         this.isLoading = false;

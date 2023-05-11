@@ -8,15 +8,9 @@
         },
       }"
     >
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            color="primary"
-            :disabled="!hasViewPerm()"
-            icon
-            v-bind="attrs"
-            v-on="on"
-          >
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-btn color="primary" :disabled="!hasViewPerm()" icon v-bind="props">
             <v-icon>remove_red_eye</v-icon>
           </v-btn>
         </template>
@@ -39,14 +33,13 @@
           },
         }"
       >
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
             <v-btn
               color="primary"
               :disabled="!hasViewPerm()"
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>app_registration</v-icon>
             </v-btn>
@@ -67,14 +60,13 @@
           },
         }"
       >
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
             <v-btn
               color="primary"
               :disabled="!hasEditPerm()"
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>mode_edit</v-icon>
             </v-btn>
@@ -95,8 +87,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
-import { FormPermissions } from '@/utils/constants';
+import DeleteSubmission from '@src/components/forms/submission/DeleteSubmission.vue';
+import { FormPermissions } from '@src/utils/constants';
 
 export default {
   name: 'MySubmissionsActions',

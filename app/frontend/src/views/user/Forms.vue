@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import FormsTable from '@/components/designer/FormsTable.vue';
+import FormsTable from '@src/components/designer/FormsTable.vue';
 
 export default {
   name: 'UserForms',

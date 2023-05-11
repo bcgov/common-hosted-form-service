@@ -45,7 +45,7 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import { IdentityProviders } from '../../utils/constants';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'BCGovNavBar',

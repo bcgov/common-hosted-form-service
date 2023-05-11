@@ -1,5 +1,5 @@
 <template>
-  <v-card outlined flat>
+  <v-card variant="outlined" flat>
     <v-card-title v-if="$slots.title">
       <slot name="title" />
     </v-card-title>

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import FormViewer from '@/components/designer/FormViewer.vue';
+import FormViewer from '@src/components/designer/FormViewer.vue';
 
 export default {
   name: 'FormSubmit',

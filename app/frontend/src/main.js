@@ -1,22 +1,25 @@
 import 'nprogress/nprogress.css';
 import '@bcgov/bc-sans/css/BCSans.css';
-import '@/assets/scss/style.scss';
+import 'vue-json-pretty/lib/styles.css';
+import '@src/assets/scss/style.scss';
+import 'font-awesome/css/font-awesome.min.css';
+import 'formiojs/dist/formio.builder.min.css';
 
 import axios from 'axios';
 import NProgress from 'nprogress';
 import { createApp, h } from 'vue';
 
-import App from '@/App.vue';
-import { formatDate, formatDateLong } from '@/filters';
-import auth from '@/store/modules/auth.js';
-import getRouter from '@/router';
-import store from '@/store';
+import App from '@src/App.vue';
+import { formatDate, formatDateLong } from '@src/filters';
+import auth from '@src/store/modules/auth.js';
+import getRouter from '@src/router';
+import store from '@src/store';
 
-// The Vue instance
 const app = createApp({
   render: () => h(App),
 });
 
+app.config.unwrapInjectedRef = true;
 app.config.globalProperties.$filters = {
   formatDate,
   formatDateLong,
@@ -26,17 +29,32 @@ app.config.globalProperties.$filters = {
 // importing the main formio dependency (whether through vue-formio or directly)
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
-import BcGovFormioComponents from '@/formio/lib';
+import BcGovFormioComponents from '@src/formio/lib';
 import { Formio } from '@formio/vue';
 Formio.use(BcGovFormioComponents);
 
-/* import font awesome icon component */
+import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-/* add font awesome icon component */
-app.component('FontAwesomeIcon', FontAwesomeIcon);
+import {
+  faFlask,
+  faXmark,
+  faSquareArrowUpRight,
+  faCheck,
+  faPenToSquare,
+  faEye,
+} from '@fortawesome/free-solid-svg-icons';
+library.add(
+  faFlask,
+  faXmark,
+  faSquareArrowUpRight,
+  faCheck,
+  faPenToSquare,
+  faEye
+);
+app.component('font-awesome-icon', FontAwesomeIcon);
 
-import VueKeycloakJs from '@/plugins/keycloak';
-import vuetify from '@/plugins/vuetify';
+import VueKeycloakJs from '@src/plugins/keycloak';
+import vuetify from '@src/plugins/vuetify';
 app.use(vuetify);
 
 /* import clipboard */
@@ -47,22 +65,7 @@ app.use(Clipboard, {
 });
 
 // Globally register all components with base in the name
-/*
-const requireComponent = require.context(
-  '@/components',
-  true,
-  /Base[A-Z]\w+\.(vue|js)$/
-);
-requireComponent.keys().forEach((fileName) => {
-  const componentConfig = requireComponent(fileName);
-  const componentName = fileName
-    .split('/')
-    .pop()
-    .replace(/\.\w+$/, '');
-  app.component(componentName, componentConfig.default || componentConfig);
-});
-*/
-const modules = import.meta.glob('@/components/**/*.(vue|js)');
+const modules = import.meta.glob('@src/components/**/*.(vue|js)');
 for (const path in modules) {
   if (path.includes('Base')) {
     modules[path]().then((mod) => {
@@ -81,11 +84,11 @@ NProgress.start();
 // IE11 Detection (https://stackoverflow.com/a/21825207)
 if (!!window.MSInputMethodContext && !!document.documentMode) {
   document.write(`<div style="padding-top: 5em; text-align: center;">
-    <h1>We're sorry but ${
-      import.meta.env.VITE_TITLE
-    } is not supported in Internet Explorer.</h1>
-    <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
-  </div>`);
+      <h1>We're sorry but ${
+        import.meta.env.VITE_TITLE
+      } is not supported in Internet Explorer.</h1>
+      <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
+    </div>`);
   NProgress.done();
 } else {
   loadConfig();
@@ -174,3 +177,9 @@ function loadKeycloak(config) {
     },
   });
 }
+
+/*
+Taken from https://stackoverflow.com/a/73919230 so that we can access the
+global properties from other JS files.
+*/
+export const useAppConfig = () => app.config;

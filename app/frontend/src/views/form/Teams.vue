@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import TeamManagement from '@/components/forms/manage/TeamManagement.vue';
-import { IdentityProviders } from '@/utils/constants';
+import TeamManagement from '@src/components/forms/manage/TeamManagement.vue';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'FormTeams',

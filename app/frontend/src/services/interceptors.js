@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getCurrentInstance } from 'vue';
+import { useAppConfig } from '@src/main';
 
 /**
  * @function appAxios
@@ -8,9 +8,10 @@ import { getCurrentInstance } from 'vue';
  * @returns {object} An axios instance
  */
 export function appAxios(timeout = 10000) {
+  const { globalProperties } = useAppConfig();
   const axiosOptions = { timeout: timeout };
-  if (getCurrentInstance().config.globalProperties.$config) {
-    const config = getCurrentInstance().config.globalProperties.$config;
+  if (globalProperties.$config) {
+    const config = globalProperties.$config;
     axiosOptions.baseURL = `${config.basePath}/${config.apiPath}`;
   }
 
@@ -18,15 +19,12 @@ export function appAxios(timeout = 10000) {
 
   instance.interceptors.request.use(
     (cfg) => {
-      console.log(getCurrentInstance());
       if (
-        getCurrentInstance().config.globalProperties.$keycloak &&
-        getCurrentInstance().config.globalProperties.$keycloak.ready &&
-        getCurrentInstance().config.globalProperties.$keycloak.authenticated
+        globalProperties.$keycloak &&
+        globalProperties.$keycloak.ready &&
+        globalProperties.$keycloak.authenticated
       ) {
-        cfg.headers.Authorization = `Bearer ${
-          getCurrentInstance().config.globalProperties.$keycloak.token
-        }`;
+        cfg.headers.Authorization = `Bearer ${globalProperties.$keycloak.token}`;
       }
       return Promise.resolve(cfg);
     },

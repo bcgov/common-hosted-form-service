@@ -8,36 +8,29 @@
         </v-col>
         <!-- buttons -->
         <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <v-btn
                 class="mx-1"
                 color="primary"
                 icon
-                v-bind="attrs"
+                v-bind="props"
                 @click="showColumnsDialog = true"
-                v-on="on"
               >
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
             <span>Select Columns</span>
           </v-tooltip>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <router-link
                 :to="{
                   name: 'FormSubmit',
                   query: { f: form.id },
                 }"
               >
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
+                <v-btn class="mx-1" color="primary" icon v-bind="props">
                   <v-icon>add_circle</v-icon>
                 </v-btn>
               </router-link>
@@ -79,18 +72,18 @@
       loading-text="Loading... Please wait"
       no-data-text="You have no submissions"
     >
-      <template #[`item.lastEdited`]="{ item }">
-        {{ $filters.formatDateLong(item.lastEdited, false) }}
+      <template v-slot:item.lastEdited="{ item }">
+        {{ $filters.formatDateLong(item.raw.lastEdited, false) }}
       </template>
-      <template #[`item.submittedDate`]="{ item }">
-        {{ $filters.formatDateLong(item.submittedDate, false) }}
+      <template v-slot:item.submittedDate="{ item }">
+        {{ $filters.formatDateLong(item.raw.submittedDate, false) }}
       </template>
-      <template #[`item.completedDate`]="{ item }">
-        {{ $filters.formatDateLong(item.completedDate, false) }}
+      <template v-slot:item.completedDate="{ item }">
+        {{ $filters.formatDateLong(item.raw.completedDate, false) }}
       </template>
-      <template #[`item.actions`]="{ item }">
+      <template v-slot:item.actions="{ item }">
         <MySubmissionsActions
-          :submission="item"
+          :submission="item.raw"
           :form-id="formId"
           :is-copy-from-existing-submission-enabled="
             isCopyFromExistingSubmissionEnabled
@@ -124,7 +117,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import MySubmissionsActions from '@/components/forms/submission/MySubmissionsActions.vue';
+import MySubmissionsActions from '@src/components/forms/submission/MySubmissionsActions.vue';
 
 export default {
   name: 'MySubmissionsTable',
@@ -143,10 +136,10 @@ export default {
       filterData: [],
       filterIgnore: [
         {
-          value: 'confirmationId',
+          key: 'confirmationId',
         },
         {
-          value: 'actions',
+          key: 'actions',
         },
       ],
       showColumnsDialog: false,
@@ -161,35 +154,35 @@ export default {
     DEFAULT_HEADERS() {
       let headers = [
         {
-          text: 'Confirmation Id',
+          title: 'Confirmation Id',
           align: 'start',
-          value: 'confirmationId',
+          key: 'confirmationId',
           sortable: true,
         },
         {
-          text: 'Created By',
-          value: 'createdBy',
+          title: 'Created By',
+          key: 'createdBy',
           sortable: true,
         },
         {
-          text: 'Status Updated By',
-          value: 'username',
+          title: 'Status Updated By',
+          key: 'username',
           sortable: true,
         },
         {
-          text: 'Status',
-          value: 'status',
+          title: 'Status',
+          key: 'status',
           sortable: true,
         },
         {
-          text: 'Submission Date',
-          value: 'submittedDate',
+          title: 'Submission Date',
+          key: 'submittedDate',
           sortable: true,
         },
         {
-          text: 'Actions',
+          title: 'Actions',
           align: 'end',
-          value: 'actions',
+          key: 'actions',
           filterable: false,
           sortable: false,
           width: '140px',
@@ -197,15 +190,15 @@ export default {
       ];
       if (this.showDraftLastEdited || !this.formId) {
         headers.splice(headers.length - 1, 0, {
-          text: 'Draft Updated By',
+          title: 'Draft Updated By',
           align: 'start',
-          value: 'updatedBy',
+          key: 'updatedBy',
           sortable: true,
         });
         headers.splice(headers.length - 1, 0, {
-          text: 'Draft Last Edited',
+          title: 'Draft Last Edited',
           align: 'start',
-          value: 'lastEdited',
+          key: 'lastEdited',
           sortable: true,
         });
       }

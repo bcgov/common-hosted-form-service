@@ -2,9 +2,9 @@
   <BaseSecure :idp="[IDP.IDIR]">
     <h1>
       PREVIEW
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
-          <v-icon color="primary" class="mt-n1 ml-1" v-bind="attrs" v-on="on">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-icon color="primary" class="mt-n1 ml-1" v-bind="props">
             help_outline
           </v-icon>
         </template>
@@ -19,9 +19,9 @@
 </template>
 
 <script>
-import FormViewer from '@/components/designer/FormViewer.vue';
+import FormViewer from '@src/components/designer/FormViewer.vue';
 
-import { IdentityProviders } from '@/utils/constants';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'FormPreview',

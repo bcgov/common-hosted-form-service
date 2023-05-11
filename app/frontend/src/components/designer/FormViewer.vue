@@ -2,12 +2,15 @@
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <div v-if="isFormScheduleExpired">
       <template>
-        <v-alert text prominent type="error">
-          {{
+        <v-alert
+          :text="
             isLateSubmissionAllowed
               ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
               : formScheduleExpireMessage
-          }}
+          "
+          prominent
+          type="error"
+        >
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
@@ -38,7 +41,7 @@
       </div>
       <div class="form-wrapper">
         <v-alert
-          :value="saved || saving"
+          v-if="saved || saving"
           :class="
             saving
               ? NOTIFICATIONS_TYPES.INFO.class
@@ -54,7 +57,6 @@
               ? NOTIFICATIONS_TYPES.INFO.icon
               : NOTIFICATIONS_TYPES.SUCCESS.icon
           "
-          transition="scale-transition"
         >
           <div v-if="saving">
             <v-progress-linear indeterminate />
@@ -99,19 +101,20 @@
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from '@formio/vue';
 
-import templateExtensions from '@/plugins/templateExtensions';
-import { formService, rbacService } from '@/services';
-import FormViewerActions from '@/components/designer/FormViewerActions.vue';
+import templateExtensions from '@src/plugins/templateExtensions';
+import { formService, rbacService } from '@src/services';
+import FormViewerActions from '@src/components/designer/FormViewerActions.vue';
 
-import { isFormPublic } from '@/utils/permissionUtils';
-import { attachAttributesToLinks } from '@/utils/transformUtils';
-import { FormPermissions, NotificationTypes } from '@/utils/constants';
+import { isFormPublic } from '@src/utils/permissionUtils';
+import { attachAttributesToLinks } from '@src/utils/transformUtils';
+import { FormPermissions, NotificationTypes } from '@src/utils/constants';
 
 import _ from 'lodash';
 
 export default {
   name: 'FormViewer',
   components: {
+    // eslint-disable-next-line vue/no-reserved-component-names
     Form,
     FormViewerActions,
   },
@@ -569,10 +572,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@font-awesome/css/font-awesome.min.css';
-@import '@formiojs/dist/formio.form.min.css';
+@import 'font-awesome/css/font-awesome.min.css';
+@import 'formiojs/dist/formio.form.min.css';
 
-.form-wrapper ::v-deep .formio-form {
+.form-wrapper :deep(.formio-form) {
   &.formio-read-only {
     // in submission review mode, make readonly formio fields consistently greyed-out
     .form-control,

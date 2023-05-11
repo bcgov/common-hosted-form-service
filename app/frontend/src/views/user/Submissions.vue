@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
     <MySubmissionsTable :form-id="f" />
-  </div>
+  </BaseSecure>
 </template>
 
 <script>
-import MySubmissionsTable from '@/components/forms/submission/MySubmissionsTable.vue';
+import MySubmissionsTable from '@src/components/forms/submission/MySubmissionsTable.vue';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'Submissions',
@@ -17,6 +18,9 @@ export default {
       type: String,
       required: true,
     },
+  },
+  computed: {
+    IDP: () => IdentityProviders,
   },
 };
 </script>
