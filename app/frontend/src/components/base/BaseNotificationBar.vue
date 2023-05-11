@@ -7,6 +7,7 @@
     @input="alertClosed"
     transition="slide-y-transition"
   >
+    <h3 v-if="notification.title">{{ notification.title }}</h3>
     {{ notification.message }}
   </v-alert>
 </template>
@@ -19,7 +20,9 @@ export default {
     notification: {
       class: Object,
       icon: Object,
+      title: String,
       message: Object,
+      timeout: Number, // in seconds
     },
   },
   data() {
@@ -34,7 +37,7 @@ export default {
     },
   },
   mounted() {
-    this.timeout = setTimeout(() => this.deleteNotification(this.notification), 10000);
+    this.timeout = setTimeout(() => this.deleteNotification(this.notification), this.notification.timeout ? this.notification.timeout * 1000 : 10000);
   },
   beforeDestroy() {
     // Prevent memory leak if component destroyed before timeout up

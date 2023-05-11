@@ -328,12 +328,14 @@ export default {
         const to = this.dateRange && this.endDate ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss').utc().format() : undefined;
 
         let emailExport = false;
-        if (this.submissionList.length > ExportLargeData.MAX_RECORDS || this.formFields.length > ExportLargeData.MAX_FIELDS) {
+        if ((this.submissionList.length > ExportLargeData.MAX_RECORDS || this.formFields.length > ExportLargeData.MAX_FIELDS) && this.exportFormat !== 'json') {
           this.dialog = false;
           emailExport = true;
           this.addNotification({
             ...NotificationTypes.SUCCESS,
-            message: `Export in progress... An email will be sent to ${this.email} containing a link to download your data when it is ready.`,
+            title: 'Export in progress',
+            message: `An email will be sent to ${this.email} containing a link to download your data when it is ready`,
+            timeout: 20,
           });
         }
         const response = await formService.exportSubmissions(
