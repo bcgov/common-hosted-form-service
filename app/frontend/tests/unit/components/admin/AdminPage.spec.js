@@ -8,9 +8,7 @@ describe('AdminPage.vue', () => {
     const wrapper = shallowMount(AdminPage, {
       localVue,
       mocks: {
-        $config: {
-          adminDashboardUrl: 'some-value',
-        },
+        $config: {},
       },
       stubs: ['AdminFormsTable', 'AdminUsersTable', 'Developer'],
     });
