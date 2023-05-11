@@ -59,6 +59,30 @@ export function checkSubmissionView(userForm) {
 }
 
 /**
+ * @function getErrorMessage
+ * Gets the message to display for preflight errors. Expand this to add
+ * friendlier messages for other errors.
+ * @param {Object} options - The Object containing preflight request details.
+ * @param {Error} error - The error that was produced.
+ * @returns {string|undefined} - The error message to display, or undefined to
+ *    use the default message.
+ */
+function getErrorMessage(options, error) {
+  let errorMessage = undefined;
+
+  if (options.formId) {
+    const status = error?.response?.status;
+    if (status === 404 || status === 422) {
+      errorMessage =
+        'The form is currently unavailable. This may be due to an incorrect ' +
+        'link, or the form may have been deleted by its owner.';
+    }
+  }
+
+  return errorMessage;
+}
+
+/**
  * @function preFlightAuth
  * Determines whether to enter a route based on user authentication state and idpHint
  * @param {Object} options Object containing either a formId or submissionId attribute
@@ -87,11 +111,26 @@ export async function preFlightAuth(options = {}, next) {
       throw new Error('Options missing both formId and submissionId');
     }
   } catch (error) {
-    store.dispatch('notifications/addNotification', {
-      message: 'An error occurred while loading this form.',
-      consoleError: `Error while loading ${JSON.stringify(options)}: ${error}`,
-    });
-    store.dispatch('auth/errorNavigate'); // Halt user with error page
+    // Halt user with error page, use alertNavigate for "friendly" messages.
+    const message = getErrorMessage(options, error);
+
+    if (message) {
+      // Don't display the 'An error has occurred...' popup notification.
+      store.dispatch('auth/alertNavigate', {
+        message: message,
+        type: 'error',
+      });
+    } else {
+      store.dispatch('notifications/addNotification', {
+        message: 'An error occurred while loading this form.',
+        consoleError: `Error while loading ${JSON.stringify(
+          options
+        )}: ${error}`,
+      });
+
+      store.dispatch('auth/errorNavigate');
+    }
+
     return; // Short circuit this function - no point executing further logic
   }
 

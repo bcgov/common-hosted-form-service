@@ -238,7 +238,8 @@ export default {
 
     // Status columns in the table
     getCurrentStatus(record) {
-      // Current status is most recent status (top in array, query returns in status created desc)
+      // Current status is most recent status (top in array, query returns in
+      // status created desc)
       const status =
         record.submissionStatus && record.submissionStatus[0]
           ? record.submissionStatus[0].code

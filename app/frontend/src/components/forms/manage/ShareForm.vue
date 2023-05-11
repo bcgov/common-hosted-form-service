@@ -25,7 +25,6 @@
           <v-alert
             v-if="warning"
             :class="NOTIFICATIONS_TYPES.WARNING.class"
-            :color="NOTIFICATIONS_TYPES.WARNING.color"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             text="There is no published version of the form at this time. The link
             below will not be reachable until a version is published."

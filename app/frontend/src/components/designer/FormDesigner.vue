@@ -115,7 +115,7 @@ import { mapFields } from 'vuex-map-fields';
 import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@src/plugins/templateExtensions';
 import { formService } from '@src/services';
-import { IdentityMode, NotificationTypes } from '@src/utils/constants';
+import { IdentityMode } from '@src/utils/constants';
 import InformationLinkPreviewDialog from '@src/components/infolinks/InformationLinkPreviewDialog.vue';
 import { generateIdps } from '@src/utils/transformUtils';
 import FloatButton from '@src/components/designer/FloatButton.vue';
@@ -205,9 +205,6 @@ export default {
       return IdentityMode;
     },
 
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
     designerOptions() {
       return {
         sanitizeConfig: {

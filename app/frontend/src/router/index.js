@@ -82,8 +82,22 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
-        path: '/login',
-        name: 'Login',
+        path: '/alert',
+        name: 'Alert',
+        component: () =>
+          import(
+            /* webpackChunkName: "alert" */
+            '@src/components/bcgov/BCGovAlertBanner.vue'
+          ),
+        meta: {
+          formSubmitMode: true,
+          hasLogin: true,
+        },
+        props: createProps,
+      },
+      {
+        path: '/error',
+        name: 'Error',
         component: () =>
           import(/* webpackChunkName: "login" */ '@src/views/Login.vue'),
         props: createProps,
@@ -92,6 +106,26 @@ export default function getRouter(basePath = '/') {
           NProgress.done();
           next(!store.getters['auth/authenticated']);
         },
+      },
+      {
+        path: '/file',
+        component: () =>
+          import(/* webpackChunkName: "file" */ '@src/views/File.vue'),
+        children: [
+          {
+            path: 'download',
+            name: 'Download',
+            component: () =>
+              import(
+                /* webpackChunkName: "download" */ '@src/views/file/Download.vue'
+              ),
+            meta: {
+              requiresAuth: true,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+        ],
       },
       {
         path: '/form',
@@ -135,6 +169,20 @@ export default function getRouter(basePath = '/') {
                   route.query.sv === true,
               };
             },
+          },
+          {
+            path: 'export',
+            name: 'SubmissionsExport',
+            component: () =>
+              import(
+                /* webpackChunkName: "export" */ '@src/views/form/Export.vue'
+              ),
+            meta: {
+              breadcrumbTitle: 'Submissions Export',
+              requiresAuth: true,
+              hasLogin: true,
+            },
+            props: createProps,
           },
           {
             path: 'manage',
@@ -306,7 +354,7 @@ export default function getRouter(basePath = '/') {
           // {
           //   path: 'Edit',
           //   name: 'UserFormEdit',
-          //   component: () => import(/* webpackChunkName: "userformtedit" */ '@/views/user/SubmissionEdit.vue'),
+          //   component: () => import(/* webpackChunkName: "userformtedit" */ '@src/views/user/SubmissionEdit.vue'),
           //   meta: {
           //     breadcrumbTitle: 'Edit Submission',
           //     formSubmitMode: true,
@@ -370,6 +418,27 @@ export default function getRouter(basePath = '/') {
             },
           },
         ],
+        meta: {
+          hasLogin: true,
+        },
+      },
+      {
+        path: '/login',
+        name: 'Login',
+        component: () =>
+          import(/* webpackChunkName: "login" */ '@src/views/Login.vue'),
+        props: createProps,
+        beforeEnter(_to, _from, next) {
+          // Block navigation to login page if already authenticated
+          NProgress.done();
+          next(!store.getters['auth/authenticated']);
+        },
+      },
+      {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () =>
+          import(/* webpackChunkName: "not-found" */ '@src/views/NotFound.vue'),
         meta: {
           hasLogin: true,
         },
