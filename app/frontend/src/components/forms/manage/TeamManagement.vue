@@ -11,31 +11,29 @@
           />
         </span>
         <span v-if="!isAddingUsers">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <v-btn
                 class="mx-1"
                 color="primary"
                 icon
-                v-bind="attrs"
+                v-bind="props"
                 @click="showColumnsDialog = true"
-                v-on="on"
               >
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
             <span>Select Columns</span>
           </v-tooltip>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
                 <v-btn
                   class="mx-1"
                   color="primary"
                   :disabled="!formId"
                   icon
-                  v-bind="attrs"
-                  v-on="on"
+                  v-bind="props"
                 >
                   <v-icon>settings</v-icon>
                 </v-btn>
@@ -70,7 +68,7 @@
       :single-select="false"
       :headers="HEADERS"
       :items="tableData"
-      item-key="id"
+      item-value="id"
       :loading="loading || updating"
       loading-text="Loading... Please wait"
       no-data-text="Failed to load team role data"
@@ -78,58 +76,134 @@
       dense
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
-      <template v-for="h in HEADERS" #[`header.${h.value}`]="{ HEADERS }">
-        <v-tooltip v-if="roleOrder.includes(h.value)" :key="h.value" bottom>
-          <template #activator="{ on }">
-            <span v-on="on">{{ h.text }}</span>
+      <template v-slot:column.form_designer="{ column }">
+        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
+          <template #activator="{ props }">
+            <span v-bind="props">{{ column.title }}</span>
           </template>
-          <span>{{ h.description }}</span>
+          <span>{{ column.description }}</span>
         </v-tooltip>
-        <span v-else :key="h.value">{{ h.text }}</span>
+        <span v-else>{{ column.title }}</span>
       </template>
-      <template #[`header.actions`]>
-        <v-btn
-          color="red"
-          :disabled="updating || selectedUsers.length < 1"
-          icon
-          @click="onRemoveClick(selectedUsers)"
-        >
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-icon color="red" dark v-bind="attrs" v-on="on"
-                >remove_circle</v-icon
-              >
-            </template>
-            <span>Remove selected users</span>
-          </v-tooltip>
-        </v-btn>
+      <template v-slot:column.owner="{ column }">
+        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
+          <template #activator="{ props }">
+            <span v-bind="props">{{ column.title }}</span>
+          </template>
+          <span>{{ column.description }}</span>
+        </v-tooltip>
+        <span v-else>{{ column.title }}</span>
       </template>
-      <template v-for="role in roleList" #[`item.${role.code}`]="{ item }">
+      <template v-slot:column.submission_reviewer="{ column }">
+        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
+          <template #activator="{ props }">
+            <span v-bind="props">{{ column.title }}</span>
+          </template>
+          <span>{{ column.description }}</span>
+        </v-tooltip>
+        <span v-else>{{ column.title }}</span>
+      </template>
+      <template v-slot:column.form_submitter="{ column }">
+        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
+          <template #activator="{ props }">
+            <span v-bind="props">{{ column.title }}</span>
+          </template>
+          <span>{{ column.description }}</span>
+        </v-tooltip>
+        <span v-else>{{ column.title }}</span>
+      </template>
+      <template v-slot:column.team_manager="{ column }">
+        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
+          <template #activator="{ props }">
+            <span v-bind="props">{{ column.title }}</span>
+          </template>
+          <span>{{ column.description }}</span>
+        </v-tooltip>
+        <span v-else>{{ column.title }}</span>
+      </template>
+      <template v-slot:column.actions>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              icon
+              v-bind="props"
+              :disabled="updating || selectedUsers.length < 1"
+              @click="onRemoveClick(selectedUsers)"
+              size="x-small"
+              color="red"
+            >
+              <v-icon color="white" icon="mdi:mdi-minus-thick"></v-icon>
+            </v-btn>
+          </template>
+          <span>Remove selected users</span>
+        </v-tooltip>
+      </template>
+      <template v-slot:item.form_designer="{ item }">
         <v-checkbox
-          v-if="!disableRole(role.code, item, userType)"
-          :key="role.code"
-          v-model="item[role.code]"
+          v-if="!disableRole('form_designer', item, userType)"
+          key="form_designer"
+          v-model="item.raw.form_designer"
           v-ripple
           :disabled="updating"
-          @click="onCheckboxToggle(item.userId)"
+          @click="onCheckboxToggle(item.raw.userId)"
         ></v-checkbox>
       </template>
-      <template #[`item.actions`]="{ item }">
-        <v-btn
-          color="red"
-          icon
+      <template v-slot:item.owner="{ item }">
+        <v-checkbox
+          v-if="!disableRole('owner', item, userType)"
+          key="owner"
+          v-model="item.raw.owner"
+          v-ripple
           :disabled="updating"
-          @click="onRemoveClick(item)"
-        >
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-icon color="red" dark v-bind="attrs" v-on="on"
-                >remove_circle</v-icon
-              >
-            </template>
-            <span>Remove this user</span>
-          </v-tooltip>
-        </v-btn>
+          @click="onCheckboxToggle(item.raw.userId)"
+        ></v-checkbox>
+      </template>
+      <template v-slot:item.submission_reviewer="{ item }">
+        <v-checkbox
+          v-if="!disableRole('submission_reviewer', item, userType)"
+          key="submission_reviewer"
+          v-model="item.raw.submission_reviewer"
+          v-ripple
+          :disabled="updating"
+          @click="onCheckboxToggle(item.raw.userId)"
+        ></v-checkbox>
+      </template>
+      <template v-slot:item.form_submitter="{ item }">
+        <v-checkbox
+          v-if="!disableRole('form_submitter', item, userType)"
+          key="form_submitter"
+          v-model="item.raw.form_submitter"
+          v-ripple
+          :disabled="updating"
+          @click="onCheckboxToggle(item.raw.userId)"
+        ></v-checkbox>
+      </template>
+      <template v-slot:item.team_manager="{ item }">
+        <v-checkbox
+          v-if="!disableRole('team_manager', item, userType)"
+          key="team_manager"
+          v-model="item.raw.team_manager"
+          v-ripple
+          :disabled="updating"
+          @click="onCheckboxToggle(item.raw.userId)"
+        ></v-checkbox>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              icon
+              v-bind="props"
+              :disabled="updating"
+              @click="onRemoveClick(item)"
+              size="x-small"
+              color="red"
+            >
+              <v-icon color="white" icon="mdi:mdi-minus-thick"></v-icon>
+            </v-btn>
+          </template>
+          <span>Remove this user</span>
+        </v-tooltip>
       </template>
     </v-data-table>
 
@@ -173,15 +247,15 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { rbacService, roleService, userService } from '@/services';
+import { rbacService, roleService, userService } from '@src/services';
 import {
   IdentityMode,
   FormPermissions,
   FormRoleCodes,
   IdentityProviders,
-} from '@/utils/constants';
+} from '@src/utils/constants';
 
-import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
+import AddTeamMember from '@src/components/forms/manage/AddTeamMember.vue';
 
 export default {
   name: 'TeamManagement',
@@ -200,7 +274,7 @@ export default {
       filterData: [],
       filterIgnore: [
         {
-          value: 'actions',
+          key: 'actions',
         },
       ],
       isAddingUsers: false,
@@ -230,9 +304,9 @@ export default {
     },
     DEFAULT_HEADERS() {
       const headers = [
-        { text: 'Full Name', value: 'fullName' },
-        { text: 'Username', value: 'username' },
-        { text: 'Identity Provider', value: 'identityProvider' },
+        { title: 'Full Name', key: 'fullName' },
+        { title: 'Username', key: 'username' },
+        { title: 'Identity Provider', key: 'identityProvider' },
       ];
       return headers
         .concat(
@@ -244,8 +318,8 @@ export default {
             )
             .map((role) => ({
               filterable: false,
-              text: role.display,
-              value: role.code,
+              title: role.display,
+              key: role.code,
               description: role.description,
             }))
             .sort((a, b) =>
@@ -254,7 +328,7 @@ export default {
                 : -1
             )
         )
-        .concat({ text: '', value: 'actions', width: '1rem', sortable: false });
+        .concat({ title: '', key: 'actions', width: '1rem', sortable: false });
     },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
@@ -358,7 +432,6 @@ export default {
           .forEach((role) => (row[role] = user.roles.includes(role)));
         return row;
       });
-
       this.selectedItemToDelete = new Array(this.tableData.length).fill(false);
     },
     // Is this the submitter column, and does this form have login type other than TEAM
@@ -445,7 +518,11 @@ export default {
         return;
       }
       if (item) {
-        this.itemsToDelete = Array.isArray(item) ? item : [item];
+        this.itemsToDelete = Array.isArray(item)
+          ? item.map((i) => {
+              return { id: i };
+            })
+          : [item.raw];
       }
       this.showDeleteDialog = true;
     },

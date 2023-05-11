@@ -25,9 +25,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import ManageForm from '@/components/forms/manage/ManageForm.vue';
-import ManageFormActions from '@/components/forms/manage/ManageFormActions.vue';
-import { FormPermissions, IdentityProviders } from '@/utils/constants';
+import ManageForm from '@src/components/forms/manage/ManageForm.vue';
+import ManageFormActions from '@src/components/forms/manage/ManageFormActions.vue';
+import { FormPermissions, IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'ManageLayout',

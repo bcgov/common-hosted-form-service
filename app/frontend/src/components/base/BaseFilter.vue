@@ -15,8 +15,8 @@
           clearable
           color="primary"
           prepend-inner-icon="search"
-          filled
-          dense
+          variant="filled"
+          density="compact"
           class="mt-3"
         >
         </v-text-field>
@@ -29,15 +29,18 @@
         height="300px"
         :headers="inputHeaders"
         :items="inputData"
-        :item-key="inputItemKey"
+        :item-value="inputItemKey"
         :search="inputFilter"
-        class="grey lighten-5"
+        class="bg-grey-lighten-5"
       >
       </v-data-table>
-      <v-btn class="primary mt-3" @click="savingFilterData">{{
+      <v-btn class="bg-primary mt-3" @click="savingFilterData">{{
         inputSaveButtonText
       }}</v-btn>
-      <v-btn class="mt-3 ml-3 primary--text" outlined @click="cancelFilterData"
+      <v-btn
+        class="mt-3 ml-3 text-primary"
+        variant="outlined"
+        @click="cancelFilterData"
         >Cancel</v-btn
       >
     </v-card-text>
@@ -51,15 +54,15 @@ export default {
     inputHeaders: {
       type: Array,
       default: () => [
-        { text: 'Column Name', align: 'start', sortable: true, value: 'text' },
+        { title: 'Column Name', align: 'start', sortable: true, key: 'text' },
       ],
     },
     // The data you will be filtering with
     inputData: {
       type: Array,
       default: () => [
-        { text: 'Example Text', value: 'exampleText1' },
-        { text: 'Example Text 2', value: 'exampleText2' },
+        { title: 'Example Text', key: 'exampleText1' },
+        { title: 'Example Text 2', key: 'exampleText2' },
       ],
     },
     // The default selected data
@@ -69,7 +72,7 @@ export default {
     },
     inputItemKey: {
       type: String,
-      default: 'value',
+      default: 'key',
     },
     inputFilterLabel: {
       type: String,
@@ -91,9 +94,13 @@ export default {
       inputFilter: '',
     };
   },
+  created() {
+    console.log(this.$props);
+  },
   methods: {
     savingFilterData() {
       this.inputFilter = '';
+      console.log(this.selectedData);
       this.$emit('saving-filter-data', this.selectedData);
     },
     cancelFilterData() {

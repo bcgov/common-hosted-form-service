@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-btn color="primary" text small @click="displayDialog">
+    <v-btn color="primary" variant="text" size="small" @click="displayDialog">
       <v-icon class="mr-1">email</v-icon>
       <span>Email a receipt of this submission</span>
     </v-btn>
@@ -12,7 +12,9 @@
       @continue-dialog="requestReceipt()"
     >
       <template #icon>
-        <v-icon large color="primary" class="d-none d-sm-flex"> email </v-icon>
+        <v-icon size="large" color="primary" class="d-none d-sm-flex">
+          email
+        </v-icon>
       </template>
       <template #text>
         <v-form
@@ -23,10 +25,9 @@
         >
           <v-text-field
             v-model="to"
-            dense
-            flat
+            density="compact"
             solid
-            outlined
+            variant="outlined"
             label="Send to E-mail Address"
             :rules="emailRules"
             data-test="text-form-to"
@@ -43,8 +44,8 @@
 <script>
 import { mapActions } from 'vuex';
 
-import { NotificationTypes } from '@/utils/constants';
-import { formService } from '@/services';
+import { NotificationTypes } from '@src/utils/constants';
+import { formService } from '@src/services';
 
 export default {
   name: 'RequestReceipt',

@@ -10,6 +10,6 @@
 
 <script>
 export default {
-  name: 'Form',
+  name: 'ChefsForm',
 };
 </script>

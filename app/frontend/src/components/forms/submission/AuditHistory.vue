@@ -1,14 +1,13 @@
 <template>
   <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
         <v-btn
           class="mx-1"
           color="primary"
           icon
-          v-bind="attrs"
+          v-bind="props"
           @click="loadHistory"
-          v-on="on"
         >
           <v-icon>history</v-icon>
         </v-btn>
@@ -34,8 +33,8 @@
             item-key="id"
             class="status-table"
           >
-            <template #[`item.actionTimestamp`]="{ item }">
-              {{ $filters.formatDateLong(item.actionTimestamp) }}
+            <template v-slot:item.actionTimestamp="{ item }">
+              {{ $filters.formatDateLong(item.raw.actionTimestamp) }}
             </template>
           </v-data-table>
         </v-card-text>
@@ -52,7 +51,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import formService from '@/services/formService.js';
+import formService from '@src/services/formService.js';
 
 export default {
   name: 'AuditHistory',
@@ -66,8 +65,8 @@ export default {
     return {
       dialog: false,
       headers: [
-        { text: 'User Name', value: 'updatedByUsername' },
-        { text: 'Date', value: 'actionTimestamp' },
+        { title: 'User Name', key: 'updatedByUsername' },
+        { title: 'Date', key: 'actionTimestamp' },
       ],
       loading: true,
       history: [],

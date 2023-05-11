@@ -5,38 +5,37 @@
     :items="versionList"
   >
     <!-- Version  -->
-    <template #[`item.version`]="{ item }">
-      <span> Version {{ item.version }} </span>
+    <template v-slot:item.version="{ item }">
+      <span> Version {{ item.raw.version }} </span>
     </template>
 
     <!-- Status  -->
-    <template #[`item.status`]="{ item }">
-      <label>{{ item.published ? 'Published' : 'Unpublished' }}</label>
+    <template v-slot:item.status="{ item }">
+      <label>{{ item.raw.published ? 'Published' : 'Unpublished' }}</label>
     </template>
 
     <!-- Created date  -->
-    <template #[`item.createdAt`]="{ item }">
-      {{ $filters.formatDateLong(item.createdAt) }}
+    <template v-slot:item.createdAt="{ item }">
+      {{ $filters.formatDateLong(item.raw.createdAt) }}
     </template>
 
     <!-- Updated at  -->
-    <template #[`item.updatedAt`]="{ item }">
-      {{ $filters.formatDateLong(item.updatedAt) }}
+    <template v-slot:item.updatedAt="{ item }">
+      {{ $filters.formatDateLong(item.raw.updatedAt) }}
     </template>
 
     <!-- Actions -->
-    <template #[`item.action`]="{ item }">
+    <template v-slot:item.action="{ item }">
       <!-- export -->
       <span>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
             <v-btn
               color="primary"
               class="mx-1"
               icon
-              v-bind="attrs"
-              @click="onExportClick(item.id, item.isDraft)"
-              v-on="on"
+              v-bind="props"
+              @click="onExportClick(item.raw.id, item.raw.isDraft)"
             >
               <v-icon>get_app</v-icon>
             </v-btn>
@@ -50,21 +49,21 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { adminService } from '@/services';
+import { adminService } from '@src/services';
 
 export default {
   name: 'ManageVersions',
   data() {
     return {
       headers: [
-        { text: 'Versions', align: 'start', value: 'version' },
-        { text: 'Status', align: 'start', value: 'status' },
-        { text: 'Created', align: 'start', value: 'createdAt' },
-        { text: 'Last Updated', align: 'start', value: 'updatedAt' },
+        { title: 'Versions', align: 'start', key: 'version' },
+        { title: 'Status', align: 'start', key: 'status' },
+        { title: 'Created', align: 'start', key: 'createdAt' },
+        { title: 'Last Updated', align: 'start', key: 'updatedAt' },
         {
-          text: 'Actions',
+          title: 'Actions',
           align: 'end',
-          value: 'action',
+          key: 'action',
           filterable: false,
           sortable: false,
         },

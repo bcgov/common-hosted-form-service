@@ -2,7 +2,7 @@
   <v-row class="d-print-none">
     <v-col v-if="formId">
       <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
-        <v-btn color="primary" outlined>
+        <v-btn color="primary" variant="outlined">
           <span>View All Submissions</span>
         </v-btn>
       </router-link>
@@ -10,14 +10,13 @@
     <v-col v-if="draftEnabled" class="text-right">
       <!-- Save a draft -->
       <span v-if="canSaveDraft" class="ml-2">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
             <v-btn
               color="primary"
               icon
-              v-bind="attrs"
+              v-bind="props"
               @click="$emit('save-draft')"
-              v-on="on"
             >
               <v-icon>save</v-icon>
             </v-btn>
@@ -36,9 +35,9 @@
             },
           }"
         >
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn color="primary" icon v-bind="attrs" v-on="on">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-btn color="primary" icon v-bind="props">
                 <v-icon>mode_edit</v-icon>
               </v-btn>
             </template>
@@ -59,8 +58,8 @@
 </template>
 
 <script>
-import { FormPermissions } from '@/utils/constants';
-import ManageSubmissionUsers from '@/components/forms/submission/ManageSubmissionUsers.vue';
+import { FormPermissions } from '@src/utils/constants';
+import ManageSubmissionUsers from '@src/components/forms/submission/ManageSubmissionUsers.vue';
 
 export default {
   name: 'MySubmissionsActions',

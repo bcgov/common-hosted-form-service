@@ -6,7 +6,7 @@
           :class="`elevation-${hover ? 24 : 6}`"
           class="thumbnail"
           :alt="alt"
-          contain
+          cover
           :src="src"
           :width="width"
           @click="dialog = true"

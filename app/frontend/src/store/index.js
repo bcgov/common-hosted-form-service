@@ -1,7 +1,7 @@
 import { createStore, createLogger } from 'vuex';
 
-import form from '@/store/modules/form.js';
-import notifications from '@/store/modules/notifications.js';
+import form from '@src/store/modules/form.js';
+import notifications from '@src/store/modules/notifications.js';
 
 const plugins = [];
 

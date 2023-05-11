@@ -72,7 +72,7 @@ export default {
 function init(config, watch, options) {
   const emitter = mitt();
   const ctor = sanitizeConfig(config);
-  const keycloak = Keycloak(ctor);
+  const keycloak = new Keycloak(ctor);
 
   emitter.on('ready', (cb) => {
     emitter.off('*');

@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import ManageLayout from '@/components/forms/manage/ManageLayout.vue';
-import { IdentityProviders } from '@/utils/constants';
+import ManageLayout from '@src/components/forms/manage/ManageLayout.vue';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'FormManage',

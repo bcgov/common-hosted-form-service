@@ -4,7 +4,7 @@
       <h1 class="my-6">Authenticate with:</h1>
       <v-row v-for="button in buttons" :key="button.type" justify="center">
         <v-col v-if="buttonEnabled(button.type)" sm="3">
-          <v-btn block color="primary" large @click="login(button.type)">
+          <v-btn block color="primary" size="large" @click="login(button.type)">
             <span>{{ button.label }}</span>
           </v-btn>
         </v-col>
@@ -13,8 +13,8 @@
     <div v-else>
       <h1 class="my-6">Already logged in</h1>
       <router-link :to="{ name: 'About' }">
-        <v-btn color="primary" large>
-          <v-icon left>home</v-icon>
+        <v-btn color="primary" size="large">
+          <v-icon start>home</v-icon>
           <span>About</span>
         </v-btn>
       </router-link>
@@ -25,7 +25,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import { IdentityProviders } from '@/utils/constants';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'Login',

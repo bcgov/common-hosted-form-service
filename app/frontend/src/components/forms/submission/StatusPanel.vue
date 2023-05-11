@@ -16,22 +16,22 @@
             <label>Assign or Update Status</label>
             <v-select
               v-model="statusToSet"
-              dense
-              outlined
+              density="compact"
+              variant="outlined"
               :items="items"
-              item-text="display"
+              item-title="display"
               item-value="code"
               :rules="[(v) => !!v || 'Status is required']"
-              @change="onStatusChange(statusToSet)"
+              @update:modelValue="onStatusChange(statusToSet)"
             />
 
             <div v-show="statusFields">
               <div v-if="showAsignee">
                 <label>
                   Assign To
-                  <v-tooltip bottom>
-                    <template #activator="{ on, attrs }">
-                      <v-icon color="primary" v-bind="attrs" v-on="on"
+                  <v-tooltip location="bottom">
+                    <template #activator="{ props }">
+                      <v-icon color="primary" v-bind="props"
                         >help_outline</v-icon
                       >
                     </template>
@@ -46,12 +46,11 @@
                   v-model="assignee"
                   autocomplete="autocomplete_off"
                   clearable
-                  dense
-                  :filter="autoCompleteFilter"
+                  :customFilter="autoCompleteFilter"
                   :items="formReviewers"
                   :loading="loading"
                   no-data-text="No Form Reviewers found with search. Add Form Reviewers on the Manage page."
-                  outlined
+                  variant="outlined"
                   return-object
                   :rules="[(v) => !!v || 'Assignee is required']"
                 >
@@ -68,29 +67,26 @@
                     </span>
                   </template>
                   <!-- users found in dropdown -->
-                  <template #item="data">
-                    <template v-if="typeof data.item !== 'object'">
-                      <v-list-item-content v-text="data.item" />
-                    </template>
-                    <template v-else>
-                      <v-list-item-content>
-                        <!-- Look into replacing this as we are assuming the data we receive is sanitized -->
-                        <!-- eslint-disable vue/no-v-html -->
-                        <v-list-item-title v-html="data.item.fullName" />
-                        <!-- eslint-disable vue/no-v-html -->
-                        <v-list-item-subtitle v-html="data.item.username" />
-                        <!-- eslint-disable vue/no-v-html -->
-                        <v-list-item-subtitle v-html="data.item.email" />
-                      </v-list-item-content>
-                    </template>
+                  <template v-slot:item="{ props, item }">
+                    <v-list-item v-bind="props">
+                      <v-list-item-title>
+                        {{ item?.raw?.fullName }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ item?.raw?.username }}
+                      </v-list-item-subtitle>
+                      <v-list-item-subtitle>
+                        {{ item?.raw?.email }}
+                      </v-list-item-subtitle>
+                    </v-list-item>
                   </template>
                 </v-autocomplete>
                 <span v-if="assignee">Email: {{ assignee.email }}</span>
 
                 <div class="text-right">
                   <v-btn
-                    text
-                    small
+                    variant="text"
+                    size="small"
                     color="primary"
                     class="pl-0 my-0 text-end"
                     @click="assignToCurrentUser"
@@ -104,8 +100,8 @@
                 <v-text-field
                   v-model="submissionUserEmail"
                   label="Recipient Email"
-                  outlined
-                  dense
+                  variant="outlined"
+                  density="compact"
                 />
               </div>
 
@@ -122,9 +118,8 @@
                     rows="1"
                     counter
                     auto-grow
-                    dense
-                    flat
-                    outlined
+                    density="compact"
+                    variant="outlined"
                     solid
                   />
                 </div>
@@ -136,8 +131,8 @@
         <v-row>
           <v-col cols="12" sm="6" xl="4">
             <v-dialog v-model="historyDialog" width="1200">
-              <template #activator="{ on }">
-                <v-btn block outlined color="textLink" v-on="on">
+              <template #activator="{ props }">
+                <v-btn block variant="outlined" color="textLink" v-bind="props">
                   <span>VIEW HISTORY</span>
                 </v-btn>
               </template>
@@ -168,7 +163,6 @@
               block
               :disabled="!statusToSet"
               color="primary"
-              v-on="on"
               @click="updateStatus"
             >
               <span>{{ statusAction }}</span>
@@ -182,9 +176,9 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { FormPermissions } from '@/utils/constants';
-import { formService, rbacService } from '@/services';
-import StatusTable from '@/components/forms/submission/StatusTable.vue';
+import { FormPermissions } from '@src/utils/constants';
+import { formService, rbacService } from '@src/services';
+import StatusTable from '@src/components/forms/submission/StatusTable.vue';
 
 export default {
   name: 'StatusPanel',
@@ -360,7 +354,8 @@ export default {
     },
     async updateStatus() {
       try {
-        if (this.$refs.form.validate()) {
+        const { valid } = await this.$refs.form.validate();
+        if (valid) {
           if (!this.statusToSet) {
             throw new Error('No Status');
           }

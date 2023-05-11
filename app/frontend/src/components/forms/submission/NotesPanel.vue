@@ -5,15 +5,14 @@
         <h2 class="note-heading">Notes</h2>
       </v-col>
       <v-col cols="12" sm="6" class="text-sm-right">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
             <v-btn
               class="mx-1"
               color="primary"
               icon
-              v-bind="attrs"
+              v-bind="props"
               @click="showNoteField = true"
-              v-on="on"
             >
               <v-icon>add_circle</v-icon>
             </v-btn>
@@ -30,14 +29,18 @@
         :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
         counter
         auto-grow
-        dense
-        flat
-        outlined
+        density="compact"
+        variant="outlined"
         solid
       />
       <v-row>
         <v-col cols="12" sm="6" xl="4">
-          <v-btn block color="primary" outlined @click="showNoteField = false">
+          <v-btn
+            block
+            color="primary"
+            variant="outlined"
+            @click="showNoteField = false"
+          >
             <span>Cancel</span>
           </v-btn>
         </v-col>
@@ -71,7 +74,7 @@
 <script>
 import { mapActions } from 'vuex';
 
-import { formService, rbacService } from '@/services';
+import { formService, rbacService } from '@src/services';
 
 export default {
   name: 'NotesPanel',

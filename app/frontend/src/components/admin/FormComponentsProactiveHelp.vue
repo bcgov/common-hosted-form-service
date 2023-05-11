@@ -2,21 +2,19 @@
   <div class="mt-5">
     <v-expansion-panels
       class="nrmc-expand-collapse"
-      flat
       data-cy="info_link_expansion_panels"
     >
       <v-expansion-panel
         v-for="(groupName, index) in groupList"
         :key="index"
-        flat
         @click="onExpansionPanelClick(groupName)"
       >
-        <v-expansion-panel-header>
+        <v-expansion-panel-title>
           <div class="header">
             <strong>{{ groupName }}</strong>
           </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
           <GeneralLayout
             :group-name="groupName"
             :layout-list="groupComponentsList"
@@ -26,14 +24,14 @@
                 : []
             "
           />
-        </v-expansion-panel-content>
+        </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
   </div>
 </template>
 
 <script>
-import GeneralLayout from '@/components/infolinks/GeneralLayout.vue';
+import GeneralLayout from '@src/components/infolinks/GeneralLayout.vue';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
@@ -106,7 +104,6 @@ export default {
       },
       isPanelOpened: new Map(),
       groupComponentsList: [],
-      panelHeadStyle: new Map(),
     };
   },
   computed: {
@@ -150,7 +147,6 @@ export default {
       for (let [title] of Object.entries(this.layout)) {
         if (title) {
           allgroups.push(title);
-          this.panelHeadStyle.set(title, this.notActivePanelHead);
         }
       }
       return allgroups;
@@ -176,12 +172,12 @@ export default {
 // Customized expand/collapse section
 .nrmc-expand-collapse {
   min-height: 50px;
-  .v-expansion-panel--active > .v-expansion-panel-header {
+  .v-expansion-panel--active > .v-expansion-panel-title {
     min-height: 50px;
     background: #f1f8ff;
   }
 
-  .v-expansion-panel-header {
+  .v-expansion-panel-title {
     padding: 10px;
     background: #bfbdbd14;
     border: 1px solid #7070703f;
@@ -203,11 +199,11 @@ export default {
     margin-bottom: 5px;
   }
 
-  .v-expansion-panel-header:hover {
+  .v-expansion-panel-title:hover {
     background: '#F1F8FF';
   }
 
-  .v-expansion-panel-content__wrap {
+  .v-expansion-panel-text__wrap {
     padding-top: 8px;
     padding-bottom: 0px !important;
   }

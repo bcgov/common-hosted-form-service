@@ -8,31 +8,29 @@
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
         <span v-if="checkFormManage">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <v-btn
                 class="mx-1"
                 color="primary"
                 icon
-                v-bind="attrs"
+                v-bind="props"
                 @click="showColumnsDialog = true"
-                v-on="on"
               >
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
             <span>Select Columns</span>
           </v-tooltip>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
                 <v-btn
                   class="mx-1"
                   color="primary"
                   :disabled="!formId"
                   icon
-                  v-bind="attrs"
-                  v-on="on"
+                  v-bind="props"
                 >
                   <v-icon>settings</v-icon>
                 </v-btn>
@@ -91,7 +89,7 @@
       loading-text="Loading... Please wait"
       no-data-text="There are no submissions for this form"
     >
-      <template #[`header.event`]>
+      <template v-slot:header.event>
         <span v-if="!deletedOnly">
           <v-btn
             color="red"
@@ -99,11 +97,9 @@
             icon
             @click="(showDeleteDialog = true), (singleSubmissionDelete = false)"
           >
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-icon color="red" dark v-bind="attrs" v-on="on"
-                  >remove_circle</v-icon
-                >
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-icon color="red" dark v-bind="props">remove_circle</v-icon>
               </template>
               <span>Delete selected submissions</span>
             </v-tooltip>
@@ -118,9 +114,9 @@
               (showRestoreDialog = true), (singleSubmissionRestore = false)
             "
           >
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-icon color="green" dark v-bind="attrs" v-on="on"
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-icon color="green" dark v-bind="props"
                   >restore_from_trash</v-icon
                 >
               </template>
@@ -130,27 +126,27 @@
         </span>
       </template>
 
-      <template #[`item.date`]="{ item }">
-        {{ $filters.formatDateLong(item.date) }}
+      <template v-slot:item.date="{ item }">
+        {{ $filters.formatDateLong(item.raw.date) }}
       </template>
-      <template #[`item.status`]="{ item }">
-        {{ item.status }}
+      <template v-slot:item.status="{ item }">
+        {{ item.raw.status }}
       </template>
-      <template #[`item.lateEntry`]="{ item }">
-        {{ item.lateEntry === true ? 'Yes' : 'No' }}
+      <template v-slot:item.lateEntry="{ item }">
+        {{ item.raw.lateEntry === true ? 'Yes' : 'No' }}
       </template>
-      <template #[`item.actions`]="{ item }">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+      <template v-slot:item.actions="{ item }">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
             <router-link
               :to="{
                 name: 'FormView',
                 query: {
-                  s: item.submissionId,
+                  s: item.raw.submissionId,
                 },
               }"
             >
-              <v-btn color="primary" icon v-bind="attrs" v-on="on">
+              <v-btn color="primary" icon v-bind="props">
                 <v-icon>remove_red_eye</v-icon>
               </v-btn>
             </router-link>
@@ -158,20 +154,19 @@
           <span>View Submission</span>
         </v-tooltip>
       </template>
-      <template #[`item.event`]="{ item }">
+      <template v-slot:item.event="{ item }">
         <span>
-          <v-tooltip v-if="!item.deleted" bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip v-if="!item.raw.deleted" location="bottom">
+            <template #activator="{ props }">
               <v-btn
                 color="red"
                 icon
-                v-bind="attrs"
+                v-bind="props"
                 @click="
                   (showDeleteDialog = true),
-                    (deleteItem = item),
+                    (deleteItem = item.raw),
                     (singleSubmissionDelete = true)
                 "
-                v-on="on"
               >
                 <v-icon>remove_circle</v-icon>
               </v-btn>
@@ -179,19 +174,18 @@
             <span>Delete Submission</span>
           </v-tooltip>
         </span>
-        <span v-if="item.deleted">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+        <span v-if="item.raw.deleted">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <v-btn
                 color="green"
                 icon
-                v-bind="attrs"
+                v-bind="props"
                 @click="
-                  restoreItem = item;
+                  restoreItem = item.raw;
                   showRestoreDialog = true;
                   singleSubmissionRestore = true;
                 "
-                v-on="on"
               >
                 <v-icon>restore_from_trash</v-icon>
               </v-btn>
@@ -236,7 +230,7 @@
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
         input-filter-placeholder="Search submission fields"
-        input-item-key="value"
+        input-item-key="key"
         input-save-button-text="Save"
         :input-data="FILTER_HEADERS"
         :preselected-data="PRESELECTED_DATA"
@@ -253,9 +247,9 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FormManagePermissions } from '@/utils/constants';
+import { FormManagePermissions } from '@src/utils/constants';
 import moment from 'moment';
-import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
+import ExportSubmissions from '@src/components/forms/ExportSubmissions.vue';
 
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -279,13 +273,13 @@ export default {
       filterData: [],
       filterIgnore: [
         {
-          value: 'confirmationId',
+          key: 'confirmationId',
         },
         {
-          value: 'actions',
+          key: 'actions',
         },
         {
-          value: 'event',
+          key: 'event',
         },
       ],
       loading: true,
@@ -328,7 +322,7 @@ export default {
 
     DEFAULT_HEADERS() {
       let headers = [
-        { text: 'Confirmation ID', align: 'start', value: 'confirmationId' },
+        { title: 'Confirmation ID', align: 'start', key: 'confirmationId' },
       ];
 
       if (this.userFormPreferences?.preferences?.columns) {
@@ -336,9 +330,9 @@ export default {
           headers = [
             ...headers,
             {
-              text: 'Submission Date',
+              title: 'Submission Date',
               align: 'start',
-              value: 'date',
+              key: 'date',
             },
           ];
         }
@@ -349,9 +343,9 @@ export default {
           headers = [
             ...headers,
             {
-              text: 'Submitter',
+              title: 'Submitter',
               align: 'start',
-              value: 'submitter',
+              key: 'submitter',
             },
           ];
         }
@@ -360,9 +354,9 @@ export default {
           headers = [
             ...headers,
             {
-              text: 'Status',
+              title: 'Status',
               align: 'start',
-              value: 'status',
+              key: 'status',
             },
           ];
         }
@@ -370,19 +364,19 @@ export default {
         headers = [
           ...headers,
           {
-            text: 'Submission Date',
+            title: 'Submission Date',
             align: 'start',
-            value: 'date',
+            key: 'date',
           },
           {
-            text: 'Submitter',
+            title: 'Submitter',
             align: 'start',
-            value: 'submitter',
+            key: 'submitter',
           },
           {
-            text: 'Status',
+            title: 'Status',
             align: 'start',
-            value: 'status',
+            key: 'status',
           },
         ];
         // If status flow enabled add that column
@@ -390,9 +384,9 @@ export default {
           headers = [
             ...headers,
             {
-              text: 'Status',
+              title: 'Status',
               align: 'start',
-              value: 'status',
+              key: 'status',
             },
           ];
         }
@@ -402,7 +396,7 @@ export default {
         //push new header for late submission if Form is setup for scheduling
         headers = [
           ...headers,
-          { text: 'Late Submission', align: 'start', value: 'lateEntry' },
+          { title: 'Late Submission', align: 'start', key: 'lateEntry' },
         ];
       }
 
@@ -410,20 +404,20 @@ export default {
       const maxHeaderLength = 25;
       this.userColumns.forEach((col) => {
         headers.push({
-          text:
+          title:
             col.length > maxHeaderLength
               ? `${col.substring(0, maxHeaderLength)}...`
               : col,
           align: 'end',
-          value: col,
+          key: col,
         });
       });
 
       // Actions column at the end
       headers.push({
-        text: 'View',
+        title: 'View',
         align: 'end',
-        value: 'actions',
+        key: 'actions',
         filterable: false,
         sortable: false,
         width: '40px',
@@ -431,9 +425,9 @@ export default {
 
       // Actions column at the end
       headers.push({
-        text: 'event',
+        title: 'event',
         align: 'end',
-        value: 'event',
+        key: 'event',
         filterable: false,
         sortable: false,
         width: '40px',
@@ -457,7 +451,7 @@ export default {
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       ).concat(
         this.formFields.map((ff) => {
-          return { text: ff, value: ff, align: 'end' };
+          return { title: ff, key: ff, align: 'end' };
         })
       );
 
@@ -465,9 +459,9 @@ export default {
       if (this.showStatus) {
         filteredHeader = [
           {
-            text: 'Status',
+            title: 'Status',
             align: 'start',
-            value: 'status',
+            key: 'status',
           },
           ...filteredHeader,
         ];
@@ -475,19 +469,19 @@ export default {
 
       filteredHeader = [
         {
-          text: 'Submission Date',
+          title: 'Submission Date',
           align: 'start',
-          value: 'date',
+          key: 'date',
         },
         {
-          text: 'Submitter',
+          title: 'Submitter',
           align: 'start',
-          value: 'submitter',
+          key: 'submitter',
         },
         {
-          text: 'Status',
+          title: 'Status',
           align: 'start',
-          value: 'status',
+          key: 'status',
         },
         ...filteredHeader,
       ];
@@ -506,8 +500,8 @@ export default {
           (column) => {
             return {
               align: 'end',
-              text: column,
-              value: column,
+              title: column,
+              key: column,
             };
           }
         );

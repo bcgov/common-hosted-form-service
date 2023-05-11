@@ -7,30 +7,28 @@
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
             <v-btn
               class="mx-1"
               color="primary"
               icon
-              v-bind="attrs"
+              v-bind="props"
               @click="onExportClick"
-              v-on="on"
             >
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
           <span>Export Design</span>
         </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
             <v-btn
               class="mx-1"
               color="primary"
               icon
-              v-bind="attrs"
+              v-bind="props"
               @click="$refs.uploader.click()"
-              v-on="on"
             >
               <v-icon>publish</v-icon>
               <input
@@ -55,7 +53,7 @@
       </v-col>
     </v-row>
     <BaseInfoCard class="my-6">
-      <h4 class="primary--text">
+      <h4 class="text-primary">
         <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
       </h4>
       <p class="my-0">
@@ -68,9 +66,9 @@
       </p>
     </BaseInfoCard>
     <FormBuilder
+      :form="FORM_SCHEMA"
       :key="reRenderFormIo"
       ref="formioForm"
-      :form="formSchema"
       :options="designerOptions"
       class="form-designer"
       @change="onChangeMethod"
@@ -115,12 +113,12 @@ import { mapActions, mapGetters } from 'vuex';
 import { FormBuilder } from '@formio/vue';
 import { mapFields } from 'vuex-map-fields';
 import { compare, applyPatch, deepClone } from 'fast-json-patch';
-import templateExtensions from '@/plugins/templateExtensions';
-import { formService } from '@/services';
-import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
-import { generateIdps } from '@/utils/transformUtils';
-import FloatButton from '@/components/designer/FloatButton.vue';
+import templateExtensions from '@src/plugins/templateExtensions';
+import { formService } from '@src/services';
+import { IdentityMode, NotificationTypes } from '@src/utils/constants';
+import InformationLinkPreviewDialog from '@src/components/infolinks/InformationLinkPreviewDialog.vue';
+import { generateIdps } from '@src/utils/transformUtils';
+import FloatButton from '@src/components/designer/FloatButton.vue';
 
 export default {
   name: 'FormDesigner',
@@ -148,13 +146,6 @@ export default {
   },
   data() {
     return {
-      items: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' },
-      ],
-      offset: true,
       savedStatus: this.isSavedStatus,
       isFormSaved: !this.newVersion,
       scrollTop: true,
@@ -317,6 +308,9 @@ export default {
         },
       };
     },
+    FORM_SCHEMA() {
+      return this.formSchema;
+    },
   },
   watch: {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
@@ -324,10 +318,10 @@ export default {
       this.reRenderFormIo += 1;
     },
   },
-  created() {
+  async created() {
     if (this.formId) {
-      this.getFormSchema();
-      this.fetchForm(this.formId);
+      await this.fetchForm(this.formId);
+      await this.getFormSchema();
     }
   },
 
@@ -362,6 +356,7 @@ export default {
           // using the original schema in the mount will give you the default schema
           this.patch.originalSchema = deepClone(this.formSchema);
         }
+        this.reRenderFormIo += 1;
       } catch (error) {
         this.addNotification({
           message: 'An error occurred while loading the form design.',
@@ -598,6 +593,7 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
+        this.reRenderFormIo += 1;
       }
     },
     async redoPatchFromHistory() {
@@ -608,6 +604,7 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
+        this.reRenderFormIo += 1;
       }
     },
     resetHistoryFlags(flag = false) {
@@ -755,9 +752,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@font-awesome/css/font-awesome.min.css';
-@import '@formiojs/dist/formio.builder.min.css';
-
 /* disable router-link */
 .disabled-router {
   pointer-events: none;

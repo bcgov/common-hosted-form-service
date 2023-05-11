@@ -4,7 +4,7 @@
       <template #alert="{ form }">
         <div class="mb-5">
           <h1 class="mb-5">
-            <v-icon large color="success">check_circle</v-icon>
+            <v-icon size="large" color="success">check_circle</v-icon>
             Your form has been submitted successfully
           </h1>
           <div v-if="form.showSubmissionConfirmation">
@@ -35,8 +35,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import FormViewer from '@/components/designer/FormViewer.vue';
-import RequestReceipt from '@/components/forms/RequestReceipt.vue';
+import FormViewer from '@src/components/designer/FormViewer.vue';
+import RequestReceipt from '@src/components/forms/RequestReceipt.vue';
 
 export default {
   name: 'FormView',

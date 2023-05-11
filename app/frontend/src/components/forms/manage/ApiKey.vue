@@ -34,27 +34,25 @@
         </v-col>
         <v-col cols="12" sm="5" xl="3">
           <v-text-field
-            dense
-            flat
+            density="compact"
             hide-details
             label="Secret"
-            outlined
+            variant="outlined"
             solid
             readonly
             :type="showSecret ? 'text' : 'password'"
-            :value="secret"
+            :model-value="secret"
           />
         </v-col>
         <v-col cols="12" sm="3">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <v-btn
                 color="primary"
                 :disabled="!canReadSecret"
                 icon
-                small
-                v-bind="attrs"
-                v-on="on"
+                size="small"
+                v-bind="props"
                 @click="showHideKey"
               >
                 <v-icon v-if="showSecret">visibility_off</v-icon>
@@ -73,15 +71,14 @@
             tooltip-text="Copy secret to clipboard"
           />
 
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <v-btn
                 color="red"
                 :disabled="!canDeleteKey"
                 icon
-                small
-                v-bind="attrs"
-                v-on="on"
+                size="small"
+                v-bind="props"
                 @click="showDeleteDialog = true"
               >
                 <v-icon>delete</v-icon>
@@ -134,7 +131,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { FormPermissions } from '@/utils/constants';
+import { FormPermissions } from '@src/utils/constants';
 
 export default {
   name: 'ApiKey',

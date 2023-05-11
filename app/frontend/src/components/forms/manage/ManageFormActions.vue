@@ -5,10 +5,10 @@
     </span>
 
     <span v-if="canViewSubmissions">
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
           <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
-            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+            <v-btn class="mx-1" color="primary" icon v-bind="props">
               <v-icon class="mr-1">list_alt</v-icon>
             </v-btn>
           </router-link>
@@ -18,10 +18,10 @@
     </span>
 
     <span v-if="canManageTeam">
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
           <router-link :to="{ name: 'FormTeams', query: { f: form.id } }">
-            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+            <v-btn class="mx-1" color="primary" icon v-bind="props">
               <v-icon>group</v-icon>
             </v-btn>
           </router-link>
@@ -31,15 +31,14 @@
     </span>
 
     <span v-if="canDeleteForm">
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
           <v-btn
             class="mx-1"
             color="red"
             icon
-            v-bind="attrs"
+            v-bind="props"
             @click="showDeleteDialog = true"
-            v-on="on"
           >
             <v-icon>delete</v-icon>
           </v-btn>
@@ -70,8 +69,8 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import { FormPermissions } from '@/utils/constants';
-import ShareForm from '@/components/forms/manage/ShareForm.vue';
+import { FormPermissions } from '@src/utils/constants';
+import ShareForm from '@src/components/forms/manage/ShareForm.vue';
 
 export default {
   name: 'ManageFormActions',

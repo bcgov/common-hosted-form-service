@@ -208,6 +208,7 @@ const service = {
   removeMultiUsers: async (formId, data) => {
     // create the batch and insert...
     if (Array.isArray(data) && data.length !== 0 && formId) {
+      console.log(data);
       // check if they're deleting the only owner
       const userRoles = await FormRoleUser.query().where('formId', formId).where('role', Roles.OWNER);
       if (userRoles.every((ur) => data.includes(ur.userId))) {

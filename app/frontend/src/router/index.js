@@ -1,9 +1,9 @@
 import NProgress from 'nprogress';
 import { createRouter, createWebHistory } from 'vue-router';
 
-import store from '@/store';
-import { IdentityProviders } from '@/utils/constants';
-import { preFlightAuth } from '@/utils/permissionUtils';
+import store from '@src/store';
+import { IdentityProviders } from '@src/utils/constants';
+import { preFlightAuth } from '@src/utils/permissionUtils';
 
 let isFirstTransition = true;
 let router = undefined;
@@ -33,28 +33,28 @@ export default function getRouter(basePath = '/') {
       {
         path: '/',
         name: 'Home',
+        redirect: { name: 'About' },
+      },
+      {
+        path: '/',
+        name: 'About',
         component: () =>
-          import(/* webpackChunkName: "about" */ '@/views/About.vue'),
+          import(/* webpackChunkName: "about" */ '@src/views/About.vue'),
         meta: {
           hasLogin: true,
         },
       },
       {
-        path: '/about',
-        redirect: { name: 'Home' },
-        name: 'About',
-      },
-      {
         path: '/admin',
         component: () =>
-          import(/* webpackChunkName: "admin" */ '@/views/Admin.vue'),
+          import(/* webpackChunkName: "admin" */ '@src/views/Admin.vue'),
         children: [
           {
             path: '',
             name: 'Admin',
             component: () =>
               import(
-                /* webpackChunkName: "adminroot" */ '@/views/admin/Root.vue'
+                /* webpackChunkName: "adminroot" */ '@src/views/admin/Root.vue'
               ),
           },
           {
@@ -62,7 +62,7 @@ export default function getRouter(basePath = '/') {
             name: 'AdministerForm',
             component: () =>
               import(
-                /* webpackChunkName: "administerform" */ '@/views/admin/Form.vue'
+                /* webpackChunkName: "administerform" */ '@src/views/admin/Form.vue'
               ),
             props: createProps,
           },
@@ -71,7 +71,7 @@ export default function getRouter(basePath = '/') {
             name: 'AdministerUser',
             component: () =>
               import(
-                /* webpackChunkName: "administeruser" */ '@/views/admin/User.vue'
+                /* webpackChunkName: "administeruser" */ '@src/views/admin/User.vue'
               ),
             props: createProps,
           },
@@ -82,27 +82,28 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
-        path: '/error',
-        name: 'Error',
+        path: '/login',
+        name: 'Login',
         component: () =>
-          import(/* webpackChunkName: "error" */ '@/views/Error.vue'),
-        meta: {
-          formSubmitMode: true,
-          hasLogin: true,
-        },
+          import(/* webpackChunkName: "login" */ '@src/views/Login.vue'),
         props: createProps,
+        beforeEnter(_to, _from, next) {
+          // Block navigation to login page if already authenticated
+          NProgress.done();
+          next(!store.getters['auth/authenticated']);
+        },
       },
       {
         path: '/form',
         component: () =>
-          import(/* webpackChunkName: "form" */ '@/views/Form.vue'),
+          import(/* webpackChunkName: "form" */ '@src/views/Form.vue'),
         children: [
           {
             path: 'create',
             name: 'FormCreate',
             component: () =>
               import(
-                /* webpackChunkName: "create" */ '@/views/form/Create.vue'
+                /* webpackChunkName: "create" */ '@src/views/form/Create.vue'
               ),
             meta: {
               breadcrumbTitle: 'Form Designer',
@@ -115,21 +116,32 @@ export default function getRouter(basePath = '/') {
             name: 'FormDesigner',
             component: () =>
               import(
-                /* webpackChunkName: "designer" */ '@/views/form/Design.vue'
+                /* webpackChunkName: "designer" */ '@src/views/form/Design.vue'
               ),
             meta: {
               breadcrumbTitle: 'Form Designer',
               requiresAuth: IdentityProviders.IDIR,
               hasLogin: true,
             },
-            props: createProps,
+            props: (route) => {
+              return {
+                ...route.query,
+                ...route.params,
+                nv:
+                  String(route.query.nv).toLowerCase() === 'true' ||
+                  route.query.nv === true,
+                sv:
+                  String(route.query.sv).toLowerCase() === 'true' ||
+                  route.query.sv === true,
+              };
+            },
           },
           {
             path: 'manage',
             name: 'FormManage',
             component: () =>
               import(
-                /* webpackChunkName: "manage" */ '@/views/form/Manage.vue'
+                /* webpackChunkName: "manage" */ '@src/views/form/Manage.vue'
               ),
             meta: {
               breadcrumbTitle: 'Manage Form',
@@ -143,7 +155,7 @@ export default function getRouter(basePath = '/') {
             name: 'FormPreview',
             component: () =>
               import(
-                /* webpackChunkName: "viewsubmission" */ '@/views/form/Preview.vue'
+                /* webpackChunkName: "viewsubmission" */ '@src/views/form/Preview.vue'
               ),
             meta: {
               breadcrumbTitle: 'Preview Form',
@@ -158,7 +170,7 @@ export default function getRouter(basePath = '/') {
             name: 'FormSubmissions',
             component: () =>
               import(
-                /* webpackChunkName: "submissions" */ '@/views/form/Submissions.vue'
+                /* webpackChunkName: "submissions" */ '@src/views/form/Submissions.vue'
               ),
             meta: {
               breadcrumbTitle: 'Submissions',
@@ -172,7 +184,7 @@ export default function getRouter(basePath = '/') {
             name: 'FormSubmit',
             component: () =>
               import(
-                /* webpackChunkName: "submit" */ '@/views/form/Submit.vue'
+                /* webpackChunkName: "submit" */ '@src/views/form/Submit.vue'
               ),
             meta: {
               breadcrumbTitle: 'Submit Form',
@@ -188,7 +200,7 @@ export default function getRouter(basePath = '/') {
             name: 'FormSuccess',
             component: () =>
               import(
-                /* webpackChunkName: "submit" */ '@/views/form/Success.vue'
+                /* webpackChunkName: "submit" */ '@src/views/form/Success.vue'
               ),
             meta: {
               breadcrumbTitle: 'Submit Success',
@@ -203,7 +215,9 @@ export default function getRouter(basePath = '/') {
             path: 'teams',
             name: 'FormTeams',
             component: () =>
-              import(/* webpackChunkName: "teams" */ '@/views/form/Teams.vue'),
+              import(
+                /* webpackChunkName: "teams" */ '@src/views/form/Teams.vue'
+              ),
             meta: {
               breadcrumbTitle: 'Team Management',
               requiresAuth: IdentityProviders.IDIR,
@@ -216,7 +230,7 @@ export default function getRouter(basePath = '/') {
             name: 'FormView',
             component: () =>
               import(
-                /* webpackChunkName: "viewsubmission" */ '@/views/form/View.vue'
+                /* webpackChunkName: "viewsubmission" */ '@src/views/form/View.vue'
               ),
             meta: {
               breadcrumbTitle: 'View Submission',
@@ -230,14 +244,14 @@ export default function getRouter(basePath = '/') {
       {
         path: '/user',
         component: () =>
-          import(/* webpackChunkName: "user" */ '@/views/User.vue'),
+          import(/* webpackChunkName: "user" */ '@src/views/User.vue'),
         children: [
           {
             path: '',
             name: 'User',
             component: () =>
               import(
-                /* webpackChunkName: "designer" */ '@/views/user/Root.vue'
+                /* webpackChunkName: "designer" */ '@src/views/user/Root.vue'
               ),
             meta: {
               requiresAuth: true,
@@ -248,13 +262,21 @@ export default function getRouter(basePath = '/') {
             name: 'UserFormDraftEdit',
             component: () =>
               import(
-                /* webpackChunkName: "userformdraftedit" */ '@/views/user/SubmissionDraftEdit.vue'
+                /* webpackChunkName: "userformdraftedit" */ '@src/views/user/SubmissionDraftEdit.vue'
               ),
             meta: {
               breadcrumbTitle: 'Edit Draft',
               formSubmitMode: true,
             },
-            props: createProps,
+            props: (route) => {
+              return {
+                ...route.query,
+                ...route.params,
+                sv:
+                  String(route.query.sv).toLowerCase() === 'true' ||
+                  route.query.sv === true,
+              };
+            },
             beforeEnter(to, _from, next) {
               preFlightAuth({ submissionId: to.query.s }, next);
             },
@@ -264,7 +286,7 @@ export default function getRouter(basePath = '/') {
             name: 'UserFormDuplicate',
             component: () =>
               import(
-                /* webpackChunkName: "userformduplicate" */ '@/views/user/SubmissionDuplicate.vue'
+                /* webpackChunkName: "userformduplicate" */ '@src/views/user/SubmissionDuplicate.vue'
               ),
             meta: {
               breadcrumbTitle: 'Create from existing',
@@ -296,7 +318,7 @@ export default function getRouter(basePath = '/') {
             name: 'UserForms',
             component: () =>
               import(
-                /* webpackChunkName: "userforms" */ '@/views/user/Forms.vue'
+                /* webpackChunkName: "userforms" */ '@src/views/user/Forms.vue'
               ),
             meta: {
               breadcrumbTitle: 'My Forms',
@@ -308,7 +330,7 @@ export default function getRouter(basePath = '/') {
             name: 'UserHistory',
             component: () =>
               import(
-                /* webpackChunkName: "history" */ '@/views/user/History.vue'
+                /* webpackChunkName: "history" */ '@src/views/user/History.vue'
               ),
             meta: {
               breadcrumbTitle: 'History',
@@ -320,7 +342,7 @@ export default function getRouter(basePath = '/') {
             name: 'UserSubmissions',
             component: () =>
               import(
-                /* webpackChunkName: "usersubmissions" */ '@/views/user/Submissions.vue'
+                /* webpackChunkName: "usersubmissions" */ '@src/views/user/Submissions.vue'
               ),
             meta: {
               breadcrumbTitle: 'Previous Submissions',
@@ -336,7 +358,7 @@ export default function getRouter(basePath = '/') {
             name: 'UserFormView',
             component: () =>
               import(
-                /* webpackChunkName: "userformview" */ '@/views/user/SubmissionView.vue'
+                /* webpackChunkName: "userformview" */ '@src/views/user/SubmissionView.vue'
               ),
             meta: {
               breadcrumbTitle: 'Submission',
@@ -352,28 +374,6 @@ export default function getRouter(basePath = '/') {
           hasLogin: true,
         },
       },
-      {
-        path: '/login',
-        name: 'Login',
-        component: () =>
-          import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
-        props: createProps,
-        beforeEnter(_to, _from, next) {
-          // Block navigation to login page if already authenticated
-          NProgress.done();
-          next(!store.getters['auth/authenticated']);
-        },
-      },
-      {
-        path: '/404',
-        alias: '/:pathMatch(.*)*',
-        name: 'NotFound',
-        component: () =>
-          import(/* webpackChunkName: "not-found" */ '@/views/NotFound.vue'),
-        meta: {
-          hasLogin: true,
-        },
-      },
     ],
   });
 
@@ -382,9 +382,9 @@ export default function getRouter(basePath = '/') {
     if (isFirstTransition) {
       // Always call rbac/current if authenticated and on first page load
       if (
-        router.app.$keycloak &&
-        router.app.$keycloak.ready &&
-        router.app.$keycloak.authenticated
+        router.app.config.globalProperties.$keycloak &&
+        router.app.config.globalProperties.$keycloak.ready &&
+        router.app.config.globalProperties.$keycloak.authenticated
       ) {
         store.dispatch('form/getFormsForCurrentUser');
       }
@@ -403,9 +403,9 @@ export default function getRouter(basePath = '/') {
     // in those cases, see the beforeEnter navigation guards for auth loop determination
     if (
       to.matched.some((route) => route.meta.requiresAuth) &&
-      router.app.$keycloak &&
-      router.app.$keycloak.ready &&
-      !router.app.$keycloak.authenticated
+      router.app.config.globalProperties.$keycloak &&
+      router.app.config.globalProperties.$keycloak.ready &&
+      !router.app.config.globalProperties.$keycloak.authenticated
     ) {
       const redirectUri =
         location.origin + basePath + to.path + location.search;
@@ -432,6 +432,5 @@ export default function getRouter(basePath = '/') {
     isFirstTransition = false;
     NProgress.done();
   });
-
   return router;
 }

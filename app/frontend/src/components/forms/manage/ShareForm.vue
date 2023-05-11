@@ -1,15 +1,14 @@
 <template>
   <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
         <v-btn
           class="mx-1"
           data-cy="shareFormButton"
           color="primary"
           icon
-          v-bind="attrs"
+          v-bind="props"
           @click="dialog = true"
-          v-on="on"
         >
           <v-icon class="mr-1">share</v-icon>
         </v-btn>
@@ -24,44 +23,40 @@
           <hr />
           <p class="mb-5">Copy the link below or download the QR code.</p>
           <v-alert
-            :value="warning"
+            v-if="warning"
             :class="NOTIFICATIONS_TYPES.WARNING.class"
             :color="NOTIFICATIONS_TYPES.WARNING.color"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
-            transition="scale-transition"
-          >
-            There is no published version of the form at this time. The link
-            below will not be reachable until a version is published.
-          </v-alert>
+            text="There is no published version of the form at this time. The link
+            below will not be reachable until a version is published."
+          ></v-alert>
           <v-text-field
             readonly
-            dense
-            flat
-            outlined
+            density="compact"
+            variant="outlined"
             label="URL"
             data-test="text-shareUrl"
-            :value="formLink"
+            :model-value="formLink"
           >
             <template #prepend>
               <v-icon>link</v-icon>
             </template>
-            <template #append-outer>
+            <template #append>
               <BaseCopyToClipboard
                 class="mt-n1"
                 :copy-text="formLink"
                 tooltip-text="Copy URL to clipboard"
               />
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
                   <v-btn
                     class="mt-n1"
                     color="primary"
                     :href="formLink"
                     icon
                     target="_blank"
-                    v-bind="attrs"
+                    v-bind="props"
                     data-cy="shareFormLinkButton"
-                    v-on="on"
                   >
                     <v-icon class="mr-1">open_in_new</v-icon>
                   </v-btn>
@@ -83,14 +78,13 @@
               </div>
             </v-col>
             <v-col cols="1" class="text-center">
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
                   <v-btn
                     color="primary"
                     icon
-                    v-bind="attrs"
+                    v-bind="props"
                     @click="downloadQr"
-                    v-on="on"
                   >
                     <v-icon>get_app</v-icon>
                   </v-btn>
@@ -113,7 +107,7 @@
 
 <script>
 import QrcodeVue from 'qrcode.vue';
-import { NotificationTypes } from '@/utils/constants';
+import { NotificationTypes } from '@src/utils/constants';
 
 export default {
   components: {
@@ -141,7 +135,7 @@ export default {
       // TODO: Consider using vue-router to generate this url string instead
       return `${window.location.origin}${
         import.meta.env.BASE_URL
-      }form/submit?f=${this.formId}`;
+      }/form/submit?f=${this.formId}`;
     },
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
@@ -159,14 +153,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '@vuetify/lib/styles/settings/_variables';
+@import 'vuetify/settings';
 
 .qrCodeContainer {
   @media #{map-get($display-breakpoints, 'sm-and-up')} {
     padding-left: 75px;
   }
 
-  ::v-deep canvas {
+  :deep(canvas) {
     margin-top: 50px;
     max-width: 250px;
     max-height: 250px;

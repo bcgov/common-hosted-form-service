@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import UserSubmission from '@/components/forms/submission/UserSubmission.vue';
+import UserSubmission from '@src/components/forms/submission/UserSubmission.vue';
 
 export default {
   name: 'SubmissionDraftEdit',

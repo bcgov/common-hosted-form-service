@@ -3,9 +3,9 @@
     :class="'target-notification ' + notification.class"
     :icon="notification.icon"
     prominent
-    dismissible
-    transition="slide-y-transition"
-    @input="alertClosed"
+    closable
+    standard-easing="slide-y-transition"
+    @update:modelValue="alertClosed"
   >
     {{ notification.message }}
   </v-alert>

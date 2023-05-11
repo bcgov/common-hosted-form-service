@@ -1,4 +1,4 @@
-import { NotificationTypes } from '@/utils/constants';
+import { NotificationTypes } from '@src/utils/constants';
 
 // So each notification has a uniqueId in the session
 let nextId = 1;

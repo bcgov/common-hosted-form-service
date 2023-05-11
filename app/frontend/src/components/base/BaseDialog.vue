@@ -2,7 +2,7 @@
   <v-dialog
     :max-width="width"
     persistent
-    :value="value"
+    :model-value="value"
     @click:outside="closeDialog"
     @keydown.esc="closeDialog"
   >
@@ -20,7 +20,7 @@
         <v-card-text>
           <div class="dialog-icon">
             <slot name="icon">
-              <v-icon medium>default-icon</v-icon>
+              <v-icon size="medium">default-icon</v-icon>
             </slot>
           </div>
           <div class="dialog-text">
@@ -30,7 +30,12 @@
       </div>
       <v-card-actions class="justify-center">
         <div v-if="type === 'OK'">
-          <v-btn class="mb-5" color="primary" depressed @click="closeDialog">
+          <v-btn
+            class="mb-5"
+            color="primary"
+            variant="flat"
+            @click="closeDialog"
+          >
             <slot name="button-text">
               <span>OK</span>
             </slot>
@@ -40,14 +45,14 @@
           <v-btn
             class="mb-5 mr-5"
             color="primary"
-            depressed
+            variant="flat"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
               <span>Continue</span>
             </slot>
           </v-btn>
-          <v-btn class="mb-5" outlined @click="closeDialog">
+          <v-btn class="mb-5" variant="outlined" @click="closeDialog">
             <slot name="button-text-cancel">
               <span>Cancel</span>
             </slot>
@@ -57,14 +62,14 @@
           <v-btn
             class="mb-5 mr-5"
             color="primary"
-            depressed
+            variant="flat"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
               <span>Continue</span>
             </slot>
           </v-btn>
-          <v-btn class="mb-5" outlined @click="deleteDialog">
+          <v-btn class="mb-5" variant="outlined" @click="deleteDialog">
             <slot name="button-text-delete">
               <span>Cancel</span>
             </slot>
@@ -74,7 +79,7 @@
           <v-btn
             class="mb-5 mr-5"
             color="primary"
-            depressed
+            variant="flat"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
@@ -85,14 +90,14 @@
             v-if="enableCustomButton"
             class="mb-5 mr-5"
             color="primary"
-            depressed
+            variant="flat"
             @click="customDialog"
           >
             <slot name="button-text-custom">
               <span>Custom</span>
             </slot>
           </v-btn>
-          <v-btn class="mb-5" outlined @click="closeDialog">
+          <v-btn class="mb-5" variant="outlined" @click="closeDialog">
             <slot name="button-text-cancel">
               <span>Cancel</span>
             </slot>

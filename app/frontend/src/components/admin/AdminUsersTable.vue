@@ -27,12 +27,14 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template #[`item.created`]="{ item }">
-        {{ $filters.formatDate(item.createdAt) }}
+      <template v-slot:item.created="{ item }">
+        {{ $filters.formatDate(item.raw.createdAt) }}
       </template>
-      <template #[`item.actions`]="{ item }">
-        <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
-          <v-btn color="primary" text small>
+      <template v-slot:item.actions="{ item }">
+        <router-link
+          :to="{ name: 'AdministerUser', query: { u: item.raw.id } }"
+        >
+          <v-btn color="primary" variant="text" size="small">
             <v-icon class="mr-1">build_circle</v-icon>
             <span class="d-none d-sm-flex">Admin</span>
           </v-btn>
@@ -51,13 +53,13 @@ export default {
     return {
       activeOnly: false,
       headers: [
-        { text: 'Full Name', align: 'start', value: 'fullName' },
-        { text: 'User ID', align: 'start', value: 'username' },
-        { text: 'Created', align: 'start', value: 'created' },
+        { title: 'Full Name', align: 'start', key: 'fullName' },
+        { title: 'User ID', align: 'start', key: 'username' },
+        { title: 'Created', align: 'start', key: 'created' },
         {
-          text: 'Actions',
+          title: 'Actions',
           align: 'end',
-          value: 'actions',
+          key: 'actions',
           filterable: false,
           sortable: false,
         },

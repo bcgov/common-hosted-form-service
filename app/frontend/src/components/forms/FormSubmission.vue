@@ -30,18 +30,12 @@
             <PrintOptions :submission-id="submissionId" />
           </span>
           <span>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
                 <router-link
                   :to="{ name: 'FormSubmissions', query: { f: form.id } }"
                 >
-                  <v-btn
-                    class="mx-1"
-                    color="primary"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                  >
+                  <v-btn class="mx-1" color="primary" icon v-bind="props">
                     <v-icon>list_alt</v-icon>
                   </v-btn>
                 </router-link>
@@ -62,14 +56,13 @@
         class="pl-0 pt-0"
       >
         <v-alert
-          :value="!submissionReadOnly"
+          v-if="!submissionReadOnly"
           :class="'d-print-none ' + NOTIFICATIONS_TYPES.INFO.class"
           :color="NOTIFICATIONS_TYPES.INFO.color"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
-          transition="scale-transition"
-          >After editing, re-submit the form to save your changes.</v-alert
-        >
-        <v-card outlined class="review-form">
+          text="After editing, re-submit the form to save your changes."
+        ></v-alert>
+        <v-card variant="outlined" class="review-form">
           <v-row no-gutters>
             <v-col cols="12" sm="6">
               <h2 class="review-heading">Submission</h2>
@@ -83,16 +76,15 @@
             >
               <span v-if="submissionReadOnly">
                 <AuditHistory :submission-id="submissionId" />
-                <v-tooltip bottom>
-                  <template #activator="{ on, attrs }">
+                <v-tooltip location="bottom">
+                  <template #activator="{ props }">
                     <v-btn
                       class="mx-1"
                       color="primary"
                       :disabled="isDraft"
                       icon
-                      v-bind="attrs"
+                      v-bind="props"
                       @click="toggleSubmissionEdit(true)"
-                      v-on="on"
                     >
                       <v-icon>mode_edit</v-icon>
                     </v-btn>
@@ -102,7 +94,7 @@
               </span>
               <v-btn
                 v-else
-                outlined
+                variant="outlined"
                 color="textLink"
                 @click="toggleSubmissionEdit(false)"
               >
@@ -130,7 +122,11 @@
         order="first"
         order-md="last"
       >
-        <v-card outlined class="review-form" :disabled="!submissionReadOnly">
+        <v-card
+          variant="outlined"
+          class="review-form"
+          :disabled="!submissionReadOnly"
+        >
           <h2 class="review-heading">Status</h2>
           <StatusPanel
             :submission-id="submissionId"
@@ -139,7 +135,11 @@
             @draft-enabled="setDraft"
           />
         </v-card>
-        <v-card outlined class="review-form" :disabled="!submissionReadOnly">
+        <v-card
+          variant="outlined"
+          class="review-form"
+          :disabled="!submissionReadOnly"
+        >
           <NotesPanel ref="notesPanel" :submission-id="submissionId" />
         </v-card>
       </v-col>
@@ -150,13 +150,13 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import AuditHistory from '@/components/forms/submission/AuditHistory.vue';
-import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
-import FormViewer from '@/components/designer/FormViewer.vue';
-import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
-import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
-import PrintOptions from '@/components/forms/PrintOptions.vue';
-import { NotificationTypes } from '@/utils/constants';
+import AuditHistory from '@src/components/forms/submission/AuditHistory.vue';
+import DeleteSubmission from '@src/components/forms/submission/DeleteSubmission.vue';
+import FormViewer from '@src/components/designer/FormViewer.vue';
+import NotesPanel from '@src/components/forms/submission/NotesPanel.vue';
+import StatusPanel from '@src/components/forms/submission/StatusPanel.vue';
+import PrintOptions from '@src/components/forms/PrintOptions.vue';
+import { NotificationTypes } from '@src/utils/constants';
 
 export default {
   name: 'FormSubmission',

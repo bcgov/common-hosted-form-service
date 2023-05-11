@@ -14,14 +14,22 @@
         order="1"
         order-sm="2"
       >
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <router-link :to="{ name: 'FormCreate' }">
-              <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
-                <v-icon>add_circle</v-icon>
-              </v-btn>
-            </router-link>
-          </template>
+        <v-tooltip location="bottom">
+          <router-link
+            :to="{ name: 'FormCreate' }"
+            custom
+            v-slot="{ navigate }"
+          >
+            <v-btn
+              class="mx-1"
+              color="primary"
+              icon
+              @click="navigate"
+              role="link"
+            >
+              <v-icon>add_circle</v-icon>
+            </v-btn>
+          </router-link>
           <span>Create a New Form</span>
         </v-tooltip>
       </v-col>
@@ -54,53 +62,54 @@
       :loading="loading"
       loading-text="Loading... Please wait"
     >
-      <template #[`item.name`]="{ item }">
+      <template v-slot:item.name="{ item }">
         <router-link
-          v-if="item.published"
+          v-if="item.raw.published"
           :to="{
             name: 'FormSubmit',
-            query: { f: item.id },
+            query: { f: item.raw.id },
           }"
           target="_blank"
         >
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">{{ item.name }}</span>
+          <span>{{ item.raw.name }}</span>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span v-bind="props">{{ item.raw.name }}</span>
             </template>
-            <span v-if="item.published">
+            <span v-if="item.raw.published">
               View Form
               <v-icon>open_in_new</v-icon>
             </span>
           </v-tooltip>
         </router-link>
-        <span v-else>{{ item.name }}</span>
+        <span v-else>{{ item.raw.name }}</span>
         <!-- link to description in dialog -->
         <v-icon
-          v-if="item.description.trim()"
-          small
+          v-if="item.raw.description?.trim()"
+          size="small"
           class="description-icon ml-2 mr-4"
           color="primary"
-          @click="onDescriptionClick(item.id, item.description)"
+          @click="onDescriptionClick(item.raw.id, item.raw.description)"
         >
           description
         </v-icon>
       </template>
-      <template #[`item.actions`]="{ item }">
+      <template v-slot:item.actions="{ item }">
         <router-link
-          v-if="checkFormManage(item)"
-          :to="{ name: 'FormManage', query: { f: item.id } }"
+          v-if="checkFormManage(item.raw)"
+          :to="{ name: 'FormManage', query: { f: item.raw.id } }"
         >
-          <v-btn color="primary" text small>
+          <v-btn color="primary" variant="text" size="small">
             <v-icon class="mr-1">settings</v-icon>
             <span class="d-none d-sm-flex">Manage</span>
           </v-btn>
         </router-link>
         <router-link
-          v-if="checkSubmissionView(item)"
+          v-if="checkSubmissionView(item.raw)"
           data-cy="formSubmissionsLink"
-          :to="{ name: 'FormSubmissions', query: { f: item.id } }"
+          :to="{ name: 'FormSubmissions', query: { f: item.raw.id } }"
         >
-          <v-btn color="primary" text small>
+          <v-btn color="primary" variant="text" size="small">
             <v-icon class="mr-1">list_alt</v-icon>
             <span class="d-none d-sm-flex">Submissions</span>
           </v-btn>
@@ -125,12 +134,12 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { IdentityProviders } from '@/utils/constants';
+import { IdentityProviders } from '@src/utils/constants';
 import {
   checkFormManage,
   checkFormSubmit,
   checkSubmissionView,
-} from '@/utils/permissionUtils';
+} from '@src/utils/permissionUtils';
 
 export default {
   name: 'FormsTable',
@@ -139,11 +148,11 @@ export default {
       // Assigning width: '1%' to dynamically assign width to the Table's Columns as described by this post on Stack Overflow:
       // https://stackoverflow.com/a/51569928
       headers: [
-        { text: 'Form Title', align: 'start', value: 'name', width: '1%' },
+        { title: 'Form Title', align: 'start', key: 'name', width: '1%' },
         {
-          text: 'Actions',
+          title: 'Actions',
           align: 'end',
-          value: 'actions',
+          key: 'actions',
           filterable: false,
           sortable: false,
           width: '1%',

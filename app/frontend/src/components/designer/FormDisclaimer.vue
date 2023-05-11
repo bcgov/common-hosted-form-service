@@ -24,7 +24,7 @@
           target="_blank"
         >
           Ministry Privacy Officer
-          <v-icon small color="primary">open_in_new</v-icon>
+          <v-icon size="small" color="primary">open_in_new</v-icon>
         </a>
         and to complete assessments as required.
       </li>

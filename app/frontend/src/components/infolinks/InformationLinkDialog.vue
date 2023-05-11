@@ -19,7 +19,7 @@
             <v-col>
               <div
                 style="margin: 0px; padding: 0px"
-                class="red--text"
+                class="text-red"
                 v-text="'Learn More Link field cannot be empty.'"
               />
             </v-col>
@@ -28,7 +28,7 @@
             <v-col>
               <div
                 style="margin: 0px; padding: 0px"
-                class="red--text"
+                class="text-red"
                 v-text="'Large image. Image size cannot be large than .5mb'"
               />
             </v-col>
@@ -49,12 +49,11 @@
                 <v-col cols="5">
                   <v-text-field
                     v-model="moreHelpInfoLink"
-                    dense
+                    density="compact"
                     enable
                     style="width: 100%"
-                    flat
                     :disabled="!isLinkEnabled"
-                    :value="moreHelpInfoLink"
+                    :model-value="moreHelpInfoLink"
                     data-cy="more_help_info_link_text_field"
                     class="text-style"
                     color="#1A5A96"
@@ -83,11 +82,11 @@
               <v-textarea
                 v-model="description"
                 clear-icon="mdi-close-circle"
-                outlined
+                variant="outlined"
                 hide-details
                 clearable
                 data-cy="more_help_info_link_text_area"
-                value="description"
+                model-value="description"
                 class="text-style"
               ></v-textarea>
             </v-col>

@@ -1,14 +1,9 @@
+<!-- eslint-disable vue/no-v-model-argument -->
 <template>
   <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          icon
-          v-bind="attrs"
-          @click="dialog = true"
-          v-on="on"
-        >
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
+        <v-btn color="primary" icon v-bind="props" @click="dialog = true">
           <v-icon>group</v-icon>
         </v-btn>
       </template>
@@ -36,54 +31,39 @@
               <form autocomplete="off">
                 <v-autocomplete
                   v-model="userSearchSelection"
-                  v-model:search-input="findUsers"
-                  autocomplete="autocomplete_off"
+                  v-model:search="findUsers"
+                  :items="items"
+                  chips
+                  closable-chips
                   clearable
-                  dense
-                  :filter="filterObject"
+                  item-title="fullName"
+                  density="compact"
+                  :customFilter="filterObject"
                   hide-details
-                  :items="userSearchResults"
                   :label="autocompleteLabel"
                   :loading="isLoadingDropdown"
                   return-object
                 >
                   <!-- no data -->
-                  <template #no-data>
+                  <template v-slot:no-data>
                     <div class="px-2">
                       Can't find someone? They may not have logged into
                       CHEFS.<br />
                       Kindly send them a link to CHEFS and ask them to log in.
                     </div>
                   </template>
-                  <!-- selected user -->
-                  <template #selection="data">
-                    <span
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      close
-                      @click="data.select"
-                    >
-                      {{ data.item.fullName }}
-                    </span>
+                  <template v-slot:chip="{ props, item }">
+                    <v-chip v-bind="props" :text="item?.raw?.fullName"></v-chip>
                   </template>
+
                   <!-- users found in dropdown -->
-                  <template #item="data">
-                    <template v-if="typeof data.item !== 'object'">
-                      <v-list-item-content v-text="data.item" />
-                    </template>
-                    <template v-else>
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          {{ data.item.fullName }}
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ data.item.username }} ({{ data.item.idpCode }})
-                        </v-list-item-subtitle>
-                        <v-list-item-subtitle>
-                          {{ data.item.email }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </template>
+                  <template v-slot:item="{ props, item }">
+                    <v-list-item
+                      v-bind="props"
+                      :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
+                      :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
+                    >
+                    </v-list-item>
                   </template>
                 </v-autocomplete>
               </form>
@@ -109,35 +89,32 @@
           </p>
 
           <v-skeleton-loader :loading="isLoadingTable" type="table-row">
-            <v-simple-table dense>
-              <template>
-                <thead>
-                  <tr>
-                    <th class="text-left">Name</th>
-                    <th class="text-left">Username</th>
-                    <th class="text-left">Email</th>
-                    <th v-if="isDraft" class="text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="item in userTableList" :key="item.userId">
-                    <td>{{ item.fullName }}</td>
-                    <td>{{ item.username }}</td>
-                    <td>{{ item.email }}</td>
-                    <td v-if="isDraft">
-                      <v-btn
-                        color="red"
-                        icon
-                        :disabled="item.isOwner"
-                        @click="removeUser(item)"
-                      >
-                        <v-icon>remove_circle</v-icon>
-                      </v-btn>
-                    </td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
+            <v-table dense>
+              <thead>
+                <tr>
+                  <th class="text-left">Name</th>
+                  <th class="text-left">Username</th>
+                  <th class="text-left">Email</th>
+                  <th v-if="isDraft" class="text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in userTableList" :key="item.id">
+                  <td>{{ item.fullName }}</td>
+                  <td>{{ item.username }}</td>
+                  <td>{{ item.email }}</td>
+                  <td v-if="isDraft">
+                    <v-btn
+                      color="red"
+                      :disabled="item.isOwner"
+                      @click="removeUser(item)"
+                      icon="mdi-minus-thick"
+                      size="x-small"
+                    ></v-btn>
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
           </v-skeleton-loader>
         </v-card-text>
 
@@ -179,8 +156,8 @@ import {
   IdentityProviders,
   NotificationTypes,
   Regex,
-} from '@/utils/constants';
-import { rbacService, userService } from '@/services';
+} from '@src/utils/constants';
+import { rbacService, userService } from '@src/services';
 
 export default {
   name: 'ManageSubmissionUsers',
@@ -219,6 +196,9 @@ export default {
       return this.selectedIdp == IdentityProviders.IDIR
         ? 'Enter a name, e-mail, or username'
         : 'Enter an exact e-mail or username.';
+    },
+    items() {
+      return this.userSearchResults;
     },
   },
   watch: {

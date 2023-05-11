@@ -9,6 +9,7 @@ const proxyObject = {
   changeOrigin: true,
 };
 
+// https://vitejs.dev/config/
 export default defineConfig({
   base: process.env.VITE_FRONTEND_BASEPATH
     ? process.env.VITE_FRONTEND_BASEPATH
@@ -24,10 +25,10 @@ export default defineConfig({
   plugins: [vue(), eslintPlugin()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@font-awesome': path.resolve(__dirname, './node_modules/font-awesome'),
-      '@formiojs': path.resolve(__dirname, './node_modules/formiojs'),
-      '@vuetify': path.resolve(__dirname, './node_modules/vuetify'),
+      '@src': path.resolve(__dirname, './src'),
     },
+  },
+  optimizeDeps: {
+    include: ['material-design-icons-iconfont'],
   },
 });

@@ -5,7 +5,7 @@
       <img
         alt="B.C. Government Logo"
         class="mr-1 d-inline"
-        contain
+        cover
         :src="PrintLogo"
       />
       <h1
@@ -23,9 +23,8 @@
         <v-img
           alt="B.C. Government Logo"
           class="d-flex"
-          contain
           height="3.5rem"
-          src="BCLogo"
+          :src="BCLogo"
           width="10rem"
         />
       </a>
@@ -43,8 +42,8 @@
 </template>
 
 <script>
-import BCLogo from '@//assets/images/bc_logo.svg';
-import PrintLogo from '@//assets/images/bc_logo_print.svg';
+import BCLogo from '@src/assets/images/bc_logo.svg';
+import PrintLogo from '@src/assets/images/bc_logo_print.svg';
 
 export default {
   name: 'BCGovHeader',
@@ -69,7 +68,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../assets/scss/style.scss';
+@import '@src/assets/scss/style.scss';
 
 .gov-header {
   .printHeader {

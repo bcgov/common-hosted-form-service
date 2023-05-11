@@ -51,7 +51,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { rbacService } from '@/services';
+import { rbacService } from '@src/services';
 
 import VueJsonPretty from 'vue-json-pretty';
 

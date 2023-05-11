@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import AdminPage from '@/components/admin/AdminPage.vue';
+import AdminPage from '@src/components/admin/AdminPage.vue';
 
 export default {
   name: 'AdminRoot',

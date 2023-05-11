@@ -6,18 +6,22 @@ module.exports = {
     es6: true,
     jest: true,
     node: true,
-    es2022: true,
   },
   extends: [
+    'plugin:vue/essential',
     'eslint:recommended',
-    'plugin:vue/vue3-recommended',
     'plugin:prettier/recommended',
+    'plugin:vuetify/base',
   ],
-  plugins: ['prettier'],
+  plugins: ['vuetify', 'prettier'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
     _: false,
+  },
+  parserOptions: {
+    sourceType: 'module',
+    ecmaVersion: 2020,
   },
   rules: {
     'prettier/prettier': 'error',
@@ -52,14 +56,11 @@ module.exports = {
       },
     ],
     'vue/no-spaces-around-equal-signs-in-attribute': ['error'],
-    'vue/require-default-prop': 'off',
-    /* This is necessary until we have packages that conform to this */
-    'vue/v-on-event-hyphenation': [ "off", {
-      autofix: false,
-    }],
-    'vue/no-lone-template': 'off',
-    /* Should probably remove this and fix the existing issues */
-    'vue/no-template-shadow': 'off',
+    'vuetify/no-deprecated-classes': 'error',
+    'vuetify/grid-unknown-attributes': 'error',
+    /* This needs to be removed during testing, we need it in production to ignore the v-data-table
+    but there may be more Vuetify components that are deprecated or in labs */
+    'vuetify/no-deprecated-components': 'off',
   },
   overrides: [
     {

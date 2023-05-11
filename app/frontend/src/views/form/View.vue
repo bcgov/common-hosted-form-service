@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import FormSubmission from '@/components/forms/FormSubmission.vue';
-import { IdentityProviders } from '@/utils/constants';
+import FormSubmission from '@src/components/forms/FormSubmission.vue';
+import { IdentityProviders } from '@src/utils/constants';
 
 export default {
   name: 'FormView',
