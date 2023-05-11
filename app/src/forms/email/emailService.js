@@ -458,10 +458,10 @@ const service = {
       const bodyTemplate = 'file-download-ready.html';
       const configData = {
         bodyTemplate: bodyTemplate,
-        title: `${form.name} submissions export`,
-        subject: `${form.name} submissions export`,
+        title: 'CHEFS Data Export',
+        subject: `CHEFS: ${form.name} submissions export`,
         priority: 'normal',
-        messageLinkText: 'You can download your submissions exports by visiting the following link:',
+        messageLinkText: `Your data export for ${form.name} is ready`,
         form,
       };
       const contexts = [
