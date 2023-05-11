@@ -15,8 +15,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 export default {
   name: 'AdminPage',
   components: {
@@ -29,7 +27,7 @@ export default {
   },
   data() {
     return {
-      adminDashboardUrl: Vue.prototype.$config.adminDashboardUrl,
+      adminDashboardUrl: this.$config.adminDashboardUrl,
     };
   },
 };
