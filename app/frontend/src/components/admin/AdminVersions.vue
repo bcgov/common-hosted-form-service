@@ -41,7 +41,7 @@
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
-          <span>Export Design</span>
+          <span>{{ $t('trans.adminVersions.exportDesign') }} </span>
         </v-tooltip>
       </span>
     </template>
@@ -57,12 +57,28 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Versions', align: 'start', value: 'version' },
-        { text: 'Status', align: 'start', value: 'status' },
-        { text: 'Created', align: 'start', value: 'createdAt' },
-        { text: 'Last Updated', align: 'start', value: 'updatedAt' },
         {
-          text: 'Actions',
+          text: "this.$t('trans.manageVersions.versions')",
+          align: 'start',
+          value: 'version',
+        },
+        {
+          text: "this.$t('trans.manageVersions.status')",
+          align: 'start',
+          value: 'status',
+        },
+        {
+          text: "this.$t('trans.manageVersions.created')",
+          align: 'start',
+          value: 'createdAt',
+        },
+        {
+          text: "this.$t('trans.manageVersions.lastUpdated')",
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: "this.$t('trans.manageVersions.actions')",
           align: 'end',
           value: 'action',
           filterable: false,
@@ -79,6 +95,7 @@ export default {
         version: '',
         id: '',
       },
+      message: "this.$t('trans.adminVersions.notificationMsg')",
     };
   },
   computed: {
@@ -120,7 +137,7 @@ export default {
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while loading the form design.',
+          message: this.message,
         });
       }
     },

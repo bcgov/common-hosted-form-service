@@ -24,13 +24,13 @@
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" large>
           <v-icon left>home</v-icon>
-          <span>About</span>
+          <span>{{ $t('trans.baseSecure.about') }}</span>
         </v-btn>
       </router-link>
     </div>
   </div>
   <div v-else class="text-center">
-    <h1 class="my-8">You must be logged in to use this feature.</h1>
+    <h1 class="my-8">{{ $t('trans.baseSecure.loginInfo') }}</h1>
     <v-btn
       v-if="keycloakReady"
       color="primary"
@@ -38,7 +38,7 @@
       @click="login"
       large
     >
-      <span>Login</span>
+      <span>{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>
   </div>
 </template>

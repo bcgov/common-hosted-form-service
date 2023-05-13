@@ -2,7 +2,7 @@
   <div>
     <v-btn color="primary" text small @click="displayDialog">
       <v-icon class="mr-1">email</v-icon>
-      <span>Email a receipt of this submission</span>
+      <span>{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
 
     <BaseDialog
@@ -34,7 +34,7 @@
         </v-form>
       </template>
       <template v-slot:button-text-continue>
-        <span>SEND</span>
+        <span>{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>
