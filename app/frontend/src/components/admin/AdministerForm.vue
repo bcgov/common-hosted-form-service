@@ -61,7 +61,9 @@
       @close-dialog="showRestoreDialog = false"
       @continue-dialog="restore"
     >
-      <template #title>Confirm Restore</template>
+      <template #title>{{
+        $t('trans.administerForm.confirmRestore')
+      }}</template>
       <template #text>
         <div v-if="restoreInProgress" class="text-center">
           <v-progress-circular indeterminate color="primary" :size="100">

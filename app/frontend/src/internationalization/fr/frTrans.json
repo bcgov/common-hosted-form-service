@@ -121,7 +121,8 @@
     "formTitle": "Titre du formulaire",
     "created": "Créé",
     "deleted": "Supprimé",
-    "actions": "Actions"
+    "actions": "Actions",
+    "delete": "Supprimer"
   },
   "administerForm": {
     "deleted": "SUPPRIMÉ",
@@ -137,6 +138,115 @@
     "toActiveState": "à l'état actif",
     "confirmDeletion": "Confirmer la suppression",
     "confirmDeletionMsg": "Voulez-vous vraiment supprimer cette clé API ?",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "confirmRestore": "Confirmer la restauration"
+  },
+  "administerUser": {
+    "userDetails": "Détails de l'utilisateur",
+    "openSSOConsole": "Ouvrir la console SSO"
+  },
+  "adminPage": {
+    "forms": "Formes",
+    "users": "Utilisateurs",
+    "developer": "Développeur",
+    "infoLinks": "Liens d'informations"
+  },
+  "adminUsersTable": {
+    "search": "Recherche",
+    "loadingText": "Chargement... veuillez patienter",
+    "admin": "Administrateur",
+    "fullName": "Nom et prénom",
+    "userID": "ID de l'utilisateur",
+    "created": "créé",
+    "actions": "Actions"
+  },
+  "adminVersions": {
+    "exportDesign": "Conception d'exportation",
+    "versions": "Versions",
+    "status": "Statut",
+    "created": "Créé",
+    "lastUpdated": "Dernière mise à jour",
+    "actions": "Actions",
+    "notificationMsg": "Une erreur s'est produite lors du chargement de la conception de formulaire."
+  },
+  "developer": {
+    "user": "Utilisateur",
+    "name": "Nom",
+    "userName": "Nom d'utilisateur",
+    "JWTContents": "Contenu JWT",
+    "JWTContentsSBTxt": "Contenu JWT copié dans le presse-papiers",
+    "JWTContentsTTTxt": "Copier le contenu JWT dans le presse-papiers",
+    "JWTToken": "Jeton JWT",
+    "JWTTokenSBTxt": "Contenu JWT copié dans le presse-papiers",
+    "JWTTokenTTTxt": "Copier le contenu JWT dans le presse-papiers",
+    "chefsAPI": "API CHEFS",
+    "RBACSBTxt": "Réponse RBAC copiée dans le presse-papiers",
+    "RBACTTTxt": "Copier la réponse RBAC dans le presse-papiers",
+    "notificationMsg": "Impossible d'obtenir l'utilisateur à partir du RBAC, voir la console",
+    "notificationConsErr": "Erreur lors de l'obtention de l'utilisateur à partir du RBAC"
+  },
+  "baseAuthButton": {
+    "logout": "Se déconnecter"
+  },
+  "baseDialog": {
+    "defaultText": "texte par défaut",
+    "ok": "D'ACCORD",
+    "continue": "Continuer",
+    "cancel": "Annuler",
+    "custom": "Coutume"
+  },
+  "baseSecure": {
+    "about": "À propos",
+    "loginInfo": "Vous devez être connecté pour utiliser cette fonctionnalité."
+  },
+  "formDesigner": {
+    "formDesign": "Conception de formulaire",
+    "exportDesign" :"Conception d'exportation",
+    "importDesign": "Importer la conception",
+    "important": "IMPORTANTE"
+  },
+  "formDisclaimer": {
+    "disclaimerAndStatement": "Clause de non-responsabilité et déclaration de responsabilité pour les concepteurs de formulaire :",
+    "privacyLaw": "Il est de votre responsabilité de vous conformer aux lois sur la confidentialité régissant la collecte, l'utilisation et la divulgation d'informations personnellement identifiables.",
+    "disclosure": "L'accès à cet outil de conception de formulaire n'autorise pas en soi la collecte, l'utilisation ou la divulgation d'informations personnellement identifiables.",
+    "consent": "Il est de votre responsabilité d'obtenir le consentement pour collecter des informations conformément à la loi.",
+    "formIntention": "Avant de publier ou de distribuer votre formulaire, vous devez discuter de l'intention du formulaire avec votre",
+    "privacyOfficer": "Agent de la protection de la vie privée du ministère",
+    "assement": "et effectuer les évaluations nécessaires."
+  },
+  "submissionsTable": {
+    "submissionsTable": "Tableau des soumissions",
+    "selectColumns": "Sélectionnez les colonnes",
+    "manageForm": "Gérer le formulaire",
+    "submissionsToFiles": "Exporter les soumissions vers des fichiers",
+    "showDeletedSubmissions": "Afficher les soumissions supprimées",
+    "showMySubmissions": "Afficher mes soumissions",
+    "search": "Recherche",
+    "loadingText": "Chargement... veuillez patienter",
+    "noDataText": "Il n'y a pas de soumissions pour ce formulaire",
+    "delSelectedSubmissions": "Supprimer les soumissions sélectionnées",
+    "resSelectedSubmissions": "Restaurer les soumissions sélectionnées",
+    "yes": "OUI",
+    "no": "NON",
+    "viewSubmission": "Voir la soumission",
+    "deleteSubmission": "Supprimer la soumission",
+    "restore": "Restaurer",
+    "confirmDeletion": "Confirmer la suppression",
+    "delete": "Supprimer",
+    "confirmRestoration": "Confirmer la restauration",
+    "searchSubmissionFields": "Champs de soumission de recherche",
+    "save": "Sauvegarder",
+    "searchTitle": "Recherchez et sélectionnez les colonnes à afficher sous votre tableau de bord",
+    "status": "Statut",
+    "submitter": "Auteur",
+    "submissionDate": "Date de soumission",
+    "event": "événement",
+    "view": "Voir",
+    "lateSubmission": "Un dépôt tardif",
+    "confirmationID": "Identifiant de confirmation",
+    "multiDelWarning": "Êtes-vous sûr de vouloir supprimer les soumissions sélectionnées?",
+    "singleDelWarning": "Êtes-vous sûr de vouloir supprimer cette soumission?",
+    "multiRestoreWarning": "Voulez-vous vraiment restaurer ces soumissions?",
+    "singleRestoreWarning": "Voulez-vous vraiment restaurer cette soumission?"
   }
 }

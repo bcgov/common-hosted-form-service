@@ -46,7 +46,7 @@
           <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
             <span class="d-none d-sm-flex">{{
-              $t('trans.manageVersions.admin')
+              $t('trans.adminFormsTable.admin')
             }}</span>
           </v-btn>
         </router-link>
@@ -61,7 +61,7 @@
           <v-btn color="primary" text small>
             <v-icon class="mr-1">note_add</v-icon>
             <span class="d-none d-sm-flex">{{
-              $t('trans.manageVersions.launch')
+              $t('trans.adminFormsTable.launch')
             }}</span>
           </v-btn>
         </router-link>
@@ -78,30 +78,7 @@ export default {
   data() {
     return {
       activeOnly: false,
-      headers: [
-        {
-          text: "this.$t('trans.manageVersions.delete')",
-          align: 'start',
-          value: 'name',
-        },
-        {
-          text: "this.$t('trans.manageVersions.created')",
-          align: 'start',
-          value: 'createdAt',
-        },
-        {
-          text: "this.$t('trans.manageVersions.deleted')",
-          align: 'start',
-          value: 'updatedAt',
-        },
-        {
-          text: "this.$t('trans.manageVersions.actions')",
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ],
+
       loading: true,
       search: '',
     };
@@ -112,6 +89,32 @@ export default {
       return this.headers.filter(
         (x) => x.value !== 'updatedAt' || this.activeOnly
       );
+    },
+    headers() {
+      return [
+        {
+          text: this.$t('trans.adminFormsTable.formTitle'),
+          align: 'start',
+          value: 'name',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.created'),
+          align: 'start',
+          value: 'createdAt',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.deleted'),
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.actions'),
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+        },
+      ];
     },
   },
   methods: {

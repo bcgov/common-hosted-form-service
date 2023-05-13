@@ -3,7 +3,7 @@
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>Form Design</h1>
+        <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
@@ -20,7 +20,7 @@
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
-          <span>Export Design</span>
+          <span>{{ $t('trans.formDesigner.exportDesign') }}</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
@@ -42,7 +42,7 @@
               />
             </v-btn>
           </template>
-          <span>Import Design</span>
+          <span>{{ $t('trans.formDesigner.importDesign') }}</span>
         </v-tooltip>
       </v-col>
       <!-- form name -->
@@ -56,7 +56,8 @@
     </v-row>
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+        <v-icon class="mr-1" color="primary">info</v-icon
+        >{{ $t('trans.formDesigner.important') }}!
       </h4>
       <p class="my-0">
         Use the <strong>SAVE DESIGN</strong> button when you are done building
