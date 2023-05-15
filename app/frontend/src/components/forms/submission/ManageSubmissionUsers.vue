@@ -100,12 +100,15 @@
             </v-col>
           </v-row>
           <div v-else>
-            You can only invite and manage team members while this form is a
-            draft
+            {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
           <p class="mt-5">
-            <strong>Team members for this submission:</strong>
+            <strong
+              >{{
+                $t('trans.manageSubmissionUsers.submissionTeamMembers')
+              }}:</strong
+            >
           </p>
 
           <v-skeleton-loader :loading="isLoadingTable" type="table-row">
@@ -116,7 +119,9 @@
                     <th class="text-left">Name</th>
                     <th class="text-left">Username</th>
                     <th class="text-left">Email</th>
-                    <th class="text-left" v-if="isDraft">Actions</th>
+                    <th class="text-left" v-if="isDraft">
+                      {{ $t('trans.manageSubmissionUsers.actions') }}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -143,7 +148,7 @@
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span>Close</span>
+            <span> {{ $t('trans.manageSubmissionUsers.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -164,7 +169,7 @@
           >? They will no longer have permissions for this submission.
         </template>
         <template #button-text-continue>
-          <span>Remove</span>
+          <span>{{ $t('trans.manageSubmissionUsers.remove') }}</span>
         </template>
       </BaseDialog>
     </v-dialog>

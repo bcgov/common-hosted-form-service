@@ -269,9 +269,10 @@ export default {
           }
         } catch (error) {
           this.addNotification({
-            message:
-              'An error occured while trying to fetch recipient emails for this submission.',
-            consoleError: `Error getting recipient emails for ${this.submissionId}: ${error}`,
+            message: this.$t('trans.statusPanel.fetchSubmissionUsersErr'),
+            consoleError:
+              this.$t('trans.statusPanel.fetchSubmissionUsersConsErr') +
+              `${this.submissionId}: ${error}`,
           });
         }
       }
@@ -312,7 +313,7 @@ export default {
 
         this.statusHistory = statuses.data;
         if (!this.statusHistory.length || !this.statusHistory[0]) {
-          throw new Error('No statuses found');
+          throw new Error(this.$t('trans.statusPanel.noStatusesFound'));
         } else {
           // Statuses are returned in date precedence, the 0th item in the array is the current status
           this.currentStatus = this.statusHistory[0];
@@ -321,7 +322,7 @@ export default {
           const scRes = await formService.getStatusCodes(this.formId);
           const statusCodes = scRes.data;
           if (!statusCodes.length) {
-            throw new Error('error finding status codes');
+            throw new Error(this.$t('trans.statusPanel.statusCodesErr'));
           }
           // For the CURRENT status, add the code details (display name, next codes etc)
           this.currentStatus.statusCodeDetail = statusCodes.find(
@@ -334,8 +335,10 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'Error occured fetching status for this submission.',
-          consoleError: `Error getting statuses: ${error.message}`,
+          message: this.$t('trans.statusPanel.notifyErrorCode'),
+          consoleError:
+            this.$t('trans.statusPanel.notifyConsoleErrorCode') +
+            `${error.message}`,
         });
       } finally {
         this.loading = false;
@@ -354,7 +357,7 @@ export default {
       try {
         if (this.$refs.form.validate()) {
           if (!this.statusToSet) {
-            throw new Error('No Status');
+            throw new Error(this.$t('trans.statusPanel.status'));
           }
 
           const statusBody = {
@@ -374,7 +377,7 @@ export default {
           );
           if (!statusResponse.data) {
             throw new Error(
-              'No response data from API while submitting status update form'
+              this.$t('trans.statusPanel.updtSubmissionsStatusErr')
             );
           }
 
@@ -404,7 +407,7 @@ export default {
             );
             if (!response.data) {
               throw new Error(
-                'No response data from API while submitting note for status update'
+                this.$t('trans.statusPanel.addNoteNoReponserErr')
               );
             }
             // Update the parent if the note was updated
@@ -414,8 +417,10 @@ export default {
           this.getStatus();
         }
       } catch (error) {
-        console.error(`Error updating status: ${error}`); // eslint-disable-line no-console
-        this.error = 'An error occured while trying to update the status';
+        console.error(
+          this.$t('trans.statusPanel.addNoteConsoleErrMsg') + `: ${error}`
+        ); // eslint-disable-line no-console
+        this.error = this.$t('trans.statusPanel.addNoteErrMsg');
       }
     },
   },
