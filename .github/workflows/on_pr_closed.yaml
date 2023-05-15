@@ -2,8 +2,8 @@ name: Pull Request Closed
 
 env:
   ACRONYM: chefs
-  APP_NAME: common-hosted-form-service
-  NAMESPACE_PREFIX: a12c97
+  APP_NAME: medis-form-service
+  NAMESPACE_PREFIX: c2da03
 
 on:
   pull_request:

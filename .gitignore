@@ -55,7 +55,5 @@ build
 .env
 .idea
 .project
-
 !app/frontend/.env
 !local-infrastructure/.env
-.history

@@ -1,10 +1,6 @@
 <template>
   <div>
-    <v-expansion-panels
-      v-model="settingsPanel"
-      flat
-      class="nrmc-expand-collapse"
-    >
+    <v-expansion-panels v-model="settingsPanel" flat class="nrmc-expand-collapse">
       <v-expansion-panel flat v-if="canEditForm">
         <!-- Form Settings -->
         <v-expansion-panel-header>
@@ -14,30 +10,15 @@
           <div class="header">
             <strong>Form Settings</strong>
             <span>
-              <small>
-                Created: {{ form.createdAt | formatDate }} ({{
-                  form.createdBy
-                }})
-              </small>
-              <v-btn
-                v-if="canEditForm"
-                small
-                icon
-                color="primary"
-                @click.native.stop="enableSettingsEdit"
-              >
+              <small> Created: {{ form.createdAt | formatDate }} ({{ form.createdBy }}) </small>
+              <v-btn v-if="canEditForm" small icon color="primary" @click.native.stop="enableSettingsEdit">
                 <v-icon>edit</v-icon>
               </v-btn>
             </span>
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-form
-            ref="settingsForm"
-            :disabled="formSettingsDisabled"
-            v-model="settingsFormValid"
-            lazy-validation
-          >
+          <v-form ref="settingsForm" :disabled="formSettingsDisabled" v-model="settingsFormValid" lazy-validation>
             <FormSettings :disabled="formSettingsDisabled" />
           </v-form>
 
@@ -54,12 +35,7 @@
     </v-expansion-panels>
 
     <!-- Api Key -->
-    <v-expansion-panels
-      v-model="apiKeyPanel"
-      flat
-      class="nrmc-expand-collapse"
-      v-if="canManageAPI"
-    >
+    <v-expansion-panels v-model="apiKeyPanel" flat class="nrmc-expand-collapse" v-if="canManageAPI">
       <v-expansion-panel flat>
         <v-expansion-panel-header>
           <template v-slot:actions>
@@ -68,16 +44,8 @@
           <div class="header">
             <strong>API Key</strong>
             <span v-if="apiKey">
-              <small v-if="apiKey.updatedBy">
-                Updated: {{ apiKey.updatedAt | formatDate }} ({{
-                  apiKey.updatedBy
-                }})
-              </small>
-              <small v-else>
-                Created: {{ apiKey.createdAt | formatDate }} ({{
-                  apiKey.createdBy
-                }})
-              </small>
+              <small v-if="apiKey.updatedBy"> Updated: {{ apiKey.updatedAt | formatDate }} ({{ apiKey.updatedBy }}) </small>
+              <small v-else> Created: {{ apiKey.createdAt | formatDate }} ({{ apiKey.createdBy }}) </small>
             </span>
           </div>
         </v-expansion-panel-header>
@@ -88,11 +56,7 @@
     </v-expansion-panels>
 
     <!-- Form Design -->
-    <v-expansion-panels
-      v-model="versionsPanel"
-      flat
-      class="nrmc-expand-collapse"
-    >
+    <v-expansion-panels v-model="versionsPanel" flat class="nrmc-expand-collapse">
       <v-expansion-panel flat>
         <v-expansion-panel-header>
           <template v-slot:actions>
@@ -146,10 +110,7 @@ export default {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
     combinedVersionAndDraftCount() {
-      return (
-        (this.form.versions ? this.form.versions.length : 0) +
-        (this.drafts ? this.drafts.length : 0)
-      );
+      return (this.form.versions ? this.form.versions.length : 0) + (this.drafts ? this.drafts.length : 0);
     },
     currentVersion() {
       let cv = 'N/A';
@@ -170,12 +131,7 @@ export default {
     },
     canManageAPI() {
       return this.permissions.some((p) =>
-        [
-          FormPermissions.FORM_API_CREATE,
-          FormPermissions.FORM_API_READ,
-          FormPermissions.FORM_API_UPDATE,
-          FormPermissions.FORM_API_DELETE,
-        ].includes(p)
+        [FormPermissions.FORM_API_CREATE, FormPermissions.FORM_API_READ, FormPermissions.FORM_API_UPDATE, FormPermissions.FORM_API_DELETE].includes(p)
       );
     },
   },
@@ -205,8 +161,7 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to update the settings for this form.',
+          message: 'An error occurred while attempting to update the settings for this form.',
           consoleError: `Error updating settings for ${this.form.id}: ${error}`,
         });
       }

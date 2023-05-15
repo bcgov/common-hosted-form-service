@@ -18,13 +18,13 @@ describe('FormComponentsProactiveHelp.vue', () => {
       getters: {
         proactiveHelpInfoGroupObject: () => {},
         builder: () => {},
-      }
+      },
     });
     store.registerModule('admin', {
       namespaced: true,
       getters: {
         fcHelpInfo: () => {},
-      }
+      },
     });
   });
 
@@ -36,7 +36,7 @@ describe('FormComponentsProactiveHelp.vue', () => {
     const wrapper = shallowMount(FormComponentsProactiveHelp, {
       localVue,
       store,
-      stubs: ['GeneralLayout']
+      stubs: ['GeneralLayout'],
     });
 
     wrapper.vm.onExpansionPanelClick('Basic Layout');

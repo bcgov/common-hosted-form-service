@@ -90,9 +90,7 @@ export default {
    * @returns {Promise} An axios response
    */
   deleteDraft(formId, formVersionDraftId) {
-    return appAxios().delete(
-      `${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`
-    );
+    return appAxios().delete(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`);
   },
 
   /**
@@ -113,9 +111,7 @@ export default {
    * @returns {Promise} An axios response
    */
   publishDraft(formId, formVersionDraftId) {
-    return appAxios().post(
-      `${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}/publish`
-    );
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}/publish`);
   },
 
   /**
@@ -126,9 +122,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readDraft(formId, formVersionDraftId) {
-    return appAxios().get(
-      `${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`
-    );
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`);
   },
 
   /**
@@ -140,10 +134,7 @@ export default {
    * @returns {Promise} An axios response
    */
   updateDraft(formId, formVersionDraftId, data) {
-    return appAxios().put(
-      `${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`,
-      data
-    );
+    return appAxios().put(`${ApiRoutes.FORMS}/${formId}/drafts/${formVersionDraftId}`, data);
   },
 
   //
@@ -168,9 +159,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readVersion(formId, formVersionId) {
-    return appAxios().get(
-      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`
-    );
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`);
   },
 
   /**
@@ -181,9 +170,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readVersionFields(formId, formVersionId) {
-    return appAxios().get(
-      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/fields`
-    );
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/fields`);
   },
 
   /**
@@ -195,15 +182,11 @@ export default {
    * @returns {Promise} An axios response
    */
   publishVersion(formId, formVersionId, publish) {
-    return appAxios().post(
-      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/publish`,
-      null,
-      {
-        params: {
-          unpublish: !publish,
-        },
-      }
-    );
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/publish`, null, {
+      params: {
+        unpublish: !publish,
+      },
+    });
   },
 
   /**
@@ -215,10 +198,7 @@ export default {
    * @returns {Promise} An axios response
    */
   updateVersion(formId, formVersionId, data) {
-    return appAxios().put(
-      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`,
-      data
-    );
+    return appAxios().put(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}`, data);
   },
 
   //
@@ -234,10 +214,19 @@ export default {
    * @returns {Promise} An axios response
    */
   createSubmission(formId, versionId, requestBody) {
-    return appAxios().post(
-      `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`,
-      requestBody
-    );
+    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`, requestBody);
+  },
+
+  /**
+   * @function createBulkSubmission
+   * Submit the form data
+   * @param {string} formId The form uuid
+   * @param {string} versionId The form uuid
+   * @param {Object} requestBody The files data for multi submission
+   * @returns {Promise} An axios response
+   */
+  createMultiSubmission(formId, versionId, requestBody) {
+    return appAxios(30000).post(`${ApiRoutes.FORMS}/${formId}/versions/${versionId}/multiSubmission`, requestBody);
   },
 
   /**
@@ -257,10 +246,7 @@ export default {
    * @returns {Promise} An axios response
    */
   deleteMultipleSubmissions(submissionId, formId, requestBody) {
-    return appAxios().delete(
-      `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions`,
-      requestBody
-    );
+    return appAxios().delete(`${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions`, requestBody);
   },
 
   /**
@@ -271,10 +257,7 @@ export default {
    * @returns {Promise} An axios response
    */
   restoreSubmission(submissionId, requestBody) {
-    return appAxios().put(
-      `${ApiRoutes.SUBMISSION}/${submissionId}/restore`,
-      requestBody
-    );
+    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}/restore`, requestBody);
   },
 
   /**
@@ -284,10 +267,7 @@ export default {
    * @returns {Promise} An axios response
    */
   restoreMutipleSubmissions(submissionId, formId, requestBody) {
-    return appAxios().put(
-      `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions/restore`,
-      requestBody
-    );
+    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions/restore`, requestBody);
   },
 
   /**
@@ -298,10 +278,7 @@ export default {
    * @returns {Promise} An axios response
    */
   updateSubmission(submissionId, requestBody) {
-    return appAxios().put(
-      `${ApiRoutes.SUBMISSION}/${submissionId}`,
-      requestBody
-    );
+    return appAxios().put(`${ApiRoutes.SUBMISSION}/${submissionId}`, requestBody);
   },
 
   /**
@@ -377,16 +354,7 @@ export default {
    * @param {object} options options for the export (eg: minDate, maxDate, deleted, drafts)
    * @returns {Promise} An axios response
    */
-  exportSubmissions(
-    formId,
-    format,
-    template,
-    versionSelected,
-    preference,
-    fields,
-    emailExport = false,
-    options = {}
-  ) {
+  exportSubmissions(formId, format, template, versionSelected, preference, fields, emailExport = false, options = {}) {
     return appAxios().post(
       `${ApiRoutes.FORMS}/${formId}/export/fields`,
       {
@@ -427,10 +395,7 @@ export default {
    * @returns {Promise} An axios response
    */
   addNote(submissionId, data) {
-    return appAxios().post(
-      `${ApiRoutes.SUBMISSION}/${submissionId}/notes`,
-      data
-    );
+    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/notes`, data);
   },
 
   /**
@@ -451,14 +416,10 @@ export default {
    * @returns {Promise} An axios response
    */
   docGen(submissionId, body) {
-    return appAxios().post(
-      `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`,
-      body,
-      {
-        responseType: 'arraybuffer', // Needed for binaries unless you want pain
-        timeout: 30000, // Override default timeout as this call could take a while
-      }
-    );
+    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/template/render`, body, {
+      responseType: 'arraybuffer', // Needed for binaries unless you want pain
+      timeout: 30000, // Override default timeout as this call could take a while
+    });
   },
 
   /**
@@ -469,10 +430,7 @@ export default {
    * @returns {Promise} An axios response
    */
   updateSubmissionStatus(submissionId, data) {
-    return appAxios().post(
-      `${ApiRoutes.SUBMISSION}/${submissionId}/status`,
-      data
-    );
+    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/status`, data);
   },
 
   //
@@ -487,10 +445,7 @@ export default {
    * @returns {Promise} An axios response
    */
   requestReceiptEmail(submissionId, requestBody) {
-    return appAxios().post(
-      `${ApiRoutes.SUBMISSION}/${submissionId}/email`,
-      requestBody
-    );
+    return appAxios().post(`${ApiRoutes.SUBMISSION}/${submissionId}/email`, requestBody);
   },
 
   /**
@@ -500,9 +455,7 @@ export default {
    * @returns {Promise} An axios response
    */
   async listFCProactiveHelp() {
-    return await appAxios().get(
-      `${ApiRoutes.FORMS}/formcomponents/proactivehelp/list`
-    );
+    return await appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/list`);
   },
 
   /**
@@ -512,8 +465,6 @@ export default {
    * @returns {Promise} An axios response
    */
   async getFCProactiveHelpImageUrl(componentId) {
-    return appAxios().get(
-      `${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`
-    );
+    return appAxios().get(`${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`);
   },
 };

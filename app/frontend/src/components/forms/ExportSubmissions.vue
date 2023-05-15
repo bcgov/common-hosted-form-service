@@ -10,16 +10,8 @@
             <span>
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
-                  <router-link
-                    :to="{ name: 'FormSubmissions', query: { f: form.id } }"
-                  >
-                    <v-btn
-                      class="mx-1"
-                      color="primary"
-                      icon
-                      v-bind="attrs"
-                      v-on="on"
-                    >
+                  <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
+                    <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                       <v-icon class="mr-1">list_alt</v-icon>
                     </v-btn>
                   </router-link>
@@ -51,9 +43,7 @@
             <v-row v-if="exportFormat === 'csv'" class="mt-5">
               <v-col cols="6">
                 <div class="subTitleObjectStyle">Form Version</div>
-                <div class="red--text mt-3" v-if="versionRequired">
-                  Version is required.
-                </div>
+                <div class="red--text mt-3" v-if="versionRequired">Version is required.</div>
                 <v-select
                   item-text="id"
                   item-value="version"
@@ -65,10 +55,7 @@
                 ></v-select>
               </v-col>
             </v-row>
-            <v-row
-              v-if="exportFormat === 'csv' && showFieldsOptions"
-              class="mt-0"
-            >
+            <v-row v-if="exportFormat === 'csv' && showFieldsOptions" class="mt-0">
               <v-col>
                 <p class="subTitleObjectStyle">Data Fields</p>
                 <v-row v-if="exportFormat === 'csv'">
@@ -87,12 +74,8 @@
                           single-line
                         >
                         </v-text-field>
-                        <div
-                          class="subTitleObjectStyle"
-                          style="font-size: 14px !important"
-                        >
-                          {{ selected.length }} of
-                          {{ FILTER_HEADERS.length }} selected for export
+                        <div class="subTitleObjectStyle" style="font-size: 14px !important">
+                          {{ selected.length }} of {{ FILTER_HEADERS.length }} selected for export
                         </div>
 
                         <v-data-table
@@ -160,12 +143,7 @@
                             outlined
                           ></v-text-field>
                         </template>
-                        <v-date-picker
-                          v-model="startDate"
-                          data-test="picker-form-startDate"
-                          @input="startDateMenu = false"
-                          :max="maxDate"
-                        ></v-date-picker>
+                        <v-date-picker v-model="startDate" data-test="picker-form-startDate" @input="startDateMenu = false" :max="maxDate"></v-date-picker>
                       </v-menu>
                     </v-col>
                     <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
@@ -191,73 +169,40 @@
                             outlined
                           ></v-text-field>
                         </template>
-                        <v-date-picker
-                          v-model="endDate"
-                          data-test="picker-form-endDate"
-                          @input="endDateMenu = false"
-                          :min="startDate"
-                        ></v-date-picker>
+                        <v-date-picker v-model="endDate" data-test="picker-form-endDate" @input="endDateMenu = false" :min="startDate"></v-date-picker>
                       </v-menu>
                     </v-col>
                   </v-row>
                 </div>
               </v-col>
             </v-row>
-            <v-row
-              v-if="exportFormat === 'csv' && showFieldsOptions"
-              class="mt-0 pt-0"
-            >
+            <v-row v-if="exportFormat === 'csv' && showFieldsOptions" class="mt-0 pt-0">
               <v-col>
                 <div style="display: flex; align-content: flex-start">
                   <div class="subTitleObjectStyle mr-1">CSV Format</div>
                 </div>
 
                 <v-radio-group v-model="csvFormats" hide-details="auto">
-                  <v-radio
-                    label="A"
-                    value="multiRowEmptySpacesCSVExport"
-                    style="display: flex; align-content: flex-start"
-                  >
+                  <v-radio label="A" value="multiRowEmptySpacesCSVExport" style="display: flex; align-content: flex-start">
                     <template v-slot:label>
-                      <span
-                        class="radioboxLabelStyle"
-                        style="display: flex; align-content: flex-start"
-                      >
+                      <span class="radioboxLabelStyle" style="display: flex; align-content: flex-start">
                         1 - Multiple rows per submission with indentation
                       </span>
                     </template>
                   </v-radio>
-                  <v-radio
-                    label="B"
-                    value="multiRowBackFilledCSVExport"
-                    class="mt-2"
-                    style="display: flex; align-content: flex-start"
-                  >
+                  <v-radio label="B" value="multiRowBackFilledCSVExport" class="mt-2" style="display: flex; align-content: flex-start">
                     <template v-slot:label>
-                      <span class="radioboxLabelStyle">
-                        2 - Multiple rows per submission
-                      </span>
+                      <span class="radioboxLabelStyle"> 2 - Multiple rows per submission </span>
                     </template>
                   </v-radio>
-                  <v-radio
-                    label="C"
-                    class="mt-2"
-                    value="singleRowCSVExport"
-                    style="display: flex; align-content: flex-start"
-                  >
+                  <v-radio label="C" class="mt-2" value="singleRowCSVExport" style="display: flex; align-content: flex-start">
                     <template v-slot:label>
-                      <span class="radioboxLabelStyle"
-                        >3 - Single row per submission
-                      </span>
+                      <span class="radioboxLabelStyle">3 - Single row per submission </span>
                     </template>
                   </v-radio>
                   <v-radio label="D" value="unFormattedCSVExport" class="mt-2">
                     <template v-slot:label>
-                      <span
-                        class="radioboxLabelStyle"
-                        style="display: flex; align-content: flex-start"
-                        >4 - Unformatted
-                      </span>
+                      <span class="radioboxLabelStyle" style="display: flex; align-content: flex-start">4 - Unformatted </span>
                     </template>
                   </v-radio>
                 </v-radio-group>
@@ -266,11 +211,7 @@
             <div class="mt-7 fileLabelStyle">
               File Name and Type: <strong>{{ fileName }}</strong>
             </div>
-            <v-btn
-              class="mb-5 mt-5 exportButtonStyle"
-              color="primary"
-              @click="callExport"
-            >
+            <v-btn class="mb-5 mt-5 exportButtonStyle" color="primary" @click="callExport">
               <span>Export</span>
             </v-btn>
           </v-col>
@@ -286,10 +227,7 @@ import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
 import { NotificationTypes, ExportLargeData } from '@/utils/constants';
 
-import {
-  faXmark,
-  faSquareArrowUpRight,
-} from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark, faSquareArrowUpRight);
 export default {
@@ -302,8 +240,7 @@ export default {
   },
   data() {
     return {
-      githubLink:
-        'https://github.com/bcgov/common-hosted-form-service/wiki/Submission-to-CSV-Export',
+      githubLink: 'https://github.com/bcgov/common-hosted-form-service/wiki/Submission-to-CSV-Export',
       dateRange: false,
       dialog: false,
       endDate: moment(Date()).format('YYYY-MM-DD'),
@@ -338,13 +275,7 @@ export default {
       let momentString = momentObj.format('YYYY-MM-DD');
       return momentString;
     },
-    ...mapGetters('form', [
-      'form',
-      'userFormPreferences',
-      'permissions',
-      'formFields',
-      'submissionList',
-    ]),
+    ...mapGetters('form', ['form', 'userFormPreferences', 'permissions', 'formFields', 'submissionList']),
 
     ...mapGetters('auth', ['email']),
     fileName() {
@@ -365,9 +296,7 @@ export default {
     ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
     async changeVersions(value) {
       this.versionRequired = false;
-      value !== ''
-        ? (this.showFieldsOptions = true)
-        : (this.showFieldsOptions = false);
+      value !== '' ? (this.showFieldsOptions = true) : (this.showFieldsOptions = false);
       await this.refreshFormFields(value);
     },
     async refreshFormFields(version) {
@@ -391,30 +320,15 @@ export default {
       }
     },
     async export() {
-      let fieldToExport =
-        this.selected.length > 0
-          ? this.selected.map((field) => field.value)
-          : [''];
+      let fieldToExport = this.selected.length > 0 ? this.selected.map((field) => field.value) : [''];
       try {
         // UTC start of selected start date...
-        const from =
-          this.dateRange && this.startDate
-            ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format()
-            : undefined;
+        const from = this.dateRange && this.startDate ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format() : undefined;
         // UTC end of selected end date...
-        const to =
-          this.dateRange && this.endDate
-            ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
-                .utc()
-                .format()
-            : undefined;
+        const to = this.dateRange && this.endDate ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss').utc().format() : undefined;
 
         let emailExport = false;
-        if (
-          (this.submissionList.length > ExportLargeData.MAX_RECORDS ||
-            this.formFields.length > ExportLargeData.MAX_FIELDS) &&
-          this.exportFormat !== 'json'
-        ) {
+        if ((this.submissionList.length > ExportLargeData.MAX_RECORDS || this.formFields.length > ExportLargeData.MAX_FIELDS) && this.exportFormat !== 'json') {
           this.dialog = false;
           emailExport = true;
           this.addNotification({
@@ -458,8 +372,7 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to export submissions for this form.',
+          message: 'An error occurred while attempting to export submissions for this form.',
           consoleError: `Error export submissions for ${this.form.id}: ${error}`,
         });
       }
@@ -469,22 +382,16 @@ export default {
       this.versions = [];
       if (this.form && Array.isArray(this.form.versions)) {
         let versions = this.form.versions;
-        const isFormNotPublished = versions.every(
-          (version) => !version.published
-        );
+        const isFormNotPublished = versions.every((version) => !version.published);
         if (isFormNotPublished) {
-          versions.sort((a, b) =>
-            a.version < b.version ? -1 : a.version > b.version ? 1 : 0
-          );
+          versions.sort((a, b) => (a.version < b.version ? -1 : a.version > b.version ? 1 : 0));
           this.showFieldsOptions = false;
           this.versions.push('');
         } else {
           this.showFieldsOptions = true;
           versions.sort((a, b) => b.published - a.published);
         }
-        this.versions.push(
-          ...this.form.versions.map((version) => version.version)
-        );
+        this.versions.push(...this.form.versions.map((version) => version.version));
         this.versionSelected = this.versions[0];
         await this.refreshFormFields(this.versionSelected);
       }

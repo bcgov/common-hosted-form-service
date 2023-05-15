@@ -5,7 +5,6 @@ import '@/assets/scss/style.scss';
 import axios from 'axios';
 import NProgress from 'nprogress';
 import Vue from 'vue';
-
 import App from '@/App.vue';
 import '@/filters';
 import auth from '@/store/modules/auth.js';
@@ -24,6 +23,8 @@ Formio.use(BcGovFormioComponents);
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 /* add font awesome icon component */
 Vue.component('font-awesome-icon', FontAwesomeIcon);
+import VueBlobJsonCsv from 'vue-blob-json-csv';
+Vue.use(VueBlobJsonCsv);
 
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';
@@ -33,11 +34,7 @@ NProgress.configure({ showSpinner: false });
 NProgress.start();
 
 // Globally register all components with base in the name
-const requireComponent = require.context(
-  '@/components',
-  true,
-  /Base[A-Z]\w+\.(vue|js)$/
-);
+const requireComponent = require.context('@/components', true, /Base[A-Z]\w+\.(vue|js)$/);
 requireComponent.keys().forEach((fileName) => {
   const componentConfig = requireComponent(fileName);
   const componentName = fileName
@@ -83,10 +80,7 @@ function initializeApp(kcSuccess = false, basePath = '/') {
  */
 async function loadConfig() {
   // App publicPath is ./ - so use relative path here, will hit the backend server using relative path to root.
-  const configUrl =
-    process.env.NODE_ENV === 'production'
-      ? 'config'
-      : `${process.env.BASE_URL}/config`;
+  const configUrl = process.env.NODE_ENV === 'production' ? 'config' : `${process.env.BASE_URL}/config`;
   const storageKey = 'config';
   try {
     // Get configuration if it isn't already in session storage
@@ -99,13 +93,7 @@ async function loadConfig() {
     const config = JSON.parse(sessionStorage.getItem(storageKey));
     Vue.prototype.$config = Object.freeze(config);
 
-    if (
-      !config ||
-      !config.keycloak ||
-      !config.keycloak.clientId ||
-      !config.keycloak.realm ||
-      !config.keycloak.serverUrl
-    ) {
+    if (!config || !config.keycloak || !config.keycloak.clientId || !config.keycloak.realm || !config.keycloak.serverUrl) {
       throw new Error('Keycloak is misconfigured');
     }
 

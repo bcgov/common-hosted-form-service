@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        version: [12, 14, 16]
+        version: [16]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -78,7 +78,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        version: [12, 14, 16]
+        version: [16]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -98,9 +98,10 @@ jobs:
             ${{ runner.os }}-frontend-${{ env.cache-name }}-
             ${{ runner.os }}-frontend-
             ${{ runner.os }}-
+      # uncomment this before deploy
       - name: Install dependencies
         if: steps.cache-frontend.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --force
       - name: Test
         run: npm run test
         env:

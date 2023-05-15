@@ -7,11 +7,7 @@ module.exports = {
     jest: true,
     node: true,
   },
-  extends: [
-    'plugin:vue/essential',
-    'eslint:recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['plugin:vue/essential', 'eslint:recommended', 'plugin:prettier/recommended'],
   plugins: ['vuetify', 'prettier'],
   globals: {
     Atomics: 'readonly',
@@ -24,7 +20,12 @@ module.exports = {
     parser: 'babel-eslint',
   },
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
     'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'eol-last': ['error', 'always'],
     'linebreak-style': ['error', 'unix'],
@@ -62,10 +63,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: [
-        '**/__tests__/*.{j,t}s?(x)',
-        '**/tests/unit/**/*.spec.{j,t}s?(x)',
-      ],
+      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
       env: {
         jest: true,
       },

@@ -19,8 +19,8 @@ describe('BaseSecure.vue', () => {
       getters: {
         authenticated: () => true,
         isUser: () => true,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BaseSecure, { localVue, store });
@@ -34,14 +34,14 @@ describe('BaseSecure.vue', () => {
       getters: {
         authenticated: () => true,
         isUser: () => false,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BaseSecure, {
       localVue,
       store,
-      stubs: ['router-link']
+      stubs: ['router-link'],
     });
 
     expect(wrapper.text()).toMatch('Unauthorized');
@@ -54,8 +54,8 @@ describe('BaseSecure.vue', () => {
         authenticated: () => true,
         isAdmin: () => false,
         isUser: () => true,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BaseSecure, {
@@ -63,8 +63,8 @@ describe('BaseSecure.vue', () => {
       store,
       stubs: ['router-link'],
       propsData: {
-        admin: true
-      }
+        admin: true,
+      },
     });
 
     expect(wrapper.text()).toMatch('You do not have permission');
@@ -77,8 +77,8 @@ describe('BaseSecure.vue', () => {
         authenticated: () => true,
         isAdmin: () => false,
         isUser: () => true,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BaseSecure, {
@@ -86,8 +86,8 @@ describe('BaseSecure.vue', () => {
       store,
       stubs: ['router-link'],
       propsData: {
-        admin: true
-      }
+        admin: true,
+      },
     });
 
     expect(wrapper.text()).toMatch('');
@@ -98,8 +98,8 @@ describe('BaseSecure.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BaseSecure, { localVue, store });
@@ -112,8 +112,8 @@ describe('BaseSecure.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => false
-      }
+        keycloakReady: () => false,
+      },
     });
 
     const wrapper = shallowMount(BaseSecure, { localVue, store });
@@ -127,11 +127,11 @@ describe('BaseSecure.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => true
+        keycloakReady: () => true,
       },
       actions: {
-        login: mockLogin
-      }
+        login: mockLogin,
+      },
     });
 
     const wrapper = shallowMount(BaseSecure, { localVue, store });

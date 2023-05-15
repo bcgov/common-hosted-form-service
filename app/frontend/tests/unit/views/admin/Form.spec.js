@@ -20,7 +20,7 @@ describe('Form.vue', () => {
       localVue,
       propsData: { f: 'f' },
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
     });
     await localVue.nextTick();
 

@@ -31,14 +31,11 @@
                   Assign To
                   <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
-                      <v-icon color="primary" v-bind="attrs" v-on="on"
-                        >help_outline</v-icon
-                      >
+                      <v-icon color="primary" v-bind="attrs" v-on="on">help_outline</v-icon>
                     </template>
                     <span>
                       Submissions can be assigned to Form Reviewers.
-                      <br />To add more team members as Form Reviewers, go to
-                      the Manage page for this form.
+                      <br />To add more team members as Form Reviewers, go to the Manage page for this form.
                     </span>
                   </v-tooltip>
                 </label>
@@ -57,13 +54,7 @@
                 >
                   <!-- selected user -->
                   <template #selection="data">
-                    <span
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      close
-                      @click="data.select"
-                      @click:close="remove(data.item)"
-                    >
+                    <span v-bind="data.attrs" :input-value="data.selected" close @click="data.select" @click:close="remove(data.item)">
                       {{ data.item.fullName }}
                     </span>
                   </template>
@@ -84,32 +75,18 @@
                 <span v-if="assignee">Email: {{ assignee.email }}</span>
 
                 <div class="text-right">
-                  <v-btn
-                    text
-                    small
-                    color="primary"
-                    class="pl-0 my-0 text-end"
-                    @click="assignToCurrentUser"
-                  >
+                  <v-btn text small color="primary" class="pl-0 my-0 text-end" @click="assignToCurrentUser">
                     <v-icon class="mr-1">person</v-icon>
                     <span>ASSIGN TO ME</span>
                   </v-btn>
                 </div>
               </div>
               <div v-show="statusFields" v-if="showRevising">
-                <v-text-field
-                  v-model="submissionUserEmail"
-                  label="Recipient Email"
-                  outlined
-                  dense
-                />
+                <v-text-field v-model="submissionUserEmail" label="Recipient Email" outlined dense />
               </div>
 
               <div v-if="showRevising || showAsignee || showCompleted">
-                <v-checkbox
-                  v-model="addComment"
-                  :label="'Attach Comment to Email'"
-                />
+                <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
                 <div v-if="addComment">
                   <label>Email Comment</label>
                   <v-textarea
@@ -147,11 +124,7 @@
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn
-                    @click="historyDialog = false"
-                    class="mb-5 close-dlg"
-                    color="primary"
-                  >
+                  <v-btn @click="historyDialog = false" class="mb-5 close-dlg" color="primary">
                     <span>CLOSE</span>
                   </v-btn>
                 </v-card-actions>
@@ -160,13 +133,7 @@
           </v-col>
 
           <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-            <v-btn
-              block
-              :disabled="!this.statusToSet"
-              color="primary"
-              v-on="on"
-              @click="updateStatus"
-            >
+            <v-btn block :disabled="!this.statusToSet" color="primary" v-on="on" @click="updateStatus">
               <span>{{ statusAction }}</span>
             </v-btn>
           </v-col>
@@ -255,40 +222,28 @@ export default {
           await this.fetchSubmissionUsers(this.submissionId);
 
           const submitterData = this.submissionUsers.data.find((data) => {
-            const username = data.user.idpCode
-              ? `${data.user.username}@${data.user.idpCode}`
-              : data.user.username;
+            const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
             return username === this.formSubmission.createdBy;
           });
 
           if (submitterData) {
-            this.submissionUserEmail = submitterData.user
-              ? submitterData.user.email
-              : undefined;
+            this.submissionUserEmail = submitterData.user ? submitterData.user.email : undefined;
             this.showSendConfirmEmail = status === 'COMPLETED';
           }
         } catch (error) {
           this.addNotification({
-            message:
-              'An error occured while trying to fetch recipient emails for this submission.',
+            message: 'An error occured while trying to fetch recipient emails for this submission.',
             consoleError: `Error getting recipient emails for ${this.submissionId}: ${error}`,
           });
         }
       }
     },
     assignToCurrentUser() {
-      this.assignee = this.formReviewers.find(
-        (f) => f.idpUserId === this.identityProviderIdentity
-      );
+      this.assignee = this.formReviewers.find((f) => f.idpUserId === this.identityProviderIdentity);
     },
     autoCompleteFilter(item, queryText) {
       return (
-        item.fullName
-          .toLocaleLowerCase()
-          .includes(queryText.toLocaleLowerCase()) ||
-        item.username
-          .toLocaleLowerCase()
-          .includes(queryText.toLocaleLowerCase())
+        item.fullName.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) || item.username.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
       );
     },
     async getStatus() {
@@ -299,14 +254,10 @@ export default {
           formId: this.formId,
           permissions: FormPermissions.SUBMISSION_READ,
         });
-        this.formReviewers = rbacUsrs.data.sort((a, b) =>
-          a.fullName.localeCompare(b.fullName)
-        );
+        this.formReviewers = rbacUsrs.data.sort((a, b) => a.fullName.localeCompare(b.fullName));
 
         // Get submission status
-        const statuses = await formService.getSubmissionStatuses(
-          this.submissionId
-        );
+        const statuses = await formService.getSubmissionStatuses(this.submissionId);
 
         this.$emit('draft-enabled', statuses.data[0].code);
 
@@ -324,9 +275,7 @@ export default {
             throw new Error('error finding status codes');
           }
           // For the CURRENT status, add the code details (display name, next codes etc)
-          this.currentStatus.statusCodeDetail = statusCodes.find(
-            (sc) => sc.code === this.currentStatus.code
-          ).statusCode;
+          this.currentStatus.statusCodeDetail = statusCodes.find((sc) => sc.code === this.currentStatus.code).statusCode;
           this.items = this.currentStatus.statusCodeDetail.nextCodes;
         }
         if (!this.form.enableSubmitterDraft) {
@@ -368,29 +317,20 @@ export default {
               statusBody.assignmentNotificationEmail = this.assignee.email;
             }
           }
-          const statusResponse = await formService.updateSubmissionStatus(
-            this.submissionId,
-            statusBody
-          );
+          const statusResponse = await formService.updateSubmissionStatus(this.submissionId, statusBody);
           if (!statusResponse.data) {
-            throw new Error(
-              'No response data from API while submitting status update form'
-            );
+            throw new Error('No response data from API while submitting status update form');
           }
 
           if (this.emailComment) {
             let formattedComment;
             if (this.statusToSet === 'ASSIGNED') {
               formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
-            } else if (
-              this.statusToSet === 'REVISING' ||
-              this.statusToSet === 'COMPLETED'
-            ) {
+            } else if (this.statusToSet === 'REVISING' || this.statusToSet === 'COMPLETED') {
               formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
             }
 
-            const submissionStatusId =
-              statusResponse.data[0].submissionStatusId;
+            const submissionStatusId = statusResponse.data[0].submissionStatusId;
             const user = await rbacService.getCurrentUser();
             const noteBody = {
               submissionId: this.submissionId,
@@ -398,14 +338,9 @@ export default {
               note: formattedComment,
               userId: user.data.id,
             };
-            const response = await formService.addNote(
-              this.submissionId,
-              noteBody
-            );
+            const response = await formService.addNote(this.submissionId, noteBody);
             if (!response.data) {
-              throw new Error(
-                'No response data from API while submitting note for status update'
-              );
+              throw new Error('No response data from API while submitting note for status update');
             }
             // Update the parent if the note was updated
             this.$emit('note-updated');

@@ -9,21 +9,13 @@
           </h1>
           <div v-if="form.showSubmissionConfirmation">
             <h3>
-              <span class="d-print-none">
-                If you wish to keep a record of this submission, you can keep
-                the following
-              </span>
+              <span class="d-print-none"> If you wish to keep a record of this submission, you can keep the following </span>
               <span>
                 Confirmation ID:
                 <mark>{{ s.substring(0, 8).toUpperCase() }}</mark>
               </span>
             </h3>
-            <RequestReceipt
-              class="d-print-none"
-              :email="email"
-              :formName="form.name"
-              :submissionId="s"
-            />
+            <RequestReceipt class="d-print-none" :email="email" :formName="form.name" :submissionId="s" />
           </div>
           <hr />
         </div>

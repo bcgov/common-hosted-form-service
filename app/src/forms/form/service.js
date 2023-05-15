@@ -68,6 +68,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser.usernameIdp;
+      obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
       obj.schedule = data.schedule;
       obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
@@ -138,6 +139,7 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.usernameIdp,
+        allowSubmitterToUploadFile: data.allowSubmitterToUploadFile,
         schedule: data.schedule,
         reminder_enabled: data.reminder_enabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
@@ -325,15 +327,14 @@ const service = {
     const { schema } = await service.readVersion(formVersionId);
     return schema.components.flatMap((c) => findFields(c));
   },
-
   listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query().where('formVersionId', formVersionId).modify('filterCreatedBy', params.createdBy).modify('orderDescending');
   },
-
   createSubmission: async (formVersionId, data, currentUser) => {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
+
       const { identityProviders } = await service.readForm(formVersion.formId);
 
       trx = await FormSubmission.startTransaction();
@@ -405,7 +406,76 @@ const service = {
       throw err;
     }
   },
+  createMultiSubmission: async (formVersionId, data, currentUser) => {
+    let trx;
+    try {
+      const formVersion = await service.readVersion(formVersionId);
+      const { identityProviders } = await service.readForm(formVersion.formId);
 
+      trx = await FormSubmission.startTransaction();
+
+      // Ensure we only record the user if the form is not public facing
+      const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
+      const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
+
+      const submissionDataArray = data.submission.data;
+      const recordWithoutData = data;
+      delete recordWithoutData.submission.data;
+
+      let recordsToInsert = [];
+      let submissionId;
+      // let's create multiple submissions with same metadata
+      submissionDataArray.map((singleData) => {
+        submissionId = uuidv4();
+        recordsToInsert.push({
+          ...recordWithoutData,
+          id: submissionId,
+          formVersionId: formVersion.id,
+          confirmationId: submissionId.substring(0, 8).toUpperCase(),
+          createdBy: createdBy,
+          submission: {
+            ...recordWithoutData.submission,
+            data: singleData,
+          },
+        });
+      });
+
+      const result = await FormSubmission.query(trx).insert(recordsToInsert);
+
+      if (!isPublicForm && !currentUser.public) {
+        // Provide the submission creator appropriate CRUD permissions if this is a non-public form
+        // we decided that subitter cannot delete or update their own submission unless it's a draft
+        // We know this is the submission creator when we see the SUBMISSION_CREATE permission
+        // These are adjusted at the update point if going from draft to submitted, or when adding
+        // team submitters to a draft
+
+        const perms = [Permissions.SUBMISSION_CREATE, Permissions.SUBMISSION_READ];
+        if (data.draft) {
+          perms.push(Permissions.SUBMISSION_DELETE, Permissions.SUBMISSION_UPDATE);
+        }
+        let itemsToInsert = [];
+        result.map((singleSubmission) => {
+          itemsToInsert.push(
+            ...perms.map((perm) => ({
+              id: uuidv4(),
+              userId: currentUser.id,
+              formSubmissionId: singleSubmission.id,
+              permission: perm,
+              createdBy: createdBy,
+            }))
+          );
+        });
+
+        await FormSubmissionUser.query(trx).insert(itemsToInsert);
+      }
+
+      await trx.commit();
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
   listSubmissionFields: (formVersionId, fields) => {
     return FormSubmission.query()
       .select(
@@ -428,7 +498,6 @@ const service = {
       .modify('filterFormVersionId', params.formVersionId)
       .modify('orderDescending');
   },
-
   createDraft: async (formId, data, currentUser) => {
     let trx;
     try {
@@ -468,15 +537,12 @@ const service = {
       throw err;
     }
   },
-
   readDraft: async (formVersionDraftId) => {
     return FormVersionDraft.query().findById(formVersionDraftId).throwIfNotFound();
   },
-
   deleteDraft: async (formVersionDraftId) => {
     return FormVersionDraft.query().deleteById(formVersionDraftId).throwIfNotFound();
   },
-
   publishDraft: async (formId, formVersionDraftId, currentUser) => {
     let trx;
     try {
@@ -511,7 +577,6 @@ const service = {
       throw err;
     }
   },
-
   getStatusCodes: async (formId) => {
     return FormStatusCode.query().withGraphFetched('statusCode').where('formId', formId);
   },

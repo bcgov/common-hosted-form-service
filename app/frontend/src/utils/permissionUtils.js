@@ -1,11 +1,6 @@
 import { formService } from '@/services';
 import store from '@/store';
-import {
-  FormPermissions,
-  FormManagePermissions,
-  IdentityMode,
-  IdentityProviders,
-} from '@/utils/constants';
+import { FormPermissions, FormManagePermissions, IdentityMode, IdentityProviders } from '@/utils/constants';
 
 //
 // Utility Functions for determining permissions
@@ -21,8 +16,7 @@ export function checkFormSubmit(userForm) {
   return (
     userForm &&
     ((userForm.idps && userForm.idps.includes(IdentityProviders.PUBLIC)) ||
-      (userForm.permissions &&
-        userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)))
+      (userForm.permissions && userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)))
   );
 }
 
@@ -33,11 +27,7 @@ export function checkFormSubmit(userForm) {
  * @returns {boolean} TRUE if they can
  */
 export function checkFormManage(userForm) {
-  return (
-    userForm &&
-    userForm.permissions &&
-    userForm.permissions.some((p) => FormManagePermissions.includes(p))
-  );
+  return userForm && userForm.permissions && userForm.permissions.some((p) => FormManagePermissions.includes(p));
 }
 
 /**
@@ -47,15 +37,8 @@ export function checkFormManage(userForm) {
  * @returns {boolean} TRUE if they can
  */
 export function checkSubmissionView(userForm) {
-  const perms = [
-    FormPermissions.SUBMISSION_READ,
-    FormPermissions.SUBMISSION_UPDATE,
-  ];
-  return (
-    userForm &&
-    userForm.permissions &&
-    userForm.permissions.some((p) => perms.includes(p))
-  );
+  const perms = [FormPermissions.SUBMISSION_READ, FormPermissions.SUBMISSION_UPDATE];
+  return userForm && userForm.permissions && userForm.permissions.some((p) => perms.includes(p));
 }
 
 /**
@@ -73,9 +56,7 @@ function getErrorMessage(options, error) {
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
-      errorMessage =
-        'The form is currently unavailable. This may be due to an incorrect ' +
-        'link, or the form may have been deleted by its owner.';
+      errorMessage = 'The form is currently unavailable. This may be due to an incorrect ' + 'link, or the form may have been deleted by its owner.';
     }
   }
 
@@ -93,8 +74,7 @@ export async function preFlightAuth(options = {}, next) {
   const getIdpHint = (values) => {
     return Array.isArray(values) && values.length ? values[0] : undefined;
   };
-  const isValidIdp = (value) =>
-    Object.values(IdentityProviders).includes(value);
+  const isValidIdp = (value) => Object.values(IdentityProviders).includes(value);
 
   // Determine current form or submission idpHint if available
   let idpHint = undefined;
@@ -103,9 +83,7 @@ export async function preFlightAuth(options = {}, next) {
       const { data } = await formService.readFormOptions(options.formId);
       idpHint = getIdpHint(data.idpHints);
     } else if (options.submissionId) {
-      const { data } = await formService.getSubmissionOptions(
-        options.submissionId
-      );
+      const { data } = await formService.getSubmissionOptions(options.submissionId);
       idpHint = getIdpHint(data.form.idpHints);
     } else {
       throw new Error('Options missing both formId and submissionId');
@@ -123,9 +101,7 @@ export async function preFlightAuth(options = {}, next) {
     } else {
       store.dispatch('notifications/addNotification', {
         message: 'An error occurred while loading this form.',
-        consoleError: `Error while loading ${JSON.stringify(
-          options
-        )}: ${error}`,
+        consoleError: `Error while loading ${JSON.stringify(options)}: ${error}`,
       });
 
       store.dispatch('auth/errorNavigate');
@@ -167,9 +143,5 @@ export async function preFlightAuth(options = {}, next) {
  * @returns {boolean} TRUE if public
  */
 export function isFormPublic(form) {
-  return (
-    form &&
-    form.identityProviders &&
-    form.identityProviders.some((i) => i.code === IdentityMode.PUBLIC)
-  );
+  return form && form.identityProviders && form.identityProviders.some((i) => i.code === IdentityMode.PUBLIC);
 }

@@ -2,8 +2,8 @@ name: Push
 
 env:
   ACRONYM: chefs
-  APP_NAME: common-hosted-form-service
-  NAMESPACE_PREFIX: a12c97
+  APP_NAME: medis-form-service
+  NAMESPACE_PREFIX: c2da03
 
 on:
   push:
@@ -57,6 +57,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          mailjob_schedule: ${{ vars.MAILJOB_SCHEDULE }}
 
   deploy-test:
     name: Deploy to Test
@@ -84,6 +85,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          mailjob_schedule: ${{ vars.MAILJOB_SCHEDULE }}
 
   deploy-prod:
     name: Deploy to Prod
@@ -112,3 +114,4 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          mailjob_schedule: ${{ vars.MAILJOB_SCHEDULE }}

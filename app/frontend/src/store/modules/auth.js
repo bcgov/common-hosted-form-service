@@ -9,9 +9,7 @@ import getRouter from '@/router';
  * @returns {boolean} True if all `roles` exist in `tokenRoles`; false otherwise
  */
 function hasRoles(tokenRoles, roles = []) {
-  return roles
-    .map((r) => tokenRoles.some((t) => t === r))
-    .every((x) => x === true);
+  return roles.map((r) => tokenRoles.some((t) => t === r)).every((x) => x === true);
 }
 
 export default {
@@ -23,14 +21,9 @@ export default {
   },
   getters: {
     authenticated: () => Vue.prototype.$keycloak.authenticated,
-    createLoginUrl: () => (options) =>
-      Vue.prototype.$keycloak.createLoginUrl(options),
-    createLogoutUrl: () => (options) =>
-      Vue.prototype.$keycloak.createLogoutUrl(options),
-    email: () =>
-      Vue.prototype.$keycloak.tokenParsed
-        ? Vue.prototype.$keycloak.tokenParsed.email
-        : '',
+    createLoginUrl: () => (options) => Vue.prototype.$keycloak.createLoginUrl(options),
+    createLogoutUrl: () => (options) => Vue.prototype.$keycloak.createLogoutUrl(options),
+    email: () => (Vue.prototype.$keycloak.tokenParsed ? Vue.prototype.$keycloak.tokenParsed.email : ''),
     fullName: () => Vue.prototype.$keycloak.fullName,
     hasResourceRoles: (_state, getters) => (resource, roles) => {
       if (!getters.authenticated) return false;
@@ -41,16 +34,12 @@ export default {
       }
       return false; // There are roles to check, but nothing in token to check against
     },
-    identityProvider: () =>
-      Vue.prototype.$keycloak.tokenParsed
-        ? Vue.prototype.$keycloak.tokenParsed.identity_provider
-        : null,
+    identityProvider: () => (Vue.prototype.$keycloak.tokenParsed ? Vue.prototype.$keycloak.tokenParsed.identity_provider : null),
     isAdmin: (_state, getters) => getters.hasResourceRoles('chefs', ['admin']),
     isUser: (_state, getters) => getters.hasResourceRoles('chefs', ['user']),
     keycloakReady: () => Vue.prototype.$keycloak.ready,
     keycloakSubject: () => Vue.prototype.$keycloak.subject,
-    identityProviderIdentity: () =>
-      Vue.prototype.$keycloak.tokenParsed.idp_userid,
+    identityProviderIdentity: () => Vue.prototype.$keycloak.tokenParsed.idp_userid,
     moduleLoaded: () => !!Vue.prototype.$keycloak,
     realmAccess: () => Vue.prototype.$keycloak.tokenParsed.realm_access,
     redirectUri: (state) => state.redirectUri,
@@ -105,8 +94,7 @@ export default {
     login({ commit, getters, rootGetters }, idpHint = undefined) {
       if (getters.keycloakReady) {
         // Use existing redirect uri if available
-        if (!getters.redirectUri)
-          commit('SET_REDIRECTURI', location.toString());
+        if (!getters.redirectUri) commit('SET_REDIRECTURI', location.toString());
 
         const options = {
           redirectUri: getters.redirectUri,

@@ -2,8 +2,8 @@ name: Pull Request Opened
 
 env:
   ACRONYM: chefs
-  APP_NAME: common-hosted-form-service
-  NAMESPACE_PREFIX: a12c97
+  APP_NAME: medis-form-service
+  NAMESPACE_PREFIX: c2da03
 
 on:
   pull_request:
@@ -21,7 +21,6 @@ concurrency:
 jobs:
   build:
     name: Build & Push
-    if: "! github.event.pull_request.head.repo.fork"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -62,6 +61,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /pr-${{ github.event.number }}
+          mailjob_schedule: ${{ vars.MAILJOB_SCHEDULE }}
       - name: Release Comment on PR
         uses: marocchino/sticky-pull-request-comment@v2
         if: success()

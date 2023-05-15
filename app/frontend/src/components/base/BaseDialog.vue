@@ -1,18 +1,10 @@
 <template>
-  <v-dialog
-    :max-width="width"
-    persistent
-    v-bind:value="value"
-    @click:outside="closeDialog"
-    @keydown.esc="closeDialog"
-  >
+  <v-dialog :max-width="width" persistent v-bind:value="value" @click:outside="closeDialog" @keydown.esc="closeDialog">
     <v-card>
       <div class="dialog-body">
         <div v-if="showCloseButton">
           <v-spacer />
-          <v-icon color="primary" class="float-right m-3" @click="closeDialog"
-            >close</v-icon
-          >
+          <v-icon color="primary" class="float-right m-3" @click="closeDialog">close</v-icon>
         </div>
         <v-card-title class primary-title>
           <slot name="title"></slot>
@@ -37,12 +29,7 @@
           </v-btn>
         </div>
         <div v-else-if="type === 'CONTINUE'">
-          <v-btn
-            class="mb-5 mr-5"
-            color="primary"
-            depressed
-            @click="continueDialog"
-          >
+          <v-btn class="mb-5 mr-5" color="primary" depressed @click="continueDialog">
             <slot name="button-text-continue">
               <span>Continue</span>
             </slot>
@@ -54,12 +41,7 @@
           </v-btn>
         </div>
         <div v-else-if="type === 'SAVEDDELETE'">
-          <v-btn
-            class="mb-5 mr-5"
-            color="primary"
-            depressed
-            @click="continueDialog"
-          >
+          <v-btn class="mb-5 mr-5" color="primary" depressed @click="continueDialog">
             <slot name="button-text-continue">
               <span>Continue</span>
             </slot>
@@ -71,23 +53,12 @@
           </v-btn>
         </div>
         <div v-else-if="type === 'CUSTOM'">
-          <v-btn
-            class="mb-5 mr-5"
-            color="primary"
-            depressed
-            @click="continueDialog"
-          >
+          <v-btn class="mb-5 mr-5" color="primary" depressed @click="continueDialog">
             <slot name="button-text-continue">
               <span>Continue</span>
             </slot>
           </v-btn>
-          <v-btn
-            class="mb-5 mr-5"
-            color="primary"
-            depressed
-            @click="customDialog"
-            v-if="enableCustomButton"
-          >
+          <v-btn class="mb-5 mr-5" color="primary" depressed @click="customDialog" v-if="enableCustomButton">
             <slot name="button-text-custom">
               <span>Custom</span>
             </slot>

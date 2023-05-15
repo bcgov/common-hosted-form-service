@@ -59,7 +59,7 @@ objects:
         app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"patroni-${JOB_NAME}"}]'
       name: "${APP_NAME}-app-${JOB_NAME}"
     spec:
-      replicas: 2
+      replicas: 1
       revisionHistoryLimit: 10
       selector:
         app: "${APP_NAME}-${JOB_NAME}"

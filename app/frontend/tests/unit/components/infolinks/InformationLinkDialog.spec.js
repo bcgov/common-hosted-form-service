@@ -3,10 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
 
 describe('InformationLinkDialog.vue', () => {
-
   it('selectImage()', async () => {
-
-
     const event = {
       target: {
         files: [
@@ -29,14 +26,13 @@ describe('InformationLinkDialog.vue', () => {
   });
 
   it('resetDialog', async () => {
-
     const wrapper = shallowMount(InformationLinkDialog, {
       data() {
         return {
           description: 'dump text',
-          link:'url'
+          link: 'url',
         };
-      }
+      },
     });
 
     wrapper.vm.resetDialog();

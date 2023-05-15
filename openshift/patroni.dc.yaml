@@ -363,7 +363,7 @@ parameters:
     description: Maximum amount of CPU the container can use.
     displayName: CPU Limit
     required: true
-    value: "1"
+    value: "200m"
   - name: MEMORY_REQUEST
     description: Starting amount of memory the container can use.
     displayName: Memory Request
@@ -378,7 +378,7 @@ parameters:
     description: The size of the persistent volume to create.
     displayName: Persistent Volume Size
     required: true
-    value: 2Gi
+    value: 256Mi
   - name: STORAGE_CLASS
     description: The type of the persistent volume to create.
     displayName: Persistent Volume Class

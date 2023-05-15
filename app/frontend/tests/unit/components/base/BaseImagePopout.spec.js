@@ -10,7 +10,7 @@ describe('BaseImagePopout.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(BaseImagePopout, {
       localVue,
-      propsData: { src: 'test' }
+      propsData: { src: 'test' },
     });
 
     expect(wrapper.html()).toMatch('v-hover');

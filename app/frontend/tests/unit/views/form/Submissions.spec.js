@@ -9,7 +9,7 @@ describe('Submissions.vue', () => {
     const wrapper = shallowMount(Submissions, {
       localVue,
       propsData: { f: 'f' },
-      stubs: ['BaseSecure', 'SubmissionsTable']
+      stubs: ['BaseSecure', 'SubmissionsTable'],
     });
 
     expect(wrapper.html()).toMatch('submissionstable');

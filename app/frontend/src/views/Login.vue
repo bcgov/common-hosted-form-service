@@ -32,11 +32,7 @@ export default {
   props: {
     idpHint: {
       type: Array,
-      default: () => [
-        IdentityProviders.IDIR,
-        IdentityProviders.BCEIDBUSINESS,
-        IdentityProviders.BCEIDBASIC,
-      ],
+      default: () => [IdentityProviders.IDIR, IdentityProviders.BCEIDBUSINESS, IdentityProviders.BCEIDBASIC],
     },
   },
   created() {

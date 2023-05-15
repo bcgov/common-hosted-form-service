@@ -19,29 +19,15 @@
           </p>
         </v-col>
         <!-- buttons -->
-        <v-col
-          class="text-right d-print-none"
-          cols="12"
-          sm="6"
-          order="1"
-          order-sm="2"
-        >
+        <v-col class="text-right d-print-none" cols="12" sm="6" order="1" order-sm="2">
           <span>
             <PrintOptions :submissionId="submissionId" />
           </span>
           <span>
             <v-tooltip bottom>
               <template #activator="{ on, attrs }">
-                <router-link
-                  :to="{ name: 'FormSubmissions', query: { f: form.id } }"
-                >
-                  <v-btn
-                    class="mx-1"
-                    color="primary"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                  >
+                <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
+                  <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
                     <v-icon>list_alt</v-icon>
                   </v-btn>
                 </router-link>
@@ -56,11 +42,7 @@
     <br />
     <v-row>
       <!-- The form submission -->
-      <v-col
-        cols="12"
-        :md="form.enableStatusUpdates ? 8 : 12"
-        class="pl-0 pt-0"
-      >
+      <v-col cols="12" :md="form.enableStatusUpdates ? 8 : 12" class="pl-0 pt-0">
         <v-alert
           :value="!submissionReadOnly"
           :class="'d-print-none ' + NOTIFICATIONS_TYPES.INFO.class"
@@ -74,37 +56,19 @@
               <h2 class="review-heading">Submission</h2>
             </v-col>
             <v-spacer />
-            <v-col
-              v-if="form.enableStatusUpdates"
-              class="text-sm-right d-print-none"
-              cols="12"
-              sm="6"
-            >
+            <v-col v-if="form.enableStatusUpdates" class="text-sm-right d-print-none" cols="12" sm="6">
               <span v-if="submissionReadOnly">
                 <AuditHistory :submissionId="submissionId" />
                 <v-tooltip bottom>
                   <template #activator="{ on, attrs }">
-                    <v-btn
-                      class="mx-1"
-                      @click="toggleSubmissionEdit(true)"
-                      color="primary"
-                      :disabled="isDraft"
-                      icon
-                      v-bind="attrs"
-                      v-on="on"
-                    >
+                    <v-btn class="mx-1" @click="toggleSubmissionEdit(true)" color="primary" :disabled="isDraft" icon v-bind="attrs" v-on="on">
                       <v-icon>mode_edit</v-icon>
                     </v-btn>
                   </template>
                   <span>Edit This Submission</span>
                 </v-tooltip>
               </span>
-              <v-btn
-                v-else
-                outlined
-                color="textLink"
-                @click="toggleSubmissionEdit(false)"
-              >
+              <v-btn v-else outlined color="textLink" @click="toggleSubmissionEdit(false)">
                 <span>CANCEL</span>
               </v-btn>
             </v-col>
@@ -121,22 +85,10 @@
       </v-col>
 
       <!-- Status updates and notes -->
-      <v-col
-        v-if="form.enableStatusUpdates"
-        cols="12"
-        md="4"
-        class="pl-0 pt-0 d-print-none"
-        order="first"
-        order-md="last"
-      >
+      <v-col v-if="form.enableStatusUpdates" cols="12" md="4" class="pl-0 pt-0 d-print-none" order="first" order-md="last">
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <h2 class="review-heading">Status</h2>
-          <StatusPanel
-            :submissionId="submissionId"
-            :formId="form.id"
-            @note-updated="refreshNotes"
-            @draft-enabled="setDraft"
-          />
+          <StatusPanel :submissionId="submissionId" :formId="form.id" @note-updated="refreshNotes" @draft-enabled="setDraft" />
         </v-card>
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
           <NotesPanel :submissionId="submissionId" ref="notesPanel" />

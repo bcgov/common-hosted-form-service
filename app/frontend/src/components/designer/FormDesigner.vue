@@ -9,14 +9,7 @@
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-1"
-              @click="onExportClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn class="mx-1" @click="onExportClick" color="primary" icon v-bind="attrs" v-on="on">
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
@@ -24,22 +17,9 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-1"
-              @click="$refs.uploader.click()"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn class="mx-1" @click="$refs.uploader.click()" color="primary" icon v-bind="attrs" v-on="on">
               <v-icon>publish</v-icon>
-              <input
-                class="d-none"
-                @change="loadFile"
-                ref="uploader"
-                type="file"
-                accept=".json"
-              />
+              <input class="d-none" @change="loadFile" ref="uploader" type="file" accept=".json" />
             </v-btn>
           </template>
           <span>Import Design</span>
@@ -55,17 +35,9 @@
       </v-col>
     </v-row>
     <BaseInfoCard class="my-6">
-      <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
-      </h4>
-      <p class="my-0">
-        Use the <strong>SAVE DESIGN</strong> button when you are done building
-        this form.
-      </p>
-      <p class="my-0">
-        The <strong>SUBMIT</strong> button is provided for your user to submit
-        this form and will be activated after it is saved.
-      </p>
+      <h4 class="primary--text"><v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!</h4>
+      <p class="my-0">Use the <strong>SAVE DESIGN</strong> button when you are done building this form.</p>
+      <p class="my-0">The <strong>SUBMIT</strong> button is provided for your user to submit this form and will be activated after it is saved.</p>
     </BaseInfoCard>
     <FormBuilder
       :form="formSchema"
@@ -149,12 +121,7 @@ export default {
   },
   data() {
     return {
-      items: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' },
-      ],
+      items: [{ title: 'Click Me' }, { title: 'Click Me' }, { title: 'Click Me' }, { title: 'Click Me 2' }],
       offset: true,
       savedStatus: this.isSavedStatus,
       isFormSaved: !this.newVersion,
@@ -190,10 +157,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('form', [
-      'fcProactiveHelpGroupList',
-      'fcProactiveHelpImageUrl',
-    ]),
+    ...mapGetters('form', ['fcProactiveHelpGroupList', 'fcProactiveHelpImageUrl']),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapGetters('form', ['builder']),
     ...mapFields('form', [
@@ -204,6 +168,7 @@ export default {
       'form.idps',
       'form.name',
       'form.sendSubRecieviedEmail',
+      'form.allowSubmitterToUploadFile',
       'form.showSubmissionConfirmation',
       'form.snake',
       'form.submissionReceivedEmails',
@@ -317,11 +282,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', [
-      'fetchForm',
-      'setDirtyFlag',
-      'getFCProactiveHelpImageUrl',
-    ]),
+    ...mapActions('form', ['fetchForm', 'setDirtyFlag', 'getFCProactiveHelpImageUrl']),
     ...mapActions('notifications', ['addNotification']),
 
     // TODO: Put this into vuex form module
@@ -381,9 +342,7 @@ export default {
       }
 
       const a = document.createElement('a');
-      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(this.formSchema)
-      )}`;
+      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.formSchema))}`;
       a.download = `${snek}_schema.json`;
       a.style.display = 'none';
       a.classList.add('hiddenDownloadTextElement');
@@ -429,9 +388,7 @@ export default {
       // Contains the names of every category of components
       let builder = this.$refs.formioForm.builder.instance.builder;
       if (Object.keys(this.fcProactiveHelpGroupList).length > 0) {
-        for (const [groupName, elements] of Object.entries(
-          this.fcProactiveHelpGroupList
-        )) {
+        for (const [groupName, elements] of Object.entries(this.fcProactiveHelpGroupList)) {
           let extractedElementsNames = this.extractPublishedElement(elements);
           for (const [key, builderElements] of Object.entries(builder)) {
             if (groupName === builderElements.title) {
@@ -445,10 +402,7 @@ export default {
                     // Append the info el
                     let child = document.createElement('i');
 
-                    child.setAttribute(
-                      'class',
-                      'fa fa-info-circle info-helper'
-                    );
+                    child.setAttribute('class', 'fa fa-info-circle info-helper');
                     child.style.float = 'right';
                     child.style.fontSize = '14px';
                     child.addEventListener('click', function () {
@@ -475,9 +429,7 @@ export default {
 
     async showHelperClicked(elementName, groupName) {
       const elements = this.fcProactiveHelpGroupList[groupName];
-      this.component = elements.find(
-        (element) => element.componentName === elementName
-      );
+      this.component = elements.find((element) => element.componentName === elementName);
       await this.getFCProactiveHelpImageUrl(this.component.id);
       this.onShowClosePreveiwDialog();
     },
@@ -510,11 +462,7 @@ export default {
           }
         } else {
           // If we removed a component but not during an add action
-          if (
-            (!this.patch.componentAddedStart &&
-              this.patch.componentRemovedStart) ||
-            this.patch.componentMovedStart
-          ) {
+          if ((!this.patch.componentAddedStart && this.patch.componentRemovedStart) || this.patch.componentMovedStart) {
             // Component was removed or moved
             this.addPatchToHistory();
           }
@@ -595,17 +543,10 @@ export default {
       this.patch.componentRemovedStart = flag;
     },
     canUndoPatch() {
-      return (
-        this.patch.history.length &&
-        this.patch.index >= 0 &&
-        this.patch.index < this.patch.history.length
-      );
+      return this.patch.history.length && this.patch.index >= 0 && this.patch.index < this.patch.history.length;
     },
     canRedoPatch() {
-      return (
-        this.patch.history.length &&
-        this.patch.index < this.patch.history.length - 1
-      );
+      return this.patch.history.length && this.patch.index < this.patch.history.length - 1;
     },
     undoEnabled() {
       return this.canUndoPatch();
@@ -666,12 +607,7 @@ export default {
 
     async schemaCreateNew() {
       const emailList =
-        this.sendSubRecieviedEmail &&
-        this.submissionReceivedEmails &&
-        Array.isArray(this.submissionReceivedEmails)
-          ? this.submissionReceivedEmails
-          : [];
-
+        this.sendSubRecieviedEmail && this.submissionReceivedEmails && Array.isArray(this.submissionReceivedEmails) ? this.submissionReceivedEmails : [];
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -684,6 +620,7 @@ export default {
         enableCopyExistingSubmission: this.enableCopyExistingSubmission,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
+        allowSubmitterToUploadFile: this.allowSubmitterToUploadFile,
         submissionReceivedEmails: emailList,
         reminder_enabled: false,
       });
@@ -706,7 +643,6 @@ export default {
         schema: this.formSchema,
         formVersionId: this.versionId,
       });
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
