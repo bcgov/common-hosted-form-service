@@ -8,12 +8,12 @@
       disable-pagination
       :items="layoutList"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      loading-text="$t('trans.generalLayout.loadingText')"
     >
       <template #[`item.componentName`]="{ item }">
         <div>
           <template>
-            <div style="text-transform: capitalize label">
+            <div style="text-transform: capitalize" class="label">
               {{ item.componentName }}
             </div>
           </template>
@@ -30,7 +30,9 @@
               @click="onOpenDialog(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-              <span class="d-none d-sm-flex" style="font-size: 16px">EDIT</span>
+              <span class="d-none d-sm-flex" style="font-size: 16px"
+                >$t('trans.generalLayout.edit')</span
+              >
             </v-btn>
           </div>
           <div>
@@ -43,9 +45,9 @@
               :disabled="canDisabled(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-eye" />
-              <span class="d-none d-sm-flex" style="font-size: 16px"
-                >PREVIEW</span
-              >
+              <span class="d-none d-sm-flex" style="font-size: 16px">{{
+                $t('trans.generalLayout.preview')
+              }}</span>
             </v-btn>
           </div>
           <div>
@@ -66,7 +68,11 @@
               <span
                 style="width: 120px !important; font-size: 16px"
                 class="d-none d-sm-flex"
-                >{{ publish[index] ? 'PUBLISHED' : 'UNPUBLISHED' }}</span
+                >{{
+                  publish[index]
+                    ? $t('trans.generalLayout.published')
+                    : $t('trans.generalLayout.unpublished')
+                }}</span
               >
             </v-btn>
           </div>

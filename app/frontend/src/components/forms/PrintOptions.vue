@@ -22,7 +22,9 @@
       content-class="export-submissions-dlg"
     >
       <v-card>
-        <v-card-title class="text-h5 pb-0">Download Options</v-card-title>
+        <v-card-title class="text-h5 pb-0">{{
+          $t('trans.printOptions.downloadOptions')
+        }}</v-card-title>
         <v-card-text>
           <hr />
           <p>
@@ -50,7 +52,7 @@
           <v-file-input
             counter
             :clearable="true"
-            label="Upload template file"
+            :label="$t('trans.printOptions.uploadTemplateFile')"
             persistent-hint
             prepend-icon="attachment"
             required
@@ -71,10 +73,10 @@
                   v-on="on"
                 >
                   <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
-                  <span>Template Print</span>
+                  <span>{{ $t('trans.printOptions.templatePrint') }}</span>
                 </v-btn>
               </template>
-              <span>Submit to CDOGS and Download</span>
+              <span>{{ $t('trans.printOptions.submitButtonTxt') }}</span>
             </v-tooltip>
           </v-card-actions>
         </v-card-text>

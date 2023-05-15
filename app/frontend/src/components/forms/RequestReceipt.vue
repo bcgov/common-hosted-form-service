@@ -26,7 +26,7 @@
             flat
             solid
             outlined
-            label="Send to E-mail Address"
+            :label="$t('trans.requestReceipt.sendToEmailAddress')"
             :rules="emailRules"
             v-model="to"
             data-test="text-form-to"

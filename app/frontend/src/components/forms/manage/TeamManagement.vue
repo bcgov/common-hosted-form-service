@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container fluid class="d-flex">
-      <h1 class="mr-auto">Team Management</h1>
+      <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
       <div style="z-index: 1">
         <span>
           <AddTeamMember
@@ -24,7 +24,7 @@
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
-            <span>Select Columns</span>
+            <span>{{ $t('trans.teamManagement.selectColumns') }}</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -41,7 +41,7 @@
                 </v-btn>
               </router-link>
             </template>
-            <span>Manage Form</span>
+            <span>{{ $t('trans.teamManagement.manageForm') }}</span>
           </v-tooltip>
         </span>
       </div>
@@ -57,7 +57,7 @@
           class="pb-5"
           :disabled="!canManageTeam"
           hide-details
-          label="Search"
+          :label="$t('trans.teamManagement.search')"
           single-line
         />
       </v-col>
@@ -72,8 +72,8 @@
       :items="tableData"
       item-key="id"
       :loading="loading || updating"
-      loading-text="Loading... Please wait"
-      no-data-text="Failed to load team role data"
+      loading-text="$t('trans.teamManagement.loadingText')"
+      no-data-text="$t('trans.teamManagement.noDataText')"
       :search="search"
       dense
     >
@@ -100,7 +100,7 @@
                 >remove_circle</v-icon
               >
             </template>
-            <span>Remove selected users</span>
+            <span>{{ $t('trans.teamManagement.removeSelectedUsers') }}</span>
           </v-tooltip>
         </v-btn>
       </template>
@@ -130,7 +130,7 @@
                 >remove_circle</v-icon
               >
             </template>
-            <span>Remove this user</span>
+            <span>{{ $t('trans.teamManagement.removeThisUser') }}</span>
           </v-tooltip>
         </v-btn>
       </template>
@@ -142,20 +142,24 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="removeUser"
     >
-      <template #title>Confirm Removal</template>
+      <template #title>{{
+        $t('trans.teamManagement.confirmRemoval')
+      }}</template>
       <template #text>
         {{ DeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span>Remove</span>
+        <span>{{ $t('trans.teamManagement.remove') }}</span>
       </template>
     </BaseDialog>
 
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
-        inputFilterPlaceholder="Search team management fields"
+        :inputFilterPlaceholder="
+          $t('trans.teamManagement.searchTeamManagementFields')
+        "
         inputItemKey="value"
-        inputSaveButtonText="Save"
+        :inputSaveButtonText="$t('trans.teamManagement.save')"
         :inputData="
           DEFAULT_HEADERS.filter(
             (h) => !filterIgnore.some((fd) => fd.value === h.value)
@@ -165,9 +169,9 @@
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title
-          >Search and select columns to show under your dashboard</template
-        >
+        <template #filter-title>{{
+          $t('trans.teamManagement.teamMebersTitle')
+        }}</template>
       </BaseFilter>
     </v-dialog>
   </div>
@@ -207,14 +211,17 @@ export default {
     roleOrder: () => Object.values(FormRoleCodes),
     DeleteMessage() {
       return this.itemsToDelete.length > 1
-        ? 'Are you sure you want to remove the selected members?'
-        : 'Are you sure you want to remove the selected member?';
+        ? this.$t('trans.teamManagement.delSelectedMembersWarning"')
+        : this.$t('trans.teamManagement.delSelectedMemberWarning');
     },
     DEFAULT_HEADERS() {
       const headers = [
-        { text: 'Full Name', value: 'fullName' },
-        { text: 'Username', value: 'username' },
-        { text: 'Identity Provider', value: 'identityProvider' },
+        { text: this.$t('trans.teamManagement.fullName'), value: 'fullName' },
+        { text: this.$t('trans.teamManagement.username'), value: 'username' },
+        {
+          text: this.$t('trans.teamManagement.identityProvider'),
+          value: 'identityProvider',
+        },
       ];
       return headers
         .concat(
@@ -318,7 +325,9 @@ export default {
               this.setUserForms(user.id);
           } else {
             this.addNotification({
-              message: `${user.username}@${user.idpCode} is already in the team.`,
+              message:
+                `${user.username}@${user.idpCode}` +
+                this.$t('trans.teamManagement.idpMessage'),
             });
           }
         });
@@ -330,7 +339,7 @@ export default {
         2
       ) {
         this.addNotification({
-          message: 'There must always be at least one form owner',
+          message: this.$t('trans.teamManagement.formOwnerErrMsg'),
           consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
         });
         return false;
@@ -392,7 +401,9 @@ export default {
     async getFormUsers() {
       try {
         if (!this.canManageTeam) {
-          throw new Error('Insufficient permissions to manage team');
+          throw new Error(
+            this.$t('trans.teamManagement.insufficientPermissnMsg')
+          );
         }
         const formUsersResponse = await rbacService.getFormUsers({
           formId: this.formId,
@@ -409,7 +420,9 @@ export default {
       } catch (error) {
         this.addNotification({
           message: error.message,
-          consoleError: `Error getting form users: ${error}`,
+
+          consoleError:
+            this.$t('trans.teamManagement.getUserErrMsg') + `${error}`,
         });
         this.formUsers = [];
       } finally {
@@ -423,7 +436,9 @@ export default {
       } catch (error) {
         this.addNotification({
           message: error.message,
-          consoleError: `Error getting list of roles: ${error}`,
+
+          consoleError:
+            this.$t('trans.teamManagement.getRolesErrMsg') + `${error}`,
         });
         this.roleList = [];
       }
@@ -445,9 +460,8 @@ export default {
     },
     ownerError() {
       this.addNotification({
-        message: 'There must always be at least one form owner',
-        consoleError:
-          'Cannot remove as they are the only remaining owner of this form.',
+        message: this.$t('trans.teamManagement.formOwnerErrMsg'),
+        consoleError: this.$t('trans.teamManagement.formOwnerConsoleErrMsg'),
       });
     },
     userError() {

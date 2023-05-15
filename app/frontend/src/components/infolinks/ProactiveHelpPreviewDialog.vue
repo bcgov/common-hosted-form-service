@@ -63,7 +63,7 @@
                 }"
               >
                 <div class="mr-1 cursor">
-                  Learn more
+                  {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
                   <font-awesome-icon
                     icon="fa-solid fa-square-arrow-up-right"
                   /></div
