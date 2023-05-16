@@ -219,9 +219,6 @@ export default {
       return IdentityMode;
     },
 
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
     designerOptions() {
       return {
         sanitizeConfig: {
