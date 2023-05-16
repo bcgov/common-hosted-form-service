@@ -11,8 +11,6 @@ const messages = {
   fr: fr,
 };
 
-console.log('+++++++---->> ', messages);
-
 // Create VueI18n instance with options
 export default new VueI18n({
   locale: 'en', // set locale

@@ -325,7 +325,6 @@
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
 import formService from '@/services/formService.js';
-import { FormPermissions } from '@/utils/constants';
 import { NotificationTypes, ExportLargeData } from '@/utils/constants';
 
 import {

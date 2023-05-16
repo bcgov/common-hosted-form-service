@@ -378,6 +378,7 @@ export default {
         this.userSearchResults = response.data;
       } catch (error) {
         // this.userSearchResults = [];
+        /* eslint-disable no-console */
         console.error(
           this.$t('trans.manageSubmissionUsers.getUsersErrMsg', {
             error: error,

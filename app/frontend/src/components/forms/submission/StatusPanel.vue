@@ -425,8 +425,11 @@ export default {
           this.getStatus();
         }
       } catch (error) {
+        /* eslint-disable no-console */
         console.error(
-          this.$t('trans.statusPanel.addNoteConsoleErrMsg') + `: ${error}`
+          `${this.$t('trans.statusPanel.addNoteConsoleErrMsg', {
+            error: error,
+          })}`
         ); // eslint-disable-line no-console
         this.error = this.$t('trans.statusPanel.addNoteErrMsg');
       }
