@@ -61,7 +61,11 @@
           color="success"
           value
           :input-value="item.published"
-          :label="item.published ? 'Published' : 'Unpublished'"
+          :label="
+            item.published
+              ? $t('trans.manageVersions.published')
+              : $t('trans.manageVersions.unpublished')
+          "
           :disabled="!canPublish"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
         />
@@ -143,7 +147,11 @@
               {{ $t('trans.manageVersions.infoC') }}
             </span>
             <span v-else>
-              Use version {{ item.version }} as the base for a new version
+              {{
+                $t('trans.manageVersions.useVersionInfo', {
+                  version: item.version,
+                })
+              }}
             </span>
           </v-tooltip>
         </span>
@@ -200,8 +208,12 @@
         >
       </template>
       <template #text>
-        <span v-if="publishOpts.publishing">
-          This will make Version {{ publishOpts.version }} of your form live.
+        <span v-if="publishOpts.publishing"
+          >{{
+            $t('trans.manageVersions.useVersionInfo', {
+              version: publishOpts.version,
+            })
+          }}
         </span>
         <span v-else>
           {{ $t('trans.manageVersions.infoE') }}

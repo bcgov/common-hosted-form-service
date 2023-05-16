@@ -61,7 +61,11 @@
                 </p>
               </BaseInfoCard>
             </v-expand-transition>
-            <v-radio class="mb-4" label="Log-in Required" value="login" />
+            <v-radio
+              class="mb-4"
+              :label="$t('trans.formSettings.loginRequired')"
+              value="login"
+            />
             <v-expand-transition>
               <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6">
                 <v-radio-group class="my-0" v-model="idps[0]">
@@ -136,18 +140,14 @@
             :disabled="userType === ID_MODE.PUBLIC"
           >
             <template #label>
-              <span>
-                Submitters can
-                <strong>Save and Edit Drafts</strong>
+              <span v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')">
               </span>
             </template>
           </v-checkbox>
 
           <v-checkbox class="my-0" v-model="enableStatusUpdates">
             <template #label>
-              <span>
-                Reviewers can <strong>Update the Status</strong> of this form
-                (i.e. Submitted, Assigned, Completed)
+              <span v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')">
               </span>
             </template>
           </v-checkbox>
@@ -197,9 +197,10 @@
           >
             <template #label>
               <span
-                >Submitters can
-                <strong>Copy an existing submission</strong></span
-              >
+                v-html="
+                  $t('trans.formSettings.submitterCanCopyExistingSubmissn')
+                "
+              ></span>
               <v-tooltip bottom close-delay="2500">
                 <template v-slot:activator="{ on, attrs }">
                   <font-awesome-icon
@@ -242,9 +243,11 @@
                   </v-icon>
                 </template>
                 <span>
-                  Selecting this option controls what the submitting user of
-                  this form will see on successful submission. <br />
-                  If checked, it will display
+                  <span
+                    v-html="
+                      $t('trans.formSettings.submissionConfirmationToolTip')
+                    "
+                  />
                   <ul>
                     <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
                     <li>
@@ -258,7 +261,7 @@
 
           <v-checkbox class="my-0" v-model="sendSubRecieviedEmail">
             <template #label>
-              Send my team a notification email
+              {{ $t('trans.formSettings.emailNotificatnToTeam') }}
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
@@ -266,8 +269,7 @@
                   </v-icon>
                 </template>
                 <span>
-                  Send a notification to your specified email address when any
-                  user submits this form
+                  {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
                 </span>
               </v-tooltip>
             </template>
@@ -283,8 +285,8 @@
             outlined
             hide-selected
             clearable
-            hint="Add one or more valid email addresses"
-            label="Notification Email Addresses"
+            :hint="$t('trans.formSettings.addMoreValidEmailAddrs')"
+            :label="$t('trans.formSettings.notificationEmailAddrs')"
             multiple
             small-chips
             deletable-chips
@@ -308,7 +310,9 @@
       <v-expand-transition>
         <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished">
           <BasePanel class="fill-height">
-            <template #title>Form Schedule Settings</template>
+            <template #title>{{
+              $t('trans.formSettings.formScheduleSettings')
+            }}</template>
             <v-row class="m-0">
               <v-col cols="8" md="8" class="pl-0 pr-0 pb-0">
                 <v-menu
@@ -326,7 +330,7 @@
                       placeholder="yyyy-mm-dd"
                       append-icon="event"
                       v-on:click:append="openSubmissionDateDraw = true"
-                      label="Open submissions"
+                      :label="$t('trans.formSettings.opensubmissions')"
                       v-on="on"
                       dense
                       outlined
@@ -346,7 +350,7 @@
               <v-col cols="12" md="12" class="p-0">
                 <template>
                   <p class="font-weight-black">
-                    How long do you want to receive submissions?
+                    {{ $t('trans.formSettings.submissionsDeadline') }}
                   </p>
                 </template>
                 <v-expand-transition>
@@ -359,17 +363,19 @@
                     >
                       <v-radio
                         class="mx-2"
-                        label="Keep open until manually unpublished"
+                        :label="
+                          $t('trans.formSettings.keepSubmissnOpenTilUnplished')
+                        "
                         :value="SCHEDULE_TYPE.MANUAL"
                       />
                       <v-radio
                         class="mx-2"
-                        label="Schedule a closing date"
+                        :label="$t('trans.formSettings.submissionsClosingDate')"
                         :value="SCHEDULE_TYPE.CLOSINGDATE"
                       />
                       <v-radio
                         class="mx-2"
-                        label="Set up submission period"
+                        :label="$t('trans.formSettings.submissionPeriod')"
                         :value="SCHEDULE_TYPE.PERIOD"
                       />
                     </v-radio-group>
@@ -398,7 +404,7 @@
                       placeholder="yyyy-mm-dd"
                       append-icon="event"
                       v-on:click:append="closeSubmissionDateDraw = true"
-                      label="Close submissions"
+                      :label="$t('trans.formSettings.closeSubmissions')"
                       v-on="on"
                       dense
                       outlined
@@ -421,7 +427,7 @@
                 v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD"
               >
                 <v-text-field
-                  label="Keep open for"
+                  :label="$t('trans.formSettings.keepOpenFor')"
                   value="0"
                   type="number"
                   dense
@@ -442,7 +448,7 @@
               >
                 <v-select
                   :items="['days', 'weeks', 'months', 'quarters', 'years']"
-                  label="Period"
+                  :label="$t('trans.formSettings.period')"
                   dense
                   flat
                   solid
@@ -465,7 +471,7 @@
               :rules="allowLateSubmissionRule"
             >
               <template #label>
-                Allow late submissions
+                {{ $t('trans.formSettings.allowLateSubmissions') }}
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
@@ -478,8 +484,7 @@
                     </v-icon>
                   </template>
                   <span>
-                    If checked, submitters will be able to submit data after the
-                    closing date.
+                    {{ $t('trans.formSettings.allowLateSubmissionsInfoTip') }}
                   </span>
                 </v-tooltip>
               </template>
@@ -497,7 +502,7 @@
               <v-row class="m-0">
                 <v-col cols="4" md="4" class="m-0 p-0">
                   <v-text-field
-                    label="After close date for"
+                    :label="$t('trans.formSettings.afterCloseDateFor')"
                     value="0"
                     type="number"
                     dense
@@ -513,7 +518,7 @@
                 <v-col cols="4" md="4" class="m-0 p-0">
                   <v-select
                     :items="['days', 'weeks', 'months', 'quarters', 'years']"
-                    label="Period"
+                    :label="$t('trans.formSettings.period')"
                     dense
                     flat
                     solid
@@ -532,7 +537,9 @@
               v-model="schedule.repeatSubmission.enabled"
               v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD"
             >
-              <template #label> Repeat period </template>
+              <template #label>
+                {{ $t('trans.formSettings.repeatPeriod') }}
+              </template>
             </v-checkbox>
 
             <v-expand-transition
@@ -544,7 +551,7 @@
               <v-row class="m-0">
                 <v-col cols="4" class="m-0 p-0">
                   <v-text-field
-                    label="Every"
+                    :label="$t('trans.formSettings.every')"
                     value="0"
                     type="number"
                     dense
@@ -560,7 +567,7 @@
                 <v-col cols="4" class="m-0 p-0">
                   <v-select
                     :items="AVAILABLE_PERIOD_OPTIONS"
-                    label="Period"
+                    :label="$t('trans.formSettings.period')"
                     dense
                     flat
                     solid
@@ -587,7 +594,7 @@
                         placeholder="yyyy-mm-dd"
                         append-icon="event"
                         v-on:click:append="repeatUntil = true"
-                        label="Repeat until"
+                        :label="$t('trans.formSettings.repeatUntil')"
                         v-on="on"
                         dense
                         outlined
@@ -621,7 +628,9 @@
             >
               <v-col class="p-0 m-0" cols="12" md="12"
                 ><template>
-                  <p class="font-weight-black m-0">Summary</p>
+                  <p class="font-weight-black m-0">
+                    {{ $t('trans.formSettings.summary') }}
+                  </p>
                 </template></v-col
               >
 
@@ -633,8 +642,9 @@
                   schedule.openSubmissionDateTime &&
                   schedule.openSubmissionDateTime.length
                 "
-                >This form will be open for submissions from
-                <b>{{ schedule.openSubmissionDateTime }}</b> to
+                >{{ $t('trans.formSettings.submissionsOpenDateRange') }}
+                <b>{{ schedule.openSubmissionDateTime }}</b>
+                {{ $t('trans.formSettings.to') }}
                 <b>
                   {{
                     schedule.scheduleType === SCHEDULE_TYPE.PERIOD
@@ -656,14 +666,13 @@
                   schedule.allowLateSubmissions.enabled &&
                   schedule.allowLateSubmissions.forNext.intervalType &&
                   schedule.allowLateSubmissions.forNext.term
-                    ? ', allowing late submissions for ' +
+                    ? $t('trans.formSettings.allowLateSubmissnInterval') +
                       schedule.allowLateSubmissions.forNext.term +
                       ' ' +
                       schedule.allowLateSubmissions.forNext.intervalType +
                       '.'
-                    : '. '
+                    : '.'
                 }}</span>
-
                 <span
                   v-if="
                     schedule.scheduleType === SCHEDULE_TYPE.PERIOD &&
@@ -673,9 +682,10 @@
                     schedule.repeatSubmission.everyIntervalType &&
                     AVAILABLE_DATES[1]
                   "
-                  >The schedule will repeat every
+                  >{{ $t('trans.formSettings.scheduleRepetition') }}
                   <b>{{ schedule.repeatSubmission.everyTerm }} </b>
-                  <b>{{ schedule.repeatSubmission.everyIntervalType }}</b> until
+                  <b>{{ schedule.repeatSubmission.everyIntervalType }}</b>
+                  {{ $t('trans.formSettings.until') }}
                   <b>{{ schedule.repeatSubmission.repeatUntil }}</b
                   >.
                   <v-tooltip bottom>
@@ -691,23 +701,25 @@
                     </template>
                     <span>
                       <!-- MORE FUTURE OCCURENCES -->
-                      As per the settings these are the available dates of
-                      submissions:
+                      {{ $t('trans.formSettings.datesOfSubmissnInfo') }}
                       <ul>
                         <li
                           :key="date.startDate + Math.random()"
                           v-for="date in AVAILABLE_DATES"
                         >
-                          This form will be open for submissions from
+                          {{ $t('trans.formSettings.formOpenInterval') }}
                           {{ date.startDate.split(' ')[0] }}
                           <span v-if="schedule.enabled">
-                            to {{ date.closeDate.split(' ')[0] }}
+                            {{ $t('trans.formSettings.to') }}
+                            {{ date.closeDate.split(' ')[0] }}
                             <span
                               v-if="
                                 schedule.allowLateSubmissions.enabled &&
                                 date.closeDate !== date.graceDate
                               "
-                              >with allowing late submission until
+                              >{{
+                                $t('trans.formSettings.allowDateSubmissionDate')
+                              }}
                               {{ date.graceDate.split(' ')[0] }}</span
                             ></span
                           >
@@ -730,7 +742,6 @@
                   schedule.openSubmissionDateTime)
               "
             />
-
             <v-row
               class="p-0 m-0"
               v-if="
@@ -745,7 +756,7 @@
                   v-model="schedule.closingMessageEnabled"
                 >
                   <template #label>
-                    Set custom closing message
+                    {{ $t('trans.formSettings.customClosingMessage') }}
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon
@@ -758,8 +769,9 @@
                         </v-icon>
                       </template>
                       <span>
-                        Allow you to add a customized message for your users
-                        when they visit a closed form.
+                        {{
+                          $t('trans.formSettings.customClosingMessageToolTip')
+                        }}
                       </span>
                     </v-tooltip>
                   </template>
@@ -770,14 +782,16 @@
                 <v-expand-transition v-if="schedule.closingMessageEnabled">
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
-                      <template #title>Closing Message</template>
+                      <template #title>{{
+                        $t('trans.formSettings.closingMessage')
+                      }}</template>
                       <v-textarea
                         dense
                         rows="2"
                         flat
                         solid
                         outlined
-                        label="Closing Message"
+                        :label="$t('trans.formSettings.closingMessage')"
                         data-test="text-name"
                         v-model="schedule.closingMessage"
                         :rules="closeMessage"
@@ -800,13 +814,15 @@
                 >
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
-                      <template #title>SEND Reminder email</template>
+                      <template #title>{{
+                        $t('trans.formSettings.sendReminderEmail')
+                      }}</template>
                       <v-checkbox
                         class="my-0 m-0 p-0"
                         v-model="reminder_enabled"
                       >
                         <template #label>
-                          Enable automatic reminder notification
+                          {{ $t('trans.formSettings.sendReminderEmail') }}
                           <v-tooltip close-delay="2500" bottom>
                             <template v-slot:activator="{ on, attrs }">
                               <v-icon
@@ -819,14 +835,17 @@
                               </v-icon>
                             </template>
                             <span>
-                              Send reminder email/s with the form link during
-                              the submission period.
+                              {{
+                                $t(
+                                  'trans.formSettings.autoReminderNotificatnToolTip'
+                                )
+                              }}
                               <a
                                 :href="githubLinkScheduleAndReminderFeature"
                                 class="preview_info_link_field_white"
                                 :target="'_blank'"
                               >
-                                Learn more
+                                {{ $t('trans.formSettings.learnMore') }}
                                 <font-awesome-icon
                                   icon="fa-solid fa-square-arrow-up-right"
                               /></a>
@@ -891,91 +910,94 @@ export default {
         (v) =>
           v !== 'login' ||
           this.idps.length === 1 ||
-          'Please select 1 log-in type',
+          this.$t('trans.formSettings.selectLoginType'),
       ],
       descriptionRules: [
         (v) =>
           !v ||
           v.length <= 255 ||
-          'Form Description must be 255 characters or less',
+          this.$t('trans.formSettings.formDescriptnMaxChars'),
       ],
       nameRules: [
-        (v) => !!v || 'Form Title is required',
+        (v) => !!v || this.$t('trans.formSettings.formTitleReq'),
         (v) =>
-          (v && v.length <= 255) || 'Form Title must be 255 characters or less',
+          (v && v.length <= 255) ||
+          this.$t('trans.formSettings.formTitlemaxChars'),
       ],
       emailArrayRules: [
         (v) =>
           !this.sendSubRecieviedEmail ||
           v.length > 0 ||
-          'Please enter at least 1 email address',
+          this.$t('trans.formSettings.atLeastOneEmailReq'),
         (v) =>
           !this.sendSubRecieviedEmail ||
           v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
-          'Please enter all valid email addresses',
+          this.$t('trans.formSettings.validEmailRequired'),
       ],
       scheduleOpenDate: [
-        (v) => !!v || 'This field is required.',
+        (v) => !!v || this.$t('trans.formSettings.validEmailRequired'),
         (v) =>
           (v &&
             new RegExp(
               /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
             ).test(v)) ||
-          'Date must be in correct format. ie. yyyy-mm-dd',
+          this.$t('trans.formSettings.correctDateFormat'),
       ],
       scheduleCloseDate: [
-        (v) => !!v || 'This field is required.',
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v &&
             new RegExp(
               /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
             ).test(v)) ||
-          'Date must be in correct format. ie. yyyy-mm-dd',
+          this.$t('trans.formSettings.correctDateFormat'),
         (v) =>
           moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') ||
-          'Close Submission date should be greater then open submission date.',
+          this.$t('trans.formSettings.dateDiffMsg'),
       ],
       roundNumber: [
-        (v) => !!v || 'This field is required.',
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
-          'Value must be a number. ie. 1,2,3,5,99',
+          this.$t('trans.formSettings.valueMustBeNumber'),
       ],
       repeatTerm: [
-        (v) => !!v || 'This field is required.',
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
-          'Value must be an number. ie. 1,2,3,5,99',
+          this.$t('trans.formSettings.valueMustBeNumber'),
       ],
-      scheduleTypedRules: [(v) => !!v || 'Please select atleast 1 option'],
+      scheduleTypedRules: [
+        (v) => !!v || this.$t('trans.formSettings.selectAnOptions'),
+      ],
       allowLateSubmissionRule: [
         // (v) => !!v || 'This field is required'
       ],
-      intervalType: [(v) => !!v || 'This field is required.'],
+      intervalType: [(v) => !!v || this.$t('trans.formSettings.fieldRequired')],
       repeatIntervalType: [
-        (v) => !!v || 'This field is required.',
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           this.AVAILABLE_PERIOD_OPTIONS.includes(v) ||
-          'This should be a valid interval.',
+          this.$t('trans.formSettings.validInterval'),
       ],
       repeatIntervalTypeReminder: [
-        (v) => !!v || 'This field is required & should be an interval.',
+        (v) => !!v || this.$t('trans.formSettings.fieldRequiredAndInterval'),
         (v) =>
           this.AVAILABLE_PERIOD_INTERVAL.includes(v) ||
-          'This field is required & should be a valid interval.',
+          this.$t('trans.formSettings.fieldRequiredAndInterval'),
       ],
-      closeMessage: [(v) => !!v || 'This field is required.'],
+      closeMessage: [(v) => !!v || this.$t('trans.formSettings.fieldRequired')],
       repeatUntilDate: [
-        (v) => !!v || 'This field is required.',
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v &&
             new RegExp(
               /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
             ).test(v)) ||
-          'Date must be in correct format. ie. yyyy-mm-dd',
+          this.$t('trans.formSettings.correctDateFormat'),
         (v) =>
           moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') ||
-          'Repeat untill date should be greater then open submission date.',
+          this.$t('trans.formSettings.dateGrtOpenSubmissnDate'),
       ],
     };
   },

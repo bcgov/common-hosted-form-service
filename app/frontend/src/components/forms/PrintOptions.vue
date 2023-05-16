@@ -13,7 +13,7 @@
           <v-icon>print</v-icon>
         </v-btn>
       </template>
-      <span>Print</span>
+      <span>{{ $t('trans.printOptions.print') }}</span>
     </v-tooltip>
 
     <v-dialog
@@ -32,12 +32,12 @@
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
               target="blank"
-              >Print</a
+              >{{ $t('trans.printOptions.print') }}</a
             >
             the page from your browser
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span>Browser Print</span>
+            <span>{{ $t('trans.printOptions.browserPrint') }}</span>
           </v-btn>
 
           <p>

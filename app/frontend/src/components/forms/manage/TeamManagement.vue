@@ -467,8 +467,7 @@ export default {
     userError() {
       this.addNotification({
         message: '',
-        consoleError:
-          'Cannot remove as they are the only remaining owner of this form.',
+        consoleError: this.$t('trans.teamManagement.formOwnerRemovalWarning'),
       });
     },
     async removeUser() {
@@ -489,8 +488,11 @@ export default {
             error.response.data &&
             error.response.data.detail
               ? error.response.data.detail
-              : 'An error occurred while attempting to delete the selected users',
-          consoleError: `Error deleting users from form ${this.formId}: ${error}`,
+              : this.$t('trans.teamManagement.removeUsersErrMsg'),
+          consoleError: this.$t(
+            'trans.teamManagement.removeUserConsoleErrMsg',
+            { formId: this.formId, error: error }
+          ),
         });
       } finally {
         this.itemsToDelete = [];
@@ -515,9 +517,11 @@ export default {
         await this.getFormUsers();
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to update all user roles',
-          consoleError: `Error setting all user roles for form ${this.formId}: ${error}`,
+          message: this.$t('trans.teamManagement.updUserRolesErrMsg'),
+          consoleError: this.$t(
+            'trans.teamManagement.updUserRolesConsoleErrMsg',
+            { formId: this.formId, error: error }
+          ),
         });
       }
       this.updating = false;
@@ -544,8 +548,14 @@ export default {
             error.response.data &&
             error.response.data.detail
               ? error.response.data.detail
-              : 'An error occurred while attempting to update roles for a user',
-          consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
+              : this.$t('trans.teamManagement.setUserFormsErrMsg'),
+          consoleError: this.$t(
+            'trans.teamManagement.setUserFormsConsoleErrMsg',
+            {
+              formId: this.formId,
+              error: error,
+            }
+          ),
         });
       } finally {
         await this.getFormPermissionsForUser(this.formId);

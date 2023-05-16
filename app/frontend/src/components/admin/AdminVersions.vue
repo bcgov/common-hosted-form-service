@@ -6,12 +6,22 @@
   >
     <!-- Version  -->
     <template #[`item.version`]="{ item }">
-      <span> Version {{ item.version }} </span>
+      <span>
+        {{
+          $t('trans.adminVersions.version', {
+            versionNo: item.version,
+          })
+        }}
+      </span>
     </template>
 
     <!-- Status  -->
     <template #[`item.status`]="{ item }">
-      <label>{{ item.published ? 'Published' : 'Unpublished' }}</label>
+      <label>{{
+        item.published
+          ? $t('trans.adminVersions.published')
+          : $t('trans.adminVersions.unpublished')
+      }}</label>
     </template>
 
     <!-- Created date  -->
