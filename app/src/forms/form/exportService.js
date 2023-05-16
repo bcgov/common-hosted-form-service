@@ -2,6 +2,7 @@ const Problem = require('api-problem');
 const { flattenComponents, unwindPath, submissionHeaders } = require('../common/utils');
 const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
+const _ = require('lodash');
 const { Readable } = require('stream');
 const { unwind, flatten } = require('@json2csv/transforms');
 const { Transform } = require('@json2csv/node');
@@ -55,7 +56,6 @@ const service = {
         }
       });
     }
-
     return formSchemaheaders;
   },
 
@@ -94,7 +94,6 @@ const service = {
     }
     return {};
   },
-
   _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, columns, version, emailExport, currentUser, referer) => {
     // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map((obj) => {
@@ -121,8 +120,10 @@ const service = {
     let preference;
     if (params.preference && _.isString(params.preference)) {
       preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
     }
-    preference = params.preference;
+
     // params for this export include minDate and maxDate (full timestamp dates).
     let submissionData = await SubmissionData.query()
       .column(service._submissionsColumns(form, params))
@@ -132,26 +133,11 @@ const service = {
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault');
-    if (params.columns) {
-      for (let index in submissionData) {
-        if (submissionData[index].submission) {
-          let keys = Object.keys(submissionData[index].submission);
-          for (let key of keys) {
-            if (Array.isArray(params.columns) && !params.columns.includes(key)) {
-              delete submissionData[index].submission[key];
-            }
-          }
-        }
-      }
-    } else {
-      for (let index in submissionData) {
-        if (submissionData[index].submission) {
-          let keys = Object.keys(submissionData[index].submission);
-          for (let key of keys) {
-            if (key === 'submit') {
-              delete submissionData[index].submission[key];
-            }
-          }
+    for (let index in submissionData) {
+      let keys = Object.keys(submissionData[index].submission);
+      for (let key of keys) {
+        if (key === 'submit') {
+          delete submissionData[index].submission[key];
         }
       }
     }
@@ -167,16 +153,17 @@ const service = {
       },
     };
   },
-
-  _formatSubmissionsCsv: async (form, data, exportTemplate, columns, version, emailExport, currentUser, referer) => {
+  _formatSubmissionsCsv: async (form, data, exportTemplate, fields, version, emailExport, currentUser, referer) => {
     try {
       switch (exportTemplate) {
-        case 'flattenedWithBlankOut':
-          return await service._flattenSubmissionsCSVExport(form, data, columns, false, version, emailExport, currentUser, referer);
-        case 'flattenedWithFilled':
-          return await service._flattenSubmissionsCSVExport(form, data, columns, true, version, emailExport, currentUser, referer);
-        case 'unflattened':
-          return await service._unFlattenSubmissionsCSVExport(form, data, columns, version, emailExport, currentUser, referer);
+        case 'multiRowEmptySpacesCSVExport':
+          return service._multiRowsCSVExport(form, data, version, true, fields, emailExport, currentUser, referer);
+        case 'multiRowBackFilledCSVExport':
+          return service._multiRowsCSVExport(form, data, version, false, fields, emailExport, currentUser, referer);
+        case 'singleRowCSVExport':
+          return service._singleRowCSVExport(form, data, currentUser, emailExport, referer);
+        case 'unFormattedCSVExport':
+          return service._unFormattedCSVExport(form, data, emailExport, currentUser, referer);
         default:
         // code block
       }
@@ -186,7 +173,7 @@ const service = {
       });
     }
   },
-  _flattenSubmissionsCSVExport: async (form, data, columns, blankout, version, emailExport, currentUser, referer) => {
+  _multiRowsCSVExport: async (form, data, version, blankout, fields, emailExport, currentUser, referer) => {
     let pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, fields);
 
@@ -195,6 +182,20 @@ const service = {
       fields: headers,
     };
 
+    return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
+  },
+  _singleRowCSVExport: async (form, data, currentUser, emailExport, referer) => {
+    const opts = {
+      transforms: [flatten({ objects: true, arrays: true, separator: '.' })],
+    };
+
+    return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
+  },
+  _unFormattedCSVExport: async (form, data, emailExport, currentUser, referer) => {
+    return service._submissionCSVExport({}, form, data, emailExport, currentUser, referer);
+  },
+
+  _submissionCSVExport(opts, form, data, emailExport, currentUser, referer) {
     // to work with object chunk in pipe instead of Buffer
     const transformOpts = {
       objectMode: true,
@@ -205,7 +206,7 @@ const service = {
 
     let csv = [];
 
-    if (emailExport !== 'false') {
+    if (emailExport !== 'false' && emailExport !== false) {
       // If submission count is big we're start streams parsed chunks into the temp file
       // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
       // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
@@ -274,92 +275,7 @@ const service = {
         });
     });
   },
-  _unFlattenSubmissionsCSVExport: async (form, data, columns, version, emailExport, currentUser, referer) => {
-    let headers = await service._buildCsvHeaders(form, data, version, columns);
-    const opts = {
-      transforms: [flatten({ object: true, array: true, separator: '.' })],
-      fields: headers,
-    };
 
-    // to work with object chunk in pipe instead of Buffer
-    const transformOpts = {
-      objectMode: true,
-    };
-
-    const dataStream = Readable.from(data);
-    const json2csvParser = new Transform(opts, transformOpts);
-
-    let csv = [];
-
-    if (emailExport !== 'false') {
-      // If submission count is big we're start streams parsed chunks into the temp file
-      // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
-      // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
-      // to use it in email for link generation for downloading...
-      const path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fs.realpathSync(os.tmpdir());
-      const pathToTmpFile = `${path}/${uuidv4()}.csv`;
-      const outputStream = fs.createWriteStream(pathToTmpFile);
-      dataStream.pipe(json2csvParser).pipe(outputStream);
-
-      // Creating FileStorage instance and uploading it, so we can download it later
-      outputStream.on('finish', () => {
-        // Read file stats to get fie size
-        fs.stat(pathToTmpFile, async (err, stats) => {
-          if (err) {
-            throw new Problem(400, {
-              detail: `Error while trying to fetch file stats: ${err}`,
-            });
-          } else {
-            const fileData = {
-              originalname: service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv),
-              mimetype: 'text/csv',
-              size: stats.size,
-              path: pathToTmpFile,
-            };
-            const fileCurrentUser = {
-              usernameIdp: currentUser.usernameIdp,
-            };
-            // Uploading to Object storage
-            const fileResult = await fileService.create(fileData, fileCurrentUser);
-            // Sending the email with link to uploaded export
-            emailService.submissionExportLink(form.id, null, { to: currentUser.email }, referer, fileResult.id);
-          }
-        });
-      });
-      return new Promise((resolve) =>
-        resolve({
-          data: null,
-          headers: {
-            'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-            'content-type': 'text/csv',
-          },
-        })
-      );
-    }
-    // If we're working with not too many submissions, we can process parsing right away without
-    // any memory constrains
-    return new Promise((resolve, reject) => {
-      dataStream
-        .pipe(json2csvParser)
-        .on('data', (chunk) => {
-          csv.push(chunk.toString());
-        })
-        .on('finish', () => {
-          resolve({
-            data: csv.join(''),
-            headers: {
-              'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-              'content-type': 'text/csv',
-            },
-          });
-        })
-        .on('error', (err) => {
-          reject({
-            detail: `Error while parsing json chunk: ${err}`,
-          });
-        });
-    });
-  },
   _readLatestFormSchema: (formId, version) => {
     return FormVersion.query()
       .select('schema')
@@ -368,7 +284,7 @@ const service = {
       .modify('filterVersion', version)
       .modify('orderVersionDescending')
       .first()
-      .then((row) => row.schema);
+      .then((row) => row?.schema);
   },
   fieldsForCSVExport: async (formId, params = {}) => {
     const form = await service._getForm(formId);
@@ -387,11 +303,10 @@ const service = {
     // what output format?
     const exportType = service._exportType(params);
     const exportFormat = service._exportFormat(params);
-    const exportTemplate = params.template ? params.template : 'flattenedWithFilled';
+    const exportTemplate = params.template ? params.template : 'multiRowEmptySpacesCSVExport';
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, params.version, form, params);
-    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, columns, params.version, params.emailExport, currentUser, referer);
-
+    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version, params.emailExport, currentUser, referer);
     return { data: result.data, headers: result.headers };
   },
 };
