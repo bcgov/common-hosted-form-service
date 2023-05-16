@@ -44,11 +44,6 @@
               ? NOTIFICATIONS_TYPES.INFO.class
               : NOTIFICATIONS_TYPES.SUCCESS.class
           "
-          :color="
-            saving
-              ? NOTIFICATIONS_TYPES.INFO.color
-              : NOTIFICATIONS_TYPES.SUCCESS.color
-          "
           :icon="
             saving
               ? NOTIFICATIONS_TYPES.INFO.icon
@@ -320,9 +315,16 @@ export default {
             !response.data.versions ||
             !response.data.versions[0]
           ) {
-            throw new Error(
-              `No published version found in response. FormID: ${this.formId}`
-            );
+            this.$router.push({
+              name: 'Alert',
+              params: {
+                message:
+                  'The form owner has not published the form, and it is not ' +
+                  'available for submissions.',
+                type: 'info',
+              },
+            });
+            return;
           }
           this.form = response.data;
           this.version = response.data.versions[0].version;
@@ -341,8 +343,7 @@ export default {
         if (this.authenticated) {
           this.isFormScheduleExpired = true;
           this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage =
-            'An error occurred fetching this form';
+          this.formScheduleExpireMessage = error.message;
           this.addNotification({
             message: 'An error occurred fetching this form',
             consoleError: `Error loading form schema ${this.versionId}: ${error}`,

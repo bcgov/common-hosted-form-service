@@ -3,6 +3,7 @@ import { IdentityMode, NotificationTypes } from '@/utils/constants';
 import {
   apiKeyService,
   formService,
+  fileService,
   rbacService,
   userService,
 } from '@/services';
@@ -78,7 +79,10 @@ export default {
     fcProactiveHelpGroupList: {},
     imageList: new Map(),
     fcProactiveHelpImageUrl: '',
-    multiLanguage: '',
+    downloadedFile: {
+      data: null,
+      headers: null,
+    },
   },
   getters: {
     getField, // vuex-map-fields
@@ -98,7 +102,7 @@ export default {
     builder: (state) => state.builder,
     fcProactiveHelpGroupList: (state) => state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
-    multiLanguage: (state) => state.multiLanguage,
+    downloadedFile: (state) => state.downloadedFile,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -154,8 +158,11 @@ export default {
     SET_FCPROACTIVEHELPIMAGEURL(state, fcProactiveHelpImageUrl) {
       state.fcProactiveHelpImageUrl = fcProactiveHelpImageUrl;
     },
-    SET_MULTI_LANGUAGE(state, multiLanguage) {
-      state.multiLanguage = multiLanguage;
+    SET_DOWNLOADEDFILE_DATA(state, downloadedFile) {
+      state.downloadedFile.data = downloadedFile;
+    },
+    SET_DOWNLOADEDFILE_HEADERS(state, headers) {
+      state.downloadedFile.headers = headers;
     },
   },
   actions: {
@@ -794,6 +801,24 @@ export default {
     },
     async setMultiLanguage({ commit }, multiLanguage) {
       commit('SET_MULTI_LANGUAGE', multiLanguage);
+    },
+    async downloadFile({ commit, dispatch }, fileId) {
+      try {
+        commit('SET_DOWNLOADEDFILE_DATA', null);
+        commit('SET_DOWNLOADEDFILE_HEADERS', null);
+        const response = await fileService.getFile(fileId);
+        commit('SET_DOWNLOADEDFILE_DATA', response.data);
+        commit('SET_DOWNLOADEDFILE_HEADERS', response.headers);
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: 'An error occurred while downloading file',
+            consoleError: 'Error downloading file',
+          },
+          { root: true }
+        );
+      }
     },
   },
 };

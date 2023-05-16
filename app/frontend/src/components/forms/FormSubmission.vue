@@ -64,7 +64,6 @@
         <v-alert
           :value="!submissionReadOnly"
           :class="'d-print-none ' + NOTIFICATIONS_TYPES.INFO.class"
-          :color="NOTIFICATIONS_TYPES.INFO.color"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
           transition="scale-transition"
           >{{ $t('trans.formSubmission.alertInfo') }}</v-alert
