@@ -428,7 +428,7 @@
     "statusHistory": "Status History",
     "close": "CLOSE",
     "addNoteNoReponserErr": "No response data from API while submitting note for status update",
-    "addNoteConsoleErrMsg": "Error updating status",
+    "addNoteConsoleErrMsg": "Error updating status: {error}",
     "addNoteErrMsg": "An error occured while trying to update the status",
     "updtSubmissionsStatusErr": "No response data from API while submitting status update form",
     "noStatus": "No Status",

@@ -385,7 +385,7 @@ export default {
     preference,
     fields,
     emailExport = false,
-    options = {},
+    options = {}
   ) {
     return appAxios().post(
       `${ApiRoutes.FORMS}/${formId}/export/fields`,
