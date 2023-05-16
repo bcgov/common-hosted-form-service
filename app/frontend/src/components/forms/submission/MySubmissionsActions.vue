@@ -10,7 +10,13 @@
     >
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
-          <v-btn color="primary" :disabled="!hasViewPerm()" icon v-bind="attrs" v-on="on">
+          <v-btn
+            color="primary"
+            :disabled="!hasViewPerm()"
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
             <v-icon>remove_red_eye</v-icon>
           </v-btn>
         </template>
@@ -18,7 +24,12 @@
       </v-tooltip>
     </router-link>
 
-    <span v-if="submission.status === 'SUBMITTED' && isCopyFromExistingSubmissionEnabled === true">
+    <span
+      v-if="
+        submission.status === 'SUBMITTED' &&
+        isCopyFromExistingSubmissionEnabled === true
+      "
+    >
       <router-link
         :to="{
           name: 'UserFormDuplicate',
@@ -30,7 +41,13 @@
       >
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn color="primary" :disabled="!hasViewPerm()" icon v-bind="attrs" v-on="on">
+            <v-btn
+              color="primary"
+              :disabled="!hasViewPerm()"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon>app_registration</v-icon>
             </v-btn>
           </template>
@@ -39,7 +56,9 @@
       </router-link>
     </span>
 
-    <span v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'">
+    <span
+      v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
+    >
       <router-link
         :to="{
           name: 'UserFormDraftEdit',
@@ -50,7 +69,13 @@
       >
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn color="primary" :disabled="!hasEditPerm()" icon v-bind="attrs" v-on="on">
+            <v-btn
+              color="primary"
+              :disabled="!hasEditPerm()"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon>mode_edit</v-icon>
             </v-btn>
           </template>
@@ -100,13 +125,19 @@ export default {
     },
     hasDeletePerm() {
       // Only the creator of the draft can delete it
-      return this.submission.permissions.includes(FormPermissions.SUBMISSION_CREATE);
+      return this.submission.permissions.includes(
+        FormPermissions.SUBMISSION_CREATE
+      );
     },
     hasEditPerm() {
-      return this.submission.permissions.includes(FormPermissions.SUBMISSION_UPDATE);
+      return this.submission.permissions.includes(
+        FormPermissions.SUBMISSION_UPDATE
+      );
     },
     hasViewPerm() {
-      return this.submission.permissions.includes(FormPermissions.SUBMISSION_READ);
+      return this.submission.permissions.includes(
+        FormPermissions.SUBMISSION_READ
+      );
     },
   },
 };

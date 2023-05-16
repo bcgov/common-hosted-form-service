@@ -1,6 +1,11 @@
 <template>
   <v-skeleton-loader :loading="loading" type="article">
-    <FormViewer displayTitle :readOnly="readOnly" :saved="saved" :submissionId="submissionId" />
+    <FormViewer
+      displayTitle
+      :readOnly="readOnly"
+      :saved="saved"
+      :submissionId="submissionId"
+    />
   </v-skeleton-loader>
 </template>
 

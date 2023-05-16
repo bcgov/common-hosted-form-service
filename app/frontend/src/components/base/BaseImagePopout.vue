@@ -2,7 +2,15 @@
   <div>
     <v-hover>
       <template v-slot:default="{ hover }">
-        <v-img :class="`elevation-${hover ? 24 : 6}`" class="thumbnail" :alt="alt" contain :src="src" :width="width" @click="dialog = true" />
+        <v-img
+          :class="`elevation-${hover ? 24 : 6}`"
+          class="thumbnail"
+          :alt="alt"
+          contain
+          :src="src"
+          :width="width"
+          @click="dialog = true"
+        />
       </template>
     </v-hover>
 

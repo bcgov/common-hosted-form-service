@@ -7,7 +7,14 @@
       <v-col cols="12" sm="6" class="text-sm-right">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn class="mx-1" @click="showNoteField = true" color="primary" icon v-bind="attrs" v-on="on">
+            <v-btn
+              class="mx-1"
+              @click="showNoteField = true"
+              color="primary"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon>add_circle</v-icon>
             </v-btn>
           </template>
@@ -18,7 +25,16 @@
 
     <v-form v-if="showNoteField">
       <label>Note</label>
-      <v-textarea v-model="newNote" :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']" counter auto-grow dense flat outlined solid />
+      <v-textarea
+        v-model="newNote"
+        :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+        counter
+        auto-grow
+        dense
+        flat
+        outlined
+        solid
+      />
       <v-row>
         <v-col cols="12" sm="6" xl="4">
           <v-btn block color="primary" @click="showNoteField = false" outlined>
@@ -26,7 +42,13 @@
           </v-btn>
         </v-col>
         <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-          <v-btn block color="primary" data-test="btn-add-note" :disabled="!newNote" @click="addNote">
+          <v-btn
+            block
+            color="primary"
+            data-test="btn-add-note"
+            :disabled="!newNote"
+            @click="addNote"
+          >
             <span>ADD NOTE</span>
           </v-btn>
         </v-col>
@@ -94,11 +116,14 @@ export default {
     async getNotes() {
       this.loading = true;
       try {
-        const response = await formService.getSubmissionNotes(this.submissionId);
+        const response = await formService.getSubmissionNotes(
+          this.submissionId
+        );
         this.notes = response.data;
       } catch (error) {
         this.addNotification({
-          message: 'An error occured while trying to fetch notes for this submission.',
+          message:
+            'An error occured while trying to fetch notes for this submission.',
           consoleError: `Error getting notes for ${this.submissionId}: ${error}`,
         });
       } finally {

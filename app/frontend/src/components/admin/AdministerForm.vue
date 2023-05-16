@@ -5,7 +5,13 @@
 
     <div v-if="form.active === false" class="red--text mb-6">
       (DELETED)
-      <v-btn color="primary" class="mt-0" @click="showRestoreDialog = true" text small>
+      <v-btn
+        color="primary"
+        class="mt-0"
+        @click="showRestoreDialog = true"
+        text
+        small
+      >
         <v-icon class="mr-1">build_circle</v-icon>
         <span class="d-none d-sm-flex">Restore this form</span>
       </v-btn>
@@ -20,7 +26,12 @@
           <div v-if="apiKey" class="mt-6">
             <h4>API Key Details</h4>
             <vue-json-pretty :data="apiKey" />
-            <v-btn class="mt-6 mb-6" color="primary" :disabled="!apiKey" @click="showDeleteDialog = true">
+            <v-btn
+              class="mt-6 mb-6"
+              color="primary"
+              :disabled="!apiKey"
+              @click="showDeleteDialog = true"
+            >
               <span>Delete API Key</span>
             </v-btn>
           </div>
@@ -42,11 +53,18 @@
       <AddOwner :formId="form.id" />
     </div>
 
-    <BaseDialog v-model="showRestoreDialog" type="CONTINUE" @close-dialog="showRestoreDialog = false" @continue-dialog="restore">
+    <BaseDialog
+      v-model="showRestoreDialog"
+      type="CONTINUE"
+      @close-dialog="showRestoreDialog = false"
+      @continue-dialog="restore"
+    >
       <template #title>Confirm Restore</template>
       <template #text>
         <div v-if="restoreInProgress" class="text-center">
-          <v-progress-circular indeterminate color="primary" :size="100"> Restoring </v-progress-circular>
+          <v-progress-circular indeterminate color="primary" :size="100">
+            Restoring
+          </v-progress-circular>
         </div>
         <div v-else>
           Restore
@@ -59,7 +77,12 @@
     </BaseDialog>
 
     <!-- Delete confirmation -->
-    <BaseDialog v-model="showDeleteDialog" type="CONTINUE" @close-dialog="showDeleteDialog = false" @continue-dialog="deleteKey">
+    <BaseDialog
+      v-model="showDeleteDialog"
+      type="CONTINUE"
+      @close-dialog="showDeleteDialog = false"
+      @continue-dialog="deleteKey"
+    >
       <template #title>Confirm Deletion</template>
       <template #text>Are you sure you want to delete this API Key?</template>
       <template #button-text-continue>
@@ -103,7 +126,13 @@ export default {
     ...mapGetters('admin', ['form', 'roles', 'apiKey']),
   },
   methods: {
-    ...mapActions('admin', ['deleteApiKey', 'readApiDetails', 'readForm', 'readRoles', 'restoreForm']),
+    ...mapActions('admin', [
+      'deleteApiKey',
+      'readApiDetails',
+      'readForm',
+      'readRoles',
+      'restoreForm',
+    ]),
     async deleteKey() {
       await this.deleteApiKey(this.form.id);
       this.showDeleteDialog = false;
@@ -116,7 +145,11 @@ export default {
     },
   },
   async mounted() {
-    await Promise.all([this.readForm(this.formId), this.readApiDetails(this.formId), this.readRoles(this.formId)]);
+    await Promise.all([
+      this.readForm(this.formId),
+      this.readApiDetails(this.formId),
+      this.readRoles(this.formId),
+    ]);
 
     this.formDetails = { ...this.form };
     delete this.formDetails.versions;

@@ -18,7 +18,11 @@ export function appAxios(timeout = 10000) {
 
   instance.interceptors.request.use(
     (cfg) => {
-      if (Vue.prototype.$keycloak && Vue.prototype.$keycloak.ready && Vue.prototype.$keycloak.authenticated) {
+      if (
+        Vue.prototype.$keycloak &&
+        Vue.prototype.$keycloak.ready &&
+        Vue.prototype.$keycloak.authenticated
+      ) {
         cfg.headers.Authorization = `Bearer ${Vue.prototype.$keycloak.token}`;
       }
       return Promise.resolve(cfg);

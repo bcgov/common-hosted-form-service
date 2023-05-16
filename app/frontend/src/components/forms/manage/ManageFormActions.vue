@@ -33,14 +33,26 @@
     <span v-if="canDeleteForm">
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
-          <v-btn class="mx-1" color="red" @click="showDeleteDialog = true" icon v-bind="attrs" v-on="on">
+          <v-btn
+            class="mx-1"
+            color="red"
+            @click="showDeleteDialog = true"
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
             <v-icon>delete</v-icon>
           </v-btn>
         </template>
         <span>Delete Form</span>
       </v-tooltip>
 
-      <BaseDialog v-model="showDeleteDialog" type="CONTINUE" @close-dialog="showDeleteDialog = false" @continue-dialog="deleteForm">
+      <BaseDialog
+        v-model="showDeleteDialog"
+        type="CONTINUE"
+        @close-dialog="showDeleteDialog = false"
+        @continue-dialog="deleteForm"
+      >
         <template #title>Confirm Deletion</template>
         <template #text>
           Are you sure you wish to delete
@@ -79,11 +91,18 @@ export default {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
     canViewSubmissions() {
-      const perms = [FormPermissions.SUBMISSION_READ, FormPermissions.SUBMISSION_UPDATE];
+      const perms = [
+        FormPermissions.SUBMISSION_READ,
+        FormPermissions.SUBMISSION_UPDATE,
+      ];
       return this.permissions.some((p) => perms.includes(p));
     },
     isPublished() {
-      return this.form.versions && this.form.versions.length && this.form.versions.some((v) => v.published);
+      return (
+        this.form.versions &&
+        this.form.versions.length &&
+        this.form.versions.some((v) => v.published)
+      );
     },
   },
   methods: {

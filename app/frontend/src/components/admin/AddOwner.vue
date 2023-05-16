@@ -1,8 +1,9 @@
 <template>
   <v-form ref="addUserForm" v-model="valid">
     <p>
-      This should only be done in the event that the current form owner is no longer active or is out of contact in a priority event. Otherwise have the current
-      Owner or a Team Administrator for the form do this themselves.
+      This should only be done in the event that the current form owner is no
+      longer active or is out of contact in a priority event. Otherwise have the
+      current Owner or a Team Administrator for the form do this themselves.
     </p>
 
     <v-row class="mt-4">
@@ -42,7 +43,12 @@ export default {
     return {
       userGuid: '',
       valid: false,
-      userGuidRules: [(v) => !!v || 'User ID required', (v) => (uuidValidate(v) && uuidVersion(v) === 4) || 'Enter a valid User ID GUID'],
+      userGuidRules: [
+        (v) => !!v || 'User ID required',
+        (v) =>
+          (uuidValidate(v) && uuidVersion(v) === 4) ||
+          'Enter a valid User ID GUID',
+      ],
     };
   },
   methods: {

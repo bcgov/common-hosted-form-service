@@ -45,7 +45,9 @@ export default Templates.current = {
       if (ctx.component.validate.required) {
         ctx.input.attr['required'] = 'required';
       }
-      return `<div role="radiogroup" aria-required="true">${currentTemplate.radio.form(ctx)}</div>`;
+      return `<div role="radiogroup" aria-required="true">${currentTemplate.radio.form(
+        ctx
+      )}</div>`;
     },
   },
 };

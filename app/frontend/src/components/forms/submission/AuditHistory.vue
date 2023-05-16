@@ -2,7 +2,14 @@
   <span>
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
-        <v-btn class="mx-1" @click="loadHistory" color="primary" icon v-bind="attrs" v-on="on">
+        <v-btn
+          class="mx-1"
+          @click="loadHistory"
+          color="primary"
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
           <v-icon>history</v-icon>
         </v-btn>
       </template>
@@ -14,9 +21,19 @@
         <v-card-title class="text-h5 pb-0">Edit History</v-card-title>
         <v-card-text>
           <hr />
-          <p>This is an audit log of who has made changes to this submission after the original submission.</p>
+          <p>
+            This is an audit log of who has made changes to this submission
+            after the original submission.
+          </p>
 
-          <v-data-table :headers="headers" :items="history" :loading="loading" loading-text="Loading... Please wait" item-key="id" class="status-table">
+          <v-data-table
+            :headers="headers"
+            :items="history"
+            :loading="loading"
+            loading-text="Loading... Please wait"
+            item-key="id"
+            class="status-table"
+          >
             <template #[`item.actionTimestamp`]="{ item }">
               {{ item.actionTimestamp | formatDateLong }}
             </template>
@@ -62,7 +79,9 @@ export default {
       this.loading = true;
       this.dialog = true;
       try {
-        const response = await formService.listSubmissionEdits(this.submissionId);
+        const response = await formService.listSubmissionEdits(
+          this.submissionId
+        );
         this.history = response.data;
       } catch (error) {
         this.addNotification({

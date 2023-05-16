@@ -20,7 +20,12 @@
         </v-icon>
       </v-avatar>
     </div>
-    <div :style="[{ display: 'flex', flexDirection: fabItemsDirection, gap: fabItemsGap }]" v-if="isFABActionsOpen">
+    <div
+      :style="[
+        { display: 'flex', flexDirection: fabItemsDirection, gap: fabItemsGap },
+      ]"
+      v-if="isFABActionsOpen"
+    >
       <router-link
         ref="publishRouterLink"
         data-cy="publishRouterLink"
@@ -34,7 +39,14 @@
       >
         <div v-text="'Publish'" />
         <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
-          <v-icon :color="saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor" :size="fabItemsIconsSize"> upload_file </v-icon>
+          <v-icon
+            :color="
+              saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
+            "
+            :size="fabItemsIconsSize"
+          >
+            upload_file
+          </v-icon>
         </v-avatar>
       </router-link>
       <router-link
@@ -47,34 +59,100 @@
       >
         <div v-text="'Manage'" />
         <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
-          <v-icon :color="saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor" :size="fabItemsIconsSize"> settings </v-icon>
+          <v-icon
+            :color="
+              saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
+            "
+            :size="fabItemsIconsSize"
+          >
+            settings
+          </v-icon>
         </v-avatar>
       </router-link>
 
-      <div ref="redoButton" class="fabAction" data-cy="redoButton" :class="{ 'disabled-router': !redoEnabled }">
+      <div
+        ref="redoButton"
+        class="fabAction"
+        data-cy="redoButton"
+        :class="{ 'disabled-router': !redoEnabled }"
+      >
         <div v-text="'Redo'" />
-        <v-avatar class="fabItems" :size="fabItemsSize" @click="toParent('redo')">
-          <v-icon :color="redoEnabled ? fabItemsColor : disabledFabItemsColor" :size="fabItemsIconsSize"> redo </v-icon>
+        <v-avatar
+          class="fabItems"
+          :size="fabItemsSize"
+          @click="toParent('redo')"
+        >
+          <v-icon
+            :color="redoEnabled ? fabItemsColor : disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+          >
+            redo
+          </v-icon>
         </v-avatar>
       </div>
-      <div ref="undoButton" class="fabAction" data-cy="undoButton" :class="{ 'disabled-router': !undoEnabled }">
+      <div
+        ref="undoButton"
+        class="fabAction"
+        data-cy="undoButton"
+        :class="{ 'disabled-router': !undoEnabled }"
+      >
         <div v-text="'Undo'" />
-        <v-avatar class="fabItems" :size="fabItemsSize" @click="toParent('undo')">
-          <v-icon :color="undoEnabled ? fabItemsColor : disabledFabItemsColor" :size="fabItemsIconsSize"> undo </v-icon>
+        <v-avatar
+          class="fabItems"
+          :size="fabItemsSize"
+          @click="toParent('undo')"
+        >
+          <v-icon
+            :color="undoEnabled ? fabItemsColor : disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+          >
+            undo
+          </v-icon>
         </v-avatar>
       </div>
-      <div class="fabAction" ref="previewRouterLink" @click="gotoPreview" :class="{ 'disabled-router': !formId || !draftId }">
+      <div
+        class="fabAction"
+        ref="previewRouterLink"
+        @click="gotoPreview"
+        :class="{ 'disabled-router': !formId || !draftId }"
+      >
         <div v-text="'Preview'" />
         <v-avatar class="fabItems" :size="fabItemsSize">
-          <v-icon :color="formId ? fabItemsColor : disabledFabItemsColor" :size="fabItemsIconsSize"> remove_red_eye </v-icon>
+          <v-icon
+            :color="formId ? fabItemsColor : disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+          >
+            remove_red_eye
+          </v-icon>
         </v-avatar>
       </div>
-      <div class="fabAction" data-cy="saveButton" ref="saveButton" :class="{ 'disabled-router': isFormSaved }">
+      <div
+        class="fabAction"
+        data-cy="saveButton"
+        ref="saveButton"
+        :class="{ 'disabled-router': isFormSaved }"
+      >
         <div>{{ this.savedStatus }}</div>
-        <v-avatar class="fabItems" :size="fabItemsSize" @click="toParent('save')">
-          <v-icon v-if="!this.saving" :color="!isFormSaved ? fabItemsColor : disabledFabItemsColor" :size="fabItemsIconsSize" dark> save </v-icon>
+        <v-avatar
+          class="fabItems"
+          :size="fabItemsSize"
+          @click="toParent('save')"
+        >
+          <v-icon
+            v-if="!this.saving"
+            :color="!isFormSaved ? fabItemsColor : disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+            dark
+          >
+            save
+          </v-icon>
 
-          <v-progress-circular v-if="this.saving" indeterminate color="#1A5A96" size="25"></v-progress-circular>
+          <v-progress-circular
+            v-if="this.saving"
+            indeterminate
+            color="#1A5A96"
+            size="25"
+          ></v-progress-circular>
         </v-avatar>
       </div>
       <div class="fabAction">
@@ -165,7 +243,9 @@ export default {
       type: Object,
       validator: function (value) {
         // The value must match one of these strings
-        return ['top', 'bottom', 'right', 'left'].includes(...Object.keys(value));
+        return ['top', 'bottom', 'right', 'left'].includes(
+          ...Object.keys(value)
+        );
       },
     },
   },
@@ -235,7 +315,10 @@ export default {
 
     //checks if FAB is placed at the bottom right or bottom left of the screen
     bottomLeftRight() {
-      if (this.placement === 'bottom-right' || this.placement === 'bottom-left') {
+      if (
+        this.placement === 'bottom-right' ||
+        this.placement === 'bottom-left'
+      ) {
         this.fabItemsDirection = 'column-reverse';
       }
     },
@@ -279,7 +362,10 @@ export default {
       if (window.scrollY === 0) {
         this.scrollIconName = 'south';
         this.scrollName = 'Bottom';
-      } else if (window.pageYOffset + window.innerHeight >= document.documentElement.scrollHeight - 50) {
+      } else if (
+        window.pageYOffset + window.innerHeight >=
+        document.documentElement.scrollHeight - 50
+      ) {
         this.scrollIconName = 'north';
         this.scrollName = 'Top';
       }

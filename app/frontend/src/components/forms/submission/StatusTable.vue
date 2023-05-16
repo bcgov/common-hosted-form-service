@@ -14,7 +14,9 @@
         <span>{{ item.createdAt | formatDate }}</span>
       </template>
 
-      <template #[`item.user`]="{ item }">{{ item.user ? item.user.fullName : '' }}</template>
+      <template #[`item.user`]="{ item }">{{
+        item.user ? item.user.fullName : ''
+      }}</template>
     </v-data-table>
   </v-container>
 </template>
@@ -46,7 +48,9 @@ export default {
     async getData() {
       this.loading = true;
       try {
-        const response = await formService.getSubmissionStatuses(this.submissionId);
+        const response = await formService.getSubmissionStatuses(
+          this.submissionId
+        );
         this.statuses = response.data;
       } catch (error) {
         this.addNotification({

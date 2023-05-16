@@ -40,6 +40,9 @@ export default {
    * @returns {Promise} An axios response
    */
   updateUserFormPreferences(formId, body) {
-    return appAxios().put(`${ApiRoutes.USERS}/preferences/forms/${formId}`, body);
+    return appAxios().put(
+      `${ApiRoutes.USERS}/preferences/forms/${formId}`,
+      body
+    );
   },
 };
