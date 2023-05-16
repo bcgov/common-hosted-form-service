@@ -5,7 +5,7 @@
         <v-row>
           <v-col cols="12" sm="6" order="2" order-sm="1">
             <h1>
-              {{ this.$t('trans.exportSubmissions.exportSubmissionsToFile') }}
+              {{ $t('trans.exportSubmissions.exportSubmissionsToFile') }}
             </h1>
           </v-col>
           <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
@@ -26,9 +26,7 @@
                     </v-btn>
                   </router-link>
                 </template>
-                <span>{{
-                  this.$t('trans.exportSubmissions.viewSubmissions')
-                }}</span>
+                <span>{{ $t('trans.exportSubmissions.viewSubmissions') }}</span>
               </v-tooltip>
             </span>
           </v-col>
@@ -38,7 +36,7 @@
             <v-row>
               <v-col>
                 <p class="subTitleObjectStyle">
-                  {{ this.$t('trans.exportSubmissions.fileType') }}
+                  {{ $t('trans.exportSubmissions.fileType') }}
                 </p>
                 <v-radio-group v-model="exportFormat" hide-details="auto">
                   <v-radio
@@ -47,14 +45,14 @@
                   >
                     <template v-slot:label>
                       <span class="radioboxLabelStyle">{{
-                        this.$t('trans.exportSubmissions.json')
+                        $t('trans.exportSubmissions.json')
                       }}</span>
                     </template>
                   </v-radio>
                   <v-radio label="CSV" value="csv">
                     <template v-slot:label>
                       <span class="radioboxLabelStyle">{{
-                        this.$t('trans.exportSubmissions.csv')
+                        $t('trans.exportSubmissions.csv')
                       }}</span>
                     </template>
                   </v-radio>
@@ -64,10 +62,10 @@
             <v-row v-if="exportFormat === 'csv'" class="mt-5">
               <v-col cols="6">
                 <div class="subTitleObjectStyle">
-                  {{ this.$t('trans.exportSubmissions.formVersion') }}
+                  {{ $t('trans.exportSubmissions.formVersion') }}
                 </div>
                 <div class="red--text mt-3" v-if="versionRequired">
-                  {{ this.$t('trans.exportSubmissions.versionIsRequired') }}
+                  {{ $t('trans.exportSubmissions.versionIsRequired') }}
                 </div>
                 <v-select
                   item-text="id"
@@ -86,7 +84,7 @@
             >
               <v-col>
                 <p class="subTitleObjectStyle">
-                  {{ this.$t('trans.exportSubmissions.dataFields') }}
+                  {{ $t('trans.exportSubmissions.dataFields') }}
                 </p>
                 <v-row v-if="exportFormat === 'csv'">
                   <v-col>
@@ -111,11 +109,7 @@
                           style="font-size: 14px !important"
                         >
                           {{ selected.length }} of {{ FILTER_HEADERS.length }}
-                          {{
-                            this.$t(
-                              'trans.exportSubmissions.selectedForExports'
-                            )
-                          }}
+                          {{ $t('trans.exportSubmissions.selectedForExports') }}
                         </div>
 
                         <v-data-table
@@ -142,7 +136,7 @@
             <v-row class="mt-4">
               <v-col>
                 <p class="subTitleObjectStyle">
-                  {{ this.$t('trans.exportSubmissions.submissionDate') }}
+                  {{ $t('trans.exportSubmissions.submissionDate') }}
                 </p>
                 <v-radio-group v-model="dateRange" hide-details="auto">
                   <v-radio
@@ -151,7 +145,7 @@
                   >
                     <template v-slot:label>
                       <span class="radioboxLabelStyle">{{
-                        this.$t('trans.exportSubmissions.all')
+                        $t('trans.exportSubmissions.all')
                       }}</span>
                     </template>
                   </v-radio>
@@ -161,7 +155,7 @@
                   >
                     <template v-slot:label>
                       <span class="radioboxLabelStyle">{{
-                        this.$t('trans.exportSubmissions.SelectdateRange')
+                        $t('trans.exportSubmissions.SelectdateRange')
                       }}</span>
                     </template>
                   </v-radio>
@@ -184,7 +178,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <label>{{
-                            this.$t('trans.exportSubmissions.from')
+                            $t('trans.exportSubmissions.from')
                           }}</label>
                           <v-text-field
                             v-model="startDate"
@@ -216,9 +210,7 @@
                         min-width="290px"
                       >
                         <template v-slot:activator="{ on }">
-                          <label>{{
-                            this.$t('trans.exportSubmissions.to')
-                          }}</label>
+                          <label>{{ $t('trans.exportSubmissions.to') }}</label>
                           <v-text-field
                             v-model="endDate"
                             placeholder="yyyy-mm-dd"
@@ -249,7 +241,7 @@
               <v-col>
                 <div style="display: flex; align-content: flex-start">
                   <div class="subTitleObjectStyle mr-1">
-                    {{ this.$t('trans.exportSubmissions.CSVFormat') }}
+                    {{ $t('trans.exportSubmissions.CSVFormat') }}
                   </div>
                 </div>
 
@@ -265,9 +257,7 @@
                         style="display: flex; align-content: flex-start"
                       >
                         {{
-                          this.$t(
-                            'trans.exportSubmissions.multiRowPerSubmissionA'
-                          )
+                          $t('trans.exportSubmissions.multiRowPerSubmissionA')
                         }}
                       </span>
                     </template>
@@ -281,9 +271,7 @@
                     <template v-slot:label>
                       <span class="radioboxLabelStyle">
                         {{
-                          this.$t(
-                            'trans.exportSubmissions.multiRowPerSubmissionB'
-                          )
+                          $t('trans.exportSubmissions.multiRowPerSubmissionB')
                         }}
                       </span>
                     </template>
@@ -297,9 +285,7 @@
                     <template v-slot:label>
                       <span class="radioboxLabelStyle"
                         >{{
-                          this.$t(
-                            'trans.exportSubmissions.singleRowPerSubmission'
-                          )
+                          $t('trans.exportSubmissions.singleRowPerSubmission')
                         }}
                       </span>
                     </template>
@@ -310,7 +296,7 @@
                         class="radioboxLabelStyle"
                         style="display: flex; align-content: flex-start"
                       >
-                        {{ this.$t('trans.exportSubmissions.unformatted') }}
+                        {{ $t('trans.exportSubmissions.unformatted') }}
                       </span>
                     </template>
                   </v-radio>
@@ -318,7 +304,7 @@
               </v-col>
             </v-row>
             <div class="mt-7 fileLabelStyle">
-              {{ this.$t('trans.exportSubmissions.fileNameAndType') }}:
+              {{ $t('trans.exportSubmissions.fileNameAndType') }}:
               <strong>{{ fileName }}</strong>
             </div>
             <v-btn
@@ -326,7 +312,7 @@
               color="primary"
               @click="callExport"
             >
-              <span>{{ this.$t('trans.exportSubmissions.export') }}</span>
+              <span>{{ $t('trans.exportSubmissions.export') }}</span>
             </v-btn>
           </v-col>
         </v-row>

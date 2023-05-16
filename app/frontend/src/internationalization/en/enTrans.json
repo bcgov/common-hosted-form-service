@@ -7,7 +7,10 @@
     "submissions": "Submissions",
     "formTitle": "Form Title",
     "viewForm": "View Form",
-    "description": "description"
+    "description": "description",
+    "Description": "Description:",
+    "action": "Actions",
+    "loadingText": "Loading... Please wait"
   },
   "manageLayout": {
     "manageForm":"Manage Form"
@@ -62,7 +65,60 @@
     "afterSubmission": "After Submission",
     "submissionConfirmation":"Show the submission confirmation details",
     "theConfirmationID": "the Confirmation ID",
-    "infoB": "the option for the user to email themselves a submission confirmation"
+    "infoB": "the option for the user to email themselves a submission confirmation",
+    "loginRequired": "Log-in Required",
+    "canSaveAndEditDraftLabel": "Submitters can <strong>Save and Edit Drafts</strong>",
+    "canUpdateStatusAsReviewer": "Reviewers can <strong>Update the Status</strong> of this form (i.e. Submitted, Assigned, Completed)",
+    "submitterCanCopyExistingSubmissn": "Submitters can<strong> Copy an existing submission</strong>",
+    "submissionConfirmationToolTip": "Selecting this option controls what the submitting user of this form will see on successful submission. <br /> If checked, it will display",
+    "emailNotificatnToTeam": "Send my team a notification email",
+    "emailNotificatnToTeamToolTip": "Send a notification to your specified email address when any user submits this form",
+    "notificationEmailAddrs": "Notification Email Addresses",
+    "addMoreValidEmailAddrs": "Add one or more valid email addresses",
+    "formScheduleSettings": "Form Schedule Settings",
+    "opensubmissions": "Open submissions",
+    "submissionsDeadline": "How long do you want to receive submissions?",
+    "keepSubmissnOpenTilUnplished": "Keep open until manually unpublished",
+    "submissionsClosingDate": "Schedule a closing date",
+    "submissionPeriod": "Set up submission period",
+    "closeSubmissions": "Close submissions",
+    "keepOpenFor": "Keep open for",
+    "period": "Period",
+    "allowLateSubmissions": "Allow late submissions",
+    "allowLateSubmissionsInfoTip": "If checked, submitters will be able to submit data after the closing date.",
+    "afterCloseDateFor": "After close date for",
+    "repeatPeriod": "Repeat period",
+    "every": "Every",
+    "repeatUntil": "Repeat until",
+    "summary": "Summary",
+    "submissionsOpenDateRange": "This form will be open for submissions from",
+    "to": "to",
+    "scheduleRepetition": "The schedule will repeat every",
+    "allowLateSubmissnInterval": "allowing late submissions for",
+    "until": "until",
+    "datesOfSubmissnInfo": "As per the settings these are the available dates of submissions:",
+    "formOpenInterval": "This form will be open for submissions from",
+    "allowDateSubmissionDate": "with allowing late submission until",
+    "customClosingMessage": "Set custom closing message",
+    "customClosingMessageToolTip": "Allow you to add a customized message for your users when they visit a closed form.",
+    "closingMessage": "Closing Message",
+    "sendReminderEmail": "SEND Reminder email",
+    "autoReminderNotificatn":"Enable automatic reminder notification",
+    "autoReminderNotificatnToolTip":"Send reminder email/s with the form link during the submission period.",
+    "selectLoginType": "Please select 1 log-in type",
+    "formDescriptnMaxChars": "Form Description must be 255 characters or less",
+    "formTitlemaxChars": "Form Title must be 255 characters or less",
+    "formTitleReq": "Form Title is required",
+    "atLeastOneEmailReq": "Please enter at least 1 email address",
+    "validEmailRequired": "Please enter all valid email addresses",
+    "fieldRequired": "This field is required.",
+    "correctDateFormat": "Date must be in correct format. ie. yyyy-mm-dd",
+    "dateDiffMsg": "Close Submission date should be greater then open submission date.",
+    "valueMustBeNumber": "Value must be a number. ie. 1,2,3,5,99",
+    "selectAnOptions": "Please select atleast 1 option",
+    "validInterval": "This should be a valid interval.",
+    "fieldRequiredAndInterval": "This field is required & should be an interval.",
+    "dateGrtOpenSubmissnDate": "Repeat untill date should be greater then open submission date"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -103,7 +159,11 @@
     "status": "Status",
     "dateCreated": "Date Created",
     "createdBy": "Created By",
-    "actions": "Actions"
+    "actions": "Actions",
+    "published": "Published",
+    "unpublished": "Unpublished",
+    "useVersionInfo": "Use version {version} as the base for a new version",
+    "publishingVersionInfo": "This will make Version {version} of your form live."
   },
   "addOwner": {
     "infoA": "This should only be done in the event that the current form owner is no longer active or is out of contact in a priority event. Otherwise have the current Owner or a Team Administrator for the form do this themselves.",
@@ -167,6 +227,9 @@
     "created": "Created",
     "lastUpdated": "Last Updated",
     "actions": "Actions",
+    "published": "Published",
+    "unpublished": "Unpublished",
+    "version": "Version {versionNo}",
     "notificationMsg": "An error occurred while loading the form design."
   },
   "developer": {
@@ -201,7 +264,13 @@
   "baseSecure": {
     "about": "About",
     "loginInfo": "You must be logged in to use this feature.",
-    "login": "Connexion"
+    "login": "Login",
+    "401NotAuthorized": "401: not authorized. :",
+    "401ErrorMsg": "Your account is not set up correctly.<br />Please contact",
+    "403Forbidden": "403: Forbidden. :",
+    "403ErrorMsg": "This page requires {idp} authentication.",
+    "401UnAuthorized": "401: Unauthorized. :",
+    "401UnAuthorizedErrMsg": "You do not have permission to access this page."
   },
   "formDesigner": {
     "formDesign": "Form Design",
@@ -286,7 +355,25 @@
     "submissionTeamMembers": "Team members for this submission",
     "actions": "Actions",
     "close": "Close",
-    "remove": "Remove"
+    "remove": "Remove",
+    "userNotFoundErrMsg": "Can't find someone? They may not have logged into CHEFS.<br /> Kindly send them a link to CHEFS and ask them to log in.",
+    "name": "Name",
+    "username": "Username",
+    "email": "Email",
+    "removeUserWarningMsg1": "Are you sure you wish to remove",
+    "removeUserWarningMsg2": "They will no longer have permissions for this submission.",
+    "userExistInListMsg": "User {username} is already in the list of team members.",
+    "getSubmissionUsersErr": "An error occured while trying to fetch users for this submission.",
+    "getSubmissionUsersConsoleErr": "Error getting users for {submissionId} : {error}",
+    "sentInviteEmailTo": "Sent invite email to",
+    "sentUninvitedEmailTo": "Sent uninvited email to",
+    "updateUserErrMsg": "An error occured while trying to update users for this submission.",
+    "updateUserConsoleErrMsg": "Error setting user permissions. Sub: {submissionId} User: {userId} Error: {error}",
+    "searchInputLength": "Search input for BCeID username/email must be greater than 6 characters.",
+    "exactBCEIDSearch": "Email searches for BCeID must be exact.",
+    "getUsersErrMsg": "Error getting users: {error}",
+    "exactEmailOrUsername": "Enter an exact e-mail or username.",
+    "requiredFiled": "Enter a name, e-mail, or username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -324,6 +411,7 @@
     "maxChars": "Max 4000 characters"
   },
   "statusPanel": {
+    "currentStatus": "Current Status:",
     "assignedTo": "Assigned To:",
     "assignOrUpdateStatus": "Assign or Update Status",
     "display": "display",
@@ -349,7 +437,8 @@
     "notifyErrorCode": "Error occured fetching status for this submission.",
     "notifyConsoleErrorCode": "Error getting statuses:",
     "fetchSubmissionUsersErr": "An error occured while trying to fetch recipient emails for this submission.",
-    "fetchSubmissionUsersConsErr": "Error getting recipient emails for"
+    "fetchSubmissionUsersConsErr": "Error getting recipient emails for",
+    "assignSubmissnToFormReviewer": "Submissions can be assigned to Form Reviewers. <br />To add more team members as Form Reviewers, go to the Manage page for this form."
   },
   "statusTable": {
     "loadingText": "Loading... Please wait",
@@ -392,7 +481,9 @@
     "submitButtonTxt": "Submit to CDOGS and Download",
     "templatePrint": "Template Print",
     "uploadTemplateFile": "Upload template file",
-    "downloadOptions": "Download Options"
+    "downloadOptions": "Download Options",
+    "print": "Print",
+    "browserPrint": "Browser Print"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",
@@ -452,7 +543,25 @@
     "formOwnerConsoleErrMsg": "Cannot remove as they are the only remaining owner of this form.",
     "insufficientPermissnMsg": "Insufficient permissions to manage team",
     "getUserErrMsg": "Error getting form users: ",
-    "getRolesErrMsg": "Error getting list of roles: "
+    "getRolesErrMsg": "Error getting list of roles: ",
+    "formOwnerRemovalWarning": "Cannot remove as they are the only remaining owner of this form.",
+    "removeUsersErrMsg": "An error occurred while attempting to delete the selected users",
+    "removeUserConsoleErrMsg": "Error deleting users from form {formId}: {error}",
+    "updUserRolesErrMsg": "An error occurred while attempting to update all user roles",
+    "updUserRolesConsoleErrMsg": "Error setting all user roles for form {formId}: {error}",
+    "setUserFormsErrMsg": "An error occurred while attempting to update roles for a user",
+    "setUserFormsConsoleErrMsg": "Error setting user roles for form {formId}: {error}"
+  },
+  "floatButton" : {
+    "publish": "Publish",
+    "manage": "Manage",
+    "redo": "Redo",
+    "undo": "Undo",
+    "preview": "Preview",
+    "bottom": "Bottom",
+    "top": "Top",
+    "actions": "Actions",
+    "collapse": "Collapse"
   }
 
 }

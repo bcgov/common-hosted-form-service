@@ -52,7 +52,7 @@
       :items="filteredFormList"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.formsTable.loadingText')"
     >
       <template #[`item.name`]="{ item }">
         <router-link
@@ -118,7 +118,7 @@
       @close-dialog="showDescriptionDialog = false"
     >
       <template #title>
-        <span class="pl-5">Description:</span>
+        <span class="pl-5">{{ $t('trans.formsTable.Description') }}</span>
       </template>
       <template #text>
         <slot name="formDescription">{{ formDescription }}</slot>
@@ -142,17 +142,6 @@ export default {
     return {
       // Assigning width: '1%' to dynamically assign width to the Table's Columns as described by this post on Stack Overflow:
       // https://stackoverflow.com/a/51569928
-      headers: [
-        { text: 'Form Title', align: 'start', value: 'name', width: '1%' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-          width: '1%',
-        },
-      ],
       loading: true,
       showDescriptionDialog: false,
       formId: null,
@@ -163,6 +152,24 @@ export default {
   computed: {
     ...mapGetters('form', ['formList']),
     ...mapGetters('auth', ['user']),
+    headers() {
+      return [
+        {
+          text: this.$t('trans.formsTable.formTitle'),
+          align: 'start',
+          value: 'name',
+          width: '1%',
+        },
+        {
+          text: this.$t('trans.formsTable.action'),
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+          width: '1%',
+        },
+      ];
+    },
     filteredFormList() {
       // At this point, we're only showing forms you can manage or view submissions of here
       // This may get reconceptualized in the future to different pages or something
