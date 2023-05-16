@@ -9,7 +9,7 @@
             </h1>
           </v-col>
           <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-            <span v-if="canViewSubmissions">
+            <span>
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
                   <router-link
@@ -361,7 +361,6 @@ export default {
       versions: [],
       allDataFields: true,
       inputFilter: '',
-      select: ['Vuetify', 'Programming'],
       singleSelect: false,
       showFieldsOptions: false,
       selected: [],
@@ -389,6 +388,7 @@ export default {
       'formFields',
       'submissionList',
     ]),
+
     ...mapGetters('auth', ['email']),
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
@@ -454,14 +454,17 @@ export default {
 
         let emailExport = false;
         if (
-          this.submissionList.length > ExportLargeData.MAX_RECORDS ||
-          this.formFields.length > ExportLargeData.MAX_FIELDS
+          (this.submissionList.length > ExportLargeData.MAX_RECORDS ||
+            this.formFields.length > ExportLargeData.MAX_FIELDS) &&
+          this.exportFormat !== 'json'
         ) {
           this.dialog = false;
           emailExport = true;
           this.addNotification({
             ...NotificationTypes.SUCCESS,
-            message: `Export in progress... An email will be sent to ${this.email} containing a link to download your data when it is ready.`,
+            title: 'Export in progress',
+            message: `An email will be sent to ${this.email} containing a link to download your data when it is ready`,
+            timeout: 20,
           });
         }
         const response = await formService.exportSubmissions(
@@ -505,13 +508,7 @@ export default {
         });
       }
     },
-    canViewSubmissions() {
-      const perms = [
-        FormPermissions.SUBMISSION_READ,
-        FormPermissions.SUBMISSION_UPDATE,
-      ];
-      return this.permissions.some((p) => perms.includes(p));
-    },
+
     async updateVersions() {
       this.versions = [];
       if (this.form && Array.isArray(this.form.versions)) {
