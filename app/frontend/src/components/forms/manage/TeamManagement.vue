@@ -399,7 +399,7 @@ export default {
           roles: '*',
         });
         this.formUsers = formUsersResponse?.data?.map((user) => {
-          user.idp = user.identityProviders.join(',');
+          user.idp = user.user_idpCode;
           return user;
         });
       } catch (error) {
