@@ -497,7 +497,6 @@ export default function getRouter(basePath = '/') {
   });
 
   router.afterEach(() => {
-    window.onbeforeunload = null;
     isFirstTransition = false;
     NProgress.done();
   });

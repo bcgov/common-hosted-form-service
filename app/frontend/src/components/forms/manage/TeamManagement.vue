@@ -247,7 +247,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { rbacService, roleService, userService } from '@src/services';
+import { rbacService, roleService } from '@/services';
 import {
   IdentityMode,
   FormPermissions,
@@ -477,14 +477,10 @@ export default {
           formId: this.formId,
           roles: '*',
         });
-        this.formUsers = await Promise.all(
-          formUsersResponse.data.map(async (user) => {
-            const userId = user.userId;
-            const response = await userService.getUser(userId);
-            user.idp = response.data.idpCode;
-            return user;
-          })
-        );
+        this.formUsers = formUsersResponse?.data?.map((user) => {
+          user.idp = user.user_idpCode;
+          return user;
+        });
       } catch (error) {
         this.addNotification({
           message: error.message,
