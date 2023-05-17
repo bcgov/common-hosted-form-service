@@ -247,7 +247,10 @@
     "notificationConsErr": "Error al obtener el usuario de RBAC"
   },
   "fcProactiveHelp": {},
-  "baseAuthButton": { "logout": "Cerrar sesión" },
+  "baseAuthButton": {
+    "logout": "Cerrar sesión",
+    "login": "acceso"
+  },
   "baseDialog": {
     "defaultText": "texto predeterminado",
     "ok": "DE ACUERDO",
@@ -614,5 +617,17 @@
     "chefsHowToSub": "Nuestra Guía de inicio rápido le presentará algunas de las funciones básicas de CHEFS. ¡Empezar!",
     "getStartedToChefs": "Comience a usar CHEFS",
     "createOnlineTitle": "Cree formularios en línea para recopilar información de sus clientes y mejorar sus flujos de trabajo."
+  },
+  "create": {
+    "createNewForm": "Crear nuevo formulario",
+    "setUpForm": "Configurar formulario",
+    "designForm": "Formulario de diseño",
+    "formSettings": "Configuración de formulario",
+    "disclaimer": "Descargo de responsabilidad",
+    "disclaimerStmt": "Acepto la exención de responsabilidad y la declaración de responsabilidad de Form Designers",
+    "continue": "Continuar",
+    "back": "Atrás",
+    "confirmPageNav": "¿De verdad quieres salir de esta página? Los cambios que haya realizado no se guardarán.",
+    "agreementErrMsg": "Debe aceptar el descargo de responsabilidad de privacidad que se muestra arriba."
   }
 }

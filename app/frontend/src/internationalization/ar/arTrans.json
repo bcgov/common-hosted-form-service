@@ -247,7 +247,10 @@
     "notificationConsErr": "خطأ في الحصول على مستخدم من RBAC"
   },
   "fcProactiveHelp": {},
-  "baseAuthButton": { "logout": "تسجيل خروج" },
+  "baseAuthButton": {
+    "logout": "تسجيل خروج",
+    "login": "تسجيل الدخول"
+  },
   "baseDialog": {
     "defaultText": "النص الافتراضي",
     "ok": "نعم",
@@ -614,5 +617,17 @@
     "chefsHowToSub": "سيقدم لك دليل البدء السريع الخاص بنا بعض الوظائف الأساسية لـ CHEFS. البدء!",
     "getStartedToChefs": "ابدأ باستخدام CHEFS",
     "createOnlineTitle": "قم بإنشاء نماذج عبر الإنترنت لجمع المعلومات من عملائك وتحسين سير العمل الخاص بك."
+  },
+  "create": {
+    "createNewForm": "إنشاء نموذج جديد",
+    "setUpForm": "قم بإعداد النموذج",
+    "designForm": "نموذج التصميم",
+    "formSettings": "إعدادات النموذج",
+    "disclaimer": "تنصل",
+    "disclaimerStmt": "أوافق على إخلاء المسؤولية وبيان المسؤولية لمصممي النماذج",
+    "continue": "يكمل",
+    "back": "خلف",
+    "confirmPageNav": "هل تريد حقًا مغادرة هذه الصفحة؟ لن يتم حفظ التغييرات التي قمت بها.",
+    "agreementErrMsg": "يجب أن توافق على إخلاء مسؤولية الخصوصية الموضح أعلاه."
   }
 }

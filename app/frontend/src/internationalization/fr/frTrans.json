@@ -247,7 +247,10 @@
     "notificationConsErr": "Erreur lors de l'obtention de l'utilisateur à partir du RBAC"
   },
   "fcProactiveHelp": {},
-  "baseAuthButton": { "logout": "Se déconnecter" },
+  "baseAuthButton": {
+    "logout": "Se déconnecter",
+    "login": "connexion"
+  },
   "baseDialog": {
     "defaultText": "texte par défaut",
     "ok": "D'ACCORD",
@@ -614,5 +617,17 @@
     "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS. Commencer!",
     "getStartedToChefs": "Commencez à utiliser CHEFS",
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail."
+  },
+  "create": {
+    "createNewForm": "Créer un nouveau formulaire",
+    "setUpForm": "Configurer le formulaire",
+    "designForm": "Formulaire de conception",
+    "formSettings": "Paramètres du formulaire",
+    "disclaimer": "Clause de non-responsabilité",
+    "disclaimerStmt": "J'accepte la clause de non-responsabilité et la déclaration de responsabilité des concepteurs de formulaires",
+    "continue": "Continuer",
+    "back": "Dos",
+    "confirmPageNav": "Voulez-vous vraiment quitter cette page ? Les modifications que vous avez apportées ne seront pas enregistrées.",
+    "agreementErrMsg": "Vous devez accepter la clause de non-responsabilité en matière de confidentialité indiquée ci-dessus."
   }
 }

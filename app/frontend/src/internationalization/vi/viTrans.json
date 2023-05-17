@@ -247,7 +247,10 @@
     "notificationConsErr": "Lỗi khi nhận Người dùng từ RBAC"
   },
   "fcProactiveHelp": {},
-  "baseAuthButton": { "logout": "Đăng xuất" },
+  "baseAuthButton": {
+    "logout": "Đăng xuất",
+    "login": "đăng nhập"
+  },
   "baseDialog": {
     "defaultText": "văn bản mặc định",
     "ok": "ĐƯỢC RỒI",
@@ -614,5 +617,17 @@
     "chefsHowToSub": "Hướng dẫn bắt đầu nhanh của chúng tôi sẽ giới thiệu cho bạn một số chức năng cơ bản của CHEFS. Bắt đầu!",
     "getStartedToChefs": "Bắt đầu sử dụng CHEFS",
     "createOnlineTitle": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn."
+  },
+  "create": {
+    "createNewForm": "Tạo biểu mẫu mới",
+    "setUpForm": "Thiết lập biểu mẫu",
+    "designForm": "mẫu thiết kế",
+    "formSettings": "Cài đặt biểu mẫu",
+    "disclaimer": "từ chối trách nhiệm",
+    "disclaimerStmt": "Tôi đồng ý với tuyên bố từ chối trách nhiệm và tuyên bố trách nhiệm đối với Nhà thiết kế biểu mẫu",
+    "continue": "Tiếp tục",
+    "back": "Mặt sau",
+    "confirmPageNav": "Bạn có thực sự muốn rời khỏi trang này? Những thay đổi bạn đã thực hiện sẽ không được lưu.",
+    "agreementErrMsg": "Bạn phải đồng ý với tuyên bố từ chối trách nhiệm về quyền riêng tư được hiển thị ở trên."
   }
 }
