@@ -34,7 +34,7 @@
             class="my-0"
             :mandatory="false"
             :rules="loginRequiredRules"
-            @update:model-value="userTypeChanged"
+            @update:modelValue="userTypeChanged"
           >
             <v-radio
               class="mb-4"
@@ -172,12 +172,12 @@
             <template #label>
               Form Submissions Schedule
               <v-tooltip location="bottom" close-delay="2500">
-                <template #activator="{ attrs }">
+                <template #activator="{ props }">
                   <font-awesome-icon
                     icon="fa-solid fa-flask"
                     color="primary"
                     class="ml-3"
-                    v-bind="attrs"
+                    v-bind="props"
                   />
                 </template>
                 <span
@@ -206,12 +206,12 @@
                 <strong>Copy an existing submission</strong></span
               >
               <v-tooltip location="bottom" close-delay="2500">
-                <template #activator="{ attrs }">
+                <template #activator="{ props }">
                   <font-awesome-icon
                     icon="fa-solid fa-flask"
                     color="primary"
                     class="ml-3"
-                    v-bind="attrs"
+                    v-bind="props"
                   />
                 </template>
                 <span
@@ -336,7 +336,7 @@
                       v-model="schedule.scheduleType"
                       class="my-0"
                       :rules="scheduleTypedRules"
-                      @update:model-value="scheduleTypeChanged"
+                      @update:modelValue="scheduleTypeChanged"
                     >
                       <v-radio
                         class="mx-2"
@@ -483,7 +483,7 @@
               v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD"
               v-model="schedule.repeatSubmission.enabled"
               class="my-0 pt-0"
-              @update:model-value="repeatSubmissionChanged"
+              @update:modelValue="repeatSubmissionChanged"
             >
               <template #label> Repeat period </template>
             </v-checkbox>

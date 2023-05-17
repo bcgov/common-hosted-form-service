@@ -14,7 +14,6 @@ export default {
     event: 'change',
   },
   props: {
-    value: String,
     creatorStep: {
       type: Number,
     },

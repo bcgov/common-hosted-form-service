@@ -59,7 +59,7 @@
                   item-value="version"
                   v-model="versionSelected"
                   :items="versions"
-                  @update:model-value="changeVersions"
+                  @update:modelValue="changeVersions"
                   class="mt-0"
                   style="width: 25%; margin-top: 0px"
                 ></v-select>
@@ -138,62 +138,30 @@
                 <div v-if="dateRange">
                   <v-row>
                     <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
-                      <v-menu
-                        v-model="startDateMenu"
-                        data-test="menu-form-startDate"
-                        :close-on-content-click="true"
-                        transition="scale-transition"
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on }">
-                          <label>From</label>
-                          <v-text-field
-                            v-model="startDate"
-                            placeholder="yyyy-mm-dd"
-                            append-icon="event"
-                            v-on:click:append="startDateMenu = true"
-                            readonly
-                            v-on="on"
-                            density="compact"
-                            variant="outlined"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="startDate"
-                          data-test="picker-form-startDate"
-                          @input="startDateMenu = false"
-                          :max="maxDate"
-                        ></v-date-picker>
-                      </v-menu>
+                      <v-text-field
+                        label="From"
+                        placeholder="yyyy-mm-dd"
+                        append-icon="event"
+                        type="date"
+                        v-model="startDate"
+                        data-test="picker-form-startDate"
+                        :max="maxDate"
+                        density="compact"
+                        variant="outlined"
+                      ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
-                      <v-menu
+                      <v-text-field
+                        label="From"
+                        placeholder="yyyy-mm-dd"
+                        append-icon="event"
+                        type="date"
                         v-model="endDateMenu"
-                        data-test="menu-form-endDate"
-                        :close-on-content-click="true"
-                        transition="scale-transition"
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on }">
-                          <label>To</label>
-                          <v-text-field
-                            v-model="endDate"
-                            placeholder="yyyy-mm-dd"
-                            append-icon="event"
-                            v-on:click:append="endDateMenu = true"
-                            readonly
-                            v-on="on"
-                            density="compact"
-                            variant="outlined"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="endDate"
-                          data-test="picker-form-endDate"
-                          @input="endDateMenu = false"
-                          :min="startDate"
-                        ></v-date-picker>
-                      </v-menu>
+                        data-test="picker-form-endDate"
+                        :min="startDate"
+                        density="compact"
+                        variant="outlined"
+                      ></v-text-field>
                     </v-col>
                   </v-row>
                 </div>
@@ -524,15 +492,15 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
+.submissions-table :deep(tbody tr:nth-of-type(odd)) {
   background-color: #f5f5f5;
 }
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em !important;
