@@ -5,7 +5,7 @@
         <v-alert text prominent type="error">
           {{
             isLateSubmissionAllowed
-              ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
+              ? $t('trans.formViewer.lateFormSubmissions')
               : formScheduleExpireMessage
           }}
         </v-alert>
@@ -53,9 +53,9 @@
         >
           <div v-if="saving">
             <v-progress-linear indeterminate />
-            Saving
+            {{ $t('trans.formViewer.saving') }}
           </div>
-          <div v-else>Draft Saved</div>
+          <div v-else>{{ $t('trans.formViewer.draftSaved') }}</div>
         </v-alert>
 
         <slot name="alert" v-bind:form="form" />
@@ -67,10 +67,12 @@
           @close-dialog="showSubmitConfirmDialog = false"
           @continue-dialog="continueSubmit"
         >
-          <template #title>Please Confirm</template>
-          <template #text>Are you sure you wish to submit your form?</template>
+          <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
+          <template #text>{{
+            $t('trans.formViewer.submitFormWarningMsg')
+          }}</template>
           <template #button-text-continue>
-            <span>Submit</span>
+            <span>{{ $t('trans.formViewer.submit') }}</span>
           </template>
         </BaseDialog>
 
@@ -85,7 +87,9 @@
           :options="viewerOptions"
           :language="multiLanguage"
         />
-        <p v-if="version" class="text-right">Version: {{ version }}</p>
+        <p v-if="version" class="text-right">
+          {{ $t('trans.formViewer.version', { version: version }) }}
+        </p>
       </div>
     </div>
   </v-skeleton-loader>
@@ -158,8 +162,9 @@ export default {
       version: 0,
       versionIdToSubmitTo: this.versionId,
       isFormScheduleExpired: false,
-      formScheduleExpireMessage:
-        'Form submission is not available as the scheduled submission period has expired.',
+      formScheduleExpireMessage: this.$t(
+        'trans.manageVersions.formScheduleExpireMessage'
+      ),
       isLateSubmissionAllowed: false,
     };
   },
@@ -276,8 +281,10 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred fetching the submission for this form',
-          consoleError: `Error loading form submission data ${this.submissionId}: ${error}`,
+          message: this.$t('trans.formViewer.getUsersSubmissionsErrMsg'),
+          consoleError: this.$t(
+            'trans.formViewer.getUsersSubmissionsConsoleErrMsg'
+          ),
         });
       } finally {
         this.loadingSubmission = false;
@@ -293,7 +300,9 @@ export default {
           response = await formService.readVersion(this.formId, this.versionId);
           if (!response.data || !response.data.schema) {
             throw new Error(
-              `No schema in response. VersionId: ${this.versionId}`
+              this.$t('trans.formViewer.readVersionErrMsg', {
+                versionId: this.versionId,
+              })
             );
           }
           this.form = response.data;
@@ -302,7 +311,11 @@ export default {
           // If getting for a specific draft version of the form for preview
           response = await formService.readDraft(this.formId, this.draftId);
           if (!response.data || !response.data.schema) {
-            throw new Error(`No schema in response. DraftId: ${this.draftId}`);
+            throw new Error(
+              this.$t('trans.formViewer.readDraftErrMsg', {
+                draftId: this.draftId,
+              })
+            );
           }
           this.form = response.data;
           this.formSchema = response.data.schema;
@@ -317,9 +330,7 @@ export default {
             this.$router.push({
               name: 'Alert',
               params: {
-                message:
-                  'The form owner has not published the form, and it is not ' +
-                  'available for submissions.',
+                message: this.$t('trans.formViewer.alertRouteMsg'),
                 type: 'info',
               },
             });
@@ -344,8 +355,11 @@ export default {
           this.isLateSubmissionAllowed = false;
           this.formScheduleExpireMessage = error.message;
           this.addNotification({
-            message: 'An error occurred fetching this form',
-            consoleError: `Error loading form schema ${this.versionId}: ${error}`,
+            message: this.$t('trans.formViewer.fecthingFormErrMsg'),
+            consoleError: this.$t(
+              'trans.formViewer.fecthingFormConsoleErrMsg',
+              { versionId: this.versionId, error: error }
+            ),
           });
         }
       }
@@ -378,8 +392,11 @@ export default {
         this.showSubmitConfirmDialog = false;
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while saving a draft',
-          consoleError: `Error saving draft. SubmissionId: ${this.submissionId}. Error: ${error}`,
+          message: this.$t('trans.formViewer.savingDraftErrMsg'),
+          consoleError: this.$t('trans.formViewer.fecthingFormConsoleErrMsg', {
+            submissionId: this.submissionId,
+            error: error,
+          }),
         });
       }
     },
@@ -421,7 +438,7 @@ export default {
     // else onSubmitError
     onSubmitButton(event) {
       if (this.preview) {
-        alert('Submission disabled during form preview');
+        alert(this.$t('trans.formViewer.submissionsPreviewAlert'));
         return;
       }
       // this is our first event in the submission chain.
@@ -475,7 +492,7 @@ export default {
     // eslint-disable-next-line no-unused-vars
     async onSubmit(submission) {
       if (this.preview) {
-        alert('Submission disabled during form preview');
+        alert(this.$t('trans.formViewer.submissionsPreviewAlert'));
         return;
       }
 
@@ -488,7 +505,9 @@ export default {
       if (errors) {
         this.addNotification({
           message: errors,
-          consoleError: `Error submiting the form: ${errors}`,
+          consoleError: this.$t('trans.formViewer.submissionsSubmitErrMsg', {
+            errors: errors,
+          }),
         });
       } else {
         this.currentForm.events.emit('formio.submitDone');
@@ -517,12 +536,14 @@ export default {
           );
         } else {
           throw new Error(
-            `Failed response from submission endpoint. Response code: ${response.status}`
+            this.$t('trans.formViewer.sendSubmissionErrMsg', {
+              status: response.status,
+            })
           );
         }
       } catch (error) {
         console.error(error); // eslint-disable-line no-console
-        errMsg = 'An error occurred submitting this form';
+        errMsg = this.$t('trans.formViewer.errMsg');
       }
       return errMsg;
     },
@@ -548,7 +569,7 @@ export default {
     // Custom Event triggered from buttons with Action type "Event"
     onCustomEvent(event) {
       alert(
-        `Custom button events not supported yet. Event Type: ${event.type}`
+        this.$t('trans.formViewer.customEventAlert', { event: event.type })
       );
     },
   },

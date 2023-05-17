@@ -4,31 +4,31 @@
       <ul>
         <li>
           <router-link data-cy="aboutLinks" :to="{ name: 'About' }">{{
-            $t('homePage.navBarAbout')
+            $t('trans.bCGovNavBar.about')
           }}</router-link>
         </li>
         <li v-if="authenticated">
           <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }">{{
-            $t('homePage.navBarMyForms')
+            $t('trans.bCGovNavBar.myForms')
           }}</router-link>
         </li>
         <li v-if="hasPrivileges">
           <router-link :to="{ name: 'FormCreate' }">{{
-            $t('homePage.navBarCreateNewForm')
+            $t('trans.bCGovNavBar.createNewForm')
           }}</router-link>
         </li>
         <li v-if="hasPrivileges">
           <a
             href="https://github.com/bcgov/common-hosted-form-service/wiki"
             target="_blank"
-            >{{ $t('homePage.navBarHelp') }}</a
+            >{{ $t('trans.bCGovNavBar.help') }}</a
           >
         </li>
         <li v-if="hasPrivileges">
           <a
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
-            >{{ $t('homePage.navBarFeedback') }}</a
+            >{{ $t('trans.bCGovNavBar.feedback') }}</a
           >
         </li>
         <!-- <li>
@@ -36,7 +36,7 @@
         </li> -->
         <li v-if="isAdmin">
           <router-link :to="{ name: 'Admin' }">{{
-            $t('homePage.navBarAdmin')
+            $t('trans.bCGovNavBar.admin')
           }}</router-link>
         </li>
       </ul>

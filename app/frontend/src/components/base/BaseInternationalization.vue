@@ -57,9 +57,9 @@ export default {
         { title: 'Español (Spanish)', keyword: 'es' },
         { title: '한국어 (Korean)', keyword: 'ko' },
         { title: 'فارسی (Farsi)', keyword: '' },
-        { title: 'ਪੰਜਾਬੀ (Punjabi)', keyword: '' },
-        { title: '简体中文 (Simplified Chinese)', keyword: '' },
-        { title: '繁體中文 (Traditional Chinese)', keyword: '' },
+        { title: 'ਪੰਜਾਬੀ (Punjabi)', keyword: 'pa' },
+        { title: '简体中文 (Simplified Chinese)', keyword: 'zh' },
+        { title: '繁體中文 (Traditional Chinese)', keyword: 'zhTW' },
       ],
     };
   },

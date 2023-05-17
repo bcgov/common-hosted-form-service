@@ -4,17 +4,19 @@
       <v-row justify="center">
         <v-col lg="8">
           <h1 class="my-5 d-block">
-            {{ $t('homePage.title') }}
+            {{ $t('trans.homePage.title') }}
           </h1>
-          <p>{{ $t('homePage.subTitle') }}<br /></p>
+          <p>{{ $t('trans.homePage.subTitle') }}<br /></p>
 
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated">{{ $t('homePage.loginToStart') }}</span>
-            <span v-else>{{ $t('homePage.createFormLabel') }}</span>
+            <span v-if="!authenticated">{{
+              $t('trans.homePage.loginToStart')
+            }}</span>
+            <span v-else>{{ $t('trans.homePage.createFormLabel') }}</span>
           </v-btn>
 
           <h2 id="video" class="pt-5">
-            {{ $t('homePage.takeATourOfChefs') }}
+            {{ $t('trans.homePage.takeATourOfChefs') }}
           </h2>
           <div class="video-wrapper">
             <iframe
@@ -34,9 +36,9 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('homePage.chefsHowToTitle') }}</h2>
+        <h2>{{ $t('trans.homePage.chefsHowToTitle') }}</h2>
         <p>
-          {{ $t('homePage.chefsHowToSub') }}
+          {{ $t('trans.homePage.chefsHowToSub') }}
           <a :href="howToVideoUrl" target="_blank">Get started!</a>
         </p>
       </v-col>
@@ -51,9 +53,9 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('homePage.createCustomFormTitle') }}</h2>
+        <h2>{{ $t('trans.homePage.createCustomFormTitle') }}</h2>
         <p>
-          {{ $t('homePage.createCustomFormSub1') }}
+          {{ $t('trans.homePage.createCustomFormSub1') }}
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -67,12 +69,12 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('homePage.manageAccessTitle') }}</h2>
+        <h2>{{ $t('trans.homePage.manageAccessTitle') }}</h2>
         <p>
-          {{ $t('homePage.manageAccessSub1') }}
+          {{ $t('trans.homePage.manageAccessSub1') }}
         </p>
         <p>
-          {{ $t('homePage.manageAccessSub2') }}
+          {{ $t('trans.homePage.manageAccessSub2') }}
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -87,15 +89,15 @@
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h3 class="mb-5">{{ $t('homePage.getStartedToChefs') }}</h3>
+          <h3 class="mb-5">{{ $t('trans.homePage.getStartedToChefs') }}</h3>
           <p>
-            {{ $t('homePage.createOnlineTitle') }}
+            {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
             <span v-if="!authenticated">{{
-              $t('homePage.logInToGetStarted')
+              $t('trans.homePage.logInToGetStarted')
             }}</span>
-            <span v-else>{{ $t('homePage.createFormLabel') }}</span>
+            <span v-else>{{ $t('trans.homePage.createFormLabel') }}</span>
           </v-btn>
         </v-col>
       </v-row>
