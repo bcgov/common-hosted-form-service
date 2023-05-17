@@ -69,7 +69,7 @@
           :model-value="item.raw.published"
           :label="item.raw.published ? 'Published' : 'Unpublished'"
           :disabled="!canPublish"
-          @update:change="
+          @update:modelValue="
             togglePublish(
               $event,
               item.raw.id,

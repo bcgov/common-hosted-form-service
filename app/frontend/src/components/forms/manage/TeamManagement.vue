@@ -247,7 +247,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { rbacService, roleService } from '@/services';
+import { rbacService, roleService } from '@src/services';
 import {
   IdentityMode,
   FormPermissions,
@@ -460,6 +460,8 @@ export default {
       return false;
     },
     generateFormRoleUsers(user) {
+      console.log(user);
+      console.log(this.roleOrder);
       return Object.keys(user)
         .filter((role) => this.roleOrder.includes(role) && user[role])
         .map((role) => ({
@@ -597,6 +599,7 @@ export default {
         this.updating = true;
         const user = this.tableData.filter((u) => u.userId === userId)[0];
         const userRoles = this.generateFormRoleUsers(user);
+        console.log(userRoles);
         await rbacService.setUserForms(userRoles, {
           formId: this.formId,
           userId: userId,

@@ -2,7 +2,7 @@
   <v-dialog
     :max-width="width"
     persistent
-    :model-value="value"
+    :model-value="modelValue"
     @click:outside="closeDialog"
     @keydown.esc="closeDialog"
   >
@@ -112,7 +112,7 @@
 export default {
   name: 'BaseDialog',
   props: {
-    value: {
+    modelValue: {
       default: false,
       type: Boolean,
     },
@@ -133,7 +133,13 @@ export default {
       type: Boolean,
     },
   },
-  emits: ['close-dialog', 'continue-dialog', 'delete-dialog', 'custom-dialog'],
+  emits: [
+    'update:modelValue',
+    'close-dialog',
+    'continue-dialog',
+    'delete-dialog',
+    'custom-dialog',
+  ],
   methods: {
     closeDialog() {
       this.$emit('close-dialog');
