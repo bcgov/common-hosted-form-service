@@ -247,7 +247,10 @@
     "notificationConsErr": "從 RBAC 獲取用戶時出錯"
   },
   "fcProactiveHelp": {},
-  "baseAuthButton": { "logout": "登出" },
+  "baseAuthButton": {
+    "logout": "登出",
+    "login": "登錄"
+  },
   "baseDialog": {
     "defaultText": "默認文本",
     "ok": "好的",
@@ -614,5 +617,17 @@
     "chefsHowToSub": "我們的快速入門指南將向您介紹 CHEFS 的一些基本功能。開始吧！",
     "getStartedToChefs": "開始使用 CHEFS",
     "createOnlineTitle": "創建在線表格以從您的客戶那裡收集信息並改進您的工作流程。"
+  },
+  "create": {
+    "createNewForm": "創建新表格",
+    "setUpForm": "設置表格",
+    "designForm": "設計形式",
+    "formSettings": "表單設置",
+    "disclaimer": "免責聲明",
+    "disclaimerStmt": "我同意 Form Designers 的免責聲明和責任聲明",
+    "continue": "繼續",
+    "back": "後退",
+    "confirmPageNav": "您真的要離開此頁面嗎？您所做的更改將不會保存。",
+    "agreementErrMsg": "您必須同意上面顯示的隱私免責聲明。"
   }
 }

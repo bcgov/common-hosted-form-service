@@ -247,7 +247,10 @@
     "notificationConsErr": "RBAC에서 사용자를 가져오는 중 오류가 발생했습니다."
   },
   "fcProactiveHelp": {},
-  "baseAuthButton": { "logout": "로그 아웃" },
+  "baseAuthButton": {
+    "logout": "로그 아웃",
+    "login": "로그인"
+  },
   "baseDialog": {
     "defaultText": "기본 텍스트",
     "ok": "좋아요",
@@ -614,5 +617,17 @@
     "chefsHowToSub": "빠른 시작 가이드는 CHEFS의 기본 기능 중 일부를 소개합니다. 시작하다!",
     "getStartedToChefs": "CHEFS를 사용하여 시작하기",
     "createOnlineTitle": "클라이언트로부터 정보를 수집하고 작업 흐름을 개선하기 위한 온라인 양식을 만드십시오."
+  },
+  "create": {
+    "createNewForm": "새 양식 만들기",
+    "setUpForm": "양식 설정",
+    "designForm": "디자인 양식",
+    "formSettings": "양식 설정",
+    "disclaimer": "부인 성명",
+    "disclaimerStmt": "양식 디자이너에 대한 면책 조항 및 책임 진술에 동의합니다.",
+    "continue": "계속하다",
+    "back": "뒤쪽에",
+    "confirmPageNav": "이 페이지에서 나가시겠습니까? 변경 사항은 저장되지 않습니다.",
+    "agreementErrMsg": "위에 표시된 개인 정보 면책 조항에 동의해야 합니다."
   }
 }

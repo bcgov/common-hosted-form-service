@@ -247,7 +247,10 @@
     "notificationConsErr": "Error sa pagkuha ng User mula sa RBAC"
   },
   "fcProactiveHelp": {},
-  "baseAuthButton": { "logout": "Mag-logout" },
+  "baseAuthButton": {
+    "logout": "Mag-logout",
+    "login": "mag log in"
+  },
   "baseDialog": {
     "defaultText": "default na teksto",
     "ok": "OK",
@@ -614,5 +617,17 @@
     "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS. Magsimula!",
     "getStartedToChefs": "Magsimula sa paggamit ng CHEFS",
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho."
+  },
+  "create": {
+    "createNewForm": "Lumikha ng Bagong Form",
+    "setUpForm": "I-set up ang Form",
+    "designForm": "Form ng Disenyo",
+    "formSettings": "Mga Setting ng Form",
+    "disclaimer": "Disclaimer",
+    "disclaimerStmt": "Sumasang-ayon ako sa disclaimer at pahayag ng responsibilidad para sa mga Form Designer",
+    "continue": "Magpatuloy",
+    "back": "Bumalik",
+    "confirmPageNav": "Gusto mo ba talagang umalis sa page na ito? Hindi mase-save ang mga pagbabagong ginawa mo.",
+    "agreementErrMsg": "Dapat kang sumang-ayon sa disclaimer sa privacy na ipinapakita sa itaas."
   }
 }

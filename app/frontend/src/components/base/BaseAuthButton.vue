@@ -4,7 +4,7 @@
       <span>{{ $t('trans.baseAuthButton.logout') }}</span>
     </v-btn>
     <v-btn v-else-if="hasLogin" dark outlined @click="login()">
-      <span>{{ $t('homePage.login') }}</span>
+      <span>{{ $t('trans.baseAuthButton.login') }}</span>
     </v-btn>
   </div>
 </template>

@@ -83,6 +83,7 @@ export default {
       data: null,
       headers: null,
     },
+    multiLanguage: '',
   },
   getters: {
     getField, // vuex-map-fields
@@ -103,6 +104,7 @@ export default {
     fcProactiveHelpGroupList: (state) => state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
     downloadedFile: (state) => state.downloadedFile,
+    multiLanguage: (state) => state.multiLanguage,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -163,6 +165,9 @@ export default {
     },
     SET_DOWNLOADEDFILE_HEADERS(state, headers) {
       state.downloadedFile.headers = headers;
+    },
+    SET_MULTI_LANGUAGE(state, multiLanguage) {
+      state.multiLanguage = multiLanguage;
     },
   },
   actions: {

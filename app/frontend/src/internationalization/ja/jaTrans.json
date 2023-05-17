@@ -247,7 +247,10 @@
     "notificationConsErr": "RBAC からユーザーを取得中にエラーが発生しました"
   },
   "fcProactiveHelp": {},
-  "baseAuthButton": { "logout": "ログアウト" },
+  "baseAuthButton": {
+    "logout": "ログアウト",
+    "login": "ログイン"
+  },
   "baseDialog": {
     "defaultText": "デフォルトのテキスト",
     "ok": "OK",
@@ -614,5 +617,17 @@
     "chefsHowToSub": "クイックスタート ガイドでは、CHEFS の基本機能のいくつかを紹介します。始めましょう！",
     "getStartedToChefs": "CHFS の使用を開始する",
     "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します。"
+  },
+  "create": {
+    "createNewForm": "新しいフォームの作成",
+    "setUpForm": "フォームの設定",
+    "designForm": "デザインフォーム",
+    "formSettings": "フォーム設定",
+    "disclaimer": "免責事項",
+    "disclaimerStmt": "フォームデザイナーの免責事項と責任声明に同意します",
+    "continue": "続く",
+    "back": "戻る",
+    "confirmPageNav": "本当にこのページを離れてもよろしいですか?加えた変更は保存されません。",
+    "agreementErrMsg": "上記のプライバシー免責事項に同意する必要があります。"
   }
 }
