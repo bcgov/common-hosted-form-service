@@ -562,6 +562,66 @@
     "top": "Top",
     "actions": "Actions",
     "collapse": "Collapse"
+  },
+  "formViewer": {
+    "lateFormSubmissions": "The form submission period has expired! You can still create a late submission by clicking the button below.",
+    "createLateSubmission": "Create late submission",
+    "draftSaved": "Draft Saved",
+    "saving": "Saving",
+    "pleaseConfirm": "Please Confirm",
+    "submitFormWarningMsg": "Are you sure you wish to submit your form?",
+    "submit": "Submit",
+    "version": "Version: { version }",
+    "formScheduleExpireMessage": "Form submission is not available as the scheduled submission period has expired.",
+    "getUsersSubmissionsErrMsg": "An error occurred fetching the submission for this form",
+    "getUsersSubmissionsConsoleErrMsg": "Error loading form submission data {submissionId}: {error}",
+    "readVersionErrMsg": "No schema in response. VersionId: {versionId}",
+    "readDraftErrMsg": "No schema in response. DraftId: {draftId}",
+    "alertRouteMsg": "The form owner has not published the form, and it is not available for submissions.",
+    "fecthingFormErrMsg": "An error occurred fetching this form",
+    "fecthingFormConsoleErrMsg": "Error loading form schema {versionId}: {error}",
+    "savingDraftErrMsg": "An error occurred while saving a draft",
+    "savingDraftConsoleErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
+    "submissionsPreviewAlert": "Submission disabled during form preview",
+    "submissionsSubmitErrMsg": "Error submiting the form: {errors}",
+    "sendSubmissionErrMsg": "Failed response from submission endpoint. Response code: {status}",
+    "errMsg": "An error occurred submitting this form",
+    "customEventAlert": "Custom button events not supported yet. Event Type: {event}"
+  },
+  "bCGovFooter": {
+    "home":"Home",
+    "about":"About gov.bc.ca",
+    "disclaimer":"Disclaimer",
+    "privacy":"Privacy",
+    "accessibility":"Accessibility",
+    "copyRight":"Copyright",
+    "contactUs":"Contact Us"
+  },
+  "bCGovNavBar": {
+    "about":"About",
+    "myForms":"My Forms",
+    "createNewForm":"Create a New Form",
+    "help":"Help",
+    "feedback":"Feedback",
+    "admin":"Admin"
+  },
+  "homePage": {
+    "title":"Create, publish forms, and receive submissions with the Common Hosted Forms Service.",
+  "subTitle":"All B.C. Government employees or contractors with an IDIR account can use our hosted version of Common Hosted Forms Service (CHEFS) to create forms.",
+  "takeATourOfChefs":"Take a tour of CHEFS to see it in action.",
+  "logInToGetStarted":"Log in to get started",
+  "loginToStart":"Log in with IDIR to get started",
+  "login":"Login",
+  "createFormLabel":"Create a Form",
+  "manageAccessTitle":"Manage access to your form",
+  "manageAccessSub1":"CHEFS allows you to create public forms, or you can manage access through IDIR or BCeID authentication.",
+  "manageAccessSub2":"You can also assign roles to your team to manage all of your submissions.",
+  "createCustomFormTitle":"Create custom forms with the CHEFS form builder",
+  "createCustomFormSub1":"With CHEFS, you can create secure forms with an intuitive drag-and-drop interface. You can add form components, re-arrange them, and drop them into different layouts configurations.",
+  "chefsHowToTitle":"CHEFS How-to Videos",
+  "chefsHowToSub":"Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. Get started!",
+  "getStartedToChefs":"Get started using CHEFS",
+  "createOnlineTitle":"Create online forms to collect information from your clients and improve your workflows."
   }
 
 }
