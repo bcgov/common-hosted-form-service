@@ -544,6 +544,12 @@ export default {
         `Custom button events not supported yet. Event Type: ${event.type}`
       );
     },
+    beforeWindowUnload(e) {
+      if (!this.preview && !this.readOnly) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    },
   },
   async created() {
     if (this.submissionId && this.isDuplicate) {
@@ -555,16 +561,17 @@ export default {
     } else {
       await this.getFormSchema();
     }
-    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-    if (!this.preview && !this.readOnly) {
-      window.onbeforeunload = () => true;
-    }
+
+    window.addEventListener('beforeunload', this.beforeWindowUnload);
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change
     if (this.forceNewTabLinks) {
       attachAttributesToLinks(this.formSchema.components);
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.beforeWindowUnload);
   },
 };
 </script>

@@ -2,6 +2,9 @@ const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 const { v4: uuidv4 } = require('uuid');
 
 jest.mock('../../../../src/forms/common/models/tables/formSubmissionStatus', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/formSubmission', () => MockModel);
+
+const service = require('../../../../src/forms/submission/service');
 
 beforeEach(() => {
   MockModel.mockReset();
@@ -11,8 +14,6 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
-
-const service = require('../../../../src/forms/submission/service');
 
 describe('read', () => {
   it('should call the internal _fetchSubmissionData method', async () => {
@@ -49,17 +50,6 @@ describe('createStatus', () => {
     expect(MockModel.insert).toHaveBeenCalledTimes(1);
     expect(MockModel.insert).toHaveBeenCalledWith(expect.anything());
   });
-});
-
-jest.mock('../../../../src/forms/common/models/tables/formSubmission', () => MockModel);
-
-beforeEach(() => {
-  MockModel.mockReset();
-  MockTransaction.mockReset();
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
 });
 
 describe('deleteMutipleSubmissions', () => {
