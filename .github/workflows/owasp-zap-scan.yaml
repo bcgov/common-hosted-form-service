@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Cloud SDK
         if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}
@@ -61,29 +61,27 @@ jobs:
           export_default_credentials: true
       - name: ZAP Base Scan
         if: ${{ env.ZAP_SCAN_TYPE == 'base' }}
-        uses: zaproxy/action-baseline@v0.6.1
+        uses: zaproxy/action-baseline@v0.7.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
           target: ${{ env.ZAP_TARGET_URL }}
-          rules_file_name: ".zap/rules.tsv"
           cmd_options: "-a -d -T ${{ env.ZAP_MAX_DURATION }} -m ${{ env.ZAP_DURATION }}"
           issue_title: OWAP Baseline
       - name: ZAP Full Scan
         if: ${{ env.ZAP_SCAN_TYPE == 'full' }}
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.4.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
           target: ${{ env.ZAP_TARGET_URL }}
-          rules_file_name: ".zap/rules.tsv"
           cmd_options: "-a -d -T ${{ env.ZAP_MAX_DURATION }} -m ${{ env.ZAP_DURATION }}"
       - name: Create Artifact Directory
         if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}
         run: |
           mkdir -p public/zap
       - name: Publish Reports to Github
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: zap_scan
           path: public/zap
@@ -92,7 +90,7 @@ jobs:
         run: |
           mv public/zap/report_md.md public/zap/README.md
       - name: ZAP Results
-        uses: JamesIves/github-pages-deploy-action@4.1.6
+        uses: JamesIves/github-pages-deploy-action@4.4.1
         with:
           branch: zap-scan
           folder: public/zap
