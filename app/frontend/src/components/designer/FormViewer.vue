@@ -842,31 +842,33 @@ export default {
     closeBulkYesOrNo() {
       this.doYouWantToSaveTheDraft = false;
     },
-    async init() {
-      if (this.submissionId && this.isDuplicate) {
-        //Run when make new submission from existing one called.
-        await this.getFormData();
-        //We need this to be called as well, because we need latest version of form
-        await this.getFormSchema();
-      } else if (this.submissionId && !this.isDuplicate) {
-        await this.getFormData();
-      } else {
-        await this.getFormSchema();
-      }
+    beforeWindowUnload(e) {
       if (!this.preview && !this.readOnly) {
-        window.onbeforeunload = () => true;
+        e.preventDefault();
+        e.returnValue = '';
       }
-      this.resetMessage();
     },
   },
   async created() {
-    this.init();
+    if (this.submissionId && this.isDuplicate) {
+      //Run when make new submission from existing one called.
+      await this.getFormData();
+      await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
+    } else if (this.submissionId && !this.isDuplicate) {
+      await this.getFormData();
+    } else {
+      await this.getFormSchema();
+    }
+    window.addEventListener('beforeunload', this.beforeWindowUnload);
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change
     if (this.forceNewTabLinks) {
       attachAttributesToLinks(this.formSchema.components);
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.beforeWindowUnload);
   },
 };
 </script>

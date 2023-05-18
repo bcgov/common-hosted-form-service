@@ -9,8 +9,12 @@ module.exports = {
   preset: '@vue/cli-plugin-unit-jest',
   setupFiles: ['<rootDir>/tests/unit/globalSetup.js'],
   snapshotSerializers: ['jest-serializer-vue'],
-  testMatch: ['**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'],
-  testURL: 'http://localhost/',
+  testMatch: [
+    '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'
+  ],
+  testEnvironmentOptions: {
+    url: 'http://localhost/',
+  },
   transform: {
     '.*\\.(vue)$': 'vue-jest',
     '^.+\\.vue$': 'vue-jest',
