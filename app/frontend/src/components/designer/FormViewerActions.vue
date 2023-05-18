@@ -7,7 +7,7 @@
     </v-col>
     <v-col class="text-right">
       <!-- Bulk button -->
-      <span v-if="allowSubmitterToUploadFile" class="ml-2">
+      <span v-if="allowSubmitterToUploadFile && !block" class="ml-2">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
