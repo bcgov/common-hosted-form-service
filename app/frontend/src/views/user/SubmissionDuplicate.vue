@@ -1,5 +1,10 @@
 <template>
-  <UserDuplicateSubmission :saved="sv" :submissionId="s" :formId="f" :readOnly="false" />
+  <UserDuplicateSubmission
+    :saved="sv"
+    :submissionId="s"
+    :formId="f"
+    :readOnly="false"
+  />
 </template>
 
 <script>

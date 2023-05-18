@@ -17,13 +17,16 @@ export default {
       });
     },
     DELETE(state, notificationToRemove) {
-      state.notifications = state.notifications.filter((notification) => notification.id !== notificationToRemove.id);
+      state.notifications = state.notifications.filter(
+        (notification) => notification.id !== notificationToRemove.id
+      );
     },
   },
   actions: {
     addNotification({ commit }, notification) {
       if (notification.consoleError) console.error(notification.consoleError); // eslint-disable-line no-console
-      if (!notification.type) notification = { ...notification, ...NotificationTypes.ERROR }; // Error (red) by default
+      if (!notification.type)
+        notification = { ...notification, ...NotificationTypes.ERROR }; // Error (red) by default
       commit('PUSH', notification);
     },
     deleteNotification({ commit }, notificationToRemove) {

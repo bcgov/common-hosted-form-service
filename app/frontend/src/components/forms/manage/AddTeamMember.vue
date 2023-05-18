@@ -1,14 +1,28 @@
 <template>
   <span>
     <span v-if="addingUsers" style="margin-right: 656px" elevation="1">
-      <v-sheet elevation="1" class="float-right" style="position: absolute; width: 669px">
+      <v-sheet
+        elevation="1"
+        class="float-right"
+        style="position: absolute; width: 669px"
+      >
         <v-sheet style="background-color: #38598a" elevation="1">
           <v-row justify="center" align="center">
             <v-col cols="12" sm="12">
-              <v-radio-group class="ml-3 my-0" v-model="selectedIdp" row dense fluid hide-details>
+              <v-radio-group
+                class="ml-3 my-0"
+                v-model="selectedIdp"
+                row
+                dense
+                fluid
+                hide-details
+              >
                 <v-radio class="my-0" label="IDIR" :value="ID_PROVIDERS.IDIR" />
                 <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
-                <v-radio label="Business BCeID" :value="ID_PROVIDERS.BCEIDBUSINESS" />
+                <v-radio
+                  label="Business BCeID"
+                  :value="ID_PROVIDERS.BCEIDBUSINESS"
+                />
               </v-radio-group>
             </v-col>
           </v-row>
@@ -37,7 +51,12 @@
               </template>
               <!-- selected user -->
               <template #selection="data">
-                <span v-bind="data.attrs" :input-value="data.selected" close @click="data.select">
+                <span
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  close
+                  @click="data.select"
+                >
                   {{ data.item.fullName }}
                 </span>
               </template>
@@ -51,7 +70,9 @@
                     <v-list-item-title>
                       {{ data.item.fullName }}
                     </v-list-item-title>
-                    <v-list-item-subtitle> {{ data.item.username }} ({{ data.item.idpCode }}) </v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{ data.item.username }} ({{ data.item.idpCode }})
+                    </v-list-item-subtitle>
                     <v-list-item-subtitle>
                       {{ data.item.email }}
                     </v-list-item-subtitle>
@@ -63,8 +84,22 @@
         </v-row>
         <v-row class="my-0">
           <v-col cols="12" class="py-0">
-            <v-chip-group v-model="selectedRoles" multiple active-class="primary--text" fluid column class="py-0 mx-3" return-object>
-              <v-chip v-for="role in FORM_ROLES" :key="role" :value="role" filter outlined>
+            <v-chip-group
+              v-model="selectedRoles"
+              multiple
+              active-class="primary--text"
+              fluid
+              column
+              class="py-0 mx-3"
+              return-object
+            >
+              <v-chip
+                v-for="role in FORM_ROLES"
+                :key="role"
+                :value="role"
+                filter
+                outlined
+              >
                 {{ role }}
               </v-chip>
             </v-chip-group>
@@ -73,7 +108,13 @@
         <v-row class="pl-1 my-0">
           <v-col cols="auto">
             <!-- buttons -->
-            <v-btn color="primary" class="ml-2" :disabled="!model" :loading="isLoading" @click="save">
+            <v-btn
+              color="primary"
+              class="ml-2"
+              :disabled="!model"
+              :loading="isLoading"
+              @click="save"
+            >
               <span>Add</span>
             </v-btn>
             <v-btn
@@ -90,7 +131,9 @@
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="red--text">You must select at least one role to add this user.</span>
+            <span class="red--text"
+              >You must select at least one role to add this user.</span
+            >
           </v-col>
         </v-row>
       </v-sheet>
@@ -98,7 +141,15 @@
     <span v-else>
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
-          <v-btn class="mx-1" @click="addingUsers = true" color="primary" :disabled="disabled" icon v-bind="attrs" v-on="on">
+          <v-btn
+            class="mx-1"
+            @click="addingUsers = true"
+            color="primary"
+            :disabled="disabled"
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
             <v-icon>person_add</v-icon>
           </v-btn>
         </template>
@@ -138,7 +189,9 @@ export default {
     filterObject(item, queryText) {
       return Object.values(item)
         .filter((v) => v)
-        .some((v) => v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()));
+        .some((v) =>
+          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+        );
     },
     save() {
       if (this.selectedRoles.length === 0) {
@@ -160,15 +213,23 @@ export default {
       return IdentityProviders;
     },
     FORM_ROLES() {
-      if (this.selectedIdp === IdentityProviders.BCEIDBASIC) return Object.values(FormRoleCodes).filter((frc) => frc === FormRoleCodes.FORM_SUBMITTER);
+      if (this.selectedIdp === IdentityProviders.BCEIDBASIC)
+        return Object.values(FormRoleCodes).filter(
+          (frc) => frc === FormRoleCodes.FORM_SUBMITTER
+        );
       else if (this.selectedIdp === IdentityProviders.BCEIDBUSINESS)
         return Object.values(FormRoleCodes)
-          .filter((frc) => frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER)
+          .filter(
+            (frc) =>
+              frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER
+          )
           .sort();
       return Object.values(FormRoleCodes).sort();
     },
     autocompleteLabel() {
-      return this.selectedIdp == IdentityProviders.IDIR ? 'Enter a name, e-mail, or username' : 'Enter an exact e-mail or username';
+      return this.selectedIdp == IdentityProviders.IDIR
+        ? 'Enter a name, e-mail, or username'
+        : 'Enter an exact e-mail or username';
     },
   },
   watch: {
@@ -194,10 +255,17 @@ export default {
       try {
         let params = {};
         params.idpCode = this.selectedIdp;
-        if (this.selectedIdp == IdentityProviders.BCEIDBASIC || this.selectedIdp == IdentityProviders.BCEIDBUSINESS) {
-          if (input.length < 6) throw new Error('Search input for BCeID username/email must be greater than 6 characters.');
+        if (
+          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
+          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
+        ) {
+          if (input.length < 6)
+            throw new Error(
+              'Search input for BCeID username/email must be greater than 6 characters.'
+            );
           if (input.includes('@')) {
-            if (!new RegExp(Regex.EMAIL).test(input)) throw new Error('Email searches for BCeID must be exact.');
+            if (!new RegExp(Regex.EMAIL).test(input))
+              throw new Error('Email searches for BCeID must be exact.');
             else params.email = input;
           } else {
             params.username = input;

@@ -78,7 +78,11 @@ export default {
    * @returns {Promise} An axios response
    */
   removeMultiUsers(requestBody, params = {}) {
-    return appAxios().delete(`${ApiRoutes.RBAC}/users?formId=${params.formId}`, { data: requestBody }, { params });
+    return appAxios().delete(
+      `${ApiRoutes.RBAC}/users?formId=${params.formId}`,
+      { data: requestBody },
+      { params }
+    );
   },
 
   //

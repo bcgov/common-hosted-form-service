@@ -1,6 +1,12 @@
 <template>
   <v-row justify="center">
-    <v-dialog transition="dialog-top-transition" v-model="dialog" scrollable width="auto" @click:outside="close">
+    <v-dialog
+      transition="dialog-top-transition"
+      v-model="dialog"
+      scrollable
+      width="auto"
+      @click:outside="close"
+    >
       <v-card>
         <v-card-text style="height: auto" class="p-4">
           <b class="text-center">Do you want to save this draft ?</b>

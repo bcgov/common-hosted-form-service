@@ -3,10 +3,14 @@
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h1 class="my-5 d-block">Create, publish forms, and receive submissions with the Common Hosted Forms Service.</h1>
+          <h1 class="my-5 d-block">
+            Create, publish forms, and receive submissions with the Common
+            Hosted Forms Service.
+          </h1>
           <p>
-            All B.C. Government employees or contractors with an IDIR account can use our hosted version of Common Hosted Forms Service (CHEFS) to create
-            forms.<br />
+            All B.C. Government employees or contractors with an IDIR account
+            can use our hosted version of Common Hosted Forms Service (CHEFS) to
+            create forms.<br />
           </p>
 
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
@@ -14,7 +18,9 @@
             <span v-else>Create a Form</span>
           </v-btn>
 
-          <h2 id="video" class="pt-5">Take a tour of CHEFS to see it in action.</h2>
+          <h2 id="video" class="pt-5">
+            Take a tour of CHEFS to see it in action.
+          </h2>
           <div class="video-wrapper">
             <iframe
               width="100%"
@@ -35,7 +41,8 @@
       <v-col cols="12" lg="4">
         <h2>CHEFS How-to Videos</h2>
         <p>
-          Our Quickstart Guide will introduce you to some of the basic functions of CHEFS.
+          Our Quickstart Guide will introduce you to some of the basic functions
+          of CHEFS.
           <a :href="howToVideoUrl" target="_blank">Get started!</a>
         </p>
       </v-col>
@@ -52,8 +59,9 @@
       <v-col cols="12" lg="4">
         <h2>Create custom forms with the CHEFS form builder</h2>
         <p>
-          With CHEFS, you can create secure forms with an intuitive drag-and-drop interface. You can add form components, re-arrange them, and drop them into
-          different layouts configurations.
+          With CHEFS, you can create secure forms with an intuitive
+          drag-and-drop interface. You can add form components, re-arrange them,
+          and drop them into different layouts configurations.
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -68,8 +76,14 @@
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
         <h2>Manage access to your form</h2>
-        <p>CHEFS allows you to create public forms, or you can manage access through IDIR or BCeID authentication.</p>
-        <p>You can also assign roles to your team to manage all of your submissions.</p>
+        <p>
+          CHEFS allows you to create public forms, or you can manage access
+          through IDIR or BCeID authentication.
+        </p>
+        <p>
+          You can also assign roles to your team to manage all of your
+          submissions.
+        </p>
       </v-col>
       <v-col cols="12" lg="4">
         <BaseImagePopout
@@ -84,7 +98,10 @@
       <v-row justify="center">
         <v-col lg="8">
           <h3 class="mb-5">Get started using CHEFS</h3>
-          <p>Create online forms to collect information from your clients and improve your workflows.</p>
+          <p>
+            Create online forms to collect information from your clients and
+            improve your workflows.
+          </p>
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
             <span v-if="!authenticated">Log in to get Started</span>
             <span v-else>Create a Form</span>

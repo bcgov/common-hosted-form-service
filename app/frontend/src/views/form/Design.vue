@@ -1,6 +1,15 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
-    <FormDesigner class="mt-6" :draftId="d" :formId="f" :saved="JSON.parse(sv)" :versionId="v" ref="formDesigner" :isSavedStatus="svs" :newVersion="nv" />
+    <FormDesigner
+      class="mt-6"
+      :draftId="d"
+      :formId="f"
+      :saved="JSON.parse(sv)"
+      :versionId="v"
+      ref="formDesigner"
+      :isSavedStatus="svs"
+      :newVersion="nv"
+    />
   </BaseSecure>
 </template>
 
@@ -39,7 +48,13 @@ export default {
     IDP: () => IdentityProviders,
   },
   beforeRouteLeave(_to, _from, next) {
-    this.form.isDirty ? next(window.confirm('Do you really want to leave this page? Changes you made will not be saved.')) : next();
+    this.form.isDirty
+      ? next(
+          window.confirm(
+            'Do you really want to leave this page? Changes you made will not be saved.'
+          )
+        )
+      : next();
   },
   beforeMount() {
     this.listFCProactiveHelp();

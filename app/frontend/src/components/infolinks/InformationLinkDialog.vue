@@ -1,32 +1,51 @@
 <template>
   <v-row justify="center" class="mb-5">
-    <v-dialog v-model="dialog" scrollable width="70%" @click:outside="onCloseDialog">
+    <v-dialog
+      v-model="dialog"
+      scrollable
+      width="70%"
+      @click:outside="onCloseDialog"
+    >
       <v-card>
         <v-container>
           <v-row>
             <v-col>
-              <span class="text-h5" style="font-weight: bold">Component Information Link</span>
+              <span class="text-h5" style="font-weight: bold"
+                >Component Information Link</span
+              >
             </v-col>
           </v-row>
           <v-row v-if="linkError">
             <v-col>
-              <div style="margin: 0px; padding: 0px" v-text="'Learn More Link field cannot be empty.'" class="red--text" />
+              <div
+                style="margin: 0px; padding: 0px"
+                v-text="'Learn More Link field cannot be empty.'"
+                class="red--text"
+              />
             </v-col>
           </v-row>
           <v-row v-if="imageSizeError">
             <v-col>
-              <div style="margin: 0px; padding: 0px" v-text="'Large image. Image size cannot be large than .5mb'" class="red--text" />
+              <div
+                style="margin: 0px; padding: 0px"
+                v-text="'Large image. Image size cannot be large than .5mb'"
+                class="red--text"
+              />
             </v-col>
           </v-row>
 
           <v-row class="mt-5" no-gutters>
-            <span class="text-decoration-underline mr-2 blackColorWrapper"> Component Name: </span>
+            <span class="text-decoration-underline mr-2 blackColorWrapper">
+              Component Name:
+            </span>
             <span v-text="componentName_" class="blueColorWrapper" />
           </v-row>
           <v-row class="mt-1" no-gutters>
             <v-col>
               <div class="d-flex flex-row align-center">
-                <p class="mr-2 mt-2 text-decoration-underline blueColorWrapper">Learn More Link:</p>
+                <p class="mr-2 mt-2 text-decoration-underline blueColorWrapper">
+                  Learn More Link:
+                </p>
                 <v-col cols="5">
                   <v-text-field
                     dense
@@ -45,7 +64,11 @@
                 </v-col>
                 <v-checkbox v-model="isLinkEnabled" class="checkbox_data_cy">
                   <template v-slot:label>
-                    <span class="v-label">{{ !isLinkEnabled ? 'Click to enable link' : 'Click to disable link' }}</span>
+                    <span class="v-label">{{
+                      !isLinkEnabled
+                        ? 'Click to enable link'
+                        : 'Click to disable link'
+                    }}</span>
                   </template>
                 </v-checkbox>
               </div>
@@ -53,7 +76,9 @@
           </v-row>
 
           <v-row no-gutters>
-            <v-col cols="12" sm="12" md="12" class="mb-2 blackColorWrapper"> Description </v-col>
+            <v-col cols="12" sm="12" md="12" class="mb-2 blackColorWrapper">
+              Description
+            </v-col>
             <v-col cols="12" sm="12" md="12">
               <v-textarea
                 clear-icon="mdi-close-circle"
@@ -70,7 +95,12 @@
           <v-row class="mt-2" no-gutters>
             <v-col>
               <div class="d-flex align-center">
-                <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" size="xl" color="#1A5A96" class="mr-1 mt-2" />
+                <font-awesome-icon
+                  icon="fa-solid fa-cloud-arrow-up"
+                  size="xl"
+                  color="#1A5A96"
+                  class="mr-1 mt-2"
+                />
                 <v-col>
                   <v-file-input
                     style="width: 50%"
@@ -78,7 +108,9 @@
                     show-size
                     counter
                     accept="image/*"
-                    :label="imagePlaceholder ? imagePlaceholder : 'Image Upload:'"
+                    :label="
+                      imagePlaceholder ? imagePlaceholder : 'Image Upload:'
+                    "
                     class="file_upload_data-cy"
                     @change="selectImage"
                   ></v-file-input>
@@ -90,8 +122,20 @@
             <v-col>
               <div class="d-flex flex-row justify-space-between align-end">
                 <div>
-                  <v-btn class="mr-4 saveButtonWrapper" @click="submit" data-cy="more_help_info_link_save_button"> Save </v-btn>
-                  <v-btn class="cancelButtonWrapper" @click="onCloseDialog" data-cy="more_help_info_link_cancel_button"> Cancel </v-btn>
+                  <v-btn
+                    class="mr-4 saveButtonWrapper"
+                    @click="submit"
+                    data-cy="more_help_info_link_save_button"
+                  >
+                    Save
+                  </v-btn>
+                  <v-btn
+                    class="cancelButtonWrapper"
+                    @click="onCloseDialog"
+                    data-cy="more_help_info_link_cancel_button"
+                  >
+                    Cancel
+                  </v-btn>
                 </div>
               </div>
             </v-col>
@@ -114,17 +158,36 @@ export default {
   data() {
     return {
       errors: [],
-      componentName_: this.component && this.component.componentName ? this.component.componentName : this.componentName,
-      description: this.component && this.component.description ? this.component.description : '',
-      moreHelpInfoLink: this.component && this.component.externalLink ? this.component.externalLink : '',
-      isLinkEnabled: this.component && this.component.isLinkEnabled ? this.component.isLinkEnabled : false,
+      componentName_:
+        this.component && this.component.componentName
+          ? this.component.componentName
+          : this.componentName,
+      description:
+        this.component && this.component.description
+          ? this.component.description
+          : '',
+      moreHelpInfoLink:
+        this.component && this.component.externalLink
+          ? this.component.externalLink
+          : '',
+      isLinkEnabled:
+        this.component && this.component.isLinkEnabled
+          ? this.component.isLinkEnabled
+          : false,
       dialog: this.showDialog,
       color1: '#1A5A96',
       image: '',
       imageSizeError: false,
-      componentId: this.component && this.component.id ? this.component.id : undefined,
-      imageName: this.component && this.component.imageName ? this.component.imageName : '',
-      imagePlaceholder: this.component && this.component.imageName ? this.component.imageName : undefined,
+      componentId:
+        this.component && this.component.id ? this.component.id : undefined,
+      imageName:
+        this.component && this.component.imageName
+          ? this.component.imageName
+          : '',
+      imagePlaceholder:
+        this.component && this.component.imageName
+          ? this.component.imageName
+          : undefined,
       linkError: false,
     };
   },
@@ -135,7 +198,11 @@ export default {
     groupName: { type: String, require: true },
   },
   methods: {
-    ...mapActions('admin', ['addFCProactiveHelp', 'uploadFCProactiveHelpImage', 'getEachFCProactiveHelpVersion']),
+    ...mapActions('admin', [
+      'addFCProactiveHelp',
+      'uploadFCProactiveHelpImage',
+      'getEachFCProactiveHelpVersion',
+    ]),
     onCloseDialog() {
       this.resetDialog();
       this.$emit('close-dialog');
@@ -167,7 +234,9 @@ export default {
     submit() {
       if (!this.validateLinkUrl()) {
         this.imageName = this.image !== '' ? this.imageName : '';
-        this.moreHelpInfoLink = !this.isLinkEnabled ? '' : this.moreHelpInfoLink;
+        this.moreHelpInfoLink = !this.isLinkEnabled
+          ? ''
+          : this.moreHelpInfoLink;
         this.addFCProactiveHelp({
           componentId: this.componentId,
           componentName: this.componentName_,
@@ -175,7 +244,10 @@ export default {
           externalLink: this.moreHelpInfoLink,
           groupName: this.groupName,
           description: this.description,
-          status: this.component && this.component.status ? this.component.status : false,
+          status:
+            this.component && this.component.status
+              ? this.component.status
+              : false,
           isLinkEnabled: this.isLinkEnabled,
           imageName: this.imageName,
         });

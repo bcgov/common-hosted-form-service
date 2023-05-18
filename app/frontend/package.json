@@ -15,7 +15,7 @@
     "lint": "eslint \"src/**/*.{js,vue}\"",
     "lint:fix": "eslint \"src/**/*.{js,vue}\"",
     "prettier": "prettier --check \"src/**/*.{js,vue,css,scss}\"",
-    "prettier:fix": "prettier --write 'src/**/*.{js,vue,css,scss}'",
+    "prettier:fix": "prettier --write \"src/**/*.{js,vue,css,scss}\"",
     "pretest": "npm run lint",
     "clean": "rm -rf coverage dist **/e2e/videos",
     "clean:formio": "node ./component-update.js clean",
