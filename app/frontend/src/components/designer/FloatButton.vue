@@ -13,7 +13,7 @@
     ]"
   >
     <div class="fabAction" @click="onOpenFABActionItems">
-      {{ baseFABItemName }}
+      <div class="text" v-text="baseFABItemName" />
       <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
         <v-icon :color="baseIconColor" :size="fabItemsIconsSize">
           {{ baseIconName }}
@@ -37,7 +37,7 @@
         :class="{ 'disabled-router': !formId }"
         tag="div"
       >
-        <div v-text="$t('trans.floatButton.publish')" />
+        <div class="text" v-text="$t('trans.floatButton.publish')" />
         <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
           <v-icon
             :color="
@@ -57,7 +57,7 @@
         :class="{ 'disabled-router': !formId }"
         tag="div"
       >
-        <div v-text="$t('trans.floatButton.manage')" />
+        <div class="text" v-text="$t('trans.floatButton.manage')" />
         <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
           <v-icon
             :color="
@@ -76,7 +76,7 @@
         data-cy="redoButton"
         :class="{ 'disabled-router': !redoEnabled }"
       >
-        <div v-text="$t('trans.floatButton.redo')" />
+        <div class="text" v-text="$t('trans.floatButton.redo')" />
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -96,7 +96,7 @@
         data-cy="undoButton"
         :class="{ 'disabled-router': !undoEnabled }"
       >
-        <div v-text="$t('trans.floatButton.undo')" />
+        <div class="text" v-text="$t('trans.floatButton.undo')" />
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -116,7 +116,7 @@
         @click="gotoPreview"
         :class="{ 'disabled-router': !formId || !draftId }"
       >
-        <div v-text="$t('trans.floatButton.preview')" />
+        <div class="text" v-text="$t('trans.floatButton.preview')" />
         <v-avatar class="fabItems" :size="fabItemsSize">
           <v-icon
             :color="formId ? fabItemsColor : disabledFabItemsColor"
@@ -132,7 +132,7 @@
         ref="saveButton"
         :class="{ 'disabled-router': isFormSaved }"
       >
-        <div>{{ this.savedStatus }}</div>
+        <div class="text">{{ this.save1 }}</div>
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -156,7 +156,7 @@
         </v-avatar>
       </div>
       <div class="fabAction">
-        <div v-text="scrollName" />
+        <div class="text" v-text="scrollName" />
 
         <v-avatar class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
           <v-icon :color="fabItemsColor" :size="fabItemsIconsSize">
@@ -177,6 +177,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'FloatButton',
   data() {
@@ -188,7 +190,7 @@ export default {
       fabItemsIconsSize: 31,
 
       //base fab item variable start
-      baseFABItemName: 'Collapse',
+
       baseIconName: 'close',
       baseIconColor: '#ffffff', //end
 
@@ -198,8 +200,13 @@ export default {
       disabledInvertedFabItemsColor: '#ffffff',
       disabledFabItemsColor: '#707070C1', // end
       scrollName: this.$t('trans.floatButton.bottom'),
+      baseFABItemName: this.$t('trans.floatButton.actions'),
       scrollIconName: 'south',
+      save1: 'Save',
     };
+  },
+  computed: {
+    ...mapGetters('form', ['multiLanguage']),
   },
   props: {
     formId: String,
@@ -256,11 +263,11 @@ export default {
       if (this.isFABActionsOpen) {
         this.baseIconName = 'menu';
         this.isFABActionsOpen = false;
-        this.baseFABItemName = 'Actions';
+        this.baseFABItemName = this.$t('trans.floatButton.actions');
       } else {
         this.baseIconName = 'close';
         this.isFABActionsOpen = true;
-        this.baseFABItemName = 'Collapse';
+        this.baseFABItemName = this.$t('trans.floatButton.collapse');
       }
     },
     gotoPreview() {
@@ -270,6 +277,7 @@ export default {
       });
       window.open(route.href);
     },
+
     setSizes() {
       this.floatButtonSize = {};
 
@@ -336,7 +344,7 @@ export default {
       switch (this.placement) {
         case 'bottom-right':
           this.fabItemsPosition.right = '-.5vw';
-          this.fabItemsPosition.bottom = '7vh';
+          this.fabItemsPosition.bottom = '4vh';
           break;
         case 'bottom-left':
           this.fabItemsPosition.left = '5vw';
@@ -407,6 +415,37 @@ export default {
     size() {
       this.setSizes();
     },
+
+    savedStatus(value) {
+      if (value === 'Saved') {
+        this.save1 = this.$t('trans.floatButton.saved');
+      } else if (value === 'Save') {
+        this.save1 = this.$t('trans.floatButton.save');
+      } else if (value === 'Saving') {
+        this.save1 = this.$t('trans.floatButton.saving');
+      } else if (value === 'Not Saved') {
+        this.save1 = this.$t('trans.floatButton.notSaved');
+      }
+    },
+    multiLanguage() {
+      this.scrollName = this.$t('trans.floatButton.bottom');
+
+      if (this.isFABActionsOpen) {
+        this.baseFABItemName = this.$t('trans.floatButton.actions');
+      } else {
+        this.baseFABItemName = this.$t('trans.floatButton.collapse');
+      }
+
+      if (this.savedStatus === 'Saved') {
+        this.save1 = this.$t('trans.floatButton.saved');
+      } else if (this.savedStatus === 'Save') {
+        this.save1 = this.$t('trans.floatButton.save');
+      } else if (this.savedStatus === 'Saving') {
+        this.save1 = this.$t('trans.floatButton.saving');
+      } else if (this.savedStatus === 'Not Saved') {
+        this.save1 = this.$t('trans.floatButton.notSaved');
+      }
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
@@ -422,7 +461,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 /* disable router-link */
 .disabled-router {
   pointer-events: none;
@@ -432,11 +471,13 @@ export default {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
   align-content: center;
   overflow: hidden;
   width: auto;
   height: auto;
+  list-style: none;
   pointer-events: cursor;
   color: #313132;
   font-size: 12px;
@@ -445,7 +486,7 @@ export default {
   font-family: BCSans !important;
   cursor: pointer;
   border-radius: 100%;
-  padding: 3px;
+  padding: 3px !important;
 }
 
 .fabItemsInverColor {
@@ -473,5 +514,11 @@ export default {
 
 .fabItems:hover {
   border: 1px solid #003366;
+}
+.text {
+  overflow-wrap: break-word;
+  width: 50px;
+  text-align: center;
+  word-break: break-word;
 }
 </style>

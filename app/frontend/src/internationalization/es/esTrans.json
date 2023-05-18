@@ -273,7 +273,17 @@
     "formDesign": "Diseño de formularios",
     "exportDesign": "Diseño de exportación",
     "importDesign": "Diseño de importación",
-    "important": "IMPORTANTE"
+    "important": "IMPORTANTE",
+    "formDesignInfoA": "Utilice el botón <strong>GUARDAR DISEÑO</strong> cuando haya terminado de crear este formulario.",
+    "formDesignInfoB": "El botón <strong>ENVIAR</strong> se proporciona para que su usuario envíe este formulario y se activará después de guardarlo.",
+    "formLoadErrMsg": "Ocurrió un error al cargar el diseño del formulario.",
+    "formLoadConsoleErrMsg": "Error al cargar el formulario {formId} esquema (versión: {versionId} borrador: {draftId}): {error}",
+    "formSchemaImportErrMsg": "Ocurrió un error al importar el esquema del formulario.",
+    "formSchemaImportConsoleErrMsg": "Error al importar el esquema del formulario: {error}",
+    "formDesignSaveErrMsg": "Se produjo un error al intentar guardar este diseño de formulario. Si necesita actualizar o salir para volver a intentarlo más tarde, puede exportar el diseño existente en la página para guardarlo más tarde.",
+    "formDesignSaveConsoleErrMsg": "Error al actualizar o crear el formulario (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
+    "collapse": "colapsar",
+    "actions": "Comportamiento"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",
@@ -556,7 +566,11 @@
     "bottom": "Abajo",
     "top": "Arriba",
     "actions": "Comportamiento",
-    "collapse": "Colapsar"
+    "collapse": "Colapsar",
+    "saved": "Salvado",
+    "save": "Ahorrar",
+    "saving": "Ahorro",
+    "notSaved": "No guardado"
   },
   "formViewer": {
     "lateFormSubmissions": "¡El período de envío del formulario ha expirado! Todavía puede crear un envío tardío haciendo clic en el botón a continuación.",

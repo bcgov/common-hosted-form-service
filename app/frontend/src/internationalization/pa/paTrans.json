@@ -273,7 +273,17 @@
     "formDesign": "ਫਾਰਮ ਡਿਜ਼ਾਈਨ",
     "exportDesign": "ਨਿਰਯਾਤ ਡਿਜ਼ਾਈਨ",
     "importDesign": "ਡਿਜ਼ਾਈਨ ਆਯਾਤ ਕਰੋ",
-    "important": "ਮਹੱਤਵਪੂਰਨ"
+    "important": "ਮਹੱਤਵਪੂਰਨ",
+    "formDesignInfoA": "ਜਦੋਂ ਤੁਸੀਂ ਇਸ ਫਾਰਮ ਨੂੰ ਬਣਾਉਣ ਦਾ ਕੰਮ ਪੂਰਾ ਕਰ ਲੈਂਦੇ ਹੋ ਤਾਂ <strong>ਸੇਵ ਡਿਜ਼ਾਈਨ</strong> ਬਟਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।",
+    "formDesignInfoB": "ਤੁਹਾਡੇ ਉਪਭੋਗਤਾ ਨੂੰ ਇਹ ਫਾਰਮ ਜਮ੍ਹਾਂ ਕਰਾਉਣ ਲਈ <strong>SUBMIT</strong> ਬਟਨ ਦਿੱਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਸਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਤੋਂ ਬਾਅਦ ਕਿਰਿਆਸ਼ੀਲ ਹੋ ਜਾਵੇਗਾ।",
+    "formLoadErrMsg": "ਫਾਰਮ ਡਿਜ਼ਾਈਨ ਨੂੰ ਲੋਡ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "formLoadConsoleErrMsg": "ਫਾਰਮ {formId} ਸਕੀਮਾ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ (ਵਰਜਨ: {versionId} ਡਰਾਫਟ: {draftId}): {error}",
+    "formSchemaImportErrMsg": "ਫਾਰਮ ਸਕੀਮਾ ਨੂੰ ਆਯਾਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "formSchemaImportConsoleErrMsg": "ਫਾਰਮ ਸਕੀਮਾ ਨੂੰ ਆਯਾਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ : {error}",
+    "formDesignSaveErrMsg": "ਇਸ ਫਾਰਮ ਡਿਜ਼ਾਈਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ। ਜੇਕਰ ਤੁਹਾਨੂੰ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਤਾਜ਼ਾ ਕਰਨ ਜਾਂ ਛੱਡਣ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ ਪੰਨੇ 'ਤੇ ਮੌਜੂਦਾ ਡਿਜ਼ਾਈਨ ਨੂੰ ਨਿਰਯਾਤ ਕਰ ਸਕਦੇ ਹੋ।",
+    "formDesignSaveConsoleErrMsg": "ਫਾਰਮ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਜਾਂ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) ਤਰੁੱਟੀ: {error}",
+    "collapse": "ਸਮੇਟਣਾ",
+    "actions": "ਕਾਰਵਾਈਆਂ"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "ਬੇਦਾਅਵਾ ਅਤੇ ਫਾਰਮ ਡਿਜ਼ਾਈਨਰਾਂ ਲਈ ਜ਼ਿੰਮੇਵਾਰੀ ਦਾ ਬਿਆਨ:",
@@ -556,7 +566,11 @@
     "bottom": "ਥੱਲੇ",
     "top": "ਸਿਖਰ",
     "actions": "ਕਾਰਵਾਈਆਂ",
-    "collapse": "ਸਮੇਟਣਾ"
+    "collapse": "ਸਮੇਟਣਾ",
+    "saved": "ਸੰਭਾਲੀ ਗਈ",
+    "save": "ਸੇਵ ਕਰੋ",
+    "saving": "ਸੰਭਾਲ ਰਿਹਾ ਹੈ",
+    "notSaved": "ਸੰਭਾਲਿਆ ਨਹੀਂ ਗਿਆ"
   },
   "formViewer": {
     "lateFormSubmissions": "ਫਾਰਮ ਜਮ੍ਹਾਂ ਕਰਨ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ! ਤੁਸੀਂ ਅਜੇ ਵੀ ਹੇਠਾਂ ਦਿੱਤੇ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਦੇਰ ਨਾਲ ਸਬਮਿਸ਼ਨ ਬਣਾ ਸਕਦੇ ਹੋ।",

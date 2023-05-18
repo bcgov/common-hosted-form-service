@@ -273,7 +273,17 @@
     "formDesign": "フォームデザイン",
     "exportDesign": "デザインのエクスポート",
     "importDesign": "デザインのインポート",
-    "important": "重要"
+    "important": "重要",
+    "formDesignInfoA": "このフォームの作成が完了したら、 <strong>[デザインを保存]</strong>ボタンを使用します。",
+    "formDesignInfoB": "<strong>[送信]</strong>ボタンは、ユーザーがこのフォームを送信するために提供されており、保存後にアクティブになります。",
+    "formLoadErrMsg": "フォームデザインの読み込み中にエラーが発生しました。",
+    "formLoadConsoleErrMsg": "フォーム {formId} スキーマの読み込みエラー (バージョン: {versionId} ドラフト: {draftId}): {error}",
+    "formSchemaImportErrMsg": "フォーム スキーマのインポート中にエラーが発生しました。",
+    "formSchemaImportConsoleErrMsg": "フォーム スキーマのインポート中にエラーが発生しました: {error}",
+    "formDesignSaveErrMsg": "このフォームデザインを保存しようとしたときにエラーが発生しました。更新するか、後で再試行するために終了する必要がある場合は、ページ上の既存のデザインをエクスポートして、後で使用できるように保存できます。",
+    "formDesignSaveConsoleErrMsg": "フォームの更新または作成中にエラーが発生しました (FormID: {formId}、versionId: {versionId}、draftId: {draftId}) エラー: {error}",
+    "collapse": "崩壊",
+    "actions": "行動"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "フォームデザイナーに対する免責事項と責任声明:",
@@ -556,7 +566,11 @@
     "bottom": "下",
     "top": "上",
     "actions": "行動",
-    "collapse": "崩壊"
+    "collapse": "崩壊",
+    "saved": "保存されました",
+    "save": "保存",
+    "saving": "保存",
+    "notSaved": "保存されていません"
   },
   "formViewer": {
     "lateFormSubmissions": "フォーム送信期間は終了しました。下のボタンをクリックすると、遅れて提出することもできます。",

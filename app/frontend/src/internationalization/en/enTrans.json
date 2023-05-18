@@ -275,7 +275,17 @@
     "formDesign": "Form Design",
     "exportDesign": "Export Design",
     "importDesign": "Import Design",
-    "important": "IMPORTANT"
+    "important": "IMPORTANT",
+    "formDesignInfoA": "Use the <strong>SAVE DESIGN</strong> button when you are done building this form.",
+    "formDesignInfoB": "The <strong>SUBMIT</strong> button is provided for your user to submit this form and will be activated after it is saved.",
+    "formLoadErrMsg": "An error occurred while loading the form design.",
+    "formLoadConsoleErrMsg": "Error loading form {formId} schema (version: {versionId} draft: {draftId}): {error}",
+    "formSchemaImportErrMsg": "An error occurred while importing the form schema.",
+    "formSchemaImportConsoleErrMsg": "Error importing form schema : {error}",
+    "formDesignSaveErrMsg": "An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.",
+    "formDesignSaveConsoleErrMsg": "Error updating or creating form (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
+    "collapse": "Collapse",
+    "actions": "Actions"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer and statement of responsibility for Form Designers:",
@@ -560,7 +570,11 @@
     "bottom": "Bottom",
     "top": "Top",
     "actions": "Actions",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "saved": "Saved",
+    "save": "Save",
+    "saving": "Saving",
+    "notSaved": "Not Saved"
   },
   "formViewer": {
     "lateFormSubmissions": "The form submission period has expired! You can still create a late submission by clicking the button below.",

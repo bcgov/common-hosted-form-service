@@ -273,7 +273,17 @@
     "formDesign": "thiết kế biểu mẫu",
     "exportDesign": "Thiết kế xuất khẩu",
     "importDesign": "Thiết kế nhập khẩu",
-    "important": "QUAN TRỌNG"
+    "important": "QUAN TRỌNG",
+    "formDesignInfoA": "Sử dụng nút <strong>LƯU THIẾT KẾ</strong> khi bạn hoàn thành việc xây dựng biểu mẫu này.",
+    "formDesignInfoB": "Nút <strong>GỬI</strong> được cung cấp để người dùng của bạn gửi biểu mẫu này và sẽ được kích hoạt sau khi được lưu.",
+    "formLoadErrMsg": "Đã xảy ra lỗi khi tải thiết kế biểu mẫu.",
+    "formLoadConsoleErrMsg": "Lỗi khi tải lược đồ biểu mẫu {formId} (phiên bản: {versionId} bản nháp: {draftId}): {error}",
+    "formSchemaImportErrMsg": "Đã xảy ra lỗi khi nhập lược đồ biểu mẫu.",
+    "formSchemaImportConsoleErrMsg": "Lỗi khi nhập giản đồ biểu mẫu : {error}",
+    "formDesignSaveErrMsg": "Đã xảy ra lỗi khi cố gắng lưu thiết kế biểu mẫu này. Nếu bạn cần làm mới hoặc để lại để thử lại sau, bạn có thể Xuất thiết kế hiện có trên trang để lưu lại sau này.",
+    "formDesignSaveConsoleErrMsg": "Lỗi khi cập nhật hoặc tạo biểu mẫu (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Lỗi: {error}",
+    "collapse": "Sụp đổ",
+    "actions": "hành động"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Tuyên bố miễn trừ trách nhiệm và tuyên bố trách nhiệm đối với Người thiết kế biểu mẫu:",
@@ -556,7 +566,11 @@
     "bottom": "Đáy",
     "top": "Đứng đầu",
     "actions": "hành động",
-    "collapse": "Sụp đổ"
+    "collapse": "Sụp đổ",
+    "saved": "Đã lưu",
+    "save": "Cứu",
+    "saving": "Tiết kiệm",
+    "notSaved": "Chưa được lưu"
   },
   "formViewer": {
     "lateFormSubmissions": "Thời gian gửi biểu mẫu đã hết hạn! Bạn vẫn có thể tạo một bài nộp muộn bằng cách nhấp vào nút bên dưới.",
