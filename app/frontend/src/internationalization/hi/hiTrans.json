@@ -270,10 +270,20 @@
     "401UnAuthorizedErrMsg": "आपको इस पेज को एक्सेस करने की अनुमति नहीं है।"
   },
   "formDesigner": {
-    "formDesign": "फॉर्म डिजाइन",
+    "formDesign": "प्रपत्र डिजाइन",
     "exportDesign": "निर्यात डिजाइन",
     "importDesign": "आयात डिजाइन",
-    "important": "महत्वपूर्ण"
+    "important": "महत्वपूर्ण",
+    "formDesignInfoA": "जब आप इस फॉर्म का निर्माण पूरा कर लें तो <strong>सेव डिज़ाइन</strong> बटन का उपयोग करें।",
+    "formDesignInfoB": "<strong>सबमिट</strong> बटन आपके उपयोगकर्ता को यह फ़ॉर्म सबमिट करने के लिए प्रदान किया गया है और इसे सहेजे जाने के बाद सक्रिय हो जाएगा।",
+    "formLoadErrMsg": "प्रपत्र डिज़ाइन लोड करते समय एक त्रुटि हुई.",
+    "formLoadConsoleErrMsg": "फ़ॉर्म {formId} स्कीमा लोड करने में त्रुटि (संस्करण: {versionId} ड्राफ़्ट: {draftId}): {त्रुटि}",
+    "formSchemaImportErrMsg": "प्रपत्र स्कीमा आयात करते समय एक त्रुटि उत्पन्न हुई।",
+    "formSchemaImportConsoleErrMsg": "प्रपत्र स्कीमा आयात करने में त्रुटि: {त्रुटि}",
+    "formDesignSaveErrMsg": "इस प्रपत्र डिज़ाइन को सहेजने का प्रयास करते समय एक त्रुटि हुई. यदि आपको बाद में पुनः प्रयास करने के लिए ताज़ा करने या छोड़ने की आवश्यकता है, तो आप बाद में सहेजने के लिए पृष्ठ पर मौजूदा डिज़ाइन निर्यात कर सकते हैं।",
+    "formDesignSaveConsoleErrMsg": "फ़ॉर्म को अपडेट करने या बनाने में त्रुटि (FormID: {formId}, versionId: {versionId},raftId: {draftId}) त्रुटि: {error}",
+    "collapse": "गिर जाना",
+    "actions": "कार्रवाई"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "प्रपत्र डिजाइनरों के लिए अस्वीकरण और उत्तरदायित्व विवरण:",
@@ -556,7 +566,11 @@
     "bottom": "तल",
     "top": "ऊपर",
     "actions": "कार्रवाई",
-    "collapse": "गिर जाना"
+    "collapse": "गिर जाना",
+    "saved": "बचाया",
+    "save": "बचाना",
+    "saving": "सहेजा जा रहा है",
+    "notSaved": "सहेजा नहीं गया"
   },
   "formViewer": {
     "lateFormSubmissions": "प्रपत्र जमा करने की अवधि समाप्त हो गई है! आप अभी भी नीचे दिए गए बटन पर क्लिक करके देर से सबमिशन बना सकते हैं।",

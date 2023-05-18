@@ -273,7 +273,21 @@
     "formDesign": "Conception de formulaire",
     "exportDesign": "Conception d'exportation",
     "importDesign": "Importer la conception",
-    "important": "IMPORTANT"
+    "important": "IMPORTANT",
+    "formDesignInfoA": "Utilisez le bouton <strong>ENREGISTRER LA CONCEPTION</strong> lorsque vous avez terminé de créer ce formulaire.",
+    "formDesignInfoB": "Le bouton <strong>SOUMETTRE</strong> est fourni à votre utilisateur pour soumettre ce formulaire et sera activé après son enregistrement.",
+    "formLoadErrMsg": "Une erreur s'est produite lors du chargement de la conception de formulaire.",
+    "formLoadConsoleErrMsg": "Erreur lors du chargement du schéma {formId} du formulaire (version : {versionId} brouillon : {draftId}) : {error}",
+    "formSchemaImportErrMsg": "Une erreur s'est produite lors de l'importation du schéma du formulaire.",
+    "formSchemaImportConsoleErrMsg": "Erreur lors de l'importation du schéma du formulaire : {error}",
+    "formDesignSaveErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement de cette conception de formulaire. Si vous devez actualiser ou quitter pour réessayer plus tard, vous pouvez exporter le design existant sur la page pour l'enregistrer pour plus tard.",
+    "formDesignSaveConsoleErrMsg": "Erreur lors de la mise à jour ou de la création du formulaire (FormID : {formId}, versionId : {versionId}, draftId : {draftId}) Erreur : {error}",
+    "saved": "Enregistré",
+    "save": "Sauvegarder",
+    "saving": "Économie",
+    "notSaved": "Non enregistré",
+    "collapse": "effondrement",
+    "actions": "Actions"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Clause de non-responsabilité et déclaration de responsabilité pour les concepteurs de formulaire :",
@@ -556,7 +570,11 @@
     "bottom": "Bas",
     "top": "Haut",
     "actions": "Actions",
-    "collapse": "Effondrement"
+    "collapse": "Effondrement",
+    "saved": "Enregistré",
+    "save": "Sauvegarder",
+    "saving": "Économie",
+    "notSaved": "Non enregistré"
   },
   "formViewer": {
     "lateFormSubmissions": "La période de soumission du formulaire est expirée ! Vous pouvez toujours créer une soumission tardive en cliquant sur le bouton ci-dessous.",

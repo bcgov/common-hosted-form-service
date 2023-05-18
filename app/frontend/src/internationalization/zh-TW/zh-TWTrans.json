@@ -273,7 +273,17 @@
     "formDesign": "表單設計",
     "exportDesign": "導出設計",
     "importDesign": "導入設計",
-    "important": "重要的"
+    "important": "重要的",
+    "formDesignInfoA": "完成此表單的構建後，請使用<strong>“保存設計”</strong>按鈕。",
+    "formDesignInfoB": "<strong>提交</strong>按鈕供您的用戶提交此表單，並在保存後激活。",
+    "formLoadErrMsg": "加載表單設計時出錯。",
+    "formLoadConsoleErrMsg": "加載表單 {formId} 架構時出錯（版本：{versionId} 草稿：{draftId}）：{error}",
+    "formSchemaImportErrMsg": "導入表單架構時出錯。",
+    "formSchemaImportConsoleErrMsg": "導入表單架構時出錯：{error}",
+    "formDesignSaveErrMsg": "試圖保存此表單設計時出錯。如果您需要刷新或離開以稍後重試，您可以導出頁面上的現有設計以保存以備後用。",
+    "formDesignSaveConsoleErrMsg": "更新或創建表單時出錯（FormID：{formId}，versionId：{versionId}，draftId：{draftId}）錯誤：{error}",
+    "collapse": "坍塌",
+    "actions": "動作"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Form Designers 的免責聲明和責任聲明：",
@@ -556,7 +566,11 @@
     "bottom": "底部",
     "top": "頂部",
     "actions": "動作",
-    "collapse": "坍塌"
+    "collapse": "坍塌",
+    "saved": "已保存",
+    "save": "節省",
+    "saving": "保存",
+    "notSaved": "未保存"
   },
   "formViewer": {
     "lateFormSubmissions": "表單提交期限已過！您仍然可以通過單擊下面的按鈕創建延遲提交。",

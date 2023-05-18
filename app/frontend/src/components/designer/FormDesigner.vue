@@ -59,14 +59,8 @@
         <v-icon class="mr-1" color="primary">info</v-icon
         >{{ $t('trans.formDesigner.important') }}!
       </h4>
-      <p class="my-0">
-        Use the <strong>SAVE DESIGN</strong> button when you are done building
-        this form.
-      </p>
-      <p class="my-0">
-        The <strong>SUBMIT</strong> button is provided for your user to submit
-        this form and will be activated after it is saved.
-      </p>
+      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
+      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoB')"></p>
     </BaseInfoCard>
     <FormBuilder
       :form="formSchema"
@@ -95,7 +89,7 @@
       :baseFABBorderColor="'#C0C0C0'"
       :fabZIndex="1"
       :size="'small'"
-      fabItemsGap="7px"
+      fabItemsGap="4px"
       @undo="onUndoClick"
       @redo="onRedoClick"
       @save="submitFormSchema"
@@ -349,8 +343,13 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while loading the form design.',
-          consoleError: `Error loading form ${this.formId} schema (version: ${this.versionId} draft: ${this.draftId}): ${error}`,
+          message: this.$t('trans.formDesigner.formLoadErrMsg'),
+          consoleError: this.$t('trans.formDesigner.formLoadConsoleErrMsg', {
+            formId: this.formId,
+            versionId: this.versionId,
+            draftId: this.draftId,
+            error: error,
+          }),
         });
       }
       // get a version number to show in header
@@ -372,8 +371,13 @@ export default {
         fileReader.readAsText(file);
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while importing the form schema.',
-          consoleError: `Error importing form schema : ${error}`,
+          message: this.$t('trans.formDesigner.formSchemaImportErrMsg'),
+          consoleError: this.$t(
+            'trans.formDesigner.formSchemaImportConsoleErrMsg',
+            {
+              error: error,
+            }
+          ),
         });
       }
     },
@@ -655,9 +659,16 @@ export default {
         this.savedStatus = 'Not Saved';
         this.isFormSaved = false;
         this.addNotification({
-          message:
-            'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
-          consoleError: `Error updating or creating form (FormID: ${this.formId}, versionId: ${this.versionId}, draftId: ${this.draftId}) Error: ${error}`,
+          message: this.$t('trans.formDesigner.formDesignSaveErrMsg'),
+          consoleError: this.$t(
+            'trans.formDesigner.formSchemaImportConsoleErrMsg',
+            {
+              formId: this.formId,
+              versionId: this.versionId,
+              draftId: this.draftId,
+              error: error,
+            }
+          ),
         });
       } finally {
         this.saving = false;
@@ -732,7 +743,11 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true, svs: 'Saved' },
+        query: {
+          ...this.$route.query,
+          sv: true,
+          svs: 'Saved',
+        },
       });
     },
   },

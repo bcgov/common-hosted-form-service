@@ -273,7 +273,17 @@
     "formDesign": "Disenyo ng Form",
     "exportDesign": "I-export ang Disenyo",
     "importDesign": "Import na Disenyo",
-    "important": "MAHALAGA"
+    "important": "MAHALAGA",
+    "formDesignInfoA": "Gamitin ang <strong>SAVE DESIGN</strong> button kapag tapos ka nang buuin ang form na ito.",
+    "formDesignInfoB": "Ang <strong>SUBMIT</strong> button ay ibinibigay para sa iyong user na isumite ang form na ito at isaaktibo pagkatapos itong ma-save.",
+    "formLoadErrMsg": "May naganap na error habang nilo-load ang disenyo ng form.",
+    "formLoadConsoleErrMsg": "Error sa paglo-load ng form {formId} schema (bersyon: {versionId} draft: {draftId}): {error}",
+    "formSchemaImportErrMsg": "May naganap na error habang ini-import ang form schema.",
+    "formSchemaImportConsoleErrMsg": "Error sa pag-import ng form schema : {error}",
+    "formDesignSaveErrMsg": "May naganap na error habang sinusubukang i-save ang disenyo ng form na ito. Kung kailangan mong mag-refresh o umalis upang subukang muli sa ibang pagkakataon, maaari mong I-export ang kasalukuyang disenyo sa page upang i-save para sa ibang pagkakataon.",
+    "formDesignSaveConsoleErrMsg": "Error sa pag-update o paggawa ng form (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
+    "collapse": "Pagbagsak",
+    "actions": "Mga aksyon"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer at pahayag ng responsibilidad para sa mga Form Designer:",
@@ -556,7 +566,11 @@
     "bottom": "Ibaba",
     "top": "Nangunguna",
     "actions": "Mga aksyon",
-    "collapse": "Pagbagsak"
+    "collapse": "Pagbagsak",
+    "saved": "Nai-save",
+    "save": "I-save",
+    "saving": "Nagtitipid",
+    "notSaved": "Hindi Na-save"
   },
   "formViewer": {
     "lateFormSubmissions": "Ang panahon ng pagsusumite ng form ay nag-expire na! Maaari ka pa ring gumawa ng huli na pagsusumite sa pamamagitan ng pag-click sa button sa ibaba.",

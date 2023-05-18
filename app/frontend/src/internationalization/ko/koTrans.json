@@ -273,7 +273,17 @@
     "formDesign": "양식 디자인",
     "exportDesign": "디자인 내보내기",
     "importDesign": "디자인 가져오기",
-    "important": "중요한"
+    "important": "중요한",
+    "formDesignInfoA": "이 양식 작성을 완료하면 <strong>SAVE DESIGN</strong> 버튼을 사용하십시오.",
+    "formDesignInfoB": "<strong>SUBMIT</strong> 버튼은 사용자가 이 양식을 제출할 수 있도록 제공되며 양식이 저장되면 활성화됩니다.",
+    "formLoadErrMsg": "양식 디자인을 로드하는 동안 오류가 발생했습니다.",
+    "formLoadConsoleErrMsg": "양식 {formId} 스키마(버전: {versionId} 초안: {draftId}) 로드 오류: {error}",
+    "formSchemaImportErrMsg": "양식 스키마를 가져오는 동안 오류가 발생했습니다.",
+    "formSchemaImportConsoleErrMsg": "양식 스키마 가져오기 오류: {error}",
+    "formDesignSaveErrMsg": "이 양식 디자인을 저장하는 동안 오류가 발생했습니다. 새로고침하거나 나중에 다시 시도하기 위해 나가야 하는 경우 페이지에서 기존 디자인을 내보내 나중에 저장할 수 있습니다.",
+    "formDesignSaveConsoleErrMsg": "양식 업데이트 또는 생성 오류(FormID: {formId}, versionId: {versionId}, draftId: {draftId}) 오류: {error}",
+    "collapse": "무너지다",
+    "actions": "행위"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "양식 설계자에 대한 면책 및 책임 진술:",
@@ -556,7 +566,11 @@
     "bottom": "맨 아래",
     "top": "맨 위",
     "actions": "행위",
-    "collapse": "무너지다"
+    "collapse": "무너지다",
+    "saved": "저장됨",
+    "save": "구하다",
+    "saving": "절약",
+    "notSaved": "저장되지 않음"
   },
   "formViewer": {
     "lateFormSubmissions": "양식 제출 기간이 만료되었습니다! 여전히 아래 버튼을 클릭하여 늦은 제출을 생성할 수 있습니다.",
