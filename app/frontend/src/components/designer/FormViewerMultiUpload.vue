@@ -278,6 +278,7 @@ export default {
         this.index = 0;
         this.max = 100;
         this.progress = true;
+        this.$emit('toggleBlock', true);
         this.validate(this.Json[this.index], []);
       } catch (error) {
         this.resetUpload();
@@ -338,6 +339,7 @@ export default {
       if (this.globalError.length == 0) {
         this.$emit('save-bulk-data', this.Json);
       } else {
+        this.$emit('toggleBlock', false);
         this.$emit('set-error', {
           message: this.ERROR.ERROR_AFTER_VALIDATE,
           error: true,

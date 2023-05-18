@@ -23,6 +23,7 @@
         <div v-if="displayTitle">
           <div v-if="!isFormPublic(form)">
             <FormViewerActions
+              :block="block"
               :draftEnabled="form.enableSubmitterDraft"
               :formId="form.id"
               :isDraft="submissionRecord.draft"
@@ -115,6 +116,7 @@
             @reset-message="resetMessage"
             @set-error="setError"
             :formFields="formFields"
+            @toggleBlock="toggleBlock"
           />
           <Form
             class="mt-4"
@@ -134,11 +136,23 @@
           <p v-if="version" class="text-right">Version: {{ version }}</p>
         </div>
       </div>
-      <YesOrNoDialog
-        :doYouWantToSaveTheDraft="doYouWantToSaveTheDraft"
-        @save-draft="saveDraftFromModal"
-        @close-bulk-yes-or-no="closeBulkYesOrNo"
-      />
+      <BaseDialog
+        v-model="doYouWantToSaveTheDraft"
+        type="SAVEDDELETE"
+        :enableCustomButton="false"
+        @close-dialog="closeBulkYesOrNo"
+        @delete-dialog="no"
+        @continue-dialog="yes"
+      >
+        <template #title>Please Confirm</template>
+        <template #text>Do you want to save the draft?</template>
+        <template #button-text-continue>
+          <span>Yes</span>
+        </template>
+        <template #button-text-delete>
+          <span>No</span>
+        </template>
+      </BaseDialog>
     </v-skeleton-loader>
   </div>
 </template>
@@ -154,14 +168,11 @@ import FormViewerMultiUpload from '@/components/designer/FormViewerMultiUpload.v
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '@/utils/constants';
-import YesOrNoDialog from '@/components/designer/YesOrNoDialog.vue';
-
 import _ from 'lodash';
 
 export default {
   name: 'FormViewer',
   components: {
-    YesOrNoDialog,
     Form,
     FormViewerActions,
     FormViewerMultiUpload,
@@ -427,6 +438,9 @@ export default {
       this.allowSubmitterToUploadFile =
         response.data.allowSubmitterToUploadFile;
       if (this.allowSubmitterToUploadFile && !this.draftId) this.jsonManager();
+    },
+    toggleBlock(e) {
+      this.block = e;
     },
     formChange(e) {
       if (e.changed != undefined && !e.changed.flags.fromSubmission) {
@@ -812,6 +826,12 @@ export default {
       } else {
         this.bulkFile = !this.bulkFile;
       }
+    },
+    yes() {
+      this.saveDraftFromModal(true);
+    },
+    no() {
+      this.saveDraftFromModal(false);
     },
     saveDraftFromModal(event) {
       this.doYouWantToSaveTheDraft = false;

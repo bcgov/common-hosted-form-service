@@ -87,6 +87,10 @@ export default {
     ManageSubmissionUsers,
   },
   props: {
+    block: {
+      type: Boolean,
+      default: false,
+    },
     bulkFile: {
       type: Boolean,
       default: false,
