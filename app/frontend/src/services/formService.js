@@ -249,7 +249,7 @@ export default {
    * @returns {Promise} An axios response
    */
   createMultiSubmission(formId, versionId, requestBody) {
-    return appAxios(30000).post(
+    return appAxios().post(
       `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/multiSubmission`,
       requestBody
     );

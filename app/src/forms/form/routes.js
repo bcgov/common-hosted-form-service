@@ -76,10 +76,15 @@ routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPe
   await controller.createSubmission(req, res, next);
 });
 
-routes.post('/:formId/versions/:formVersionId/multiSubmission', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
-  req.setTimeout(30 * 1000); //use req. this sets timeout to 30 seconds
-  await controller.createMultiSubmission(req, res, next);
-});
+routes.post(
+  '/:formId/versions/:formVersionId/multiSubmission',
+  middleware.publicRateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]),
+  async (req, res, next) => {
+    await controller.createMultiSubmission(req, res, next);
+  }
+);
 
 routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
   controller.listSubmissionFields(req, res, next);

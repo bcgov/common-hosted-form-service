@@ -98,10 +98,9 @@ jobs:
             ${{ runner.os }}-frontend-${{ env.cache-name }}-
             ${{ runner.os }}-frontend-
             ${{ runner.os }}-
-      # uncomment this before deploy
       - name: Install dependencies
         if: steps.cache-frontend.outputs.cache-hit != 'true'
-        run: npm ci --force
+        run: npm ci
       - name: Test
         run: npm run test
         env:
