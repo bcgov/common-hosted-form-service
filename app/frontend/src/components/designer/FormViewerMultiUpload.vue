@@ -24,6 +24,7 @@
     </v-row>
     <v-row>
       <h3>{{ form.name }}</h3>
+
       <div
         v-if="!file"
         class="drop-zone"
@@ -35,14 +36,18 @@
         <v-icon class="mr-1" color="#003366">upload</v-icon>
         <h1>Select JSON file to upload</h1>
         <p>or drag and drop it here</p>
-        <input
+
+        <v-file-input
           class="drop-zone__input"
           ref="file"
           accept=".json"
           type="file"
           @change="addFile($event, 1)"
           name="file"
-        />
+          label="Choose a file"
+          show-size
+        >
+        </v-file-input>
       </div>
       <div v-if="file" class="worker-zone">
         <div class="wz-top">
@@ -199,37 +204,48 @@ export default {
         });
         return;
       }
-      let droppedFiles = type == 0 ? e.dataTransfer.files : e.target.files;
-      if (!droppedFiles || droppedFiles == undefined) return;
+      try {
+        let droppedFiles = type == 0 ? e.dataTransfer.files : [e];
 
-      if (droppedFiles.length > 1) {
+        if (!droppedFiles || droppedFiles == undefined) return;
+
+        if (droppedFiles.length > 1) {
+          this.addNotification({
+            message: this.ERROR.DRAG_MULPLE_FILE_ERROR,
+            consoleError: this.ERROR.DRAG_MULPLE_FILE_ERROR,
+          });
+          return;
+        }
+
+        if (droppedFiles[0]['type'] != 'application/json') {
+          this.addNotification({
+            message: this.ERROR.FILE_FORMAT_ERROR,
+            consoleError: this.ERROR.FILE_FORMAT_ERROR,
+          });
+          return;
+        }
+        let size = droppedFiles[0].size / (1024 * 1024);
+        if (size > this.max_file_size) {
+          this.addNotification({
+            message: this.ERROR.FILE_SIZE_ERROR,
+            consoleError: this.ERROR.FILE_SIZE_ERROR,
+          });
+          return;
+        }
+        this.file = droppedFiles[0];
+        this.parseFile();
+      } catch (error) {
         this.addNotification({
           message: this.ERROR.DRAG_MULPLE_FILE_ERROR,
-          consoleError: this.ERROR.DRAG_MULPLE_FILE_ERROR,
+          consoleError: `${this.ERROR.DRAG_MULPLE_FILE_ERROR} ${error}`,
         });
         return;
       }
-      if (droppedFiles[0]['type'] != 'application/json') {
-        this.addNotification({
-          message: this.ERROR.FILE_FORMAT_ERROR,
-          consoleError: this.ERROR.FILE_FORMAT_ERROR,
-        });
-        return;
-      }
-      let size = droppedFiles[0].size / (1024 * 1024);
-      if (size > this.max_file_size) {
-        this.addNotification({
-          message: this.ERROR.FILE_SIZE_ERROR,
-          consoleError: this.ERROR.FILE_SIZE_ERROR,
-        });
-        return;
-      }
-      this.file = droppedFiles[0];
-      this.parseFile();
     },
     handleFile() {
       if (this.file == undefined) {
-        this.$refs.file.click();
+        this.$refs.file.$refs.input.click();
+        // this.$refs.file.click();
       }
     },
     removeFile(file) {
