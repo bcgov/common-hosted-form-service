@@ -445,7 +445,11 @@
     "notifyConsoleErrorCode": "获取状态时出错：",
     "fetchSubmissionUsersErr": "尝试获取此提交的收件人电子邮件时出错。",
     "fetchSubmissionUsersConsErr": "获取收件人电子邮件时出错",
-    "assignSubmissnToFormReviewer": "可以将提交的内容分配给表单审阅者。<br />要将更多团队成员添加为表单审阅者，请转到此表单的管理页面。"
+    "assignSubmissnToFormReviewer": "可以将提交的内容分配给表单审阅者。<br />要将更多团队成员添加为表单审阅者，请转到此表单的管理页面。",
+    "update": "更新",
+    "revise": "修订",
+    "complete": "完全的",
+    "assign": "分配"
   },
   "statusTable": {
     "loadingText": "加载请稍候",
@@ -490,7 +494,8 @@
     "uploadTemplateFile": "上传模板文件",
     "downloadOptions": "下载选项",
     "print": "打印",
-    "browserPrint": "浏览器打印"
+    "browserPrint": "浏览器打印",
+    "pageFromBrowser": "来自浏览器的页面"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "组件信息链接",
@@ -643,5 +648,33 @@
     "back": "后退",
     "confirmPageNav": "您真的要离开此页面吗？您所做的更改将不会保存。",
     "agreementErrMsg": "您必须同意上面显示的隐私免责声明。"
+  },
+  "addTeamMember": {
+    "formDesign": "表单设计",
+    "exportDesign": "导出设计",
+    "importDesign": "导入设计",
+    "important": "重要的",
+    "formDesignInfoA": "完成此表单的构建后，请使用<strong>“保存设计”</strong>按钮。",
+    "formDesignInfoB": "<strong>提交</strong>按钮供您的用户提交此表单，并在保存后激活。",
+    "formLoadErrMsg": "加载表单设计时出错。",
+    "formLoadConsoleErrMsg": "加载表单 {formId} 架构时出错（版本：{versionId} 草稿：{draftId}）：{error}",
+    "formSchemaImportErrMsg": "导入表单架构时出错。",
+    "formSchemaImportConsoleErrMsg": "导入表单架构时出错：{error}",
+    "formDesignSaveErrMsg": "试图保存此表单设计时出错。如果您需要刷新或离开以稍后重试，您可以导出页面上的现有设计以保存以备后用。",
+    "formDesignSaveConsoleErrMsg": "更新或创建表单时出错（FormID：{formId}，versionId：{versionId}，draftId：{draftId}）错误：{error}",
+    "saved": "已保存",
+    "save": "节省",
+    "saving": "保存",
+    "notSaved": "未保存",
+    "collapse": "坍塌",
+    "actions": "动作"
+  },
+  "baseFilter": {
+    "cancel": "取消"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "查看所有提交",
+    "saveAsADraft": "保存为草稿",
+    "editThisDraft": "编辑此草稿"
   }
 }

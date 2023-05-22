@@ -445,7 +445,11 @@
     "notifyConsoleErrorCode": "Error al obtener estados:",
     "fetchSubmissionUsersErr": "Se produjo un error al intentar recuperar los correos electrónicos de los destinatarios para este envío.",
     "fetchSubmissionUsersConsErr": "Error al obtener los correos electrónicos de los destinatarios para",
-    "assignSubmissnToFormReviewer": "Los envíos se pueden asignar a revisores de formularios.<br /> Para agregar más miembros del equipo como revisores de formularios, vaya a la página Administrar de este formulario."
+    "assignSubmissnToFormReviewer": "Los envíos se pueden asignar a revisores de formularios.<br /> Para agregar más miembros del equipo como revisores de formularios, vaya a la página Administrar de este formulario.",
+    "update": "ACTUALIZAR",
+    "revise": "REVISAR",
+    "complete": "COMPLETA",
+    "assign": "ASIGNAR"
   },
   "statusTable": {
     "loadingText": "Cargando por favor espere",
@@ -490,7 +494,8 @@
     "uploadTemplateFile": "Subir archivo de plantilla",
     "downloadOptions": "Opciones de descarga",
     "print": "Imprimir",
-    "browserPrint": "Impresión del navegador"
+    "browserPrint": "Impresión del navegador",
+    "pageFromBrowser": "la página desde tu navegador"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Enlace de información del componente",
@@ -643,5 +648,33 @@
     "back": "Atrás",
     "confirmPageNav": "¿De verdad quieres salir de esta página? Los cambios que haya realizado no se guardarán.",
     "agreementErrMsg": "Debe aceptar el descargo de responsabilidad de privacidad que se muestra arriba."
+  },
+  "addTeamMember": {
+    "formDesign": "Diseño de formularios",
+    "exportDesign": "Diseño de exportación",
+    "importDesign": "Diseño de importación",
+    "important": "IMPORTANTE",
+    "formDesignInfoA": "Utilice el botón <strong>GUARDAR DISEÑO</strong> cuando haya terminado de crear este formulario.",
+    "formDesignInfoB": "El botón <strong>ENVIAR</strong> se proporciona para que su usuario envíe este formulario y se activará después de guardarlo.",
+    "formLoadErrMsg": "Ocurrió un error al cargar el diseño del formulario.",
+    "formLoadConsoleErrMsg": "Error al cargar el formulario {formId} esquema (versión: {versionId} borrador: {draftId}): {error}",
+    "formSchemaImportErrMsg": "Ocurrió un error al importar el esquema del formulario.",
+    "formSchemaImportConsoleErrMsg": "Error al importar el esquema del formulario: {error}",
+    "formDesignSaveErrMsg": "Se produjo un error al intentar guardar este diseño de formulario. Si necesita actualizar o salir para volver a intentarlo más tarde, puede exportar el diseño existente en la página para guardarlo más tarde.",
+    "formDesignSaveConsoleErrMsg": "Error al actualizar o crear el formulario (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
+    "saved": "Salvado",
+    "save": "Ahorrar",
+    "saving": "Ahorro",
+    "notSaved": "No guardado",
+    "collapse": "Colapsar",
+    "actions": "Comportamiento"
+  },
+  "baseFilter": {
+    "cancel": "Cancelar"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "عرض جميع عمليات الإرسال",
+    "saveAsADraft": "احفظ كمسودة",
+    "editThisDraft": "قم بتحرير هذه المسودة"
   }
 }

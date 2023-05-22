@@ -3,7 +3,7 @@
     <v-col v-if="formId">
       <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
         <v-btn color="primary" outlined>
-          <span>View All Submissions</span>
+          <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }}</span>
         </v-btn>
       </router-link>
     </v-col>
@@ -22,7 +22,7 @@
               <v-icon>save</v-icon>
             </v-btn>
           </template>
-          <span>Save as a Draft</span>
+          <span>{{ $t('trans.formViewerActions.saveAsADraft') }}</span>
         </v-tooltip>
       </span>
 
@@ -42,7 +42,7 @@
                 <v-icon>mode_edit</v-icon>
               </v-btn>
             </template>
-            <span>Edit this Draft</span>
+            <span>{{ $t('trans.formViewerActions.editThisDraft') }}</span>
           </v-tooltip>
         </router-link>
       </span>

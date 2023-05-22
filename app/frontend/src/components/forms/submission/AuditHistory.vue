@@ -66,16 +66,20 @@ export default {
   data() {
     return {
       dialog: false,
-      headers: [
+      loading: true,
+      history: [],
+    };
+  },
+  computed: {
+    headers() {
+      return [
         {
           text: this.$t('trans.auditHistory.userName'),
           value: 'updatedByUsername',
         },
         { text: this.$t('trans.auditHistory.date'), value: 'actionTimestamp' },
-      ],
-      loading: true,
-      history: [],
-    };
+      ];
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),

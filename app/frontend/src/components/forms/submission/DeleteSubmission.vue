@@ -17,8 +17,8 @@
         >{{ $t('trans.deleteSubmission.deleteThis') }}
         {{
           isDraft
-            ? "$t('trans.deleteSubmission.drafts')"
-            : "$t('trans.deleteSubmission.submission')"
+            ? $t('trans.deleteSubmission.drafts')
+            : $t('trans.deleteSubmission.submission')
         }}</span
       >
     </v-tooltip>

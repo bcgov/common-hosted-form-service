@@ -445,7 +445,11 @@
     "notifyConsoleErrorCode": "Lỗi nhận trạng thái:",
     "fetchSubmissionUsersErr": "Đã xảy ra lỗi khi cố gắng tìm nạp email của người nhận cho nội dung gửi này.",
     "fetchSubmissionUsersConsErr": "Lỗi nhận email người nhận cho",
-    "assignSubmissnToFormReviewer": "Nội dung gửi có thể được chỉ định cho Người đánh giá biểu mẫu.<br /> Để thêm nhiều thành viên nhóm làm Người đánh giá biểu mẫu, hãy chuyển đến trang Quản lý cho biểu mẫu này."
+    "assignSubmissnToFormReviewer": "Nội dung gửi có thể được chỉ định cho Người đánh giá biểu mẫu.<br /> Để thêm nhiều thành viên nhóm làm Người đánh giá biểu mẫu, hãy chuyển đến trang Quản lý cho biểu mẫu này.",
+    "update": "CẬP NHẬT",
+    "revise": "ÔN LẠI",
+    "complete": "HOÀN THÀNH",
+    "assign": "GIAO PHÓ"
   },
   "statusTable": {
     "loadingText": "Tải vui lòng đợi",
@@ -490,7 +494,8 @@
     "uploadTemplateFile": "Tải lên tệp mẫu",
     "downloadOptions": "Tùy chọn tải xuống",
     "print": "In",
-    "browserPrint": "In trình duyệt"
+    "browserPrint": "In trình duyệt",
+    "pageFromBrowser": "trang từ trình duyệt của bạn"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Liên kết thông tin thành phần",
@@ -643,5 +648,33 @@
     "back": "Mặt sau",
     "confirmPageNav": "Bạn có thực sự muốn rời khỏi trang này? Những thay đổi bạn đã thực hiện sẽ không được lưu.",
     "agreementErrMsg": "Bạn phải đồng ý với tuyên bố từ chối trách nhiệm về quyền riêng tư được hiển thị ở trên."
+  },
+  "addTeamMember": {
+    "formDesign": "thiết kế biểu mẫu",
+    "exportDesign": "Thiết kế xuất khẩu",
+    "importDesign": "Thiết kế nhập khẩu",
+    "important": "QUAN TRỌNG",
+    "formDesignInfoA": "Sử dụng nút <strong>LƯU THIẾT KẾ</strong> khi bạn hoàn thành việc xây dựng biểu mẫu này.",
+    "formDesignInfoB": "Nút <strong>GỬI</strong> được cung cấp để người dùng của bạn gửi biểu mẫu này và sẽ được kích hoạt sau khi được lưu.",
+    "formLoadErrMsg": "Đã xảy ra lỗi khi tải thiết kế biểu mẫu.",
+    "formLoadConsoleErrMsg": "Lỗi khi tải lược đồ biểu mẫu {formId} (phiên bản: {versionId} bản nháp: {draftId}): {error}",
+    "formSchemaImportErrMsg": "Đã xảy ra lỗi khi nhập lược đồ biểu mẫu.",
+    "formSchemaImportConsoleErrMsg": "Lỗi khi nhập giản đồ biểu mẫu : {error}",
+    "formDesignSaveErrMsg": "Đã xảy ra lỗi khi cố gắng lưu thiết kế biểu mẫu này. Nếu bạn cần làm mới hoặc để lại để thử lại sau, bạn có thể Xuất thiết kế hiện có trên trang để lưu lại sau này.",
+    "formDesignSaveConsoleErrMsg": "Lỗi khi cập nhật hoặc tạo biểu mẫu (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Lỗi: {error}",
+    "saved": "Đã lưu",
+    "save": "Cứu",
+    "saving": "Tiết kiệm",
+    "notSaved": "Chưa được lưu",
+    "collapse": "Sụp đổ",
+    "actions": "hành động"
+  },
+  "baseFilter": {
+    "cancel": "Hủy bỏ"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "Xem tất cả bài dự thi",
+    "saveAsADraft": "Lưu dưới dạng Bản nháp",
+    "editThisDraft": "Chỉnh sửa Bản nháp này"
   }
 }

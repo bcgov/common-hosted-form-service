@@ -445,7 +445,11 @@
     "notifyConsoleErrorCode": "स्थितियां प्राप्त करने में त्रुटि:",
     "fetchSubmissionUsersErr": "इस सबमिशन के लिए प्राप्तकर्ता ईमेल लाने का प्रयास करते समय एक त्रुटि हुई।",
     "fetchSubmissionUsersConsErr": "के लिए प्राप्तकर्ता ईमेल प्राप्त करने में त्रुटि",
-    "assignSubmissnToFormReviewer": "सबमिशन फॉर्म समीक्षकों को सौंपे जा सकते हैं।<br /> प्रपत्र समीक्षकों के रूप में और अधिक टीम सदस्यों को जोड़ने के लिए, इस प्रपत्र के प्रबंधन पृष्ठ पर जाएँ।"
+    "assignSubmissnToFormReviewer": "सबमिशन फॉर्म समीक्षकों को सौंपे जा सकते हैं।<br /> प्रपत्र समीक्षकों के रूप में और अधिक टीम सदस्यों को जोड़ने के लिए, इस प्रपत्र के प्रबंधन पृष्ठ पर जाएँ।",
+    "update": "अद्यतन",
+    "revise": "दोहराना",
+    "complete": "पूरा",
+    "assign": "सौंपना"
   },
   "statusTable": {
     "loadingText": "लोड हो रहा है कृपया प्रतीक्षा करें",
@@ -490,7 +494,8 @@
     "uploadTemplateFile": "टेम्पलेट फ़ाइल अपलोड करें",
     "downloadOptions": "डाउनलोड विकल्प",
     "print": "छाप",
-    "browserPrint": "ब्राउज़र प्रिंट"
+    "browserPrint": "ब्राउज़र प्रिंट",
+    "pageFromBrowser": "आपके ब्राउज़र से पृष्ठ"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "घटक सूचना लिंक",
@@ -643,5 +648,33 @@
     "back": "पीछे",
     "confirmPageNav": "क्या आप वाकई इस पृष्ठ को छोड़ना चाहते हैं? आपके द्वारा किए गए परिवर्तन सहेजे नहीं जाएंगे।",
     "agreementErrMsg": "आपको ऊपर दिखाए गए गोपनीयता अस्वीकरण से सहमत होना होगा।"
+  },
+  "addTeamMember": {
+    "formDesign": "प्रपत्र डिजाइन",
+    "exportDesign": "निर्यात डिजाइन",
+    "importDesign": "आयात डिजाइन",
+    "important": "महत्वपूर्ण",
+    "formDesignInfoA": "जब आप इस फॉर्म का निर्माण पूरा कर लें तो <strong>सेव डिज़ाइन</strong> बटन का उपयोग करें।",
+    "formDesignInfoB": "<strong>सबमिट</strong> बटन आपके उपयोगकर्ता को यह फॉर्म जमा करने के लिए प्रदान किया गया है और इसे सहेजे जाने के बाद सक्रिय हो जाएगा।",
+    "formLoadErrMsg": "प्रपत्र डिज़ाइन लोड करते समय एक त्रुटि हुई.",
+    "formLoadConsoleErrMsg": "फ़ॉर्म {formId} स्कीमा लोड करने में त्रुटि (संस्करण: {versionId} ड्राफ़्ट: {draftId}): {त्रुटि}",
+    "formSchemaImportErrMsg": "प्रपत्र स्कीमा आयात करते समय एक त्रुटि उत्पन्न हुई।",
+    "formSchemaImportConsoleErrMsg": "प्रपत्र स्कीमा आयात करने में त्रुटि: {त्रुटि}",
+    "formDesignSaveErrMsg": "इस प्रपत्र डिज़ाइन को सहेजने का प्रयास करते समय एक त्रुटि हुई. यदि आपको बाद में पुनः प्रयास करने के लिए ताज़ा करने या छोड़ने की आवश्यकता है, तो आप बाद में सहेजने के लिए पृष्ठ पर मौजूदा डिज़ाइन निर्यात कर सकते हैं।",
+    "formDesignSaveConsoleErrMsg": "फ़ॉर्म को अपडेट करने या बनाने में त्रुटि (FormID: {formId}, versionId: {versionId},raftId: {draftId}) त्रुटि: {error}",
+    "saved": "बचाया",
+    "save": "बचाना",
+    "saving": "सहेजा जा रहा है",
+    "notSaved": "सहेजा नहीं गया",
+    "collapse": "गिर जाना",
+    "actions": "कार्रवाई"
+  },
+  "baseFilter": {
+    "cancel": "रद्द करना"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",
+    "saveAsADraft": "एक मसौदे के रूप में सहेजो",
+    "editThisDraft": "इस मसौदे को संपादित करें"
   }
 }
