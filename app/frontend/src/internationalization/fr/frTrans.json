@@ -449,7 +449,11 @@
     "notifyConsoleErrorCode": "Erreur lors de la récupération des états :",
     "fetchSubmissionUsersErr": "Une erreur s'est produite lors de la tentative de récupération des e-mails des destinataires pour cette soumission.",
     "fetchSubmissionUsersConsErr": "Erreur lors de la récupération des e-mails des destinataires pour",
-    "assignSubmissnToFormReviewer": "Les soumissions peuvent être attribuées à des réviseurs de formulaires.<br /> Pour ajouter d&#39;autres membres de l&#39;équipe en tant que réviseurs de formulaires, accédez à la page Gérer de ce formulaire."
+    "assignSubmissnToFormReviewer": "Les soumissions peuvent être attribuées à des réviseurs de formulaires.<br /> Pour ajouter d&#39;autres membres de l&#39;équipe en tant que réviseurs de formulaires, accédez à la page Gérer de ce formulaire.",
+    "update": "MISE À JOUR",
+    "revise": "RÉVISER",
+    "complete": "COMPLÈTE",
+    "assign": "ATTRIBUER"
   },
   "statusTable": {
     "loadingText": "Chargement, veuillez patienter",
@@ -494,7 +498,8 @@
     "uploadTemplateFile": "Télécharger le fichier modèle",
     "downloadOptions": "Options de téléchargement",
     "print": "Imprimer",
-    "browserPrint": "Impression du navigateur"
+    "browserPrint": "Impression du navigateur",
+    "pageFromBrowser": "la page de votre navigateur"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Lien d'informations sur les composants",
@@ -647,5 +652,33 @@
     "back": "Dos",
     "confirmPageNav": "Voulez-vous vraiment quitter cette page ? Les modifications que vous avez apportées ne seront pas enregistrées.",
     "agreementErrMsg": "Vous devez accepter la clause de non-responsabilité en matière de confidentialité indiquée ci-dessus."
+  },
+  "addTeamMember": {
+    "formDesign": "Conception de formulaire",
+    "exportDesign": "Conception d'exportation",
+    "importDesign": "Importer la conception",
+    "important": "IMPORTANT",
+    "formDesignInfoA": "Utilisez le bouton <strong>ENREGISTRER LA CONCEPTION</strong> lorsque vous avez terminé de créer ce formulaire.",
+    "formDesignInfoB": "Le bouton <strong>SOUMETTRE</strong> est fourni à votre utilisateur pour soumettre ce formulaire et sera activé après son enregistrement.",
+    "formLoadErrMsg": "Une erreur s'est produite lors du chargement de la conception de formulaire.",
+    "formLoadConsoleErrMsg": "Erreur lors du chargement du schéma {formId} du formulaire (version : {versionId} brouillon : {draftId}) : {error}",
+    "formSchemaImportErrMsg": "Une erreur s'est produite lors de l'importation du schéma du formulaire.",
+    "formSchemaImportConsoleErrMsg": "Erreur lors de l'importation du schéma du formulaire : {error}",
+    "formDesignSaveErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement de cette conception de formulaire. Si vous devez actualiser ou quitter pour réessayer plus tard, vous pouvez exporter le design existant sur la page pour l'enregistrer pour plus tard.",
+    "formDesignSaveConsoleErrMsg": "Erreur lors de la mise à jour ou de la création du formulaire (FormID : {formId}, versionId : {versionId}, draftId : {draftId}) Erreur : {error}",
+    "saved": "Enregistré",
+    "save": "Sauvegarder",
+    "saving": "Économie",
+    "notSaved": "Non enregistré",
+    "collapse": "Effondrement",
+    "actions": "Actions"
+  },
+  "baseFilter": {
+    "cancel": "Annuler"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "Voir toutes les soumissions",
+    "saveAsADraft": "Enregistrer en tant que projet",
+    "editThisDraft": "Modifier ce brouillon"
   }
 }

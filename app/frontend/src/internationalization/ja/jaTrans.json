@@ -445,7 +445,11 @@
     "notifyConsoleErrorCode": "ステータス取得エラー:",
     "fetchSubmissionUsersErr": "この送信の受信者の電子メールを取得しようとしたときにエラーが発生しました。",
     "fetchSubmissionUsersConsErr": "受信者の電子メールを取得中にエラーが発生しました",
-    "assignSubmissnToFormReviewer": "提出物はフォームレビュー担当者に割り当てることができます。<br />さらにチームメンバーをフォームレビュー担当者として追加するには、このフォームの「管理」ページに移動します。"
+    "assignSubmissnToFormReviewer": "提出物はフォームレビュー担当者に割り当てることができます。<br />さらにチームメンバーをフォームレビュー担当者として追加するには、このフォームの「管理」ページに移動します。",
+    "update": "アップデート",
+    "revise": "改訂",
+    "complete": "完了",
+    "assign": "割当"
   },
   "statusTable": {
     "loadingText": "読み込み中。。。待って下さい",
@@ -490,7 +494,8 @@
     "uploadTemplateFile": "テンプレートファイルをアップロードする",
     "downloadOptions": "ダウンロードオプション",
     "print": "印刷する",
-    "browserPrint": "ブラウザ印刷"
+    "browserPrint": "ブラウザ印刷",
+    "pageFromBrowser": "ブラウザからのページ"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "コンポーネント情報リンク",
@@ -643,5 +648,33 @@
     "back": "戻る",
     "confirmPageNav": "本当にこのページを離れてもよろしいですか?加えた変更は保存されません。",
     "agreementErrMsg": "上記のプライバシー免責事項に同意する必要があります。"
+  },
+  "addTeamMember": {
+    "formDesign": "フォームデザイン",
+    "exportDesign": "デザインのエクスポート",
+    "importDesign": "デザインのインポート",
+    "important": "重要",
+    "formDesignInfoA": "このフォームの作成が完了したら、 <strong>[デザインを保存]</strong>ボタンを使用します。",
+    "formDesignInfoB": "<strong>[送信]</strong>ボタンは、ユーザーがこのフォームを送信するために提供されており、保存後にアクティブになります。",
+    "formLoadErrMsg": "フォームデザインの読み込み中にエラーが発生しました。",
+    "formLoadConsoleErrMsg": "フォーム {formId} スキーマの読み込みエラー (バージョン: {versionId} ドラフト: {draftId}): {error}",
+    "formSchemaImportErrMsg": "フォーム スキーマのインポート中にエラーが発生しました。",
+    "formSchemaImportConsoleErrMsg": "フォーム スキーマのインポート中にエラーが発生しました: {error}",
+    "formDesignSaveErrMsg": "このフォームデザインを保存しようとしたときにエラーが発生しました。更新するか、後で再試行するために終了する必要がある場合は、ページ上の既存のデザインをエクスポートして、後で使用できるように保存できます。",
+    "formDesignSaveConsoleErrMsg": "フォームの更新または作成中にエラーが発生しました (FormID: {formId}、versionId: {versionId}、draftId: {draftId}) エラー: {error}",
+    "saved": "保存されました",
+    "save": "保存",
+    "saving": "保存",
+    "notSaved": "保存されていません",
+    "collapse": "崩壊",
+    "actions": "行動"
+  },
+  "baseFilter": {
+    "cancel": "キャンセル"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",
+    "saveAsADraft": "एक मसौदे के रूप में सहेजो",
+    "editThisDraft": "इस मसौदे को संपादित करें"
   }
 }

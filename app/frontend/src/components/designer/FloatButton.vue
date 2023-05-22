@@ -200,7 +200,7 @@ export default {
       disabledInvertedFabItemsColor: '#ffffff',
       disabledFabItemsColor: '#707070C1', // end
       scrollName: this.$t('trans.floatButton.bottom'),
-      baseFABItemName: this.$t('trans.floatButton.actions'),
+      baseFABItemName: this.$t('trans.floatButton.collapse'),
       scrollIconName: 'south',
       save1: 'Save',
     };

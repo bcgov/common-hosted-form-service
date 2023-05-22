@@ -447,7 +447,11 @@
     "notifyConsoleErrorCode": "Error getting statuses:",
     "fetchSubmissionUsersErr": "An error occured while trying to fetch recipient emails for this submission.",
     "fetchSubmissionUsersConsErr": "Error getting recipient emails for",
-    "assignSubmissnToFormReviewer": "Submissions can be assigned to Form Reviewers. <br />To add more team members as Form Reviewers, go to the Manage page for this form."
+    "assignSubmissnToFormReviewer": "Submissions can be assigned to Form Reviewers. <br />To add more team members as Form Reviewers, go to the Manage page for this form.",
+    "update": "UPDATE",
+    "revise": "REVISE",
+    "complete": "COMPLETE",
+    "assign": "ASSIGN"
   },
   "statusTable": {
     "loadingText": "Loading... Please wait",
@@ -492,7 +496,8 @@
     "uploadTemplateFile": "Upload template file",
     "downloadOptions": "Download Options",
     "print": "Print",
-    "browserPrint": "Browser Print"
+    "browserPrint": "Browser Print",
+    "pageFromBrowser": "the page from your browser"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",
@@ -647,5 +652,30 @@
     "back": "Back",
     "confirmPageNav": "Do you really want to leave this page? Changes you made will not be saved.",
     "agreementErrMsg": "You must agree to the privacy disclaimer shown above."
+  },
+  "addTeamMember": {
+    "cantFindChefsUsers": "Can't find someone? They may not have logged into CHEFS.<br /> Kindly send them a link to CHEFS and ask them to log in.",
+    "cancel": "Cancel",
+    "mustSelectAUser": "You must select at least one role to add this user.",
+    "addNewMember": "Add a New Member",
+    "enterUsername": "Enter a name, e-mail, or username",
+    "enterExactUsername": "Enter an exact e-mail or username",
+    "BCeIDInputSearchMaxLen": "Search input for BCeID username/email must be greater than 6 characters.",
+    "BCeIDMustBeExact": "Email searches for BCeID must be exact.",
+    "errorGettingUsers": "Error getting users {error}"
+  },
+  "baseFilter": {
+    "cancel": "Cancel",
+    "columnName": "Column Name",
+    "exampleText": "Example Text",
+    "exampleText2": "Example Text 2",
+    "filterPlaceholderTxt": "Filter Placeholder Text",
+    "filter": "Filter",
+    "value": "value"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "View All Submissions",
+    "saveAsADraft": "Save as a Draft",
+    "editThisDraft": "Edit this Draft"
   }
 }

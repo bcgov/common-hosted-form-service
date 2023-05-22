@@ -197,10 +197,11 @@
           >
             <template #label>
               <span
+                style="max-width: 80%"
                 v-html="
                   $t('trans.formSettings.submitterCanCopyExistingSubmissn')
                 "
-              ></span>
+              />
               <v-tooltip bottom close-delay="2500">
                 <template v-slot:activator="{ on, attrs }">
                   <font-awesome-icon

@@ -445,7 +445,11 @@
     "notifyConsoleErrorCode": "Error sa pagkuha ng mga status:",
     "fetchSubmissionUsersErr": "May naganap na error habang sinusubukang kunin ang mga email ng tatanggap para sa pagsusumiteng ito.",
     "fetchSubmissionUsersConsErr": "Error sa pagkuha ng mga email ng tatanggap para sa",
-    "assignSubmissnToFormReviewer": "Maaaring italaga ang mga pagsusumite sa Mga Tagasuri ng Form.<br /> Upang magdagdag ng higit pang mga miyembro ng koponan bilang Mga Tagasuri ng Form, pumunta sa pahina ng Pamahalaan para sa form na ito."
+    "assignSubmissnToFormReviewer": "Maaaring italaga ang mga pagsusumite sa Mga Tagasuri ng Form.<br /> Upang magdagdag ng higit pang mga miyembro ng koponan bilang Mga Tagasuri ng Form, pumunta sa pahina ng Pamahalaan para sa form na ito.",
+    "update": "I-UPDATE",
+    "revise": "REVISE",
+    "complete": "KUMPLETO",
+    "assign": "I-ASSIGN"
   },
   "statusTable": {
     "loadingText": "Naglo-load... Mangyaring maghintay",
@@ -490,7 +494,8 @@
     "uploadTemplateFile": "Mag-upload ng template file",
     "downloadOptions": "Mga Opsyon sa Pag-download",
     "print": "Print",
-    "browserPrint": "Pag-print ng Browser"
+    "browserPrint": "Pag-print ng Browser",
+    "pageFromBrowser": "ang pahina mula sa iyong browser"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link ng Impormasyon ng Bahagi",
@@ -643,5 +648,33 @@
     "back": "Bumalik",
     "confirmPageNav": "Gusto mo ba talagang umalis sa page na ito? Hindi mase-save ang mga pagbabagong ginawa mo.",
     "agreementErrMsg": "Dapat kang sumang-ayon sa disclaimer sa privacy na ipinapakita sa itaas."
+  },
+  "addTeamMember": {
+    "formDesign": "Disenyo ng Form",
+    "exportDesign": "I-export ang Disenyo",
+    "importDesign": "Import na Disenyo",
+    "important": "MAHALAGA",
+    "formDesignInfoA": "Gamitin ang <strong>SAVE DESIGN</strong> button kapag tapos ka nang buuin ang form na ito.",
+    "formDesignInfoB": "Ang <strong>SUBMIT</strong> button ay ibinibigay para sa iyong user na isumite ang form na ito at isaaktibo pagkatapos itong ma-save.",
+    "formLoadErrMsg": "May naganap na error habang nilo-load ang disenyo ng form.",
+    "formLoadConsoleErrMsg": "Error sa paglo-load ng form {formId} schema (bersyon: {versionId} draft: {draftId}): {error}",
+    "formSchemaImportErrMsg": "May naganap na error habang ini-import ang form schema.",
+    "formSchemaImportConsoleErrMsg": "Error sa pag-import ng form schema : {error}",
+    "formDesignSaveErrMsg": "May naganap na error habang sinusubukang i-save ang disenyo ng form na ito. Kung kailangan mong mag-refresh o umalis upang subukang muli sa ibang pagkakataon, maaari mong I-export ang kasalukuyang disenyo sa page upang i-save para sa ibang pagkakataon.",
+    "formDesignSaveConsoleErrMsg": "Error sa pag-update o paggawa ng form (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
+    "saved": "Nai-save",
+    "save": "I-save",
+    "saving": "Nagtitipid",
+    "notSaved": "Hindi Na-save",
+    "collapse": "Pagbagsak",
+    "actions": "Mga aksyon"
+  },
+  "baseFilter": {
+    "cancel": "Kanselahin"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "Tingnan ang Lahat ng Pagsusumite",
+    "saveAsADraft": "I-save bilang Draft",
+    "editThisDraft": "I-edit ang Draft na ito"
   }
 }

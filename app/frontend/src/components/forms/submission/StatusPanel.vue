@@ -72,16 +72,16 @@
                   </template>
                   <!-- users found in dropdown -->
                   <template #item="data">
-                    <template v-if="typeof data.item !== 'object'">
+                    <div v-if="typeof data.item !== 'object'">
                       <v-list-item-content v-text="data.item" />
-                    </template>
-                    <template v-else>
+                    </div>
+                    <div v-else>
                       <v-list-item-content>
                         <v-list-item-title v-html="data.item.fullName" />
                         <v-list-item-subtitle v-html="data.item.username" />
                         <v-list-item-subtitle v-html="data.item.email" />
                       </v-list-item-content>
-                    </template>
+                    </div>
                   </template>
                 </v-autocomplete>
                 <span v-if="assignee">Email: {{ assignee.email }}</span>
@@ -139,7 +139,7 @@
           <v-col cols="12" sm="6" xl="4">
             <v-dialog v-model="historyDialog" width="1200">
               <template #activator="{ on }">
-                <v-btn block outlined color="textLink" v-on="on">
+                <v-btn block outlined color="textLink" v-on="on" id="btnText">
                   <span>{{ $t('trans.statusPanel.viewHistory') }}</span>
                 </v-btn>
               </template>
@@ -249,7 +249,29 @@ export default {
         REVISING: 'REVISE',
         DEFAULT: 'UPDATE',
       });
-      return obj[this.statusToSet] ? obj[this.statusToSet] : obj['DEFAULT'];
+
+      let action = obj[this.statusToSet]
+        ? obj[this.statusToSet]
+        : obj['DEFAULT'];
+
+      let actionStatus = '';
+      switch (action) {
+        case 'ASSIGN':
+          actionStatus = this.$t('trans.statusPanel.assign');
+          break;
+        case 'COMPLETE':
+          actionStatus = this.$t('trans.statusPanel.complete');
+          break;
+        case 'REVISE':
+          actionStatus = this.$t('trans.statusPanel.revise');
+          break;
+        case 'UPDATE':
+          actionStatus = this.$t('trans.statusPanel.update');
+          break;
+        default:
+        // code block
+      }
+      return actionStatus;
     },
   },
   methods: {
@@ -440,3 +462,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.v-btn__content {
+  width: 100%;
+  white-space: normal;
+}
+</style>

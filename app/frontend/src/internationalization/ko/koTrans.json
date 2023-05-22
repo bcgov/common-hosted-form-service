@@ -445,7 +445,11 @@
     "notifyConsoleErrorCode": "상태 가져오기 오류:",
     "fetchSubmissionUsersErr": "이 제출에 대한 수신자 이메일을 가져오는 동안 오류가 발생했습니다.",
     "fetchSubmissionUsersConsErr": "에 대한 수신자 이메일을 가져오는 중 오류가 발생했습니다.",
-    "assignSubmissnToFormReviewer": "제출물을 양식 검토자에게 할당할 수 있습니다.<br /> 더 많은 팀 구성원을 양식 검토자로 추가하려면 이 양식의 관리 페이지로 이동하십시오."
+    "assignSubmissnToFormReviewer": "제출물을 양식 검토자에게 할당할 수 있습니다.<br /> 더 많은 팀 구성원을 양식 검토자로 추가하려면 이 양식의 관리 페이지로 이동하십시오.",
+    "update": "업데이트",
+    "revise": "개정하다",
+    "complete": "완벽한",
+    "assign": "양수인"
   },
   "statusTable": {
     "loadingText": "로딩 중 기다려주세요",
@@ -490,7 +494,8 @@
     "uploadTemplateFile": "템플릿 파일 업로드",
     "downloadOptions": "다운로드 옵션",
     "print": "인쇄",
-    "browserPrint": "브라우저 인쇄"
+    "browserPrint": "브라우저 인쇄",
+    "pageFromBrowser": "ブラウザからのページ"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "구성품 정보 링크",
@@ -643,5 +648,33 @@
     "back": "뒤쪽에",
     "confirmPageNav": "이 페이지에서 나가시겠습니까? 변경 사항은 저장되지 않습니다.",
     "agreementErrMsg": "위에 표시된 개인 정보 면책 조항에 동의해야 합니다."
+  },
+  "addTeamMember": {
+    "formDesign": "양식 디자인",
+    "exportDesign": "디자인 내보내기",
+    "importDesign": "디자인 가져오기",
+    "important": "중요한",
+    "formDesignInfoA": "이 양식 작성을 완료하면 <strong>SAVE DESIGN</strong> 버튼을 사용하십시오.",
+    "formDesignInfoB": "<strong>SUBMIT</strong> 버튼은 사용자가 이 양식을 제출할 수 있도록 제공되며 양식이 저장되면 활성화됩니다.",
+    "formLoadErrMsg": "양식 디자인을 로드하는 동안 오류가 발생했습니다.",
+    "formLoadConsoleErrMsg": "양식 {formId} 스키마(버전: {versionId} 초안: {draftId}) 로드 오류: {error}",
+    "formSchemaImportErrMsg": "양식 스키마를 가져오는 동안 오류가 발생했습니다.",
+    "formSchemaImportConsoleErrMsg": "양식 스키마 가져오기 오류: {error}",
+    "formDesignSaveErrMsg": "이 양식 디자인을 저장하는 동안 오류가 발생했습니다. 새로고침하거나 나중에 다시 시도하기 위해 나가야 하는 경우 페이지에서 기존 디자인을 내보내 나중에 저장할 수 있습니다.",
+    "formDesignSaveConsoleErrMsg": "양식 업데이트 또는 생성 오류(FormID: {formId}, versionId: {versionId}, draftId: {draftId}) 오류: {error}",
+    "saved": "저장됨",
+    "save": "구하다",
+    "saving": "절약",
+    "notSaved": "저장되지 않음",
+    "collapse": "무너지다",
+    "actions": "행위"
+  },
+  "baseFilter": {
+    "cancel": "취소"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",
+    "saveAsADraft": "एक मसौदे के रूप में सहेजो",
+    "editThisDraft": "इस मसौदे को संपादित करें"
   }
 }

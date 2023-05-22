@@ -445,7 +445,11 @@
     "notifyConsoleErrorCode": "獲取狀態時出錯：",
     "fetchSubmissionUsersErr": "嘗試獲取此提交的收件人電子郵件時出錯。",
     "fetchSubmissionUsersConsErr": "獲取收件人電子郵件時出錯",
-    "assignSubmissnToFormReviewer": "可以將提交的內容分配給表單審閱者。<br />要將更多團隊成員添加為表單審閱者，請轉到此表單的管理頁面。"
+    "assignSubmissnToFormReviewer": "可以將提交的內容分配給表單審閱者。<br />要將更多團隊成員添加為表單審閱者，請轉到此表單的管理頁面。",
+    "update": "更新",
+    "revise": "修訂",
+    "complete": "完全的",
+    "assign": "分配"
   },
   "statusTable": {
     "loadingText": "加載請稍候",
@@ -490,7 +494,8 @@
     "uploadTemplateFile": "上傳模板文件",
     "downloadOptions": "下載選項",
     "print": "打印",
-    "browserPrint": "瀏覽器打印"
+    "browserPrint": "瀏覽器打印",
+    "pageFromBrowser": "來自瀏覽器的頁面"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "組件信息鏈接",
@@ -643,5 +648,28 @@
     "back": "後退",
     "confirmPageNav": "您真的要離開此頁面嗎？您所做的更改將不會保存。",
     "agreementErrMsg": "您必須同意上面顯示的隱私免責聲明。"
+  },
+  "addTeamMember": {
+    "formDesign": "表單設計",
+    "exportDesign": "導出設計",
+    "importDesign": "導入設計",
+    "important": "重要的",
+    "formDesignInfoA": "完成此表單的構建後，請使用<strong>“保存設計”</strong>按鈕。",
+    "formDesignInfoB": "<strong>提交</strong>按鈕供您的用戶提交此表單，並在保存後激活。",
+    "formLoadErrMsg": "加載表單設計時出錯。",
+    "formLoadConsoleErrMsg": "加載表單 {formId} 架構時出錯（版本：{versionId} 草稿：{draftId}）：{error}",
+    "formSchemaImportErrMsg": "導入表單架構時出錯。",
+    "formSchemaImportConsoleErrMsg": "導入表單架構時出錯：{error}",
+    "formDesignSaveErrMsg": "試圖保存此表單設計時出錯。如果您需要刷新或離開以稍後重試，您可以導出頁面上的現有設計以保存以備後用。",
+    "formDesignSaveConsoleErrMsg": "更新或創建表單時出錯（FormID：{formId}，versionId：{versionId}，draftId：{draftId}）錯誤：{error}",
+    "saved": "已保存",
+    "save": "節省",
+    "saving": "保存",
+    "notSaved": "未保存",
+    "collapse": "坍塌",
+    "actions": "動作"
+  },
+  "baseFilter": {
+    "cancel": "取消"
   }
 }
