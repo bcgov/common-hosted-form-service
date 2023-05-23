@@ -15,7 +15,7 @@ describe('_appUrl', () => {
   });
 
   it('should rethrow exceptions', () => {
-    expect(() => emailService._appUrl('notaurl')).toThrow('Invalid URLSSS');
+    expect(() => emailService._appUrl('notaurl')).toThrow('Invalid URL');
   });
 });
 

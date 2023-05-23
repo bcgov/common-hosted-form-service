@@ -1,10 +1,10 @@
 import { shallowMount, createLocalVue, RouterLinkStub } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
-
 import FloatButton from '@/components/designer/FloatButton.vue';
 
 const localVue = createLocalVue();
+const $t = () => {}
 localVue.use(Vuetify);
 localVue.use(VueRouter);
 
@@ -13,7 +13,8 @@ describe('FloatButton.vue', () => {
 
   it('test that undo event was triggered', async() => {
     const wrapper = shallowMount(FloatButton, {
-      localVue
+      localVue,
+      mocks:{ $t }
     });
 
     expect(wrapper.find({ ref: 'undoButton' }).exists()).toBe(true);
