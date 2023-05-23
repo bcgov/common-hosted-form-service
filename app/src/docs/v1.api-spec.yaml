@@ -376,6 +376,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/{formId}/export/fields:
+    post:
+      summary: Export submissions for a form with the ability to select fields to export if CSV is selected. Use only in frontend (from an interface)
+      operationId: exportWithFields
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormSubmissionExportWithFields'
+      responses:
+        '200':
+          description: Export file created for download
+          headers:
+            content-type:
+              description: Response header
+              schema:
+                type: object
+              example: text/json; charset=utf-8
+          content:
+            text/csv:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormSubmissionExport'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /forms/{formId}/options:
     get:
       summary: Get pre-flight details for a form
@@ -2864,11 +2910,11 @@ components:
                         intervalType:
                           type: string
                           description: This contain a value that can be used with combination to another key i.e. term to calculate a period. Thats tells a form to be allowed a late submission for particular period.  40 Days, 3 Weeks, 1 Years etc.
-                closingMessageEnabled: 
+                closingMessageEnabled:
                   type: boolean
                   description: Set to true when custom closing message is enabled
                   example: true
-                openSubmissionDateTime: 
+                openSubmissionDateTime:
                   type: string
                   description: Contains open date of form schedule system.
                   example: '2022-12-22'
@@ -3053,6 +3099,60 @@ components:
             formFieldB:
               type: string
               description: A field in the submission object
+    FormSubmissionExportWithFields:
+      allOf:
+        - type: object
+          properties:
+            format:
+              type: String
+              description: Chosen file type for the submission data exported
+              example: csv
+            template:
+              type: String
+              description: Chosen CSV format for the submission data exported
+              example: multiRowEmptySpacesCSVExport
+            version:
+              type: integer
+              description: The version number of the form for the submission data exported
+              example: 1
+            type:
+              type: String
+              description: default value is submissions and should be changed
+              example: submissions
+            preferences:
+              type: object
+              description: form submissions export preferences
+              example: {minDate, maxDate}
+            fields:
+              type: array
+              description: List of form submission fields to be exported to CSV
+              example:
+                - form.confirmationId,
+                - form.formName,
+                - form.version,
+                - form.createdAt,
+                - form.fullName,
+                - form.username",
+                - form.email,
+                - form.status,
+                - form.assignee,
+                - form.assigneeEmail,
+                - fishermansName,
+                - email",
+                - forWhichBcLakeRegionAreYouCompletingTheseQuestions,
+                - didYouFishAnyBcLakesThisYear,
+                - oneRowPerLake,
+                - oneRowPerLake.lakeName,
+                - oneRowPerLake.closestTown,
+                - oneRowPerLake.numberOfDays,
+                - oneRowPerLake.dataGrid,
+                - oneRowPerLake.dataGrid.fishType,
+                - oneRowPerLake.dataGrid.numberCaught,
+                - oneRowPerLake.dataGrid.numberKept
+            emailExport:
+              type: Boolean
+              description: This parameter should be set to true if the form submissions are large (e.g. above 500) or the form is big
+              example: false
     FormSubmissionSummary:
       allOf:
         - type: object
