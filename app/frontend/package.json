@@ -35,7 +35,6 @@
     "bootstrap-scss": "^4.6.2",
     "core-js": "^3.30.2",
     "deep-freeze": "^0.0.1",
-    "export-from-json": "^1.7.2",
     "fast-json-patch": "^3.1.1",
     "font-awesome": "^4.7.0",
     "formiojs": "^4.14.13",

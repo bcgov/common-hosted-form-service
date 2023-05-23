@@ -245,7 +245,6 @@ export default {
     handleFile() {
       if (this.file == undefined) {
         this.$refs.file.$refs.input.click();
-        // this.$refs.file.click();
       }
     },
     removeFile(file) {
@@ -256,13 +255,10 @@ export default {
     parseFile() {
       try {
         let reader = new FileReader();
-        reader.onload = function (e) {
+        reader.onload = (e) => {
           this.Json = JSON.parse(e.target.result);
-        }.bind(this);
-
-        reader.onloadend = () => {
-          this.preValidateSubmission();
         };
+        reader.onloadend = this.preValidateSubmission;
         reader.readAsText(this.file);
       } catch (e) {
         this.resetUpload();
@@ -331,7 +327,7 @@ export default {
             });
           }
           this.index++;
-          this.value = this.pourcentage(this.index);
+          this.value = this.percentage(this.index);
           clearTimeout(timer);
           if (this.index < this.Json.length) {
             this.validate(this.Json[this.index], errors);
@@ -342,7 +338,7 @@ export default {
         12
       );
     },
-    pourcentage(i) {
+    percentage(i) {
       let number_of_submission = this.Json.length;
       if (number_of_submission > 0) {
         return Math.ceil((i * this.max) / number_of_submission);
@@ -371,7 +367,7 @@ export default {
       this.value = 0;
       this.upload_state = 0;
       this.error = false;
-      this.report = ['test'];
+      this.report = [];
       this.index = 0;
       this.globalError = [];
       this.progress = false;
@@ -455,7 +451,6 @@ export default {
         margin-top: -4%;
         margin-bottom: 3%;
       }
-      //border: 1px solid #003366;
       .success-text {
         color: #38598a;
       }

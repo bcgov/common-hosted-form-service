@@ -231,6 +231,7 @@ export default {
       },
       bulkFile: false,
       formElement: undefined,
+      // sbdMessage is submitBulkDraftMessage, it is use share information between this component and FormViewerMultiUpload component
       sbdMessage: {
         message: String,
         error: Boolean,
