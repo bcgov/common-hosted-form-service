@@ -9,7 +9,7 @@ describe('admin actions', () => {
   const mockStore = {
     commit: jest.fn(),
     dispatch: jest.fn(),
-    state: cloneDeep(store.state)
+    state: cloneDeep(store.state),
   };
   const mockConsoleError = jest.spyOn(console, 'error');
 
@@ -74,7 +74,6 @@ describe('admin actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
-
     it('readRoles should commit to SET_ROLES', async () => {
       adminService.readRoles.mockResolvedValue({ data: { form: {} } });
       await store.actions.readRoles(mockStore, 'fId');
@@ -149,7 +148,7 @@ describe('admin actions', () => {
 
     it('getUsers should dispatch to notifications/addNotification', async () => {
       adminService.listUsers.mockRejectedValue('');
-      await store.actions.getUsers(mockStore,);
+      await store.actions.getUsers(mockStore);
 
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
@@ -165,17 +164,15 @@ describe('admin actions', () => {
 
     it('readUser should dispatch to notifications/addNotification', async () => {
       adminService.readUser.mockRejectedValue('');
-      await store.actions.readUser(mockStore,);
+      await store.actions.readUser(mockStore);
 
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
 
-
-
     it('addFCProactiveHelp should commit to SET_FCPROACTIVEHELP', async () => {
       adminService.addFCProactiveHelp.mockResolvedValue({});
-      await store.actions.addFCProactiveHelp(mockStore,{});
+      await store.actions.addFCProactiveHelp(mockStore, {});
 
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELP', expect.any(Object));
@@ -183,17 +180,15 @@ describe('admin actions', () => {
 
     it('addFCProactiveHelp should commit to SET_FCPROACTIVEHELPGROUPLIST', async () => {
       adminService.listFCProactiveHelp.mockResolvedValue({});
-      await store.actions.listFCProactiveHelp(mockStore,{});
+      await store.actions.listFCProactiveHelp(mockStore, {});
 
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPLIST', expect.any(Object));
     });
 
-
-
     it('updateFCProactiveHelpStatus should update publish status and commit to SET_FCPROACTIVEHELP', async () => {
       adminService.updateFCProactiveHelpStatus.mockRejectedValue('');
-      await store.actions.updateFCProactiveHelpStatus(mockStore,{componentId:'5b97417a-252c-46c2-b132-85adac5ab3bc',publishStatus:true});
+      await store.actions.updateFCProactiveHelpStatus(mockStore, { componentId: '5b97417a-252c-46c2-b132-85adac5ab3bc', publishStatus: true });
 
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));

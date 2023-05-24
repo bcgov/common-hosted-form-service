@@ -9,7 +9,7 @@ describe('form actions', () => {
   const mockStore = {
     commit: jest.fn(),
     dispatch: jest.fn(),
-    state: cloneDeep(store.state)
+    state: cloneDeep(store.state),
   };
   const mockConsoleError = jest.spyOn(console, 'error');
 
@@ -44,10 +44,12 @@ describe('form actions', () => {
     it('getFormPermissionsForUser should commit to SET_FORM_PERMISSIONS', async () => {
       rbacService.getCurrentUser.mockResolvedValue({
         data: {
-          forms: [{
-            permissions: []
-          }]
-        }
+          forms: [
+            {
+              permissions: [],
+            },
+          ],
+        },
       });
       await store.actions.getFormPermissionsForUser(mockStore, 'fId');
 
@@ -69,8 +71,8 @@ describe('form actions', () => {
       userService.getUserFormPreferences.mockResolvedValue({
         data: {
           preferences: ['foo', 'bar'],
-          userId: '123'
-        }
+          userId: '123',
+        },
       });
       await store.actions.getFormPreferencesForCurrentUser(mockStore, 'fId');
 
@@ -90,8 +92,8 @@ describe('form actions', () => {
       userService.updateUserFormPreferences.mockResolvedValue({
         data: {
           preferences: ['foo', 'bar'],
-          userId: '123'
-        }
+          userId: '123',
+        },
       });
       await store.actions.updateFormPreferencesForCurrentUser(mockStore, { formId: 'fId', preferences: {} });
 
@@ -214,7 +216,7 @@ describe('form actions', () => {
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'createdBy': '' });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '' });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -225,7 +227,7 @@ describe('form actions', () => {
       expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'createdBy': '' });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '' });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -249,7 +251,7 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false, 'createdBy': '' });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '' });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -319,16 +321,9 @@ describe('form actions', () => {
     });
 
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith(
-      'SET_FORM_FIELDS',
-      expect.any(Object)
-    );
+    expect(mockStore.commit).toHaveBeenCalledWith('SET_FORM_FIELDS', expect.any(Object));
     expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
     expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
-    expect(mockStore.dispatch).toHaveBeenCalledWith(
-      'notifications/addNotification',
-      expect.any(Object),
-      expect.any(Object)
-    );
+    expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
   });
 });

@@ -43,7 +43,6 @@ export default {
     return {
       userGuid: '',
       valid: false,
-
       userGuidRules: [
         (v) => !!v || 'User ID required',
         (v) =>

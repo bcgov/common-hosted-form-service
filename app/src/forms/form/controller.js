@@ -91,7 +91,6 @@ module.exports = {
       next(error);
     }
   },
-
   readVersion: async (req, res, next) => {
     try {
       const response = await service.readVersion(req.params.formVersionId);
@@ -132,6 +131,14 @@ module.exports = {
       }
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
       fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => {});
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  createMultiSubmission: async (req, res, next) => {
+    try {
+      const response = await service.createMultiSubmission(req.params.formVersionId, req.body, req.currentUser);
       res.status(201).json(response);
     } catch (error) {
       next(error);

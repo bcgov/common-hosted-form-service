@@ -18,15 +18,15 @@ describe('Error.vue', () => {
         keycloakReady: () => true,
       },
       actions: {
-        logout: () => jest.fn()
-      }
+        logout: () => jest.fn(),
+      },
     });
   });
 
   it('renders without error', async () => {
     const wrapper = shallowMount(Error, {
       localVue,
-      store
+      store,
     });
     await localVue.nextTick();
 
