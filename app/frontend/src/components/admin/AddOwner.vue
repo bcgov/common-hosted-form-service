@@ -3,7 +3,6 @@
     <p>
       {{ $t('trans.addOwner.infoA') }}
     </p>
-
     <v-row class="mt-4">
       <v-col cols="9" sm="6" md="6" lg="4">
         <v-text-field

@@ -277,6 +277,7 @@ export default {
         this.items = response.data;
       } catch (error) {
         this.items = [];
+        /* eslint-disable no-console */
         console.error(
           this.$t('trans.addTeamMember.errorGettingUsers', { error: error })
         ); // eslint-disable-line no-console

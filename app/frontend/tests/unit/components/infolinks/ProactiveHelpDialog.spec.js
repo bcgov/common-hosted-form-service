@@ -1,7 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
-
+import i18n from '@/internationalization';
 import ProactiveHelpDialog from '@/components/infolinks/ProactiveHelpDialog.vue';
 
+const $t = () => {};
 describe('ProactiveHelpDialog.vue', () => {
 
   it('selectImage()', async () => {
@@ -19,7 +20,7 @@ describe('ProactiveHelpDialog.vue', () => {
       },
     };
 
-    const wrapper = shallowMount(ProactiveHelpDialog);
+    const wrapper = shallowMount(ProactiveHelpDialog, {i18n});
 
     const fileReaderSpy = jest.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementation(() => null);
     const persistSpy = jest.spyOn(ProactiveHelpDialog.methods, 'uploadFCProactiveHelpImage');
@@ -36,7 +37,8 @@ describe('ProactiveHelpDialog.vue', () => {
           description: 'dump text',
           link:'url'
         };
-      }
+      },
+      i18n
     });
 
     wrapper.vm.resetDialog();
