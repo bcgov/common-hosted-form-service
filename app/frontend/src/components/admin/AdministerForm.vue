@@ -4,7 +4,7 @@
     <p>{{ form.description }}</p>
 
     <div v-if="form.active === false" class="red--text mb-6">
-      (DELETED)
+      ({{ $t('trans.administerForm.deleted') }})
       <v-btn
         color="primary"
         class="mt-0"
@@ -13,18 +13,20 @@
         small
       >
         <v-icon class="mr-1">build_circle</v-icon>
-        <span class="d-none d-sm-flex">Restore this form</span>
+        <span class="d-none d-sm-flex">{{
+          $t('trans.administerForm.restoreForm')
+        }}</span>
       </v-btn>
     </div>
 
     <v-container>
       <v-row no-gutters>
         <v-col md="6">
-          <h4>Form Details</h4>
+          <h4>{{ $t('trans.administerForm.formDetails') }}</h4>
           <vue-json-pretty :data="formDetails" />
 
           <div v-if="apiKey" class="mt-6">
-            <h4>API Key Details</h4>
+            <h4>{{ $t('trans.administerForm.apiKeyDetails') }}</h4>
             <vue-json-pretty :data="apiKey" />
             <v-btn
               class="mt-6 mb-6"
@@ -32,24 +34,24 @@
               :disabled="!apiKey"
               @click="showDeleteDialog = true"
             >
-              <span>Delete API Key</span>
+              <span>{{ $t('trans.administerForm.deleteApiKey') }}</span>
             </v-btn>
           </div>
         </v-col>
         <v-col md="6">
-          <h4>Form Users</h4>
+          <h4>{{ $t('trans.administerForm.formUsers') }}</h4>
           <vue-json-pretty :data="roles" />
         </v-col>
       </v-row>
     </v-container>
 
     <div v-if="form.active" class="mt-12">
-      <h4>Form Versions</h4>
+      <h4>{{ $t('trans.administerForm.formVersions') }}</h4>
       <AdminVersions />
     </div>
 
     <div v-if="form.active" class="mt-12">
-      <h4>Assign A New Owner</h4>
+      <h4>{{ $t('trans.administerForm.assignANewOwner') }}</h4>
       <AddOwner :formId="form.id" />
     </div>
 
@@ -59,20 +61,23 @@
       @close-dialog="showRestoreDialog = false"
       @continue-dialog="restore"
     >
-      <template #title>Confirm Restore</template>
+      <template #title>{{
+        $t('trans.administerForm.confirmRestore')
+      }}</template>
       <template #text>
         <div v-if="restoreInProgress" class="text-center">
           <v-progress-circular indeterminate color="primary" :size="100">
-            Restoring
+            {{ $t('trans.administerForm.restoring') }}
           </v-progress-circular>
         </div>
         <div v-else>
-          Restore
-          <strong>{{ form.name }}</strong> to active state?
+          {{ $t('trans.administerForm.restore') }}
+          <strong>{{ form.name }}</strong>
+          {{ $t('trans.administerForm.toActiveState') }}?
         </div>
       </template>
       <template #button-text-continue>
-        <span>Restore</span>
+        <span>{{ $t('trans.administerForm.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -83,10 +88,14 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="deleteKey"
     >
-      <template #title>Confirm Deletion</template>
-      <template #text>Are you sure you want to delete this API Key?</template>
+      <template #title>{{
+        $t('trans.administerForm.confirmDeletion')
+      }}</template>
+      <template #text>{{
+        $t('trans.administerForm.confirmDeletionMsg')
+      }}</template>
       <template #button-text-continue>
-        <span>Delete</span>
+        <span>{{ $t('trans.administerForm.delete') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>

@@ -37,8 +37,11 @@
       <v-btn @click="savingFilterData" class="primary mt-3">{{
         inputSaveButtonText
       }}</v-btn>
-      <v-btn @click="cancelFilterData" class="mt-3 ml-3 primary--text" outlined
-        >Cancel</v-btn
+      <v-btn
+        @click="cancelFilterData"
+        class="mt-3 ml-3 primary--text"
+        outlined
+        >{{ this.$t('trans.baseFilter.cancel') }}</v-btn
       >
     </v-card-text>
   </v-card>
@@ -51,15 +54,26 @@ export default {
     inputHeaders: {
       type: Array,
       default: () => [
-        { text: 'Column Name', align: 'start', sortable: true, value: 'text' },
+        {
+          text: this.$t('trans.baseFilter.columnName'),
+          align: 'start',
+          sortable: true,
+          value: 'text',
+        },
       ],
     },
     // The data you will be filtering with
     inputData: {
       type: Array,
       default: () => [
-        { text: 'Example Text', value: 'exampleText1' },
-        { text: 'Example Text 2', value: 'exampleText2' },
+        {
+          text: this.$t('trans.baseFilter.exampleText'),
+          value: 'exampleText1',
+        },
+        {
+          text: this.$t('trans.baseFilter.exampleText2'),
+          value: 'exampleText2',
+        },
       ],
     },
     // The default selected data
@@ -77,7 +91,7 @@ export default {
     },
     inputFilterPlaceholder: {
       type: String,
-      default: 'Filter Placeholder Text',
+      default: 'Example Text 2',
     },
     inputSaveButtonText: {
       type: String,

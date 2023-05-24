@@ -1,6 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import Form from '@/views/admin/Form.vue';
 
 const localVue = createLocalVue();
@@ -20,7 +20,8 @@ describe('Form.vue', () => {
       localVue,
       propsData: { f: 'f' },
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
+      i18n
     });
     await localVue.nextTick();
 

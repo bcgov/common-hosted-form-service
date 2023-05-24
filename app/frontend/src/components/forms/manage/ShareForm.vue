@@ -14,23 +14,24 @@
           <v-icon class="mr-1">share</v-icon>
         </v-btn>
       </template>
-      <span>Share Form</span>
+      <span>{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0">Share Link</v-card-title>
+        <v-card-title class="text-h5 pb-0">{{
+          $t('trans.shareForm.shareLink')
+        }}</v-card-title>
         <v-card-text>
           <hr />
-          <p class="mb-5">Copy the link below or download the QR code.</p>
+          <p class="mb-5">{{ $t('trans.shareForm.copyQRCode') }}</p>
           <v-alert
             :value="warning"
             :class="NOTIFICATIONS_TYPES.WARNING.class"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             transition="scale-transition"
           >
-            There is no published version of the form at this time. The link
-            below will not be reachable until a version is published.
+            {{ $t('trans.shareForm.warningMessage') }}
           </v-alert>
           <v-text-field
             readonly
@@ -48,7 +49,7 @@
               <BaseCopyToClipboard
                 class="mt-n1"
                 :copyText="formLink"
-                tooltipText="Copy URL to clipboard"
+                :tooltipText="$t('trans.shareForm.copyURLToClipboard')"
               />
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
@@ -65,7 +66,7 @@
                     <v-icon class="mr-1">open_in_new</v-icon>
                   </v-btn>
                 </template>
-                <span>Open this form</span>
+                <span>{{ $t('trans.shareForm.openThisForm') }}</span>
               </v-tooltip>
             </template>
           </v-text-field>
@@ -94,7 +95,7 @@
                     <v-icon>get_app</v-icon>
                   </v-btn>
                 </template>
-                <span>Download QR Code</span>
+                <span>{{ $t('trans.shareForm.downloadQRCode') }}</span>
               </v-tooltip>
             </v-col>
           </v-row>
@@ -102,7 +103,7 @@
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span>Close</span>
+            <span>{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
