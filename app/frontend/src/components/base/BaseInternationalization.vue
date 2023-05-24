@@ -45,8 +45,8 @@ export default {
       lang: 'en',
       languageIndex: 0,
       items: [
-        { title: 'عربى (Arabic)', keyword: 'ar' },
         { title: 'English', keyword: 'en' },
+        { title: 'عربى (Arabic)', keyword: 'ar' },
         { title: 'Español (Spanish)', keyword: 'es' },
         { title: 'فارسی (Farsi)', keyword: 'fa' },
         { title: 'Français (French)', keyword: 'fr' },
