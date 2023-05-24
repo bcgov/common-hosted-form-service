@@ -251,7 +251,7 @@
   "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Logout",
-    "login": "login"
+    "login": "Login"
   },
   "baseDialog": {
     "defaultText": "default text",

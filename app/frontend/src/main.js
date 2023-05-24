@@ -126,7 +126,7 @@ async function loadConfig() {
  */
 function loadKeycloak(config) {
   Vue.use(VueKeycloakJs, {
-    init: { onLoad: 'check-sso', checkLoginIframe: false, pkceMethod: 'S256' },
+    init: { onLoad: 'check-sso' },
     config: {
       clientId: config.keycloak.clientId,
       realm: config.keycloak.realm,

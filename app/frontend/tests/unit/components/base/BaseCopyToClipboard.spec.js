@@ -1,7 +1,7 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import BaseCopyToClipboard from '@/components/base/BaseCopyToClipboard.vue';
 
 const localVue = createLocalVue();
@@ -33,7 +33,8 @@ describe('BaseCopyToClipboard.vue', () => {
     const wrapper = shallowMount(BaseCopyToClipboard, {
       localVue,
       propsData: { copyText: 'test' },
-      store
+      store,
+      i18n
     });
 
     expect(wrapper.text()).toMatch('Copy to Clipboard');
@@ -43,7 +44,8 @@ describe('BaseCopyToClipboard.vue', () => {
     const wrapper = shallowMount(BaseCopyToClipboard, {
       localVue,
       propsData: { copyText: 'test' },
-      store
+      store,
+      i18n
     });
     wrapper.vm.clipboardSuccessHandler();
 
@@ -55,7 +57,8 @@ describe('BaseCopyToClipboard.vue', () => {
     const wrapper = shallowMount(BaseCopyToClipboard, {
       localVue,
       propsData: { copyText: 'test' },
-      store
+      store,
+      i18n
     });
     wrapper.vm.clipboardErrorHandler();
 

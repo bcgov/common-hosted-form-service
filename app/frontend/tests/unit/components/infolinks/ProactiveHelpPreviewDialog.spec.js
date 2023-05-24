@@ -1,7 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
-
+import i18n from '@/internationalization';
 import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
-
 
 describe('ProactiveHelpPreviewDialog.vue', () => {
 
@@ -14,6 +13,7 @@ describe('ProactiveHelpPreviewDialog.vue', () => {
           link:'url'
         };
       },
+      i18n,
       propsData: {
         component:{ type: Object }
       },
