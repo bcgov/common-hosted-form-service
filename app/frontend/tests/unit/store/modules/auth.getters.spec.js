@@ -20,7 +20,7 @@ const keycloakHelper = (mockKcObject) => {
     configurable: true, // Needed to allow deletions later
     get() {
       return mockKcObject;
-    }
+    },
   });
 };
 
@@ -56,13 +56,13 @@ describe('auth getters', () => {
             realm_access: {},
             resource_access: {
               chefs: {
-                roles: roles
-              }
-            }
+                roles: roles,
+              },
+            },
           },
-          userName: 'uName'
+          userName: 'uName',
         };
-      }
+      },
     });
   });
 
@@ -95,7 +95,7 @@ describe('auth getters', () => {
 
   it('email should return an empty string', () => {
     keycloakHelper({
-      tokenParsed: undefined
+      tokenParsed: undefined,
     });
 
     expect(store.getters.email).toBeFalsy();
@@ -138,8 +138,8 @@ describe('auth getters', () => {
       authenticated: authenticated,
       tokenParsed: {
         realm_access: {},
-        resource_access: {}
-      }
+        resource_access: {},
+      },
     });
 
     expect(store.getters.authenticated).toBeTruthy();
@@ -244,14 +244,14 @@ describe('auth getters', () => {
       fullName: 'John Doe',
       email: 'e@mail.com',
       idp: 'idir',
-      public: false
+      public: false,
     });
   });
 
   it('creates a public user when not authenticated', () => {
     keycloakHelper({
       authenticated: false,
-      tokenParsed: undefined
+      tokenParsed: undefined,
     });
 
     expect(store.getters.user).toBeTruthy();
@@ -262,7 +262,7 @@ describe('auth getters', () => {
       fullName: '',
       email: '',
       idp: 'public',
-      public: true
+      public: true,
     });
   });
 });

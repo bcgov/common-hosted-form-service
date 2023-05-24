@@ -857,6 +857,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/{formId}/versions/{formVersionId}/multiSubmission:
+    post:
+      summary: Upload multiple draft submissions
+      operationId: uploadMultipleDraft
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/formVersionIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormSubmissionMultiple'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormSubmissionResponseMultiple'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /forms/{formId}/versions/{formVersionId}/submissions/discover:
     get:
       summary: List field value submissions from a form version
@@ -2864,11 +2900,11 @@ components:
                         intervalType:
                           type: string
                           description: This contain a value that can be used with combination to another key i.e. term to calculate a period. Thats tells a form to be allowed a late submission for particular period.  40 Days, 3 Weeks, 1 Years etc.
-                closingMessageEnabled: 
+                closingMessageEnabled:
                   type: boolean
                   description: Set to true when custom closing message is enabled
                   example: true
-                openSubmissionDateTime: 
+                openSubmissionDateTime:
                   type: string
                   description: Contains open date of form schedule system.
                   example: '2022-12-22'
@@ -2993,6 +3029,50 @@ components:
               type: object
               description: this is the json for the form submission.
         - $ref: '#/components/schemas/TimeStampUserData'
+    FormSubmissionObjectForMultipleUpload:
+      allOf:
+        - type: object
+          description: this is the json for the form submission.
+    FormSubmissionResponseMultiple:
+      allOf:
+        - type: array
+          items:
+          - type: object
+            properties:
+              draft:
+                type: boolean
+                description: >-
+                  Used to indicate if submission came from a draft version of a
+                  form.
+                example: false
+              submission:
+                type: object
+                description: this object should contain one property named data as an array. This array named data should store all the multiple drafts as object in this array.
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FormSubmissionObjectForMultipleUpload'
+                    description: this is an array of multiple objects, each object contain data of single the form submissions.
+    FormSubmissionMultiple:
+      allOf:
+        - type: object
+          properties:
+            draft:
+              type: boolean
+              description: >-
+                Used to indicate if submission came from a draft version of a
+                form.
+              example: false
+            submission:
+              type: object
+              description: this object should contain one property named data as an array. This array named data should store all the multiple drafts as object in this array.
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/FormSubmissionObjectForMultipleUpload'
+                  description: this is an array of multiple objects, each object contain data of single the form submissions.
     FormSubmissionCore:
       type: object
       properties:

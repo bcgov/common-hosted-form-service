@@ -16,7 +16,7 @@ describe('Create.vue', () => {
   const mockWindowConfirm = jest.spyOn(window, 'confirm');
   let store;
   const formActions = {
-    resetForm: jest.fn()
+    resetForm: jest.fn(),
   };
 
   beforeEach(() => {
@@ -24,9 +24,9 @@ describe('Create.vue', () => {
       modules: {
         form: {
           namespaced: true,
-          actions: formActions
-        }
-      }
+          actions: formActions,
+        },
+      },
     });
   });
 
@@ -43,7 +43,7 @@ describe('Create.vue', () => {
     const wrapper = shallowMount(Create, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer']
+      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer'],
     });
 
     expect(wrapper.html()).toMatch('basesecure');
@@ -55,7 +55,7 @@ describe('Create.vue', () => {
     const wrapper = shallowMount(Create, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer']
+      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer'],
     });
     Create.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 

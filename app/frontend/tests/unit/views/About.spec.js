@@ -20,8 +20,8 @@ describe('About.vue', () => {
         isAdmin: () => false,
         keycloakReady: () => true,
         // eslint-disable-next-line no-unused-vars
-        createLoginUrl: () => () => 'testurl'
-      }
+        createLoginUrl: () => () => 'testurl',
+      },
     });
   });
 
@@ -30,7 +30,7 @@ describe('About.vue', () => {
       localVue,
       store,
       stubs: ['router-link', 'BaseImagePopout'],
-      vuetify
+      vuetify,
     });
 
     expect(wrapper.html()).toMatch('Create, publish forms, and receive submissions');

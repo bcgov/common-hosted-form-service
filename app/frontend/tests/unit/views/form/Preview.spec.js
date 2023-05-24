@@ -8,7 +8,7 @@ describe('Preview.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(Preview, {
       localVue,
-      stubs: ['BaseSecure', 'FormViewer']
+      stubs: ['BaseSecure', 'FormViewer'],
     });
 
     expect(wrapper.html()).toMatch('basesecure');
