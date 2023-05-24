@@ -3,39 +3,41 @@
     <div class="nav-holder">
       <ul>
         <li>
-          <router-link data-cy="aboutLinks" :to="{ name: 'About' }"
-            >About</router-link
-          >
+          <router-link data-cy="aboutLinks" :to="{ name: 'About' }">{{
+            $t('trans.bCGovNavBar.about')
+          }}</router-link>
         </li>
         <li v-if="authenticated">
-          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }"
-            >My Forms</router-link
-          >
+          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }">{{
+            $t('trans.bCGovNavBar.myForms')
+          }}</router-link>
         </li>
         <li v-if="hasPrivileges">
-          <router-link :to="{ name: 'FormCreate' }"
-            >Create a New Form</router-link
-          >
+          <router-link :to="{ name: 'FormCreate' }">{{
+            $t('trans.bCGovNavBar.createNewForm')
+          }}</router-link>
         </li>
         <li v-if="hasPrivileges">
           <a
             href="https://github.com/bcgov/common-hosted-form-service/wiki"
             target="_blank"
-            >Help</a
+            >{{ $t('trans.bCGovNavBar.help') }}</a
           >
         </li>
         <li v-if="hasPrivileges">
           <a
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
-            >Feedback</a
+            >{{ $t('trans.bCGovNavBar.feedback') }}</a
           >
         </li>
         <!-- <li>
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li> -->
         <li v-if="isAdmin">
-          <router-link :to="{ name: 'Admin' }">Admin</router-link>
+          <router-link :to="{ name: 'Admin' }">{{
+            $t('trans.bCGovNavBar.admin')
+          }}</router-link>
         </li>
       </ul>
     </div>
@@ -49,6 +51,11 @@ import { IdentityProviders } from '../../utils/constants';
 
 export default {
   name: 'BCGovNavBar',
+  data() {
+    return {
+      items: ['french', 'english'],
+    };
+  },
   computed: {
     ...mapGetters('auth', ['authenticated', 'isAdmin', 'identityProvider']),
     hideNavBar() {

@@ -13,7 +13,7 @@
           <v-icon>print</v-icon>
         </v-btn>
       </template>
-      <span>Print</span>
+      <span>{{ $t('trans.printOptions.print') }}</span>
     </v-tooltip>
 
     <v-dialog
@@ -22,7 +22,9 @@
       content-class="export-submissions-dlg"
     >
       <v-card>
-        <v-card-title class="text-h5 pb-0">Download Options</v-card-title>
+        <v-card-title class="text-h5 pb-0">{{
+          $t('trans.printOptions.downloadOptions')
+        }}</v-card-title>
         <v-card-text>
           <hr />
           <p>
@@ -30,12 +32,12 @@
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
               target="blank"
-              >Print</a
+              >{{ $t('trans.printOptions.print') }}</a
             >
             the page from your browser
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span>Browser Print</span>
+            <span>{{ $t('trans.printOptions.browserPrint') }}</span>
           </v-btn>
 
           <p>
@@ -50,7 +52,7 @@
           <v-file-input
             counter
             :clearable="true"
-            label="Upload template file"
+            :label="$t('trans.printOptions.uploadTemplateFile')"
             persistent-hint
             prepend-icon="attachment"
             required
@@ -71,10 +73,10 @@
                   v-on="on"
                 >
                   <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
-                  <span>Template Print</span>
+                  <span>{{ $t('trans.printOptions.templatePrint') }}</span>
                 </v-btn>
               </template>
-              <span>Submit to CDOGS and Download</span>
+              <span>{{ $t('trans.printOptions.submitButtonTxt') }}</span>
             </v-tooltip>
           </v-card-actions>
         </v-card-text>

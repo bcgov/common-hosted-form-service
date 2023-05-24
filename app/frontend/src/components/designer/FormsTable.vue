@@ -3,7 +3,7 @@
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>My Forms</h1>
+        <h1>{{ $t('trans.formsTable.myForms') }}</h1>
       </v-col>
       <!-- buttons -->
       <v-col
@@ -22,7 +22,7 @@
               </v-btn>
             </router-link>
           </template>
-          <span>Create a New Form</span>
+          <span>{{ $t('trans.formsTable.createNewForm') }}</span>
         </v-tooltip>
       </v-col>
     </v-row>
@@ -35,7 +35,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            :label="$t('trans.formsTable.createNewForm')"
             single-line
             hide-details
             class="pb-5"
@@ -52,7 +52,7 @@
       :items="filteredFormList"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.formsTable.loadingText')"
     >
       <template #[`item.name`]="{ item }">
         <router-link
@@ -68,7 +68,7 @@
               <span v-bind="attrs" v-on="on">{{ item.name }}</span>
             </template>
             <span v-if="item.published">
-              View Form
+              {{ $t('trans.formsTable.viewForm') }}
               <v-icon>open_in_new</v-icon>
             </span>
           </v-tooltip>
@@ -82,7 +82,7 @@
           class="description-icon ml-2 mr-4"
           color="primary"
         >
-          description
+          {{ $t('trans.formsTable.description') }}
         </v-icon>
       </template>
       <template #[`item.actions`]="{ item }">
@@ -92,7 +92,9 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">settings</v-icon>
-            <span class="d-none d-sm-flex">Manage</span>
+            <span class="d-none d-sm-flex">{{
+              $t('trans.formsTable.manage')
+            }}</span>
           </v-btn>
         </router-link>
         <router-link
@@ -102,7 +104,9 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">list_alt</v-icon>
-            <span class="d-none d-sm-flex">Submissions</span>
+            <span class="d-none d-sm-flex">{{
+              $t('trans.formsTable.submissions')
+            }}</span>
           </v-btn>
         </router-link>
       </template>
@@ -114,7 +118,7 @@
       @close-dialog="showDescriptionDialog = false"
     >
       <template #title>
-        <span class="pl-5">Description:</span>
+        <span class="pl-5">{{ $t('trans.formsTable.Description') }}</span>
       </template>
       <template #text>
         <slot name="formDescription">{{ formDescription }}</slot>
@@ -138,17 +142,6 @@ export default {
     return {
       // Assigning width: '1%' to dynamically assign width to the Table's Columns as described by this post on Stack Overflow:
       // https://stackoverflow.com/a/51569928
-      headers: [
-        { text: 'Form Title', align: 'start', value: 'name', width: '1%' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-          width: '1%',
-        },
-      ],
       loading: true,
       showDescriptionDialog: false,
       formId: null,
@@ -159,6 +152,24 @@ export default {
   computed: {
     ...mapGetters('form', ['formList']),
     ...mapGetters('auth', ['user']),
+    headers() {
+      return [
+        {
+          text: this.$t('trans.formsTable.formTitle'),
+          align: 'start',
+          value: 'name',
+          width: '1%',
+        },
+        {
+          text: this.$t('trans.formsTable.action'),
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+          width: '1%',
+        },
+      ];
+    },
     filteredFormList() {
       // At this point, we're only showing forms you can manage or view submissions of here
       // This may get reconceptualized in the future to different pages or something

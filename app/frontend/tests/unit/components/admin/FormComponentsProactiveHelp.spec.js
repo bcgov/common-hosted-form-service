@@ -1,6 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import FormComponentsProactiveHelp from '@/components/admin/FormComponentsProactiveHelp.vue';
 
 const localVue = createLocalVue();
@@ -36,7 +36,8 @@ describe('FormComponentsProactiveHelp.vue', () => {
     const wrapper = shallowMount(FormComponentsProactiveHelp, {
       localVue,
       store,
-      stubs: ['GeneralLayout']
+      stubs: ['GeneralLayout'],
+      i18n
     });
 
     wrapper.vm.onExpansionPanelClick('Basic Layout');
