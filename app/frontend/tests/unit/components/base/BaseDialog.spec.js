@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuetify from 'vuetify';
-
+import i18n from '@/internationalization';
 import BaseDialog from '@/components/base/BaseDialog.vue';
 
 const localVue = createLocalVue();
@@ -10,7 +10,8 @@ describe('BaseDialog.vue', () => {
   it('renders with ok button', async () => {
     const wrapper = shallowMount(BaseDialog, {
       localVue,
-      propsData: { show: true, type: 'OK' }
+      propsData: { show: true, type: 'OK' },
+      i18n
     });
     await wrapper.vm.closeDialog();
     await localVue.nextTick();
@@ -21,7 +22,8 @@ describe('BaseDialog.vue', () => {
   it('renders with continue button', async () => {
     const wrapper = shallowMount(BaseDialog, {
       localVue,
-      propsData: { show: true, type: 'CONTINUE' }
+      propsData: { show: true, type: 'CONTINUE' },
+      i18n
     });
     await wrapper.vm.continueDialog();
     await localVue.nextTick();
@@ -32,7 +34,8 @@ describe('BaseDialog.vue', () => {
   it('renders with the close button', async () => {
     const wrapper = shallowMount(BaseDialog, {
       localVue,
-      propsData: { show: true, showCloseButton: true }
+      propsData: { show: true, showCloseButton: true },
+      i18n
     });
     await wrapper.vm.closeDialog();
     await localVue.nextTick();
@@ -43,7 +46,8 @@ describe('BaseDialog.vue', () => {
   it('renders without the close button', async () => {
     const wrapper = shallowMount(BaseDialog, {
       localVue,
-      propsData: { show: true }
+      propsData: { show: true },
+      i18n
     });
     await wrapper.vm.closeDialog();
     await localVue.nextTick();

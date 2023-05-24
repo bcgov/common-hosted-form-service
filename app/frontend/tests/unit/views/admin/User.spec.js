@@ -1,9 +1,11 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import User from '@/views/admin/User.vue';
 
 const localVue = createLocalVue();
+
+
 localVue.use(Vuex);
 
 describe('User.vue', () => {
@@ -20,7 +22,8 @@ describe('User.vue', () => {
       localVue,
       propsData: { u: 'u' },
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
+      i18n
     });
     await localVue.nextTick();
 

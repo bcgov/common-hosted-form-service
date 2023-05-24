@@ -8,7 +8,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            :label="$t('trans.adminUsersTable.search')"
             single-line
             hide-details
             class="pb-5"
@@ -25,7 +25,7 @@
       :items="userList"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.adminUsersTable.loadingText')"
     >
       <template #[`item.created`]="{ item }">
         {{ item.createdAt | formatDate }}
@@ -34,7 +34,9 @@
         <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
           <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
-            <span class="d-none d-sm-flex">Admin</span>
+            <span class="d-none d-sm-flex">{{
+              $t('trans.adminUsersTable.admin')
+            }}</span>
           </v-btn>
         </router-link>
       </template>
@@ -50,24 +52,38 @@ export default {
   data() {
     return {
       activeOnly: false,
-      headers: [
-        { text: 'Full Name', align: 'start', value: 'fullName' },
-        { text: 'User ID', align: 'start', value: 'username' },
-        { text: 'Created', align: 'start', value: 'created' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ],
       loading: true,
       search: '',
     };
   },
   computed: {
     ...mapGetters('admin', ['userList']),
+    headers() {
+      return [
+        {
+          text: this.$t('trans.adminUsersTable.fullName'),
+          align: 'start',
+          value: 'fullName',
+        },
+        {
+          text: this.$t('trans.adminUsersTable.userID'),
+          align: 'start',
+          value: 'username',
+        },
+        {
+          text: this.$t('trans.adminUsersTable.created'),
+          align: 'start',
+          value: 'created',
+        },
+        {
+          text: this.$t('trans.adminUsersTable.actions'),
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+        },
+      ];
+    },
   },
   methods: {
     ...mapActions('admin', ['getUsers']),
