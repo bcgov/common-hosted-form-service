@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
-      <v-icon class="mr-1" color="primary">info</v-icon> You must be the
-      <strong>Form Owner</strong> to manage API Keys.
+      <v-icon class="mr-1" color="primary">info</v-icon
+      ><span v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
     </div>
     <h3 class="mt-3">{{ $t('trans.apiKey.disclaimer') }}</h3>
     <ul>
@@ -25,7 +25,11 @@
             @click="showConfirmationDialog = true"
           >
             <span
-              >{{ apiKey ? 'Regenerate' : 'Generate' }}
+              >{{
+                apiKey
+                  ? $t('trans.apiKey.regenerate')
+                  : $t('trans.apiKey.generate')
+              }}
               {{ $t('trans.apiKey.apiKey') }}</span
             >
           </v-btn>
@@ -35,11 +39,13 @@
             dense
             flat
             hide-details
-            label="Secret"
+            :label="$t('trans.apiKey.label')"
             outlined
             solid
             readonly
-            :type="showSecret ? 'text' : 'password'"
+            :type="
+              showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
+            "
             :value="secret"
           />
         </v-col>
@@ -100,18 +106,14 @@
     >
       <template #title>{{ $t('trans.apiKey.confirmKeyGen') }}</template>
       <template #text>
-        <span v-if="!apiKey">
-          Create an API Key for this form?<br />
-          Ensure you follow the Disclaimer on this page.
-        </span>
-        <span v-else>
-          Regenerate the API Key? <br />
-          <strong>Continuing will delete your current API Key access</strong>.
-        </span>
+        <span v-if="!apiKey" v-html="$t('trans.apiKey.createAPIKey')"> </span>
+        <span v-else v-html="$t('trans.apiKey.regenerateAPIKey')"> </span>
       </template>
       <template #button-text-continue>
         <span
-          >{{ apiKey ? 'Regenerate' : 'Generate' }}
+          >{{
+            apiKey ? $t('trans.apiKey.regenerate') : $t('trans.apiKey.generate')
+          }}
           {{ $t('trans.apiKey.key') }}</span
         >
       </template>

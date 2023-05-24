@@ -39,7 +39,9 @@
         <h2>{{ $t('trans.homePage.chefsHowToTitle') }}</h2>
         <p>
           {{ $t('trans.homePage.chefsHowToSub') }}
-          <a :href="howToVideoUrl" target="_blank">Get started!</a>
+          <a :href="howToVideoUrl" target="_blank"
+            >{{ $t('trans.homePage.getStarted') }}!</a
+          >
         </p>
       </v-col>
       <v-col cols="12" lg="4">

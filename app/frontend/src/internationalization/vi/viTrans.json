@@ -133,7 +133,15 @@
     "confirmDeletion": "Xác nhận xóa",
     "deleteMsg": "Bạn có chắc chắn muốn xóa Khóa API của mình không?",
     "delete": "Xóa bỏ",
-    "confirmKeyGen": "Xác nhận tạo khóa"
+    "confirmKeyGen": "Xác nhận tạo khóa",
+    "createAPIKey": "Tạo Khóa API cho biểu mẫu này?<br /> Đảm bảo bạn tuân theo Tuyên bố miễn trừ trách nhiệm trên trang này.",
+    "regenerateAPIKey": "Tạo lại khóa API? <br /> <strong>Việc tiếp tục sẽ xóa quyền truy cập Khóa API hiện tại của bạn</strong>.",
+    "formOwnerKeyAcess": "Bạn phải là <strong>Chủ sở hữu biểu mẫu</strong> để quản lý Khóa API.",
+    "regenerate": "tái tạo",
+    "generate": "Phát ra",
+    "secret": "Bí mật",
+    "text": "chữ",
+    "password": "mật khẩu"
   },
   "manageVersions": {
     "important": "QUAN TRỌNG!",
@@ -635,7 +643,8 @@
     "chefsHowToTitle": "Video hướng dẫn của CHEF",
     "chefsHowToSub": "Hướng dẫn bắt đầu nhanh của chúng tôi sẽ giới thiệu cho bạn một số chức năng cơ bản của CHEFS. Bắt đầu!",
     "getStartedToChefs": "Bắt đầu sử dụng CHEFS",
-    "createOnlineTitle": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn."
+    "createOnlineTitle": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn.",
+    "getStarted": "Bắt đầu"
   },
   "create": {
     "createNewForm": "Tạo biểu mẫu mới",

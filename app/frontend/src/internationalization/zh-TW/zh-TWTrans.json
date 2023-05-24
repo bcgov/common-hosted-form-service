@@ -133,7 +133,15 @@
     "confirmDeletion": "確認刪除",
     "deleteMsg": "您確定要刪除您的 API 密鑰嗎？",
     "delete": "刪除",
-    "confirmKeyGen": "確認密鑰生成"
+    "confirmKeyGen": "確認密鑰生成",
+    "createAPIKey": "为此表单创建一个 API 密钥？<br />确保您遵循此页面上的免责声明.",
+    "regenerateAPIKey": "重新生成 API 密钥？ <br /> <strong>继续将删除您当前的 API 密钥访问权限</strong>。",
+    "formOwnerKeyAcess": "您必须是<strong>表单所有者</strong>才能管理 API 密钥。",
+    "regenerate": "再生",
+    "generate": "产生",
+    "secret": "秘密",
+    "text": "文本",
+    "password": "密码"
   },
   "manageVersions": {
     "important": "重要的！",
@@ -635,7 +643,8 @@
     "chefsHowToTitle": "CHEFS 操作視頻",
     "chefsHowToSub": "我們的快速入門指南將向您介紹 CHEFS 的一些基本功能。開始吧！",
     "getStartedToChefs": "開始使用 CHEFS",
-    "createOnlineTitle": "創建在線表格以從您的客戶那裡收集信息並改進您的工作流程。"
+    "createOnlineTitle": "創建在線表格以從您的客戶那裡收集信息並改進您的工作流程。",
+    "getStarted": "開始吧"
   },
   "create": {
     "createNewForm": "創建新表格",

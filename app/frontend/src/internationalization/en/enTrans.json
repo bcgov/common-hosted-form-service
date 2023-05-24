@@ -135,7 +135,15 @@
     "confirmDeletion": "Confirm Deletion",
     "deleteMsg": "Are you sure you wish to delete your API Key?",
     "delete": "Delete",
-    "confirmKeyGen": "Confirm Key Generation"
+    "confirmKeyGen": "Confirm Key Generation",
+    "createAPIKey": "Create an API Key for this form?<br /> Ensure you follow the Disclaimer on this page.",
+    "regenerateAPIKey": "Regenerate the API Key? <br /> <strong>Continuing will delete your current API Key access</strong>.",
+    "formOwnerKeyAcess": "You must be the <strong>Form Owner</strong> to manage API Keys.",
+    "regenerate": "Regenerate",
+    "generate": "Generate",
+    "secret": "Secret",
+    "text": "text",
+    "password": "password"
   },
   "manageVersions": {
     "important": "IMPORTANT!",
@@ -253,6 +261,7 @@
     "logout": "Logout",
     "login": "Login"
   },
+
   "baseDialog": {
     "defaultText": "default text",
     "ok": "OK",
