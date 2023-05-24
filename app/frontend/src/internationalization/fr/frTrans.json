@@ -133,7 +133,15 @@
     "confirmDeletion": "Confirmer la suppression",
     "deleteMsg": "Êtes-vous sûr de vouloir supprimer votre clé API ?",
     "delete": "Supprimer",
-    "confirmKeyGen": "Confirmer la génération de clé"
+    "confirmKeyGen": "Confirmer la génération de clé",
+    "createAPIKey": "Créer une clé API pour ce formulaire ?<br /> Assurez-vous de suivre la clause de non-responsabilité sur cette page.",
+    "regenerateAPIKey": "Régénérer la clé API ? <br /> <strong>Si vous continuez, votre accès actuel à la clé API sera supprimé</strong>.",
+    "formOwnerKeyAcess": "Vous devez être le <strong>propriétaire du formulaire</strong> pour gérer les clés API.",
+    "regenerate": "Régénérer",
+    "generate": "Générer",
+    "secret": "Secrète",
+    "text": "texte",
+    "password": "mot de passe"
   },
   "manageVersions": {
     "important": "IMPORTANT!",
@@ -639,7 +647,8 @@
     "chefsHowToTitle": "Vidéos explicatives CHEFS",
     "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS. Commencer!",
     "getStartedToChefs": "Commencez à utiliser CHEFS",
-    "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail."
+    "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
+    "getStarted": "Commencer"
   },
   "create": {
     "createNewForm": "Créer un nouveau formulaire",

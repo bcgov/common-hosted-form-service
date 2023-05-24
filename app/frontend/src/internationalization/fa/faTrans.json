@@ -133,7 +133,15 @@
     "confirmDeletion": "حذف را تایید کنید",
     "deleteMsg": "آیا مطمئن هستید که می خواهید کلید API خود را حذف کنید؟",
     "delete": "حذف",
-    "confirmKeyGen": "تأیید تولید کلید"
+    "confirmKeyGen": "تأیید تولید کلید",
+    "createAPIKey": "یک کلید API برای این فرم ایجاد کنید؟<br /> مطمئن شوید که سلب مسئولیت را در این صفحه دنبال می کنید.",
+    "regenerateAPIKey": "کلید API را دوباره تولید کنید؟ <br /> <strong>ادامه، دسترسی کلید API فعلی شما را حذف می‌کند</strong>.",
+    "formOwnerKeyAcess": "برای مدیریت کلیدهای API باید <strong>مالک فرم</strong> باشید.",
+    "regenerate": "بازسازی کنید",
+    "generate": "تولید می کنند",
+    "secret": "راز",
+    "text": "متن",
+    "password": "کلمه عبور"
   },
   "manageVersions": {
     "important": "مهم!",
@@ -632,7 +640,8 @@
     "chefsHowToTitle": "فیلم‌های راهنمای سرآشپز",
     "chefsHowToSub": "راهنمای شروع سریع ما شما را با برخی از عملکردهای اساسی CHEFS آشنا می کند. شروع کن!",
     "getStartedToChefs": "شروع به استفاده از CHEFS کنید",
-    "createOnlineTitle": "فرم های آنلاین برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود ایجاد کنید."
+    "createOnlineTitle": "فرم های آنلاین برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود ایجاد کنید.",
+    "getStarted": "شروع کنید"
   },
   "create": {
     "createNewForm": "ایجاد فرم جدید",

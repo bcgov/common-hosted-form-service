@@ -15,9 +15,8 @@
             <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
             <span>
               <small>
-                Created: {{ form.createdAt | formatDate }} ({{
-                  form.createdBy
-                }})
+                {{ $t('trans.manageForm.created') }}:
+                {{ form.createdAt | formatDate }} ({{ form.createdBy }})
               </small>
               <v-btn
                 v-if="canEditForm"

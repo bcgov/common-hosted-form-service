@@ -68,27 +68,27 @@ export default {
     return {
       headers: [
         {
-          text: "this.$t('trans.manageVersions.versions')",
+          text: this.$t('trans.manageVersions.versions'),
           align: 'start',
           value: 'version',
         },
         {
-          text: "this.$t('trans.manageVersions.status')",
+          text: this.$t('trans.manageVersions.status'),
           align: 'start',
           value: 'status',
         },
         {
-          text: "this.$t('trans.manageVersions.created')",
+          text: this.$t('trans.manageVersions.created'),
           align: 'start',
           value: 'createdAt',
         },
         {
-          text: "this.$t('trans.manageVersions.lastUpdated')",
+          text: this.$t('trans.manageVersions.lastUpdated'),
           align: 'start',
           value: 'updatedAt',
         },
         {
-          text: "this.$t('trans.manageVersions.actions')",
+          text: this.$t('trans.manageVersions.actions'),
           align: 'end',
           value: 'action',
           filterable: false,
@@ -105,7 +105,7 @@ export default {
         version: '',
         id: '',
       },
-      message: "this.$t('trans.adminVersions.notificationMsg')",
+      message: this.$t('trans.adminVersions.notificationMsg'),
     };
   },
   computed: {

@@ -133,7 +133,15 @@
     "confirmDeletion": "削除の確認",
     "deleteMsg": "API キーを削除してもよろしいですか?",
     "delete": "消去",
-    "confirmKeyGen": "キー生成の確認"
+    "confirmKeyGen": "キー生成の確認",
+    "createAPIKey": "このフォームの API キーを作成しますか?<br /> このページの免責事項に従ってください。",
+    "regenerateAPIKey": "APIキーを再生成しますか? <br /> <strong>続行すると、現在の API キー アクセスが削除されます</strong>。",
+    "formOwnerKeyAcess": "API キーを管理するには<strong>フォーム所有者</strong>である必要があります。",
+    "regenerate": "再生する",
+    "generate": "生成",
+    "secret": "ひみつ",
+    "text": "文章",
+    "password": "パスワード"
   },
   "manageVersions": {
     "important": "重要！",
@@ -635,7 +643,8 @@
     "chefsHowToTitle": "シェフのハウツービデオ",
     "chefsHowToSub": "クイックスタート ガイドでは、CHEFS の基本機能のいくつかを紹介します。始めましょう！",
     "getStartedToChefs": "CHFS の使用を開始する",
-    "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します。"
+    "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します",
+    "getStarted": "始めましょう"
   },
   "create": {
     "createNewForm": "新しいフォームの作成",
