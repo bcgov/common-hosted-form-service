@@ -38,6 +38,7 @@
       </h1>
       <v-spacer />
       <BaseAuthButton />
+      <BaseInternationalization />
     </v-toolbar>
   </header>
 </template>

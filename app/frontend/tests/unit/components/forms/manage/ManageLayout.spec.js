@@ -1,6 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import ManageLayout from '@/components/forms/manage/ManageLayout.vue';
 
 const localVue = createLocalVue();
@@ -43,7 +43,8 @@ describe('ManageLayout.vue', () => {
       localVue,
       propsData: { f: 'f' },
       store,
-      stubs: ['ManageFormActions', 'ManageForm']
+      stubs: ['ManageFormActions', 'ManageForm'],
+      i18n
     });
 
     expect(wrapper.html()).toMatch('Manage Form');
@@ -57,7 +58,8 @@ describe('ManageLayout.vue', () => {
       localVue,
       propsData: { f: formId },
       store,
-      stubs: ['ManageFormActions', 'ManageForm']
+      stubs: ['ManageFormActions', 'ManageForm'],
+      i18n
     });
 
     expect(formActions.fetchForm).toHaveBeenCalledTimes(1);
@@ -71,7 +73,8 @@ describe('ManageLayout.vue', () => {
       localVue,
       propsData: { f: 'f' },
       store,
-      stubs: ['ManageFormActions', 'ManageForm']
+      stubs: ['ManageFormActions', 'ManageForm'],
+      i18n
     });
 
     expect(wrapper.html()).toMatch('myForm');

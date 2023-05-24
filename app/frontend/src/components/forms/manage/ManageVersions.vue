@@ -2,19 +2,17 @@
   <div>
     <BaseInfoCard class="my-4">
       <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+        <v-icon class="mr-1" color="primary">info</v-icon
+        >{{ $t('trans.manageVersions.important') }}
       </h4>
       <p>
-        If there are no published versions, users are unable to access this form
-        until there is a published version assigned. Once a version is
-        published, that version is no longer editable. You must create a new
-        version based on one of the previous form versions to continue editing.
+        {{ $t('trans.manageVersions.infoA') }}
       </p>
     </BaseInfoCard>
 
     <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary">info</v-icon>Note: Only one version
-      can be published.
+      <v-icon class="mr-1" color="primary">info</v-icon
+      >{{ $t('trans.manageVersions.infoB') }}
     </div>
     <v-data-table
       :key="rerenderTable"
@@ -36,7 +34,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
-                Version {{ item.version }}
+                {{ $t('trans.manageVersions.version') }} {{ item.version }}
                 <v-chip
                   v-if="item.isDraft"
                   color="secondary"
@@ -44,12 +42,12 @@
                   x-small
                   text-color="black"
                 >
-                  Draft
+                  {{ $t('trans.manageVersions.draft') }}
                 </v-chip>
               </span>
             </template>
             <span>
-              Click to preview
+              {{ $t('trans.manageVersions.clickToPreview') }}
               <v-icon>open_in_new</v-icon>
             </span>
           </v-tooltip>
@@ -63,7 +61,11 @@
           color="success"
           value
           :input-value="item.published"
-          :label="item.published ? 'Published' : 'Unpublished'"
+          :label="
+            item.published
+              ? $t('trans.manageVersions.published')
+              : $t('trans.manageVersions.unpublished')
+          "
           :disabled="!canPublish"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
         />
@@ -102,7 +104,7 @@
                 </v-btn>
               </router-link>
             </template>
-            <span>Edit Version</span>
+            <span>{{ $t('trans.manageVersions.editVersion') }}</span>
           </v-tooltip>
         </span>
 
@@ -121,7 +123,7 @@
                 <v-icon>get_app</v-icon>
               </v-btn>
             </template>
-            <span>Export Design</span>
+            <span>{{ $t('trans.manageVersions.exportDesign') }}</span>
           </v-tooltip>
         </span>
 
@@ -142,11 +144,14 @@
               </span>
             </template>
             <span v-if="hasDraft">
-              Please publish or delete your latest draft version before starting
-              a new version.
+              {{ $t('trans.manageVersions.infoC') }}
             </span>
             <span v-else>
-              Use version {{ item.version }} as the base for a new version
+              {{
+                $t('trans.manageVersions.useVersionInfo', {
+                  version: item.version,
+                })
+              }}
             </span>
           </v-tooltip>
         </span>
@@ -167,7 +172,7 @@
                 </v-btn>
               </span>
             </template>
-            <span>Delete Version</span>
+            <span>{{ $t('trans.manageVersions.deleteVersion') }}</span>
           </v-tooltip>
         </span>
       </template>
@@ -178,10 +183,11 @@
       type="OK"
       @close-dialog="showHasDraftsDialog = false"
     >
-      <template #title>Draft already exists</template>
+      <template #title>{{
+        $t('trans.manageVersions.draftAlreadyExists')
+      }}</template>
       <template #text>
-        Please edit, publish or delete the existing draft before starting a new
-        draft.
+        {{ $t('trans.manageVersions.infoD') }}
       </template>
     </BaseDialog>
 
@@ -193,17 +199,24 @@
     >
       <template #title>
         <span v-if="publishOpts.publishing">
-          Publish Version {{ publishOpts.version }}
-        </span>
-        <span v-else>Unpublish Version {{ publishOpts.version }}</span>
-      </template>
-      <template #text>
-        <span v-if="publishOpts.publishing">
-          This will make Version {{ publishOpts.version }} of your form live.
+          {{ $t('trans.manageVersions.publishVersion') }}
+          {{ publishOpts.version }}
         </span>
         <span v-else>
-          Unpublishing this form will take the form out of circulation until a
-          version is published again.
+          {{ $t('trans.manageVersions.unpublishVersion') }}
+          {{ publishOpts.version }}</span
+        >
+      </template>
+      <template #text>
+        <span v-if="publishOpts.publishing"
+          >{{
+            $t('trans.manageVersions.useVersionInfo', {
+              version: publishOpts.version,
+            })
+          }}
+        </span>
+        <span v-else>
+          {{ $t('trans.manageVersions.infoE') }}
         </span>
       </template>
     </BaseDialog>
@@ -214,10 +227,12 @@
       @close-dialog="showDeleteDraftDialog = false"
       @continue-dialog="deleteCurrentDraft"
     >
-      <template #title>Confirm Deletion</template>
-      <template #text>Are you sure you wish to delete this Version?</template>
+      <template #title
+        >{{ $t('trans.manageVersions.confirmDeletion') }}
+      </template>
+      <template #text>{{ $t('trans.manageVersions.infoF') }}</template>
       <template #button-text-continue>
-        <span>Delete</span>
+        <span>{{ $t('trans.manageVersions.delete') }}</span>
       </template>
     </BaseDialog>
   </div>
@@ -233,20 +248,6 @@ export default {
   inject: ['fd', 'draftId', 'formId'],
   data() {
     return {
-      headers: [
-        { text: 'Version', align: 'start', value: 'version' },
-        { text: 'Status', align: 'start', value: 'status' },
-        { text: 'Date Created', align: 'start', value: 'createdAt' },
-        { text: 'Created By', align: 'start', value: 'createdBy' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'action',
-          filterable: false,
-          sortable: false,
-          width: 200,
-        },
-      ],
       formSchema: {
         display: 'form',
         type: 'form',
@@ -265,6 +266,39 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['drafts', 'form', 'permissions']),
+    headers() {
+      return [
+        {
+          text: this.$t('trans.manageVersions.version'),
+          align: 'start',
+          value: 'version',
+        },
+        {
+          text: this.$t('trans.manageVersions.status'),
+          align: 'start',
+          value: 'status',
+        },
+        {
+          text: this.$t('trans.manageVersions.dateCreated'),
+          align: 'start',
+          value: 'createdAt',
+        },
+
+        {
+          text: this.$t('trans.manageVersions.createdBy'),
+          align: 'start',
+          value: 'createdBy',
+        },
+        {
+          text: this.$t('trans.manageVersions.actions'),
+          align: 'end',
+          value: 'action',
+          filterable: false,
+          sortable: false,
+          width: 200,
+        },
+      ];
+    },
     canCreateDesign() {
       return this.permissions.includes(FormPermissions.DESIGN_CREATE);
     },

@@ -69,6 +69,7 @@ export default {
         data: {},
       },
     },
+
     permissions: [],
     roles: [],
     submissionList: [],
@@ -82,6 +83,7 @@ export default {
       data: null,
       headers: null,
     },
+    multiLanguage: '',
   },
   getters: {
     getField, // vuex-map-fields
@@ -102,6 +104,7 @@ export default {
     fcProactiveHelpGroupList: (state) => state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
     downloadedFile: (state) => state.downloadedFile,
+    multiLanguage: (state) => state.multiLanguage,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -162,6 +165,9 @@ export default {
     },
     SET_DOWNLOADEDFILE_HEADERS(state, headers) {
       state.downloadedFile.headers = headers;
+    },
+    SET_MULTI_LANGUAGE(state, multiLanguage) {
+      state.multiLanguage = multiLanguage;
     },
   },
   actions: {
@@ -796,6 +802,9 @@ export default {
       // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
       if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       commit('SET_FORM_DIRTY', isDirty);
+    },
+    async setMultiLanguage({ commit }, multiLanguage) {
+      commit('SET_MULTI_LANGUAGE', multiLanguage);
     },
     async downloadFile({ commit, dispatch }, fileId) {
       try {
