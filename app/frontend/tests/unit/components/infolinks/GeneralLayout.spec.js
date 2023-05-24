@@ -1,6 +1,7 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import GeneralLayout from '@/components/infolinks/GeneralLayout.vue';
+import i18n from '@/internationalization';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -11,7 +12,7 @@ describe('GeneralLayout.vue', () => {
   it('isComponentPublish()', async () => {
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
-      stubs: ['InformationLinkDialog','InformationLinkPreviewDialog'],
+      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
       propsData: {
         componentsList: {
           type:Array,
@@ -22,7 +23,8 @@ describe('GeneralLayout.vue', () => {
         return {
           publish:[false, false]
         };
-      }
+      },
+      i18n
     });
     await wrapper.setProps({ componentsList: [{'componentName':'content','status':true}, {'componentName':'textfiled','status':false}],
       layoutList:[{'componentName':'content'}, {'componentName':'textfiled'}]});
@@ -39,7 +41,7 @@ describe('GeneralLayout.vue', () => {
 
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
-      stubs: ['InformationLinkDialog','InformationLinkPreviewDialog'],
+      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
       propsData: {
         componentsList: {
           type:Array,
@@ -50,7 +52,8 @@ describe('GeneralLayout.vue', () => {
         return {
           publish:[false, false]
         };
-      }
+      },
+      i18n
     });
     await wrapper.setProps({ componentsList: [{'componentName':'content','status':true}, {'componentName':'textfiled','status':false}],
       layoutList:[{'componentName':'content'}, {'componentName':'textfiled'}]});
@@ -63,7 +66,7 @@ describe('GeneralLayout.vue', () => {
 
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
-      stubs: ['InformationLinkDialog','InformationLinkPreviewDialog'],
+      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
       propsData: {
         componentsList: {
           type:Array,
@@ -74,7 +77,8 @@ describe('GeneralLayout.vue', () => {
         return {
           showPreviewDialog: false
         };
-      }
+      },
+      i18n
     });
     await wrapper.setProps({ componentsList: [{'componentName':'content','status':true}, {'componentName':'textfiled','status':false}],
       layoutList:[{'componentName':'content'}, {'componentName':'textfiled'}]});
@@ -86,7 +90,7 @@ describe('GeneralLayout.vue', () => {
 
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
-      stubs: ['InformationLinkDialog','InformationLinkPreviewDialog'],
+      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
       propsData: {
         componentsList: {
           type:Array,
@@ -97,7 +101,8 @@ describe('GeneralLayout.vue', () => {
         return {
           showDialog: false
         };
-      }
+      },
+      i18n
     });
     await wrapper.setProps({ componentsList: [{'componentName':'content','status':true}, {'componentName':'textfiled','status':false}],
       layoutList:[{'componentName':'content'}, {'componentName':'textfiled'}]});

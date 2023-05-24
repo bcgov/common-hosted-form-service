@@ -1,7 +1,7 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import About from '@/views/About.vue';
 
 const localVue = createLocalVue();
@@ -30,7 +30,8 @@ describe('About.vue', () => {
       localVue,
       store,
       stubs: ['router-link', 'BaseImagePopout'],
-      vuetify
+      vuetify,
+      i18n
     });
 
     expect(wrapper.html()).toMatch('Create, publish forms, and receive submissions');

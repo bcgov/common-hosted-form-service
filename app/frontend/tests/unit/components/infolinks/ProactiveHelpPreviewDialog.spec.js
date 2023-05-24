@@ -1,19 +1,19 @@
 import { shallowMount } from '@vue/test-utils';
+import i18n from '@/internationalization';
+import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
 
-import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
-
-
-describe('InformationLinkPreviewDialog.vue', () => {
+describe('ProactiveHelpPreviewDialog.vue', () => {
 
   it('preview dialog', async () => {
 
-    const wrapper = shallowMount(InformationLinkPreviewDialog, {
+    const wrapper = shallowMount(ProactiveHelpPreviewDialog, {
       data() {
         return {
           description: 'dump text',
           link:'url'
         };
       },
+      i18n,
       propsData: {
         component:{ type: Object }
       },
