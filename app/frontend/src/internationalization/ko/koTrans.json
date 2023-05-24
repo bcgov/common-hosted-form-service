@@ -133,7 +133,15 @@
     "confirmDeletion": "삭제 확인",
     "deleteMsg": "API 키를 삭제하시겠습니까?",
     "delete": "삭제",
-    "confirmKeyGen": "키 생성 확인"
+    "confirmKeyGen": "키 생성 확인",
+    "createAPIKey": "이 양식에 대한 API 키를 만드시겠습니까?<br /> 이 페이지의 면책 조항을 따르십시오.",
+    "regenerateAPIKey": "API 키를 재생성하시겠습니까? <br /> <strong>계속하면 현재 API 키 액세스 권한이 삭제됩니다</strong>.",
+    "formOwnerKeyAcess": "API 키를 관리하려면 <strong>양식 소유자</strong>여야 합니다.",
+    "regenerate": "재생하다",
+    "generate": "생성하다",
+    "secret": "비밀",
+    "text": "텍스트",
+    "password": "비밀번호"
   },
   "manageVersions": {
     "important": "중요한!",
@@ -635,7 +643,8 @@
     "chefsHowToTitle": "셰프 사용법 동영상",
     "chefsHowToSub": "빠른 시작 가이드는 CHEFS의 기본 기능 중 일부를 소개합니다. 시작하다!",
     "getStartedToChefs": "CHEFS를 사용하여 시작하기",
-    "createOnlineTitle": "클라이언트로부터 정보를 수집하고 작업 흐름을 개선하기 위한 온라인 양식을 만드십시오."
+    "createOnlineTitle": "클라이언트로부터 정보를 수집하고 작업 흐름을 개선하기 위한 온라인 양식을 만드십시오.",
+    "getStarted": "시작하다"
   },
   "create": {
     "createNewForm": "새 양식 만들기",

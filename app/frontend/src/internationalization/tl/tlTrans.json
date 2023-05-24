@@ -133,7 +133,15 @@
     "confirmDeletion": "Kumpirmahin ang pagtanggal",
     "deleteMsg": "Sigurado ka bang gusto mong tanggalin ang iyong API Key?",
     "delete": "Tanggalin",
-    "confirmKeyGen": "Kumpirmahin ang Key Generation"
+    "confirmKeyGen": "Kumpirmahin ang Key Generation",
+    "createAPIKey": "Lumikha ng API Key para sa form na ito?<br /> Tiyaking susundin mo ang Disclaimer sa pahinang ito.",
+    "regenerateAPIKey": "I-regenerate ang API Key? <br /> <strong>Tatanggalin ng pagpapatuloy ang iyong kasalukuyang access sa API Key</strong>.",
+    "formOwnerKeyAcess": "Ikaw dapat ang <strong>May-ari ng Form</strong> upang pamahalaan ang mga API Key.",
+    "regenerate": "Magbagong-buhay",
+    "generate": "Bumuo",
+    "secret": "Lihim",
+    "text": "text",
+    "password": "password"
   },
   "manageVersions": {
     "important": "MAHALAGA!",
@@ -635,7 +643,8 @@
     "chefsHowToTitle": "Mga Video na How-to ng CHEFS",
     "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS. Magsimula!",
     "getStartedToChefs": "Magsimula sa paggamit ng CHEFS",
-    "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho."
+    "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
+    "getStarted": "Magsimula"
   },
   "create": {
     "createNewForm": "Lumikha ng Bagong Form",
