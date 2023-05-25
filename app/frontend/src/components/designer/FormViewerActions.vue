@@ -8,6 +8,10 @@
       </router-link>
     </v-col>
     <v-col v-if="draftEnabled" class="text-right">
+      <span class="ml-2">
+        <PrintOptions :submission="submission" />
+      </span>
+
       <!-- Save a draft -->
       <span v-if="canSaveDraft" class="ml-2">
         <v-tooltip bottom>
@@ -61,11 +65,13 @@
 <script>
 import { FormPermissions } from '@/utils/constants';
 import ManageSubmissionUsers from '@/components/forms/submission/ManageSubmissionUsers.vue';
+import PrintOptions from '@/components/forms/PrintOptions.vue';
 
 export default {
   name: 'MySubmissionsActions',
   components: {
     ManageSubmissionUsers,
+    PrintOptions,
   },
   props: {
     draftEnabled: {
@@ -89,6 +95,10 @@ export default {
     },
     submissionId: {
       type: String,
+      default: undefined,
+    },
+    submission: {
+      type: Object,
       default: undefined,
     },
   },
