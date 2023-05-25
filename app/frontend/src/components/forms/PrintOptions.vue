@@ -185,7 +185,6 @@ export default {
             template: body,
             submission: this.submission,
           };
-          console.log(draftData);
           response = await utilsService.draftDocGen(draftData);
         }
 
