@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Material+Icons');
+@import '@mdi/font/css/materialdesignicons.css';
+@import 'bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
+@import 'vue-json-pretty/lib/styles.css';
+
+// Variables
+$bcgov-blue: #003366;
+$bcgov-blue-secondary: #38598a;
+$bcgov-orange: #fcba19;
+$bcgov-grey: #efefef;
+$bcgov-font: #313132;
+$bcgov-error: #d8292f;
+$bcgov-link: #1a5a96;
+$bcgov-link-hover: #3b99fc;
+$bcgov-input-placeholder: #606060;
+$bcgov-font-error: #a12622;
+$bcgov-font-warning: #6c4a00;
+$bcgov-font-success: #2d4821;
+$bcgov-alert-error: #f2dede;
+$bcgov-alert-warning: #f9f1c6;
+$bcgov-alert-info: #d9eaf7;
+$bcgov-alert-success: #dff0d8;
+
+// Sticky Footer
+body {
+  display: flex;
+  flex-direction: column;
+  & > .v-content {
+    flex: 1 0 auto;
+  }
+}
+
+// Typography
+.v-application {
+  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
+    sans-serif !important;
+  line-height: 1.4;
+  font-size: 0.875rem;
+}
+
+h1 {
+  font-size: 1.9em;
+}
+h2 {
+  font-size: 1.7em;
+}
+h3 {
+  font-size: 1.3em;
+}
+h4 {
+  font-size: 1.05em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: $bcgov-font;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+p {
+  color: $bcgov-font;
+  line-height: 1.7;
+}
+
+// links
+a {
+  color: $bcgov-link;
+  &:hover {
+    color: $bcgov-link-hover;
+  }
+}
+
+// Horizontal Rule
+hr {
+  border-top: 1px solid lightgrey;
+  margin-bottom: 1em;
+  .orange {
+    border-top: 2px solid $bcgov-orange;
+  }
+}
+
+// General Transition Animation Behavior
+.component-fade-enter-active,
+.component-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.component-fade-enter,
+.component-fade-leave-to {
+  opacity: 0;
+}
+
+// Anchor and Tab Behavior
+a,
+.v-tab {
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+    button,
+    .v-icon {
+      text-decoration: none;
+    }
+  }
+}
+
+.v-btn {
+  span > span {
+    font-weight: bold;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    span > span {
+      text-decoration: underline;
+    }
+  }
+  &.v-btn--disabled {
+    color: #777;
+  }
+
+  &.v-btn--outlined {
+    border: 2px solid #fff;
+    &.v-btn--disabled {
+      border-color: rgba(0, 0, 0, 0.26);
+    }
+  }
+}
+
+// Customized expand/collapse section
+.nrmc-expand-collapse {
+  width: 100%;
+  min-height: 50px;
+  .v-expansion-panel--active > .v-expansion-panel-title {
+    min-height: 50px;
+  }
+
+  .v-expansion-panel-title {
+    padding: 10px;
+    background-color: $bcgov-grey;
+    .icon {
+      order: 0;
+    }
+
+    .header {
+      order: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .v-expansion-panel-text__wrap {
+    padding-top: 8px;
+  }
+}
+
+.v-tooltip > .v-overlay__content {
+  pointer-events: auto !important; //Have to replace Tooltips default behaviour pointer-events: none as we have some tooltips with External Links.
+}
