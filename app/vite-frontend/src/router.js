@@ -1,0 +1,233 @@
+import NProgress from 'nprogress';
+import { createRouter, createWebHistory } from 'vue-router';
+
+import { IdentityProviders } from '~/utils/constants';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
+import { preFlightAuth } from '~/utils/permissionUtils';
+
+let isFirstTransition = true;
+let router = undefined;
+
+/**
+ * @function createProps
+ * Parses the route query and params to generate vue props
+ * @param {object} route The route object
+ * @returns {object} a Vue props object
+ */
+const createProps = (route) => ({ ...route.query, ...route.params });
+
+/**
+ * @function getRouter
+ * Constructs and returns a Vue Router object
+ * @param {string} [basePath='/'] the base server path
+ * @returns {object} a Vue Router object
+ */
+export default function getRouter(basePath = '/') {
+  // Return existing router object if already instantiated
+  if (router) return router;
+
+  // Create new router definition
+  router = createRouter({
+    history: createWebHistory(basePath),
+    routes: [
+      {
+        path: '/',
+        name: 'Home',
+        redirect: { name: 'About' },
+      },
+      {
+        path: '/',
+        name: 'About',
+        component: () => import('~/views/About.vue'),
+        meta: {
+          hasLogin: true,
+        },
+      },
+      {
+        path: '/form',
+        component: () => import('~/views/Form.vue'),
+        children: [
+          {
+            path: 'create',
+            name: 'FormCreate',
+            component: () => import('~/views/form/Create.vue'),
+            meta: {
+              breadcrumbTitle: 'Form Designer',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+          },
+          {
+            path: 'design',
+            name: 'FormDesigner',
+            component: () => import('~/views/form/Design.vue'),
+            meta: {
+              breadcrumbTitle: 'Form Designer',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: (route) => {
+              return {
+                ...route.query,
+                ...route.params,
+                nv:
+                  String(route.query.nv).toLowerCase() === 'true' ||
+                  route.query.nv === true,
+                sv:
+                  String(route.query.sv).toLowerCase() === 'true' ||
+                  route.query.sv === true,
+              };
+            },
+          },
+          {
+            path: 'manage',
+            name: 'FormManage',
+            component: () => import('~/views/form/Manage.vue'),
+            meta: {
+              breadcrumbTitle: 'Manage Form',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
+            path: 'preview',
+            name: 'FormPreview',
+            component: () => import('~/views/form/Preview.vue'),
+            meta: {
+              breadcrumbTitle: 'Preview Form',
+              formSubmitMode: true,
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
+            path: 'submissions',
+            name: 'FormSubmissions',
+            component: () => import('~/views/form/Submissions.vue'),
+            meta: {
+              breadcrumbTitle: 'Submissions',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
+            path: 'submit',
+            name: 'FormSubmit',
+            component: () => import('~/views/form/Submit.vue'),
+            meta: {
+              breadcrumbTitle: 'Submit Form',
+              formSubmitMode: true,
+            },
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ formId: to.query.f }, next);
+            },
+          },
+        ],
+      },
+      {
+        path: '/user',
+        component: () => import('~/views/User.vue'),
+        children: [
+          {
+            path: 'forms',
+            name: 'UserForms',
+            component: () => import('~/views/user/Forms.vue'),
+            meta: {
+              breadcrumbTitle: 'My Forms',
+              requiresAuth: IdentityProviders.IDIR,
+            },
+          },
+        ],
+      },
+      {
+        path: '/error',
+        name: 'Error',
+        component: () => import('~/views/Error.vue'),
+        meta: {
+          formSubmitMode: true,
+          hasLogin: true,
+        },
+        props: createProps,
+      },
+      {
+        path: '/login',
+        name: 'Login',
+        component: () => import('~/views/Login.vue'),
+        props: createProps,
+        beforeEnter(to, from, next) {
+          // Block navigation to login page if already authenticated
+          NProgress.done();
+          const authStore = useAuthStore();
+          if (authStore.authenticated) next('/');
+          else next();
+        },
+      },
+      {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('~/views/NotFound.vue'),
+        meta: {
+          hasLogin: true,
+        },
+      },
+    ],
+  });
+
+  router.beforeEach((to, from, next) => {
+    NProgress.start();
+
+    const authStore = useAuthStore();
+
+    if (isFirstTransition) {
+      // Always call rbac/current if authenticated and on first page load
+      if (authStore?.ready && authStore?.authenticated) {
+        const formStore = useFormStore();
+        formStore.getFormsForCurrentUser();
+      }
+
+      // Handle proper redirections on first page load
+      if (to.query.r) {
+        router.replace({
+          path: to.query.r.replace(basePath, ''),
+          query: (({ r, ...q }) => q)(to.query), // eslint-disable-line no-unused-vars
+        });
+      }
+    }
+
+    // Force login redirect if not authenticated
+    // Note some pages (Submit and Success) only require auth if the form being loaded is secured
+    // in those cases, see the beforeEnter navigation guards for auth loop determination
+    if (
+      to.matched.some((route) => route.meta.requiresAuth) &&
+      authStore.ready &&
+      !authStore.authenticated
+    ) {
+      const redirectUri =
+        location.origin + basePath + to.path + location.search;
+      authStore.redirectUri = redirectUri;
+
+      // Determine what kind of redirect behavior is needed
+      let idpHint = undefined;
+      if (typeof to.meta.requiresAuth === 'string') {
+        idpHint = to.meta.requiresAuth;
+      }
+      authStore.login(idpHint);
+    }
+
+    // Update document title if applicable
+    document.title = to.meta.title ? to.meta.title : import.meta.env.VITE_TITLE;
+    next();
+  });
+
+  router.afterEach(() => {
+    isFirstTransition = false;
+    NProgress.done();
+  });
+
+  return router;
+}
