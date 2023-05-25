@@ -132,6 +132,23 @@ module.exports = {
       next(error);
     }
   },
+  draftTemplateUploadAndRender: async (req, res, next) => {
+    try {
+      const templateBody = { ...req.body.template, data: req.body.submission.data };
+      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const contentDisposition = headers['content-disposition'];
+
+      res
+        .status(status)
+        .set({
+          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Type': headers['content-type'],
+        })
+        .send(data);
+    } catch (error) {
+      next(error);
+    }
+  },
   listEdits: async (req, res, next) => {
     try {
       const response = await service.listEdits(req.params.formSubmissionId);
