@@ -43,7 +43,9 @@
             outlined
             solid
             readonly
-            :type="showSecret ? 'text' : 'password'"
+            :type="
+              showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
+            "
             :value="secret"
           />
         </v-col>
