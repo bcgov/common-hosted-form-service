@@ -26,7 +26,7 @@
             </v-btn>
           </router-link>
         </template>
-        <span>{{ $t('trans.manageFormActions.viewSubmissions') }}</span>
+        <span>{{ $t('trans.manageFormActions.teamManagement') }}</span>
       </v-tooltip>
     </span>
 

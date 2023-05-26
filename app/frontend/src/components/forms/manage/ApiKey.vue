@@ -39,13 +39,11 @@
             dense
             flat
             hide-details
-            :label="$t('trans.apiKey.label')"
+            :label="$t('trans.apiKey.secret')"
             outlined
             solid
             readonly
-            :type="
-              showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
-            "
+            :type="showSecret ? 'text' : 'password'"
             :value="secret"
           />
         </v-col>
