@@ -117,7 +117,7 @@ import { IdentityMode } from '@/utils/constants';
 import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
-import formioIl8next from '@/internationalization/formio/formio.json';
+import formioIl8next from '@/internationalization/trans/formio/formio.json';
 
 export default {
   name: 'FormDesigner',
