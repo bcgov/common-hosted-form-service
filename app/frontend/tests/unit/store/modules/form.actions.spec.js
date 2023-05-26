@@ -2,13 +2,16 @@ import { cloneDeep } from 'lodash';
 
 import { formService, rbacService, userService, adminService } from '@/services';
 import store from '@/store/modules/form';
+import i18n from '@/internationalization';
+
 
 jest.mock('@/services');
-
+jest.mock('@/internationalization', () => ({ global: {t: jest.fn(() => {}) }}));
 describe('form actions', () => {
   const mockStore = {
     commit: jest.fn(),
     dispatch: jest.fn(),
+
     state: cloneDeep(store.state)
   };
   const mockConsoleError = jest.spyOn(console, 'error');

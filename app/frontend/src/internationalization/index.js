@@ -1,21 +1,21 @@
 import VueI18n from 'vue-i18n';
 import Vue from 'vue';
 
-import ar from '@/internationalization/ar';
-import en from '@/internationalization/en';
-import es from '@/internationalization/es';
-import fa from '@/internationalization/fa';
-import fr from '@/internationalization/fr';
-import hi from '@/internationalization/hi';
-import ja from '@/internationalization/ja';
-import ko from '@/internationalization/ko';
-import pa from '@/internationalization/pa';
-import ru from '@/internationalization/ru';
-import tl from '@/internationalization/tl';
-import uk from '@/internationalization/uk';
-import vi from '@/internationalization/vi';
-import zh from '@/internationalization/zh';
-import zhTW from '@/internationalization/zh-TW';
+import ar from '@/internationalization/trans/chefs/ar';
+import en from '@/internationalization/trans/chefs/en';
+import es from '@/internationalization/trans/chefs/es';
+import fa from '@/internationalization/trans/chefs/fa';
+import fr from '@/internationalization/trans/chefs/fr';
+import hi from '@/internationalization/trans/chefs/hi';
+import ja from '@/internationalization/trans/chefs/ja';
+import ko from '@/internationalization/trans/chefs/ko';
+import pa from '@/internationalization/trans/chefs/pa';
+import ru from '@/internationalization/trans/chefs/ru';
+import tl from '@/internationalization/trans/chefs/tl';
+import uk from '@/internationalization/trans/chefs/uk';
+import vi from '@/internationalization/trans/chefs/vi';
+import zh from '@/internationalization/trans/chefs/zh';
+import zhTW from '@/internationalization/trans/chefs/zhTW';
 
 Vue.use(VueI18n);
 
