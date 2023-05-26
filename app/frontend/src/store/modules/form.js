@@ -8,6 +8,7 @@ import {
   userService,
 } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
+import i18n from '@/internationalization';
 
 const genInitialSchedule = () => ({
   enabled: null,
@@ -195,8 +196,13 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching your forms.',
-            consoleError: `Error getting user data: ${error}`,
+            message: i18n.global.t('trans.store.form.getCurrUserFormsErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.getCurrUserFormsErrMsg',
+              {
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -217,9 +223,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while fetching your user data for this form.',
-            consoleError: `Error getting user data using formID ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.getUserFormPermErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.getUserFormPermConsErrMsg',
+              { formId: formId, error: error }
+            ),
           },
           { root: true }
         );
@@ -240,9 +248,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while fetching your user data for this form.',
-            consoleError: `Error getting user data using formID ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.getUserFormRolesErrmsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.getUserFormRolesConsErrmsg',
+              { formId: formId, error: error }
+            ),
           },
           { root: true }
         );
@@ -256,9 +266,13 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while fetching your preferences for this form.',
-            consoleError: `Error getting user form prefs using formID ${formId}: ${error}`,
+            message: i18n.global.t(
+              'trans.store.form.getCurrUserFormPrefErrMsg'
+            ),
+            consoleError: i18n.global.t(
+              'trans.store.form.getCurrUserFormPrefErrMsg',
+              { formId: formId, error: error }
+            ),
           },
           { root: true }
         );
@@ -278,9 +292,13 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while saving your preferences for this form.',
-            consoleError: `Error updating user form prefs using formID ${formId}, and prefs ${preferences}: ${error}`,
+            message: i18n.global.t(
+              'trans.store.form.updCurrUserFormPrefErrMsg'
+            ),
+            consoleError: i18n.global.t(
+              'trans.store.form.updCurrUserFormPrefConsErrMsg',
+              { formId: formId, preferences: preferences, error: error }
+            ),
           },
           { root: true }
         );
@@ -296,7 +314,9 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: `Form "${state.form.name}" has been deleted successfully.`,
+            message: i18n.global.t('trans.store.form.delCurrformNotiMsg', {
+              name: state.form.name,
+            }),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -305,8 +325,16 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: `An error occurred while attempting to delete "${state.form.name}".`,
-            consoleError: `Error deleting form ${state.form.id}: ${error}`,
+            message: i18n.global.t('trans.store.form.delCurrformNotiMsg', {
+              name: state.form.name,
+            }),
+            consoleError: i18n.global.t(
+              'trans.store.form.delCurrFormConsErMsg',
+              {
+                id: state.form.id,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -319,8 +347,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while deleting this draft.',
-            consoleError: `Error deleting ${draftId}: ${error}`,
+            message: i18n.global.t('trans.store.form.delDraftErrMsg'),
+            consoleError: i18n.global.t('trans.store.form.delDraftConsErrMsg', {
+              draftId: draftId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -335,9 +366,14 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while scanning for drafts for this form.',
-            consoleError: `Error getting drafts for form ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.fecthDraftErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.fecthDraftConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -363,8 +399,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching this form.',
-            consoleError: `Error getting form ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.fecthFormErrMsg'),
+            consoleError: i18n.global.t('trans.store.form.fecthFormErrMsg', {
+              formId: formId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -382,9 +421,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while fetching the list of fields for this form.',
-            consoleError: `Error getting form ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.fetchFormFieldsErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.fetchFormFieldsConsErrMsg',
+              { formId: formId, error: error }
+            ),
           },
           { root: true }
         );
@@ -397,8 +438,14 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while publishing.',
-            consoleError: `Error publishing ${draftId}: ${error}`,
+            message: i18n.global.t('trans.store.form.publishDraftErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.publishDraftConsErrMsg',
+              {
+                draftId: draftId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -414,7 +461,10 @@ export default {
             message: `An error occurred while ${
               publish ? 'publishing' : 'unpublishing'
             }.`,
-            consoleError: `Error in toggleVersionPublish ${versionId} ${publish}: ${error}`,
+            consoleError: i18n.global.t(
+              'trans.store.form.toggleVersnPublConsErrMsg',
+              { versionId: versionId, publish: publish, error: error }
+            ),
           },
           { root: true }
         );
@@ -459,9 +509,14 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while updating the settings for this form.',
-            consoleError: `Error updating form ${state.form.id}: ${error}`,
+            message: i18n.global.t('trans.store.form.updateFormErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.updateFormConsErrMsg',
+              {
+                id: state.form.id,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -478,7 +533,9 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'Submission deleted successfully.',
+            message: i18n.global.t(
+              'trans.store.form.deleteSubmissionNotifyMsg'
+            ),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -487,8 +544,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while deleting this submission.',
-            consoleError: `Error deleting submission ${submissionId}: ${error}`,
+            message: i18n.global.t('trans.store.form.deleteSubmissionErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.deleteSubmissionConsErrMsg',
+              { submissionId: submissionId, error: error }
+            ),
           },
           { root: true }
         );
@@ -503,7 +563,9 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'Submissions deleted successfully.',
+            message: i18n.global.t(
+              'trans.store.form.deleteSubmissionsNotifyMsg'
+            ),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -512,9 +574,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while deleting the selected submissions.',
-            consoleError: `Error deleteing submissions: ${error}`,
+            message: i18n.global.t('trans.store.form.deleteSubmissionsErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.deleteSubmissionsConsErrMsg',
+              { error: error }
+            ),
           },
           { root: true }
         );
@@ -530,7 +594,9 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'Submissions restored successfully.',
+            message: i18n.global.t(
+              'trans.store.form.restoreSubmissionsNotiMsg'
+            ),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -539,8 +605,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while restoring this submission.',
-            consoleError: `Error restoring submissions: ${error}`,
+            message: i18n.global.t('trans.store.form.restoreSubmissionsErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.restoreSubmissionsConsErrMsg',
+              { error: error }
+            ),
           },
           { root: true }
         );
@@ -554,7 +623,7 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'Submission restored successfully.',
+            message: i18n.global.t('trans.store.form.restoreSubmissionNotiMsg'),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -563,8 +632,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while restoring this submission.',
-            consoleError: `Error restoring submission ${submissionId}: ${error}`,
+            message: i18n.global.t('trans.store.form.restoreSubmissionsErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.restoreSubmissionsConsErrMsg',
+              { error: error, submissionId: submissionId }
+            ),
           },
           { root: true }
         );
@@ -581,9 +653,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while fetching the recipient email for this submission.',
-            consoleError: `Error getting recipient email for submission ${formSubmissionId}: ${error}`,
+            message: i18n.global.t('trans.store.form.fecthSubmissnUsersErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.fecthSubmissnUsersConsErrMsg',
+              { formSubmissionId: formSubmissionId, error: error }
+            ),
           },
           { root: true }
         );
@@ -599,8 +673,14 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching this submission.',
-            consoleError: `Error getting submission ${submissionId}: ${error}`,
+            message: i18n.global.t('trans.store.form.fetchSubmissnErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.fetchSubmissnConsErrMsg',
+              {
+                submissionId: submissionId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -624,9 +704,13 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while fetching the list of fields for this form.',
-            consoleError: `Error getting form ${formId}: ${error}`,
+            message: i18n.global.t(
+              'trans.store.form.fetchFormCSVExptFieldsErrMsg'
+            ),
+            consoleError: i18n.global.t(
+              'trans.store.form.fetchFormCSVExptFieldsErrMsg',
+              { formId: formId, error: error }
+            ),
           },
           { root: true }
         );
@@ -656,9 +740,14 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while fetching submissions for this form.',
-            consoleError: `Error getting submissions for ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.fetchSubmissnsErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.fetchSubmissnsConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -679,8 +768,15 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching this form.',
-            consoleError: `Error getting version ${versionId} for form ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.fetchVersionErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.fetchVersionConsErrMsg',
+              {
+                versionId: versionId,
+                formId: formId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -697,7 +793,7 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'The API Key for this form has been deleted.',
+            message: i18n.global.t('trans.store.form.deleteApiKeyNotifyMsg'),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -706,8 +802,14 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while trying to delete the API Key.',
-            consoleError: `Error deleting API Key for form ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.deleteApiKeyErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.deleteApiKeyConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -720,7 +822,7 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An API Key for this form has been created.',
+            message: i18n.global.t('trans.store.form.generateApiKeyNotifyMsg'),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -729,8 +831,14 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while trying to generate an API Key.',
-            consoleError: `Error generating API Key for form ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.generateApiKeyErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.generateApiKeyConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -744,8 +852,14 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while trying to fetch the API Key.',
-            consoleError: `Error getting API Key for form ${formId}: ${error}`,
+            message: i18n.global.t('trans.store.form.readApiKeyErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.readApiKeyConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
@@ -770,8 +884,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while getting image url',
-            consoleError: 'Error getting image url',
+            message: i18n.global.t('trans.store.form.getFCPHImageUrlErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.getFCPHImageUrlConsErrMsg',
+              { error: error }
+            ),
           },
           { root: true }
         );
@@ -789,8 +906,10 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching form builder components',
-            consoleError: 'Error getting form builder components',
+            message: i18n.global.t('trans.store.form.listFCPHErrMsg'),
+            consoleError: i18n.global.t('trans.store.form.listFCPHConsErrMsg', {
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -817,8 +936,13 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while downloading file',
-            consoleError: 'Error downloading file',
+            message: i18n.global.t('trans.store.form.downloadFileErrMsg'),
+            consoleError: i18n.global.t(
+              'trans.store.form.downloadFileConsErrMsg',
+              {
+                error: error,
+              }
+            ),
           },
           { root: true }
         );

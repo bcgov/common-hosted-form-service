@@ -39,7 +39,7 @@
             dense
             flat
             hide-details
-            :label="$t('trans.apiKey.label')"
+            :label="$t('trans.apiKey.secret')"
             outlined
             solid
             readonly
