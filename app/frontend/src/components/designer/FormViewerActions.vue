@@ -27,7 +27,7 @@
           }}</span>
         </v-tooltip>
       </span>
-      
+
       <span v-if="draftEnabled" class="ml-2">
         <PrintOptions :submission="submission" />
       </span>
