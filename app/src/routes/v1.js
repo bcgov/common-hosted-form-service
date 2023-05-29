@@ -13,6 +13,7 @@ const rbac = require('../forms/rbac');
 const role = require('../forms/role');
 const user = require('../forms/user');
 const submission = require('../forms/submission');
+const utils = require('../forms/utils');
 const index = require('../forms/public');
 
 admin.mount(router);
@@ -24,6 +25,7 @@ const rbacPath = rbac.mount(router);
 const rolePath = role.mount(router);
 const userPath = user.mount(router);
 const submissionPath = submission.mount(router);
+const utilsPath = utils.mount(router);
 const publicPath = index.mount(router);
 
 const getSpec = () => {
@@ -39,7 +41,7 @@ const getSpec = () => {
 // Base v1 Responder
 router.get('/', (_req, res) => {
   res.status(200).json({
-    endpoints: ['/docs', filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath],
+    endpoints: ['/docs', filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath, utilsPath],
   });
 });
 

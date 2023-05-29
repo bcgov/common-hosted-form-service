@@ -27,6 +27,10 @@
           }}</span>
         </v-tooltip>
       </span>
+      
+      <span v-if="draftEnabled" class="ml-2">
+        <PrintOptions :submission="submission" />
+      </span>
 
       <!-- Save a draft -->
       <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
@@ -80,11 +84,13 @@
 <script>
 import { FormPermissions } from '@/utils/constants';
 import ManageSubmissionUsers from '@/components/forms/submission/ManageSubmissionUsers.vue';
+import PrintOptions from '@/components/forms/PrintOptions.vue';
 
 export default {
   name: 'MySubmissionsActions',
   components: {
     ManageSubmissionUsers,
+    PrintOptions,
   },
   props: {
     block: {
@@ -120,6 +126,10 @@ export default {
     },
     submissionId: {
       type: String,
+      default: undefined,
+    },
+    submission: {
+      type: Object,
       default: undefined,
     },
   },
