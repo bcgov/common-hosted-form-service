@@ -11,6 +11,7 @@ describe('Constants', () => {
       ROLES: '/roles',
       SUBMISSION: '/submissions',
       USERS: '/users',
+      UTILS: '/utils',
     });
   });
 

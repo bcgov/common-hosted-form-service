@@ -31,6 +31,7 @@
             :permissions="permissions"
             :readOnly="readOnly"
             :submissionId="submissionId"
+            :submission="submission"
             @save-draft="saveDraft"
           />
         </div>
