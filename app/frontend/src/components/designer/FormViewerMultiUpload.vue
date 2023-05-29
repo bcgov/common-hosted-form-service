@@ -123,10 +123,12 @@
         </v-row>
       </div>
     </v-row>
+    <v-row id="validateForm" class="displayNone"></v-row>
   </div>
 </template>
 <script>
 import { mapActions } from 'vuex';
+import { Formio } from 'vue-formio';
 export default {
   name: 'FormViewerDownloadButton',
   components: {},
@@ -142,6 +144,7 @@ export default {
       upload_state: Number,
       response: [],
       file_name: String,
+      typeError: Number,
     },
     json_csv: {
       data: [],
@@ -268,7 +271,7 @@ export default {
         });
       }
     },
-    preValidateSubmission() {
+    async preValidateSubmission() {
       try {
         if (!Array.isArray(this.Json)) {
           this.resetUpload();
@@ -291,7 +294,18 @@ export default {
         this.max = 100;
         this.progress = true;
         this.$emit('toggleBlock', true);
-        this.validate(this.Json[this.index], []);
+        this.vForm = await Formio.createForm(
+          document.getElementById('validateForm'),
+          this.formSchema,
+          {
+            highlightErrors: true,
+            alwaysDirty: true,
+            hide: {
+              submit: true,
+            },
+          }
+        );
+        await this.validate(this.Json[this.index], []);
       } catch (error) {
         this.resetUpload();
         this.$emit('set-error', {
@@ -305,39 +319,44 @@ export default {
         return;
       }
     },
-    validate(element, errors) {
-      const timer = setTimeout(
-        function () {
-          try {
-            let newForm = this.formElement;
-            newForm.data = element;
-            newForm.submission.data = element;
-            newForm.triggerChange();
-            let validationResult = newForm.checkValidity();
-            if (!validationResult) {
-              errors.push({
-                submission: this.index,
-                errors: validationResult.errors,
-              });
-            }
-          } catch (error) {
-            errors.push({
-              submission: this.index,
-              message: this.ERROR.ERROR_WHILE_CHECKVALIDITY,
-            });
-          }
-          this.index++;
-          this.value = this.percentage(this.index);
-          clearTimeout(timer);
-          if (this.index < this.Json.length) {
-            this.validate(this.Json[this.index], errors);
-          } else {
-            this.endValidation(errors);
-          }
-        }.bind(this),
-        12
-      );
+    async validate(element, errors) {
+      try {
+        this.vForm.setSubmission({
+          data: element,
+        });
+
+        try {
+          await this.vForm.submit();
+        } catch (err) {
+          errors[this.index] = {
+            submission: this.index,
+            errors: err,
+          };
+        }
+
+        this.value = this.percentage(this.index);
+        this.index++;
+
+        const shouldContinueValidation = this.index < this.Json.length;
+        if (shouldContinueValidation) {
+          await this.delay(20);
+          await this.validate(this.Json[this.index], errors);
+        } else {
+          await this.delay(20);
+          this.endValidation(errors);
+        }
+      } catch (error) {
+        errors[this.index] = {
+          submission: this.index,
+          message: this.ERROR.ERROR_WHILE_CHECKVALIDITY,
+        };
+      }
     },
+
+    delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    },
+
     percentage(i) {
       let number_of_submission = this.Json.length;
       if (number_of_submission > 0) {
@@ -356,7 +375,13 @@ export default {
           message: this.ERROR.ERROR_AFTER_VALIDATE,
           error: true,
           upload_state: 10,
-          response: this.globalError,
+          response: {
+            data: {
+              title: 'Validation Error',
+              reports: this.globalError,
+            },
+          },
+          typeError: 0,
         });
       }
     },
@@ -378,6 +403,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.displayNone,
+.formio-error-wrapper {
+  display: none !important;
+  height: 1px;
+  width: 1px;
+}
 .loading {
   background-color: #5072a6;
   border-color: #003366;
