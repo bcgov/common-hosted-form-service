@@ -8,6 +8,8 @@ module.exports = {
   },
   testMatch: ['**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'],
   testPathIgnorePatterns: ['frontend'],
-  testURL: 'http://localhost/',
+  testEnvironmentOptions: {
+    url: 'http://localhost/',
+  },
   transformIgnorePatterns: ['/node_modules/(?!@json2csv|@streamparser)'],
 };
