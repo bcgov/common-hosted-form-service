@@ -62,7 +62,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="$t('trans.mySubmissionsTable.search')"
+            :label="$t('trans.mySubmissionsTable.search')"
             single-line
             hide-details
             class="pb-5"
@@ -165,7 +165,7 @@ export default {
     DEFAULT_HEADERS() {
       let headers = [
         {
-          text: this.$t('trans.mySubmissionsTable.filterTitle'),
+          text: this.$t('trans.mySubmissionsTable.confirmationId'),
           align: 'start',
           value: 'confirmationId',
           sortable: true,
@@ -201,13 +201,13 @@ export default {
       ];
       if (this.showDraftLastEdited || !this.formId) {
         headers.splice(headers.length - 1, 0, {
-          text: 'Draft Updated By',
+          text: this.$t('trans.mySubmissionsTable.draftUpdatedBy'),
           align: 'start',
           value: 'updatedBy',
           sortable: true,
         });
         headers.splice(headers.length - 1, 0, {
-          text: 'Draft Last Edited',
+          text: this.$t('trans.mySubmissionsTable.draftLastEdited'),
           align: 'start',
           value: 'lastEdited',
           sortable: true,

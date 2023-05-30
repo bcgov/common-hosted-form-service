@@ -118,7 +118,8 @@
     "selectAnOptions": "Please select atleast 1 option",
     "validInterval": "This should be a valid interval.",
     "fieldRequiredAndInterval": "This field is required & should be an interval.",
-    "dateGrtOpenSubmissnDate": "Repeat untill date should be greater then open submission date"
+    "dateGrtOpenSubmissnDate": "Repeat untill date should be greater then open submission date",
+    "public": "Public (anonymous)"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -413,7 +414,10 @@
     "createdBy": "Created By",
     "statusUpdatedBy": "Status Updated By",
     "status": "Status",
-    "submissionDate": "Submission Date"
+    "submissionDate": "Submission Date",
+    "draftUpdatedBy": "Draft Updated By",
+    "draftLastEdited": "Draft Last Edited"
+
   },
   "notesPanel": {
     "addNewNote": "Add New Note",
@@ -506,7 +510,9 @@
     "downloadOptions": "Download Options",
     "print": "Print",
     "browserPrint": "Browser Print",
-    "pageFromBrowser": "the page from your browser"
+    "pageFromBrowser": "the page from your browser",
+    "uploadA": "Upload a",
+    "uploadB": "to have a structured version"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",
@@ -688,6 +694,9 @@
     "saveAsADraft": "Save as a Draft",
     "editThisDraft": "Edit this Draft"
   },
+  "root": {
+    "admin": "Admin"
+  },
   "sucess": {
     "sucessFormSubmissn": "Your form has been submitted successfully",
     "keepRecord": "If you wish to keep a record of this submission, you can keep the following",
@@ -788,5 +797,13 @@
       "downloadFileErrMsg": "An error occurred while downloading file",
       "downloadFileConsErrMsg": "Error downloading file: error"
     }
+  },
+  "permissionUtils": {
+    "formNotAvailable": "The form is currently unavailable. This may be due to an incorrect link, or the form may have been deleted by its owner.",
+    "missingFormIdAndSubmssId": "Options missing both formId and submissionId",
+    "loadingFormErrMsg": "An error occurred while loading this form.",
+    "loadingForm": "Error while loading {options}: {error}",
+    "idpHintMsg": "This form requires {idpHint} authentication. Please re-login and try again.",
+    "formIdpMissMatch": "Form IDP mismatch. Form requires {idpHint} but user has {userIdp}."
   }
 }

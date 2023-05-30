@@ -6,6 +6,7 @@ import {
   IdentityMode,
   IdentityProviders,
 } from '@/utils/constants';
+import i18n from '@/internationalization';
 
 //
 // Utility Functions for determining permissions
@@ -73,9 +74,7 @@ function getErrorMessage(options, error) {
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
-      errorMessage =
-        'The form is currently unavailable. This may be due to an incorrect ' +
-        'link, or the form may have been deleted by its owner.';
+      errorMessage = i18n.global.t('trans.permissionUtils.formNotAvailable');
     }
   }
 
@@ -108,7 +107,9 @@ export async function preFlightAuth(options = {}, next) {
       );
       idpHint = getIdpHint(data.form.idpHints);
     } else {
-      throw new Error('Options missing both formId and submissionId');
+      throw new Error(
+        i18n.global.t('trans.permissionUtils.missingFormIdAndSubmssId')
+      );
     }
   } catch (error) {
     // Halt user with error page, use alertNavigate for "friendly" messages.
@@ -122,10 +123,11 @@ export async function preFlightAuth(options = {}, next) {
       });
     } else {
       store.dispatch('notifications/addNotification', {
-        message: 'An error occurred while loading this form.',
-        consoleError: `Error while loading ${JSON.stringify(
-          options
-        )}: ${error}`,
+        message: i18n.global.t('trans.permissionUtils.loadingFormErrMsg'),
+        consoleError: i18n.global.t('trans.permissionUtils.loadingForm', {
+          options: options,
+          error: error,
+        }),
       });
 
       store.dispatch('auth/errorNavigate');
@@ -142,10 +144,15 @@ export async function preFlightAuth(options = {}, next) {
     } else if (isValidIdp(idpHint) && userIdp === idpHint) {
       next(); // Permit navigation if idps match
     } else {
-      const msg = `This form requires ${idpHint.toUpperCase()} authentication. Please re-login and try again.`;
+      const msg = i18n.global.t('trans.permissionUtils.idpHintMsg', {
+        idpHint: idpHint.toUpperCase(),
+      });
       store.dispatch('notifications/addNotification', {
         message: msg,
-        consoleError: `Form IDP mismatch. Form requires ${idpHint} but user has ${userIdp}.`,
+        consoleError: i18n.global.t('trans.permissionUtils.formIdpMissMatch', {
+          idpHint: idpHint,
+          userIdp: userIdp,
+        }),
       });
       store.dispatch('auth/errorNavigate', msg); // Halt user with idp mismatch error page
     }
