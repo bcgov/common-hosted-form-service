@@ -85,7 +85,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { formService } from '@/services';
+import { formService, utilsService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
@@ -103,6 +103,10 @@ export default {
   },
   props: {
     submissionId: String,
+    submission: {
+      type: Object,
+      default: undefined,
+    },
   },
   computed: {
     files() {
@@ -172,8 +176,17 @@ export default {
           outputFileType
         );
 
+        let response = null;
         // Submit Template to CDOGS API
-        const response = await formService.docGen(this.submissionId, body);
+        if (this.submissionId?.length > 0) {
+          response = await formService.docGen(this.submissionId, body);
+        } else {
+          const draftData = {
+            template: body,
+            submission: this.submission,
+          };
+          response = await utilsService.draftDocGen(draftData);
+        }
 
         // create file to download
         const filename = this.getDispositionFilename(
