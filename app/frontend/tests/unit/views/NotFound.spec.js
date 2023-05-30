@@ -10,7 +10,7 @@ describe('NotFound.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(NotFound, {
       localVue,
-      stubs: ['router-link']
+      stubs: ['router-link'],
     });
 
     expect(wrapper.text()).toMatch('404: Page not found. :(');

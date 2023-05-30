@@ -15,10 +15,10 @@ describe('BaseNotificationContainer.vue', () => {
         notifications: {
           namespaced: true,
           state: {
-            notifications: []
-          }
-        }
-      }
+            notifications: [],
+          },
+        },
+      },
     });
   });
 
@@ -26,7 +26,7 @@ describe('BaseNotificationContainer.vue', () => {
     const wrapper = shallowMount(BaseNotificationContainer, {
       localVue,
       store,
-      stubs: ['BaseNotificationBar']
+      stubs: ['BaseNotificationBar'],
     });
 
     expect(wrapper.html()).toMatch('notification-container');

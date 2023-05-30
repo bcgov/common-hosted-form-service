@@ -35,7 +35,6 @@ class Form extends Timestamps(Model) {
     const FormVersion = require('./formVersion');
     const FormVersionDraft = require('./formVersionDraft');
     const IdentityProvider = require('./identityProvider');
-
     return {
       drafts: {
         relation: Model.HasManyRelation,
@@ -118,6 +117,7 @@ class Form extends Timestamps(Model) {
       'name',
       'description',
       'active',
+      'allowSubmitterToUploadFile',
       'showSubmissionConfirmation',
       'enableStatusUpdates',
       'schedule',
@@ -138,6 +138,7 @@ class Form extends Timestamps(Model) {
         name: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: ['string', 'null'], maxLength: 255 },
         active: { type: 'boolean' },
+        allowSubmitterToUploadFile: { type: 'boolean' },
         labels: { type: ['array', 'null'], items: { type: 'string' } },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },

@@ -7,7 +7,7 @@ describe('Forms.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(Forms, {
       localVue,
-      stubs: ['FormsTable']
+      stubs: ['FormsTable'],
     });
 
     expect(wrapper.html()).toMatch('formstable');
