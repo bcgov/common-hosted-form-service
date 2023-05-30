@@ -23,10 +23,10 @@ describe('BaseNotificationBar.vue', () => {
         notifications: {
           namespaced: true,
           actions: {
-            deleteNotification: mockDeleteNotification
-          }
-        }
-      }
+            deleteNotification: mockDeleteNotification,
+          },
+        },
+      },
     });
   });
 
@@ -40,9 +40,9 @@ describe('BaseNotificationBar.vue', () => {
       propsData: {
         notification: {
           ...notificationProperties,
-        }
+        },
       },
-      store
+      store,
     });
 
     expect(wrapper.html()).toMatch('v-alert');
@@ -55,9 +55,9 @@ describe('BaseNotificationBar.vue', () => {
       propsData: {
         notification: {
           ...notificationProperties,
-        }
+        },
       },
-      store
+      store,
     });
     wrapper.vm.alertClosed();
 
@@ -70,9 +70,9 @@ describe('BaseNotificationBar.vue', () => {
       propsData: {
         notification: {
           ...notificationProperties,
-        }
+        },
       },
-      store
+      store,
     });
     wrapper.destroy();
 

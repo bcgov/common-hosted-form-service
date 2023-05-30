@@ -5,7 +5,6 @@ import '@/assets/scss/style.scss';
 import axios from 'axios';
 import NProgress from 'nprogress';
 import Vue from 'vue';
-
 import App from '@/App.vue';
 import '@/filters';
 import auth from '@/store/modules/auth.js';
@@ -24,6 +23,8 @@ Formio.use(BcGovFormioComponents);
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 /* add font awesome icon component */
 Vue.component('font-awesome-icon', FontAwesomeIcon);
+import VueBlobJsonCsv from 'vue-blob-json-csv';
+Vue.use(VueBlobJsonCsv);
 
 import VueKeycloakJs from '@/plugins/keycloak';
 import vuetify from '@/plugins/vuetify';

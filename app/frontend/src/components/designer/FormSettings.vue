@@ -134,6 +134,7 @@
           <template #title>Form Functionality</template>
           <v-checkbox
             class="my-0"
+            @change="enableSubmitterDraftChanged"
             v-model="enableSubmitterDraft"
             :disabled="userType === ID_MODE.PUBLIC"
           >
@@ -150,6 +151,41 @@
               <span>
                 Reviewers can <strong>Update the Status</strong> of this form
                 (i.e. Submitted, Assigned, Completed)
+              </span>
+            </template>
+          </v-checkbox>
+
+          <v-checkbox
+            @change="allowSubmitterToUploadFileChanged"
+            class="my-0"
+            v-model="allowSubmitterToUploadFile"
+          >
+            <template #label>
+              <span>
+                Allow <strong> multiple draft</strong> upload
+                <v-tooltip close-delay="3000" bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <font-awesome-icon
+                      icon="fa-solid fa-flask"
+                      color="primary"
+                      class="ml-3"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <span
+                    >Experimental
+                    <a
+                      :href="githubLinkBulkUpload"
+                      class="preview_info_link_field_white"
+                      :target="'_blank'"
+                    >
+                      Learn more
+                      <font-awesome-icon
+                        icon="fa-solid fa-square-arrow-up-right"
+                    /></a>
+                  </span>
+                </v-tooltip>
               </span>
             </template>
           </v-checkbox>
@@ -879,6 +915,8 @@ export default {
   data() {
     // debugger;
     return {
+      githubLinkBulkUpload:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload',
       githubLinkCopyFromExistingFeature:
         'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
       githubLinkScheduleAndReminderFeature:
@@ -987,6 +1025,7 @@ export default {
       'form.enableSubmitterDraft',
       'form.enableCopyExistingSubmission',
       'form.enableStatusUpdates',
+      'form.allowSubmitterToUploadFile',
       'form.id',
       'form.idps',
       'form.name',
@@ -1167,6 +1206,7 @@ export default {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
         this.enableSubmitterDraft = false;
+        this.allowSubmitterToUploadFile = false;
         this.enableCopyExistingSubmission = false;
       }
       if (this.userType !== 'team') {
@@ -1241,6 +1281,16 @@ export default {
             intervalType: null,
           },
         };
+      }
+    },
+    enableSubmitterDraftChanged() {
+      if (!this.enableSubmitterDraft) {
+        this.allowSubmitterToUploadFile = false;
+      }
+    },
+    allowSubmitterToUploadFileChanged() {
+      if (this.allowSubmitterToUploadFile && !this.enableSubmitterDraft) {
+        this.enableSubmitterDraft = true;
       }
     },
   },
