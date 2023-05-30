@@ -9,7 +9,7 @@ describe('AddOwner.vue', () => {
   const mockAdminGetter = jest.fn();
   let store;
   const actions = {
-    readUser: jest.fn()
+    readUser: jest.fn(),
   };
 
   beforeEach(() => {
@@ -18,14 +18,13 @@ describe('AddOwner.vue', () => {
         admin: {
           namespaced: true,
           getters: {
-            user: mockAdminGetter
+            user: mockAdminGetter,
           },
-          actions: actions
-        }
-      }
+          actions: actions,
+        },
+      },
     });
   });
-
 
   it('renders ', async () => {
     const wrapper = shallowMount(AddOwner, {
@@ -36,9 +35,9 @@ describe('AddOwner.vue', () => {
         $config: {
           keycloak: {
             serverUrl: 'servU',
-            realm: 'theRealm'
-          }
-        }
+            realm: 'theRealm',
+          },
+        },
       },
     });
     await localVue.nextTick();

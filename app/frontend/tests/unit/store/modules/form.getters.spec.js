@@ -14,31 +14,32 @@ describe('form getters', () => {
     drafts: [],
     form: {
       name: 'ABC',
-      reminder : {
-        'enabled':false,
-        'allowAdditionalNotifications': true
+      reminder: {
+        enabled: false,
+        allowAdditionalNotifications: true,
       },
-      schedule : {
-        'enabled':true,
-        'scheduleType':'manual'
-      }
+      schedule: {
+        enabled: true,
+        scheduleType: 'manual',
+      },
     },
     formList: [
       {
-        name: 'ABC'
-      }, {
-        name: 'XYZ'
-      }
+        name: 'ABC',
+      },
+      {
+        name: 'XYZ',
+      },
     ],
     formSubmission: {
       confirmationId: '1234',
       submission: {
-        data: { field: '123' }
-      }
+        data: { field: '123' },
+      },
     },
     permissions: ['SUBMIT', 'READ'],
     submissionList: ['test', 'sub'],
-    version: { type: 'form' }
+    version: { type: 'form' },
   };
 
   beforeEach(() => {

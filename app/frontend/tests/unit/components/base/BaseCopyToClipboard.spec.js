@@ -18,10 +18,10 @@ describe('BaseCopyToClipboard.vue', () => {
         notifications: {
           namespaced: true,
           actions: {
-            addNotification: mockAddNotification
-          }
-        }
-      }
+            addNotification: mockAddNotification,
+          },
+        },
+      },
     });
   });
 
@@ -33,7 +33,7 @@ describe('BaseCopyToClipboard.vue', () => {
     const wrapper = shallowMount(BaseCopyToClipboard, {
       localVue,
       propsData: { copyText: 'test' },
-      store
+      store,
     });
 
     expect(wrapper.text()).toMatch('Copy to Clipboard');
@@ -43,7 +43,7 @@ describe('BaseCopyToClipboard.vue', () => {
     const wrapper = shallowMount(BaseCopyToClipboard, {
       localVue,
       propsData: { copyText: 'test' },
-      store
+      store,
     });
     wrapper.vm.clipboardSuccessHandler();
 
@@ -55,7 +55,7 @@ describe('BaseCopyToClipboard.vue', () => {
     const wrapper = shallowMount(BaseCopyToClipboard, {
       localVue,
       propsData: { copyText: 'test' },
-      store
+      store,
     });
     wrapper.vm.clipboardErrorHandler();
 

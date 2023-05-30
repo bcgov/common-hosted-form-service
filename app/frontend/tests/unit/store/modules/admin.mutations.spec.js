@@ -51,9 +51,8 @@ describe('admin mutations', () => {
     expect(state.userList).toEqual(expect.arrayContaining([expect.objectContaining(obj)]));
   });
 
-
   it('SET_FCPROACTIVEHELP should update fcProactiveHelp state', () => {
-    const obj = { };
+    const obj = {};
     store.mutations.SET_FCPROACTIVEHELP(state, obj);
 
     expect(state.fcProactiveHelp).toBeTruthy();
@@ -67,6 +66,4 @@ describe('admin mutations', () => {
     expect(state.fcProactiveHelpGroupList).toBeTruthy();
     expect(state.fcProactiveHelpGroupList).toEqual(expect.objectContaining(obj));
   });
-
-
 });

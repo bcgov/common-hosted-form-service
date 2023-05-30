@@ -9,7 +9,7 @@ describe('AdministerUser.vue', () => {
   const mockAdminGetter = jest.fn();
   let store;
   const actions = {
-    readUser: jest.fn()
+    readUser: jest.fn(),
   };
 
   beforeEach(() => {
@@ -18,11 +18,11 @@ describe('AdministerUser.vue', () => {
         admin: {
           namespaced: true,
           getters: {
-            user: mockAdminGetter
+            user: mockAdminGetter,
           },
-          actions: actions
-        }
-      }
+          actions: actions,
+        },
+      },
     });
   });
 
@@ -35,15 +35,16 @@ describe('AdministerUser.vue', () => {
     mockAdminGetter.mockReturnValue({ fullName: 'alice', keycloakId: '1' });
     const wrapper = shallowMount(AdministerUser, {
       localVue,
-      store, mocks: {
+      store,
+      mocks: {
         $config: {
           keycloak: {
             serverUrl: 'servU',
-            realm: 'theRealm'
-          }
-        }
+            realm: 'theRealm',
+          },
+        },
       },
-      propsData: { userId: 'me' }
+      propsData: { userId: 'me' },
     });
     await localVue.nextTick();
 

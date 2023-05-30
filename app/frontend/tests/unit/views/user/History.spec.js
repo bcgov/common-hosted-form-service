@@ -7,7 +7,7 @@ describe('History.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(History, {
       localVue,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
     });
 
     expect(wrapper.text()).toMatch('Your Submission History');

@@ -13,7 +13,7 @@ describe('ManageSubmissionUsers.vue', () => {
   const formActions = {
     fetchDrafts: jest.fn(),
     fetchForm: jest.fn(),
-    getFormPermissionsForUser: jest.fn()
+    getFormPermissionsForUser: jest.fn(),
   };
   const notifactionActions = {
     addNotification: jest.fn(),
@@ -25,15 +25,15 @@ describe('ManageSubmissionUsers.vue', () => {
         form: {
           namespaced: true,
           getters: {
-            form: mockFormGetter
+            form: mockFormGetter,
           },
-          actions: formActions
+          actions: formActions,
         },
         notifications: {
           namespaced: true,
           actions: notifactionActions,
-        }
-      }
+        },
+      },
     });
   });
 
@@ -47,7 +47,7 @@ describe('ManageSubmissionUsers.vue', () => {
       localVue,
       propsData: { isDraft: false, submissionId: SUBMISSION_ID },
       store,
-      stubs: ['BaseDialog']
+      stubs: ['BaseDialog'],
     });
 
     expect(wrapper.html()).toMatch('Manage Team Members');
