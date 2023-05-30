@@ -28,26 +28,26 @@
         <v-card-text>
           <hr />
           <p>
-            <strong>1.</strong>
+            <strong>1. </strong>
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
               target="blank"
               >{{ $t('trans.printOptions.print') }}</a
             >
-            the page from your browser
+            {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
             <span>{{ $t('trans.printOptions.browserPrint') }}</span>
           </v-btn>
 
           <p>
-            <strong>2.</strong> Upload a
+            <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
               target="blank"
               >CDOGS template</a
             >
-            to have a structured version
+            {{ $t('trans.printOptions.uploadB') }}
           </p>
           <v-file-input
             counter
