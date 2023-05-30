@@ -26,7 +26,7 @@
     }
   },
   "frontend": {
-    "adminDashboardUrl": "VUE_APP_ADMIN_DASHBOARD_URL",
+    "adminDashboardUrl": "",
     "apiPath": "api/v1",
     "basePath": "/app",
     "keycloak": {

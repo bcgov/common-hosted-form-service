@@ -27,7 +27,7 @@ export default {
   },
   data() {
     return {
-      adminDashboardUrl: process.env.VUE_APP_ADMIN_DASHBOARD_URL,
+      adminDashboardUrl: this.$config.adminDashboardUrl,
     };
   },
 };
