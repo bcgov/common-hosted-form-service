@@ -22,7 +22,7 @@
           </template>
           <span>{{
             bulkFile
-              ? 'Switch to sigle submission'
+              ? 'Switch to single submission'
               : 'Switch to multiple submission'
           }}</span>
         </v-tooltip>
