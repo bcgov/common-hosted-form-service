@@ -2,10 +2,9 @@ import { cloneDeep } from 'lodash';
 
 import { adminService } from '@/services';
 import store from '@/store/modules/admin';
-import i18n from '@/internationalization';
 
 jest.mock('@/services');
-jest.mock('@/internationalization', () => ({ global: {t: jest.fn(() => {}) }}));
+jest.mock('@/internationalization', () => ({t: jest.fn(() => {}) }));
 
 describe('admin actions', () => {
   const mockStore = {

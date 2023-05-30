@@ -28,26 +28,26 @@
         <v-card-text>
           <hr />
           <p>
-            <strong>1.</strong>
+            <strong>1. </strong>
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
               target="blank"
               >{{ $t('trans.printOptions.print') }}</a
             >
-            the page from your browser
+            {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
             <span>{{ $t('trans.printOptions.browserPrint') }}</span>
           </v-btn>
 
           <p>
-            <strong>2.</strong> Upload a
+            <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
               target="blank"
               >CDOGS template</a
             >
-            to have a structured version
+            {{ $t('trans.printOptions.uploadB') }}
           </p>
           <v-file-input
             counter
@@ -87,7 +87,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { formService } from '@/services';
+import { formService, utilsService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
@@ -105,6 +105,10 @@ export default {
   },
   props: {
     submissionId: String,
+    submission: {
+      type: Object,
+      default: undefined,
+    },
   },
   computed: {
     files() {
@@ -174,8 +178,17 @@ export default {
           outputFileType
         );
 
+        let response = null;
         // Submit Template to CDOGS API
-        const response = await formService.docGen(this.submissionId, body);
+        if (this.submissionId?.length > 0) {
+          response = await formService.docGen(this.submissionId, body);
+        } else {
+          const draftData = {
+            template: body,
+            submission: this.submission,
+          };
+          response = await utilsService.draftDocGen(draftData);
+        }
 
         // create file to download
         const filename = this.getDispositionFilename(
