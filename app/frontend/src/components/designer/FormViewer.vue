@@ -164,7 +164,7 @@ export default {
       versionIdToSubmitTo: this.versionId,
       isFormScheduleExpired: false,
       formScheduleExpireMessage: this.$t(
-        'trans.manageVersions.formScheduleExpireMessage'
+        'trans.formViewer.formScheduleExpireMessage'
       ),
       isLateSubmissionAllowed: false,
     };

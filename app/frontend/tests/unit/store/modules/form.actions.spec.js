@@ -6,7 +6,8 @@ import i18n from '@/internationalization';
 
 
 jest.mock('@/services');
-jest.mock('@/internationalization', () => ({ global: {t: jest.fn(() => {}) }}));
+jest.mock('@/internationalization', () => ({t: jest.fn(() => {}) }));
+
 describe('form actions', () => {
   const mockStore = {
     commit: jest.fn(),
