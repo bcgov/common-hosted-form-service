@@ -40,7 +40,7 @@
           >
             <v-radio
               class="mb-4"
-              label="Public (anonymous)"
+              :label="$t('trans.formSettings.public')"
               :value="ID_MODE.PUBLIC"
             />
             <v-expand-transition>
