@@ -10,9 +10,52 @@ describe('AdminPage.vue', () => {
       mocks: {
         $config: {},
       },
-      stubs: ['AdminFormsTable', 'AdminUsersTable', 'Developer'],
+      stubs: [
+        'AdminFormsTable',
+        'AdminUsersTable',
+        'Developer',
+        'FormComponentsProactiveHelp',
+        'Metrics',
+      ],
     });
 
-    expect(wrapper.text()).toMatch('Forms');
+    expect(wrapper.text()).toContain('Forms');
+    expect(wrapper.text()).not.toContain('Metrics');
+  });
+
+  it('renders without metrics', () => {
+    const wrapper = shallowMount(AdminPage, {
+      localVue,
+      mocks: {
+        $config: { adminDashboardUrl: '' },
+      },
+      stubs: [
+        'AdminFormsTable',
+        'AdminUsersTable',
+        'Developer',
+        'FormComponentsProactiveHelp',
+        'Metrics',
+      ],
+    });
+
+    expect(wrapper.text()).not.toContain('Metrics');
+  });
+
+  it('renders with metrics', () => {
+    const wrapper = shallowMount(AdminPage, {
+      localVue,
+      mocks: {
+        $config: { adminDashboardUrl: 'x' },
+      },
+      stubs: [
+        'AdminFormsTable',
+        'AdminUsersTable',
+        'Developer',
+        'FormComponentsProactiveHelp',
+        'Metrics',
+      ],
+    });
+
+    expect(wrapper.text()).toContain('Metrics');
   });
 });
