@@ -70,14 +70,12 @@ export function checkSubmissionView(userForm) {
  */
 function getErrorMessage(options, error) {
   let errorMessage = undefined;
-
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
-      errorMessage = i18n.global.t('trans.permissionUtils.formNotAvailable');
+      errorMessage = i18n.t('trans.permissionUtils.formNotAvailable');
     }
   }
-
   return errorMessage;
 }
 
@@ -107,14 +105,11 @@ export async function preFlightAuth(options = {}, next) {
       );
       idpHint = getIdpHint(data.form.idpHints);
     } else {
-      throw new Error(
-        i18n.global.t('trans.permissionUtils.missingFormIdAndSubmssId')
-      );
+      throw new Error(i18n.t('trans.permissionUtils.missingFormIdAndSubmssId'));
     }
   } catch (error) {
     // Halt user with error page, use alertNavigate for "friendly" messages.
     const message = getErrorMessage(options, error);
-
     if (message) {
       // Don't display the 'An error has occurred...' popup notification.
       store.dispatch('auth/alertNavigate', {
@@ -123,8 +118,8 @@ export async function preFlightAuth(options = {}, next) {
       });
     } else {
       store.dispatch('notifications/addNotification', {
-        message: i18n.global.t('trans.permissionUtils.loadingFormErrMsg'),
-        consoleError: i18n.global.t('trans.permissionUtils.loadingForm', {
+        message: i18n.t('trans.permissionUtils.loadingFormErrMsg'),
+        consoleError: i18n.t('trans.permissionUtils.loadingForm', {
           options: options,
           error: error,
         }),
@@ -144,15 +139,12 @@ export async function preFlightAuth(options = {}, next) {
     } else if (isValidIdp(idpHint) && userIdp === idpHint) {
       next(); // Permit navigation if idps match
     } else {
-      const msg = i18n.global.t('trans.permissionUtils.idpHintMsg', {
+      const msg = i18n.t('trans.permissionUtils.idpHintMsg', {
         idpHint: idpHint.toUpperCase(),
       });
       store.dispatch('notifications/addNotification', {
         message: msg,
-        consoleError: i18n.global.t('trans.permissionUtils.formIdpMissMatch', {
-          idpHint: idpHint,
-          userIdp: userIdp,
-        }),
+        consoleError: '-----',
       });
       store.dispatch('auth/errorNavigate', msg); // Halt user with idp mismatch error page
     }

@@ -77,7 +77,7 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.addFormOwnerRole', {
+            message: i18n.t('trans.store.admin.addFormOwnerRole', {
               fullName: response.data[0].fullName,
             }),
             ...NotificationTypes.SUCCESS,
@@ -90,8 +90,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.addRowError'),
-            consoleError: i18n.global.t('trans.store.admin.addRowError', {
+            message: i18n.t('trans.store.admin.addRowError'),
+            consoleError: i18n.t('trans.store.admin.addRowError', {
               userId: formUser.userId,
               formId: formUser.formId,
               error: error,
@@ -108,7 +108,7 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.apiKeyDelMsg'),
+            message: i18n.t('trans.store.admin.apiKeyDelMsg'),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -117,8 +117,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.errDeletingApiKey'),
-            consoleError: i18n.global.t('trans.store.admin.apiKeyDelMsg', {
+            message: i18n.t('trans.store.admin.errDeletingApiKey'),
+            consoleError: i18n.t('trans.store.admin.apiKeyDelMsg', {
               formId: formId,
               error: error,
             }),
@@ -137,13 +137,10 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.fecthingFormsErrMsg'),
-            consoleError: i18n.global.t(
-              'trans.store.admin.fecthingFormsErrMsg',
-              {
-                error: error,
-              }
-            ),
+            message: i18n.t('trans.store.admin.fecthingFormsErrMsg'),
+            consoleError: i18n.t('trans.store.admin.fecthingFormsErrMsg', {
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -159,14 +156,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.fecthingFormErrMsg'),
-            consoleError: i18n.global.t(
-              'trans.store.admin.fecthingFormsErrMsg',
-              {
-                formId: formId,
-                error: error,
-              }
-            ),
+            message: i18n.t('trans.store.admin.fecthingFormErrMsg'),
+            consoleError: i18n.t('trans.store.admin.fecthingFormsErrMsg', {
+              formId: formId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -181,10 +175,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t(
-              'trans.store.admin.fecthFormUserRolesErrMsg'
-            ),
-            consoleError: i18n.global.t(
+            message: i18n.t('trans.store.admin.fecthFormUserRolesErrMsg'),
+            consoleError: i18n.t(
               'trans.store.admin.fecthFormUserRolesConsErrMsg',
               { error: error }
             ),
@@ -202,8 +194,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.fecthApiDetailsErrMsg'),
-            consoleError: i18n.global.t(
+            message: i18n.t('trans.store.admin.fecthApiDetailsErrMsg'),
+            consoleError: i18n.t(
               'trans.store.admin.fecthApiDetailsConsErrMsg',
               { formId: formId, error: error }
             ),
@@ -221,14 +213,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.restoreFormErrMsg'),
-            consoleError: i18n.global.t(
-              'trans.store.admin.restoreFormConsErrMsg',
-              {
-                formId: formId,
-                error: error,
-              }
-            ),
+            message: i18n.t('trans.store.admin.restoreFormErrMsg'),
+            consoleError: i18n.t('trans.store.admin.restoreFormConsErrMsg', {
+              formId: formId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -248,13 +237,10 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.getUsersErrMsg'),
-            consoleError: i18n.global.t(
-              'trans.store.admin.getUsersConsErrMsg',
-              {
-                error: error,
-              }
-            ),
+            message: i18n.t('trans.store.admin.getUsersErrMsg'),
+            consoleError: i18n.t('trans.store.admin.getUsersConsErrMsg', {
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -270,8 +256,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.getUserErrMsg'),
-            consoleError: i18n.global.t('trans.store.admin.getUserConsErrMsg', {
+            message: i18n.t('trans.store.admin.getUserErrMsg'),
+            consoleError: i18n.t('trans.store.admin.getUserConsErrMsg', {
               userId: userId,
               error: error,
             }),
@@ -292,8 +278,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.storingFCHelpInfoErrMsg'),
-            consoleError: i18n.global.t(
+            message: i18n.t('trans.store.admin.storingFCHelpInfoErrMsg'),
+            consoleError: i18n.t(
               'trans.store.admin.storingFCHelpInfoConsErrMsg',
               { error: error }
             ),
@@ -315,8 +301,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.gettingFCImgUrlErrMsg'),
-            consoleError: i18n.global.t(
+            message: i18n.t('trans.store.admin.gettingFCImgUrlErrMsg'),
+            consoleError: i18n.t(
               'trans.store.admin.gettingFCImgUrlConsErrMsg',
               { error: error }
             ),
@@ -342,8 +328,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t('trans.store.admin.updatingFCStatusErrMsg'),
-            consoleError: i18n.global.t(
+            message: i18n.t('trans.store.admin.updatingFCStatusErrMsg'),
+            consoleError: i18n.t(
               'trans.store.admin.updatingFCStatusConsErrMsg',
               { error: error }
             ),
@@ -364,10 +350,8 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: i18n.global.t(
-              'trans.store.admin.fecthingFormBuilderCompsErrMsg'
-            ),
-            consoleError: i18n.global.t(
+            message: i18n.t('trans.store.admin.fecthingFormBuilderCompsErrMsg'),
+            consoleError: i18n.t(
               'trans.store.admin.fecthingFormBuilderCompsConsErrMsg',
               { error: error }
             ),
