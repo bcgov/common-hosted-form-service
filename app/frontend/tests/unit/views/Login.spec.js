@@ -17,11 +17,11 @@ describe('Login.vue', () => {
       getters: {
         authenticated: () => true,
         keycloakReady: () => true,
-        createLoginUrl: () => () => 'testurl'
+        createLoginUrl: () => () => 'testurl',
       },
       actions: {
-        login: () => jest.fn()
-      }
+        login: () => jest.fn(),
+      },
     });
   });
 

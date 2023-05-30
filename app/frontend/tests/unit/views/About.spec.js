@@ -20,8 +20,8 @@ describe('About.vue', () => {
         isAdmin: () => false,
         keycloakReady: () => true,
         // eslint-disable-next-line no-unused-vars
-        createLoginUrl: () => () => 'testurl'
-      }
+        createLoginUrl: () => () => 'testurl',
+      },
     });
   });
 

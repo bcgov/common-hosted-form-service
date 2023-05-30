@@ -24,11 +24,11 @@ describe('AdministerForm.vue', () => {
           namespaced: true,
           getters: {
             apiKey: mockApiKey,
-            form: mockAdminGetter
+            form: mockAdminGetter,
           },
-          actions: actions
-        }
-      }
+          actions: actions,
+        },
+      },
     });
   });
 
@@ -45,7 +45,7 @@ describe('AdministerForm.vue', () => {
       store,
       i18n,
       propsData: { formId: 'f' },
-      stubs: ['BaseDialog', 'AdminVersions', 'VueJsonPretty']
+      stubs: ['BaseDialog', 'AdminVersions', 'VueJsonPretty'],
     });
     await localVue.nextTick();
 

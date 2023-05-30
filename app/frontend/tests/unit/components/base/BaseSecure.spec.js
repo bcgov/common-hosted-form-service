@@ -19,8 +19,8 @@ describe('BaseSecure.vue', () => {
       getters: {
         authenticated: () => true,
         isUser: () => true,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BaseSecure, { localVue, store, i18n });
@@ -101,7 +101,7 @@ describe('BaseSecure.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => true
+        keycloakReady: () => true,
       },
     });
 
@@ -115,7 +115,7 @@ describe('BaseSecure.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => false
+        keycloakReady: () => false,
       },
     });
 
@@ -130,10 +130,10 @@ describe('BaseSecure.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => true
+        keycloakReady: () => true,
       },
       actions: {
-        login: mockLogin
+        login: mockLogin,
       },
     });
 

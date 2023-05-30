@@ -6,8 +6,6 @@ const $t = () => {};
 describe('ProactiveHelpDialog.vue', () => {
 
   it('selectImage()', async () => {
-
-
     const event = {
       target: {
         files: [
@@ -35,7 +33,7 @@ describe('ProactiveHelpDialog.vue', () => {
       data() {
         return {
           description: 'dump text',
-          link:'url'
+          link: 'url',
         };
       },
       i18n

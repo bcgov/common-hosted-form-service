@@ -15,10 +15,10 @@ describe('BaseNotificationContainer.vue', () => {
         notifications: {
           namespaced: true,
           state: {
-            notifications: []
-          }
-        }
-      }
+            notifications: [],
+          },
+        },
+      },
     });
   });
 

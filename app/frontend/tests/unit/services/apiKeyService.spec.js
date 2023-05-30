@@ -11,14 +11,13 @@ const zeroUuid = '00000000-0000-0000-0000-000000000000';
 
 jest.mock('@/services/interceptors', () => {
   return {
-    appAxios: () => mockInstance
+    appAxios: () => mockInstance,
   };
 });
 
 beforeEach(() => {
   mockAxios.reset();
 });
-
 
 describe('API Key Service', () => {
   const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}${ApiRoutes.APIKEY}`;

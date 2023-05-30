@@ -201,6 +201,7 @@ export default {
       'form.idps',
       'form.name',
       'form.sendSubRecieviedEmail',
+      'form.allowSubmitterToUploadFile',
       'form.showSubmissionConfirmation',
       'form.snake',
       'form.submissionReceivedEmails',
@@ -688,7 +689,6 @@ export default {
         Array.isArray(this.submissionReceivedEmails)
           ? this.submissionReceivedEmails
           : [];
-
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -701,6 +701,7 @@ export default {
         enableCopyExistingSubmission: this.enableCopyExistingSubmission,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
+        allowSubmitterToUploadFile: this.allowSubmitterToUploadFile,
         submissionReceivedEmails: emailList,
         reminder_enabled: false,
       });
@@ -723,7 +724,6 @@ export default {
         schema: this.formSchema,
         formVersionId: this.versionId,
       });
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
