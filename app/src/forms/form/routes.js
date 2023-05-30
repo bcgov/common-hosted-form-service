@@ -61,11 +61,9 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
 routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readVersionFields(req, res, next);
 });
-
 // routes.put('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
 //   next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to modify form versions.' }));
 // });
-
 routes.post('/:formId/versions/:formVersionId/publish', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
   await controller.publishVersion(req, res, next);
 });
@@ -77,6 +75,16 @@ routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPer
 routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
   await controller.createSubmission(req, res, next);
 });
+
+routes.post(
+  '/:formId/versions/:formVersionId/multiSubmission',
+  middleware.publicRateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]),
+  async (req, res, next) => {
+    await controller.createMultiSubmission(req, res, next);
+  }
+);
 
 routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
   controller.listSubmissionFields(req, res, next);

@@ -13,7 +13,7 @@ describe('ManageLayout.vue', () => {
   const formActions = {
     fetchDrafts: jest.fn(),
     fetchForm: jest.fn(),
-    getFormPermissionsForUser: jest.fn()
+    getFormPermissionsForUser: jest.fn(),
   };
 
   beforeEach(() => {
@@ -25,9 +25,9 @@ describe('ManageLayout.vue', () => {
             form: mockFormGetter,
             permissions: mockPermissionsGetter,
           },
-          actions: formActions
-        }
-      }
+          actions: formActions,
+        },
+      },
     });
   });
 

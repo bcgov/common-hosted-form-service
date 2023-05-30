@@ -54,5 +54,4 @@ describe('BaseDialog.vue', () => {
 
     expect(wrapper.text()).not.toMatch('close');
   });
-
 });

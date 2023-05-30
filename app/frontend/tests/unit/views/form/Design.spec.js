@@ -17,10 +17,10 @@ describe('Design.vue', () => {
         form: {
           namespaced: true,
           getters: {
-            form: mockFormGetter
-          }
-        }
-      }
+            form: mockFormGetter,
+          },
+        },
+      },
     });
   });
 

@@ -24,10 +24,10 @@ describe('BaseNotificationBar.vue', () => {
         notifications: {
           namespaced: true,
           actions: {
-            deleteNotification: mockDeleteNotification
-          }
-        }
-      }
+            deleteNotification: mockDeleteNotification,
+          },
+        },
+      },
     });
   });
 
@@ -41,7 +41,7 @@ describe('BaseNotificationBar.vue', () => {
       propsData: {
         notification: {
           ...notificationProperties,
-        }
+        },
       },
       store,
       i18n
@@ -57,7 +57,7 @@ describe('BaseNotificationBar.vue', () => {
       propsData: {
         notification: {
           ...notificationProperties,
-        }
+        },
       },
       store,
       i18n
@@ -73,7 +73,7 @@ describe('BaseNotificationBar.vue', () => {
       propsData: {
         notification: {
           ...notificationProperties,
-        }
+        },
       },
       store,
       i18n

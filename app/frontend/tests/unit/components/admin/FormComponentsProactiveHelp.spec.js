@@ -18,13 +18,13 @@ describe('FormComponentsProactiveHelp.vue', () => {
       getters: {
         proactiveHelpInfoGroupObject: () => {},
         builder: () => {},
-      }
+      },
     });
     store.registerModule('admin', {
       namespaced: true,
       getters: {
         fcHelpInfo: () => {},
-      }
+      },
     });
   });
 

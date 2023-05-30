@@ -15,8 +15,8 @@ describe('Admin.vue', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
-        isAdmin: () => false
-      }
+        isAdmin: () => false,
+      },
     });
   });
 

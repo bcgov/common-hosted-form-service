@@ -87,6 +87,7 @@
       <template #[`item.submittedDate`]="{ item }">
         {{ item.submittedDate | formatDateLong }}
       </template>
+
       <template #[`item.completedDate`]="{ item }">
         {{ item.completedDate | formatDateLong }}
       </template>

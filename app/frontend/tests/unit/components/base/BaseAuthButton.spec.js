@@ -36,8 +36,8 @@ describe('BaseAuthButton.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
@@ -51,8 +51,8 @@ describe('BaseAuthButton.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
@@ -65,8 +65,8 @@ describe('BaseAuthButton.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => false
-      }
+        keycloakReady: () => false,
+      },
     });
 
     const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
@@ -80,11 +80,11 @@ describe('BaseAuthButton.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => true
+        keycloakReady: () => true,
       },
       actions: {
-        login: mockLogin
-      }
+        login: mockLogin,
+      },
     });
 
     const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
@@ -101,11 +101,11 @@ describe('BaseAuthButton.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        keycloakReady: () => true
+        keycloakReady: () => true,
       },
       actions: {
-        logout: mockLogout
-      }
+        logout: mockLogout,
+      },
     });
 
     const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
