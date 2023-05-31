@@ -12,7 +12,7 @@ const oneUuid = '11111111-1111-1111-1111-111111111111';
 
 jest.mock('@/services/interceptors', () => {
   return {
-    appAxios: () => mockInstance
+    appAxios: () => mockInstance,
   };
 });
 
@@ -103,7 +103,6 @@ describe('Form Service', () => {
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
-
 
   //
   // Form Drafts
@@ -372,8 +371,8 @@ describe('Form Service', () => {
     it('calls post endpoint', async () => {
       mockAxios.onPost(endpoint).reply(200);
       const parsedContext = {
-        'firstName': 'Jane',
-        'lastName': 'Smith'
+        firstName: 'Jane',
+        lastName: 'Smith',
       };
       const content = 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK';
       const contentFileType = 'txt';
@@ -431,17 +430,13 @@ describe('Form Service', () => {
     it('calls delete endpoint', async () => {
       mockAxios.onDelete(endpoint).reply(200);
 
-      let submissionIds = [
-        'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
-        '0715b1ac-4069-4778-a868-b4f71fdea18d'
-      ];
+      let submissionIds = ['ac4ef441-43b1-414a-a0d4-1e2f67c2a745', '0715b1ac-4069-4778-a868-b4f71fdea18d'];
 
-      const result = await formService.deleteMultipleSubmissions(submissionId,formId,{data:{submissionIds}});
+      const result = await formService.deleteMultipleSubmissions(submissionId, formId, { data: { submissionIds } });
       expect(result).toBeTruthy();
       expect(mockAxios.history.delete).toHaveLength(1);
     });
   });
-
 
   describe('submissions/${submissionId}/${formId}/submissions/restore', () => {
     let submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
@@ -450,12 +445,9 @@ describe('Form Service', () => {
 
     it('calls restore multiple submission endpoint', async () => {
       mockAxios.onPut(endpoint).reply(200);
-      let submissionIds = [
-        'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
-        '0715b1ac-4069-4778-a868-b4f71fdea18d'
-      ];
+      let submissionIds = ['ac4ef441-43b1-414a-a0d4-1e2f67c2a745', '0715b1ac-4069-4778-a868-b4f71fdea18d'];
 
-      const result = await formService.restoreMutipleSubmissions(submissionId,formId,{submissionIds});
+      const result = await formService.restoreMutipleSubmissions(submissionId, formId, { submissionIds });
       expect(result).toBeTruthy();
       expect(mockAxios.history.put).toHaveLength(1);
     });
@@ -467,16 +459,9 @@ describe('Form Service', () => {
 
     it('calls to get submissions fields for csv export', async () => {
       mockAxios.onGet(endpoint).reply(200);
-      const result = await formService.readCSVExportFields(
-        formId,
-        'submissions',
-        false,
-        false,
-        1
-      );
+      const result = await formService.readCSVExportFields(formId, 'submissions', false, false, 1);
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
 });
-

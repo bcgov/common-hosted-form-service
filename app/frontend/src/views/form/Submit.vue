@@ -1,5 +1,5 @@
 <template>
-  <FormViewer :formId="f" displayTitle />
+  <FormViewer :formId="f" :bulkState="b" displayTitle />
 </template>
 
 <script>
@@ -12,6 +12,7 @@ export default {
   },
   props: {
     f: String,
+    b: String,
   },
 };
 </script>

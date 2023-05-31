@@ -25,8 +25,8 @@ describe('Developer.vue', () => {
         fullName: () => 'fullName',
         token: () => 'token',
         tokenParsed: () => ({}),
-        userName: () => 'userName'
-      }
+        userName: () => 'userName',
+      },
     });
   });
 

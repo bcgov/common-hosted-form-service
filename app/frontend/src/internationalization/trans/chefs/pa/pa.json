@@ -12,7 +12,9 @@
     "action": "ਕਾਰਵਾਈਆਂ",
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ"
   },
-  "manageLayout": { "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ" },
+  "manageLayout": {
+    "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
+  },
   "shareForm": {
     "shareForm": "ਫਾਰਮ ਸਾਂਝਾ ਕਰੋ",
     "shareLink": "ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ",
@@ -292,7 +294,8 @@
     "formDesignSaveErrMsg": "ਇਸ ਫਾਰਮ ਡਿਜ਼ਾਈਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ। ਜੇਕਰ ਤੁਹਾਨੂੰ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਤਾਜ਼ਾ ਕਰਨ ਜਾਂ ਛੱਡਣ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ ਪੰਨੇ 'ਤੇ ਮੌਜੂਦਾ ਡਿਜ਼ਾਈਨ ਨੂੰ ਨਿਰਯਾਤ ਕਰ ਸਕਦੇ ਹੋ।",
     "formDesignSaveConsoleErrMsg": "ਫਾਰਮ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਜਾਂ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) ਤਰੁੱਟੀ: {error}",
     "collapse": "ਸਮੇਟਣਾ",
-    "actions": "ਕਾਰਵਾਈਆਂ"
+    "actions": "ਕਾਰਵਾਈਆਂ",
+    "version": "ਸੰਸਕਰਣ"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "ਬੇਦਾਅਵਾ ਅਤੇ ਫਾਰਮ ਡਿਜ਼ਾਈਨਰਾਂ ਲਈ ਜ਼ਿੰਮੇਵਾਰੀ ਦਾ ਬਿਆਨ:",
@@ -306,7 +309,11 @@
   "requestReceipt": {
     "emailReceipt": "ਇਸ ਸਬਮਿਸ਼ਨ ਦੀ ਇੱਕ ਰਸੀਦ ਈਮੇਲ ਕਰੋ",
     "send": "ਭੇਜੋ",
-    "sendToEmailAddress": "ਈ-ਮੇਲ ਪਤੇ 'ਤੇ ਭੇਜੋ"
+    "sendToEmailAddress": "ਈ-ਮੇਲ ਪਤੇ 'ਤੇ ਭੇਜੋ",
+    "emailSent": "{to} ਨੂੰ ਇੱਕ ਈਮੇਲ ਭੇਜੀ ਗਈ ਹੈ।",
+    "sendingEmailErrMsg": "ਤੁਹਾਡੀ ਈਮੇਲ ਭੇਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "sendingEmailConsErrMsg": "{to} ਨੂੰ ਈਮੇਲ ਪੁਸ਼ਟੀਕਰਨ ਅਸਫਲ: {error}",
+    "emailRequired": "ਈ-ਮੇਲ ਦੀ ਲੋੜ ਹੈ"
   },
   "submissionsTable": {
     "submissionsTable": "ਸਬਮਿਸ਼ਨ ਟੇਬਲ",
@@ -497,7 +504,10 @@
     "export": "ਨਿਰਯਾਤ",
     "noResponseDataErr": "ਐਕਸਪੋਰਟਸਬਮਿਸ਼ਨ ਕਾਲ ਦੇ ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਡਾਟਾ ਨਹੀਂ ਹੈ",
     "apiCallErrorMsg": "ਇਸ ਫਾਰਮ ਲਈ ਬੇਨਤੀਆਂ ਨੂੰ ਨਿਰਯਾਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
-    "apiCallConsErrorMsg": "ਲਈ ਗਲਤੀ ਨਿਰਯਾਤ ਸਪੁਰਦਗੀ"
+    "apiCallConsErrorMsg": "ਲਈ ਗਲਤੀ ਨਿਰਯਾਤ ਸਪੁਰਦਗੀ",
+    "selectAllFields": "ਸਾਰੇ ਖੇਤਰ ਚੁਣੋ",
+    "emailSentMsg": "{email} 'ਤੇ ਇੱਕ ਈਮੇਲ ਭੇਜੀ ਜਾਵੇਗੀ ਜਿਸ ਵਿੱਚ ਤੁਹਾਡਾ ਡੇਟਾ ਤਿਆਰ ਹੋਣ 'ਤੇ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਇੱਕ ਲਿੰਕ ਸ਼ਾਮਲ ਹੋਵੇਗਾ",
+    "exportInProgress": "ਨਿਰਯਾਤ ਜਾਰੀ ਹੈ"
   },
   "printOptions": {
     "submitButtonTxt": "CDOGS ਨੂੰ ਜਮ੍ਹਾਂ ਕਰੋ ਅਤੇ ਡਾਊਨਲੋਡ ਕਰੋ",
@@ -508,7 +518,10 @@
     "browserPrint": "ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰਿੰਟ",
     "pageFromBrowser": "ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਤੋਂ ਪੰਨਾ",
     "uploadA": "آپلود a",
-    "uploadB": "برای داشتن یک نسخه ساختار یافته"
+    "uploadB": "برای داشتن یک نسخه ساختار یافته",
+    "docGrnSucess": "ਦਸਤਾਵੇਜ਼ ਸਫਲਤਾਪੂਰਵਕ ਸਿਰਜਿਆ ਗਿਆ",
+    "failedDocGenErrMsg": "ਦਸਤਾਵੇਜ਼ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ",
+    "failedDocGenConsErrMsg": "ਟੈਮਪਲੇਟ ਦਰਜ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "ਕੰਪੋਨੈਂਟ ਜਾਣਕਾਰੀ ਲਿੰਕ",
@@ -523,13 +536,22 @@
     "save": "ਸੇਵ ਕਰੋ",
     "description": "ਵਰਣਨ"
   },
-  "proactiveHelpPreviewDialog": { "learnMore": "ਜਿਆਦਾ ਜਾਣੋ" },
+  "proactiveHelpPreviewDialog": {
+    "learnMore": "ਜਿਆਦਾ ਜਾਣੋ"
+  },
+  "baseCopyToClipboard": {
+    "linkToClipboard": "ਲਿੰਕ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ",
+    "copyToClipboard": "ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰੋ",
+    "errCopyToClipboard": "ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਵਿੱਚ ਤਰੁੱਟੀ।"
+  },
   "generalLayout": {
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
     "preview": "ਝਲਕ",
     "published": "ਪ੍ਰਕਾਸ਼ਿਤ",
     "unpublished": "ਅਣਪ੍ਰਕਾਸ਼ਿਤ",
-    "edit": "ਸੰਪਾਦਿਤ ਕਰੋ"
+    "edit": "ਸੰਪਾਦਿਤ ਕਰੋ",
+    "formTitle": "ਫਾਰਮ ਦਾ ਸਿਰਲੇਖ",
+    "actions": "ਕਾਰਵਾਈਆਂ"
   },
   "formSubmission": {
     "editThisSubmission": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਸੰਪਾਦਿਤ ਕਰੋ",
@@ -598,10 +620,12 @@
     "pleaseConfirm": "ਕ੍ਰਿਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ",
     "submitFormWarningMsg": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਆਪਣਾ ਫਾਰਮ ਜਮ੍ਹਾਂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
     "submit": "ਜਮ੍ਹਾਂ ਕਰੋ",
+    "wantToSaveDraft": "ਕੀ ਤੁਸੀਂ ਡਰਾਫਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
     "version": "ਸੰਸਕਰਣ: { ਸੰਸਕਰਣ }",
     "formScheduleExpireMessage": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ ਕਿਉਂਕਿ ਅਨੁਸੂਚਿਤ ਸਬਮਿਸ਼ਨ ਦੀ ਮਿਆਦ ਖਤਮ ਹੋ ਗਈ ਹੈ।",
     "getUsersSubmissionsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸਪੁਰਦਗੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "getUsersSubmissionsConsoleErrMsg": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਡਾਟਾ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ {submissionId}: {error}",
+    "multiDraftUploadSuccess": "ਤੁਹਾਡਾ ਮਲਟੀਪਲ ਡਰਾਫਟ ਅੱਪਲੋਡ ਸਫਲ ਰਿਹਾ ਹੈ!",
     "readVersionErrMsg": "ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਸਕੀਮਾ ਨਹੀਂ। VersionId: {versionId}",
     "readDraftErrMsg": "ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਸਕੀਮਾ ਨਹੀਂ। DraftId: {draftId}",
     "alertRouteMsg": "ਫਾਰਮ ਮਾਲਕ ਨੇ ਫਾਰਮ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਕੀਤਾ ਹੈ, ਅਤੇ ਇਹ ਸਬਮਿਸ਼ਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
@@ -613,7 +637,15 @@
     "submissionsSubmitErrMsg": "ਫਾਰਮ ਜਮ੍ਹਾਂ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {errors}",
     "sendSubmissionErrMsg": "ਸਪੁਰਦਗੀ ਅੰਤਮ ਬਿੰਦੂ ਤੋਂ ਅਸਫਲ ਜਵਾਬ। ਜਵਾਬ ਕੋਡ: {status}",
     "errMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਸਪੁਰਦ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
-    "customEventAlert": "ਕਸਟਮ ਬਟਨ ਇਵੈਂਟ ਅਜੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਘਟਨਾ ਦੀ ਕਿਸਮ: {event}"
+    "customEventAlert": "ਕਸਟਮ ਬਟਨ ਇਵੈਂਟ ਅਜੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਘਟਨਾ ਦੀ ਕਿਸਮ: {event}",
+    "formLoading": "ਕਿਰਪਾ ਕਰਕੇ ਫਾਰਮ ਲੋਡ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰੋ !!!",
+    "yes": "ਹਾਂ",
+    "no": "ਨੰ",
+    "failedResSubmissn": "ਸਪੁਰਦਗੀ ਅੰਤਮ ਬਿੰਦੂ ਤੋਂ ਅਸਫਲ ਜਵਾਬ। ਜਵਾਬ ਕੋਡ: {status}",
+    "errSubmittingForm": "ਇਸ ਫਾਰਮ ਨੂੰ ਸਪੁਰਦ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+    "errorSavingFile": "ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਦਾ ਨਾਮ: {fileNname}। ਗਲਤੀ: {error}",
+    "submittingDraftErrMsg": "ਡਰਾਫਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+    "submittingDraftConsErrMsg": "ਡਰਾਫਟ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ। SubmissionId: {submissionId}। ਗਲਤੀ: {error}"
   },
   "bCGovFooter": {
     "home": "ਘਰ",
@@ -687,9 +719,35 @@
     "cancel": "ਰੱਦ ਕਰੋ"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",
-    "saveAsADraft": "एक मसौदे के रूप में सहेजो",
-    "editThisDraft": "इस मसौदे को संपादित करें"
+    "viewAllSubmissions": "ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ ਦੇਖੋ",
+    "saveAsADraft": "ਇੱਕ ਡਰਾਫਟ ਦੇ ਰੂਪ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਕਰੋ",
+    "editThisDraft": "ਇਸ ਡਰਾਫਟ ਨੂੰ ਸੰਪਾਦਿਤ ਕਰੋ",
+    "switchSingleSubmssn": "ਸਿੰਗਲ ਸਬਮਿਸ਼ਨ 'ਤੇ ਸਵਿਚ ਕਰੋ",
+    "switchMultiSubmssn": "ਸਿੰਗਲ ਸਬਮਿਸ਼ਨ 'ਤੇ ਸਵਿਚ ਕਰੋ"
+  },
+  "formViewerMultiUpload": {
+    "important": "ਮਹੱਤਵਪੂਰਨ",
+    "uploadSucessMsg": "ਮਲਟੀਪਲ ਡਰਾਫਟਾਂ ਦੇ ਸਫਲ ਅਪਲੋਡ ਨੂੰ ਯਕੀਨੀ ਬਣਾਉਣ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਪ੍ਰਦਾਨ ਕੀਤੇ ਟੈਮਪਲੇਟ ਨੂੰ ਡਾਊਨਲੋਡ ਅਤੇ ਵਰਤੋਂ ਕਰੋ।",
+    "confirmDownload": "ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "jsonFileUpload": "ਅੱਪਲੋਡ ਕਰਨ ਲਈ JSON ਫ਼ਾਈਲ ਚੁਣੋ",
+    "dragNDrop": "ਜਾਂ ਇਸਨੂੰ ਇੱਥੇ ਖਿੱਚੋ ਅਤੇ ਸੁੱਟੋ",
+    "chooseAFile": "ਇੱਕ ਫਾਈਲ ਚੁਣੋ",
+    "downloadDraftSubmns": "ਕਿਰਪਾ ਕਰਕੇ ਡਰਾਫਟ ਸਪੁਰਦਗੀ ਰਿਪੋਰਟ ਨੂੰ ਡਾਉਨਲੋਡ ਕਰੋ ਅਤੇ ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਡੇਟਾ ਸਹੀ ਤਰ੍ਹਾਂ ਦਾਖਲ ਕੀਤਾ ਗਿਆ ਹੈ।",
+    "downloadReport": "ਰਿਪੋਰਟ ਡਾਊਨਲੋਡ ਕਰੋ",
+    "doYouWantToDownload": "ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "uploadNewFile": "ਨਵੀਂ ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਕਰੋ",
+    "uploadMultipleFileErr": "ਮਾਫ਼ ਕਰਨਾ, ਤੁਸੀਂ ਸਿਰਫ਼ ਇੱਕ ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਕਰ ਸਕਦੇ ਹੋ",
+    "dragMultipleFileErr": "ਮਾਫ਼ ਕਰਨਾ, ਤੁਸੀਂ ਸਿਰਫ਼ ਇੱਕ ਫ਼ਾਈਲ ਨੂੰ ਖਿੱਚ ਸਕਦੇ ਹੋ",
+    "fileFormatErr": "ਮਾਫ਼ ਕਰਨਾ, ਅਸੀਂ ਸਿਰਫ਼ json ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਦੇ ਹਾਂ",
+    "fileSizeErr": "ਅਧਿਕਤਮ ਫਾਈਲ ਆਕਾਰ 5MB ਹੈ",
+    "parseJsonErr": "ਅਸੀਂ ਫਾਈਲ ਤੋਂ json ਡੇਟਾ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦੇ ਹਾਂ",
+    "jsonObjNotArray": "ਗਲਤ json ਫ਼ਾਈਲ ਫਾਰਮੈਟ",
+    "jsonObjNotArrayConsErr": "ਇੱਕ ਅਚਾਨਕ ਗਲਤੀ ਆਈ ਹੈ।",
+    "jsonArrayEmpty": "ਇਹ json ਫਾਈਲ ਖਾਲੀ ਹੈ।",
+    "errorWhileValidate": "ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਕੁਝ ਗੜਬੜ ਹੈ",
+    "errWhileCheckValidity": "ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਕੁਝ ਗੜਬੜ ਹੈ",
+    "errAfterValidate": "ਕੁਝ ਗਲਤੀਆਂ ਮਿਲੀਆਂ, ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਹੇਠਾਂ ਦੇਖੋ।",
+    "fileIsEmpty": "ਇਹ ਫਾਈਲ ਖਾਲੀ ਹੈ।"
   },
   "sucess": {
     "sucessFormSubmissn": "ਜੇਕਰ ਤੁਸੀਂ ਇਸ ਸਬਮਿਸ਼ਨ ਦਾ ਰਿਕਾਰਡ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਹੇਠ ਲਿਖੀਆਂ ਗੱਲਾਂ ਰੱਖ ਸਕਦੇ ਹੋ",
@@ -699,6 +757,108 @@
   "root": {
     "admin": "ਐਡਮਿਨ"
   },
-  "store":{"admin":{"addFormOwnerRole":"ਇਸ ਫਾਰਮ ਲਈ ਮਾਲਕ ਦੀ ਭੂਮਿਕਾ ਨੂੰ {fullName} ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ","addRowError":"ਭੂਮਿਕਾ ਨੂੰ ਜੋੜਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","addRowConsoleErr":"ਵਰਤੋਂਕਾਰ {userId} ਨੂੰ ਫਾਰਮ {formId} ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","apiKeyDelMsg":"ਇਸ ਫਾਰਮ ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।","errDeletingApiKey":"API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","consErrDeletingApiKey":"ਫਾਰਮ {formId} ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fecthingFormsErrMsg":"ਫਾਰਮ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fecthingFormsConsErrMsg":"ਐਡਮਿਨ ਫਾਰਮ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fecthingFormErrMsg":"ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fecthingFormConsErrMsg":"ਐਡਮਿਨ ਫਾਰਮ {formId} ਡਾਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fecthFormUserRolesErrMsg":"ਫਾਰਮ ਉਪਭੋਗਤਾ ਰੋਲ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।","fecthFormUserRolesConsErrMsg":"ਐਡਮਿਨ ਰੋਲ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fecthApiDetailsErrMsg":"ਇਸ ਫਾਰਮ ਦੇ API ਵੇਰਵਿਆਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fecthApiDetailsConsErrMsg":"ਫਾਰਮ {formId} ਡੇਟਾ ਤੋਂ ਐਡਮਿਨ API ਵੇਰਵੇ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","restoreFormErrMsg":"ਇਸ ਫਾਰਮ ਨੂੰ ਰੀਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","restoreFormConsErrMsg":"ਫਾਰਮ {formId} ਡੇਟਾ ਨੂੰ ਬਹਾਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","getUsersErrMsg":"ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।","getUsersConsErrMsg":"ਪ੍ਰਸ਼ਾਸਕ ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","getUserErrMsg":"ਇਸ ਉਪਭੋਗਤਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।","getUserConsErrMsg":"ਪ੍ਰਸ਼ਾਸਕ ਉਪਭੋਗਤਾ {userId} ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","storingFCHelpInfoErrMsg":"ਫਾਰਮ ਕੰਪੋਨੈਂਟ ਮਦਦ ਜਾਣਕਾਰੀ ਨੂੰ ਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ","storingFCHelpInfoConsErrMsg":"ਫਾਰਮ ਕੰਪੋਨੈਂਟ ਮਦਦ ਜਾਣਕਾਰੀ ਨੂੰ ਸਟੋਰ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","gettingFCImgUrlErrMsg":"ਚਿੱਤਰ url ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ","gettingFCImgUrlConsErrMsg":"ਚਿੱਤਰ url ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","updatingFCStatusErrMsg":"ਪ੍ਰਕਾਸ਼ਿਤ ਸਥਿਤੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ","updatingFCStatusConsErrMsg":"ਪ੍ਰਕਾਸ਼ਿਤ ਸਥਿਤੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fecthingFormBuilderCompsErrMsg":"ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ","fecthingFormBuilderCompsConsErrMsg":"ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"},"form":{"getCurrUserFormsErrMsg":"ਤੁਹਾਡੇ ਫਾਰਮ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","getCurrUserFormsConsErrMsg":"ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","getUserFormPermErrMsg":"ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੇ ਉਪਭੋਗਤਾ ਡੇਟਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।","getUserFormPermConsErrMsg":"formID {formId} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","getUserFormRolesErrmsg":"ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੇ ਉਪਭੋਗਤਾ ਡੇਟਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।","getUserFormRolesConsErrmsg":"formID {formId} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","updCurrUserFormPrefErrMsg":"ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","updCurrUserFormPrefConsErrMsg":"formID {formId}, ਅਤੇ prefs {preferences} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਫਾਰਮ ਪ੍ਰੀਫਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","getCurrUserFormPrefErrMsg":"ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","getCurrUserFormPrefConsErrMsg":"formID {formId} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਫਾਰਮ ਪ੍ਰੀਫਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","delCurrformNotiMsg":"ਫਾਰਮ \"{state.form.name}\" ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।","delCurrformErrMsg":"\"${state.form.name}\" ਨੂੰ ਮਿਟਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","delCurrFormConsErMsg":"ਫਾਰਮ {id} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","delDraftErrMsg":"ਇਸ ਡਰਾਫਟ ਨੂੰ ਮਿਟਾਉਣ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","delDraftConsErrMsg":"{draftId} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fecthDraftErrMsg":"ਇਸ ਫਾਰਮ ਲਈ ਡਰਾਫਟ ਨੂੰ ਸਕੈਨ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fecthDraftConsErrMsg":"ਫਾਰਮ {formId} ਲਈ ਡਰਾਫਟ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fecthFormErrMsg":"ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fecthFormConsErrMsg":"ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fetchFormFieldsErrMsg":"ਇਸ ਫਾਰਮ ਲਈ ਖੇਤਰਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fetchFormFieldsConsErrMsg":"ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","publishDraftErrMsg":"ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","publishDraftConsErrMsg":"${draftId} ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}","toggleVersnPublConsErrMsg":"toggleVersionPublish {versionId} {publish} ਵਿੱਚ ਤਰੁੱਟੀ: {error}","updateFormErrMsg":"ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","updateFormConsErrMsg":"ਫਾਰਮ {id} ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","deleteSubmissionNotifyMsg":"ਸਪੁਰਦਗੀ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾਈ ਗਈ।","deleteSubmissionErrMsg":"ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਮਿਟਾਉਣ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","deleteSubmissionConsErrMsg":"ਸਬਮਿਸ਼ਨ {submissionId} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","deleteSubmissionsNotifyMsg":"ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾਇਆ ਗਿਆ।","deleteSubmissionsErrMsg":"ਚੁਣੀਆਂ ਗਈਆਂ ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਮਿਟਾਉਣ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","deleteSubmissionsConsErrMsg":"ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","restoreSubmissionsNotiMsg":"ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਰੀਸਟੋਰ ਕੀਤਾ ਗਿਆ।","restoreSubmissionsErrMsg":"ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਰੀਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","restoreSubmissionsConsErrMsg":"ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਬਹਾਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","restoreSubmissionNotiMsg":"ਸਪੁਰਦਗੀ ਸਫਲਤਾਪੂਰਵਕ ਰੀਸਟੋਰ ਕੀਤੀ ਗਈ।","restoreSubmissionErrMsg":"ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਰੀਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","restoreSubmissionConsErrMsg":"ਸਬਮਿਸ਼ਨ {submissionId} ਨੂੰ ਬਹਾਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fecthSubmissnUsersErrMsg":"ਇਸ ਸਬਮਿਸ਼ਨ ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fecthSubmissnUsersConsErrMsg":"ਸਬਮਿਸ਼ਨ {formSubmissionId} ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fetchSubmissnErrMsg":"ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।","fetchSubmissnConsErrMsg":"ਸਬਮਿਸ਼ਨ {submissionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}","fetchFormCSVExptFieldsErrMsg":"ਇਸ ਫਾਰਮ ਲਈ ਖੇਤਰਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fetchFormCSVExptFieldsConsErrMsg":"ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fetchSubmissnsErrMsg":"ਇਸ ਫਾਰਮ ਲਈ ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fetchSubmissnsConsErrMsg":"{formId} ਲਈ ਬੇਨਤੀਆਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","fetchVersionErrMsg":"ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","fetchVersionConsErrMsg":"ਫਾਰਮ {formId} ਲਈ ਸੰਸਕਰਣ {versionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","deleteApiKeyNotifyMsg":"ਇਸ ਫਾਰਮ ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।","deleteApiKeyErrMsg":"API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","deleteApiKeyConsErrMsg":"ਫਾਰਮ {formId} ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","generateApiKeyNotifyMsg":"ਇਸ ਫਾਰਮ ਲਈ ਇੱਕ API ਕੁੰਜੀ ਬਣਾਈ ਗਈ ਹੈ।","generateApiKeyErrMsg":"API ਕੁੰਜੀ ਬਣਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","generateApiKeyConsErrMsg":"ਫਾਰਮ {formId} ਲਈ API ਕੁੰਜੀ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","readApiKeyErrMsg":"API ਕੁੰਜੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","readApiKeyConsErrMsg":"ਫਾਰਮ {formId} ਲਈ API ਕੁੰਜੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}।","getFCPHImageUrlErrMsg":"ਚਿੱਤਰ url ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ","getFCPHImageUrlConsErrMsg":"ਚਿੱਤਰ url ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","listFCPHErrMsg":"ਫਾਰਮ ਬਿਲਡਰ ਭਾਗਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ","listFCPHConsErrMsg":"ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}","downloadFileErrMsg":"ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ","downloadFileConsErrMsg":"ਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: ਗਲਤੀ"}},
-  "permissionUtils": {"formNotAvailable":"ਫਾਰਮ ਇਸ ਸਮੇਂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਲਿੰਕ ਦੇ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ, ਜਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਫਾਰਮ ਇਸਦੇ ਮਾਲਕ ਦੁਆਰਾ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੋਵੇ।","missingFormIdAndSubmssId":"ਵਿਕਲਪਾਂ ਵਿੱਚ formId ਅਤੇ submissionId ਦੋਵੇਂ ਮੌਜੂਦ ਨਹੀਂ ਹਨ","loadingFormErrMsg":"ਇਸ ਫਾਰਮ ਨੂੰ ਲੋਡ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।","loadingForm":"{options} ਲੋਡ ਕਰਨ ਦੌਰਾਨ ਤਰੁੱਟੀ: {error}","idpHintMsg":"ਇਸ ਫਾਰਮ ਲਈ {idpHint} ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਲੌਗਇਨ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।","formIdpMissMatch":"ਫਾਰਮ IDP ਬੇਮੇਲ। ਫਾਰਮ ਲਈ {idpHint} ਦੀ ਲੋੜ ਹੈ ਪਰ ਉਪਭੋਗਤਾ ਕੋਲ {userIdp} ਹੈ।"}
+  "store": {
+    "admin": {
+      "addFormOwnerRole": "ਇਸ ਫਾਰਮ ਲਈ ਮਾਲਕ ਦੀ ਭੂਮਿਕਾ ਨੂੰ {fullName} ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ",
+      "addRowError": "ਭੂਮਿਕਾ ਨੂੰ ਜੋੜਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "addRowConsoleErr": "ਵਰਤੋਂਕਾਰ {userId} ਨੂੰ ਫਾਰਮ {formId} ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "apiKeyDelMsg": "ਇਸ ਫਾਰਮ ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।",
+      "errDeletingApiKey": "API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "consErrDeletingApiKey": "ਫਾਰਮ {formId} ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fecthingFormsErrMsg": "ਫਾਰਮ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fecthingFormsConsErrMsg": "ਐਡਮਿਨ ਫਾਰਮ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fecthingFormErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fecthingFormConsErrMsg": "ਐਡਮਿਨ ਫਾਰਮ {formId} ਡਾਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fecthFormUserRolesErrMsg": "ਫਾਰਮ ਉਪਭੋਗਤਾ ਰੋਲ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
+      "fecthFormUserRolesConsErrMsg": "ਐਡਮਿਨ ਰੋਲ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fecthApiDetailsErrMsg": "ਇਸ ਫਾਰਮ ਦੇ API ਵੇਰਵਿਆਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fecthApiDetailsConsErrMsg": "ਫਾਰਮ {formId} ਡੇਟਾ ਤੋਂ ਐਡਮਿਨ API ਵੇਰਵੇ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "restoreFormErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਰੀਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "restoreFormConsErrMsg": "ਫਾਰਮ {formId} ਡੇਟਾ ਨੂੰ ਬਹਾਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getUsersErrMsg": "ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
+      "getUsersConsErrMsg": "ਪ੍ਰਸ਼ਾਸਕ ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getUserErrMsg": "ਇਸ ਉਪਭੋਗਤਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
+      "getUserConsErrMsg": "ਪ੍ਰਸ਼ਾਸਕ ਉਪਭੋਗਤਾ {userId} ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "storingFCHelpInfoErrMsg": "ਫਾਰਮ ਕੰਪੋਨੈਂਟ ਮਦਦ ਜਾਣਕਾਰੀ ਨੂੰ ਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+      "storingFCHelpInfoConsErrMsg": "ਫਾਰਮ ਕੰਪੋਨੈਂਟ ਮਦਦ ਜਾਣਕਾਰੀ ਨੂੰ ਸਟੋਰ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "gettingFCImgUrlErrMsg": "ਚਿੱਤਰ url ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+      "gettingFCImgUrlConsErrMsg": "ਚਿੱਤਰ url ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "updatingFCStatusErrMsg": "ਪ੍ਰਕਾਸ਼ਿਤ ਸਥਿਤੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+      "updatingFCStatusConsErrMsg": "ਪ੍ਰਕਾਸ਼ਿਤ ਸਥਿਤੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fecthingFormBuilderCompsErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+      "fecthingFormBuilderCompsConsErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+    },
+    "form": {
+      "getCurrUserFormsErrMsg": "ਤੁਹਾਡੇ ਫਾਰਮ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "getCurrUserFormsConsErrMsg": "ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getUserFormPermErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੇ ਉਪਭੋਗਤਾ ਡੇਟਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
+      "getUserFormPermConsErrMsg": "formID {formId} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getUserFormRolesErrmsg": "ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੇ ਉਪਭੋਗਤਾ ਡੇਟਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
+      "getUserFormRolesConsErrmsg": "formID {formId} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "updCurrUserFormPrefErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "updCurrUserFormPrefConsErrMsg": "formID {formId}, ਅਤੇ prefs {preferences} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਫਾਰਮ ਪ੍ਰੀਫਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getCurrUserFormPrefErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "getCurrUserFormPrefConsErrMsg": "formID {formId} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਫਾਰਮ ਪ੍ਰੀਫਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "delCurrformNotiMsg": "ਫਾਰਮ \"{state.form.name}\" ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।",
+      "delCurrformErrMsg": "\"${state.form.name}\" ਨੂੰ ਮਿਟਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "delCurrFormConsErMsg": "ਫਾਰਮ {id} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "delDraftErrMsg": "ਇਸ ਡਰਾਫਟ ਨੂੰ ਮਿਟਾਉਣ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "delDraftConsErrMsg": "{draftId} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fecthDraftErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਡਰਾਫਟ ਨੂੰ ਸਕੈਨ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fecthDraftConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਡਰਾਫਟ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fecthFormErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fecthFormConsErrMsg": "ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fetchFormFieldsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਖੇਤਰਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fetchFormFieldsConsErrMsg": "ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "publishDraftErrMsg": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "publishDraftConsErrMsg": "${draftId} ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}",
+      "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "updateFormErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "updateFormConsErrMsg": "ਫਾਰਮ {id} ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "deleteSubmissionNotifyMsg": "ਸਪੁਰਦਗੀ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾਈ ਗਈ।",
+      "deleteSubmissionErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਮਿਟਾਉਣ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "deleteSubmissionConsErrMsg": "ਸਬਮਿਸ਼ਨ {submissionId} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "deleteSubmissionsNotifyMsg": "ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾਇਆ ਗਿਆ।",
+      "deleteSubmissionsErrMsg": "ਚੁਣੀਆਂ ਗਈਆਂ ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਮਿਟਾਉਣ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "deleteSubmissionsConsErrMsg": "ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "restoreSubmissionsNotiMsg": "ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਰੀਸਟੋਰ ਕੀਤਾ ਗਿਆ।",
+      "restoreSubmissionsErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਰੀਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "restoreSubmissionsConsErrMsg": "ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਬਹਾਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "restoreSubmissionNotiMsg": "ਸਪੁਰਦਗੀ ਸਫਲਤਾਪੂਰਵਕ ਰੀਸਟੋਰ ਕੀਤੀ ਗਈ।",
+      "restoreSubmissionErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਰੀਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "restoreSubmissionConsErrMsg": "ਸਬਮਿਸ਼ਨ {submissionId} ਨੂੰ ਬਹਾਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fecthSubmissnUsersErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fecthSubmissnUsersConsErrMsg": "ਸਬਮਿਸ਼ਨ {formSubmissionId} ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fetchSubmissnErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
+      "fetchSubmissnConsErrMsg": "ਸਬਮਿਸ਼ਨ {submissionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}",
+      "fetchFormCSVExptFieldsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਖੇਤਰਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fetchFormCSVExptFieldsConsErrMsg": "ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fetchSubmissnsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fetchSubmissnsConsErrMsg": "{formId} ਲਈ ਬੇਨਤੀਆਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fetchVersionErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "fetchVersionConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਸੰਸਕਰਣ {versionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "deleteApiKeyNotifyMsg": "ਇਸ ਫਾਰਮ ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।",
+      "deleteApiKeyErrMsg": "API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "deleteApiKeyConsErrMsg": "ਫਾਰਮ {formId} ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "generateApiKeyNotifyMsg": "ਇਸ ਫਾਰਮ ਲਈ ਇੱਕ API ਕੁੰਜੀ ਬਣਾਈ ਗਈ ਹੈ।",
+      "generateApiKeyErrMsg": "API ਕੁੰਜੀ ਬਣਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "generateApiKeyConsErrMsg": "ਫਾਰਮ {formId} ਲਈ API ਕੁੰਜੀ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "readApiKeyErrMsg": "API ਕੁੰਜੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "readApiKeyConsErrMsg": "ਫਾਰਮ {formId} ਲਈ API ਕੁੰਜੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}।",
+      "getFCPHImageUrlErrMsg": "ਚਿੱਤਰ url ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+      "getFCPHImageUrlConsErrMsg": "ਚਿੱਤਰ url ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "listFCPHErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਭਾਗਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+      "listFCPHConsErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "downloadFileErrMsg": "ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
+      "downloadFileConsErrMsg": "ਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: ਗਲਤੀ"
+    }
+  },
+  "permissionUtils": {
+    "formNotAvailable": "ਫਾਰਮ ਇਸ ਸਮੇਂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਲਿੰਕ ਦੇ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ, ਜਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਫਾਰਮ ਇਸਦੇ ਮਾਲਕ ਦੁਆਰਾ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੋਵੇ।",
+    "missingFormIdAndSubmssId": "ਵਿਕਲਪਾਂ ਵਿੱਚ formId ਅਤੇ submissionId ਦੋਵੇਂ ਮੌਜੂਦ ਨਹੀਂ ਹਨ",
+    "loadingFormErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਲੋਡ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "loadingForm": "{options} ਲੋਡ ਕਰਨ ਦੌਰਾਨ ਤਰੁੱਟੀ: {error}",
+    "idpHintMsg": "ਇਸ ਫਾਰਮ ਲਈ {idpHint} ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਲੌਗਇਨ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "formIdpMissMatch": "ਫਾਰਮ IDP ਬੇਮੇਲ। ਫਾਰਮ ਲਈ {idpHint} ਦੀ ਲੋੜ ਹੈ ਪਰ ਉਪਭੋਗਤਾ ਕੋਲ {userIdp} ਹੈ।"
+  }
 }

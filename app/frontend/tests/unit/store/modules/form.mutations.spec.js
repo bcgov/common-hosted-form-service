@@ -53,7 +53,6 @@ describe('form mutations', () => {
     expect(state.form).toEqual(expect.objectContaining(obj));
   });
 
-
   it('SET_FORM_PERMISSIONS should update permissions state', () => {
     const obj = { foo: 'bar' };
     store.mutations.SET_FORM_PERMISSIONS(state, [obj]);

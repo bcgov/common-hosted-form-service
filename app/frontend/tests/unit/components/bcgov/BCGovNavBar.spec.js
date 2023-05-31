@@ -22,16 +22,16 @@ describe('BCGovNavBar.vue', () => {
         identityProvider: () => 'idir',
         authenticated: () => true,
         isAdmin: () => false,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BCGovNavBar, {
       localVue,
       mocks: {
         $route: {
-          meta: {}
-        }
+          meta: {},
+        },
       },
       store,
       stubs: ['router-link'],
@@ -50,8 +50,8 @@ describe('BCGovNavBar.vue', () => {
         identityProvider: () => 'idir',
         authenticated: () => true,
         isAdmin: () => true,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BCGovNavBar, {
@@ -59,12 +59,12 @@ describe('BCGovNavBar.vue', () => {
       i18n,
       mocks: {
         $route: {
-          meta: {}
-        }
+          meta: {},
+        },
       },
       store,
       stubs: ['router-link'],
-      vuetify
+      vuetify,
     });
 
     expect(wrapper.text()).toContain('About');

@@ -51,7 +51,10 @@
       </v-col>
       <!-- version number-->
       <v-col cols="12" order="4">
-        <em>Version: {{ this.displayVersion }}</em>
+        <em
+          >{{ $t('trans.formDesigner.version') }} :
+          {{ this.displayVersion }}</em
+        >
       </v-col>
     </v-row>
     <BaseInfoCard class="my-6">
@@ -145,20 +148,10 @@ export default {
   },
   data() {
     return {
-      items: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' },
-      ],
       offset: true,
       savedStatus: this.isSavedStatus,
       isFormSaved: !this.newVersion,
       scrollTop: true,
-      advancedItems: [
-        { text: 'Simple Mode', value: false },
-        { text: 'Advanced Mode', value: true },
-      ],
       designerStep: 1,
       formSchema: {
         display: 'form',
@@ -201,6 +194,7 @@ export default {
       'form.idps',
       'form.name',
       'form.sendSubRecieviedEmail',
+      'form.allowSubmitterToUploadFile',
       'form.showSubmissionConfirmation',
       'form.snake',
       'form.submissionReceivedEmails',
@@ -688,7 +682,6 @@ export default {
         Array.isArray(this.submissionReceivedEmails)
           ? this.submissionReceivedEmails
           : [];
-
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -701,6 +694,7 @@ export default {
         enableCopyExistingSubmission: this.enableCopyExistingSubmission,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
+        allowSubmitterToUploadFile: this.allowSubmitterToUploadFile,
         submissionReceivedEmails: emailList,
         reminder_enabled: false,
       });
@@ -723,7 +717,6 @@ export default {
         schema: this.formSchema,
         formVersionId: this.versionId,
       });
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',

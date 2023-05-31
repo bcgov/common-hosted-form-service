@@ -13,7 +13,8 @@ describe('Teams.vue', () => {
       stubs: [
         'BaseSecure',
         'TeamManagement'],
-        i18n
+        i18n,
+      stubs: ['BaseSecure', 'TeamManagement'],
     });
 
     expect(wrapper.html()).toMatch('teammanagement');

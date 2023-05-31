@@ -12,7 +12,9 @@
     "action": "動作",
     "loadingText": "加載請稍候"
   },
-  "manageLayout": { "manageForm": "管理表單" },
+  "manageLayout": {
+    "manageForm": "管理表單"
+  },
   "shareForm": {
     "shareForm": "分享表格",
     "shareLink": "分享鏈接",
@@ -292,7 +294,8 @@
     "formDesignSaveErrMsg": "試圖保存此表單設計時出錯。如果您需要刷新或離開以稍後重試，您可以導出頁面上的現有設計以保存以備後用。",
     "formDesignSaveConsoleErrMsg": "更新或創建表單時出錯（FormID：{formId}，versionId：{versionId}，draftId：{draftId}）錯誤：{error}",
     "collapse": "坍塌",
-    "actions": "動作"
+    "actions": "動作",
+    "version": "版本"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Form Designers 的免責聲明和責任聲明：",
@@ -306,7 +309,11 @@
   "requestReceipt": {
     "emailReceipt": "通過電子郵件發送此提交的收據",
     "send": "發送",
-    "sendToEmailAddress": "發送至電子郵件地址"
+    "sendToEmailAddress": "發送至電子郵件地址",
+    "emailSent": "一封電子郵件已發送至 {to}。",
+    "sendingEmailErrMsg": "嘗試發送您的電子郵件時出錯。",
+    "sendingEmailConsErrMsg": "向 {to} 發送電子郵件確認失敗：{error}",
+    "emailRequired": "電子郵件是必需的"
   },
   "submissionsTable": {
     "submissionsTable": "提交表",
@@ -497,7 +504,10 @@
     "export": "出口",
     "noResponseDataErr": "exportSubmissions 調用沒有響應數據",
     "apiCallErrorMsg": "嘗試導出此表單的提交時出錯。",
-    "apiCallConsErrorMsg": "導出提交時出錯"
+    "apiCallConsErrorMsg": "導出提交時出錯",
+    "selectAllFields": "選擇所有字段",
+    "emailSentMsg": "準備好後，將向 {email} 發送一封電子郵件，其中包含下載數據的鏈接",
+    "exportInProgress": "正在導出"
   },
   "printOptions": {
     "submitButtonTxt": "提交到 CDOGS 並下載",
@@ -508,7 +518,10 @@
     "browserPrint": "瀏覽器打印",
     "pageFromBrowser": "來自瀏覽器的頁面",
     "uploadA": "上傳一個",
-    "uploadB": "有一個結構化的版本"
+    "uploadB": "有一個結構化的版本",
+    "docGrnSucess": "文檔生成成功",
+    "failedDocGenErrMsg": "生成文檔失敗",
+    "failedDocGenConsErrMsg": "提交模板時出錯：{error}"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "組件信息鏈接",
@@ -523,13 +536,22 @@
     "save": "節省",
     "description": "描述"
   },
-  "proactiveHelpPreviewDialog": { "learnMore": "了解更多" },
+  "proactiveHelpPreviewDialog": {
+    "learnMore": "了解更多"
+  },
+  "baseCopyToClipboard": {
+    "linkToClipboard": "鏈接已復製到剪貼板",
+    "copyToClipboard": "複製到剪貼板",
+    "errCopyToClipboard": "嘗試複製到剪貼板時出錯。"
+  },
   "generalLayout": {
     "loadingText": "加載請稍候",
     "preview": "預覽",
     "published": "出版",
     "unpublished": "未發表",
-    "edit": "編輯"
+    "edit": "編輯",
+    "formTitle": "表格標題",
+    "actions": "動作"
   },
   "formSubmission": {
     "editThisSubmission": "編輯此提交",
@@ -598,10 +620,12 @@
     "pleaseConfirm": "請確認",
     "submitFormWarningMsg": "您確定要提交表格嗎？",
     "submit": "提交",
+    "wantToSaveDraft": "您要保存草稿嗎？",
     "version": "版本：{版本}",
     "formScheduleExpireMessage": "由於預定的提交期限已過，無法提交表單。",
     "getUsersSubmissionsErrMsg": "獲取此表單的提交時出錯",
     "getUsersSubmissionsConsoleErrMsg": "加載表單提交數據 {submissionId} 時出錯：{error}",
+    "multiDraftUploadSuccess": "您的多稿上傳成功！",
     "readVersionErrMsg": "沒有架構響應。版本號：{版本號}",
     "readDraftErrMsg": "沒有架構響應。 DraftId：{draftId}",
     "alertRouteMsg": "表單所有者尚未發布表單，因此無法提交。",
@@ -613,7 +637,15 @@
     "submissionsSubmitErrMsg": "提交表單時出錯：{errors}",
     "sendSubmissionErrMsg": "來自提交端點的失敗響應。響應碼：{status}",
     "errMsg": "提交此表單時出錯",
-    "customEventAlert": "尚不支持自定義按鈕事件。事件類型：{事件}"
+    "customEventAlert": "尚不支持自定義按鈕事件。事件類型：{事件}",
+    "formLoading": "正在加載表格，請稍候！！！",
+    "yes": "是的",
+    "no": "不",
+    "failedResSubmissn": "來自提交端點的失敗響應。響應碼：{status}",
+    "errSubmittingForm": "提交此表單時出錯",
+    "errorSavingFile": "保存文件時出錯。文件名：{fileNname}。錯誤：{錯誤}",
+    "submittingDraftErrMsg": "保存草稿時出錯",
+    "submittingDraftConsErrMsg": "保存草稿時出錯。提交 ID：{submissionId}。錯誤：{錯誤}"
   },
   "bCGovFooter": {
     "home": "家",
@@ -631,6 +663,37 @@
     "help": "幫助",
     "feedback": "反饋",
     "admin": "行政"
+  },
+  "formViewerActions": {
+    "viewAllSubmissions": "查看所有提交",
+    "saveAsADraft": "保存為草稿",
+    "editThisDraft": "編輯此草稿",
+    "switchSingleSubmssn": "切換到單次提交",
+    "switchMultiSubmssn": "切換到單次提交"
+  },
+  "formViewerMultiUpload": {
+    "important": "重要的",
+    "uploadSucessMsg": "為確保成功上傳多個草稿，請下載並使用提供的模板。",
+    "confirmDownload": "你想下載嗎？",
+    "jsonFileUpload": "選擇要上傳的 JSON 文件",
+    "dragNDrop": "或者拖放這裡",
+    "chooseAFile": "選擇一個文件",
+    "downloadDraftSubmns": "請下載提交報告草稿並確保數據輸入正確。",
+    "downloadReport": "下載報告",
+    "doYouWantToDownload": "你想下載嗎？",
+    "uploadNewFile": "上傳新文件",
+    "uploadMultipleFileErr": "抱歉，您只能上傳一個文件",
+    "dragMultipleFileErr": "抱歉，您只能拖動一個文件",
+    "fileFormatErr": "抱歉，我們只接受 json 文件",
+    "fileSizeErr": "允許的最大文件大小為 5MB",
+    "parseJsonErr": "我們無法從文件中解析 json 數據",
+    "jsonObjNotArray": "錯誤的 json 文件格式",
+    "jsonObjNotArrayConsErr": "一個意料之外的問題發生了。",
+    "jsonArrayEmpty": "這個 json 文件是空的。",
+    "errorWhileValidate": "這個文件有問題",
+    "errWhileCheckValidity": "這個文件有問題",
+    "errAfterValidate": "發現了一些錯誤，請參閱下文了解更多信息。",
+    "fileIsEmpty": "這個文件是空的。"
   },
   "homePage": {
     "title": "使用 Common Hosted Forms Service 創建、發布表單和接收提交。",
@@ -694,6 +757,108 @@
   "root": {
     "admin": "行政"
   },
-  "store":{"admin":{"addFormOwnerRole":"將此表單的所有者角色添加到 {fullName}","addRowError":"添加角色時出錯。","addRowConsoleErr":"將用戶 {userId} 添加到表單 {formId} 時出錯：{error}","apiKeyDelMsg":"此表單的 API 密鑰已被刪除。","errDeletingApiKey":"嘗試刪除 API 密鑰時出錯。","consErrDeletingApiKey":"刪除表單 {formId} 的 API 密鑰時出錯：{error}","fecthingFormsErrMsg":"獲取表單時出錯。","fecthingFormsConsErrMsg":"獲取管理表單數據時出錯：{error}","fecthingFormErrMsg":"獲取此表單時出錯。","fecthingFormConsErrMsg":"獲取管理表單 {formId} 數據時出錯：{error}","fecthFormUserRolesErrMsg":"獲取表單用戶角色時出錯。","fecthFormUserRolesConsErrMsg":"獲取管理員角色數據時出錯：{error}","fecthApiDetailsErrMsg":"獲取此表單的 API 詳細信息時出錯。","fecthApiDetailsConsErrMsg":"從表單 {formId} 數據獲取管理 API 詳細信息時出錯：{error}","restoreFormErrMsg":"恢復此表單時出錯。","restoreFormConsErrMsg":"恢復表單 {formId} 數據時出錯：{error}","getUsersErrMsg":"獲取用戶時出錯。","getUsersConsErrMsg":"獲取管理員用戶數據時出錯：{error}","getUserErrMsg":"獲取此用戶時出錯。","getUserConsErrMsg":"獲取管理員用戶 {userId} 數據時出錯：{error}","storingFCHelpInfoErrMsg":"存儲表單組件幫助信息時出錯","storingFCHelpInfoConsErrMsg":"獲取存儲表單組件幫助信息時出錯：{error}","gettingFCImgUrlErrMsg":"獲取圖片 url 時出錯","gettingFCImgUrlConsErrMsg":"獲取圖片網址時出錯：{error}","updatingFCStatusErrMsg":"更新發布狀態時出錯","updatingFCStatusConsErrMsg":"更新發布狀態時出錯：{error}","fecthingFormBuilderCompsErrMsg":"獲取表單構建器組件時出錯","fecthingFormBuilderCompsConsErrMsg":"獲取表單構建器組件時出錯：{error}"},"form":{"getCurrUserFormsErrMsg":"獲取您的表單時出錯。","getCurrUserFormsConsErrMsg":"獲取用戶數據時出錯：{error}","getUserFormPermErrMsg":"獲取此表單的用戶數據時出錯。","getUserFormPermConsErrMsg":"使用 formID {formId} 獲取用戶數據時出錯：{error}","getUserFormRolesErrmsg":"獲取此表單的用戶數據時出錯。","getUserFormRolesConsErrmsg":"使用 formID {formId} 獲取用戶數據時出錯：{error}","updCurrUserFormPrefErrMsg":"保存此表單的首選項時出錯。","updCurrUserFormPrefConsErrMsg":"使用 formID {formId} 和首選項 {preferences} 更新用戶表單首選項時出錯：{error}","getCurrUserFormPrefErrMsg":"獲取您對此表單的偏好設置時出錯。","getCurrUserFormPrefConsErrMsg":"使用 formID {formId} 獲取用戶表單首選項時出錯：{error}","delCurrformNotiMsg":"表格“{state.form.name}”已成功刪除。","delCurrformErrMsg":"嘗試刪除“${state.form.name}”時出錯。","delCurrFormConsErMsg":"刪除表單 {id} 時出錯：{error}","delDraftErrMsg":"刪除此草稿時出錯。","delDraftConsErrMsg":"刪除 {draftId} 時出錯：{error}","fecthDraftErrMsg":"掃描此表單的草稿時出錯。","fecthDraftConsErrMsg":"獲取表單 {formId} 的草稿時出錯：{error}","fecthFormErrMsg":"獲取此表單時出錯。","fecthFormConsErrMsg":"獲取表單 {formId} 時出錯：{error}","fetchFormFieldsErrMsg":"獲取此表單的字段列表時出錯。","fetchFormFieldsConsErrMsg":"獲取表單 {formId} 時出錯：{error}","publishDraftErrMsg":"發佈時出錯。","publishDraftConsErrMsg":"發布 ${draftId} 時出錯：${error}","toggleVersnPublConsErrMsg":"toggleVersionPublish {versionId} {publish} 出錯：{error}","updateFormErrMsg":"更新此表單的設置時出錯。","updateFormConsErrMsg":"更新表單 {id} 時出錯：{error}","deleteSubmissionNotifyMsg":"提交已成功刪除。","deleteSubmissionErrMsg":"刪除此提交時出錯。","deleteSubmissionConsErrMsg":"刪除提交 {submissionId} 時出錯：{error}","deleteSubmissionsNotifyMsg":"已成功刪除提交。","deleteSubmissionsErrMsg":"刪除所選提交時出錯。","deleteSubmissionsConsErrMsg":"刪除提交時出錯：{error}","restoreSubmissionsNotiMsg":"已成功恢復提交。","restoreSubmissionsErrMsg":"恢復此提交時出錯。","restoreSubmissionsConsErrMsg":"恢復提交時出錯：{error}","restoreSubmissionNotiMsg":"提交恢復成功。","restoreSubmissionErrMsg":"恢復此提交時出錯。","restoreSubmissionConsErrMsg":"恢復提交 {submissionId} 時出錯：{error}","fecthSubmissnUsersErrMsg":"獲取此提交的收件人電子郵件時出錯。","fecthSubmissnUsersConsErrMsg":"獲取提交 {formSubmissionId} 的收件人電子郵件時出錯：{error}","fetchSubmissnErrMsg":"獲取此提交時出錯。","fetchSubmissnConsErrMsg":"獲取提交 {submissionId} 時出錯：${error}","fetchFormCSVExptFieldsErrMsg":"獲取此表單的字段列表時出錯。","fetchFormCSVExptFieldsConsErrMsg":"獲取表單 {formId} 時出錯：{error}","fetchSubmissnsErrMsg":"獲取此表單的提交時出錯。","fetchSubmissnsConsErrMsg":"獲取 {formId} 的提交時出錯：{error}","fetchVersionErrMsg":"獲取此表單時出錯。","fetchVersionConsErrMsg":"獲取表單 {formId} 的版本 {versionId} 時出錯：{error}","deleteApiKeyNotifyMsg":"此表單的 API 密鑰已被刪除。","deleteApiKeyErrMsg":"嘗試刪除 API 密鑰時出錯。","deleteApiKeyConsErrMsg":"刪除表單 {formId} 的 API 密鑰時出錯：{error}","generateApiKeyNotifyMsg":"此表單的 API 密鑰已創建。","generateApiKeyErrMsg":"嘗試生成 API 密鑰時出錯。","generateApiKeyConsErrMsg":"為表單 {formId} 生成 API 密鑰時出錯：{error}","readApiKeyErrMsg":"嘗試獲取 API 密鑰時出錯。","readApiKeyConsErrMsg":"獲取表單 {formId} 的 API 密鑰時出錯：{error}。","getFCPHImageUrlErrMsg":"獲取圖片 url 時出錯","getFCPHImageUrlConsErrMsg":"獲取圖片網址時出錯：{error}","listFCPHErrMsg":"獲取表單構建器組件時出錯","listFCPHConsErrMsg":"獲取表單構建器組件時出錯：{error}","downloadFileErrMsg":"下載文件時出錯","downloadFileConsErrMsg":"下載文件時出錯：error"}},
-  "permissionUtils": {"formNotAvailable":"该表格目前不可用。这可能是由于链接不正确，或者表单可能已被其所有者删除。","missingFormIdAndSubmssId":"缺少 formId 和 submissionId 的选项","loadingFormErrMsg":"加载此表单时出错。","loadingForm":"加载 {options} 时出错：{error}","idpHintMsg":"此表单需要 {idpHint} 身份验证。请重新登录并重试。","formIdpMissMatch":"表单 IDP 不匹配。表单需要 {idpHint} 但用户有 {userIdp}。"}
+  "store": {
+    "admin": {
+      "addFormOwnerRole": "將此表單的所有者角色添加到 {fullName}",
+      "addRowError": "添加角色時出錯。",
+      "addRowConsoleErr": "將用戶 {userId} 添加到表單 {formId} 時出錯：{error}",
+      "apiKeyDelMsg": "此表單的 API 密鑰已被刪除。",
+      "errDeletingApiKey": "嘗試刪除 API 密鑰時出錯。",
+      "consErrDeletingApiKey": "刪除表單 {formId} 的 API 密鑰時出錯：{error}",
+      "fecthingFormsErrMsg": "獲取表單時出錯。",
+      "fecthingFormsConsErrMsg": "獲取管理表單數據時出錯：{error}",
+      "fecthingFormErrMsg": "獲取此表單時出錯。",
+      "fecthingFormConsErrMsg": "獲取管理表單 {formId} 數據時出錯：{error}",
+      "fecthFormUserRolesErrMsg": "獲取表單用戶角色時出錯。",
+      "fecthFormUserRolesConsErrMsg": "獲取管理員角色數據時出錯：{error}",
+      "fecthApiDetailsErrMsg": "獲取此表單的 API 詳細信息時出錯。",
+      "fecthApiDetailsConsErrMsg": "從表單 {formId} 數據獲取管理 API 詳細信息時出錯：{error}",
+      "restoreFormErrMsg": "恢復此表單時出錯。",
+      "restoreFormConsErrMsg": "恢復表單 {formId} 數據時出錯：{error}",
+      "getUsersErrMsg": "獲取用戶時出錯。",
+      "getUsersConsErrMsg": "獲取管理員用戶數據時出錯：{error}",
+      "getUserErrMsg": "獲取此用戶時出錯。",
+      "getUserConsErrMsg": "獲取管理員用戶 {userId} 數據時出錯：{error}",
+      "storingFCHelpInfoErrMsg": "存儲表單組件幫助信息時出錯",
+      "storingFCHelpInfoConsErrMsg": "獲取存儲表單組件幫助信息時出錯：{error}",
+      "gettingFCImgUrlErrMsg": "獲取圖片 url 時出錯",
+      "gettingFCImgUrlConsErrMsg": "獲取圖片網址時出錯：{error}",
+      "updatingFCStatusErrMsg": "更新發布狀態時出錯",
+      "updatingFCStatusConsErrMsg": "更新發布狀態時出錯：{error}",
+      "fecthingFormBuilderCompsErrMsg": "獲取表單構建器組件時出錯",
+      "fecthingFormBuilderCompsConsErrMsg": "獲取表單構建器組件時出錯：{error}"
+    },
+    "form": {
+      "getCurrUserFormsErrMsg": "獲取您的表單時出錯。",
+      "getCurrUserFormsConsErrMsg": "獲取用戶數據時出錯：{error}",
+      "getUserFormPermErrMsg": "獲取此表單的用戶數據時出錯。",
+      "getUserFormPermConsErrMsg": "使用 formID {formId} 獲取用戶數據時出錯：{error}",
+      "getUserFormRolesErrmsg": "獲取此表單的用戶數據時出錯。",
+      "getUserFormRolesConsErrmsg": "使用 formID {formId} 獲取用戶數據時出錯：{error}",
+      "updCurrUserFormPrefErrMsg": "保存此表單的首選項時出錯。",
+      "updCurrUserFormPrefConsErrMsg": "使用 formID {formId} 和首選項 {preferences} 更新用戶表單首選項時出錯：{error}",
+      "getCurrUserFormPrefErrMsg": "獲取您對此表單的偏好設置時出錯。",
+      "getCurrUserFormPrefConsErrMsg": "使用 formID {formId} 獲取用戶表單首選項時出錯：{error}",
+      "delCurrformNotiMsg": "表格“{state.form.name}”已成功刪除。",
+      "delCurrformErrMsg": "嘗試刪除“${state.form.name}”時出錯。",
+      "delCurrFormConsErMsg": "刪除表單 {id} 時出錯：{error}",
+      "delDraftErrMsg": "刪除此草稿時出錯。",
+      "delDraftConsErrMsg": "刪除 {draftId} 時出錯：{error}",
+      "fecthDraftErrMsg": "掃描此表單的草稿時出錯。",
+      "fecthDraftConsErrMsg": "獲取表單 {formId} 的草稿時出錯：{error}",
+      "fecthFormErrMsg": "獲取此表單時出錯。",
+      "fecthFormConsErrMsg": "獲取表單 {formId} 時出錯：{error}",
+      "fetchFormFieldsErrMsg": "獲取此表單的字段列表時出錯。",
+      "fetchFormFieldsConsErrMsg": "獲取表單 {formId} 時出錯：{error}",
+      "publishDraftErrMsg": "發佈時出錯。",
+      "publishDraftConsErrMsg": "發布 ${draftId} 時出錯：${error}",
+      "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} 出錯：{error}",
+      "updateFormErrMsg": "更新此表單的設置時出錯。",
+      "updateFormConsErrMsg": "更新表單 {id} 時出錯：{error}",
+      "deleteSubmissionNotifyMsg": "提交已成功刪除。",
+      "deleteSubmissionErrMsg": "刪除此提交時出錯。",
+      "deleteSubmissionConsErrMsg": "刪除提交 {submissionId} 時出錯：{error}",
+      "deleteSubmissionsNotifyMsg": "已成功刪除提交。",
+      "deleteSubmissionsErrMsg": "刪除所選提交時出錯。",
+      "deleteSubmissionsConsErrMsg": "刪除提交時出錯：{error}",
+      "restoreSubmissionsNotiMsg": "已成功恢復提交。",
+      "restoreSubmissionsErrMsg": "恢復此提交時出錯。",
+      "restoreSubmissionsConsErrMsg": "恢復提交時出錯：{error}",
+      "restoreSubmissionNotiMsg": "提交恢復成功。",
+      "restoreSubmissionErrMsg": "恢復此提交時出錯。",
+      "restoreSubmissionConsErrMsg": "恢復提交 {submissionId} 時出錯：{error}",
+      "fecthSubmissnUsersErrMsg": "獲取此提交的收件人電子郵件時出錯。",
+      "fecthSubmissnUsersConsErrMsg": "獲取提交 {formSubmissionId} 的收件人電子郵件時出錯：{error}",
+      "fetchSubmissnErrMsg": "獲取此提交時出錯。",
+      "fetchSubmissnConsErrMsg": "獲取提交 {submissionId} 時出錯：${error}",
+      "fetchFormCSVExptFieldsErrMsg": "獲取此表單的字段列表時出錯。",
+      "fetchFormCSVExptFieldsConsErrMsg": "獲取表單 {formId} 時出錯：{error}",
+      "fetchSubmissnsErrMsg": "獲取此表單的提交時出錯。",
+      "fetchSubmissnsConsErrMsg": "獲取 {formId} 的提交時出錯：{error}",
+      "fetchVersionErrMsg": "獲取此表單時出錯。",
+      "fetchVersionConsErrMsg": "獲取表單 {formId} 的版本 {versionId} 時出錯：{error}",
+      "deleteApiKeyNotifyMsg": "此表單的 API 密鑰已被刪除。",
+      "deleteApiKeyErrMsg": "嘗試刪除 API 密鑰時出錯。",
+      "deleteApiKeyConsErrMsg": "刪除表單 {formId} 的 API 密鑰時出錯：{error}",
+      "generateApiKeyNotifyMsg": "此表單的 API 密鑰已創建。",
+      "generateApiKeyErrMsg": "嘗試生成 API 密鑰時出錯。",
+      "generateApiKeyConsErrMsg": "為表單 {formId} 生成 API 密鑰時出錯：{error}",
+      "readApiKeyErrMsg": "嘗試獲取 API 密鑰時出錯。",
+      "readApiKeyConsErrMsg": "獲取表單 {formId} 的 API 密鑰時出錯：{error}。",
+      "getFCPHImageUrlErrMsg": "獲取圖片 url 時出錯",
+      "getFCPHImageUrlConsErrMsg": "獲取圖片網址時出錯：{error}",
+      "listFCPHErrMsg": "獲取表單構建器組件時出錯",
+      "listFCPHConsErrMsg": "獲取表單構建器組件時出錯：{error}",
+      "downloadFileErrMsg": "下載文件時出錯",
+      "downloadFileConsErrMsg": "下載文件時出錯：error"
+    }
+  },
+  "permissionUtils": {
+    "formNotAvailable": "该表格目前不可用。这可能是由于链接不正确，或者表单可能已被其所有者删除。",
+    "missingFormIdAndSubmssId": "缺少 formId 和 submissionId 的选项",
+    "loadingFormErrMsg": "加载此表单时出错。",
+    "loadingForm": "加载 {options} 时出错：{error}",
+    "idpHintMsg": "此表单需要 {idpHint} 身份验证。请重新登录并重试。",
+    "formIdpMissMatch": "表单 IDP 不匹配。表单需要 {idpHint} 但用户有 {userIdp}。"
+  }
 }

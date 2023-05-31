@@ -19,8 +19,8 @@ describe('Error.vue', () => {
         keycloakReady: () => true,
       },
       actions: {
-        logout: () => jest.fn()
-      }
+        logout: () => jest.fn(),
+      },
     });
   });
 

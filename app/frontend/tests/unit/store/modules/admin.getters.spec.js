@@ -16,10 +16,9 @@ describe('admin getters', () => {
     formList: [],
     user: {},
     userList: [],
-    fcProactiveHelp:[],
-    fcProactiveHelpGroupList:[]
+    fcProactiveHelp: [],
+    fcProactiveHelpGroupList: [],
   };
-
 
   beforeEach(() => {
     store = new Vuex.Store(cloneDeep(adminStore));
