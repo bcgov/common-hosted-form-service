@@ -12,7 +12,9 @@
     "action": "Actions",
     "loadingText": "Chargement, veuillez patienter"
   },
-  "manageLayout": { "manageForm": "Gérer le formulaire" },
+  "manageLayout": {
+    "manageForm": "Gérer le formulaire"
+  },
   "shareForm": {
     "shareForm": "Formulaire de partage",
     "shareLink": "Lien de partage",
@@ -296,7 +298,8 @@
     "saving": "Économie",
     "notSaved": "Non enregistré",
     "collapse": "effondrement",
-    "actions": "Actions"
+    "actions": "Actions",
+    "version": "Version"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Clause de non-responsabilité et déclaration de responsabilité pour les concepteurs de formulaire :",
@@ -310,7 +313,11 @@
   "requestReceipt": {
     "emailReceipt": "Envoyer un reçu de cette soumission par e-mail",
     "send": "ENVOYER",
-    "sendToEmailAddress": "Envoyer à l'adresse e-mail"
+    "sendToEmailAddress": "Envoyer à l'adresse e-mail",
+    "emailSent": "Un e-mail a été envoyé à {to}.",
+    "sendingEmailErrMsg": "Une erreur s'est produite lors de la tentative d'envoi de votre e-mail.",
+    "sendingEmailConsErrMsg": "La confirmation par e-mail à {to} a échoué : {error}",
+    "emailRequired": "L'e-mail est requis"
   },
   "submissionsTable": {
     "submissionsTable": "Tableau des soumissions",
@@ -501,7 +508,10 @@
     "export": "Exporter",
     "noResponseDataErr": "Aucune donnée en réponse à l'appel exportSubmissions",
     "apiCallErrorMsg": "Une erreur s'est produite lors de la tentative d'exportation des soumissions pour ce formulaire.",
-    "apiCallConsErrorMsg": "Erreur lors de l'exportation des soumissions pour"
+    "apiCallConsErrorMsg": "Erreur lors de l'exportation des soumissions pour",
+    "selectAllFields": "Sélectionner tous les champs",
+    "emailSentMsg": "Un e-mail sera envoyé à {email} contenant un lien pour télécharger vos données lorsqu'elles seront prêtes",
+    "exportInProgress": "Exportation en cours"
   },
   "printOptions": {
     "submitButtonTxt": "Soumettre à CDOGS et télécharger",
@@ -512,7 +522,10 @@
     "browserPrint": "Impression du navigateur",
     "pageFromBrowser": "la page de votre navigateur",
     "uploadA": "Télécharger un",
-    "uploadB": "avoir une version structurée"
+    "uploadB": "avoir une version structurée",
+    "docGrnSucess": "Document généré avec succès",
+    "failedDocGenErrMsg": "Échec de la génération du document",
+    "failedDocGenConsErrMsg": "Erreur lors de l'envoi du modèle : {error}"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Lien d'informations sur les composants",
@@ -527,13 +540,22 @@
     "save": "Sauvegarder",
     "description": "Description"
   },
-  "proactiveHelpPreviewDialog": { "learnMore": "Apprendre encore plus" },
+  "proactiveHelpPreviewDialog": {
+    "learnMore": "Apprendre encore plus"
+  },
   "generalLayout": {
     "loadingText": "Chargement, veuillez patienter",
     "preview": "APERÇU",
     "published": "PUBLIÉ",
     "unpublished": "INÉDIT",
-    "edit": "MODIFIER"
+    "edit": "MODIFIER",
+    "formTitle": "Titre du formulaire",
+    "actions": "Actions"
+  },
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Lien copié dans le presse-papiers",
+    "copyToClipboard": "Copier dans le presse-papier",
+    "errCopyToClipboard": "Erreur lors de la tentative de copie dans le presse-papiers."
   },
   "formSubmission": {
     "editThisSubmission": "Modifier cette soumission",
@@ -602,12 +624,14 @@
     "pleaseConfirm": "Veuillez confirmer",
     "submitFormWarningMsg": "Êtes-vous sûr de vouloir soumettre votre formulaire ?",
     "submit": "Soumettre",
+    "wantToSaveDraft": "Voulez-vous enregistrer le brouillon ?",
     "version": "Version : { version }",
     "formScheduleExpireMessage": "La soumission du formulaire n'est pas disponible car la période de soumission prévue a expiré.",
     "getUsersSubmissionsErrMsg": "Une erreur s'est produite lors de la récupération de la soumission pour ce formulaire",
     "getUsersSubmissionsConsoleErrMsg": "Erreur lors du chargement des données d'envoi du formulaire {submissionId} : {error}",
+    "multiDraftUploadSuccess": "Votre téléchargement de brouillons multiples a réussi !",
     "readVersionErrMsg": "Pas de schéma en réponse. ID de version : {ID de version}",
-    "readDraftErrMsg": "Pas de schéma en réponse. ID de brouillon : {id de brouillon}",
+    "readDraftErrMsg": "Pas de schéma en réponse. ID brouillon : {ID brouillon}",
     "alertRouteMsg": "Le propriétaire du formulaire n'a pas publié le formulaire et il n'est pas disponible pour les soumissions.",
     "fecthingFormErrMsg": "Une erreur s'est produite lors de la récupération de ce formulaire",
     "fecthingFormConsoleErrMsg": "Erreur lors du chargement du schéma de formulaire {versionId} : {error}",
@@ -617,7 +641,15 @@
     "submissionsSubmitErrMsg": "Erreur lors de l'envoi du formulaire : {errors}",
     "sendSubmissionErrMsg": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {statut}",
     "errMsg": "Une erreur s'est produite lors de la soumission de ce formulaire",
-    "customEventAlert": "Les événements de bouton personnalisés ne sont pas encore pris en charge. Type d'événement : {événement}"
+    "customEventAlert": "Les événements de bouton personnalisés ne sont pas encore pris en charge. Type d'événement : {événement}",
+    "formLoading": "Veuillez patienter pendant le chargement du formulaire !!!",
+    "yes": "Oui",
+    "no": "Non",
+    "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {statut}",
+    "errSubmittingForm": "Une erreur s'est produite lors de la soumission de ce formulaire",
+    "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileNname}. Erreur : {error}",
+    "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
+    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}"
   },
   "bCGovFooter": {
     "home": "Maison",
@@ -693,7 +725,33 @@
   "formViewerActions": {
     "viewAllSubmissions": "Voir toutes les soumissions",
     "saveAsADraft": "Enregistrer en tant que projet",
-    "editThisDraft": "Modifier ce brouillon"
+    "editThisDraft": "Modifier ce brouillon",
+    "switchSingleSubmssn": "Passer à la soumission unique",
+    "switchMultiSubmssn": "Passer à la soumission unique"
+  },
+  "formViewerMultiUpload": {
+    "important": "IMPORTANT",
+    "uploadSucessMsg": "Pour assurer le téléchargement réussi de plusieurs brouillons, veuillez télécharger et utiliser le modèle fourni.",
+    "confirmDownload": "Voulez-vous le télécharger ?",
+    "jsonFileUpload": "Sélectionnez le fichier JSON à télécharger",
+    "dragNDrop": "ou glissez-déposez-le ici",
+    "chooseAFile": "Choisissez un fichier",
+    "downloadDraftSubmns": "Veuillez télécharger le projet de rapport de soumission et assurez-vous que les données sont saisies correctement.",
+    "downloadReport": "Télécharger le rapport",
+    "doYouWantToDownload": "Voulez-vous le télécharger ?",
+    "uploadNewFile": "Télécharger un nouveau fichier",
+    "uploadMultipleFileErr": "Désolé, vous ne pouvez télécharger qu'un seul fichier",
+    "dragMultipleFileErr": "Désolé, vous ne pouvez faire glisser qu'un seul fichier",
+    "fileFormatErr": "Désolé, nous n'acceptons que les fichiers json",
+    "fileSizeErr": "La taille de fichier maximale autorisée est de 5 Mo",
+    "parseJsonErr": "Nous ne pouvons pas analyser les données json du fichier",
+    "jsonObjNotArray": "Mauvais format de fichier json",
+    "jsonObjNotArrayConsErr": "Une erreur inattendue est apparue.",
+    "jsonArrayEmpty": "Ce fichier json est vide.",
+    "errorWhileValidate": "Il y a quelque chose qui ne va pas avec ce fichier",
+    "errWhileCheckValidity": "Il y a quelque chose qui ne va pas avec ce fichier",
+    "errAfterValidate": "Quelques erreurs trouvées, voir ci-dessous pour plus d'informations.",
+    "fileIsEmpty": "ce fichier est vide."
   },
   "sucess": {
     "sucessFormSubmissn": "فرم شما با موفقیت ارسال شد",
@@ -703,6 +761,108 @@
   "root": {
     "admin": "Administrateur"
   },
-  "store":{"admin":{"addFormOwnerRole":"Ajout du rôle Propriétaire pour ce formulaire à {fullName}","addRowError":"Une erreur s'est produite lors de l'ajout du rôle.","addRowConsoleErr":"Erreur lors de l'ajout de l'utilisateur {userId} au formulaire {formId} : {error}","apiKeyDelMsg":"La clé API de ce formulaire a été supprimée.","errDeletingApiKey":"Une erreur s'est produite lors de la tentative de suppression de la clé API.","consErrDeletingApiKey":"Erreur lors de la suppression de la clé API pour le formulaire {formId} : {error}","fecthingFormsErrMsg":"Une erreur s'est produite lors de la récupération des formulaires.","fecthingFormsConsErrMsg":"Erreur lors de la récupération des données du formulaire d'administration : {error}","fecthingFormErrMsg":"Une erreur s'est produite lors de la récupération de ce formulaire.","fecthingFormConsErrMsg":"Erreur lors de la récupération des données du formulaire d'administration {formId} : {error}","fecthFormUserRolesErrMsg":"Une erreur s'est produite lors de la récupération des rôles d'utilisateur du formulaire.","fecthFormUserRolesConsErrMsg":"Erreur lors de la récupération des données des rôles d'administrateur : {error}","fecthApiDetailsErrMsg":"Une erreur s'est produite lors de la récupération des détails de l'API de ce formulaire.","fecthApiDetailsConsErrMsg":"Erreur lors de l'obtention des détails de l'API d'administration à partir des données du formulaire {formId} : {error}","restoreFormErrMsg":"Une erreur s'est produite lors de la restauration de ce formulaire.","restoreFormConsErrMsg":"Erreur lors de la restauration des données du formulaire {formId} : {error}","getUsersErrMsg":"Une erreur s'est produite lors de la récupération des utilisateurs.","getUsersConsErrMsg":"Erreur lors de la récupération des données des utilisateurs administrateurs : {error}","getUserErrMsg":"Une erreur s'est produite lors de la récupération de cet utilisateur.","getUserConsErrMsg":"Erreur lors de la récupération des données de l'utilisateur administrateur {userId} : {error}","storingFCHelpInfoErrMsg":"Une erreur s'est produite lors du stockage des informations d'aide du composant de formulaire","storingFCHelpInfoConsErrMsg":"Erreur lors de l'enregistrement des informations d'aide sur le composant de formulaire : {error}","gettingFCImgUrlErrMsg":"Une erreur s'est produite lors de l'obtention de l'URL de l'image","gettingFCImgUrlConsErrMsg":"Erreur lors de l'obtention de l'URL de l'image : {error}","updatingFCStatusErrMsg":"Une erreur s'est produite lors de la mise à jour de l'état de publication","updatingFCStatusConsErrMsg":"Erreur lors de la mise à jour de l'état de publication : {error}","fecthingFormBuilderCompsErrMsg":"Une erreur s'est produite lors de la récupération des composants du générateur de formulaires","fecthingFormBuilderCompsConsErrMsg":"Erreur lors de l'obtention des composants du générateur de formulaire : {error}"},"form":{"getCurrUserFormsErrMsg":"Une erreur s'est produite lors de la récupération de vos formulaires.","getCurrUserFormsConsErrMsg":"Erreur lors de la récupération des données utilisateur : {error}","getUserFormPermErrMsg":"Une erreur s'est produite lors de la récupération de vos données utilisateur pour ce formulaire.","getUserFormPermConsErrMsg":"Erreur lors de l'obtention des données utilisateur à l'aide du formID {formId} : {error}","getUserFormRolesErrmsg":"Une erreur s'est produite lors de la récupération de vos données utilisateur pour ce formulaire.","getUserFormRolesConsErrmsg":"Erreur lors de l'obtention des données utilisateur à l'aide du formID {formId} : {error}","updCurrUserFormPrefErrMsg":"Une erreur s'est produite lors de l'enregistrement de vos préférences pour ce formulaire.","updCurrUserFormPrefConsErrMsg":"Erreur lors de la mise à jour des préférences du formulaire utilisateur à l'aide de formID {formId} et des préférences {preferences} : {error}","getCurrUserFormPrefErrMsg":"Une erreur s'est produite lors de la récupération de vos préférences pour ce formulaire.","getCurrUserFormPrefConsErrMsg":"Erreur lors de l'obtention des préférences du formulaire utilisateur à l'aide du formID {formId} : {error}","delCurrformNotiMsg":"Le formulaire \"{state.form.name}\" a été supprimé avec succès.","delCurrformErrMsg":"Une erreur s'est produite lors de la tentative de suppression de \"${state.form.name}\".","delCurrFormConsErMsg":"Erreur lors de la suppression du formulaire {id} : {error}","delDraftErrMsg":"Une erreur s'est produite lors de la suppression de ce brouillon.","delDraftConsErrMsg":"Erreur lors de la suppression de {draftId} : {error}","fecthDraftErrMsg":"Une erreur s'est produite lors de la recherche de brouillons pour ce formulaire.","fecthDraftConsErrMsg":"Erreur lors de la récupération des brouillons pour le formulaire {formId} : {error}","fecthFormErrMsg":"Une erreur s'est produite lors de la récupération de ce formulaire.","fecthFormConsErrMsg":"Erreur lors de la récupération du formulaire {formId} : {error}","fetchFormFieldsErrMsg":"Une erreur s'est produite lors de la récupération de la liste des champs de ce formulaire.","fetchFormFieldsConsErrMsg":"Erreur lors de la récupération du formulaire {formId} : {error}","publishDraftErrMsg":"Une erreur s'est produite lors de la publication.","publishDraftConsErrMsg":"Erreur lors de la publication de ${draftId} : ${error}","toggleVersnPublConsErrMsg":"Erreur dans toggleVersionPublish {versionId} {publish} : {error}","updateFormErrMsg":"Une erreur s'est produite lors de la mise à jour des paramètres de ce formulaire.","updateFormConsErrMsg":"Erreur lors de la mise à jour du formulaire {id} : {error}","deleteSubmissionNotifyMsg":"Soumission supprimée avec succès.","deleteSubmissionErrMsg":"Une erreur s'est produite lors de la suppression de cette soumission.","deleteSubmissionConsErrMsg":"Erreur lors de la suppression de la soumission {submissionId} : {error}","deleteSubmissionsNotifyMsg":"Soumissions supprimées avec succès.","deleteSubmissionsErrMsg":"Une erreur s'est produite lors de la suppression des soumissions sélectionnées.","deleteSubmissionsConsErrMsg":"Erreur lors de la suppression des soumissions : {error}","restoreSubmissionsNotiMsg":"Soumissions restaurées avec succès.","restoreSubmissionsErrMsg":"Une erreur s'est produite lors de la restauration de cette soumission.","restoreSubmissionsConsErrMsg":"Erreur lors de la restauration des soumissions : {error}","restoreSubmissionNotiMsg":"Soumission restaurée avec succès.","restoreSubmissionErrMsg":"Une erreur s'est produite lors de la restauration de cette soumission.","restoreSubmissionConsErrMsg":"Erreur lors de la restauration de la soumission {submissionId} : {error}","fecthSubmissnUsersErrMsg":"Une erreur s'est produite lors de la récupération de l'e-mail du destinataire pour cette soumission.","fecthSubmissnUsersConsErrMsg":"Erreur lors de la réception de l'e-mail du destinataire pour la soumission {formSubmissionId} : {error}","fetchSubmissnErrMsg":"Une erreur s'est produite lors de la récupération de cette soumission.","fetchSubmissnConsErrMsg":"Erreur lors de l'obtention de la soumission {submissionId} : ${error}","fetchFormCSVExptFieldsErrMsg":"Une erreur s'est produite lors de la récupération de la liste des champs de ce formulaire.","fetchFormCSVExptFieldsConsErrMsg":"Erreur lors de la récupération du formulaire {formId} : {error}","fetchSubmissnsErrMsg":"Une erreur s'est produite lors de la récupération des soumissions pour ce formulaire.","fetchSubmissnsConsErrMsg":"Erreur lors de l'obtention des soumissions pour {formId} : {error}","fetchVersionErrMsg":"Une erreur s'est produite lors de la récupération de ce formulaire.","fetchVersionConsErrMsg":"Erreur lors de l'obtention de la version {versionId} pour le formulaire {formId} : {error}","deleteApiKeyNotifyMsg":"La clé API de ce formulaire a été supprimée.","deleteApiKeyErrMsg":"Une erreur s'est produite lors de la tentative de suppression de la clé API.","deleteApiKeyConsErrMsg":"Erreur lors de la suppression de la clé API pour le formulaire {formId} : {error}","generateApiKeyNotifyMsg":"Une clé API pour ce formulaire a été créée.","generateApiKeyErrMsg":"Une erreur s'est produite lors de la tentative de génération d'une clé API.","generateApiKeyConsErrMsg":"Erreur lors de la génération de la clé API pour le formulaire {formId} : {error}","readApiKeyErrMsg":"Une erreur s'est produite lors de la tentative de récupération de la clé API.","readApiKeyConsErrMsg":"Erreur lors de l'obtention de la clé API pour le formulaire {formId} : {error}.","getFCPHImageUrlErrMsg":"Une erreur s'est produite lors de l'obtention de l'URL de l'image","getFCPHImageUrlConsErrMsg":"Erreur lors de l'obtention de l'URL de l'image : {error}","listFCPHErrMsg":"Une erreur s'est produite lors de la récupération des composants du générateur de formulaires","listFCPHConsErrMsg":"Erreur lors de l'obtention des composants du générateur de formulaire : {error}","downloadFileErrMsg":"Une erreur s'est produite lors du téléchargement du fichier","downloadFileConsErrMsg":"Erreur lors du téléchargement du fichier : erreur"}},
-  "permissionUtils": {"formNotAvailable":"Le formulaire est actuellement indisponible. Cela peut être dû à un lien incorrect, ou le formulaire a peut-être été supprimé par son propriétaire.","missingFormIdAndSubmssId":"Options manquantes à la fois formId et submitId","loadingFormErrMsg":"Une erreur s'est produite lors du chargement de ce formulaire.","loadingForm":"Erreur lors du chargement de {options} : {error}","idpHintMsg":"Ce formulaire nécessite une authentification {idpHint}. Veuillez vous reconnecter et réessayer.","formIdpMissMatch":"Non-concordance du formulaire IDP. Le formulaire nécessite {idpHint} mais l'utilisateur a {userIdp}."}
+  "store": {
+    "admin": {
+      "addFormOwnerRole": "Ajout du rôle Propriétaire pour ce formulaire à {fullName}",
+      "addRowError": "Une erreur s'est produite lors de l'ajout du rôle.",
+      "addRowConsoleErr": "Erreur lors de l'ajout de l'utilisateur {userId} au formulaire {formId} : {error}",
+      "apiKeyDelMsg": "La clé API de ce formulaire a été supprimée.",
+      "errDeletingApiKey": "Une erreur s'est produite lors de la tentative de suppression de la clé API.",
+      "consErrDeletingApiKey": "Erreur lors de la suppression de la clé API pour le formulaire {formId} : {error}",
+      "fecthingFormsErrMsg": "Une erreur s'est produite lors de la récupération des formulaires.",
+      "fecthingFormsConsErrMsg": "Erreur lors de la récupération des données du formulaire d'administration : {error}",
+      "fecthingFormErrMsg": "Une erreur s'est produite lors de la récupération de ce formulaire.",
+      "fecthingFormConsErrMsg": "Erreur lors de la récupération des données du formulaire d'administration {formId} : {error}",
+      "fecthFormUserRolesErrMsg": "Une erreur s'est produite lors de la récupération des rôles d'utilisateur du formulaire.",
+      "fecthFormUserRolesConsErrMsg": "Erreur lors de la récupération des données des rôles d'administrateur : {error}",
+      "fecthApiDetailsErrMsg": "Une erreur s'est produite lors de la récupération des détails de l'API de ce formulaire.",
+      "fecthApiDetailsConsErrMsg": "Erreur lors de l'obtention des détails de l'API d'administration à partir des données du formulaire {formId} : {error}",
+      "restoreFormErrMsg": "Une erreur s'est produite lors de la restauration de ce formulaire.",
+      "restoreFormConsErrMsg": "Erreur lors de la restauration des données du formulaire {formId} : {error}",
+      "getUsersErrMsg": "Une erreur s'est produite lors de la récupération des utilisateurs.",
+      "getUsersConsErrMsg": "Erreur lors de la récupération des données des utilisateurs administrateurs : {error}",
+      "getUserErrMsg": "Une erreur s'est produite lors de la récupération de cet utilisateur.",
+      "getUserConsErrMsg": "Erreur lors de la récupération des données de l'utilisateur administrateur {userId} : {error}",
+      "storingFCHelpInfoErrMsg": "Une erreur s'est produite lors du stockage des informations d'aide du composant de formulaire",
+      "storingFCHelpInfoConsErrMsg": "Erreur lors de l'enregistrement des informations d'aide sur le composant de formulaire : {error}",
+      "gettingFCImgUrlErrMsg": "Une erreur s'est produite lors de l'obtention de l'URL de l'image",
+      "gettingFCImgUrlConsErrMsg": "Erreur lors de l'obtention de l'URL de l'image : {error}",
+      "updatingFCStatusErrMsg": "Une erreur s'est produite lors de la mise à jour de l'état de publication",
+      "updatingFCStatusConsErrMsg": "Erreur lors de la mise à jour de l'état de publication : {error}",
+      "fecthingFormBuilderCompsErrMsg": "Une erreur s'est produite lors de la récupération des composants du générateur de formulaires",
+      "fecthingFormBuilderCompsConsErrMsg": "Erreur lors de l'obtention des composants du générateur de formulaire : {error}"
+    },
+    "form": {
+      "getCurrUserFormsErrMsg": "Une erreur s'est produite lors de la récupération de vos formulaires.",
+      "getCurrUserFormsConsErrMsg": "Erreur lors de la récupération des données utilisateur : {error}",
+      "getUserFormPermErrMsg": "Une erreur s'est produite lors de la récupération de vos données utilisateur pour ce formulaire.",
+      "getUserFormPermConsErrMsg": "Erreur lors de l'obtention des données utilisateur à l'aide du formID {formId} : {error}",
+      "getUserFormRolesErrmsg": "Une erreur s'est produite lors de la récupération de vos données utilisateur pour ce formulaire.",
+      "getUserFormRolesConsErrmsg": "Erreur lors de l'obtention des données utilisateur à l'aide du formID {formId} : {error}",
+      "updCurrUserFormPrefErrMsg": "Une erreur s'est produite lors de l'enregistrement de vos préférences pour ce formulaire.",
+      "updCurrUserFormPrefConsErrMsg": "Erreur lors de la mise à jour des préférences du formulaire utilisateur à l'aide de formID {formId} et des préférences {preferences} : {error}",
+      "getCurrUserFormPrefErrMsg": "Une erreur s'est produite lors de la récupération de vos préférences pour ce formulaire.",
+      "getCurrUserFormPrefConsErrMsg": "Erreur lors de l'obtention des préférences du formulaire utilisateur à l'aide du formID {formId} : {error}",
+      "delCurrformNotiMsg": "Le formulaire \"{state.form.name}\" a été supprimé avec succès.",
+      "delCurrformErrMsg": "Une erreur s'est produite lors de la tentative de suppression de \"${state.form.name}\".",
+      "delCurrFormConsErMsg": "Erreur lors de la suppression du formulaire {id} : {error}",
+      "delDraftErrMsg": "Une erreur s'est produite lors de la suppression de ce brouillon.",
+      "delDraftConsErrMsg": "Erreur lors de la suppression de {draftId} : {error}",
+      "fecthDraftErrMsg": "Une erreur s'est produite lors de la recherche de brouillons pour ce formulaire.",
+      "fecthDraftConsErrMsg": "Erreur lors de la récupération des brouillons pour le formulaire {formId} : {error}",
+      "fecthFormErrMsg": "Une erreur s'est produite lors de la récupération de ce formulaire.",
+      "fecthFormConsErrMsg": "Erreur lors de la récupération du formulaire {formId} : {error}",
+      "fetchFormFieldsErrMsg": "Une erreur s'est produite lors de la récupération de la liste des champs de ce formulaire.",
+      "fetchFormFieldsConsErrMsg": "Erreur lors de la récupération du formulaire {formId} : {error}",
+      "publishDraftErrMsg": "Une erreur s'est produite lors de la publication.",
+      "publishDraftConsErrMsg": "Erreur lors de la publication de ${draftId} : ${error}",
+      "toggleVersnPublConsErrMsg": "Erreur dans toggleVersionPublish {versionId} {publish} : {error}",
+      "updateFormErrMsg": "Une erreur s'est produite lors de la mise à jour des paramètres de ce formulaire.",
+      "updateFormConsErrMsg": "Erreur lors de la mise à jour du formulaire {id} : {error}",
+      "deleteSubmissionNotifyMsg": "Soumission supprimée avec succès.",
+      "deleteSubmissionErrMsg": "Une erreur s'est produite lors de la suppression de cette soumission.",
+      "deleteSubmissionConsErrMsg": "Erreur lors de la suppression de la soumission {submissionId} : {error}",
+      "deleteSubmissionsNotifyMsg": "Soumissions supprimées avec succès.",
+      "deleteSubmissionsErrMsg": "Une erreur s'est produite lors de la suppression des soumissions sélectionnées.",
+      "deleteSubmissionsConsErrMsg": "Erreur lors de la suppression des soumissions : {error}",
+      "restoreSubmissionsNotiMsg": "Soumissions restaurées avec succès.",
+      "restoreSubmissionsErrMsg": "Une erreur s'est produite lors de la restauration de cette soumission.",
+      "restoreSubmissionsConsErrMsg": "Erreur lors de la restauration des soumissions : {error}",
+      "restoreSubmissionNotiMsg": "Soumission restaurée avec succès.",
+      "restoreSubmissionErrMsg": "Une erreur s'est produite lors de la restauration de cette soumission.",
+      "restoreSubmissionConsErrMsg": "Erreur lors de la restauration de la soumission {submissionId} : {error}",
+      "fecthSubmissnUsersErrMsg": "Une erreur s'est produite lors de la récupération de l'e-mail du destinataire pour cette soumission.",
+      "fecthSubmissnUsersConsErrMsg": "Erreur lors de la réception de l'e-mail du destinataire pour la soumission {formSubmissionId} : {error}",
+      "fetchSubmissnErrMsg": "Une erreur s'est produite lors de la récupération de cette soumission.",
+      "fetchSubmissnConsErrMsg": "Erreur lors de l'obtention de la soumission {submissionId} : ${error}",
+      "fetchFormCSVExptFieldsErrMsg": "Une erreur s'est produite lors de la récupération de la liste des champs de ce formulaire.",
+      "fetchFormCSVExptFieldsConsErrMsg": "Erreur lors de la récupération du formulaire {formId} : {error}",
+      "fetchSubmissnsErrMsg": "Une erreur s'est produite lors de la récupération des soumissions pour ce formulaire.",
+      "fetchSubmissnsConsErrMsg": "Erreur lors de l'obtention des soumissions pour {formId} : {error}",
+      "fetchVersionErrMsg": "Une erreur s'est produite lors de la récupération de ce formulaire.",
+      "fetchVersionConsErrMsg": "Erreur lors de l'obtention de la version {versionId} pour le formulaire {formId} : {error}",
+      "deleteApiKeyNotifyMsg": "La clé API de ce formulaire a été supprimée.",
+      "deleteApiKeyErrMsg": "Une erreur s'est produite lors de la tentative de suppression de la clé API.",
+      "deleteApiKeyConsErrMsg": "Erreur lors de la suppression de la clé API pour le formulaire {formId} : {error}",
+      "generateApiKeyNotifyMsg": "Une clé API pour ce formulaire a été créée.",
+      "generateApiKeyErrMsg": "Une erreur s'est produite lors de la tentative de génération d'une clé API.",
+      "generateApiKeyConsErrMsg": "Erreur lors de la génération de la clé API pour le formulaire {formId} : {error}",
+      "readApiKeyErrMsg": "Une erreur s'est produite lors de la tentative de récupération de la clé API.",
+      "readApiKeyConsErrMsg": "Erreur lors de l'obtention de la clé API pour le formulaire {formId} : {error}.",
+      "getFCPHImageUrlErrMsg": "Une erreur s'est produite lors de l'obtention de l'URL de l'image",
+      "getFCPHImageUrlConsErrMsg": "Erreur lors de l'obtention de l'URL de l'image : {error}",
+      "listFCPHErrMsg": "Une erreur s'est produite lors de la récupération des composants du générateur de formulaires",
+      "listFCPHConsErrMsg": "Erreur lors de l'obtention des composants du générateur de formulaire : {error}",
+      "downloadFileErrMsg": "Une erreur s'est produite lors du téléchargement du fichier",
+      "downloadFileConsErrMsg": "Erreur lors du téléchargement du fichier : erreur"
+    }
+  },
+  "permissionUtils": {
+    "formNotAvailable": "Le formulaire est actuellement indisponible. Cela peut être dû à un lien incorrect, ou le formulaire a peut-être été supprimé par son propriétaire.",
+    "missingFormIdAndSubmssId": "Options manquantes à la fois formId et submitId",
+    "loadingFormErrMsg": "Une erreur s'est produite lors du chargement de ce formulaire.",
+    "loadingForm": "Erreur lors du chargement de {options} : {error}",
+    "idpHintMsg": "Ce formulaire nécessite une authentification {idpHint}. Veuillez vous reconnecter et réessayer.",
+    "formIdpMissMatch": "Non-concordance du formulaire IDP. Le formulaire nécessite {idpHint} mais l'utilisateur a {userIdp}."
+  }
 }

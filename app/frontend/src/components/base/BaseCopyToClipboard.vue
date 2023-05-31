@@ -72,7 +72,7 @@ export default {
     },
     clipboardErrorHandler() {
       this.addNotification({
-        message: 'Error attempting to copy to clipboard.',
+        message: this.$t('trans.baseCopyToClipboard.errCopyToClipboard'),
       });
     },
   },

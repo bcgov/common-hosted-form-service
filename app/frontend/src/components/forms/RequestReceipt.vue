@@ -49,7 +49,7 @@ import { formService } from '@/services';
 export default {
   name: 'RequestReceipt',
   data: () => ({
-    emailRules: [(v) => !!v || 'E-mail is required'],
+    emailRules: [(v) => !!v || this.$t('trans.requestReceipt.emailRequired')],
     showDialog: false,
     to: '',
     valid: false,
@@ -66,13 +66,16 @@ export default {
             to: this.to,
           });
           this.addNotification({
-            message: `An email has been sent to ${this.to}.`,
+            message: this.$t('trans.requestReceipt.emailSent', { to: this.to }),
             ...NotificationTypes.SUCCESS,
           });
         } catch (error) {
           this.addNotification({
-            message: 'An error occured while attempting to send your email.',
-            consoleError: `Email confirmation to ${this.to} failed: ${error}`,
+            message: this.$t('trans.requestReceipt.sendingEmailErrMsg'),
+            consoleError: this.$t(
+              'trans.requestReceipt.sendingEmailConsErrMsg',
+              { to: this.to, error: error }
+            ),
           });
         } finally {
           this.showDialog = false;

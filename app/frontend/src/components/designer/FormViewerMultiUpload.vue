@@ -3,11 +3,11 @@
     <v-row>
       <BaseInfoCard v-if="json_csv.data" class="mb-4">
         <h4 class="primary--text">
-          <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+          <v-icon class="mr-1" color="primary">info</v-icon
+          >{{ $t('trans.formViewerMultiUpload.important') }}!
         </h4>
         <p class="my-2">
-          To ensure successful uploading of multiple drafts, please download and
-          utilize the provided template.
+          {{ $t('trans.formViewerMultiUpload.uploadSucessMsg') }}
           <span class="link">
             <vue-blob-json-csv
               tag-name="b"
@@ -15,7 +15,7 @@
               :file-name="json_csv.file_name"
               title="Download "
               :data="json_csv.data"
-              confirm="Do you want to download it?"
+              :confirm="this.$t('trans.formViewerMultiUpload.confirmDownload')"
             />
             <v-icon class="mr-1" color="#003366">download</v-icon>
           </span>
@@ -34,8 +34,8 @@
         @dragover.prevent
       >
         <v-icon class="mr-1" color="#003366">upload</v-icon>
-        <h1>Select JSON file to upload</h1>
-        <p>or drag and drop it here</p>
+        <h1>{{ this.$t('trans.formViewerMultiUpload.jsonFileUpload') }}</h1>
+        <p>{{ this.$t('trans.formViewerMultiUpload.dragNDrop') }}</p>
 
         <v-file-input
           class="drop-zone__input"
@@ -44,7 +44,7 @@
           type="file"
           @change="addFile($event, 1)"
           name="file"
-          label="Choose a file"
+          :label="this.$t('trans.formViewerMultiUpload.chooseAFile')"
           show-size
         >
         </v-file-input>
@@ -88,17 +88,18 @@
               style="text-align: justify; line-height: 1.2"
               v-if="response.error && response.response.length > 0"
             >
-              Please download the draft submission report and ensure that the
-              data is entered correctly.
+              {{ this.$t('trans.formViewerMultiUpload.downloadDraftSubmns') }}
               <br />
               <span class="link">
                 <vue-blob-json-csv
                   tag-name="b"
                   file-type="csv"
                   :file-name="response.file_name"
-                  title="Download report "
+                  :title="this.$t('trans.formViewerMultiUpload.downloadReport')"
                   :data="response.response"
-                  confirm="Do you want to download it?"
+                  :confirm="
+                    this.$t('trans.formViewerMultiUpload.doYouWantToDownload')
+                  "
                 />
                 <v-icon class="mr-1" color="#003366">download</v-icon>
               </span>
@@ -116,7 +117,9 @@
           >
             <span class="m-1 pull-right">
               <v-btn @click="resetUpload" color="primary">
-                <span>Upload new file</span>
+                <span>{{
+                  this.$t('trans.formViewerMultiUpload.uploadNewFile')
+                }}</span>
               </v-btn>
             </span>
           </v-col>
@@ -163,25 +166,38 @@ export default {
       progress: false,
       report_file_name: undefined,
       max_file_size: 5,
-      ERROR: {
-        UPLOAD_MULTIPLE_FILE_ERROR: 'Sorry, you can upload only one file',
-        DRAG_MULPLE_FILE_ERROR: 'Sorry, you can drag only one file',
-        FILE_FORMAT_ERROR: 'Sorry, we only accept json files',
-        FILE_SIZE_ERROR: 'Max file size allowed is 5MB',
-        PARSE_JSON_ERROR: 'We can not parse json data from the file',
-        JSON_OBJECT_NOT_ARRAY: 'Wrong json file format',
-        JSON_ARRAY_EMPTY: 'This json file is empty.',
-        ERROR_WHILE_VALIDATE: 'There is something wrong with this file',
-        ERROR_WHILE_CHECKVALIDITY: 'There is something wrong with this file',
-        ERROR_AFTER_VALIDATE:
-          'Some errors found, see below for more information.',
-      },
     };
   },
   computed: {
     txt_color() {
       if (!this.error) return 'success-text';
       else return 'fail-text';
+    },
+    ERROR() {
+      return {
+        UPLOAD_MULTIPLE_FILE_ERROR: this.$t(
+          'trans.formViewerMultiUpload.uploadMultipleFileErr'
+        ),
+        DRAG_MULPLE_FILE_ERROR: this.$t(
+          'trans.formViewerMultiUpload.dragMultipleFileErr'
+        ),
+        FILE_FORMAT_ERROR: this.$t('trans.formViewerMultiUpload.fileFormatErr'),
+        FILE_SIZE_ERROR: this.$t('trans.formViewerMultiUpload.fileSizeErr'),
+        PARSE_JSON_ERROR: this.$t('trans.formViewerMultiUpload.parseJsonErr'),
+        JSON_OBJECT_NOT_ARRAY: this.$t(
+          'trans.formViewerMultiUpload.jsonObjNotArray'
+        ),
+        JSON_ARRAY_EMPTY: this.$t('trans.formViewerMultiUpload.jsonArrayEmpty'),
+        ERROR_WHILE_VALIDATE: this.$t(
+          'trans.formViewerMultiUpload.errorWhileValidate'
+        ),
+        ERROR_WHILE_CHECKVALIDITY: this.$t(
+          'trans.formViewerMultiUpload.errWhileCheckValidity'
+        ),
+        ERROR_AFTER_VALIDATE: this.$t(
+          'trans.formViewerMultiUpload.errAfterValidate'
+        ),
+      };
     },
     fileSize() {
       if (this.file.size < 1024) return this.file.size.toFixed(2) + ' bytes';
@@ -274,7 +290,9 @@ export default {
           this.resetUpload();
           this.addNotification({
             message: this.ERROR.JSON_OBJECT_NOT_ARRAY,
-            consoleError: 'An unexpected error occurred.',
+            consoleError: this.$t(
+              'trans.formViewerMultiUpload.jsonObjNotArrayConsEr'
+            ),
           });
           return;
         }
@@ -282,7 +300,7 @@ export default {
           this.resetUpload();
           this.addNotification({
             message: this.ERROR.JSON_ARRAY_EMPTY,
-            consoleError: 'this file is empty.',
+            consoleError: this.$t('trans.formViewerMultiUpload.fileIsEmpty'),
           });
           return;
         }

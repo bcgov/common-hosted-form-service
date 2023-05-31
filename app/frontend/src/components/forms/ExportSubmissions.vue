@@ -364,14 +364,6 @@ export default {
       showFieldsOptions: false,
       selected: [],
       versionRequired: false,
-      headers: [
-        {
-          text: 'Select all fields',
-          align: ' start',
-          sortable: true,
-          value: 'name',
-        },
-      ],
     };
   },
   computed: {
@@ -379,6 +371,17 @@ export default {
       let momentObj = moment(Date());
       let momentString = momentObj.format('YYYY-MM-DD');
       return momentString;
+    },
+
+    headers() {
+      return [
+        {
+          text: this.$t('trans.exportSubmissions.selectAllFields'),
+          align: ' start',
+          sortable: true,
+          value: 'name',
+        },
+      ];
     },
     ...mapGetters('form', [
       'form',
@@ -461,8 +464,10 @@ export default {
           emailExport = true;
           this.addNotification({
             ...NotificationTypes.SUCCESS,
-            title: 'Export in progress',
-            message: `An email will be sent to ${this.email} containing a link to download your data when it is ready`,
+            title: this.$t('trans.exportSubmissions.exportInProgress'),
+            message: this.$t('trans.exportSubmissions.emailSentMsg', {
+              email: this.email,
+            }),
             timeout: 20,
           });
         }
