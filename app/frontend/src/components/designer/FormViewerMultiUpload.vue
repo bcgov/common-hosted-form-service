@@ -334,8 +334,8 @@ export default {
           };
         }
 
-        this.value = this.percentage(this.index);
         this.index++;
+        this.value = this.percentage(this.index);
 
         const shouldContinueValidation = this.index < this.Json.length;
         if (shouldContinueValidation) {
