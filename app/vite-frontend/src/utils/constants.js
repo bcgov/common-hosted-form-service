@@ -84,7 +84,7 @@ export const NotificationTypes = Object.freeze({
   SUCCESS: {
     color: 'success',
     type: 'success',
-    icon: 'check_circle',
+    icon: 'mdi:mdi-check-circle',
   },
   INFO: {
     color: 'info',

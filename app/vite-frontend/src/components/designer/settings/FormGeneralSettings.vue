@@ -1,13 +1,16 @@
 <script setup>
-import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
+import { useFormStore } from '~/store/form';
 
-const name = ref(null);
+const formStore = useFormStore();
+
+const { form } = storeToRefs(formStore);
+
 const nameRules = [
   (v) => !!v || 'Form Title is required',
   (v) => (v && v.length <= 255) || 'Form Title must be 255 characters or less',
 ];
-const description = ref(null);
 const descriptionRules = [
   (v) => {
     if (v) {
@@ -23,7 +26,7 @@ const descriptionRules = [
   <BasePanel class="fill-height">
     <template #title>Form Title</template>
     <v-text-field
-      v-model="name"
+      v-model="form.name"
       density="compact"
       solid
       variant="outlined"
@@ -33,7 +36,7 @@ const descriptionRules = [
     />
 
     <v-text-field
-      v-model="description"
+      v-model="form.description"
       density="compact"
       solid
       variant="outlined"
