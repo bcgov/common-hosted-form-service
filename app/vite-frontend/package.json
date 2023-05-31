@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vite",
     "build": "vite build",
-    "build:watch": "vite build --watch --base=/app/",
+    "build:watch": "vite build --watch",
     "preview": "vite preview",
     "prebuild": "node ./component-update.js",
     "build:formio": "node ./component-update.js build",
@@ -37,6 +37,7 @@
     "moment": "^2.29.4",
     "nprogress": "^0.2.0",
     "pinia": "^2.1.1",
+    "qrcode.vue": "^3.4.0",
     "vue": "^3.2.47",
     "vue-json-pretty": "^2.2.4",
     "vue-router": "^4.2.0",

@@ -54,6 +54,12 @@ export const useFormStore = defineStore('form', {
     fcProactiveHelpGroupList: {},
     fcProactiveHelpImageUrl: '',
     form: genInitialForm(),
+    formSubmission: {
+      confirmationId: '',
+      submission: {
+        data: {},
+      },
+    },
     formList: [],
     imageList: new Map(),
     permissions: [],
@@ -182,6 +188,24 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    //
+    // Form
+    //
+    async deleteCurrentForm() {
+      const notificationStore = useNotificationStore();
+      try {
+        await formService.deleteForm(this.form.id);
+        notificationStore.addNotification({
+          text: `Form "${this.form.name}" has been deleted successfully.`,
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        notificationStore.addNotification({
+          text: `An error occurred while attempting to delete "${this.form.name}".`,
+          consoleError: `Error deleting form ${this.form.id}: ${error}`,
+        });
+      }
+    },
     async updateForm() {
       try {
         const emailList =
@@ -219,6 +243,20 @@ export const useFormStore = defineStore('form', {
         notificationStore.addNotification({
           text: 'An error occurred while updating the settings for this form.',
           consoleError: `Error updating form ${this.form.id}: ${error}`,
+        });
+      }
+    },
+    async fetchSubmission({ submissionId }) {
+      try {
+        // Get this submission
+        const response = await formService.getSubmission(submissionId);
+        this.formSubmission = response.data.submission;
+        this.form = response.data.form;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: 'An error occurred while fetching this submission.',
+          consoleError: `Error getting submission ${submissionId}: ${error}`,
         });
       }
     },

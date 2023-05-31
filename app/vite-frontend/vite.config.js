@@ -10,9 +10,6 @@ const proxyObject = {
   changeOrigin: true,
 };
 
-// eslint-disable-next-line no-console
-console.log(process.env.VITE_FRONTEND_BASEPATH);
-
 // https://vitejs.dev/config/
 export default defineConfig({
   base: process.env.VITE_FRONTEND_BASEPATH
@@ -35,6 +32,7 @@ export default defineConfig({
       '~': resolve(__dirname, './src'),
       '~formiojs': resolve(__dirname, './node_modules/formiojs'),
       '~font-awesome': resolve(__dirname, './node_modules/font-awesome'),
+      '~vuetify': resolve(__dirname, './node_modules/vuetify'),
     },
   },
 });

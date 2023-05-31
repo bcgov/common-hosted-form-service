@@ -1,5 +1,4 @@
 <script setup>
-import BCGovAlertBanner from '../bcgov/BCGovAlertBanner.vue';
 import { useNotificationStore } from '~/store/notification';
 
 const notificationStore = useNotificationStore();
@@ -32,12 +31,16 @@ notificationStore.$onAction(({ name, _store, args, after, onError }) => {
 </script>
 
 <template>
-  <BCGovAlertBanner
+  <v-alert
     :id="notification.id"
+    :class="'target-notification ' + notification.class"
+    :icon="notification.icon"
+    prominent
+    dismissable
     :title="notification.title"
     :text="notification.text"
-    :type="notification.type"
-  ></BCGovAlertBanner>
+    @update:modelValue="alertClosed"
+  ></v-alert>
 </template>
 
 <style scoped>
