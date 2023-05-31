@@ -97,7 +97,6 @@ export default {
         this.$refs.settingsForm.validate();
     },
   },
-
   beforeRouteLeave(_to, _from, next) {
     this.isDirty
       ? next(window.confirm(this.$t('trans.create.agreementErrMsg')))

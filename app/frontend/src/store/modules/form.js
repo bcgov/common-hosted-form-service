@@ -38,6 +38,7 @@ const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
+  allowSubmitterToUploadFile: false,
   id: '',
   idps: [],
   isDirty: false,
@@ -66,6 +67,7 @@ export default {
     formList: [],
     formSubmission: {
       confirmationId: '',
+      originalName: '',
       submission: {
         data: {},
       },
@@ -483,6 +485,7 @@ export default {
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
+          allowSubmitterToUploadFile: state.form.allowSubmitterToUploadFile,
           reminder_enabled: state.form.reminder_enabled
             ? state.form.reminder_enabled
             : false,

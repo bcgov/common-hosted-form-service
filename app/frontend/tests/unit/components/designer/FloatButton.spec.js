@@ -38,7 +38,6 @@ describe('FloatButton.vue', () => {
     const undoButtonWrapper = wrapper.findComponent({ ref: 'undoButton' });
     undoButtonWrapper.trigger('click');
 
-
     wrapper.vm.$emit('undo');
     await wrapper.vm.$nextTick();
 
@@ -46,7 +45,7 @@ describe('FloatButton.vue', () => {
     expect(wrapper.emitted().undo.length).toBe(1);
   });
 
-  it('test that undo event was triggered', async() => {
+  it('test that undo event was triggered', async () => {
     const wrapper = shallowMount(FloatButton, {
       localVue,
       store,
@@ -58,7 +57,6 @@ describe('FloatButton.vue', () => {
     const undoButtonWrapper = wrapper.findComponent({ ref: 'redoButton' });
     undoButtonWrapper.trigger('click');
 
-
     wrapper.vm.$emit('redo');
     await wrapper.vm.$nextTick();
 
@@ -66,8 +64,7 @@ describe('FloatButton.vue', () => {
     expect(wrapper.emitted().redo.length).toBe(1);
   });
 
-  it('test that save event was triggered', async() => {
-
+  it('test that save event was triggered', async () => {
     const wrapper = shallowMount(FloatButton, {
       localVue,
       store,
@@ -79,7 +76,6 @@ describe('FloatButton.vue', () => {
     const undoButtonWrapper = wrapper.findComponent({ ref: 'saveButton' });
     undoButtonWrapper.trigger('click');
 
-
     wrapper.vm.$emit('save');
     await wrapper.vm.$nextTick();
 
@@ -87,13 +83,11 @@ describe('FloatButton.vue', () => {
     expect(wrapper.emitted().save.length).toBe(1);
   });
 
-  it('test that publish button was click', async() => {
-
+  it('test that publish button was click', async () => {
     const mockRoute = {
-      name:'FormManage',
-      query: {'d': '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6', 'f': '01fa4a32-ff4a-4304-8277-e69e0bb2d229', 'fd': 'formDesigner'}
+      name: 'FormManage',
+      query: { d: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6', f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229', fd: 'formDesigner' },
     };
-
 
     const wrapper = shallowMount(FloatButton, {
       localVue,
@@ -103,26 +97,21 @@ describe('FloatButton.vue', () => {
       i18n,
       mocks: {
         $route: mockRoute,
-      }
-
+      },
     });
 
-    await wrapper.findComponent({ref:'publishRouterLink'}).trigger('click');
+    await wrapper.findComponent({ ref: 'publishRouterLink' }).trigger('click');
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.findComponent({ref:'publishRouterLink'}).props().to).toStrictEqual(mockRoute);
-
+    expect(wrapper.findComponent({ ref: 'publishRouterLink' }).props().to).toStrictEqual(mockRoute);
   });
 
-
-  it('test that manage button was click', async() => {
-
+  it('test that manage button was click', async () => {
     const mockRoute = {
-      name:'FormManage',
-      query: {'f': '01fa4a32-ff4a-4304-8277-e69e0bb2d229'}
+      name: 'FormManage',
+      query: { f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229' },
     };
-
 
     const wrapper = shallowMount(FloatButton, {
       localVue,
@@ -132,28 +121,24 @@ describe('FloatButton.vue', () => {
       i18n,
       mocks: {
         $route: mockRoute,
-      }
-
+      },
     });
 
-    await wrapper.findComponent({ref:'settingsRouterLink'}).trigger('click');
+    await wrapper.findComponent({ ref: 'settingsRouterLink' }).trigger('click');
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.findComponent({ref:'settingsRouterLink'}).props().to).toStrictEqual(mockRoute);
-
+    expect(wrapper.findComponent({ ref: 'settingsRouterLink' }).props().to).toStrictEqual(mockRoute);
   });
 
-
-  it('test that preview button was click', async() => {
-
+  it('test that preview button was click', async () => {
     const mockRoute = {
-      name:'FormPreview',
-      query: {'d': '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6', 'f': '01fa4a32-ff4a-4304-8277-e69e0bb2d229'}
+      name: 'FormPreview',
+      query: { d: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6', f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229' },
     };
 
     const mockRouter = {
-      resolve: jest.fn()
+      resolve: jest.fn(),
     };
 
     const mockGoToPreview = jest.spyOn(FloatButton.methods, 'gotoPreview');
@@ -166,22 +151,12 @@ describe('FloatButton.vue', () => {
       i18n,
       mocks: {
         $route: mockRoute,
-        $router: mockRouter
-      }
-
+        $router: mockRouter,
+      },
     });
 
-
-    await wrapper.findComponent({ref:'previewRouterLink'}).trigger('click');
+    await wrapper.findComponent({ ref: 'previewRouterLink' }).trigger('click');
 
     expect(mockGoToPreview).toHaveBeenCalledTimes(1);
-
   });
-
-
 });
-
-
-
-
-

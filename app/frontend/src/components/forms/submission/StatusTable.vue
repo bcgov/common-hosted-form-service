@@ -34,19 +34,23 @@ export default {
     },
   },
   data: () => ({
-    headers: [
-      { text: this.$t('trans.statusTable.status'), value: 'code' },
-      {
-        text: this.$t('trans.statusTable.dateStatusChanged'),
-        align: 'start',
-        value: 'createdAt',
-      },
-      { text: this.$t('trans.statusTable.assignee'), value: 'user' },
-      { text: this.$t('trans.statusTable.updatedBy'), value: 'createdBy' },
-    ],
     statuses: [],
     loading: true,
   }),
+  computed: {
+    headers() {
+      return [
+        { text: this.$t('trans.statusTable.status'), value: 'code' },
+        {
+          text: this.$t('trans.statusTable.dateStatusChanged'),
+          align: 'start',
+          value: 'createdAt',
+        },
+        { text: this.$t('trans.statusTable.assignee'), value: 'user' },
+        { text: this.$t('trans.statusTable.updatedBy'), value: 'createdBy' },
+      ];
+    },
+  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     async getData() {

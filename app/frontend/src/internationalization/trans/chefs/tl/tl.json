@@ -12,7 +12,9 @@
     "action": "Mga aksyon",
     "loadingText": "Naglo-load... Mangyaring maghintay"
   },
-  "manageLayout": { "manageForm": "Pamahalaan ang Form" },
+  "manageLayout": {
+    "manageForm": "Pamahalaan ang Form"
+  },
   "shareForm": {
     "shareForm": "Ibahagi ang Form",
     "shareLink": "Ibahagi ang Link",
@@ -292,7 +294,8 @@
     "formDesignSaveErrMsg": "May naganap na error habang sinusubukang i-save ang disenyo ng form na ito. Kung kailangan mong mag-refresh o umalis upang subukang muli sa ibang pagkakataon, maaari mong I-export ang kasalukuyang disenyo sa page upang i-save para sa ibang pagkakataon.",
     "formDesignSaveConsoleErrMsg": "Error sa pag-update o paggawa ng form (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
     "collapse": "Pagbagsak",
-    "actions": "Mga aksyon"
+    "actions": "Mga aksyon",
+    "version": "Bersyon"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer at pahayag ng responsibilidad para sa mga Form Designer:",
@@ -306,7 +309,11 @@
   "requestReceipt": {
     "emailReceipt": "Mag-email ng resibo ng pagsusumiteng ito",
     "send": "IPADALA",
-    "sendToEmailAddress": "Ipadala sa E-mail Address"
+    "sendToEmailAddress": "Ipadala sa E-mail Address",
+    "emailSent": "Isang email ang ipinadala kay {to}.",
+    "sendingEmailErrMsg": "May naganap na error habang sinusubukang ipadala ang iyong email.",
+    "sendingEmailConsErrMsg": "Nabigo ang pagkumpirma sa email kay {to}: {error}",
+    "emailRequired": "Kinakailangan ang e-mail"
   },
   "submissionsTable": {
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
@@ -497,7 +504,10 @@
     "export": "I-export",
     "noResponseDataErr": "Walang data bilang tugon mula sa tawag sa exportSubmissions",
     "apiCallErrorMsg": "May naganap na error habang sinusubukang i-export ang mga pagsusumite para sa form na ito.",
-    "apiCallConsErrorMsg": "Error sa pag-export ng mga pagsusumite para sa"
+    "apiCallConsErrorMsg": "Error sa pag-export ng mga pagsusumite para sa",
+    "selectAllFields": "Piliin ang lahat ng field",
+    "emailSentMsg": "Magpapadala ng email sa {email} na naglalaman ng link upang i-download ang iyong data kapag handa na ito",
+    "exportInProgress": "Kasalukuyang isinasagawa ang pag-export"
   },
   "printOptions": {
     "submitButtonTxt": "Isumite sa CDOGS at I-download",
@@ -508,7 +518,10 @@
     "browserPrint": "Pag-print ng Browser",
     "pageFromBrowser": "ang pahina mula sa iyong browser",
     "uploadA": "Mag-upload ng a",
-    "uploadB": "para magkaroon ng structured na bersyon"
+    "uploadB": "para magkaroon ng structured na bersyon",
+    "docGrnSucess": "Matagumpay na nabuo ang dokumento",
+    "failedDocGenErrMsg": "Nabigong bumuo ng Dokumento",
+    "failedDocGenConsErrMsg": "Error sa pagsusumite ng template: {error}"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link ng Impormasyon ng Bahagi",
@@ -523,13 +536,22 @@
     "save": "I-save",
     "description": "Paglalarawan"
   },
-  "proactiveHelpPreviewDialog": { "learnMore": "Matuto pa" },
+  "proactiveHelpPreviewDialog": {
+    "learnMore": "Matuto pa"
+  },
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Nakopya ang link sa clipboard",
+    "copyToClipboard": "Kopyahin sa clipboard",
+    "errCopyToClipboard": "Error sa pagtatangkang kopyahin sa clipboard."
+  },
   "generalLayout": {
     "loadingText": "Naglo-load... Mangyaring maghintay",
     "preview": "PREVIEW",
     "published": "NA-publish",
     "unpublished": "HINDI NA-PUBLISH",
-    "edit": "I-EDIT"
+    "edit": "I-EDIT",
+    "formTitle": "Pamagat ng Form",
+    "actions": "Mga aksyon"
   },
   "formSubmission": {
     "editThisSubmission": "I-edit ang Pagsusumite na Ito",
@@ -593,15 +615,17 @@
   "formViewer": {
     "lateFormSubmissions": "Ang panahon ng pagsusumite ng form ay nag-expire na! Maaari ka pa ring gumawa ng huli na pagsusumite sa pamamagitan ng pag-click sa button sa ibaba.",
     "createLateSubmission": "Gumawa ng huli na pagsusumite",
-    "draftSaved": "Na-save ang Draft",
+    "draftSaved": "Nai-save ang Draft",
     "saving": "Nagtitipid",
     "pleaseConfirm": "Pakikumpirma",
     "submitFormWarningMsg": "Sigurado ka bang gusto mong isumite ang iyong form?",
     "submit": "Ipasa",
+    "wantToSaveDraft": "Gusto mo bang i-save ang draft?",
     "version": "Bersyon: { bersyon }",
     "formScheduleExpireMessage": "Ang pagsusumite ng form ay hindi magagamit dahil ang nakatakdang panahon ng pagsusumite ay nag-expire na.",
     "getUsersSubmissionsErrMsg": "Nagkaroon ng error sa pagkuha ng pagsusumite para sa form na ito",
     "getUsersSubmissionsConsoleErrMsg": "Error sa paglo-load ng data ng pagsusumite ng form {submissionId}: {error}",
+    "multiDraftUploadSuccess": "Ang iyong maramihang draft na pag-upload ay naging matagumpay!",
     "readVersionErrMsg": "Walang schema bilang tugon. VersionId: {versionId}",
     "readDraftErrMsg": "Walang schema bilang tugon. DraftId: {draftId}",
     "alertRouteMsg": "Hindi nai-publish ng may-ari ng form ang form, at hindi ito available para sa mga pagsusumite.",
@@ -613,7 +637,15 @@
     "submissionsSubmitErrMsg": "Error sa pagsusumite ng form: {errors}",
     "sendSubmissionErrMsg": "Nabigong tugon mula sa endpoint ng pagsusumite. Code ng tugon: {status}",
     "errMsg": "Nagkaroon ng error sa pagsusumite ng form na ito",
-    "customEventAlert": "Hindi pa sinusuportahan ang mga kaganapan sa custom na button. Uri ng Kaganapan: {event}"
+    "customEventAlert": "Hindi pa sinusuportahan ang mga kaganapan sa custom na button. Uri ng Kaganapan: {event}",
+    "formLoading": "Mangyaring maghintay habang naglo-load ang form !!!",
+    "yes": "Oo",
+    "no": "Hindi",
+    "failedResSubmissn": "Nabigong tugon mula sa endpoint ng pagsusumite. Code ng tugon: {status}",
+    "errSubmittingForm": "Nagkaroon ng error sa pagsusumite ng form na ito",
+    "errorSavingFile": "Error sa pag-save ng mga file. Filename: {fileNname}. Error: {error}",
+    "submittingDraftErrMsg": "Nagkaroon ng error habang nagse-save ng draft",
+    "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}"
   },
   "bCGovFooter": {
     "home": "Bahay",
@@ -689,7 +721,33 @@
   "formViewerActions": {
     "viewAllSubmissions": "Tingnan ang Lahat ng Pagsusumite",
     "saveAsADraft": "I-save bilang Draft",
-    "editThisDraft": "I-edit ang Draft na ito"
+    "editThisDraft": "I-edit ang Draft na ito",
+    "switchSingleSubmssn": "Lumipat sa iisang pagsusumite",
+    "switchMultiSubmssn": "Lumipat sa iisang pagsusumite"
+  },
+  "formViewerMultiUpload": {
+    "important": "MAHALAGA",
+    "uploadSucessMsg": "Upang matiyak ang matagumpay na pag-upload ng maraming draft, mangyaring i-download at gamitin ang ibinigay na template.",
+    "confirmDownload": "Gusto mo bang i-download ito?",
+    "jsonFileUpload": "Piliin ang JSON file na ia-upload",
+    "dragNDrop": "o i-drag at i-drop ito dito",
+    "chooseAFile": "Pumili ng file",
+    "downloadDraftSubmns": "Mangyaring i-download ang draft na ulat sa pagsusumite at tiyaking naipasok nang tama ang data.",
+    "downloadReport": "I-download ang ulat",
+    "doYouWantToDownload": "Gusto mo bang i-download ito?",
+    "uploadNewFile": "Mag-upload ng bagong file",
+    "uploadMultipleFileErr": "Paumanhin, maaari kang mag-upload lamang ng isang file",
+    "dragMultipleFileErr": "Paumanhin, maaari kang mag-drag lamang ng isang file",
+    "fileFormatErr": "Paumanhin, tumatanggap lang kami ng mga json file",
+    "fileSizeErr": "Ang maximum na laki ng file na pinapayagan ay 5MB",
+    "parseJsonErr": "Hindi namin mai-parse ang data ng json mula sa file",
+    "jsonObjNotArray": "Maling json file format",
+    "jsonObjNotArrayConsErr": "May naganap na hindi inaasahang error.",
+    "jsonArrayEmpty": "Walang laman ang json file na ito.",
+    "errorWhileValidate": "May mali sa file na ito",
+    "errWhileCheckValidity": "May mali sa file na ito",
+    "errAfterValidate": "May nakitang ilang error, tingnan sa ibaba para sa higit pang impormasyon.",
+    "fileIsEmpty": "walang laman ang file na ito."
   },
   "sucess": {
     "sucessFormSubmissn": "Ang iyong form ay matagumpay na naisumite",
@@ -699,6 +757,108 @@
   "root": {
     "admin": "Admin"
   },
-  "store":{"admin":{"addFormOwnerRole":"Idinagdag ang tungkulin ng May-ari para sa form na ito sa {fullName}","addRowError":"Nagkaroon ng error habang idinaragdag ang tungkulin.","addRowConsoleErr":"Error sa pagdaragdag ng user na {userId} sa form na {formId}: {error}","apiKeyDelMsg":"Ang API Key para sa form na ito ay tinanggal.","errDeletingApiKey":"May naganap na error habang sinusubukang tanggalin ang API Key.","consErrDeletingApiKey":"Error sa pagtanggal ng API Key para sa form {formId}: {error}","fecthingFormsErrMsg":"May naganap na error habang kumukuha ng mga form.","fecthingFormsConsErrMsg":"Error sa pagkuha ng data ng admin form: {error}","fecthingFormErrMsg":"Nagkaroon ng error habang kinukuha ang form na ito.","fecthingFormConsErrMsg":"Error sa pagkuha ng data ng admin form {formId}: {error}","fecthFormUserRolesErrMsg":"May naganap na error habang kinukuha ang mga tungkulin ng user ng form.","fecthFormUserRolesConsErrMsg":"Error sa pagkuha ng data ng mga tungkulin ng admin: {error}","fecthApiDetailsErrMsg":"May naganap na error habang kinukuha ang mga detalye ng API ng form na ito.","fecthApiDetailsConsErrMsg":"Error sa pagkuha ng mga detalye ng admin API mula sa data ng form {formId}: {error}","restoreFormErrMsg":"Nagkaroon ng error habang nire-restore ang form na ito.","restoreFormConsErrMsg":"Error sa pagpapanumbalik ng data ng form {formId}: {error}","getUsersErrMsg":"Nagkaroon ng error habang kinukuha ang mga user.","getUsersConsErrMsg":"Error sa pagkuha ng data ng mga user ng admin: {error}","getUserErrMsg":"May naganap na error habang kinukuha ang user na ito.","getUserConsErrMsg":"Error sa pagkuha ng data ng admin user {userId}: {error}","storingFCHelpInfoErrMsg":"Nagkaroon ng error habang iniimbak ang impormasyon ng tulong sa bahagi ng form","storingFCHelpInfoConsErrMsg":"Error sa pagkuha ng pag-iimbak ng impormasyon ng tulong sa bahagi ng form: {error}","gettingFCImgUrlErrMsg":"May naganap na error habang kinukuha ang url ng larawan","gettingFCImgUrlConsErrMsg":"Error sa pagkuha ng url ng larawan: {error}","updatingFCStatusErrMsg":"Nagkaroon ng error habang ina-update ang status ng pag-publish","updatingFCStatusConsErrMsg":"Error sa pag-update ng status ng pag-publish: {error}","fecthingFormBuilderCompsErrMsg":"May naganap na error habang kinukuha ang mga bahagi ng tagabuo ng form","fecthingFormBuilderCompsConsErrMsg":"Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}"},"form":{"getCurrUserFormsErrMsg":"May naganap na error habang kinukuha ang iyong mga form.","getCurrUserFormsConsErrMsg":"Error sa pagkuha ng data ng user: {error}","getUserFormPermErrMsg":"May naganap na error habang kinukuha ang iyong data ng user para sa form na ito.","getUserFormPermConsErrMsg":"Error sa pagkuha ng data ng user gamit ang formID {formId}: {error}","getUserFormRolesErrmsg":"May naganap na error habang kinukuha ang iyong data ng user para sa form na ito.","getUserFormRolesConsErrmsg":"Error sa pagkuha ng data ng user gamit ang formID {formId}: {error}","updCurrUserFormPrefErrMsg":"May naganap na error habang sine-save ang iyong mga kagustuhan para sa form na ito.","updCurrUserFormPrefConsErrMsg":"Error sa pag-update ng user form prefs gamit ang formID {formId}, at prefs {preferences}: {error}","getCurrUserFormPrefErrMsg":"May naganap na error habang kinukuha ang iyong mga kagustuhan para sa form na ito.","getCurrUserFormPrefConsErrMsg":"Error sa pagkuha ng user form prefs gamit ang formID {formId}: {error}","delCurrformNotiMsg":"Ang form na \"{state.form.name}\" ay matagumpay na natanggal.","delCurrformErrMsg":"May naganap na error habang sinusubukang tanggalin ang \"${state.form.name}\".","delCurrFormConsErMsg":"Error sa pagtanggal ng form {id}: {error}","delDraftErrMsg":"Nagkaroon ng error habang tinatanggal ang draft na ito.","delDraftConsErrMsg":"Error sa pagtanggal ng {draftId}: {error}","fecthDraftErrMsg":"May naganap na error habang nag-ii-scan para sa mga draft para sa form na ito.","fecthDraftConsErrMsg":"Error sa pagkuha ng mga draft para sa form {formId}: {error}","fecthFormErrMsg":"Nagkaroon ng error habang kinukuha ang form na ito.","fecthFormConsErrMsg":"Error sa pagkuha ng form {formId}: {error}","fetchFormFieldsErrMsg":"May naganap na error habang kinukuha ang listahan ng mga field para sa form na ito.","fetchFormFieldsConsErrMsg":"Error sa pagkuha ng form {formId}: {error}","publishDraftErrMsg":"Nagkaroon ng error habang nagpa-publish.","publishDraftConsErrMsg":"Error sa pag-publish ng ${draftId}: ${error}","toggleVersnPublConsErrMsg":"Error sa toggleVersionPublish {versionId} {publish}: {error}","updateFormErrMsg":"May naganap na error habang ina-update ang mga setting para sa form na ito.","updateFormConsErrMsg":"Error sa pag-update ng form {id}: {error}","deleteSubmissionNotifyMsg":"Matagumpay na natanggal ang pagsusumite.","deleteSubmissionErrMsg":"Nagkaroon ng error habang tinatanggal ang pagsusumiteng ito.","deleteSubmissionConsErrMsg":"Error sa pagtanggal ng pagsusumite {submissionId}: {error}","deleteSubmissionsNotifyMsg":"Matagumpay na natanggal ang mga pagsusumite.","deleteSubmissionsErrMsg":"Nagkaroon ng error habang tinatanggal ang mga napiling isinumite.","deleteSubmissionsConsErrMsg":"Error sa pagtanggal ng mga isinumite: {error}","restoreSubmissionsNotiMsg":"Matagumpay na naibalik ang mga isinumite.","restoreSubmissionsErrMsg":"Nagkaroon ng error habang nire-restore ang pagsusumiteng ito.","restoreSubmissionsConsErrMsg":"Error sa pagpapanumbalik ng mga isinumite: {error}","restoreSubmissionNotiMsg":"Matagumpay na naibalik ang pagsusumite.","restoreSubmissionErrMsg":"Nagkaroon ng error habang nire-restore ang pagsusumiteng ito.","restoreSubmissionConsErrMsg":"Error sa pagpapanumbalik ng pagsusumite {submissionId}: {error}","fecthSubmissnUsersErrMsg":"May naganap na error habang kinukuha ang email ng tatanggap para sa pagsusumiteng ito.","fecthSubmissnUsersConsErrMsg":"Error sa pagkuha ng email ng tatanggap para sa pagsusumite {formSubmissionId}: {error}","fetchSubmissnErrMsg":"May naganap na error habang kinukuha ang pagsusumiteng ito.","fetchSubmissnConsErrMsg":"Error sa pagkuha ng pagsusumite {submissionId}: ${error}","fetchFormCSVExptFieldsErrMsg":"May naganap na error habang kinukuha ang listahan ng mga field para sa form na ito.","fetchFormCSVExptFieldsConsErrMsg":"Error sa pagkuha ng form {formId}: {error}","fetchSubmissnsErrMsg":"May naganap na error habang kinukuha ang mga pagsusumite para sa form na ito.","fetchSubmissnsConsErrMsg":"Error sa pagkuha ng mga pagsusumite para sa {formId}: {error}","fetchVersionErrMsg":"Nagkaroon ng error habang kinukuha ang form na ito.","fetchVersionConsErrMsg":"Error sa pagkuha ng bersyon {versionId} para sa form {formId}: {error}","deleteApiKeyNotifyMsg":"Ang API Key para sa form na ito ay tinanggal.","deleteApiKeyErrMsg":"May naganap na error habang sinusubukang tanggalin ang API Key.","deleteApiKeyConsErrMsg":"Error sa pagtanggal ng API Key para sa form {formId}: {error}","generateApiKeyNotifyMsg":"Nagawa ang isang API Key para sa form na ito.","generateApiKeyErrMsg":"May naganap na error habang sinusubukang bumuo ng API Key.","generateApiKeyConsErrMsg":"Error sa pagbuo ng API Key para sa form {formId}: {error}","readApiKeyErrMsg":"May naganap na error habang sinusubukang kunin ang API Key.","readApiKeyConsErrMsg":"Error sa pagkuha ng API Key para sa form na {formId}: {error}.","getFCPHImageUrlErrMsg":"May naganap na error habang kinukuha ang url ng larawan","getFCPHImageUrlConsErrMsg":"Error sa pagkuha ng url ng larawan: {error}","listFCPHErrMsg":"May naganap na error habang kinukuha ang mga bahagi ng tagabuo ng form","listFCPHConsErrMsg":"Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}","downloadFileErrMsg":"Nagkaroon ng error habang nagda-download ng file","downloadFileConsErrMsg":"Error sa pag-download ng file: error"}},
-  "permissionUtils": {"formNotAvailable":"Kasalukuyang hindi available ang form. Ito ay maaaring dahil sa isang maling link, o ang form ay maaaring tinanggal ng may-ari nito.","missingFormIdAndSubmssId":"Nawawala ang mga opsyon sa parehong formId at submissionId","loadingFormErrMsg":"Nagkaroon ng error habang nilo-load ang form na ito.","loadingForm":"Error habang naglo-load ng {options}: {error}","idpHintMsg":"Ang form na ito ay nangangailangan ng {idpHint} authentication. Mangyaring muling mag-login at subukang muli.","formIdpMissMatch":"Hindi tugma sa form ng IDP. Ang form ay nangangailangan ng {idpHint} ngunit ang user ay may {userIdp}."}
+  "store": {
+    "admin": {
+      "addFormOwnerRole": "Idinagdag ang tungkulin ng May-ari para sa form na ito sa {fullName}",
+      "addRowError": "Nagkaroon ng error habang idinaragdag ang tungkulin.",
+      "addRowConsoleErr": "Error sa pagdaragdag ng user na {userId} sa form na {formId}: {error}",
+      "apiKeyDelMsg": "Ang API Key para sa form na ito ay tinanggal.",
+      "errDeletingApiKey": "May naganap na error habang sinusubukang tanggalin ang API Key.",
+      "consErrDeletingApiKey": "Error sa pagtanggal ng API Key para sa form {formId}: {error}",
+      "fecthingFormsErrMsg": "May naganap na error habang kumukuha ng mga form.",
+      "fecthingFormsConsErrMsg": "Error sa pagkuha ng data ng admin form: {error}",
+      "fecthingFormErrMsg": "Nagkaroon ng error habang kinukuha ang form na ito.",
+      "fecthingFormConsErrMsg": "Error sa pagkuha ng data ng admin form {formId}: {error}",
+      "fecthFormUserRolesErrMsg": "May naganap na error habang kinukuha ang mga tungkulin ng user ng form.",
+      "fecthFormUserRolesConsErrMsg": "Error sa pagkuha ng data ng mga tungkulin ng admin: {error}",
+      "fecthApiDetailsErrMsg": "May naganap na error habang kinukuha ang mga detalye ng API ng form na ito.",
+      "fecthApiDetailsConsErrMsg": "Error sa pagkuha ng mga detalye ng admin API mula sa data ng form {formId}: {error}",
+      "restoreFormErrMsg": "Nagkaroon ng error habang nire-restore ang form na ito.",
+      "restoreFormConsErrMsg": "Error sa pagpapanumbalik ng data ng form {formId}: {error}",
+      "getUsersErrMsg": "Nagkaroon ng error habang kinukuha ang mga user.",
+      "getUsersConsErrMsg": "Error sa pagkuha ng data ng mga user ng admin: {error}",
+      "getUserErrMsg": "May naganap na error habang kinukuha ang user na ito.",
+      "getUserConsErrMsg": "Error sa pagkuha ng data ng admin user {userId}: {error}",
+      "storingFCHelpInfoErrMsg": "Nagkaroon ng error habang iniimbak ang impormasyon ng tulong sa bahagi ng form",
+      "storingFCHelpInfoConsErrMsg": "Error sa pagkuha ng pag-iimbak ng impormasyon ng tulong sa bahagi ng form: {error}",
+      "gettingFCImgUrlErrMsg": "May naganap na error habang kinukuha ang url ng larawan",
+      "gettingFCImgUrlConsErrMsg": "Error sa pagkuha ng url ng larawan: {error}",
+      "updatingFCStatusErrMsg": "Nagkaroon ng error habang ina-update ang status ng pag-publish",
+      "updatingFCStatusConsErrMsg": "Error sa pag-update ng status ng pag-publish: {error}",
+      "fecthingFormBuilderCompsErrMsg": "May naganap na error habang kinukuha ang mga bahagi ng tagabuo ng form",
+      "fecthingFormBuilderCompsConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}"
+    },
+    "form": {
+      "getCurrUserFormsErrMsg": "May naganap na error habang kinukuha ang iyong mga form.",
+      "getCurrUserFormsConsErrMsg": "Error sa pagkuha ng data ng user: {error}",
+      "getUserFormPermErrMsg": "May naganap na error habang kinukuha ang iyong data ng user para sa form na ito.",
+      "getUserFormPermConsErrMsg": "Error sa pagkuha ng data ng user gamit ang formID {formId}: {error}",
+      "getUserFormRolesErrmsg": "May naganap na error habang kinukuha ang iyong data ng user para sa form na ito.",
+      "getUserFormRolesConsErrmsg": "Error sa pagkuha ng data ng user gamit ang formID {formId}: {error}",
+      "updCurrUserFormPrefErrMsg": "May naganap na error habang sine-save ang iyong mga kagustuhan para sa form na ito.",
+      "updCurrUserFormPrefConsErrMsg": "Error sa pag-update ng user form prefs gamit ang formID {formId}, at prefs {preferences}: {error}",
+      "getCurrUserFormPrefErrMsg": "May naganap na error habang kinukuha ang iyong mga kagustuhan para sa form na ito.",
+      "getCurrUserFormPrefConsErrMsg": "Error sa pagkuha ng user form prefs gamit ang formID {formId}: {error}",
+      "delCurrformNotiMsg": "Ang form na \"{state.form.name}\" ay matagumpay na natanggal.",
+      "delCurrformErrMsg": "May naganap na error habang sinusubukang tanggalin ang \"${state.form.name}\".",
+      "delCurrFormConsErMsg": "Error sa pagtanggal ng form {id}: {error}",
+      "delDraftErrMsg": "Nagkaroon ng error habang tinatanggal ang draft na ito.",
+      "delDraftConsErrMsg": "Error sa pagtanggal ng {draftId}: {error}",
+      "fecthDraftErrMsg": "May naganap na error habang nag-ii-scan para sa mga draft para sa form na ito.",
+      "fecthDraftConsErrMsg": "Error sa pagkuha ng mga draft para sa form {formId}: {error}",
+      "fecthFormErrMsg": "Nagkaroon ng error habang kinukuha ang form na ito.",
+      "fecthFormConsErrMsg": "Error sa pagkuha ng form {formId}: {error}",
+      "fetchFormFieldsErrMsg": "May naganap na error habang kinukuha ang listahan ng mga field para sa form na ito.",
+      "fetchFormFieldsConsErrMsg": "Error sa pagkuha ng form {formId}: {error}",
+      "publishDraftErrMsg": "Nagkaroon ng error habang nagpa-publish.",
+      "publishDraftConsErrMsg": "Error sa pag-publish ng ${draftId}: ${error}",
+      "toggleVersnPublConsErrMsg": "Error sa toggleVersionPublish {versionId} {publish}: {error}",
+      "updateFormErrMsg": "May naganap na error habang ina-update ang mga setting para sa form na ito.",
+      "updateFormConsErrMsg": "Error sa pag-update ng form {id}: {error}",
+      "deleteSubmissionNotifyMsg": "Matagumpay na natanggal ang pagsusumite.",
+      "deleteSubmissionErrMsg": "Nagkaroon ng error habang tinatanggal ang pagsusumiteng ito.",
+      "deleteSubmissionConsErrMsg": "Error sa pagtanggal ng pagsusumite {submissionId}: {error}",
+      "deleteSubmissionsNotifyMsg": "Matagumpay na natanggal ang mga pagsusumite.",
+      "deleteSubmissionsErrMsg": "Nagkaroon ng error habang tinatanggal ang mga napiling isinumite.",
+      "deleteSubmissionsConsErrMsg": "Error sa pagtanggal ng mga isinumite: {error}",
+      "restoreSubmissionsNotiMsg": "Matagumpay na naibalik ang mga isinumite.",
+      "restoreSubmissionsErrMsg": "Nagkaroon ng error habang nire-restore ang pagsusumiteng ito.",
+      "restoreSubmissionsConsErrMsg": "Error sa pagpapanumbalik ng mga isinumite: {error}",
+      "restoreSubmissionNotiMsg": "Matagumpay na naibalik ang pagsusumite.",
+      "restoreSubmissionErrMsg": "Nagkaroon ng error habang nire-restore ang pagsusumiteng ito.",
+      "restoreSubmissionConsErrMsg": "Error sa pagpapanumbalik ng pagsusumite {submissionId}: {error}",
+      "fecthSubmissnUsersErrMsg": "May naganap na error habang kinukuha ang email ng tatanggap para sa pagsusumiteng ito.",
+      "fecthSubmissnUsersConsErrMsg": "Error sa pagkuha ng email ng tatanggap para sa pagsusumite {formSubmissionId}: {error}",
+      "fetchSubmissnErrMsg": "May naganap na error habang kinukuha ang pagsusumiteng ito.",
+      "fetchSubmissnConsErrMsg": "Error sa pagkuha ng pagsusumite {submissionId}: ${error}",
+      "fetchFormCSVExptFieldsErrMsg": "May naganap na error habang kinukuha ang listahan ng mga field para sa form na ito.",
+      "fetchFormCSVExptFieldsConsErrMsg": "Error sa pagkuha ng form {formId}: {error}",
+      "fetchSubmissnsErrMsg": "May naganap na error habang kinukuha ang mga pagsusumite para sa form na ito.",
+      "fetchSubmissnsConsErrMsg": "Error sa pagkuha ng mga pagsusumite para sa {formId}: {error}",
+      "fetchVersionErrMsg": "Nagkaroon ng error habang kinukuha ang form na ito.",
+      "fetchVersionConsErrMsg": "Error sa pagkuha ng bersyon {versionId} para sa form {formId}: {error}",
+      "deleteApiKeyNotifyMsg": "Ang API Key para sa form na ito ay tinanggal.",
+      "deleteApiKeyErrMsg": "May naganap na error habang sinusubukang tanggalin ang API Key.",
+      "deleteApiKeyConsErrMsg": "Error sa pagtanggal ng API Key para sa form {formId}: {error}",
+      "generateApiKeyNotifyMsg": "Nagawa ang isang API Key para sa form na ito.",
+      "generateApiKeyErrMsg": "May naganap na error habang sinusubukang bumuo ng API Key.",
+      "generateApiKeyConsErrMsg": "Error sa pagbuo ng API Key para sa form {formId}: {error}",
+      "readApiKeyErrMsg": "May naganap na error habang sinusubukang kunin ang API Key.",
+      "readApiKeyConsErrMsg": "Error sa pagkuha ng API Key para sa form na {formId}: {error}.",
+      "getFCPHImageUrlErrMsg": "May naganap na error habang kinukuha ang url ng larawan",
+      "getFCPHImageUrlConsErrMsg": "Error sa pagkuha ng url ng larawan: {error}",
+      "listFCPHErrMsg": "May naganap na error habang kinukuha ang mga bahagi ng tagabuo ng form",
+      "listFCPHConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}",
+      "downloadFileErrMsg": "Nagkaroon ng error habang nagda-download ng file",
+      "downloadFileConsErrMsg": "Error sa pag-download ng file: error"
+    }
+  },
+  "permissionUtils": {
+    "formNotAvailable": "Kasalukuyang hindi available ang form. Ito ay maaaring dahil sa isang maling link, o ang form ay maaaring tinanggal ng may-ari nito.",
+    "missingFormIdAndSubmssId": "Nawawala ang mga opsyon sa parehong formId at submissionId",
+    "loadingFormErrMsg": "Nagkaroon ng error habang nilo-load ang form na ito.",
+    "loadingForm": "Error habang naglo-load ng {options}: {error}",
+    "idpHintMsg": "Ang form na ito ay nangangailangan ng {idpHint} authentication. Mangyaring muling mag-login at subukang muli.",
+    "formIdpMissMatch": "Hindi tugma sa form ng IDP. Ang form ay nangangailangan ng {idpHint} ngunit ang user ay may {userIdp}."
+  }
 }

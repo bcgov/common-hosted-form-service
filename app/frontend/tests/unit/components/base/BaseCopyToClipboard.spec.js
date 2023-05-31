@@ -18,10 +18,10 @@ describe('BaseCopyToClipboard.vue', () => {
         notifications: {
           namespaced: true,
           actions: {
-            addNotification: mockAddNotification
-          }
-        }
-      }
+            addNotification: mockAddNotification,
+          },
+        },
+      },
     });
   });
 

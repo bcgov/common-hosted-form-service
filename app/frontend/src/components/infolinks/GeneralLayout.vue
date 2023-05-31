@@ -8,7 +8,7 @@
       disable-pagination
       :items="layoutList"
       :loading="loading"
-      loading-text="$t('trans.generalLayout.loadingText')"
+      :loading-text="$t('trans.generalLayout.loadingText')"
     >
       <template #[`item.componentName`]="{ item }">
         <div>
@@ -30,9 +30,9 @@
               @click="onOpenDialog(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-              <span class="d-none d-sm-flex" style="font-size: 16px"
-                >$t('trans.generalLayout.edit')</span
-              >
+              <span class="d-none d-sm-flex" style="font-size: 16px">{{
+                $t('trans.generalLayout.edit')
+              }}</span>
             </v-btn>
           </div>
           <div>
@@ -119,25 +119,27 @@ export default {
       componentName: '',
       component: {},
       listLength: this.componentsList.length,
-      headers: [
+    };
+  },
+  computed: {
+    headers() {
+      return [
         {
-          text: 'Form Title',
+          text: this.$t('trans.generalLayout.formTitle'),
           align: 'start',
           value: 'componentName',
           width: '1%',
         },
         {
-          text: 'Actions',
+          text: this.$t('trans.generalLayout.actions'),
           align: 'end',
           value: 'actions',
           filterable: false,
           sortable: false,
           width: '1%',
         },
-      ],
-    };
-  },
-  computed: {
+      ];
+    },
     ...mapGetters('admin', ['fcProactiveHelpImageUrl']),
   },
   props: {

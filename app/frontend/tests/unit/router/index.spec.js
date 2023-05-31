@@ -14,8 +14,6 @@ describe('Router', () => {
     expect(routeSet).toContainEqual(expect.objectContaining({ name: 'Alert' }));
     expect(routeSet).toContainEqual(expect.objectContaining({ name: 'Error' }));
     expect(routeSet).toContainEqual(expect.objectContaining({ name: 'Login' }));
-    expect(routeSet).toContainEqual(
-      expect.objectContaining({ name: 'NotFound' })
-    );
+    expect(routeSet).toContainEqual(expect.objectContaining({ name: 'NotFound' }));
   });
 });

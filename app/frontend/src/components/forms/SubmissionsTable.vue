@@ -322,19 +322,29 @@ export default {
       submissionsCheckboxes: [],
       showDeleteDialog: false,
       selectedSubmissions: [],
-      multiDeleteMessage: "$t('trans.submissionsTable.multiDelWarning')",
-      singleDeleteMessage: "$t('trans.submissionsTable.singleDelWarning')",
-      multiRestoreMessage: "$t('trans.submissionsTable.multiRestoreWarning')",
-      singleRestoreMessage: "$t('trans.submissionsTable.singleRestoreWarning')",
+
       singleSubmissionDelete: false,
       singleSubmissionRestore: false,
       deleteItem: {},
       switchSubmissionView: false,
-      switchSubmissionViewMessage:
-        "$t('trans.submissionsTable.showDeletedSubmissions')",
     };
   },
   computed: {
+    multiDeleteMessage() {
+      return this.$t('trans.submissionsTable.multiDelWarning');
+    },
+    singleDeleteMessage() {
+      return this.$t('trans.submissionsTable.singleDelWarning');
+    },
+    multiRestoreMessage() {
+      return this.$t('trans.submissionsTable.multiRestoreWarning');
+    },
+    singleRestoreMessage() {
+      return this.$t('trans.submissionsTable.singleRestoreWarning');
+    },
+    switchSubmissionViewMessage() {
+      return this.$t('trans.submissionsTable.showDeletedSubmissions');
+    },
     ...mapGetters('form', [
       'form',
       'formFields',
@@ -726,7 +736,8 @@ export default {
         columns: [],
       };
       data.forEach((d) => {
-        preferences.columns.push(d.value);
+        if (this.formFields.includes(d.value))
+          preferences.columns.push(d.value);
       });
 
       await this.updateFormPreferencesForCurrentUser({
