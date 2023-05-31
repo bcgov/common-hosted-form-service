@@ -262,7 +262,6 @@
     "logout": "Logout",
     "login": "Login"
   },
-
   "baseDialog": {
     "defaultText": "default text",
     "ok": "OK",
@@ -295,7 +294,32 @@
     "formDesignSaveErrMsg": "An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.",
     "formDesignSaveConsoleErrMsg": "Error updating or creating form (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
     "collapse": "Collapse",
-    "actions": "Actions"
+    "actions": "Actions",
+    "version": "Version"
+  },
+  "formViewerMultiUpload": {
+    "important": "IMPORTANT",
+    "uploadSucessMsg": "To ensure successful uploading of multiple drafts, please download and utilize the provided template.",
+    "confirmDownload": "Do you want to download it?",
+    "jsonFileUpload": "Select JSON file to upload",
+    "dragNDrop": "or drag and drop it here",
+    "chooseAFile": "Choose a file",
+    "downloadDraftSubmns": "Please download the draft submission report and ensure that the data is entered correctly.",
+    "downloadReport": "Download report",
+    "doYouWantToDownload": "Do you want to download it?",
+    "uploadNewFile": "Upload new file",
+    "uploadMultipleFileErr": "Sorry, you can upload only one file",
+    "dragMultipleFileErr": "Sorry, you can drag only one file",
+    "fileFormatErr": "Sorry, we only accept json files",
+    "fileSizeErr": "Max file size allowed is 5MB",
+    "parseJsonErr": "We can not parse json data from the file",
+    "jsonObjNotArray": "Wrong json file format",
+    "jsonObjNotArrayConsErr": "An unexpected error occurred.",
+    "jsonArrayEmpty": "This json file is empty.",
+    "errorWhileValidate": "There is something wrong with this file",
+    "errWhileCheckValidity": "There is something wrong with this file",
+    "errAfterValidate": "Some errors found, see below for more information.",
+    "fileIsEmpty": "this file is empty."
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer and statement of responsibility for Form Designers:",
@@ -309,7 +333,11 @@
   "requestReceipt": {
     "emailReceipt": "Email a receipt of this submission",
     "send": "SEND",
-    "sendToEmailAddress": "Send to E-mail Address"
+    "sendToEmailAddress": "Send to E-mail Address",
+    "emailSent": "An email has been sent to {to}.",
+    "sendingEmailErrMsg": "An error occured while attempting to send your email.",
+    "sendingEmailConsErrMsg": "Email confirmation to {to} failed: {error}",
+    "emailRequired": "E-mail is required"
   },
   "submissionsTable": {
     "submissionsTable": "SubmissionsTable",
@@ -416,8 +444,19 @@
     "status": "Status",
     "submissionDate": "Submission Date",
     "draftUpdatedBy": "Draft Updated By",
-    "draftLastEdited": "Draft Last Edited"
-
+    "draftLastEdited": "Draft Last Edited",
+    "createLateSubmissn": "Create late submission",
+    "formLoading": "Please wait while the form is loading !!!",
+    "pleaseConfirm": "Please Confirm",
+    "wantToSaveDraft": "Do you want to save the draft?",
+    "yes": "Yes",
+    "no": "No",
+    "multiDraftUploadSuccess": "Your multiple draft upload has been successful!",
+    "failedResSubmissn": "Failed response from submission endpoint. Response code: {status}",
+    "errSubmittingForm": "An error occurred submitting this form",
+    "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
+    "submittingDraftErrMsg": "An error occurred while saving a draft",
+    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}"
   },
   "notesPanel": {
     "addNewNote": "Add New Note",
@@ -501,7 +540,10 @@
     "export": "Export",
     "noResponseDataErr": "No data in response from exportSubmissions call",
     "apiCallErrorMsg": "An error occurred while attempting to export submissions for this form.",
-    "apiCallConsErrorMsg": "Error export submissions for"
+    "apiCallConsErrorMsg": "Error export submissions for",
+    "selectAllFields": "Select all fields",
+    "emailSentMsg": "An email will be sent to {email} containing a link to download your data when it is ready",
+    "exportInProgress": "Export in progress"
   },
   "printOptions": {
     "submitButtonTxt": "Submit to CDOGS and Download",
@@ -512,7 +554,10 @@
     "browserPrint": "Browser Print",
     "pageFromBrowser": "the page from your browser",
     "uploadA": "Upload a",
-    "uploadB": "to have a structured version"
+    "uploadB": "to have a structured version",
+    "docGrnSucess": "Document generated successfully",
+    "failedDocGenErrMsg": "Failed to generate Document",
+    "failedDocGenConsErrMsg": "Error submitting template: {error}"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",
@@ -535,7 +580,9 @@
     "preview": "PREVIEW",
     "published": "PUBLISHED",
     "unpublished": "UNPUBLISHED",
-    "edit": "EDIT"
+    "edit": "EDIT",
+    "formTitle": "Form Title",
+    "actions": "Actions"
   },
   "formSubmission": {
     "editThisSubmission": "Edit This Submission",
@@ -604,10 +651,12 @@
     "pleaseConfirm": "Please Confirm",
     "submitFormWarningMsg": "Are you sure you wish to submit your form?",
     "submit": "Submit",
+    "wantToSaveDraft": "Do you want to save the draft?",
     "version": "Version: { version }",
     "formScheduleExpireMessage": "Form submission is not available as the scheduled submission period has expired.",
     "getUsersSubmissionsErrMsg": "An error occurred fetching the submission for this form",
     "getUsersSubmissionsConsoleErrMsg": "Error loading form submission data {submissionId}: {error}",
+    "multiDraftUploadSuccess": "Your multiple draft upload has been successful!",
     "readVersionErrMsg": "No schema in response. VersionId: {versionId}",
     "readDraftErrMsg": "No schema in response. DraftId: {draftId}",
     "alertRouteMsg": "The form owner has not published the form, and it is not available for submissions.",
@@ -619,7 +668,15 @@
     "submissionsSubmitErrMsg": "Error submiting the form: {errors}",
     "sendSubmissionErrMsg": "Failed response from submission endpoint. Response code: {status}",
     "errMsg": "An error occurred submitting this form",
-    "customEventAlert": "Custom button events not supported yet. Event Type: {event}"
+    "customEventAlert": "Custom button events not supported yet. Event Type: {event}",
+    "formLoading": "Please wait while the form is loading !!!",
+    "yes": "Yes",
+    "no": "No",
+    "failedResSubmissn": "Failed response from submission endpoint. Response code: {status}",
+    "errSubmittingForm": "An error occurred submitting this form",
+    "errorSavingFile": "Error saving files. Filename: {fileNname}. Error: {error}",
+    "submittingDraftErrMsg": "An error occurred while saving a draft",
+    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}"
   },
   "bCGovFooter": {
     "home": "Home",
@@ -692,7 +749,14 @@
   "formViewerActions": {
     "viewAllSubmissions": "View All Submissions",
     "saveAsADraft": "Save as a Draft",
-    "editThisDraft": "Edit this Draft"
+    "editThisDraft": "Edit this Draft",
+    "switchSingleSubmssn": "Switch to single submission",
+    "switchMultiSubmssn": "Switch to single submission"
+  },
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Link copied to clipboard",
+    "copyToClipboard": "Copy to Clipboard",
+    "errCopyToClipboard": "Error attempting to copy to clipboard."
   },
   "root": {
     "admin": "Admin"
@@ -703,7 +767,7 @@
     "confirmationId": "Confirmation ID:"
   },
   "store": {
-    "admin":{
+    "admin": {
       "addFormOwnerRole": "Added the Owner role for this form to {fullName}",
       "addRowError": "An error occurred while adding the role.",
       "addRowConsoleErr": "Error adding user {userId} to form {formId}: {error}",

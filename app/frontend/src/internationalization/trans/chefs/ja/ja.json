@@ -12,7 +12,9 @@
     "action": "行動",
     "loadingText": "読み込み中。。。待って下さい"
   },
-  "manageLayout": { "manageForm": "フォームの管理" },
+  "manageLayout": {
+    "manageForm": "フォームの管理"
+  },
   "shareForm": {
     "shareForm": "共有フォーム",
     "shareLink": "共有リンク",
@@ -292,7 +294,8 @@
     "formDesignSaveErrMsg": "このフォームデザインを保存しようとしたときにエラーが発生しました。更新するか、後で再試行するために終了する必要がある場合は、ページ上の既存のデザインをエクスポートして、後で使用できるように保存できます。",
     "formDesignSaveConsoleErrMsg": "フォームの更新または作成中にエラーが発生しました (FormID: {formId}、versionId: {versionId}、draftId: {draftId}) エラー: {error}",
     "collapse": "崩壊",
-    "actions": "行動"
+    "actions": "行動",
+    "version": "バージョン"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "フォームデザイナーに対する免責事項と責任声明:",
@@ -306,7 +309,11 @@
   "requestReceipt": {
     "emailReceipt": "この提出物の受領書を電子メールで送信する",
     "send": "送信",
-    "sendToEmailAddress": "電子メールアドレスに送信"
+    "sendToEmailAddress": "電子メールアドレスに送信",
+    "emailSent": "電子メールが {to} に送信されました。",
+    "sendingEmailErrMsg": "電子メールを送信しようとしたときにエラーが発生しました。",
+    "sendingEmailConsErrMsg": "{to} へのメール確認に失敗しました: {error}",
+    "emailRequired": "電子メールは必須です"
   },
   "submissionsTable": {
     "submissionsTable": "提出物テーブル",
@@ -497,7 +504,10 @@
     "export": "輸出",
     "noResponseDataErr": "exportSubmissions 呼び出しからの応答にデータがありません",
     "apiCallErrorMsg": "このフォームの送信内容をエクスポートしようとしたときにエラーが発生しました。",
-    "apiCallConsErrorMsg": "エクスポート送信エラー"
+    "apiCallConsErrorMsg": "エクスポート送信エラー",
+    "selectAllFields": "すべてのフィールドを選択します",
+    "emailSentMsg": "準備ができたら、データをダウンロードするためのリンクを含むメールが {email} に送信されます",
+    "exportInProgress": "エクスポート中です"
   },
   "printOptions": {
     "submitButtonTxt": "CDOGS に送信してダウンロードする",
@@ -508,7 +518,10 @@
     "browserPrint": "ブラウザ印刷",
     "pageFromBrowser": "ブラウザからのページ",
     "uploadA": "アップロードする",
-    "uploadB": "構造化されたバージョンを作成する"
+    "uploadB": "構造化されたバージョンを作成する",
+    "docGrnSucess": "ドキュメントが正常に生成されました",
+    "failedDocGenErrMsg": "ドキュメントの生成に失敗しました",
+    "failedDocGenConsErrMsg": "テンプレートの送信エラー: {error}"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "コンポーネント情報リンク",
@@ -523,13 +536,22 @@
     "save": "保存",
     "description": "説明"
   },
-  "proactiveHelpPreviewDialog": { "learnMore": "もっと詳しく知る" },
+  "proactiveHelpPreviewDialog": {
+    "learnMore": "もっと詳しく知る"
+  },
   "generalLayout": {
     "loadingText": "読み込み中。。。待って下さい",
     "preview": "プレビュー",
     "published": "公開されました",
     "unpublished": "未公開",
-    "edit": "編集"
+    "edit": "編集",
+    "formTitle": "フォームのタイトル",
+    "actions": "行動"
+  },
+  "baseCopyToClipboard": {
+    "linkToClipboard": "リンクがクリップボードにコピーされました",
+    "copyToClipboard": "クリップボードにコピー",
+    "errCopyToClipboard": "クリップボードにコピーしようとしたときにエラーが発生しました。"
   },
   "formSubmission": {
     "editThisSubmission": "この提出物を編集する",
@@ -598,10 +620,12 @@
     "pleaseConfirm": "ご確認ください",
     "submitFormWarningMsg": "フォームを送信してもよろしいですか?",
     "submit": "送信",
+    "wantToSaveDraft": "下書きを保存しますか?",
     "version": "バージョン: { バージョン }",
     "formScheduleExpireMessage": "予定されていた提出期間が過ぎているため、フォームを提出することはできません。",
     "getUsersSubmissionsErrMsg": "このフォームの送信を取得中にエラーが発生しました",
     "getUsersSubmissionsConsoleErrMsg": "フォーム送信データ {submissionId} の読み込みエラー: {error}",
+    "multiDraftUploadSuccess": "複数の下書きのアップロードが成功しました。",
     "readVersionErrMsg": "スキーマが応答しません。バージョン ID: {バージョン ID}",
     "readDraftErrMsg": "スキーマが応答しません。ドラフトID: {ドラフトId}",
     "alertRouteMsg": "フォーム所有者がフォームを公開していないため、送信できません。",
@@ -613,7 +637,15 @@
     "submissionsSubmitErrMsg": "フォーム送信エラー: {errors}",
     "sendSubmissionErrMsg": "送信エンドポイントからの応答が失敗しました。レスポンスコード: {ステータス}",
     "errMsg": "このフォームの送信中にエラーが発生しました",
-    "customEventAlert": "カスタム ボタン イベントはまだサポートされていません。イベントタイプ: {イベント}"
+    "customEventAlert": "カスタム ボタン イベントはまだサポートされていません。イベントタイプ: {イベント}",
+    "formLoading": "フォームを読み込んでいる間お待ちください!!!",
+    "yes": "はい",
+    "no": "いいえ",
+    "failedResSubmissn": "送信エンドポイントからの応答が失敗しました。レスポンスコード: {ステータス}",
+    "errSubmittingForm": "このフォームの送信中にエラーが発生しました",
+    "errorSavingFile": "ファイルの保存中にエラーが発生しました。ファイル名: {fileNname}。エラー: {エラー}",
+    "submittingDraftErrMsg": "下書きの保存中にエラーが発生しました",
+    "submittingDraftConsErrMsg": "下書きの保存中にエラーが発生しました。送信 ID: {submissionId}。エラー: {エラー}"
   },
   "bCGovFooter": {
     "home": "家",
@@ -687,9 +719,35 @@
     "cancel": "キャンセル"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",
-    "saveAsADraft": "एक मसौदे के रूप में सहेजो",
-    "editThisDraft": "इस मसौदे को संपादित करें"
+    "viewAllSubmissions": "すべての提出物を表示",
+    "saveAsADraft": "下書きとして保存",
+    "editThisDraft": "この下書きを編集する",
+    "switchSingleSubmssn": "単一の提出に切り替える",
+    "switchMultiSubmssn": "単一の提出に切り替える"
+  },
+  "formViewerMultiUpload": {
+    "important": "重要",
+    "uploadSucessMsg": "複数の下書きを確実にアップロードするには、提供されているテンプレートをダウンロードしてご利用ください。",
+    "confirmDownload": "ダウンロードしますか?",
+    "jsonFileUpload": "アップロードするJSONファイルを選択してください",
+    "dragNDrop": "またはここにドラッグアンドドロップします",
+    "chooseAFile": "ファイルを選択してください",
+    "downloadDraftSubmns": "ドラフト提出レポートをダウンロードし、データが正しく入力されていることを確認してください。",
+    "downloadReport": "レポートのダウンロード",
+    "doYouWantToDownload": "ダウンロードしますか?",
+    "uploadNewFile": "新しいファイルをアップロードする",
+    "uploadMultipleFileErr": "申し訳ありませんが、アップロードできるファイルは 1 つだけです",
+    "dragMultipleFileErr": "申し訳ありませんが、ドラッグできるファイルは 1 つだけです",
+    "fileFormatErr": "申し訳ありませんが、JSON ファイルのみ受け付けます",
+    "fileSizeErr": "許可される最大ファイルサイズは5MBです",
+    "parseJsonErr": "ファイルからの JSON データを解析できません",
+    "jsonObjNotArray": "間違ったjsonファイル形式",
+    "jsonObjNotArrayConsErr": "予期しないエラーが発生しました。",
+    "jsonArrayEmpty": "この json ファイルは空です。",
+    "errorWhileValidate": "このファイルには問題があります",
+    "errWhileCheckValidity": "このファイルには問題があります",
+    "errAfterValidate": "いくつかのエラーが見つかりました。詳細については、以下を参照してください。",
+    "fileIsEmpty": "このファイルは空です。"
   },
   "root": {
     "admin": "管理者"
@@ -699,6 +757,108 @@
     "keepRecord": "この提出の記録を保存したい場合は、以下を保存できます。",
     "confirmationId": "確認ID:"
   },
-  "store":{"admin":{"addFormOwnerRole":"このフォームの所有者の役割を {fullName} に追加しました","addRowError":"ロールの追加中にエラーが発生しました。","addRowConsoleErr":"ユーザー {userId} をフォーム {formId} に追加中にエラーが発生しました: {error}","apiKeyDelMsg":"このフォームの API キーは削除されました。","errDeletingApiKey":"API キーを削除しようとしたときにエラーが発生しました。","consErrDeletingApiKey":"フォーム {formId} の API キーの削除中にエラーが発生しました: {error}","fecthingFormsErrMsg":"フォームの取得中にエラーが発生しました。","fecthingFormsConsErrMsg":"管理フォームデータの取得中にエラーが発生しました: {error}","fecthingFormErrMsg":"このフォームを取得中にエラーが発生しました。","fecthingFormConsErrMsg":"管理フォーム {formId} データの取得中にエラーが発生しました: {error}","fecthFormUserRolesErrMsg":"フォームユーザーロールを取得中にエラーが発生しました。","fecthFormUserRolesConsErrMsg":"管理者ロール データの取得中にエラーが発生しました: {error}","fecthApiDetailsErrMsg":"このフォームの API 詳細を取得中にエラーが発生しました。","fecthApiDetailsConsErrMsg":"フォーム {formId} データから管理 API 詳細を取得中にエラーが発生しました: {error}","restoreFormErrMsg":"このフォームの復元中にエラーが発生しました。","restoreFormConsErrMsg":"フォーム {formId} データの復元中にエラーが発生しました: {error}","getUsersErrMsg":"ユーザーの取得中にエラーが発生しました。","getUsersConsErrMsg":"管理者ユーザーデータの取得中にエラーが発生しました: {error}","getUserErrMsg":"このユーザーを取得中にエラーが発生しました。","getUserConsErrMsg":"管理者ユーザー {userId} データの取得エラー: {error}","storingFCHelpInfoErrMsg":"フォームコンポーネントのヘルプ情報を保存中にエラーが発生しました","storingFCHelpInfoConsErrMsg":"フォーム コンポーネントのヘルプ情報の保存中にエラーが発生しました: {error}","gettingFCImgUrlErrMsg":"画像URLの取得中にエラーが発生しました","gettingFCImgUrlConsErrMsg":"画像 URL の取得中にエラーが発生しました: {error}","updatingFCStatusErrMsg":"公開ステータスの更新中にエラーが発生しました","updatingFCStatusConsErrMsg":"公開ステータスの更新中にエラーが発生しました: {error}","fecthingFormBuilderCompsErrMsg":"フォームビルダーコンポーネントの取得中にエラーが発生しました","fecthingFormBuilderCompsConsErrMsg":"フォームビルダーコンポーネントの取得エラー: {error}"},"form":{"getCurrUserFormsErrMsg":"フォームの取得中にエラーが発生しました。","getCurrUserFormsConsErrMsg":"ユーザーデータ取得エラー: {error}","getUserFormPermErrMsg":"このフォームのユーザー データを取得中にエラーが発生しました。","getUserFormPermConsErrMsg":"formID {formId} を使用したユーザー データの取得エラー: {error}","getUserFormRolesErrmsg":"このフォームのユーザー データを取得中にエラーが発生しました。","getUserFormRolesConsErrmsg":"formID {formId} を使用したユーザー データの取得エラー: {error}","updCurrUserFormPrefErrMsg":"このフォームの設定を保存中にエラーが発生しました。","updCurrUserFormPrefConsErrMsg":"formID {formId} および prefs {preferences} を使用してユーザー フォームの設定を更新中にエラーが発生しました: {error}","getCurrUserFormPrefErrMsg":"このフォームの設定を取得中にエラーが発生しました。","getCurrUserFormPrefConsErrMsg":"formID {formId} を使用したユーザー フォーム設定の取得エラー: {error}","delCurrformNotiMsg":"フォーム「{state.form.name}」は正常に削除されました。","delCurrformErrMsg":"「${state.form.name}」を削除しようとしたときにエラーが発生しました。","delCurrFormConsErMsg":"フォーム {id} の削除中にエラーが発生しました: {error}","delDraftErrMsg":"このドラフトの削除中にエラーが発生しました。","delDraftConsErrMsg":"{draftId} の削除エラー: {error}","fecthDraftErrMsg":"このフォームの下書きをスキャン中にエラーが発生しました。","fecthDraftConsErrMsg":"フォーム {formId} の下書き取得エラー: {error}","fecthFormErrMsg":"このフォームを取得中にエラーが発生しました。","fecthFormConsErrMsg":"フォーム {formId} の取得中にエラーが発生しました: {error}","fetchFormFieldsErrMsg":"このフォームのフィールドのリストを取得中にエラーが発生しました。","fetchFormFieldsConsErrMsg":"フォーム {formId} の取得中にエラーが発生しました: {error}","publishDraftErrMsg":"公開中にエラーが発生しました。","publishDraftConsErrMsg":"${draftId} の公開エラー: ${error}","toggleVersnPublConsErrMsg":"toggleVersionPublish {versionId} {publish} でのエラー: {error}","updateFormErrMsg":"このフォームの設定を更新中にエラーが発生しました。","updateFormConsErrMsg":"フォーム {id} の更新中にエラーが発生しました: {error}","deleteSubmissionNotifyMsg":"提出物は正常に削除されました。","deleteSubmissionErrMsg":"この提出物を削除中にエラーが発生しました。","deleteSubmissionConsErrMsg":"提出物 {submissionId} の削除中にエラーが発生しました: {error}","deleteSubmissionsNotifyMsg":"提出物は正常に削除されました。","deleteSubmissionsErrMsg":"選択した提出物の削除中にエラーが発生しました。","deleteSubmissionsConsErrMsg":"提出物の削除中にエラーが発生しました: {error}","restoreSubmissionsNotiMsg":"提出物は正常に復元されました。","restoreSubmissionsErrMsg":"この送信を復元中にエラーが発生しました。","restoreSubmissionsConsErrMsg":"提出物の復元中にエラーが発生しました: {error}","restoreSubmissionNotiMsg":"送信は正常に復元されました。","restoreSubmissionErrMsg":"この送信を復元中にエラーが発生しました。","restoreSubmissionConsErrMsg":"提出物 {submissionId} の復元中にエラーが発生しました: {error}","fecthSubmissnUsersErrMsg":"この送信の受信者の電子メールを取得中にエラーが発生しました。","fecthSubmissnUsersConsErrMsg":"送信用の受信者電子メールの取得エラー {formSubmissionId}: {error}","fetchSubmissnErrMsg":"この送信を取得中にエラーが発生しました。","fetchSubmissnConsErrMsg":"提出物 {submissionId} の取得エラー: ${error}","fetchFormCSVExptFieldsErrMsg":"このフォームのフィールドのリストを取得中にエラーが発生しました。","fetchFormCSVExptFieldsConsErrMsg":"フォーム {formId} の取得中にエラーが発生しました: {error}","fetchSubmissnsErrMsg":"このフォームの送信内容を取得中にエラーが発生しました。","fetchSubmissnsConsErrMsg":"{formId} の送信の取得中にエラーが発生しました: {error}","fetchVersionErrMsg":"このフォームを取得中にエラーが発生しました。","fetchVersionConsErrMsg":"フォーム {formId} のバージョン {versionId} を取得中にエラーが発生しました: {error}","deleteApiKeyNotifyMsg":"このフォームの API キーは削除されました。","deleteApiKeyErrMsg":"API キーを削除しようとしたときにエラーが発生しました。","deleteApiKeyConsErrMsg":"フォーム {formId} の API キーの削除中にエラーが発生しました: {error}","generateApiKeyNotifyMsg":"このフォームの API キーが作成されました。","generateApiKeyErrMsg":"API キーを生成しようとしたときにエラーが発生しました。","generateApiKeyConsErrMsg":"フォーム {formId} の API キー生成エラー: {error}","readApiKeyErrMsg":"API キーを取得しようとしたときにエラーが発生しました。","readApiKeyConsErrMsg":"フォーム {formId} の API キーを取得中にエラーが発生しました: {error}。","getFCPHImageUrlErrMsg":"画像URLの取得中にエラーが発生しました","getFCPHImageUrlConsErrMsg":"画像 URL の取得中にエラーが発生しました: {error}","listFCPHErrMsg":"フォームビルダーコンポーネントの取得中にエラーが発生しました","listFCPHConsErrMsg":"フォームビルダーコンポーネントの取得エラー: {error}","downloadFileErrMsg":"ファイルのダウンロード中にエラーが発生しました","downloadFileConsErrMsg":"ファイルのダウンロード中にエラーが発生しました: エラー"}},
-  "permissionUtils": {"formNotAvailable":"現在フォームはご利用いただけません。これは、リンクが間違っているか、フォームが所有者によって削除されたことが原因である可能性があります。","missingFormIdAndSubmssId":"オプションに formId と submitId の両方がありません","loadingFormErrMsg":"このフォームのロード中にエラーが発生しました。","loadingForm":"{オプション} のロード中にエラーが発生しました: {エラー}","idpHintMsg":"このフォームには {idpHint} 認証が必要です。再ログインしてもう一度お試しください。","formIdpMissMatch":"フォーム IDP の不一致。フォームには {idpHint} が必要ですが、ユーザーには {userIdp} が必要です。"}
+  "store": {
+    "admin": {
+      "addFormOwnerRole": "このフォームの所有者の役割を {fullName} に追加しました",
+      "addRowError": "ロールの追加中にエラーが発生しました。",
+      "addRowConsoleErr": "ユーザー {userId} をフォーム {formId} に追加中にエラーが発生しました: {error}",
+      "apiKeyDelMsg": "このフォームの API キーは削除されました。",
+      "errDeletingApiKey": "API キーを削除しようとしたときにエラーが発生しました。",
+      "consErrDeletingApiKey": "フォーム {formId} の API キーの削除中にエラーが発生しました: {error}",
+      "fecthingFormsErrMsg": "フォームの取得中にエラーが発生しました。",
+      "fecthingFormsConsErrMsg": "管理フォームデータの取得中にエラーが発生しました: {error}",
+      "fecthingFormErrMsg": "このフォームを取得中にエラーが発生しました。",
+      "fecthingFormConsErrMsg": "管理フォーム {formId} データの取得中にエラーが発生しました: {error}",
+      "fecthFormUserRolesErrMsg": "フォームユーザーロールを取得中にエラーが発生しました。",
+      "fecthFormUserRolesConsErrMsg": "管理者ロール データの取得中にエラーが発生しました: {error}",
+      "fecthApiDetailsErrMsg": "このフォームの API 詳細を取得中にエラーが発生しました。",
+      "fecthApiDetailsConsErrMsg": "フォーム {formId} データから管理 API 詳細を取得中にエラーが発生しました: {error}",
+      "restoreFormErrMsg": "このフォームの復元中にエラーが発生しました。",
+      "restoreFormConsErrMsg": "フォーム {formId} データの復元中にエラーが発生しました: {error}",
+      "getUsersErrMsg": "ユーザーの取得中にエラーが発生しました。",
+      "getUsersConsErrMsg": "管理者ユーザーデータの取得中にエラーが発生しました: {error}",
+      "getUserErrMsg": "このユーザーを取得中にエラーが発生しました。",
+      "getUserConsErrMsg": "管理者ユーザー {userId} データの取得エラー: {error}",
+      "storingFCHelpInfoErrMsg": "フォームコンポーネントのヘルプ情報を保存中にエラーが発生しました",
+      "storingFCHelpInfoConsErrMsg": "フォーム コンポーネントのヘルプ情報の保存中にエラーが発生しました: {error}",
+      "gettingFCImgUrlErrMsg": "画像URLの取得中にエラーが発生しました",
+      "gettingFCImgUrlConsErrMsg": "画像 URL の取得中にエラーが発生しました: {error}",
+      "updatingFCStatusErrMsg": "公開ステータスの更新中にエラーが発生しました",
+      "updatingFCStatusConsErrMsg": "公開ステータスの更新中にエラーが発生しました: {error}",
+      "fecthingFormBuilderCompsErrMsg": "フォームビルダーコンポーネントの取得中にエラーが発生しました",
+      "fecthingFormBuilderCompsConsErrMsg": "フォームビルダーコンポーネントの取得エラー: {error}"
+    },
+    "form": {
+      "getCurrUserFormsErrMsg": "フォームの取得中にエラーが発生しました。",
+      "getCurrUserFormsConsErrMsg": "ユーザーデータ取得エラー: {error}",
+      "getUserFormPermErrMsg": "このフォームのユーザー データを取得中にエラーが発生しました。",
+      "getUserFormPermConsErrMsg": "formID {formId} を使用したユーザー データの取得エラー: {error}",
+      "getUserFormRolesErrmsg": "このフォームのユーザー データを取得中にエラーが発生しました。",
+      "getUserFormRolesConsErrmsg": "formID {formId} を使用したユーザー データの取得エラー: {error}",
+      "updCurrUserFormPrefErrMsg": "このフォームの設定を保存中にエラーが発生しました。",
+      "updCurrUserFormPrefConsErrMsg": "formID {formId} および prefs {preferences} を使用してユーザー フォームの設定を更新中にエラーが発生しました: {error}",
+      "getCurrUserFormPrefErrMsg": "このフォームの設定を取得中にエラーが発生しました。",
+      "getCurrUserFormPrefConsErrMsg": "formID {formId} を使用したユーザー フォーム設定の取得エラー: {error}",
+      "delCurrformNotiMsg": "フォーム「{state.form.name}」は正常に削除されました。",
+      "delCurrformErrMsg": "「${state.form.name}」を削除しようとしたときにエラーが発生しました。",
+      "delCurrFormConsErMsg": "フォーム {id} の削除中にエラーが発生しました: {error}",
+      "delDraftErrMsg": "このドラフトの削除中にエラーが発生しました。",
+      "delDraftConsErrMsg": "{draftId} の削除エラー: {error}",
+      "fecthDraftErrMsg": "このフォームの下書きをスキャン中にエラーが発生しました。",
+      "fecthDraftConsErrMsg": "フォーム {formId} の下書き取得エラー: {error}",
+      "fecthFormErrMsg": "このフォームを取得中にエラーが発生しました。",
+      "fecthFormConsErrMsg": "フォーム {formId} の取得中にエラーが発生しました: {error}",
+      "fetchFormFieldsErrMsg": "このフォームのフィールドのリストを取得中にエラーが発生しました。",
+      "fetchFormFieldsConsErrMsg": "フォーム {formId} の取得中にエラーが発生しました: {error}",
+      "publishDraftErrMsg": "公開中にエラーが発生しました。",
+      "publishDraftConsErrMsg": "${draftId} の公開エラー: ${error}",
+      "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} でのエラー: {error}",
+      "updateFormErrMsg": "このフォームの設定を更新中にエラーが発生しました。",
+      "updateFormConsErrMsg": "フォーム {id} の更新中にエラーが発生しました: {error}",
+      "deleteSubmissionNotifyMsg": "提出物は正常に削除されました。",
+      "deleteSubmissionErrMsg": "この提出物を削除中にエラーが発生しました。",
+      "deleteSubmissionConsErrMsg": "提出物 {submissionId} の削除中にエラーが発生しました: {error}",
+      "deleteSubmissionsNotifyMsg": "提出物は正常に削除されました。",
+      "deleteSubmissionsErrMsg": "選択した提出物の削除中にエラーが発生しました。",
+      "deleteSubmissionsConsErrMsg": "提出物の削除中にエラーが発生しました: {error}",
+      "restoreSubmissionsNotiMsg": "提出物は正常に復元されました。",
+      "restoreSubmissionsErrMsg": "この送信を復元中にエラーが発生しました。",
+      "restoreSubmissionsConsErrMsg": "提出物の復元中にエラーが発生しました: {error}",
+      "restoreSubmissionNotiMsg": "送信は正常に復元されました。",
+      "restoreSubmissionErrMsg": "この送信を復元中にエラーが発生しました。",
+      "restoreSubmissionConsErrMsg": "提出物 {submissionId} の復元中にエラーが発生しました: {error}",
+      "fecthSubmissnUsersErrMsg": "この送信の受信者の電子メールを取得中にエラーが発生しました。",
+      "fecthSubmissnUsersConsErrMsg": "送信用の受信者電子メールの取得エラー {formSubmissionId}: {error}",
+      "fetchSubmissnErrMsg": "この送信を取得中にエラーが発生しました。",
+      "fetchSubmissnConsErrMsg": "提出物 {submissionId} の取得エラー: ${error}",
+      "fetchFormCSVExptFieldsErrMsg": "このフォームのフィールドのリストを取得中にエラーが発生しました。",
+      "fetchFormCSVExptFieldsConsErrMsg": "フォーム {formId} の取得中にエラーが発生しました: {error}",
+      "fetchSubmissnsErrMsg": "このフォームの送信内容を取得中にエラーが発生しました。",
+      "fetchSubmissnsConsErrMsg": "{formId} の送信の取得中にエラーが発生しました: {error}",
+      "fetchVersionErrMsg": "このフォームを取得中にエラーが発生しました。",
+      "fetchVersionConsErrMsg": "フォーム {formId} のバージョン {versionId} を取得中にエラーが発生しました: {error}",
+      "deleteApiKeyNotifyMsg": "このフォームの API キーは削除されました。",
+      "deleteApiKeyErrMsg": "API キーを削除しようとしたときにエラーが発生しました。",
+      "deleteApiKeyConsErrMsg": "フォーム {formId} の API キーの削除中にエラーが発生しました: {error}",
+      "generateApiKeyNotifyMsg": "このフォームの API キーが作成されました。",
+      "generateApiKeyErrMsg": "API キーを生成しようとしたときにエラーが発生しました。",
+      "generateApiKeyConsErrMsg": "フォーム {formId} の API キー生成エラー: {error}",
+      "readApiKeyErrMsg": "API キーを取得しようとしたときにエラーが発生しました。",
+      "readApiKeyConsErrMsg": "フォーム {formId} の API キーを取得中にエラーが発生しました: {error}。",
+      "getFCPHImageUrlErrMsg": "画像URLの取得中にエラーが発生しました",
+      "getFCPHImageUrlConsErrMsg": "画像 URL の取得中にエラーが発生しました: {error}",
+      "listFCPHErrMsg": "フォームビルダーコンポーネントの取得中にエラーが発生しました",
+      "listFCPHConsErrMsg": "フォームビルダーコンポーネントの取得エラー: {error}",
+      "downloadFileErrMsg": "ファイルのダウンロード中にエラーが発生しました",
+      "downloadFileConsErrMsg": "ファイルのダウンロード中にエラーが発生しました: エラー"
+    }
+  },
+  "permissionUtils": {
+    "formNotAvailable": "現在フォームはご利用いただけません。これは、リンクが間違っているか、フォームが所有者によって削除されたことが原因である可能性があります。",
+    "missingFormIdAndSubmssId": "オプションに formId と submitId の両方がありません",
+    "loadingFormErrMsg": "このフォームのロード中にエラーが発生しました。",
+    "loadingForm": "{オプション} のロード中にエラーが発生しました: {エラー}",
+    "idpHintMsg": "このフォームには {idpHint} 認証が必要です。再ログインしてもう一度お試しください。",
+    "formIdpMissMatch": "フォーム IDP の不一致。フォームには {idpHint} が必要ですが、ユーザーには {userIdp} が必要です。"
+  }
 }

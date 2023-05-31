@@ -202,13 +202,15 @@ export default {
         // Generate Temporary Download Link
         this.createDownload(blob, filename);
         this.addNotification({
-          message: 'Document generated successfully',
+          message: this.$t('trans.printOptions.docGrnSucess'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (e) {
         this.addNotification({
-          message: 'Failed to generate Document',
-          consoleError: `Error submitting template: ${e.message}`,
+          message: this.$t('trans.printOptions.failedDocGenErrMsg'),
+          consoleError: this.$t('trans.printOptions.failedDocGenErrMsg', {
+            error: e.message,
+          }),
         });
       } finally {
         this.loading = false;

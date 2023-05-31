@@ -22,8 +22,8 @@
           </template>
           <span>{{
             bulkFile
-              ? 'Switch to single submission'
-              : 'Switch to multiple submission'
+              ? $t('trans.formViewerActions.switchSingleSubmssn')
+              : $t('trans.formViewerActions.switchMultiSubmssn')
           }}</span>
         </v-tooltip>
       </span>

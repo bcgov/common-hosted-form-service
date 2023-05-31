@@ -12,7 +12,9 @@
     "action": "Действия",
     "loadingText": "Загрузка, пожалуйста подождите"
   },
-  "manageLayout": { "manageForm": "Управление формой" },
+  "manageLayout": {
+    "manageForm": "Управление формой"
+  },
   "shareForm": {
     "shareForm": "Поделиться формой",
     "shareLink": "Поделиться ссылкой",
@@ -292,7 +294,8 @@
     "formDesignSaveErrMsg": "Произошла ошибка при попытке сохранить дизайн этой формы. Если вам нужно обновить или оставить, чтобы повторить попытку позже, вы можете Экспортировать существующий дизайн на странице, чтобы сохранить его на потом.",
     "formDesignSaveConsoleErrMsg": "Ошибка при обновлении или создании формы (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Ошибка: {error}",
     "collapse": "Крах",
-    "actions": "Действия"
+    "actions": "Действия",
+    "version": "Версия"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Заявление об отказе от ответственности и заявление об ответственности дизайнеров форм:",
@@ -306,7 +309,11 @@
   "requestReceipt": {
     "emailReceipt": "Отправить по электронной почте квитанцию об этом представлении",
     "send": "ОТПРАВЛЯТЬ",
-    "sendToEmailAddress": "Отправить на адрес электронной почты"
+    "sendToEmailAddress": "Отправить на адрес электронной почты",
+    "emailSent": "Электронное письмо было отправлено на {to}.",
+    "sendingEmailErrMsg": "Произошла ошибка при попытке отправить письмо.",
+    "sendingEmailConsErrMsg": "Подтверждение по электронной почте для {to} не удалось: {error}",
+    "emailRequired": "Электронная почта обязательна"
   },
   "submissionsTable": {
     "submissionsTable": "МатериалыТаблица",
@@ -497,7 +504,10 @@
     "export": "Экспорт",
     "noResponseDataErr": "Нет данных в ответ на вызов exportSubmissions",
     "apiCallErrorMsg": "Произошла ошибка при попытке экспортировать материалы для этой формы.",
-    "apiCallConsErrorMsg": "Ошибка экспорта отправленных материалов для"
+    "apiCallConsErrorMsg": "Ошибка экспорта отправленных материалов для",
+    "selectAllFields": "Выбрать все поля",
+    "emailSentMsg": "На адрес {email} будет отправлено электронное письмо со ссылкой для загрузки ваших данных, когда они будут готовы.",
+    "exportInProgress": "Выполняется экспорт"
   },
   "printOptions": {
     "submitButtonTxt": "Отправить в CDOGS и скачать",
@@ -508,7 +518,10 @@
     "browserPrint": "Печать через браузер",
     "pageFromBrowser": "страница из вашего браузера",
     "uploadA": "Загрузить",
-    "uploadB": "иметь структурированную версию"
+    "uploadB": "иметь структурированную версию",
+    "docGrnSucess": "Документ успешно создан",
+    "failedDocGenErrMsg": "Не удалось создать документ",
+    "failedDocGenConsErrMsg": "Ошибка при отправке шаблона: {error}"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Ссылка на информацию о компонентах",
@@ -523,13 +536,22 @@
     "save": "Сохранять",
     "description": "Описание"
   },
-  "proactiveHelpPreviewDialog": { "learnMore": "Узнать больше" },
+  "proactiveHelpPreviewDialog": {
+    "learnMore": "Узнать больше"
+  },
   "generalLayout": {
     "loadingText": "Загрузка, пожалуйста подождите",
     "preview": "ПРЕДПРОСМОТР",
     "published": "ОПУБЛИКОВАНО",
     "unpublished": "НЕОПУБЛИКОВАНО",
-    "edit": "РЕДАКТИРОВАТЬ"
+    "edit": "РЕДАКТИРОВАТЬ",
+    "formTitle": "Название формы",
+    "actions": "Действия"
+  },
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Ссылка скопирована в буфер обмена",
+    "copyToClipboard": "Скопировать в буфер обмена",
+    "errCopyToClipboard": "Ошибка при попытке скопировать в буфер обмена."
   },
   "formSubmission": {
     "editThisSubmission": "Изменить это представление",
@@ -598,10 +620,12 @@
     "pleaseConfirm": "Пожалуйста подтвердите",
     "submitFormWarningMsg": "Вы уверены, что хотите отправить форму?",
     "submit": "Представлять на рассмотрение",
+    "wantToSaveDraft": "Сохранить черновик?",
     "version": "Версия: {версия}",
     "formScheduleExpireMessage": "Отправка формы недоступна, так как запланированный период подачи истек.",
     "getUsersSubmissionsErrMsg": "Произошла ошибка при получении отправки для этой формы",
-    "getUsersSubmissionsConsoleErrMsg": "Ошибка загрузки данных отправки формы {submissionId}: {error}",
+    "getUsersSubmissionsConsoleErrMsg": "Ошибка при загрузке данных отправки формы {submissionId}: {error}",
+    "multiDraftUploadSuccess": "Загрузка нескольких черновиков прошла успешно!",
     "readVersionErrMsg": "Схемы в ответ нет. Идентификатор версии: {идентификатор версии}",
     "readDraftErrMsg": "Схемы в ответ нет. DraftId: {draftId}",
     "alertRouteMsg": "Владелец формы не опубликовал форму, и она недоступна для отправки.",
@@ -613,7 +637,15 @@
     "submissionsSubmitErrMsg": "Ошибка при отправке формы: {errors}",
     "sendSubmissionErrMsg": "Неудачный ответ от конечной точки отправки. Код ответа: {статус}",
     "errMsg": "При отправке этой формы произошла ошибка",
-    "customEventAlert": "События пользовательских кнопок пока не поддерживаются. Тип события: {событие}"
+    "customEventAlert": "События пользовательских кнопок пока не поддерживаются. Тип события: {событие}",
+    "formLoading": "Пожалуйста, подождите пока форма загружается!!!",
+    "yes": "Да",
+    "no": "Нет",
+    "failedResSubmissn": "Неудачный ответ от конечной точки отправки. Код ответа: {статус}",
+    "errSubmittingForm": "При отправке этой формы произошла ошибка",
+    "errorSavingFile": "Ошибка сохранения файлов. Имя файла: {fileNname}. Ошибка: {ошибка}",
+    "submittingDraftErrMsg": "Произошла ошибка при сохранении черновика",
+    "submittingDraftConsErrMsg": "Не удалось сохранить черновик. Идентификатор представления: {идентификатор представления}. Ошибка: {ошибка}"
   },
   "bCGovFooter": {
     "home": "Дом",
@@ -689,7 +721,33 @@
   "formViewerActions": {
     "viewAllSubmissions": "Просмотреть все материалы",
     "saveAsADraft": "Сохранить как черновик",
-    "editThisDraft": "Изменить этот черновик"
+    "editThisDraft": "Изменить этот черновик",
+    "switchSingleSubmssn": "Переключиться на одиночную отправку",
+    "switchMultiSubmssn": "Переключиться на одиночную отправку"
+  },
+  "formViewerMultiUpload": {
+    "important": "ВАЖНЫЙ",
+    "uploadSucessMsg": "Чтобы обеспечить успешную загрузку нескольких черновиков, загрузите и используйте предоставленный шаблон.",
+    "confirmDownload": "Вы хотите скачать его?",
+    "jsonFileUpload": "Выберите файл JSON для загрузки",
+    "dragNDrop": "или перетащите сюда",
+    "chooseAFile": "Выберите файл",
+    "downloadDraftSubmns": "Пожалуйста, загрузите черновик отчета об отправке и убедитесь, что данные введены правильно.",
+    "downloadReport": "Скачать отчет",
+    "doYouWantToDownload": "Вы хотите скачать его?",
+    "uploadNewFile": "Загрузить новый файл",
+    "uploadMultipleFileErr": "Извините, вы можете загрузить только один файл",
+    "dragMultipleFileErr": "Извините, вы можете перетащить только один файл",
+    "fileFormatErr": "Извините, мы принимаем только файлы json",
+    "fileSizeErr": "Максимально допустимый размер файла составляет 5 МБ.",
+    "parseJsonErr": "Не можем разобрать json данные из файла",
+    "jsonObjNotArray": "Неправильный формат json-файла",
+    "jsonObjNotArrayConsErr": "Произошла непредвиденная ошибка.",
+    "jsonArrayEmpty": "Этот файл json пуст.",
+    "errorWhileValidate": "Что-то не так с этим файлом",
+    "errWhileCheckValidity": "Что-то не так с этим файлом",
+    "errAfterValidate": "Обнаружены некоторые ошибки, дополнительную информацию см. ниже.",
+    "fileIsEmpty": "этот файл пустой."
   },
   "sucess": {
     "sucessFormSubmissn": "Ваша форма успешно отправлена",
@@ -699,6 +757,108 @@
   "root": {
     "admin": "Администратор"
   },
-  "store":{"admin":{"addFormOwnerRole":"Добавлена роль владельца для этой формы в {fullName}","addRowError":"При добавлении роли произошла ошибка.","addRowConsoleErr":"Ошибка добавления пользователя {userId} в форму {formId}: {error}","apiKeyDelMsg":"Ключ API для этой формы был удален.","errDeletingApiKey":"Произошла ошибка при попытке удалить ключ API.","consErrDeletingApiKey":"Ошибка удаления ключа API для формы {formId}: {error}","fecthingFormsErrMsg":"Произошла ошибка при получении форм.","fecthingFormsConsErrMsg":"Ошибка при получении данных формы администратора: {error}","fecthingFormErrMsg":"При получении этой формы произошла ошибка.","fecthingFormConsErrMsg":"Ошибка при получении данных административной формы {formId}: {error}","fecthFormUserRolesErrMsg":"Произошла ошибка при получении ролей пользователей из формы.","fecthFormUserRolesConsErrMsg":"Ошибка при получении данных ролей администратора: {error}","fecthApiDetailsErrMsg":"Произошла ошибка при получении данных API этой формы.","fecthApiDetailsConsErrMsg":"Ошибка получения сведений об API администратора из данных формы {formId}: {error}","restoreFormErrMsg":"При восстановлении этой формы произошла ошибка.","restoreFormConsErrMsg":"Ошибка восстановления данных формы {formId}: {error}","getUsersErrMsg":"При получении пользователей произошла ошибка.","getUsersConsErrMsg":"Ошибка при получении данных пользователей-администраторов: {error}","getUserErrMsg":"При получении этого пользователя произошла ошибка.","getUserConsErrMsg":"Ошибка при получении данных пользователя-администратора {userId}: {error}","storingFCHelpInfoErrMsg":"Произошла ошибка при сохранении справочной информации компонента формы","storingFCHelpInfoConsErrMsg":"Ошибка при сохранении справочной информации о компоненте формы: {error}","gettingFCImgUrlErrMsg":"Произошла ошибка при получении URL изображения","gettingFCImgUrlConsErrMsg":"Ошибка при получении URL изображения: {error}","updatingFCStatusErrMsg":"Произошла ошибка при обновлении статуса публикации","updatingFCStatusConsErrMsg":"Ошибка при обновлении статуса публикации: {error}","fecthingFormBuilderCompsErrMsg":"Произошла ошибка при загрузке компонентов конструктора форм.","fecthingFormBuilderCompsConsErrMsg":"Ошибка при получении компонентов конструктора форм: {error}"},"form":{"getCurrUserFormsErrMsg":"При загрузке форм произошла ошибка.","getCurrUserFormsConsErrMsg":"Ошибка при получении пользовательских данных: {error}","getUserFormPermErrMsg":"Произошла ошибка при получении ваших пользовательских данных для этой формы.","getUserFormPermConsErrMsg":"Ошибка при получении пользовательских данных с помощью идентификатора формы {formId}: {ошибка}","getUserFormRolesErrmsg":"Произошла ошибка при получении ваших пользовательских данных для этой формы.","getUserFormRolesConsErrmsg":"Ошибка при получении пользовательских данных с помощью идентификатора формы {formId}: {ошибка}","updCurrUserFormPrefErrMsg":"Произошла ошибка при сохранении ваших настроек для этой формы.","updCurrUserFormPrefConsErrMsg":"Ошибка при обновлении настроек пользовательской формы с помощью formID {formId} и настроек {preferences}: {ошибка}","getCurrUserFormPrefErrMsg":"Произошла ошибка при получении ваших предпочтений для этой формы.","getCurrUserFormPrefConsErrMsg":"Ошибка при получении настроек пользовательской формы с помощью formID {formId}: {error}","delCurrformNotiMsg":"Форма \"{state.form.name}\" успешно удалена.","delCurrformErrMsg":"Произошла ошибка при попытке удалить \"${state.form.name}\".","delCurrFormConsErMsg":"Ошибка удаления формы {id}: {error}","delDraftErrMsg":"При удалении этого черновика произошла ошибка.","delDraftConsErrMsg":"Ошибка при удалении {draftId}: {error}","fecthDraftErrMsg":"Произошла ошибка при сканировании черновиков для этой формы.","fecthDraftConsErrMsg":"Ошибка при получении черновиков формы {formId}: {error}","fecthFormErrMsg":"При получении этой формы произошла ошибка.","fecthFormConsErrMsg":"Ошибка при получении формы {formId}: {error}","fetchFormFieldsErrMsg":"Произошла ошибка при получении списка полей для этой формы.","fetchFormFieldsConsErrMsg":"Ошибка при получении формы {formId}: {error}","publishDraftErrMsg":"При публикации произошла ошибка.","publishDraftConsErrMsg":"Ошибка публикации ${draftId}: ${error}","toggleVersnPublConsErrMsg":"Ошибка в toggleVersionPublish {versionId} {publish}: {ошибка}","updateFormErrMsg":"Произошла ошибка при обновлении настроек этой формы.","updateFormConsErrMsg":"Ошибка при обновлении формы {id}: {error}","deleteSubmissionNotifyMsg":"Отправка успешно удалена.","deleteSubmissionErrMsg":"При удалении этой отправки произошла ошибка.","deleteSubmissionConsErrMsg":"Ошибка при удалении отправки {submissionId}: {error}","deleteSubmissionsNotifyMsg":"Представления успешно удалены.","deleteSubmissionsErrMsg":"Произошла ошибка при удалении выбранных материалов.","deleteSubmissionsConsErrMsg":"Ошибка при удалении отправленных материалов: {error}","restoreSubmissionsNotiMsg":"Отправки успешно восстановлены.","restoreSubmissionsErrMsg":"При восстановлении этой отправки произошла ошибка.","restoreSubmissionsConsErrMsg":"Ошибка при восстановлении отправки: {error}","restoreSubmissionNotiMsg":"Отправка успешно восстановлена.","restoreSubmissionErrMsg":"При восстановлении этой отправки произошла ошибка.","restoreSubmissionConsErrMsg":"Ошибка при восстановлении отправки {submissionId}: {error}","fecthSubmissnUsersErrMsg":"Произошла ошибка при получении адреса электронной почты получателя для этой отправки.","fecthSubmissnUsersConsErrMsg":"Ошибка получения электронной почты получателя для отправки {formSubmissionId}: {error}","fetchSubmissnErrMsg":"При получении этой отправки произошла ошибка.","fetchSubmissnConsErrMsg":"Ошибка при получении отправки {submissionId}: ${error}","fetchFormCSVExptFieldsErrMsg":"Произошла ошибка при получении списка полей для этой формы.","fetchFormCSVExptFieldsConsErrMsg":"Ошибка при получении формы {formId}: {error}","fetchSubmissnsErrMsg":"При получении материалов для этой формы произошла ошибка.","fetchSubmissnsConsErrMsg":"Ошибка при получении материалов для {formId}: {error}","fetchVersionErrMsg":"При получении этой формы произошла ошибка.","fetchVersionConsErrMsg":"Ошибка при получении версии {versionId} для формы {formId}: {error}","deleteApiKeyNotifyMsg":"Ключ API для этой формы был удален.","deleteApiKeyErrMsg":"Произошла ошибка при попытке удалить ключ API.","deleteApiKeyConsErrMsg":"Ошибка удаления ключа API для формы {formId}: {error}","generateApiKeyNotifyMsg":"Ключ API для этой формы создан.","generateApiKeyErrMsg":"Произошла ошибка при попытке сгенерировать ключ API.","generateApiKeyConsErrMsg":"Ошибка создания ключа API для формы {formId}: {error}","readApiKeyErrMsg":"Произошла ошибка при попытке получить ключ API.","readApiKeyConsErrMsg":"Ошибка при получении ключа API для формы {formId}: {ошибка}.","getFCPHImageUrlErrMsg":"Произошла ошибка при получении URL изображения","getFCPHImageUrlConsErrMsg":"Ошибка при получении URL изображения: {error}","listFCPHErrMsg":"Произошла ошибка при получении компонентов конструктора форм.","listFCPHConsErrMsg":"Ошибка при получении компонентов конструктора форм: {error}","downloadFileErrMsg":"Произошла ошибка при загрузке файла","downloadFileConsErrMsg":"Ошибка загрузки файла: ошибка"}},
-  "permissionUtils": {"formNotAvailable":"В настоящее время форма недоступна. Это может быть связано с неправильной ссылкой, или форма может быть удалена ее владельцем.","missingFormIdAndSubmssId":"В параметрах отсутствуют как formId, так и submitId","loadingFormErrMsg":"При загрузке формы произошла ошибка.","loadingForm":"Ошибка при загрузке {параметров}: {ошибка}","idpHintMsg":"Для этой формы требуется аутентификация {idpHint}. Пожалуйста, войдите снова и повторите попытку.","formIdpMissMatch":"Несоответствие формы IDP. Для формы требуется {idpHint}, но у пользователя есть {userIdp}."}
+  "store": {
+    "admin": {
+      "addFormOwnerRole": "Добавлена роль владельца для этой формы в {fullName}",
+      "addRowError": "При добавлении роли произошла ошибка.",
+      "addRowConsoleErr": "Ошибка добавления пользователя {userId} в форму {formId}: {error}",
+      "apiKeyDelMsg": "Ключ API для этой формы был удален.",
+      "errDeletingApiKey": "Произошла ошибка при попытке удалить ключ API.",
+      "consErrDeletingApiKey": "Ошибка удаления ключа API для формы {formId}: {error}",
+      "fecthingFormsErrMsg": "Произошла ошибка при получении форм.",
+      "fecthingFormsConsErrMsg": "Ошибка при получении данных формы администратора: {error}",
+      "fecthingFormErrMsg": "При получении этой формы произошла ошибка.",
+      "fecthingFormConsErrMsg": "Ошибка при получении данных административной формы {formId}: {error}",
+      "fecthFormUserRolesErrMsg": "Произошла ошибка при получении ролей пользователей из формы.",
+      "fecthFormUserRolesConsErrMsg": "Ошибка при получении данных ролей администратора: {error}",
+      "fecthApiDetailsErrMsg": "Произошла ошибка при получении данных API этой формы.",
+      "fecthApiDetailsConsErrMsg": "Ошибка получения сведений об API администратора из данных формы {formId}: {error}",
+      "restoreFormErrMsg": "При восстановлении этой формы произошла ошибка.",
+      "restoreFormConsErrMsg": "Ошибка восстановления данных формы {formId}: {error}",
+      "getUsersErrMsg": "При получении пользователей произошла ошибка.",
+      "getUsersConsErrMsg": "Ошибка при получении данных пользователей-администраторов: {error}",
+      "getUserErrMsg": "При получении этого пользователя произошла ошибка.",
+      "getUserConsErrMsg": "Ошибка при получении данных пользователя-администратора {userId}: {error}",
+      "storingFCHelpInfoErrMsg": "Произошла ошибка при сохранении справочной информации компонента формы",
+      "storingFCHelpInfoConsErrMsg": "Ошибка при сохранении справочной информации о компоненте формы: {error}",
+      "gettingFCImgUrlErrMsg": "Произошла ошибка при получении URL изображения",
+      "gettingFCImgUrlConsErrMsg": "Ошибка при получении URL изображения: {error}",
+      "updatingFCStatusErrMsg": "Произошла ошибка при обновлении статуса публикации",
+      "updatingFCStatusConsErrMsg": "Ошибка при обновлении статуса публикации: {error}",
+      "fecthingFormBuilderCompsErrMsg": "Произошла ошибка при загрузке компонентов конструктора форм.",
+      "fecthingFormBuilderCompsConsErrMsg": "Ошибка при получении компонентов конструктора форм: {error}"
+    },
+    "form": {
+      "getCurrUserFormsErrMsg": "При загрузке форм произошла ошибка.",
+      "getCurrUserFormsConsErrMsg": "Ошибка при получении пользовательских данных: {error}",
+      "getUserFormPermErrMsg": "Произошла ошибка при получении ваших пользовательских данных для этой формы.",
+      "getUserFormPermConsErrMsg": "Ошибка при получении пользовательских данных с помощью идентификатора формы {formId}: {ошибка}",
+      "getUserFormRolesErrmsg": "Произошла ошибка при получении ваших пользовательских данных для этой формы.",
+      "getUserFormRolesConsErrmsg": "Ошибка при получении пользовательских данных с помощью идентификатора формы {formId}: {ошибка}",
+      "updCurrUserFormPrefErrMsg": "Произошла ошибка при сохранении ваших настроек для этой формы.",
+      "updCurrUserFormPrefConsErrMsg": "Ошибка при обновлении настроек пользовательской формы с помощью formID {formId} и настроек {preferences}: {ошибка}",
+      "getCurrUserFormPrefErrMsg": "Произошла ошибка при получении ваших предпочтений для этой формы.",
+      "getCurrUserFormPrefConsErrMsg": "Ошибка при получении настроек пользовательской формы с помощью formID {formId}: {error}",
+      "delCurrformNotiMsg": "Форма \"{state.form.name}\" успешно удалена.",
+      "delCurrformErrMsg": "Произошла ошибка при попытке удалить \"${state.form.name}\".",
+      "delCurrFormConsErMsg": "Ошибка удаления формы {id}: {error}",
+      "delDraftErrMsg": "При удалении этого черновика произошла ошибка.",
+      "delDraftConsErrMsg": "Ошибка при удалении {draftId}: {error}",
+      "fecthDraftErrMsg": "Произошла ошибка при сканировании черновиков для этой формы.",
+      "fecthDraftConsErrMsg": "Ошибка при получении черновиков формы {formId}: {error}",
+      "fecthFormErrMsg": "При получении этой формы произошла ошибка.",
+      "fecthFormConsErrMsg": "Ошибка при получении формы {formId}: {error}",
+      "fetchFormFieldsErrMsg": "Произошла ошибка при получении списка полей для этой формы.",
+      "fetchFormFieldsConsErrMsg": "Ошибка при получении формы {formId}: {error}",
+      "publishDraftErrMsg": "При публикации произошла ошибка.",
+      "publishDraftConsErrMsg": "Ошибка публикации ${draftId}: ${error}",
+      "toggleVersnPublConsErrMsg": "Ошибка в toggleVersionPublish {versionId} {publish}: {ошибка}",
+      "updateFormErrMsg": "Произошла ошибка при обновлении настроек этой формы.",
+      "updateFormConsErrMsg": "Ошибка при обновлении формы {id}: {error}",
+      "deleteSubmissionNotifyMsg": "Отправка успешно удалена.",
+      "deleteSubmissionErrMsg": "При удалении этой отправки произошла ошибка.",
+      "deleteSubmissionConsErrMsg": "Ошибка при удалении отправки {submissionId}: {error}",
+      "deleteSubmissionsNotifyMsg": "Представления успешно удалены.",
+      "deleteSubmissionsErrMsg": "Произошла ошибка при удалении выбранных материалов.",
+      "deleteSubmissionsConsErrMsg": "Ошибка при удалении отправленных материалов: {error}",
+      "restoreSubmissionsNotiMsg": "Отправки успешно восстановлены.",
+      "restoreSubmissionsErrMsg": "При восстановлении этой отправки произошла ошибка.",
+      "restoreSubmissionsConsErrMsg": "Ошибка при восстановлении отправки: {error}",
+      "restoreSubmissionNotiMsg": "Отправка успешно восстановлена.",
+      "restoreSubmissionErrMsg": "При восстановлении этой отправки произошла ошибка.",
+      "restoreSubmissionConsErrMsg": "Ошибка при восстановлении отправки {submissionId}: {error}",
+      "fecthSubmissnUsersErrMsg": "Произошла ошибка при получении адреса электронной почты получателя для этой отправки.",
+      "fecthSubmissnUsersConsErrMsg": "Ошибка получения электронной почты получателя для отправки {formSubmissionId}: {error}",
+      "fetchSubmissnErrMsg": "При получении этой отправки произошла ошибка.",
+      "fetchSubmissnConsErrMsg": "Ошибка при получении отправки {submissionId}: ${error}",
+      "fetchFormCSVExptFieldsErrMsg": "Произошла ошибка при получении списка полей для этой формы.",
+      "fetchFormCSVExptFieldsConsErrMsg": "Ошибка при получении формы {formId}: {error}",
+      "fetchSubmissnsErrMsg": "При получении материалов для этой формы произошла ошибка.",
+      "fetchSubmissnsConsErrMsg": "Ошибка при получении материалов для {formId}: {error}",
+      "fetchVersionErrMsg": "При получении этой формы произошла ошибка.",
+      "fetchVersionConsErrMsg": "Ошибка при получении версии {versionId} для формы {formId}: {error}",
+      "deleteApiKeyNotifyMsg": "Ключ API для этой формы был удален.",
+      "deleteApiKeyErrMsg": "Произошла ошибка при попытке удалить ключ API.",
+      "deleteApiKeyConsErrMsg": "Ошибка удаления ключа API для формы {formId}: {error}",
+      "generateApiKeyNotifyMsg": "Ключ API для этой формы создан.",
+      "generateApiKeyErrMsg": "Произошла ошибка при попытке сгенерировать ключ API.",
+      "generateApiKeyConsErrMsg": "Ошибка создания ключа API для формы {formId}: {error}",
+      "readApiKeyErrMsg": "Произошла ошибка при попытке получить ключ API.",
+      "readApiKeyConsErrMsg": "Ошибка при получении ключа API для формы {formId}: {ошибка}.",
+      "getFCPHImageUrlErrMsg": "Произошла ошибка при получении URL изображения",
+      "getFCPHImageUrlConsErrMsg": "Ошибка при получении URL изображения: {error}",
+      "listFCPHErrMsg": "Произошла ошибка при получении компонентов конструктора форм.",
+      "listFCPHConsErrMsg": "Ошибка при получении компонентов конструктора форм: {error}",
+      "downloadFileErrMsg": "Произошла ошибка при загрузке файла",
+      "downloadFileConsErrMsg": "Ошибка загрузки файла: ошибка"
+    }
+  },
+  "permissionUtils": {
+    "formNotAvailable": "В настоящее время форма недоступна. Это может быть связано с неправильной ссылкой, или форма может быть удалена ее владельцем.",
+    "missingFormIdAndSubmssId": "В параметрах отсутствуют как formId, так и submitId",
+    "loadingFormErrMsg": "При загрузке формы произошла ошибка.",
+    "loadingForm": "Ошибка при загрузке {параметров}: {ошибка}",
+    "idpHintMsg": "Для этой формы требуется аутентификация {idpHint}. Пожалуйста, войдите снова и повторите попытку.",
+    "formIdpMissMatch": "Несоответствие формы IDP. Для формы требуется {idpHint}, но у пользователя есть {userIdp}."
+  }
 }

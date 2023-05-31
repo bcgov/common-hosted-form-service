@@ -51,7 +51,10 @@
       </v-col>
       <!-- version number-->
       <v-col cols="12" order="4">
-        <em>Version: {{ this.displayVersion }}</em>
+        <em
+          >{{ $t('trans.formDesigner.version') }} :
+          {{ this.displayVersion }}</em
+        >
       </v-col>
     </v-row>
     <BaseInfoCard class="my-6">
@@ -145,20 +148,10 @@ export default {
   },
   data() {
     return {
-      items: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' },
-      ],
       offset: true,
       savedStatus: this.isSavedStatus,
       isFormSaved: !this.newVersion,
       scrollTop: true,
-      advancedItems: [
-        { text: 'Simple Mode', value: false },
-        { text: 'Advanced Mode', value: true },
-      ],
       designerStep: 1,
       formSchema: {
         display: 'form',
