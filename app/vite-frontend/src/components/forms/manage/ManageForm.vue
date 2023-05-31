@@ -14,6 +14,7 @@ const notificationStore = useNotificationStore();
 
 const apiKeyPanel = ref(1);
 const formSettingsDisabled = ref(true);
+const settingsForm = ref(null);
 const settingsFormValid = ref(false);
 const settingsPanel = ref(1);
 const versionsPanel = ref(0);
@@ -68,7 +69,7 @@ function enableSettingsEdit() {
 
 async function updateSettings() {
   try {
-    const { valid } = await this.$refs.settingsForm.validate();
+    const { valid } = await settingsForm.value.validate();
 
     if (valid) {
       await formStore.updateForm();

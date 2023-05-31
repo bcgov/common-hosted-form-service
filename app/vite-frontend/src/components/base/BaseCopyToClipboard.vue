@@ -4,7 +4,7 @@ import { NotificationTypes } from '~/utils/constants';
 
 const notificationStore = useNotificationStore();
 
-const props = defineProps({
+const properties = defineProps({
   buttonText: {
     type: String,
     default: '',
@@ -32,7 +32,7 @@ const emits = defineEmits(['copied']);
 function clipboardSuccessHandler() {
   emits('copied');
   notificationStore.addNotification({
-    text: props.snackBarText,
+    text: properties.snackBarText,
     ...NotificationTypes.INFO,
   });
 }
@@ -46,7 +46,7 @@ function clipboardErrorHandler() {
 <template>
   <span>
     <v-tooltip location="bottom">
-      <template #activator="{ prps }">
+      <template #activator="{ props }">
         <v-btn
           v-clipboard:copy="copyText"
           v-clipboard:success="clipboardSuccessHandler"
@@ -54,10 +54,10 @@ function clipboardErrorHandler() {
           color="primary"
           :disabled="disabled"
           icon
-          v-bind="prps"
+          v-bind="props"
           size="small"
         >
-          <v-icon class="mr-1" icon="mdi:mdi-content-copy"></v-icon>
+          <v-icon icon="mdi:mdi-content-copy"></v-icon>
           <span v-if="buttonText">{{ buttonText }}</span>
         </v-btn>
       </template>

@@ -6,11 +6,11 @@ import getRouter from '~/router';
 const props = defineProps({
   formId: {
     type: String,
-    required: true,
+    default: null,
   },
   draftId: {
     type: String,
-    required: true,
+    default: null,
   },
   saving: {
     type: Boolean,
@@ -31,7 +31,7 @@ const props = defineProps({
   isFormSaved: Boolean,
   savedStatus: {
     type: String,
-    required: true,
+    default: null,
   },
   placement: {
     type: String,
@@ -116,7 +116,7 @@ function onOpenFABActionItems() {
 }
 
 function gotoPreview() {
-  let route = router.resolve({
+  let route = router.push({
     name: 'FormPreview',
     query: { f: props.formId, d: props.draftId },
   });
@@ -273,7 +273,6 @@ window.addEventListener('scroll', handleScroll);
       ]"
     >
       <router-link
-        v-if="formId"
         v-slot="{ navigate }"
         :to="{
           name: 'FormManage',
@@ -305,7 +304,6 @@ window.addEventListener('scroll', handleScroll);
         </div>
       </router-link>
       <router-link
-        v-if="formId"
         v-slot="{ navigate }"
         :to="{ name: 'FormManage', query: { f: formId } }"
         custom

@@ -247,7 +247,7 @@ if (fd) {
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <span v-bind="props">
-                Version {{ item.version }}
+                Version {{ item.raw.version }}
                 <v-chip
                   v-if="item.raw.isDraft"
                   color="secondary"

@@ -21,7 +21,7 @@ export const useNotificationStore = defineStore('notification', {
       );
       router.replace({
         name: 'Alert',
-        params: { message: message, type: type },
+        params: { text: message, type: type },
       });
     },
     addNotification(notification) {

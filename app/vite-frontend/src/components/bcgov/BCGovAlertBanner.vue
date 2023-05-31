@@ -48,11 +48,11 @@ const onClose = () => {
 <template>
   <div class="ma-5">
     <v-alert
-      :id="id"
+      :id="props.id"
       :color="notificationType.color"
       :icon="notificationType.icon"
-      :title="title"
-      :text="text"
+      :title="props.title"
+      :text="props.text"
       closable
       @click="onClose"
     >

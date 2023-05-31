@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
+import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
@@ -40,6 +41,12 @@ onMounted(async () => {
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
         <h1>Manage Form</h1>
+      </v-col>
+      <!-- buttons -->
+      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+        <v-skeleton-loader :loading="loading" type="actions">
+          <ManageFormActions />
+        </v-skeleton-loader>
       </v-col>
       <!-- form name -->
       <v-col cols="12" order="3">

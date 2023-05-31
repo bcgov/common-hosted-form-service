@@ -127,12 +127,65 @@ export default function getRouter(basePath = '/') {
               preFlightAuth({ formId: to.query.f }, next);
             },
           },
+          {
+            path: 'success',
+            name: 'FormSuccess',
+            component: () => import('~/views/form/Success.vue'),
+            meta: {
+              breadcrumbTitle: 'Submit Success',
+              formSubmitMode: true,
+            },
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ submissionId: to.query.s }, next);
+            },
+          },
+          {
+            path: 'teams',
+            name: 'FormTeams',
+            component: () => import('~/views/form/Teams.vue'),
+            meta: {
+              breadcrumbTitle: 'Team Management',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
         ],
       },
       {
         path: '/user',
         component: () => import('~/views/User.vue'),
         children: [
+          {
+            path: '',
+            name: 'User',
+            component: () => import('~/views/user/Root.vue'),
+            meta: {
+              requiresAuth: true,
+            },
+          },
+          {
+            path: 'draft',
+            name: 'UserFormDraftEdit',
+            component: () => import('~/views/user/SubmissionDraftEdit.vue'),
+            meta: {
+              breadcrumbTitle: 'Edit Draft',
+              formSubmitMode: true,
+            },
+            props: (route) => {
+              return {
+                ...route.query,
+                ...route.params,
+                sv:
+                  String(route.query.sv).toLowerCase() === 'true' ||
+                  route.query.sv === true,
+              };
+            },
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ submissionId: to.query.s }, next);
+            },
+          },
           {
             path: 'forms',
             name: 'UserForms',
@@ -142,7 +195,39 @@ export default function getRouter(basePath = '/') {
               requiresAuth: IdentityProviders.IDIR,
             },
           },
+          {
+            path: 'history',
+            name: 'UserHistory',
+            component: () => import('~/views/user/History.vue'),
+            meta: {
+              breadcrumbTitle: 'History',
+              requiresAuth: true,
+            },
+          },
+          {
+            path: 'submissions',
+            name: 'UserSubmissions',
+            component: () => import('~/views/user/Submissions.vue'),
+            meta: {
+              breadcrumbTitle: 'Previous Submissions',
+              formSubmitMode: true,
+            },
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ formId: to.query.f }, next);
+            },
+          },
         ],
+      },
+      {
+        path: '/alert',
+        name: 'Alert',
+        component: () => import('~/components/bcgov/BCGovAlertBanner.vue'),
+        meta: {
+          formSubmitMode: true,
+          hasLogin: true,
+        },
+        props: createProps,
       },
       {
         path: '/error',
