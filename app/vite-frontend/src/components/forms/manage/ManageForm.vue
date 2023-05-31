@@ -2,6 +2,8 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 
+import ApiKey from '~/components/forms/manage/ApiKey.vue';
+import FormSettings from '~/components/designer/FormSettings.vue';
 import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
@@ -87,7 +89,7 @@ async function updateSettings() {
 </script>
 
 <template>
-  <div>
+  <v-container fluid>
     <v-expansion-panels v-model="settingsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel v-if="canEditForm" flat>
         <!-- Form Settings -->
@@ -120,6 +122,7 @@ async function updateSettings() {
             :disabled="formSettingsDisabled"
             lazy-validation
           >
+            <FormSettings :disabled="formSettingsDisabled" />
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
@@ -158,34 +161,42 @@ async function updateSettings() {
             </span>
           </div>
         </v-expansion-panel-title>
-        <v-expansion-panel-text> </v-expansion-panel-text>
+        <v-expansion-panel-text>
+          <ApiKey />
+        </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
 
     <!-- Form Design -->
     <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
-      <v-expansion-panel flat>
+      <v-expansion-panel>
         <v-expansion-panel-title>
-          <div class="header">
-            <strong>Form Design History</strong>
-            <div>
-              <span>
-                <strong>Total Versions:</strong>
-                {{ combinedVersionAndDraftCount }}
-              </span>
+          <v-row no-gutters>
+            <v-col cols="7" class="d-flex justify-start">
+              <strong>Form Design History</strong>
+            </v-col>
+            <v-col class="d-flex justify-end">
+              <div>
+                <span>
+                  <strong>Total Versions:</strong>
+                  {{ combinedVersionAndDraftCount }}
+                </span>
+              </div>
+            </v-col>
+            <v-col class="d-flex justify-end">
               <span class="ml-12 mr-2">
                 <strong>Status:</strong>
                 {{ versionState }}
               </span>
-            </div>
-          </div>
+            </v-col>
+          </v-row>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <ManageVersions />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-  </div>
+  </v-container>
 </template>
 
 <style>

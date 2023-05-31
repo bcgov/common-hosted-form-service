@@ -27,6 +27,6 @@ const IDP = computed(() => IdentityProviders);
 
 <template>
   <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
-    <ManageLayout :f="f"
-  /></BaseSecure>
+    <ManageLayout :f="f" />
+  </BaseSecure>
 </template>

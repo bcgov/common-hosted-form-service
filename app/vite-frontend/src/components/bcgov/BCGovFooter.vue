@@ -5,7 +5,13 @@ const formSubmitMode = ref(router?.meta?.formSubmitMode);
 </script>
 
 <template>
-  <v-footer :class="{ 'gov-footer': true, 'd-print-none': formSubmitMode }">
+  <v-footer
+    :class="{
+      'elevation-20': true,
+      'gov-footer': true,
+      'd-print-none': formSubmitMode,
+    }"
+  >
     <v-row no-gutters>
       <v-btn id="footer-home" variant="text" href="https://www.gov.bc.ca/">
         <span>Home</span>

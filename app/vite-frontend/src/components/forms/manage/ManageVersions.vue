@@ -206,7 +206,8 @@ if (fd) {
   <div>
     <BaseInfoCard class="my-4">
       <h4 class="text-primary">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+        <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
+        >IMPORTANT!
       </h4>
       <p>
         If there are no published versions, users are unable to access this form
@@ -217,8 +218,8 @@ if (fd) {
     </BaseInfoCard>
 
     <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary">info</v-icon>Note: Only one version
-      can be published.
+      <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
+      >Note: Only one version can be published.
     </div>
     <v-data-table
       :key="rerenderTable"

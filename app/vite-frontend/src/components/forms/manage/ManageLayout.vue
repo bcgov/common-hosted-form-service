@@ -46,8 +46,12 @@ onMounted(async () => {
         <h3>{{ form.name }}</h3>
       </v-col>
     </v-row>
-    <v-skeleton-loader :loading="loading" type="list-item-two-line">
-      <ManageForm />
-    </v-skeleton-loader>
+    <v-row class="mt-6" no-gutters>
+      <v-col cols="12" order="2">
+        <v-skeleton-loader :loading="loading" type="list-item-two-line">
+          <ManageForm />
+        </v-skeleton-loader>
+      </v-col>
+    </v-row>
   </div>
 </template>

@@ -15,7 +15,10 @@ const hasPrivileges = computed(
 </script>
 
 <template>
-  <nav v-if="!hideNavBar" class="navigation-main d-print-none px-md-16 px-4">
+  <nav
+    v-if="!hideNavBar"
+    class="elevation-20 navigation-main d-print-none px-md-16 px-4"
+  >
     <div class="nav-holder">
       <ul>
         <li>

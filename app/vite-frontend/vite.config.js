@@ -10,12 +10,18 @@ const proxyObject = {
   changeOrigin: true,
 };
 
+// eslint-disable-next-line no-console
+console.log(process.env.VITE_FRONTEND_BASEPATH);
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: process.env.VITE_FRONTEND_BASEPATH
     ? process.env.VITE_FRONTEND_BASEPATH
     : '/app',
   server: {
+    base: process.env.VITE_FRONTEND_BASEPATH
+      ? process.env.VITE_FRONTEND_BASEPATH
+      : '/app',
     proxy: {
       '^/pr-*/api': proxyObject,
       '^/pr-*/config': proxyObject,
@@ -27,6 +33,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '~': resolve(__dirname, './src'),
+      '~formiojs': resolve(__dirname, './node_modules/formiojs'),
+      '~font-awesome': resolve(__dirname, './node_modules/font-awesome'),
     },
   },
 });

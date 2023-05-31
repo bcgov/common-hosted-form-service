@@ -27,6 +27,21 @@ app.config.globalProperties.$filters = {
   formatDateLong,
 };
 
+// Add our custom components to the formio instance
+// importing the main formio dependency (whether through vue-formio or directly)
+// has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
+// No idea why, probably a polyfill clash
+import BcGovFormioComponents from '~/formio/lib';
+import { Formio } from '@formio/vue';
+Formio.use(BcGovFormioComponents);
+
+/* import clipboard */
+import Clipboard from 'vue3-clipboard';
+app.use(Clipboard, {
+  autoSetContainer: true,
+  appendToBody: true,
+});
+
 app.use(pinia);
 app.use(vuetify);
 

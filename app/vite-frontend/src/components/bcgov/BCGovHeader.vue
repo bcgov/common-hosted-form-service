@@ -12,7 +12,12 @@ const appTitle = ref(
 </script>
 
 <template>
-  <header :class="{ 'gov-header': true }">
+  <header
+    :class="{
+      'elevation-20': true,
+      'gov-header': true,
+    }"
+  >
     <!-- header for browser print only -->
     <div class="printHeader d-none d-print-block">
       <img

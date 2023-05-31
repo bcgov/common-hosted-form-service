@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { formService, rbacService } from '~/services';
+import { apiKeyService, formService, rbacService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
-import { IdentityMode } from '~/utils/constants';
+import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
 
 const genInitialSchedule = () => ({
@@ -50,9 +50,12 @@ const genInitialForm = () => ({
 export const useFormStore = defineStore('form', {
   state: () => ({
     apiKey: undefined,
-    form: genInitialForm(),
     drafts: [],
+    fcProactiveHelpGroupList: {},
+    fcProactiveHelpImageUrl: '',
+    form: genInitialForm(),
     formList: [],
+    imageList: new Map(),
     permissions: [],
   }),
   getters: {
@@ -218,6 +221,82 @@ export const useFormStore = defineStore('form', {
           consoleError: `Error updating form ${this.form.id}: ${error}`,
         });
       }
+    },
+    //
+    // API Keys
+    //
+    async deleteApiKey(formId) {
+      const notificationStore = useNotificationStore();
+      try {
+        await apiKeyService.deleteApiKey(formId);
+        this.apiKey = null;
+        notificationStore.addNotification({
+          text: 'The API Key for this form has been deleted.',
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        notificationStore.addNotification({
+          text: 'An error occurred while trying to delete the API Key.',
+          consoleError: `Error deleting API Key for form ${formId}: ${error}`,
+        });
+      }
+    },
+    async generateApiKey(formId) {
+      const notificationStore = useNotificationStore();
+      try {
+        const { data } = await apiKeyService.generateApiKey(formId);
+        this.apiKey = data;
+        notificationStore.addNotification({
+          text: 'An API Key for this form has been created.',
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        notificationStore.addNotification({
+          text: 'An error occurred while trying to generate an API Key.',
+          consoleError: `Error generating API Key for form ${formId}: ${error}`,
+        });
+      }
+    },
+    async readApiKey(formId) {
+      try {
+        const { data } = await apiKeyService.readApiKey(formId);
+        this.apiKey = data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: 'An error occurred while trying to fetch the API Key.',
+          consoleError: `Error getting API Key for form ${formId}: ${error}`,
+        });
+      }
+    },
+
+    async getFCProactiveHelpImageUrl(componentId) {
+      try {
+        this.fcProactiveHelpImageUrl = {};
+        const response = this.imageList.get(componentId);
+        if (response) {
+          this.fcProactiveHelpImageUrl = response.data.url;
+        } else {
+          const response = await formService.getFCProactiveHelpImageUrl(
+            componentId
+          );
+          this.imageList.set(componentId, response);
+          this.fcProactiveHelpImageUrl = response.data.url;
+        }
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: 'An error occurred while getting image url',
+          consoleError: 'Error getting image url',
+        });
+      }
+    },
+    async setDirtyFlag(isDirty) {
+      // When the form is detected to be dirty set the browser guards for closing the tab etc
+      // There are also Vue route-specific guards so that we can ask before navigating away with the links
+      // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
+      if (!this.form || this.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
+      this.form.isDirty = isDirty;
     },
   },
 });
