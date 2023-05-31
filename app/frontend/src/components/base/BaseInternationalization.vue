@@ -72,7 +72,12 @@ export default {
     languageSelected(lang) {
       this.language = lang.title;
       this.$root.$i18n.locale = lang.keyword;
-      this.$vuetify.lang.current = lang.keyword;
+      this.$vuetify.lang.current =
+        lang.keyword == 'zh'
+          ? 'zhHans'
+          : lang.keyword == 'zh-TW'
+          ? 'zhHant'
+          : lang.keyword;
       this.setMultiLanguage(lang.keyword);
     },
   },
