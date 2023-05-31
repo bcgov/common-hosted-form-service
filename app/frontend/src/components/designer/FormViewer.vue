@@ -29,6 +29,7 @@
               :isDraft="submissionRecord.draft"
               :permissions="permissions"
               :readOnly="readOnly"
+              :submission="submission"
               :submissionId="submissionId"
               :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
               :bulkFile="bulkFile"

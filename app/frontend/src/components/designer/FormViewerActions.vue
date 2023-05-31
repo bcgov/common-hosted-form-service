@@ -22,10 +22,14 @@
           </template>
           <span>{{
             bulkFile
-              ? 'Switch to sigle submission'
+              ? 'Switch to single submission'
               : 'Switch to multiple submission'
           }}</span>
         </v-tooltip>
+      </span>
+
+      <span v-if="draftEnabled" class="ml-2">
+        <PrintOptions :submission="submission" />
       </span>
 
       <!-- Save a draft -->
@@ -80,11 +84,13 @@
 <script>
 import { FormPermissions } from '@/utils/constants';
 import ManageSubmissionUsers from '@/components/forms/submission/ManageSubmissionUsers.vue';
+import PrintOptions from '@/components/forms/PrintOptions.vue';
 
 export default {
   name: 'MySubmissionsActions',
   components: {
     ManageSubmissionUsers,
+    PrintOptions,
   },
   props: {
     block: {
@@ -120,6 +126,10 @@ export default {
     },
     submissionId: {
       type: String,
+      default: undefined,
+    },
+    submission: {
+      type: Object,
       default: undefined,
     },
   },
