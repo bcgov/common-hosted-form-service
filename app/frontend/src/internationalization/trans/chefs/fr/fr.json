@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "aaaa-mm-jj"
+  },
   "formsTable": {
     "myForms": "Mes formulaires",
     "createNewForm": "Créer un nouveau formulaire",
@@ -86,7 +89,7 @@
     "period": "Période",
     "allowLateSubmissions": "Autoriser les soumissions tardives",
     "allowLateSubmissionsInfoTip": "Si cette case est cochée, les soumissionnaires pourront soumettre des données après la date de clôture.",
-    "afterCloseDateFor": "Après la date de clôture de",
+    "afterCloseDateFor": "Après la date de fermeture pour",
     "repeatPeriod": "Période de répétition",
     "every": "Chaque",
     "repeatUntil": "Répète jusqu'à",
@@ -138,11 +141,11 @@
     "delete": "Supprimer",
     "confirmKeyGen": "Confirmer la génération de clé",
     "createAPIKey": "Créer une clé API pour ce formulaire ?<br /> Assurez-vous de suivre la clause de non-responsabilité sur cette page.",
-    "regenerateAPIKey": "Régénérer la clé API ? <br /> <strong>Si vous continuez, votre accès actuel à la clé API sera supprimé</strong>.",
+    "regenerateAPIKey": "Régénérer la clé API ?<br /> <strong>Si vous continuez, votre accès actuel à la clé API sera supprimé</strong> .",
     "formOwnerKeyAcess": "Vous devez être le <strong>propriétaire du formulaire</strong> pour gérer les clés API.",
     "regenerate": "Régénérer",
     "generate": "Générer",
-    "secret": "Secrète",
+    "secret": "Secret",
     "text": "texte",
     "password": "mot de passe"
   },
@@ -175,7 +178,7 @@
     "publishingVersionInfo": "Cela rendra la version {version} de votre formulaire active."
   },
   "addOwner": {
-    "infoA": "Cela ne devrait être fait que dans le cas où le propriétaire actuel du formulaire n'est plus actif ou est hors de contact lors d'un événement prioritaire. Sinon, demandez au propriétaire actuel ou à un administrateur d'équipe du formulaire de le faire lui-même.",
+    "infoA": "Cela ne devrait être fait que dans le cas où le propriétaire actuel du formulaire n'est plus actif ou est hors de contact dans un événement prioritaire. Sinon, demandez au propriétaire actuel ou à un administrateur d'équipe du formulaire de le faire lui-même.",
     "hint": "Pour trouver l'ID utilisateur nécessaire, vous pouvez accéder à l'onglet \"UTILISATEURS\" du portail administrateur et les rechercher.",
     "addowner": "Ajouter un propriétaire",
     "label": "ID utilisateur (guid)"
@@ -260,7 +263,7 @@
   "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Se déconnecter",
-    "login": "connexion"
+    "login": "Connexion"
   },
   "baseDialog": {
     "defaultText": "texte par défaut",
@@ -293,13 +296,33 @@
     "formSchemaImportConsoleErrMsg": "Erreur lors de l'importation du schéma du formulaire : {error}",
     "formDesignSaveErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement de cette conception de formulaire. Si vous devez actualiser ou quitter pour réessayer plus tard, vous pouvez exporter le design existant sur la page pour l'enregistrer pour plus tard.",
     "formDesignSaveConsoleErrMsg": "Erreur lors de la mise à jour ou de la création du formulaire (FormID : {formId}, versionId : {versionId}, draftId : {draftId}) Erreur : {error}",
-    "saved": "Enregistré",
-    "save": "Sauvegarder",
-    "saving": "Économie",
-    "notSaved": "Non enregistré",
-    "collapse": "effondrement",
+    "collapse": "Effondrement",
     "actions": "Actions",
     "version": "Version"
+  },
+  "formViewerMultiUpload": {
+    "important": "IMPORTANT",
+    "uploadSucessMsg": "Pour assurer le téléchargement réussi de plusieurs brouillons, veuillez télécharger et utiliser le modèle fourni.",
+    "confirmDownload": "Voulez-vous le télécharger ?",
+    "jsonFileUpload": "Sélectionnez le fichier JSON à télécharger",
+    "dragNDrop": "ou glissez-déposez-le ici",
+    "chooseAFile": "Choisissez un fichier",
+    "downloadDraftSubmns": "Veuillez télécharger le projet de rapport de soumission et vous assurer que les données sont saisies correctement.",
+    "downloadReport": "Télécharger le rapport",
+    "doYouWantToDownload": "Voulez-vous le télécharger ?",
+    "uploadNewFile": "Télécharger un nouveau fichier",
+    "uploadMultipleFileErr": "Désolé, vous ne pouvez télécharger qu'un seul fichier",
+    "dragMultipleFileErr": "Désolé, vous ne pouvez faire glisser qu'un seul fichier",
+    "fileFormatErr": "Désolé, nous n'acceptons que les fichiers json",
+    "fileSizeErr": "La taille de fichier maximale autorisée est de 5 Mo",
+    "parseJsonErr": "Nous ne pouvons pas analyser les données json du fichier",
+    "jsonObjNotArray": "Mauvais format de fichier json",
+    "jsonObjNotArrayConsErr": "Une erreur inattendue est apparue.",
+    "jsonArrayEmpty": "Ce fichier json est vide.",
+    "errorWhileValidate": "Il y a quelque chose qui ne va pas avec ce fichier",
+    "errWhileCheckValidity": "Il y a quelque chose qui ne va pas avec ce fichier",
+    "errAfterValidate": "Quelques erreurs trouvées, voir ci-dessous pour plus d'informations.",
+    "fileIsEmpty": "ce fichier est vide."
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Clause de non-responsabilité et déclaration de responsabilité pour les concepteurs de formulaire :",
@@ -424,7 +447,19 @@
     "status": "Statut",
     "submissionDate": "Date de soumission",
     "draftUpdatedBy": "Brouillon mis à jour par",
-    "draftLastEdited": "Brouillon modifié en dernier"
+    "draftLastEdited": "Brouillon modifié en dernier",
+    "createLateSubmissn": "Créer une soumission tardive",
+    "formLoading": "Veuillez patienter pendant le chargement du formulaire !!!",
+    "pleaseConfirm": "Veuillez confirmer",
+    "wantToSaveDraft": "Voulez-vous enregistrer le brouillon ?",
+    "yes": "Oui",
+    "no": "Non",
+    "multiDraftUploadSuccess": "Votre téléchargement de brouillons multiples a réussi !",
+    "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {statut}",
+    "errSubmittingForm": "Une erreur s'est produite lors de la soumission de ce formulaire",
+    "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileName}. Erreur : {error}",
+    "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
+    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}"
   },
   "notesPanel": {
     "addNewNote": "Ajouter une nouvelle note",
@@ -470,7 +505,7 @@
     "assignSubmissnToFormReviewer": "Les soumissions peuvent être attribuées à des réviseurs de formulaires.<br /> Pour ajouter d&#39;autres membres de l&#39;équipe en tant que réviseurs de formulaires, accédez à la page Gérer de ce formulaire.",
     "update": "MISE À JOUR",
     "revise": "RÉVISER",
-    "complete": "COMPLÈTE",
+    "complete": "COMPLET",
     "assign": "ATTRIBUER"
   },
   "statusTable": {
@@ -511,7 +546,8 @@
     "apiCallConsErrorMsg": "Erreur lors de l'exportation des soumissions pour",
     "selectAllFields": "Sélectionner tous les champs",
     "emailSentMsg": "Un e-mail sera envoyé à {email} contenant un lien pour télécharger vos données lorsqu'elles seront prêtes",
-    "exportInProgress": "Exportation en cours"
+    "exportInProgress": "Exportation en cours",
+    "of": "de"
   },
   "printOptions": {
     "submitButtonTxt": "Soumettre à CDOGS et télécharger",
@@ -524,8 +560,9 @@
     "uploadA": "Télécharger un",
     "uploadB": "avoir une version structurée",
     "docGrnSucess": "Document généré avec succès",
-    "failedDocGenErrMsg": "Échec de la génération du document",
-    "failedDocGenConsErrMsg": "Erreur lors de l'envoi du modèle : {error}"
+    "failedDocGenErrMsg": "Impossible de générer le document",
+    "failedDocGenConsErrMsg": "Erreur lors de l'envoi du modèle : {error}",
+    "cDogsTemplate": "Modèle CDOGS"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Lien d'informations sur les composants",
@@ -552,18 +589,13 @@
     "formTitle": "Titre du formulaire",
     "actions": "Actions"
   },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "Lien copié dans le presse-papiers",
-    "copyToClipboard": "Copier dans le presse-papier",
-    "errCopyToClipboard": "Erreur lors de la tentative de copie dans le presse-papiers."
-  },
   "formSubmission": {
     "editThisSubmission": "Modifier cette soumission",
     "submission": "Soumission",
     "alertInfo": "Après modification, soumettez à nouveau le formulaire pour enregistrer vos modifications.",
     "viewAllSubmissions": "Voir toutes les soumissions",
     "submitted": "Soumis :",
-    "confirmationID": "Identifiant de confirmation :",
+    "confirmationID": "Identifiant de validation :",
     "submittedBy": "Proposé par:",
     "cancel": "ANNULER",
     "status": "Statut"
@@ -589,7 +621,7 @@
     "delSelectedMemberWarning": "Voulez-vous vraiment supprimer le membre sélectionné ?",
     "idpMessage": "est déjà dans l'équipe.",
     "formOwnerErrMsg": "Il doit toujours y avoir au moins un propriétaire de formulaire",
-    "formOwnerConsoleErrMsg": "Impossible de supprimer car ils sont le seul propriétaire restant de ce formulaire.",
+    "formOwnerConsoleErrMsg": "Impossible de supprimer {userId} car il est le seul propriétaire restant de ce formulaire.",
     "insufficientPermissnMsg": "Autorisations insuffisantes pour gérer l'équipe",
     "getUserErrMsg": "Erreur lors de la récupération des utilisateurs du formulaire :",
     "getRolesErrMsg": "Erreur lors de la récupération de la liste des rôles :",
@@ -681,7 +713,7 @@
     "manageAccessSub2": "Vous pouvez également attribuer des rôles à votre équipe pour gérer toutes vos soumissions.",
     "createCustomFormTitle": "Créez des formulaires personnalisés avec le générateur de formulaires CHEFS",
     "createCustomFormSub1": "Avec CHEFS, vous pouvez créer des formulaires sécurisés avec une interface intuitive par glisser-déposer. Vous pouvez ajouter des composants de formulaire, les réorganiser et les déposer dans différentes configurations de mise en page.",
-    "chefsHowToTitle": "Vidéos explicatives CHEFS",
+    "chefsHowToTitle": "CHEFS Vidéos explicatives",
     "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS. Commencer!",
     "getStartedToChefs": "Commencez à utiliser CHEFS",
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
@@ -700,27 +732,24 @@
     "agreementErrMsg": "Vous devez accepter la clause de non-responsabilité en matière de confidentialité indiquée ci-dessus."
   },
   "addTeamMember": {
-    "formDesign": "Conception de formulaire",
-    "exportDesign": "Conception d'exportation",
-    "importDesign": "Importer la conception",
-    "important": "IMPORTANT",
-    "formDesignInfoA": "Utilisez le bouton <strong>ENREGISTRER LA CONCEPTION</strong> lorsque vous avez terminé de créer ce formulaire.",
-    "formDesignInfoB": "Le bouton <strong>SOUMETTRE</strong> est fourni à votre utilisateur pour soumettre ce formulaire et sera activé après son enregistrement.",
-    "formLoadErrMsg": "Une erreur s'est produite lors du chargement de la conception de formulaire.",
-    "formLoadConsoleErrMsg": "Erreur lors du chargement du schéma {formId} du formulaire (version : {versionId} brouillon : {draftId}) : {error}",
-    "formSchemaImportErrMsg": "Une erreur s'est produite lors de l'importation du schéma du formulaire.",
-    "formSchemaImportConsoleErrMsg": "Erreur lors de l'importation du schéma du formulaire : {error}",
-    "formDesignSaveErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement de cette conception de formulaire. Si vous devez actualiser ou quitter pour réessayer plus tard, vous pouvez exporter le design existant sur la page pour l'enregistrer pour plus tard.",
-    "formDesignSaveConsoleErrMsg": "Erreur lors de la mise à jour ou de la création du formulaire (FormID : {formId}, versionId : {versionId}, draftId : {draftId}) Erreur : {error}",
-    "saved": "Enregistré",
-    "save": "Sauvegarder",
-    "saving": "Économie",
-    "notSaved": "Non enregistré",
-    "collapse": "Effondrement",
-    "actions": "Actions"
+    "cantFindChefsUsers": "Vous ne trouvez pas quelqu&#39;un ? Ils ne se sont peut-être pas connectés à CHEFS.<br /> Veuillez leur envoyer un lien vers CHEFS et leur demander de se connecter.",
+    "cancel": "Annuler",
+    "mustSelectAUser": "Vous devez sélectionner au moins un rôle pour ajouter cet utilisateur.",
+    "addNewMember": "Ajouter un nouveau membre",
+    "enterUsername": "Saisissez un nom, une adresse e-mail ou un nom d'utilisateur",
+    "enterExactUsername": "Entrez un e-mail ou un nom d'utilisateur exact",
+    "BCeIDInputSearchMaxLen": "L'entrée de recherche pour le nom d'utilisateur/e-mail BCeID doit comporter plus de 6 caractères.",
+    "BCeIDMustBeExact": "Les recherches par e-mail pour BCeID doivent être exactes.",
+    "errorGettingUsers": "Erreur lors de l'obtention des utilisateurs {error}"
   },
   "baseFilter": {
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "columnName": "Nom de colonne",
+    "exampleText": "Exemple de texte",
+    "exampleText2": "Exemple de texte 2",
+    "filterPlaceholderTxt": "Filtrer le texte de l'espace réservé",
+    "filter": "Filtre",
+    "value": "valeur"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Voir toutes les soumissions",
@@ -729,37 +758,26 @@
     "switchSingleSubmssn": "Passer à la soumission unique",
     "switchMultiSubmssn": "Passer à la soumission unique"
   },
-  "formViewerMultiUpload": {
-    "important": "IMPORTANT",
-    "uploadSucessMsg": "Pour assurer le téléchargement réussi de plusieurs brouillons, veuillez télécharger et utiliser le modèle fourni.",
-    "confirmDownload": "Voulez-vous le télécharger ?",
-    "jsonFileUpload": "Sélectionnez le fichier JSON à télécharger",
-    "dragNDrop": "ou glissez-déposez-le ici",
-    "chooseAFile": "Choisissez un fichier",
-    "downloadDraftSubmns": "Veuillez télécharger le projet de rapport de soumission et assurez-vous que les données sont saisies correctement.",
-    "downloadReport": "Télécharger le rapport",
-    "doYouWantToDownload": "Voulez-vous le télécharger ?",
-    "uploadNewFile": "Télécharger un nouveau fichier",
-    "uploadMultipleFileErr": "Désolé, vous ne pouvez télécharger qu'un seul fichier",
-    "dragMultipleFileErr": "Désolé, vous ne pouvez faire glisser qu'un seul fichier",
-    "fileFormatErr": "Désolé, nous n'acceptons que les fichiers json",
-    "fileSizeErr": "La taille de fichier maximale autorisée est de 5 Mo",
-    "parseJsonErr": "Nous ne pouvons pas analyser les données json du fichier",
-    "jsonObjNotArray": "Mauvais format de fichier json",
-    "jsonObjNotArrayConsErr": "Une erreur inattendue est apparue.",
-    "jsonArrayEmpty": "Ce fichier json est vide.",
-    "errorWhileValidate": "Il y a quelque chose qui ne va pas avec ce fichier",
-    "errWhileCheckValidity": "Il y a quelque chose qui ne va pas avec ce fichier",
-    "errAfterValidate": "Quelques erreurs trouvées, voir ci-dessous pour plus d'informations.",
-    "fileIsEmpty": "ce fichier est vide."
-  },
-  "sucess": {
-    "sucessFormSubmissn": "فرم شما با موفقیت ارسال شد",
-    "keepRecord": "اگر مایل به حفظ سابقه این ارسال هستید، می توانید موارد زیر را حفظ کنید",
-    "confirmationId": "شناسه تایید:"
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Lien copié dans le presse-papiers",
+    "copyToClipboard": "Copier dans le presse-papier",
+    "errCopyToClipboard": "Erreur lors de la tentative de copie dans le presse-papiers."
   },
   "root": {
     "admin": "Administrateur"
+  },
+  "sucess": {
+    "sucessFormSubmissn": "Votre formulaire a été soumis avec succès",
+    "keepRecord": "Si vous souhaitez conserver une trace de cette soumission, vous pouvez conserver les éléments suivants",
+    "confirmationId": "Identifiant de confirmation :"
+  },
+  "permissionUtils": {
+    "formNotAvailable": "Le formulaire est actuellement indisponible. Cela peut être dû à un lien incorrect, ou le formulaire a peut-être été supprimé par son propriétaire.",
+    "missingFormIdAndSubmssId": "Options manquantes à la fois formId et submitId",
+    "loadingFormErrMsg": "Une erreur s'est produite lors du chargement de ce formulaire.",
+    "loadingForm": "Erreur lors du chargement de {options} : {error}",
+    "idpHintMsg": "Ce formulaire nécessite une authentification {idpHint}. Veuillez vous reconnecter et réessayer.",
+    "formIdpMissMatch": "Non-concordance du formulaire IDP. Le formulaire nécessite {idpHint} mais l'utilisateur a {userIdp}."
   },
   "store": {
     "admin": {
@@ -856,13 +874,5 @@
       "downloadFileErrMsg": "Une erreur s'est produite lors du téléchargement du fichier",
       "downloadFileConsErrMsg": "Erreur lors du téléchargement du fichier : erreur"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "Le formulaire est actuellement indisponible. Cela peut être dû à un lien incorrect, ou le formulaire a peut-être été supprimé par son propriétaire.",
-    "missingFormIdAndSubmssId": "Options manquantes à la fois formId et submitId",
-    "loadingFormErrMsg": "Une erreur s'est produite lors du chargement de ce formulaire.",
-    "loadingForm": "Erreur lors du chargement de {options} : {error}",
-    "idpHintMsg": "Ce formulaire nécessite une authentification {idpHint}. Veuillez vous reconnecter et réessayer.",
-    "formIdpMissMatch": "Non-concordance du formulaire IDP. Le formulaire nécessite {idpHint} mais l'utilisateur a {userIdp}."
   }
 }

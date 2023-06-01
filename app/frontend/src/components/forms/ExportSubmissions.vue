@@ -108,7 +108,9 @@
                           class="subTitleObjectStyle"
                           style="font-size: 14px !important"
                         >
-                          {{ selected.length }} of {{ FILTER_HEADERS.length }}
+                          {{ selected.length }}
+                          {{ $t('trans.exportSubmissions.of') }}
+                          {{ FILTER_HEADERS.length }}
                           {{ $t('trans.exportSubmissions.selectedForExports') }}
                         </div>
 
@@ -182,7 +184,7 @@
                           }}</label>
                           <v-text-field
                             v-model="startDate"
-                            placeholder="yyyy-mm-dd"
+                            :placeholder="$t('trans.date.date')"
                             append-icon="event"
                             v-on:click:append="startDateMenu = true"
                             readonly
@@ -213,7 +215,7 @@
                           <label>{{ $t('trans.exportSubmissions.to') }}</label>
                           <v-text-field
                             v-model="endDate"
-                            placeholder="yyyy-mm-dd"
+                            :placeholder="$t('trans.date.date')"
                             append-icon="event"
                             v-on:click:append="endDateMenu = true"
                             readonly

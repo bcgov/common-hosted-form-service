@@ -340,7 +340,9 @@ export default {
       ) {
         this.addNotification({
           message: this.$t('trans.teamManagement.formOwnerErrMsg'),
-          consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+          consoleError: this.$t('trans.teamManagement.formOwnerConsoleErrMsg', {
+            userId: userId,
+          }),
         });
         return false;
       }
