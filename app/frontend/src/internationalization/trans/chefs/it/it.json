@@ -322,7 +322,8 @@
     "errorWhileValidate": "C'è qualcosa che non va in questo file",
     "errWhileCheckValidity": "C'è qualcosa che non va in questo file",
     "errAfterValidate": "Sono stati rilevati alcuni errori, vedere di seguito per ulteriori informazioni.",
-    "fileIsEmpty": "questo file è vuoto."
+    "fileIsEmpty": "questo file è vuoto.",
+    "download": "Scaricamento"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Dichiarazione di non responsabilità e dichiarazione di responsabilità per i progettisti di moduli:",

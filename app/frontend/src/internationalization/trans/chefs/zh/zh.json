@@ -322,7 +322,8 @@
     "errorWhileValidate": "这个文件有问题",
     "errWhileCheckValidity": "这个文件有问题",
     "errAfterValidate": "发现了一些错误，请参阅下文了解更多信息。",
-    "fileIsEmpty": "这个文件是空的。"
+    "fileIsEmpty": "这个文件是空的。",
+    "download": "下载"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Form Designers 的免责声明和责任声明：",
