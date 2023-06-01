@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "yyyy-mm-dd"
+  },
   "formsTable": {
     "myForms": "biểu mẫu của tôi",
     "createNewForm": "Tạo một biểu mẫu mới",
@@ -70,7 +73,7 @@
     "canSaveAndEditDraftLabel": "Người gửi có thể <strong>Lưu và Chỉnh sửa Bản nháp</strong>",
     "canUpdateStatusAsReviewer": "Người đánh giá có thể <strong>Cập nhật Trạng thái</strong> của biểu mẫu này (nghĩa là Đã gửi, Đã giao, Đã hoàn thành)",
     "submitterCanCopyExistingSubmissn": "Người gửi có thể <strong>Sao chép một bài nộp hiện có</strong>",
-    "submissionConfirmationToolTip": "Việc chọn tùy chọn này kiểm soát những gì người dùng gửi biểu mẫu này sẽ thấy khi gửi thành công.<br /> Nếu được chọn, nó sẽ hiển thị",
+    "submissionConfirmationToolTip": "Việc chọn tùy chọn này sẽ kiểm soát những gì người dùng gửi biểu mẫu này sẽ thấy khi gửi thành công.<br /> Nếu được chọn, nó sẽ hiển thị",
     "emailNotificatnToTeam": "Gửi cho nhóm của tôi một email thông báo",
     "emailNotificatnToTeamToolTip": "Gửi thông báo đến địa chỉ email được chỉ định của bạn khi bất kỳ người dùng nào gửi biểu mẫu này",
     "notificationEmailAddrs": "Địa chỉ email thông báo",
@@ -138,7 +141,7 @@
     "delete": "Xóa bỏ",
     "confirmKeyGen": "Xác nhận tạo khóa",
     "createAPIKey": "Tạo Khóa API cho biểu mẫu này?<br /> Đảm bảo bạn tuân theo Tuyên bố miễn trừ trách nhiệm trên trang này.",
-    "regenerateAPIKey": "Tạo lại khóa API? <br /> <strong>Việc tiếp tục sẽ xóa quyền truy cập Khóa API hiện tại của bạn</strong>.",
+    "regenerateAPIKey": "Tạo lại khóa API?<br /> <strong>Việc tiếp tục sẽ xóa quyền truy cập Khóa API hiện tại của bạn</strong> .",
     "formOwnerKeyAcess": "Bạn phải là <strong>Chủ sở hữu biểu mẫu</strong> để quản lý Khóa API.",
     "regenerate": "tái tạo",
     "generate": "Phát ra",
@@ -154,7 +157,7 @@
     "draft": "Bản nháp",
     "clickToPreview": "Nhấp để xem trước",
     "editVersion": "Chỉnh sửa phiên bản",
-    "exportDesign": "Thiết kế xuất khẩu",
+    "exportDesign": "thiết kế xuất khẩu",
     "infoC": "Vui lòng xuất bản hoặc xóa phiên bản nháp mới nhất của bạn trước khi bắt đầu phiên bản mới.",
     "deleteVersion": "Xóa phiên bản",
     "draftAlreadyExists": "Bản nháp đã tồn tại",
@@ -260,7 +263,7 @@
   "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Đăng xuất",
-    "login": "đăng nhập"
+    "login": "Đăng nhập"
   },
   "baseDialog": {
     "defaultText": "văn bản mặc định",
@@ -296,6 +299,30 @@
     "collapse": "Sụp đổ",
     "actions": "hành động",
     "version": "Phiên bản"
+  },
+  "formViewerMultiUpload": {
+    "important": "QUAN TRỌNG",
+    "uploadSucessMsg": "Để đảm bảo tải lên thành công nhiều bản nháp, vui lòng tải xuống và sử dụng mẫu được cung cấp.",
+    "confirmDownload": "Bạn có muốn tải xuống không?",
+    "jsonFileUpload": "Chọn tệp JSON để tải lên",
+    "dragNDrop": "hoặc kéo thả vào đây",
+    "chooseAFile": "Chọn một tệp",
+    "downloadDraftSubmns": "Vui lòng tải xuống báo cáo đệ trình dự thảo và đảm bảo rằng dữ liệu được nhập chính xác.",
+    "downloadReport": "Tải xuống báo cáo",
+    "doYouWantToDownload": "Bạn có muốn tải xuống không?",
+    "uploadNewFile": "Tải lên tệp mới",
+    "uploadMultipleFileErr": "Xin lỗi, bạn chỉ có thể tải lên một tệp",
+    "dragMultipleFileErr": "Rất tiếc, bạn chỉ có thể kéo một tệp",
+    "fileFormatErr": "Xin lỗi, chúng tôi chỉ chấp nhận các tệp json",
+    "fileSizeErr": "Kích thước tệp tối đa cho phép là 5MB",
+    "parseJsonErr": "Chúng tôi không thể phân tích cú pháp dữ liệu json từ tệp",
+    "jsonObjNotArray": "Định dạng tệp json sai",
+    "jsonObjNotArrayConsErr": "Đã xảy ra lỗi không mong muốn.",
+    "jsonArrayEmpty": "Tệp json này trống.",
+    "errorWhileValidate": "Có gì đó sai với tập tin này",
+    "errWhileCheckValidity": "Có gì đó sai với tập tin này",
+    "errAfterValidate": "Đã tìm thấy một số lỗi, xem bên dưới để biết thêm thông tin.",
+    "fileIsEmpty": "tập tin này là trống rỗng."
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Tuyên bố miễn trừ trách nhiệm và tuyên bố trách nhiệm đối với Người thiết kế biểu mẫu:",
@@ -389,7 +416,7 @@
     "getSubmissionUsersErr": "Đã xảy ra lỗi khi cố gắng tìm nạp người dùng cho nội dung gửi này.",
     "getSubmissionUsersConsoleErr": "Lỗi nhận người dùng cho {submissionId} : {error}",
     "sentInviteEmailTo": "Đã gửi email mời đến",
-    "sentUninvitedEmailTo": "Đã gửi email không mời đến",
+    "sentUninvitedEmailTo": "Đã gửi email không mời tới",
     "updateUserErrMsg": "Đã xảy ra lỗi khi cố gắng cập nhật người dùng cho lần gửi này.",
     "updateUserConsoleErrMsg": "Lỗi đặt quyền của người dùng. Phụ: {submissionId} Người dùng: {userId} Lỗi: {error}",
     "searchInputLength": "Đầu vào tìm kiếm cho tên người dùng/email BCeID phải lớn hơn 6 ký tự.",
@@ -420,7 +447,19 @@
     "status": "Trạng thái",
     "submissionDate": "Ngày nộp hồ sơ",
     "draftUpdatedBy": "Dự thảo được cập nhật bởi",
-    "draftLastEdited": "Bản nháp được chỉnh sửa lần cuối"
+    "draftLastEdited": "Bản nháp được chỉnh sửa lần cuối",
+    "createLateSubmissn": "Tạo bài nộp muộn",
+    "formLoading": "Vui lòng đợi trong khi biểu mẫu đang tải!!!",
+    "pleaseConfirm": "Vui lòng xác nhận",
+    "wantToSaveDraft": "Bạn có muốn lưu bản nháp không?",
+    "yes": "Đúng",
+    "no": "KHÔNG",
+    "multiDraftUploadSuccess": "Tải lên nhiều bản nháp của bạn đã thành công!",
+    "failedResSubmissn": "Phản hồi không thành công từ điểm cuối gửi. Mã phản hồi: {status}",
+    "errSubmittingForm": "Đã xảy ra lỗi khi gửi biểu mẫu này",
+    "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {lỗi}",
+    "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
+    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {lỗi}"
   },
   "notesPanel": {
     "addNewNote": "Thêm ghi chú mới",
@@ -506,8 +545,9 @@
     "apiCallErrorMsg": "Đã xảy ra lỗi khi cố gắng xuất nội dung gửi cho biểu mẫu này.",
     "apiCallConsErrorMsg": "Lỗi khi xuất nội dung gửi cho",
     "selectAllFields": "Chọn tất cả các lĩnh vực",
-    "emailSentMsg": "Một email sẽ được gửi tới {email} có chứa liên kết để tải xuống dữ liệu của bạn khi sẵn sàng",
-    "exportInProgress": "Đang xuất"
+    "emailSentMsg": "Một email sẽ được gửi tới {email} chứa liên kết để tải xuống dữ liệu của bạn khi sẵn sàng",
+    "exportInProgress": "Đang xuất",
+    "of": "của"
   },
   "printOptions": {
     "submitButtonTxt": "Gửi tới CDOGS và tải xuống",
@@ -517,11 +557,12 @@
     "print": "In",
     "browserPrint": "In trình duyệt",
     "pageFromBrowser": "trang từ trình duyệt của bạn",
-    "uploadA": "Завантажити a",
-    "uploadB": "мати структуровану версію",
+    "uploadA": "Tải lên một",
+    "uploadB": "để có một phiên bản có cấu trúc",
     "docGrnSucess": "Tài liệu được tạo thành công",
     "failedDocGenErrMsg": "Không thể tạo tài liệu",
-    "failedDocGenConsErrMsg": "Lỗi khi gửi mẫu: {error}"
+    "failedDocGenConsErrMsg": "Lỗi khi gửi mẫu: {error}",
+    "cDogsTemplate": "mẫu CDOGS"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Liên kết thông tin thành phần",
@@ -547,11 +588,6 @@
     "edit": "BIÊN TẬP",
     "formTitle": "Tiêu đề mẫu",
     "actions": "hành động"
-  },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "Liên kết được sao chép vào khay nhớ tạm",
-    "copyToClipboard": "Sao chép vào clipboard",
-    "errCopyToClipboard": "Lỗi khi cố sao chép vào khay nhớ tạm."
   },
   "formSubmission": {
     "editThisSubmission": "Chỉnh sửa bài nộp này",
@@ -585,7 +621,7 @@
     "delSelectedMemberWarning": "Bạn có chắc chắn muốn xóa thành viên đã chọn không?",
     "idpMessage": "đã ở trong đội.",
     "formOwnerErrMsg": "Phải luôn có ít nhất một chủ sở hữu biểu mẫu",
-    "formOwnerConsoleErrMsg": "Không thể xóa vì họ là chủ sở hữu duy nhất còn lại của biểu mẫu này.",
+    "formOwnerConsoleErrMsg": "Không thể xóa {userId} vì họ là chủ sở hữu duy nhất còn lại của biểu mẫu này.",
     "insufficientPermissnMsg": "Không đủ quyền để quản lý nhóm",
     "getUserErrMsg": "Lỗi nhận người dùng biểu mẫu:",
     "getRolesErrMsg": "Lỗi khi nhận danh sách vai trò:",
@@ -696,27 +732,24 @@
     "agreementErrMsg": "Bạn phải đồng ý với tuyên bố từ chối trách nhiệm về quyền riêng tư được hiển thị ở trên."
   },
   "addTeamMember": {
-    "formDesign": "thiết kế biểu mẫu",
-    "exportDesign": "Thiết kế xuất khẩu",
-    "importDesign": "Thiết kế nhập khẩu",
-    "important": "QUAN TRỌNG",
-    "formDesignInfoA": "Sử dụng nút <strong>LƯU THIẾT KẾ</strong> khi bạn hoàn thành việc xây dựng biểu mẫu này.",
-    "formDesignInfoB": "Nút <strong>GỬI</strong> được cung cấp để người dùng của bạn gửi biểu mẫu này và sẽ được kích hoạt sau khi được lưu.",
-    "formLoadErrMsg": "Đã xảy ra lỗi khi tải thiết kế biểu mẫu.",
-    "formLoadConsoleErrMsg": "Lỗi khi tải lược đồ biểu mẫu {formId} (phiên bản: {versionId} bản nháp: {draftId}): {error}",
-    "formSchemaImportErrMsg": "Đã xảy ra lỗi khi nhập lược đồ biểu mẫu.",
-    "formSchemaImportConsoleErrMsg": "Lỗi khi nhập giản đồ biểu mẫu : {error}",
-    "formDesignSaveErrMsg": "Đã xảy ra lỗi khi cố gắng lưu thiết kế biểu mẫu này. Nếu bạn cần làm mới hoặc để lại để thử lại sau, bạn có thể Xuất thiết kế hiện có trên trang để lưu lại sau này.",
-    "formDesignSaveConsoleErrMsg": "Lỗi khi cập nhật hoặc tạo biểu mẫu (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Lỗi: {error}",
-    "saved": "Đã lưu",
-    "save": "Cứu",
-    "saving": "Tiết kiệm",
-    "notSaved": "Chưa được lưu",
-    "collapse": "Sụp đổ",
-    "actions": "hành động"
+    "cantFindChefsUsers": "Không thể tìm thấy một người nào đó? Họ có thể chưa đăng nhập vào CHEFS.<br /> Vui lòng gửi cho họ một liên kết đến CHEFS và yêu cầu họ đăng nhập.",
+    "cancel": "Hủy bỏ",
+    "mustSelectAUser": "Bạn phải chọn ít nhất một vai trò để thêm người dùng này.",
+    "addNewMember": "Thêm một thành viên mới",
+    "enterUsername": "Nhập tên, e-mail hoặc tên người dùng",
+    "enterExactUsername": "Nhập một e-mail hoặc tên người dùng chính xác",
+    "BCeIDInputSearchMaxLen": "Đầu vào tìm kiếm cho tên người dùng/email BCeID phải lớn hơn 6 ký tự.",
+    "BCeIDMustBeExact": "Tìm kiếm email cho BCeID phải chính xác.",
+    "errorGettingUsers": "Lỗi nhận người dùng {error}"
   },
   "baseFilter": {
-    "cancel": "Hủy bỏ"
+    "cancel": "Hủy bỏ",
+    "columnName": "Tên cột dọc",
+    "exampleText": "Văn bản mẫu",
+    "exampleText2": "Văn bản mẫu 2",
+    "filterPlaceholderTxt": "Lọc văn bản giữ chỗ",
+    "filter": "Lọc",
+    "value": "giá trị"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Xem tất cả bài dự thi",
@@ -725,37 +758,26 @@
     "switchSingleSubmssn": "Chuyển sang gửi một lần",
     "switchMultiSubmssn": "Chuyển sang gửi một lần"
   },
-  "formViewerMultiUpload": {
-    "important": "QUAN TRỌNG",
-    "uploadSucessMsg": "Để đảm bảo tải lên thành công nhiều bản nháp, vui lòng tải xuống và sử dụng mẫu được cung cấp.",
-    "confirmDownload": "Bạn có muốn tải xuống không?",
-    "jsonFileUpload": "Chọn tệp JSON để tải lên",
-    "dragNDrop": "hoặc kéo thả vào đây",
-    "chooseAFile": "Chọn một tệp",
-    "downloadDraftSubmns": "Vui lòng tải xuống báo cáo đệ trình dự thảo và đảm bảo rằng dữ liệu được nhập chính xác.",
-    "downloadReport": "Tải xuống báo cáo",
-    "doYouWantToDownload": "Bạn có muốn tải về nó?",
-    "uploadNewFile": "Tải lên tệp mới",
-    "uploadMultipleFileErr": "Xin lỗi, bạn chỉ có thể tải lên một tệp",
-    "dragMultipleFileErr": "Rất tiếc, bạn chỉ có thể kéo một tệp",
-    "fileFormatErr": "Xin lỗi, chúng tôi chỉ chấp nhận các tệp json",
-    "fileSizeErr": "Kích thước tệp tối đa cho phép là 5MB",
-    "parseJsonErr": "Chúng tôi không thể phân tích cú pháp dữ liệu json từ tệp",
-    "jsonObjNotArray": "Định dạng tệp json sai",
-    "jsonObjNotArrayConsErr": "Đã xảy ra lỗi không mong muốn.",
-    "jsonArrayEmpty": "Tệp json này trống.",
-    "errorWhileValidate": "Có gì đó sai với tập tin này",
-    "errWhileCheckValidity": "Có gì đó sai với tập tin này",
-    "errAfterValidate": "Đã tìm thấy một số lỗi, xem bên dưới để biết thêm thông tin.",
-    "fileIsEmpty": "tập tin này là trống rỗng."
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Liên kết được sao chép vào khay nhớ tạm",
+    "copyToClipboard": "Sao chép vào clipboard",
+    "errCopyToClipboard": "Lỗi khi cố sao chép vào khay nhớ tạm."
+  },
+  "root": {
+    "admin": "Quản trị viên"
   },
   "sucess": {
     "sucessFormSubmissn": "Biểu mẫu của bạn đã được gửi thành công",
     "keepRecord": "Nếu bạn muốn giữ một bản ghi của bài nộp này, bạn có thể giữ như sau",
     "confirmationId": "ID xác nhận:"
   },
-  "root": {
-    "admin": "Quản trị viên"
+  "permissionUtils": {
+    "formNotAvailable": "Các hình thức hiện không có sẵn. Điều này có thể là do một liên kết không chính xác hoặc biểu mẫu có thể đã bị xóa bởi chủ sở hữu của nó.",
+    "missingFormIdAndSubmssId": "Tùy chọn thiếu cả formId và submitId",
+    "loadingFormErrMsg": "Đã xảy ra lỗi khi tải biểu mẫu này.",
+    "loadingForm": "Lỗi khi tải {options}: {error}",
+    "idpHintMsg": "Biểu mẫu này yêu cầu xác thực {idpHint}. Vui lòng đăng nhập lại và thử lại.",
+    "formIdpMissMatch": "Mẫu IDP không khớp. Biểu mẫu yêu cầu {idpHint} nhưng người dùng có {userIdp}."
   },
   "store": {
     "admin": {
@@ -852,13 +874,5 @@
       "downloadFileErrMsg": "Đã xảy ra lỗi khi tải xuống tệp",
       "downloadFileConsErrMsg": "Lỗi khi tải xuống tệp: lỗi"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "Các hình thức hiện không có sẵn. Điều này có thể là do một liên kết không chính xác hoặc biểu mẫu có thể đã bị xóa bởi chủ sở hữu của nó.",
-    "missingFormIdAndSubmssId": "Tùy chọn thiếu cả formId và submitId",
-    "loadingFormErrMsg": "Đã xảy ra lỗi khi tải biểu mẫu này.",
-    "loadingForm": "Lỗi khi tải {options}: {error}",
-    "idpHintMsg": "Biểu mẫu này yêu cầu xác thực {idpHint}. Vui lòng đăng nhập lại và thử lại.",
-    "formIdpMissMatch": "Mẫu IDP không khớp. Biểu mẫu yêu cầu {idpHint} nhưng người dùng có {userIdp}."
   }
 }

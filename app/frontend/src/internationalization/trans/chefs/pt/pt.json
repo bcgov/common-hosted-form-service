@@ -1,11 +1,14 @@
 {
+  "date": {
+    "date": "aaaa-mm-dd"
+  },
   "formsTable": {
     "myForms": "Meus formulários",
     "createNewForm": "Criar um novo formulário",
     "search": "Procurar",
     "manage": "Gerenciar",
     "submissions": "Envios",
-    "formTitle": "Título do formulário",
+    "formTitle": "Título do Formulário",
     "viewForm": "Ver formulário",
     "description": "descrição",
     "Description": "Descrição:",
@@ -46,8 +49,7 @@
     "cancel": "Cancelar"
   },
   "formSettings": {
-    "public": "Público (anônimo)",
-    "formTitle": "Título do Formulário",
+    "formTitle": "Título do formulário",
     "formDescription": "Descrição do formulário",
     "formAccess": "Acesso ao formulário",
     "info": "Se você usar este formulário para coletar informações do público em geral sobre tópicos de interesse geral do público, deverá entrar em contato com o GCPE para que seu envolvimento possa ser listado no",
@@ -119,7 +121,8 @@
     "selectAnOptions": "Selecione pelo menos 1 opção",
     "validInterval": "Este deve ser um intervalo válido.",
     "fieldRequiredAndInterval": "Este campo é obrigatório e deve ser um intervalo.",
-    "dateGrtOpenSubmissnDate": "Repetir até a data deve ser maior que a data de envio aberta"
+    "dateGrtOpenSubmissnDate": "Repetir até a data deve ser maior que a data de envio aberta",
+    "public": "Público (anônimo)"
   },
   "apiKey": {
     "disclaimer": "Isenção de responsabilidade",
@@ -175,7 +178,7 @@
     "publishingVersionInfo": "Isso tornará a versão {version} do seu formulário ativa."
   },
   "addOwner": {
-    "infoA": "Isso só deve ser feito caso o proprietário atual do formulário não esteja mais ativo ou esteja fora de contato em um evento prioritário. Caso contrário, faça com que o proprietário atual ou um administrador de equipe do formulário façam isso sozinhos.",
+    "infoA": "Isso só deve ser feito caso o proprietário do formulário atual não esteja mais ativo ou esteja fora de contato em um evento prioritário. Caso contrário, faça com que o proprietário atual ou um administrador de equipe do formulário façam isso sozinhos.",
     "hint": "Para encontrar o ID de usuário necessário, você pode ir até a guia 'USUÁRIOS' no portal do administrador e procurá-los.",
     "addowner": "Adicionar proprietário",
     "label": "ID do usuário (guid)"
@@ -297,6 +300,30 @@
     "actions": "Ações",
     "version": "Versão"
   },
+  "formViewerMultiUpload": {
+    "important": "IMPORTANTE",
+    "uploadSucessMsg": "Para garantir o upload bem-sucedido de vários rascunhos, faça o download e utilize o modelo fornecido.",
+    "confirmDownload": "Deseja baixá-lo?",
+    "jsonFileUpload": "Selecione o arquivo JSON para fazer upload",
+    "dragNDrop": "ou arraste e solte aqui",
+    "chooseAFile": "Escolha um arquivo",
+    "downloadDraftSubmns": "Faça o download do rascunho do relatório de envio e verifique se os dados foram inseridos corretamente.",
+    "downloadReport": "Baixar relatório",
+    "doYouWantToDownload": "Deseja baixá-lo?",
+    "uploadNewFile": "Carregar novo arquivo",
+    "uploadMultipleFileErr": "Desculpe, você pode enviar apenas um arquivo",
+    "dragMultipleFileErr": "Desculpe, você pode arrastar apenas um arquivo",
+    "fileFormatErr": "Desculpe, só aceitamos arquivos json",
+    "fileSizeErr": "O tamanho máximo de arquivo permitido é de 5 MB",
+    "parseJsonErr": "Não podemos analisar dados json do arquivo",
+    "jsonObjNotArray": "Formato de arquivo json incorreto",
+    "jsonObjNotArrayConsErr": "Um erro inesperado ocorreu.",
+    "jsonArrayEmpty": "Este arquivo json está vazio.",
+    "errorWhileValidate": "Há algo errado com este arquivo",
+    "errWhileCheckValidity": "Há algo errado com este arquivo",
+    "errAfterValidate": "Alguns erros encontrados, veja abaixo para mais informações.",
+    "fileIsEmpty": "este arquivo está vazio."
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Isenção de responsabilidade e declaração de responsabilidade para Designers de formulários:",
     "privacyLaw": "É sua responsabilidade cumprir as leis de privacidade que regem a coleta, uso e divulgação de informações de identificação pessoal.",
@@ -329,7 +356,7 @@
     "resSelectedSubmissions": "Restaurar envios selecionados",
     "yes": "SIM",
     "no": "NÃO",
-    "viewSubmission": "Ver Envio",
+    "viewSubmission": "Ver submissão",
     "deleteSubmission": "Excluir Envio",
     "restore": "Restaurar",
     "confirmDeletion": "Confirmar exclusão",
@@ -420,7 +447,19 @@
     "status": "Status",
     "submissionDate": "Data de submissão",
     "draftUpdatedBy": "Rascunho atualizado por",
-    "draftLastEdited": "Rascunho da última edição"
+    "draftLastEdited": "Rascunho da última edição",
+    "createLateSubmissn": "Criar envio tardio",
+    "formLoading": "Aguarde enquanto o formulário está carregando!!!",
+    "pleaseConfirm": "Por favor confirme",
+    "wantToSaveDraft": "Deseja salvar o rascunho?",
+    "yes": "Sim",
+    "no": "Não",
+    "multiDraftUploadSuccess": "O upload de vários rascunhos foi bem-sucedido!",
+    "failedResSubmissn": "Falha na resposta do endpoint de envio. Código de resposta: {status}",
+    "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
+    "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {erro}",
+    "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
+    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissãoId}. Erro: {erro}"
   },
   "notesPanel": {
     "addNewNote": "Adicionar nova nota",
@@ -458,7 +497,7 @@
     "updtSubmissionsStatusErr": "Nenhum dado de resposta da API ao enviar o formulário de atualização de status",
     "noStatus": "Sem status",
     "noStatusesFound": "Nenhum status encontrado",
-    "statusCodesErr": "códigos de status de localização de erro",
+    "statusCodesErr": "erro ao encontrar códigos de status",
     "notifyErrorCode": "Ocorreu um erro ao buscar o status deste envio.",
     "notifyConsoleErrorCode": "Erro ao obter status:",
     "fetchSubmissionUsersErr": "Ocorreu um erro ao tentar buscar e-mails de destinatários para este envio.",
@@ -486,7 +525,7 @@
     "csv": "CSV",
     "formVersion": "Versão do formulário",
     "versionIsRequired": "A versão é necessária.",
-    "dataFields": "Campos de dados",
+    "dataFields": "Campos de Dados",
     "searchFields": "Campos de pesquisa",
     "selectedForExports": "selecionado para exportação",
     "submissionDate": "Data de submissão",
@@ -507,7 +546,8 @@
     "apiCallConsErrorMsg": "Erro ao exportar envios para",
     "selectAllFields": "Selecione todos os campos",
     "emailSentMsg": "Um e-mail será enviado para {email} contendo um link para baixar seus dados quando estiver pronto",
-    "exportInProgress": "Exportação em andamento"
+    "exportInProgress": "Exportação em andamento",
+    "of": "de"
   },
   "printOptions": {
     "submitButtonTxt": "Envie para o CDOGS e faça o download",
@@ -521,14 +561,15 @@
     "uploadB": "ter uma versão estruturada",
     "docGrnSucess": "Documento gerado com sucesso",
     "failedDocGenErrMsg": "Falha ao gerar documento",
-    "failedDocGenConsErrMsg": "Erro ao enviar modelo: {error}"
+    "failedDocGenConsErrMsg": "Erro ao enviar modelo: {error}",
+    "cDogsTemplate": "modelo CDOGS"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link de informações do componente",
     "learnMoreLinkTxt": "Saiba mais O campo Link não pode ficar vazio.",
     "largeImgTxt": "Imagem grande. O tamanho da imagem não pode ser maior que 0,5 MB",
     "componentName": "Nome do componente:",
-    "learnMoreLink": "Link Saiba mais:",
+    "learnMoreLink": "Link Saiba Mais:",
     "clickToEnableLink": "Clique para ativar o link",
     "clickToDisableLink": "Clique para desativar o link",
     "imageUpload": "Carregamento de imagem:",
@@ -545,13 +586,8 @@
     "published": "PUBLICADOS",
     "unpublished": "NÃO PUBLICADO",
     "edit": "EDITAR",
-    "formTitle": "Título do formulário",
+    "formTitle": "Título do Formulário",
     "actions": "Ações"
-  },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "Link copiado para a área de transferência",
-    "copyToClipboard": "Copiar para área de transferência",
-    "errCopyToClipboard": "Erro ao tentar copiar para a área de transferência."
   },
   "formSubmission": {
     "editThisSubmission": "Editar este envio",
@@ -585,10 +621,10 @@
     "delSelectedMemberWarning": "Tem certeza de que deseja remover o membro selecionado?",
     "idpMessage": "já está na equipe.",
     "formOwnerErrMsg": "Sempre deve haver pelo menos um proprietário de formulário",
-    "formOwnerConsoleErrMsg": "Não é possível remover porque ele é o único proprietário restante deste formulário.",
+    "formOwnerConsoleErrMsg": "Não é possível remover {userId} porque ele é o único proprietário restante deste formulário.",
     "insufficientPermissnMsg": "Permissões insuficientes para gerenciar a equipe",
     "getUserErrMsg": "Erro ao obter usuários do formulário:",
-    "getRolesErrMsg": "Erro ao obter a lista de funções:",
+    "getRolesErrMsg": "Erro ao obter a lista de papéis:",
     "formOwnerRemovalWarning": "Não é possível remover porque ele é o único proprietário restante deste formulário.",
     "removeUsersErrMsg": "Ocorreu um erro ao tentar excluir os usuários selecionados",
     "removeUserConsoleErrMsg": "Erro ao excluir usuários do formulário {formId}: {error}",
@@ -645,7 +681,7 @@
     "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
     "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileNname}. Erro: {erro}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
-    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissãoId}. Erro: {erro}"
+    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissionId: {submissionId}. Erro: {erro}"
   },
   "bCGovFooter": {
     "home": "Lar",
@@ -689,7 +725,7 @@
     "designForm": "Forma de desenho",
     "formSettings": "Configurações do formulário",
     "disclaimer": "Isenção de responsabilidade",
-    "disclaimerStmt": "Eu concordo com a isenção de responsabilidade e a declaração de responsabilidade dos Designers de formulários",
+    "disclaimerStmt": "Eu concordo com a isenção de responsabilidade e declaração de responsabilidade para Form Designers",
     "continue": "Continuar",
     "back": "Voltar",
     "confirmPageNav": "Você realmente deseja sair desta página? As alterações feitas não serão salvas.",
@@ -722,32 +758,26 @@
     "switchSingleSubmssn": "Alternar para envio único",
     "switchMultiSubmssn": "Alternar para envio único"
   },
-  "formViewerMultiUpload": {
-    "important": "IMPORTANTE",
-    "uploadSucessMsg": "Para garantir o upload bem-sucedido de vários rascunhos, faça o download e utilize o modelo fornecido.",
-    "confirmDownload": "Deseja baixá-lo?",
-    "jsonFileUpload": "Selecione o arquivo JSON para fazer upload",
-    "dragNDrop": "ou arraste e solte aqui",
-    "chooseAFile": "Escolha um arquivo",
-    "downloadDraftSubmns": "Faça o download do rascunho do relatório de envio e verifique se os dados foram inseridos corretamente.",
-    "downloadReport": "Baixar relatório",
-    "doYouWantToDownload": "Deseja baixá-lo?",
-    "uploadNewFile": "Carregar novo arquivo",
-    "uploadMultipleFileErr": "Desculpe, você pode enviar apenas um arquivo",
-    "dragMultipleFileErr": "Desculpe, você pode arrastar apenas um arquivo",
-    "fileFormatErr": "Desculpe, só aceitamos arquivos json",
-    "fileSizeErr": "O tamanho máximo de arquivo permitido é de 5 MB",
-    "parseJsonErr": "Não podemos analisar dados json do arquivo",
-    "jsonObjNotArray": "Formato de arquivo json incorreto",
-    "jsonObjNotArrayConsErr": "Um erro inesperado ocorreu.",
-    "jsonArrayEmpty": "Este arquivo json está vazio.",
-    "errorWhileValidate": "Há algo errado com este arquivo",
-    "errWhileCheckValidity": "Há algo errado com este arquivo",
-    "errAfterValidate": "Alguns erros encontrados, veja abaixo para mais informações.",
-    "fileIsEmpty": "este arquivo está vazio."
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Link copiado para a área de transferência",
+    "copyToClipboard": "Copiar para área de transferência",
+    "errCopyToClipboard": "Erro ao tentar copiar para a área de transferência."
   },
   "root": {
     "admin": "Administrador"
+  },
+  "sucess": {
+    "sucessFormSubmissn": "Seu formulário foi submetido com sucesso",
+    "keepRecord": "Se você deseja manter um registro desta submissão, você pode manter o seguinte",
+    "confirmationId": "ID de confirmação:"
+  },
+  "permissionUtils": {
+    "formNotAvailable": "O formulário está indisponível no momento. Isso pode ocorrer devido a um link incorreto ou o formulário pode ter sido excluído pelo proprietário.",
+    "missingFormIdAndSubmssId": "Opções faltando formId e submitId",
+    "loadingFormErrMsg": "Ocorreu um erro ao carregar este formulário.",
+    "loadingForm": "Erro ao carregar {options}: {error}",
+    "idpHintMsg": "Este formulário requer autenticação {idpHint}. Faça login novamente e tente novamente.",
+    "formIdpMissMatch": "Incompatibilidade de IDP de formulário. O formulário requer {idpHint}, mas o usuário tem {userIdp}."
   },
   "store": {
     "admin": {
@@ -844,13 +874,5 @@
       "downloadFileErrMsg": "Ocorreu um erro durante o download do arquivo",
       "downloadFileConsErrMsg": "Erro ao baixar o arquivo: erro"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "O formulário está indisponível no momento. Isso pode ocorrer devido a um link incorreto ou o formulário pode ter sido excluído pelo proprietário.",
-    "missingFormIdAndSubmssId": "Opções faltando formId e submitId",
-    "loadingFormErrMsg": "Ocorreu um erro ao carregar este formulário.",
-    "loadingForm": "Erro ao carregar {options}: {error}",
-    "idpHintMsg": "Este formulário requer autenticação {idpHint}. Faça login novamente e tente novamente.",
-    "formIdpMissMatch": "Incompatibilidade de IDP de formulário. O formulário requer {idpHint}, mas o usuário tem {userIdp}."
   }
 }

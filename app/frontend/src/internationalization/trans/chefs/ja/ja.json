@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "yyyy-mm-dd"
+  },
   "formsTable": {
     "myForms": "私のフォーム",
     "createNewForm": "新しいフォームを作成する",
@@ -119,7 +122,7 @@
     "validInterval": "これは有効な間隔である必要があります。",
     "fieldRequiredAndInterval": "このフィールドは必須であり、間隔である必要があります。",
     "dateGrtOpenSubmissnDate": "日付が提出開始日よりも後の日付になるまで繰り返します",
-    "public": "公開（匿名)"
+    "public": "公開（匿名）"
   },
   "apiKey": {
     "disclaimer": "免責事項",
@@ -137,9 +140,9 @@
     "deleteMsg": "API キーを削除してもよろしいですか?",
     "delete": "消去",
     "confirmKeyGen": "キー生成の確認",
-    "createAPIKey": "このフォームの API キーを作成しますか?<br /> このページの免責事項に従ってください。",
-    "regenerateAPIKey": "APIキーを再生成しますか? <br /> <strong>続行すると、現在の API キー アクセスが削除されます</strong>。",
-    "formOwnerKeyAcess": "API キーを管理するには<strong>フォーム所有者</strong>である必要があります。",
+    "createAPIKey": "このフォームの API キーを作成しますか?<br />このページの免責事項に従ってください。",
+    "regenerateAPIKey": "APIキーを再生成しますか?<br /><strong>続行すると、現在の API キー アクセスが削除されます</strong>。",
+    "formOwnerKeyAcess": "API キーを管理するには、<strong>フォーム所有者</strong>である必要があります。",
     "regenerate": "再生する",
     "generate": "生成",
     "secret": "ひみつ",
@@ -250,7 +253,7 @@
     "JWTContentsTTTxt": "JWT コンテンツをクリップボードにコピー",
     "JWTToken": "JWTトークン",
     "JWTTokenSBTxt": "JWT トークンがクリップボードにコピーされました",
-    "JWTTokenTTTxt": "JWTトークンをクリップボードにコピー",
+    "JWTTokenTTTxt": "JWT トークンをクリップボードにコピー",
     "chefsAPI": "シェフAPI",
     "RBACSBTxt": "RBAC 応答がクリップボードにコピーされました",
     "RBACTTTxt": "RBAC 応答をクリップボードにコピー",
@@ -296,6 +299,30 @@
     "collapse": "崩壊",
     "actions": "行動",
     "version": "バージョン"
+  },
+  "formViewerMultiUpload": {
+    "important": "重要",
+    "uploadSucessMsg": "複数の下書きを確実にアップロードするには、提供されているテンプレートをダウンロードしてご利用ください。",
+    "confirmDownload": "ダウンロードしますか?",
+    "jsonFileUpload": "アップロードするJSONファイルを選択してください",
+    "dragNDrop": "またはここにドラッグアンドドロップします",
+    "chooseAFile": "ファイルを選択してください",
+    "downloadDraftSubmns": "ドラフト提出レポートをダウンロードし、データが正しく入力されていることを確認してください。",
+    "downloadReport": "レポートのダウンロード",
+    "doYouWantToDownload": "ダウンロードしますか?",
+    "uploadNewFile": "新しいファイルをアップロードする",
+    "uploadMultipleFileErr": "申し訳ありませんが、アップロードできるファイルは 1 つだけです",
+    "dragMultipleFileErr": "申し訳ありませんが、ドラッグできるファイルは 1 つだけです",
+    "fileFormatErr": "申し訳ありませんが、JSON ファイルのみ受け付けます",
+    "fileSizeErr": "許可される最大ファイルサイズは5MBです",
+    "parseJsonErr": "ファイルからの JSON データを解析できません",
+    "jsonObjNotArray": "間違ったjsonファイル形式",
+    "jsonObjNotArrayConsErr": "予期しないエラーが発生しました。",
+    "jsonArrayEmpty": "この json ファイルは空です。",
+    "errorWhileValidate": "このファイルには問題があります",
+    "errWhileCheckValidity": "このファイルには問題があります",
+    "errAfterValidate": "いくつかのエラーが見つかりました。詳細については、以下を参照してください。",
+    "fileIsEmpty": "このファイルは空です。"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "フォームデザイナーに対する免責事項と責任声明:",
@@ -420,7 +447,19 @@
     "status": "スターテス",
     "submissionDate": "提出日",
     "draftUpdatedBy": "ドラフトの更新者",
-    "draftLastEdited": "ドラフトの最終編集日"
+    "draftLastEdited": "ドラフトの最終編集日",
+    "createLateSubmissn": "遅延提出を作成する",
+    "formLoading": "フォームを読み込んでいる間お待ちください!!!",
+    "pleaseConfirm": "ご確認ください",
+    "wantToSaveDraft": "下書きを保存しますか?",
+    "yes": "はい",
+    "no": "いいえ",
+    "multiDraftUploadSuccess": "複数の下書きのアップロードが成功しました。",
+    "failedResSubmissn": "送信エンドポイントからの応答が失敗しました。レスポンスコード: {ステータス}",
+    "errSubmittingForm": "このフォームの送信中にエラーが発生しました",
+    "errorSavingFile": "ファイルの保存中にエラーが発生しました。ファイル名: {ファイル名}。エラー: {エラー}",
+    "submittingDraftErrMsg": "下書きの保存中にエラーが発生しました",
+    "submittingDraftConsErrMsg": "下書きの保存中にエラーが発生しました。送信 ID: {submissionId}。エラー: {エラー}"
   },
   "notesPanel": {
     "addNewNote": "新しいメモを追加",
@@ -507,7 +546,8 @@
     "apiCallConsErrorMsg": "エクスポート送信エラー",
     "selectAllFields": "すべてのフィールドを選択します",
     "emailSentMsg": "準備ができたら、データをダウンロードするためのリンクを含むメールが {email} に送信されます",
-    "exportInProgress": "エクスポート中です"
+    "exportInProgress": "エクスポート中です",
+    "of": "の"
   },
   "printOptions": {
     "submitButtonTxt": "CDOGS に送信してダウンロードする",
@@ -521,7 +561,8 @@
     "uploadB": "構造化されたバージョンを作成する",
     "docGrnSucess": "ドキュメントが正常に生成されました",
     "failedDocGenErrMsg": "ドキュメントの生成に失敗しました",
-    "failedDocGenConsErrMsg": "テンプレートの送信エラー: {error}"
+    "failedDocGenConsErrMsg": "テンプレートの送信エラー: {error}",
+    "cDogsTemplate": "CDOGS テンプレート"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "コンポーネント情報リンク",
@@ -542,16 +583,11 @@
   "generalLayout": {
     "loadingText": "読み込み中。。。待って下さい",
     "preview": "プレビュー",
-    "published": "公開されました",
+    "published": "出版されました",
     "unpublished": "未公開",
     "edit": "編集",
     "formTitle": "フォームのタイトル",
     "actions": "行動"
-  },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "リンクがクリップボードにコピーされました",
-    "copyToClipboard": "クリップボードにコピー",
-    "errCopyToClipboard": "クリップボードにコピーしようとしたときにエラーが発生しました。"
   },
   "formSubmission": {
     "editThisSubmission": "この提出物を編集する",
@@ -559,7 +595,7 @@
     "alertInfo": "編集後、フォームを再送信して変更を保存します。",
     "viewAllSubmissions": "すべての提出物を表示",
     "submitted": "提出済み:",
-    "confirmationID": "確認ID:",
+    "confirmationID": "確認ID：",
     "submittedBy": "から提出された：",
     "cancel": "キャンセル",
     "status": "スターテス"
@@ -585,7 +621,7 @@
     "delSelectedMemberWarning": "選択したメンバーを削除してもよろしいですか?",
     "idpMessage": "すでにチームにいます。",
     "formOwnerErrMsg": "常に少なくとも 1 人のフォーム所有者が必要です",
-    "formOwnerConsoleErrMsg": "このフォームの残りの所有者は彼らだけであるため、削除できません。",
+    "formOwnerConsoleErrMsg": "{userId} はこのフォームの残りの唯一の所有者であるため、削除できません。",
     "insufficientPermissnMsg": "チームを管理するための十分な権限がありません",
     "getUserErrMsg": "フォームユーザーの取得中にエラーが発生しました:",
     "getRolesErrMsg": "役割のリストの取得中にエラーが発生しました:",
@@ -680,7 +716,7 @@
     "chefsHowToTitle": "シェフのハウツービデオ",
     "chefsHowToSub": "クイックスタート ガイドでは、CHEFS の基本機能のいくつかを紹介します。始めましょう！",
     "getStartedToChefs": "CHFS の使用を開始する",
-    "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します",
+    "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します。",
     "getStarted": "始めましょう"
   },
   "create": {
@@ -696,27 +732,24 @@
     "agreementErrMsg": "上記のプライバシー免責事項に同意する必要があります。"
   },
   "addTeamMember": {
-    "formDesign": "フォームデザイン",
-    "exportDesign": "デザインのエクスポート",
-    "importDesign": "デザインのインポート",
-    "important": "重要",
-    "formDesignInfoA": "このフォームの作成が完了したら、 <strong>[デザインを保存]</strong>ボタンを使用します。",
-    "formDesignInfoB": "<strong>[送信]</strong>ボタンは、ユーザーがこのフォームを送信するために提供されており、保存後にアクティブになります。",
-    "formLoadErrMsg": "フォームデザインの読み込み中にエラーが発生しました。",
-    "formLoadConsoleErrMsg": "フォーム {formId} スキーマの読み込みエラー (バージョン: {versionId} ドラフト: {draftId}): {error}",
-    "formSchemaImportErrMsg": "フォーム スキーマのインポート中にエラーが発生しました。",
-    "formSchemaImportConsoleErrMsg": "フォーム スキーマのインポート中にエラーが発生しました: {error}",
-    "formDesignSaveErrMsg": "このフォームデザインを保存しようとしたときにエラーが発生しました。更新するか、後で再試行するために終了する必要がある場合は、ページ上の既存のデザインをエクスポートして、後で使用できるように保存できます。",
-    "formDesignSaveConsoleErrMsg": "フォームの更新または作成中にエラーが発生しました (FormID: {formId}、versionId: {versionId}、draftId: {draftId}) エラー: {error}",
-    "saved": "保存されました",
-    "save": "保存",
-    "saving": "保存",
-    "notSaved": "保存されていません",
-    "collapse": "崩壊",
-    "actions": "行動"
+    "cantFindChefsUsers": "誰かが見つかりませんか?彼らは CHEFS にログインしていない可能性があります。<br /> CHEFS へのリンクを送信し、ログインするようお願いしてください。",
+    "cancel": "キャンセル",
+    "mustSelectAUser": "このユーザーを追加するには、少なくとも 1 つの役割を選択する必要があります。",
+    "addNewMember": "新しいメンバーを追加する",
+    "enterUsername": "名前、電子メール、またはユーザー名を入力してください",
+    "enterExactUsername": "正確な電子メールまたはユーザー名を入力してください",
+    "BCeIDInputSearchMaxLen": "BCeID ユーザー名/電子メールの検索入力は 6 文字以上である必要があります。",
+    "BCeIDMustBeExact": "BCeID の電子メール検索は正確である必要があります。",
+    "errorGettingUsers": "ユーザーの取得中にエラーが発生しました {error}"
   },
   "baseFilter": {
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "columnName": "列名",
+    "exampleText": "テキストの例",
+    "exampleText2": "テキスト例 2",
+    "filterPlaceholderTxt": "プレースホルダーテキストのフィルター",
+    "filter": "フィルター",
+    "value": "価値"
   },
   "formViewerActions": {
     "viewAllSubmissions": "すべての提出物を表示",
@@ -725,29 +758,10 @@
     "switchSingleSubmssn": "単一の提出に切り替える",
     "switchMultiSubmssn": "単一の提出に切り替える"
   },
-  "formViewerMultiUpload": {
-    "important": "重要",
-    "uploadSucessMsg": "複数の下書きを確実にアップロードするには、提供されているテンプレートをダウンロードしてご利用ください。",
-    "confirmDownload": "ダウンロードしますか?",
-    "jsonFileUpload": "アップロードするJSONファイルを選択してください",
-    "dragNDrop": "またはここにドラッグアンドドロップします",
-    "chooseAFile": "ファイルを選択してください",
-    "downloadDraftSubmns": "ドラフト提出レポートをダウンロードし、データが正しく入力されていることを確認してください。",
-    "downloadReport": "レポートのダウンロード",
-    "doYouWantToDownload": "ダウンロードしますか?",
-    "uploadNewFile": "新しいファイルをアップロードする",
-    "uploadMultipleFileErr": "申し訳ありませんが、アップロードできるファイルは 1 つだけです",
-    "dragMultipleFileErr": "申し訳ありませんが、ドラッグできるファイルは 1 つだけです",
-    "fileFormatErr": "申し訳ありませんが、JSON ファイルのみ受け付けます",
-    "fileSizeErr": "許可される最大ファイルサイズは5MBです",
-    "parseJsonErr": "ファイルからの JSON データを解析できません",
-    "jsonObjNotArray": "間違ったjsonファイル形式",
-    "jsonObjNotArrayConsErr": "予期しないエラーが発生しました。",
-    "jsonArrayEmpty": "この json ファイルは空です。",
-    "errorWhileValidate": "このファイルには問題があります",
-    "errWhileCheckValidity": "このファイルには問題があります",
-    "errAfterValidate": "いくつかのエラーが見つかりました。詳細については、以下を参照してください。",
-    "fileIsEmpty": "このファイルは空です。"
+  "baseCopyToClipboard": {
+    "linkToClipboard": "リンクがクリップボードにコピーされました",
+    "copyToClipboard": "クリップボードにコピー",
+    "errCopyToClipboard": "クリップボードにコピーしようとしたときにエラーが発生しました。"
   },
   "root": {
     "admin": "管理者"
@@ -755,7 +769,15 @@
   "sucess": {
     "sucessFormSubmissn": "フォームは正常に送信されました",
     "keepRecord": "この提出の記録を保存したい場合は、以下を保存できます。",
-    "confirmationId": "確認ID:"
+    "confirmationId": "確認ID："
+  },
+  "permissionUtils": {
+    "formNotAvailable": "現在フォームはご利用いただけません。これは、リンクが間違っているか、フォームが所有者によって削除されたことが原因である可能性があります。",
+    "missingFormIdAndSubmssId": "オプションに formId と submitId の両方がありません",
+    "loadingFormErrMsg": "このフォームのロード中にエラーが発生しました。",
+    "loadingForm": "{オプション} のロード中にエラーが発生しました: {エラー}",
+    "idpHintMsg": "このフォームには {idpHint} 認証が必要です。再ログインしてもう一度お試しください。",
+    "formIdpMissMatch": "フォーム IDP の不一致。フォームには {idpHint} が必要ですが、ユーザーには {userIdp} が必要です。"
   },
   "store": {
     "admin": {
@@ -852,13 +874,5 @@
       "downloadFileErrMsg": "ファイルのダウンロード中にエラーが発生しました",
       "downloadFileConsErrMsg": "ファイルのダウンロード中にエラーが発生しました: エラー"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "現在フォームはご利用いただけません。これは、リンクが間違っているか、フォームが所有者によって削除されたことが原因である可能性があります。",
-    "missingFormIdAndSubmssId": "オプションに formId と submitId の両方がありません",
-    "loadingFormErrMsg": "このフォームのロード中にエラーが発生しました。",
-    "loadingForm": "{オプション} のロード中にエラーが発生しました: {エラー}",
-    "idpHintMsg": "このフォームには {idpHint} 認証が必要です。再ログインしてもう一度お試しください。",
-    "formIdpMissMatch": "フォーム IDP の不一致。フォームには {idpHint} が必要ですが、ユーザーには {userIdp} が必要です。"
   }
 }

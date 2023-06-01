@@ -45,7 +45,7 @@
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
               target="blank"
-              >CDOGS template</a
+              >{{ $t('trans.printOptions.cDogsTemplate') }}</a
             >
             {{ $t('trans.printOptions.uploadB') }}
           </p>

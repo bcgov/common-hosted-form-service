@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "jjjj-mm-tt"
+  },
   "formsTable": {
     "myForms": "Meine Formulare",
     "createNewForm": "Erstellen Sie ein neues Formular",
@@ -70,17 +73,16 @@
     "canSaveAndEditDraftLabel": "Einreicher können <strong>Entwürfe speichern und bearbeiten</strong>",
     "canUpdateStatusAsReviewer": "Prüfer können <strong>den Status dieses Formulars aktualisieren</strong> (z. B. „Eingereicht“, „Zugewiesen“, „Abgeschlossen“).",
     "submitterCanCopyExistingSubmissn": "Einreicher können <strong>eine vorhandene Einreichung kopieren</strong>",
-    "submissionConfirmationToolTip": "Durch Auswahl dieser Option wird gesteuert, was der übermittelnde Benutzer dieses Formulars bei erfolgreicher Übermittlung sieht.<br /> Wenn aktiviert, wird es angezeigt",
+    "submissionConfirmationToolTip": "Durch Auswahl dieser Option wird gesteuert, was der einreichende Benutzer dieses Formulars bei erfolgreicher Übermittlung sieht.<br /> Wenn aktiviert, wird es angezeigt",
     "emailNotificatnToTeam": "Senden Sie meinem Team eine Benachrichtigungs-E-Mail",
     "emailNotificatnToTeamToolTip": "Senden Sie eine Benachrichtigung an Ihre angegebene E-Mail-Adresse, wenn ein Benutzer dieses Formular absendet",
     "notificationEmailAddrs": "E-Mail-Adressen für Benachrichtigungen",
     "addMoreValidEmailAddrs": "Fügen Sie eine oder mehrere gültige E-Mail-Adressen hinzu",
-    "formScheduleSettings": "Formularplaneinstellungen",
+    "formScheduleSettings": "Formularzeitplaneinstellungen",
     "opensubmissions": "Offene Einreichungen",
     "submissionsDeadline": "Wie lange möchten Sie Einsendungen erhalten?",
     "keepSubmissnOpenTilUnplished": "Offen bleiben, bis die Veröffentlichung manuell aufgehoben wird",
     "submissionsClosingDate": "Vereinbaren Sie einen Abschlusstermin",
-    "public": "Öffentlich (anonym)",
     "submissionPeriod": "Legen Sie den Einreichungszeitraum fest",
     "closeSubmissions": "Einreichungen schließen",
     "keepOpenFor": "Offen bleiben für",
@@ -119,7 +121,8 @@
     "selectAnOptions": "Bitte wählen Sie mindestens 1 Option aus",
     "validInterval": "Dies sollte ein gültiges Intervall sein.",
     "fieldRequiredAndInterval": "Dieses Feld ist erforderlich und sollte ein Intervall sein.",
-    "dateGrtOpenSubmissnDate": "Das Datum „Wiederholen bis“ sollte größer sein als das Datum der offenen Einreichung"
+    "dateGrtOpenSubmissnDate": "Das Datum „Wiederholen bis“ sollte größer sein als das Datum der offenen Einreichung",
+    "public": "Öffentlich (anonym)"
   },
   "apiKey": {
     "disclaimer": "Haftungsausschluss",
@@ -297,6 +300,30 @@
     "actions": "Aktionen",
     "version": "Ausführung"
   },
+  "formViewerMultiUpload": {
+    "important": "WICHTIG",
+    "uploadSucessMsg": "Um sicherzustellen, dass mehrere Entwürfe erfolgreich hochgeladen werden können, laden Sie bitte die bereitgestellte Vorlage herunter und verwenden Sie sie.",
+    "confirmDownload": "Möchten Sie es herunterladen?",
+    "jsonFileUpload": "Wählen Sie die JSON-Datei zum Hochladen aus",
+    "dragNDrop": "oder per Drag & Drop hierher ziehen",
+    "chooseAFile": "Wähle eine Datei",
+    "downloadDraftSubmns": "Bitte laden Sie den Entwurf des Einreichungsberichts herunter und stellen Sie sicher, dass die Daten korrekt eingegeben werden.",
+    "downloadReport": "Bericht herunterladen",
+    "doYouWantToDownload": "Möchten Sie es herunterladen?",
+    "uploadNewFile": "Neue Datei hochladen",
+    "uploadMultipleFileErr": "Leider können Sie nur eine Datei hochladen",
+    "dragMultipleFileErr": "Leider können Sie nur eine Datei ziehen",
+    "fileFormatErr": "Leider akzeptieren wir nur JSON-Dateien",
+    "fileSizeErr": "Die maximal zulässige Dateigröße beträgt 5 MB",
+    "parseJsonErr": "Wir können keine JSON-Daten aus der Datei analysieren",
+    "jsonObjNotArray": "Falsches JSON-Dateiformat",
+    "jsonObjNotArrayConsErr": "Ein unerwarteter Fehler ist aufgetreten.",
+    "jsonArrayEmpty": "Diese JSON-Datei ist leer.",
+    "errorWhileValidate": "Mit dieser Datei stimmt etwas nicht",
+    "errWhileCheckValidity": "Mit dieser Datei stimmt etwas nicht",
+    "errAfterValidate": "Es wurden einige Fehler gefunden. Weitere Informationen finden Sie weiter unten.",
+    "fileIsEmpty": "Diese Datei ist leer."
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Haftungsausschluss und Haftungsausschluss für Form Designers:",
     "privacyLaw": "Es liegt in Ihrer Verantwortung, die Datenschutzgesetze einzuhalten, die die Erhebung, Nutzung und Offenlegung personenbezogener Daten regeln.",
@@ -310,7 +337,7 @@
     "emailReceipt": "Senden Sie eine Quittung für diese Einreichung per E-Mail",
     "send": "SCHICKEN",
     "sendToEmailAddress": "An E-Mail-Adresse senden",
-    "emailSent": "An email has been sent to {to}.",
+    "emailSent": "Eine E-Mail wurde an {to} gesendet.",
     "sendingEmailErrMsg": "Beim Versuch, Ihre E-Mail zu senden, ist ein Fehler aufgetreten.",
     "sendingEmailConsErrMsg": "E-Mail-Bestätigung an {to} fehlgeschlagen: {error}",
     "emailRequired": "E-Mail ist erforderlich"
@@ -374,7 +401,7 @@
   "manageSubmissionUsers": {
     "manageTeamMembers": "Teammitglieder verwalten",
     "add": "Hinzufügen",
-    "draftFormInvite": "Sie können Teammitglieder nur einladen und verwalten, solange es sich bei diesem Formular um einen Entwurf handelt",
+    "draftFormInvite": "Sie können Teammitglieder nur einladen und verwalten, während es sich bei diesem Formular um einen Entwurf handelt",
     "submissionTeamMembers": "Teammitglieder für diese Einreichung",
     "actions": "Aktionen",
     "close": "Schließen",
@@ -420,7 +447,19 @@
     "status": "Status",
     "submissionDate": "Abgabetermin",
     "draftUpdatedBy": "Entwurf aktualisiert von",
-    "draftLastEdited": "Entwurf zuletzt bearbeitet"
+    "draftLastEdited": "Entwurf zuletzt bearbeitet",
+    "createLateSubmissn": "Erstellen Sie eine verspätete Einreichung",
+    "formLoading": "Bitte warten Sie, während das Formular geladen wird!!!",
+    "pleaseConfirm": "Bitte bestätigen",
+    "wantToSaveDraft": "Möchten Sie den Entwurf speichern?",
+    "yes": "Ja",
+    "no": "NEIN",
+    "multiDraftUploadSuccess": "Ihr mehrfacher Entwurfs-Upload war erfolgreich!",
+    "failedResSubmissn": "Fehlgeschlagene Antwort vom Übermittlungsendpunkt. Antwortcode: {status}",
+    "errSubmittingForm": "Beim Absenden dieses Formulars ist ein Fehler aufgetreten",
+    "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileName}. Fehler: {error}",
+    "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
+    "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}"
   },
   "notesPanel": {
     "addNewNote": "Neue Notiz hinzufügen",
@@ -507,7 +546,8 @@
     "apiCallConsErrorMsg": "Fehler beim Exportieren von Übermittlungen für",
     "selectAllFields": "Wählen Sie alle Felder aus",
     "emailSentMsg": "Eine E-Mail mit einem Link zum Herunterladen Ihrer Daten wird an {email} gesendet, sobald diese fertig sind",
-    "exportInProgress": "Export läuft"
+    "exportInProgress": "Export läuft",
+    "of": "von"
   },
   "printOptions": {
     "submitButtonTxt": "An CDOGS senden und herunterladen",
@@ -519,9 +559,10 @@
     "pageFromBrowser": "die Seite aus Ihrem Browser",
     "uploadA": "Laden Sie eine hoch",
     "uploadB": "eine strukturierte Version haben",
-    "docGrnSucess": "Fehler beim Senden der Vorlage: {error}",
+    "docGrnSucess": "Dokument erfolgreich generiert",
     "failedDocGenErrMsg": "Dokument konnte nicht generiert werden",
-    "failedDocGenConsErrMsg": "Fehler beim Senden der Vorlage: {error}"
+    "failedDocGenConsErrMsg": "Fehler beim Senden der Vorlage: {error}",
+    "cDogsTemplate": "CDOGS-Vorlage"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link zu Komponenteninformationen",
@@ -538,11 +579,6 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Erfahren Sie mehr"
-  },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "Link in die Zwischenablage kopiert",
-    "copyToClipboard": "In die Zwischenablage kopieren",
-    "errCopyToClipboard": "Fehler beim Versuch, in die Zwischenablage zu kopieren."
   },
   "generalLayout": {
     "loadingText": "Laden, bitte warten",
@@ -585,7 +621,7 @@
     "delSelectedMemberWarning": "Sind Sie sicher, dass Sie das ausgewählte Mitglied entfernen möchten?",
     "idpMessage": "ist bereits im Team.",
     "formOwnerErrMsg": "Es muss immer mindestens ein Formulareigentümer vorhanden sein",
-    "formOwnerConsoleErrMsg": "Kann nicht entfernt werden, da sie der einzige verbleibende Eigentümer dieses Formulars sind.",
+    "formOwnerConsoleErrMsg": "{userId} kann nicht entfernt werden, da sie der einzige verbleibende Besitzer dieses Formulars ist.",
     "insufficientPermissnMsg": "Unzureichende Berechtigungen zum Verwalten des Teams",
     "getUserErrMsg": "Fehler beim Abrufen der Formularbenutzer:",
     "getRolesErrMsg": "Fehler beim Abrufen der Rollenliste:",
@@ -715,30 +751,6 @@
     "filter": "Filter",
     "value": "Wert"
   },
-  "formViewerMultiUpload": {
-    "important": "WICHTIG",
-    "uploadSucessMsg": "Um sicherzustellen, dass mehrere Entwürfe erfolgreich hochgeladen werden können, laden Sie bitte die bereitgestellte Vorlage herunter und verwenden Sie sie.",
-    "confirmDownload": "Möchten Sie es herunterladen?",
-    "jsonFileUpload": "Wählen Sie die JSON-Datei zum Hochladen aus",
-    "dragNDrop": "oder per Drag & Drop hierher ziehen",
-    "chooseAFile": "Wähle eine Datei",
-    "downloadDraftSubmns": "Bitte laden Sie den Entwurf des Einreichungsberichts herunter und stellen Sie sicher, dass die Daten korrekt eingegeben werden.",
-    "downloadReport": "Bericht herunterladen",
-    "doYouWantToDownload": "Möchten Sie es herunterladen?",
-    "uploadNewFile": "Neue Datei hochladen",
-    "uploadMultipleFileErr": "Leider können Sie nur eine Datei hochladen",
-    "dragMultipleFileErr": "Leider können Sie nur eine Datei ziehen",
-    "fileFormatErr": "Leider akzeptieren wir nur JSON-Dateien",
-    "fileSizeErr": "Die maximal zulässige Dateigröße beträgt 5 MB",
-    "parseJsonErr": "Wir können keine JSON-Daten aus der Datei analysieren",
-    "jsonObjNotArray": "Falsches JSON-Dateiformat",
-    "jsonObjNotArrayConsErr": "Ein unerwarteter Fehler ist aufgetreten.",
-    "jsonArrayEmpty": "Diese JSON-Datei ist leer.",
-    "errorWhileValidate": "Mit dieser Datei stimmt etwas nicht",
-    "errWhileCheckValidity": "Mit dieser Datei stimmt etwas nicht",
-    "errAfterValidate": "Es wurden einige Fehler gefunden. Weitere Informationen finden Sie weiter unten.",
-    "fileIsEmpty": "Diese Datei ist leer."
-  },
   "formViewerActions": {
     "viewAllSubmissions": "Alle Einsendungen anzeigen",
     "saveAsADraft": "Als einen Entwurf sichern",
@@ -746,8 +758,26 @@
     "switchSingleSubmssn": "Wechseln Sie zur Einzeleinreichung",
     "switchMultiSubmssn": "Wechseln Sie zur Einzeleinreichung"
   },
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Link in die Zwischenablage kopiert",
+    "copyToClipboard": "In die Zwischenablage kopieren",
+    "errCopyToClipboard": "Fehler beim Versuch, in die Zwischenablage zu kopieren."
+  },
   "root": {
     "admin": "Administrator"
+  },
+  "sucess": {
+    "sucessFormSubmissn": "Ihr Formular wurde erfolgreich übermittelt",
+    "keepRecord": "Wenn Sie diese Einreichung protokollieren möchten, können Sie Folgendes aufbewahren",
+    "confirmationId": "Bestätigungs-ID:"
+  },
+  "permissionUtils": {
+    "formNotAvailable": "Das Formular ist derzeit nicht verfügbar. Dies kann an einem falschen Link liegen oder das Formular wurde vom Eigentümer gelöscht.",
+    "missingFormIdAndSubmssId": "Bei den Optionen fehlen sowohl die Form-ID als auch die Einreichungs-ID",
+    "loadingFormErrMsg": "Beim Laden dieses Formulars ist ein Fehler aufgetreten.",
+    "loadingForm": "Fehler beim Laden von {Optionen}: {Fehler}",
+    "idpHintMsg": "Dieses Formular erfordert eine {idpHint}-Authentifizierung. Bitte melden Sie sich erneut an und versuchen Sie es erneut.",
+    "formIdpMissMatch": "Formular-IDP-Konflikt. Das Formular erfordert {idpHint}, aber der Benutzer hat {userIdp}."
   },
   "store": {
     "admin": {
@@ -844,13 +874,5 @@
       "downloadFileErrMsg": "Beim Herunterladen der Datei ist ein Fehler aufgetreten",
       "downloadFileConsErrMsg": "Fehler beim Herunterladen der Datei: Fehler"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "Das Formular ist derzeit nicht verfügbar. Dies kann an einem falschen Link liegen oder das Formular wurde vom Eigentümer gelöscht.",
-    "missingFormIdAndSubmssId": "Bei den Optionen fehlen sowohl die Form-ID als auch die Einreichungs-ID",
-    "loadingFormErrMsg": "Beim Laden dieses Formulars ist ein Fehler aufgetreten.",
-    "loadingForm": "Fehler beim Laden von {Optionen}: {Fehler}",
-    "idpHintMsg": "Dieses Formular erfordert eine {idpHint}-Authentifizierung. Bitte melden Sie sich erneut an und versuchen Sie es erneut.",
-    "formIdpMissMatch": "Formular-IDP-Konflikt. Das Formular erfordert {idpHint}, aber der Benutzer hat {userIdp}."
   }
 }
