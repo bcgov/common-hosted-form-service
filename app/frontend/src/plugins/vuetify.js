@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
-
-import zhHant from 'vuetify/lib/locale/zh-Hant';
+import hi from '@/internationalization/trans/vuetify/locale/hi';
+import pa from '@/internationalization/trans/vuetify/locale/pa';
+import tl from '@/internationalization/trans/vuetify/locale/tl';
 import zhHans from 'vuetify/lib/locale/zh-Hans';
+import zhHant from 'vuetify/lib/locale/zh-Hant';
 import vi from 'vuetify/lib/locale/vi';
 import uk from 'vuetify/lib/locale/uk';
 import ru from 'vuetify/lib/locale/ru';
@@ -41,6 +43,9 @@ export default new Vuetify({
       en,
       es,
       ar,
+      hi,
+      pa,
+      tl,
     },
     current: 'en',
   },
