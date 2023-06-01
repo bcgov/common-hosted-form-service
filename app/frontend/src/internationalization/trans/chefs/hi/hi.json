@@ -322,7 +322,8 @@
     "errorWhileValidate": "इस फाइल में कुछ गड़बड़ है",
     "errWhileCheckValidity": "इस फाइल में कुछ गड़बड़ है",
     "errAfterValidate": "कुछ त्रुटियाँ मिलीं, अधिक जानकारी के लिए नीचे देखें।",
-    "fileIsEmpty": "यह फाइल खाली है।"
+    "fileIsEmpty": "यह फाइल खाली है।",
+    "download": "डाउनलोड करना"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "प्रपत्र डिजाइनरों के लिए अस्वीकरण और उत्तरदायित्व विवरण:",

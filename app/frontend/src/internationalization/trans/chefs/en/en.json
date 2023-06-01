@@ -298,7 +298,10 @@
     "formDesignSaveConsoleErrMsg": "Error updating or creating form (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
     "collapse": "Collapse",
     "actions": "Actions",
-    "version": "Version"
+    "version": "Version",
+    "save": "Save",
+    "saving": "Saving",
+    "notSaved": "Not Saved"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANT",
@@ -322,7 +325,8 @@
     "errorWhileValidate": "There is something wrong with this file",
     "errWhileCheckValidity": "There is something wrong with this file",
     "errAfterValidate": "Some errors found, see below for more information.",
-    "fileIsEmpty": "this file is empty."
+    "fileIsEmpty": "this file is empty.",
+    "download": "Download"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer and statement of responsibility for Form Designers:",

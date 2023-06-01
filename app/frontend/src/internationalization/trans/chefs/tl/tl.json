@@ -322,7 +322,8 @@
     "errorWhileValidate": "May mali sa file na ito",
     "errWhileCheckValidity": "May mali sa file na ito",
     "errAfterValidate": "May nakitang ilang error, tingnan sa ibaba para sa higit pang impormasyon.",
-    "fileIsEmpty": "walang laman ang file na ito."
+    "fileIsEmpty": "walang laman ang file na ito.",
+    "download": "I-download"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer at pahayag ng responsibilidad para sa mga Form Designer:",

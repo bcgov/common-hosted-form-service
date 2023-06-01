@@ -322,7 +322,8 @@
     "errorWhileValidate": "Hay algo mal con este archivo",
     "errWhileCheckValidity": "Hay algo mal con este archivo",
     "errAfterValidate": "Se encontraron algunos errores, consulte a continuación para obtener más información.",
-    "fileIsEmpty": "este archivo está vacío."
+    "fileIsEmpty": "este archivo está vacío.",
+    "download": "Descargar"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",
