@@ -322,7 +322,8 @@
     "errorWhileValidate": "هناك خطأ في هذا الملف",
     "errWhileCheckValidity": "هناك خطأ في هذا الملف",
     "errAfterValidate": "تم العثور على بعض الأخطاء ، انظر أدناه لمزيد من المعلومات.",
-    "fileIsEmpty": "هذا الملف فارغ."
+    "fileIsEmpty": "هذا الملف فارغ.",
+    "downlaod": "تحميل"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "إخلاء المسؤولية وبيان المسؤولية لمصممي النماذج:",

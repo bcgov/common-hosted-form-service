@@ -322,7 +322,8 @@
     "errorWhileValidate": "Что-то не так с этим файлом",
     "errWhileCheckValidity": "Что-то не так с этим файлом",
     "errAfterValidate": "Обнаружены некоторые ошибки, дополнительную информацию см. ниже.",
-    "fileIsEmpty": "этот файл пустой."
+    "fileIsEmpty": "этот файл пустой.",
+    "download": "Скачать"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Отказ от ответственности и заявление об ответственности дизайнеров форм:",
