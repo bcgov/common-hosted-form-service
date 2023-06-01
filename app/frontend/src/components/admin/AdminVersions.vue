@@ -105,7 +105,6 @@ export default {
         version: '',
         id: '',
       },
-      message: this.$t('trans.adminVersions.notificationMsg'),
     };
   },
   computed: {
@@ -147,7 +146,7 @@ export default {
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
-          message: this.message,
+          message: this.$t('trans.adminVersions.notificationMsg'),
         });
       }
     },
