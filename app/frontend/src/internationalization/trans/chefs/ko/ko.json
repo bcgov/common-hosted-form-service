@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "yyyy-mm-dd"
+  },
   "formsTable": {
     "myForms": "내 양식",
     "createNewForm": "새 양식 만들기",
@@ -49,7 +52,7 @@
     "formTitle": "양식 제목",
     "formDescription": "양식 설명",
     "formAccess": "양식 액세스",
-    "info": "이 양식을 사용하여 대중이 일반적으로 관심을 갖는 주제에 대한 정보를 일반 대중으로부터 수집하려면 GCPE에 연락하여 참여가 목록에 표시될 수 있도록 해야 합니다.",
+    "info": "이 양식을 사용하여 대중이 일반적으로 관심을 갖는 주제에 대한 정보를 일반 대중으로부터 수집하려는 경우 귀하의 참여가 목록에 표시될 수 있도록 GCPE에 연락해야 합니다.",
     "important": "중요한",
     "idimNotifyA": "IDIM(Identity Information Management) 팀에 이메일로 알려야 합니다.",
     "idimNotifyB": "BCeID를 활용하여 양식 제출자의 신원을 확인하려는 의도.",
@@ -137,9 +140,9 @@
     "deleteMsg": "API 키를 삭제하시겠습니까?",
     "delete": "삭제",
     "confirmKeyGen": "키 생성 확인",
-    "createAPIKey": "이 양식에 대한 API 키를 만드시겠습니까?<br /> 이 페이지의 면책 조항을 따르십시오.",
-    "regenerateAPIKey": "API 키를 재생성하시겠습니까? <br /> <strong>계속하면 현재 API 키 액세스 권한이 삭제됩니다</strong>.",
-    "formOwnerKeyAcess": "API 키를 관리하려면 <strong>양식 소유자</strong>여야 합니다.",
+    "createAPIKey": "이 양식에 대한 API 키를 만드시겠습니까?<br /> 이 페이지의 고지 사항을 따르십시오.",
+    "regenerateAPIKey": "API 키를 재생성하시겠습니까?<br /> <strong>계속하면 현재 API 키 액세스 권한이 삭제됩니다</strong> .",
+    "formOwnerKeyAcess": "API 키를 관리하려면 <strong>양식 소유자</strong> 여야 합니다.",
     "regenerate": "재생하다",
     "generate": "생성하다",
     "secret": "비밀",
@@ -295,7 +298,31 @@
     "formDesignSaveConsoleErrMsg": "양식 업데이트 또는 생성 오류(FormID: {formId}, versionId: {versionId}, draftId: {draftId}) 오류: {error}",
     "collapse": "무너지다",
     "actions": "행위",
-    "version": "버전n"
+    "version": "버전"
+  },
+  "formViewerMultiUpload": {
+    "important": "중요한",
+    "uploadSucessMsg": "여러 개의 초안을 성공적으로 업로드하려면 제공된 템플릿을 다운로드하여 활용하십시오.",
+    "confirmDownload": "다운로드하시겠습니까?",
+    "jsonFileUpload": "업로드할 JSON 파일 선택",
+    "dragNDrop": "또는 여기로 드래그 앤 드롭",
+    "chooseAFile": "파일 선택",
+    "downloadDraftSubmns": "초안 제출 보고서를 다운로드하고 데이터가 올바르게 입력되었는지 확인하십시오.",
+    "downloadReport": "보고서 다운로드",
+    "doYouWantToDownload": "다운로드하시겠습니까?",
+    "uploadNewFile": "새 파일 업로드",
+    "uploadMultipleFileErr": "죄송합니다. 하나의 파일만 업로드할 수 있습니다.",
+    "dragMultipleFileErr": "죄송합니다. 하나의 파일만 드래그할 수 있습니다.",
+    "fileFormatErr": "죄송합니다. json 파일만 허용됩니다.",
+    "fileSizeErr": "허용되는 최대 파일 크기는 5MB입니다.",
+    "parseJsonErr": "파일에서 json 데이터를 구문 분석할 수 없습니다.",
+    "jsonObjNotArray": "잘못된 json 파일 형식",
+    "jsonObjNotArrayConsErr": "예상치 못한 오류가 발생했습니다.",
+    "jsonArrayEmpty": "이 json 파일은 비어 있습니다.",
+    "errorWhileValidate": "이 파일에 문제가 있습니다.",
+    "errWhileCheckValidity": "이 파일에 문제가 있습니다.",
+    "errAfterValidate": "일부 오류가 발견되었습니다. 자세한 내용은 아래를 참조하세요.",
+    "fileIsEmpty": "이 파일은 비어 있습니다."
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "양식 설계자에 대한 면책 및 책임 진술:",
@@ -420,7 +447,19 @@
     "status": "상태",
     "submissionDate": "제출 날짜",
     "draftUpdatedBy": "초안 업데이트자",
-    "draftLastEdited": "최종 수정된 초안"
+    "draftLastEdited": "최종 수정된 초안",
+    "createLateSubmissn": "늦은 제출 만들기",
+    "formLoading": "폼이 로딩되는 동안 기다려주세요!!!",
+    "pleaseConfirm": "확인 해주세요",
+    "wantToSaveDraft": "초안을 저장하시겠습니까?",
+    "yes": "예",
+    "no": "아니요",
+    "multiDraftUploadSuccess": "여러 초안 업로드가 성공적으로 완료되었습니다!",
+    "failedResSubmissn": "제출 끝점에서 실패한 응답입니다. 응답 코드: {상태}",
+    "errSubmittingForm": "이 양식을 제출하는 중에 오류가 발생했습니다.",
+    "errorSavingFile": "파일을 저장하는 중에 오류가 발생했습니다. 파일 이름: {파일 이름}. 오류: {오류}",
+    "submittingDraftErrMsg": "초안을 저장하는 중에 오류가 발생했습니다.",
+    "submittingDraftConsErrMsg": "초안을 저장하는 중에 오류가 발생했습니다. 제출 ID: {submissionId}. 오류: {오류}"
   },
   "notesPanel": {
     "addNewNote": "새 메모 추가",
@@ -507,7 +546,8 @@
     "apiCallConsErrorMsg": "에 대한 내보내기 제출 오류",
     "selectAllFields": "모든 필드 선택",
     "emailSentMsg": "데이터가 준비되면 데이터를 다운로드할 수 있는 링크가 포함된 이메일이 {email}로 전송됩니다.",
-    "exportInProgress": "내보내기 진행 중"
+    "exportInProgress": "내보내기 진행 중",
+    "of": "~의"
   },
   "printOptions": {
     "submitButtonTxt": "CDOGS에 제출 및 다운로드",
@@ -516,12 +556,13 @@
     "downloadOptions": "다운로드 옵션",
     "print": "인쇄",
     "browserPrint": "브라우저 인쇄",
-    "pageFromBrowser": "ブラウザからのページ",
+    "pageFromBrowser": "브라우저의 페이지",
     "uploadA": "업로드",
     "uploadB": "구조화 된 버전을 갖기 위해",
     "docGrnSucess": "문서가 성공적으로 생성되었습니다.",
     "failedDocGenErrMsg": "문서를 생성하지 못했습니다.",
-    "failedDocGenConsErrMsg": "템플릿 제출 오류: {error}"
+    "failedDocGenConsErrMsg": "템플릿 제출 오류: {error}",
+    "cDogsTemplate": "CDOGS 템플릿"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "구성품 정보 링크",
@@ -547,11 +588,6 @@
     "edit": "편집하다",
     "formTitle": "양식 제목",
     "actions": "행위"
-  },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "클립보드에 복사된 링크",
-    "copyToClipboard": "클립 보드에 복사",
-    "errCopyToClipboard": "클립보드에 복사하는 동안 오류가 발생했습니다."
   },
   "formSubmission": {
     "editThisSubmission": "이 제출물 편집",
@@ -585,7 +621,7 @@
     "delSelectedMemberWarning": "선택한 구성원을 제거하시겠습니까?",
     "idpMessage": "이미 팀에 있습니다.",
     "formOwnerErrMsg": "항상 양식 소유자가 한 명 이상 있어야 합니다.",
-    "formOwnerConsoleErrMsg": "이 양식의 유일한 소유자이므로 삭제할 수 없습니다.",
+    "formOwnerConsoleErrMsg": "{userId}님은 이 양식의 유일한 소유자이므로 제거할 수 없습니다.",
     "insufficientPermissnMsg": "팀을 관리할 권한이 부족합니다.",
     "getUserErrMsg": "양식 사용자 가져오기 오류:",
     "getRolesErrMsg": "역할 목록을 가져오는 중 오류 발생:",
@@ -637,7 +673,7 @@
     "submissionsSubmitErrMsg": "양식 제출 오류: {errors}",
     "sendSubmissionErrMsg": "제출 끝점에서 실패한 응답입니다. 응답 코드: {상태}",
     "errMsg": "이 양식을 제출하는 중에 오류가 발생했습니다.",
-    "customEventAlert": "사용자 정의 버튼 이벤트는 아직 지원되지 않습니다. 이벤트 유형: {event}",
+    "customEventAlert": "사용자 정의 버튼 이벤트는 아직 지원되지 않습니다. 이벤트 유형: {이벤트}",
     "formLoading": "폼이 로딩되는 동안 기다려주세요!!!",
     "yes": "예",
     "no": "아니요",
@@ -677,7 +713,7 @@
     "manageAccessSub2": "모든 제출물을 관리하기 위해 팀에 역할을 할당할 수도 있습니다.",
     "createCustomFormTitle": "CHEFS 양식 작성기로 사용자 정의 양식 만들기",
     "createCustomFormSub1": "CHEFS를 사용하면 직관적인 끌어서 놓기 인터페이스로 안전한 양식을 만들 수 있습니다. 양식 구성 요소를 추가하고 재정렬하고 다른 레이아웃 구성에 놓을 수 있습니다.",
-    "chefsHowToTitle": "셰프 사용법 동영상",
+    "chefsHowToTitle": "셰프 사용법 비디오",
     "chefsHowToSub": "빠른 시작 가이드는 CHEFS의 기본 기능 중 일부를 소개합니다. 시작하다!",
     "getStartedToChefs": "CHEFS를 사용하여 시작하기",
     "createOnlineTitle": "클라이언트로부터 정보를 수집하고 작업 흐름을 개선하기 위한 온라인 양식을 만드십시오.",
@@ -696,27 +732,24 @@
     "agreementErrMsg": "위에 표시된 개인 정보 면책 조항에 동의해야 합니다."
   },
   "addTeamMember": {
-    "formDesign": "양식 디자인",
-    "exportDesign": "디자인 내보내기",
-    "importDesign": "디자인 가져오기",
-    "important": "중요한",
-    "formDesignInfoA": "이 양식 작성을 완료하면 <strong>SAVE DESIGN</strong> 버튼을 사용하십시오.",
-    "formDesignInfoB": "<strong>SUBMIT</strong> 버튼은 사용자가 이 양식을 제출할 수 있도록 제공되며 양식이 저장되면 활성화됩니다.",
-    "formLoadErrMsg": "양식 디자인을 로드하는 동안 오류가 발생했습니다.",
-    "formLoadConsoleErrMsg": "양식 {formId} 스키마(버전: {versionId} 초안: {draftId}) 로드 오류: {error}",
-    "formSchemaImportErrMsg": "양식 스키마를 가져오는 동안 오류가 발생했습니다.",
-    "formSchemaImportConsoleErrMsg": "양식 스키마 가져오기 오류: {error}",
-    "formDesignSaveErrMsg": "이 양식 디자인을 저장하는 동안 오류가 발생했습니다. 새로고침하거나 나중에 다시 시도하기 위해 나가야 하는 경우 페이지에서 기존 디자인을 내보내 나중에 저장할 수 있습니다.",
-    "formDesignSaveConsoleErrMsg": "양식 업데이트 또는 생성 오류(FormID: {formId}, versionId: {versionId}, draftId: {draftId}) 오류: {error}",
-    "saved": "저장됨",
-    "save": "구하다",
-    "saving": "절약",
-    "notSaved": "저장되지 않음",
-    "collapse": "무너지다",
-    "actions": "행위"
+    "cantFindChefsUsers": "사람을 찾을 수 없습니까? CHEFS에 로그인하지 않았을 수 있습니다.<br /> 그들에게 CHEFS에 대한 링크를 보내고 로그인하도록 요청하십시오.",
+    "cancel": "취소",
+    "mustSelectAUser": "이 사용자를 추가하려면 하나 이상의 역할을 선택해야 합니다.",
+    "addNewMember": "새 구성원 추가",
+    "enterUsername": "이름, 이메일 또는 사용자 이름을 입력하세요.",
+    "enterExactUsername": "정확한 이메일 또는 사용자 이름을 입력하세요.",
+    "BCeIDInputSearchMaxLen": "BCeID 사용자 이름/이메일에 대한 검색 입력은 6자보다 커야 합니다.",
+    "BCeIDMustBeExact": "BCeID에 대한 이메일 검색은 정확해야 합니다.",
+    "errorGettingUsers": "사용자를 가져오는 중에 오류가 발생했습니다 {error}"
   },
   "baseFilter": {
-    "cancel": "취소"
+    "cancel": "취소",
+    "columnName": "열 이름",
+    "exampleText": "예제 텍스트",
+    "exampleText2": "예제 텍스트 2",
+    "filterPlaceholderTxt": "자리 표시자 텍스트 필터링",
+    "filter": "필터",
+    "value": "값"
   },
   "formViewerActions": {
     "viewAllSubmissions": "모든 제출물 보기",
@@ -725,29 +758,10 @@
     "switchSingleSubmssn": "단일 제출로 전환",
     "switchMultiSubmssn": "단일 제출로 전환"
   },
-  "formViewerMultiUpload": {
-    "important": "중요한",
-    "uploadSucessMsg": "여러 개의 초안을 성공적으로 업로드하려면 제공된 템플릿을 다운로드하여 활용하십시오.",
-    "confirmDownload": "다운로드하시겠습니까?",
-    "jsonFileUpload": "업로드할 JSON 파일 선택",
-    "dragNDrop": "또는 여기로 드래그 앤 드롭",
-    "chooseAFile": "파일 선택",
-    "downloadDraftSubmns": "초안 제출 보고서를 다운로드하고 데이터가 올바르게 입력되었는지 확인하십시오.",
-    "downloadReport": "보고서 다운로드",
-    "doYouWantToDownload": "다운로드하시겠습니까?",
-    "uploadNewFile": "새 파일 업로드",
-    "uploadMultipleFileErr": "죄송합니다. 하나의 파일만 업로드할 수 있습니다.",
-    "dragMultipleFileErr": "죄송합니다. 하나의 파일만 드래그할 수 있습니다.",
-    "fileFormatErr": "죄송합니다. json 파일만 허용됩니다.",
-    "fileSizeErr": "허용되는 최대 파일 크기는 5MB입니다.",
-    "parseJsonErr": "파일에서 json 데이터를 구문 분석할 수 없습니다.",
-    "jsonObjNotArray": "잘못된 json 파일 형식",
-    "jsonObjNotArrayConsErr": "예상치 못한 오류가 발생했습니다.",
-    "jsonArrayEmpty": "이 json 파일은 비어 있습니다.",
-    "errorWhileValidate": "이 파일에 문제가 있습니다.",
-    "errWhileCheckValidity": "이 파일에 문제가 있습니다.",
-    "errAfterValidate": "일부 오류가 발견되었습니다. 자세한 내용은 아래를 참조하세요.",
-    "fileIsEmpty": "이 파일은 비어 있습니다."
+  "baseCopyToClipboard": {
+    "linkToClipboard": "클립보드에 복사된 링크",
+    "copyToClipboard": "클립 보드에 복사",
+    "errCopyToClipboard": "클립보드에 복사하는 동안 오류가 발생했습니다."
   },
   "root": {
     "admin": "관리자"
@@ -756,6 +770,14 @@
     "sucessFormSubmissn": "귀하의 양식이 성공적으로 제출되었습니다",
     "keepRecord": "이 제출 기록을 보관하려면 다음을 보관할 수 있습니다.",
     "confirmationId": "확인 ID:"
+  },
+  "permissionUtils": {
+    "formNotAvailable": "현재 양식을 사용할 수 없습니다. 링크가 잘못되었거나 소유자가 양식을 삭제했기 때문일 수 있습니다.",
+    "missingFormIdAndSubmssId": "formId 및 submitId가 모두 누락된 옵션",
+    "loadingFormErrMsg": "이 양식을 로드하는 동안 오류가 발생했습니다.",
+    "loadingForm": "{options} 로드 중 오류: {error}",
+    "idpHintMsg": "이 양식에는 {idpHint} 인증이 필요합니다. 다시 로그인하고 다시 시도하십시오.",
+    "formIdpMissMatch": "양식 IDP 불일치. 양식에는 {idpHint}가 필요하지만 사용자에게는 {userIdp}가 있습니다."
   },
   "store": {
     "admin": {
@@ -766,7 +788,7 @@
       "errDeletingApiKey": "API 키를 삭제하는 중에 오류가 발생했습니다.",
       "consErrDeletingApiKey": "양식 {formId}에 대한 API 키 삭제 오류: {error}",
       "fecthingFormsErrMsg": "양식을 가져오는 동안 오류가 발생했습니다.",
-      "fecthingFormsConsErrMsg": "관리자 양식 데이터 가져오기 오류: {error}",
+      "fecthingFormsConsErrMsg": "관리 양식 데이터 가져오기 오류: {error}",
       "fecthingFormErrMsg": "이 양식을 가져오는 동안 오류가 발생했습니다.",
       "fecthingFormConsErrMsg": "관리 양식 {formId} 데이터 가져오기 오류: {error}",
       "fecthFormUserRolesErrMsg": "양식 사용자 역할을 가져오는 동안 오류가 발생했습니다.",
@@ -780,7 +802,7 @@
       "getUserErrMsg": "이 사용자를 가져오는 중에 오류가 발생했습니다.",
       "getUserConsErrMsg": "관리 사용자 {userId} 데이터를 가져오는 중 오류 발생: {error}",
       "storingFCHelpInfoErrMsg": "양식 구성 요소 도움말 정보를 저장하는 동안 오류가 발생했습니다.",
-      "storingFCHelpInfoConsErrMsg": "양식 구성 요소 도움말 정보를 저장하는 중 오류 발생: {error}",
+      "storingFCHelpInfoConsErrMsg": "양식 구성요소 도움말 정보를 저장하는 중 오류 발생: {error}",
       "gettingFCImgUrlErrMsg": "이미지 URL을 가져오는 중에 오류가 발생했습니다.",
       "gettingFCImgUrlConsErrMsg": "이미지 URL 가져오기 오류: {error}",
       "updatingFCStatusErrMsg": "게시 상태를 업데이트하는 동안 오류가 발생했습니다.",
@@ -852,13 +874,5 @@
       "downloadFileErrMsg": "파일을 다운로드하는 동안 오류가 발생했습니다",
       "downloadFileConsErrMsg": "파일 다운로드 오류: 오류"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "현재 양식을 사용할 수 없습니다. 링크가 잘못되었거나 소유자가 양식을 삭제했기 때문일 수 있습니다.",
-    "missingFormIdAndSubmssId": "formId 및 submitId가 모두 누락된 옵션",
-    "loadingFormErrMsg": "이 양식을 로드하는 동안 오류가 발생했습니다.",
-    "loadingForm": "{options} 로드 중 오류: {error}",
-    "idpHintMsg": "이 양식에는 {idpHint} 인증이 필요합니다. 다시 로그인하고 다시 시도하십시오.",
-    "formIdpMissMatch": "양식 IDP 불일치. 양식에는 {idpHint}가 필요하지만 사용자에게는 {userIdp}가 있습니다."
   }
 }

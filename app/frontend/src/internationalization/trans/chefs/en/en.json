@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "yyyy-mm-dd"
+  },
   "formsTable": {
     "myForms": "My Forms",
     "createNewForm": "Create a New Form",
@@ -543,7 +546,8 @@
     "apiCallConsErrorMsg": "Error export submissions for",
     "selectAllFields": "Select all fields",
     "emailSentMsg": "An email will be sent to {email} containing a link to download your data when it is ready",
-    "exportInProgress": "Export in progress"
+    "exportInProgress": "Export in progress",
+    "of": "of"
   },
   "printOptions": {
     "submitButtonTxt": "Submit to CDOGS and Download",
@@ -557,7 +561,8 @@
     "uploadB": "to have a structured version",
     "docGrnSucess": "Document generated successfully",
     "failedDocGenErrMsg": "Failed to generate Document",
-    "failedDocGenConsErrMsg": "Error submitting template: {error}"
+    "failedDocGenConsErrMsg": "Error submitting template: {error}",
+    "cDogsTemplate": "CDOGS template"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",
@@ -616,7 +621,7 @@
     "delSelectedMemberWarning": "Are you sure you want to remove the selected member?",
     "idpMessage": "is already in the team.",
     "formOwnerErrMsg": "There must always be at least one form owner",
-    "formOwnerConsoleErrMsg": "Cannot remove as they are the only remaining owner of this form.",
+    "formOwnerConsoleErrMsg": "Cannot remove {userId} as they are the only remaining owner of this form.",
     "insufficientPermissnMsg": "Insufficient permissions to manage team",
     "getUserErrMsg": "Error getting form users: ",
     "getRolesErrMsg": "Error getting list of roles: ",

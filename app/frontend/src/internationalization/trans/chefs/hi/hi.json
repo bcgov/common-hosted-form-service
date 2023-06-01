@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "वव-मम-दि.द"
+  },
   "formsTable": {
     "myForms": "मेरे प्रपत्र",
     "createNewForm": "एक नया प्रपत्र बनाएँ",
@@ -91,7 +94,7 @@
     "every": "प्रत्येक",
     "repeatUntil": "दोहराओ जब तक",
     "summary": "सारांश",
-    "submissionsOpenDateRange": "यह प्रपत्र से प्रस्तुतियाँ के लिए खुला रहेगा",
+    "submissionsOpenDateRange": "यह फॉर्म से सबमिशन के लिए खुला रहेगा",
     "to": "को",
     "scheduleRepetition": "शेड्यूल हर दोहराएगा",
     "allowLateSubmissnInterval": "के लिए देर से सबमिशन की अनुमति देना",
@@ -138,8 +141,8 @@
     "delete": "मिटाना",
     "confirmKeyGen": "कुंजी जनरेशन की पुष्टि करें",
     "createAPIKey": "इस फॉर्म के लिए एक एपीआई कुंजी बनाएं?<br /> सुनिश्चित करें कि आप इस पृष्ठ पर अस्वीकरण का पालन करते हैं।",
-    "regenerateAPIKey": "एपीआई कुंजी को पुन: उत्पन्न करें? <br /> <strong>जारी रखने से आपकी वर्तमान API कुंजी पहुंच हट जाएगी</strong>।",
-    "formOwnerKeyAcess": "API कुंजियों को प्रबंधित करने के लिए आपको <strong>फ़ॉर्म स्वामी</strong> होना चाहिए.",
+    "regenerateAPIKey": "एपीआई कुंजी को पुन: उत्पन्न करें?<br /> <strong>जारी रखने से आपकी वर्तमान API कुंजी पहुंच हट जाएगी</strong> ।",
+    "formOwnerKeyAcess": "एपीआई कुंजियों को प्रबंधित करने के लिए आपको <strong>फॉर्म का मालिक</strong> होना चाहिए।",
     "regenerate": "पुनः जेनरेट",
     "generate": "बनाना",
     "secret": "गुप्त",
@@ -253,7 +256,7 @@
     "JWTTokenTTTxt": "JWT टोकन को क्लिपबोर्ड पर कॉपी करें",
     "chefsAPI": "शेफ एपीआई",
     "RBACSBTxt": "RBAC प्रतिक्रिया क्लिपबोर्ड पर कॉपी की गई",
-    "RBACTTTxt": "आरबीएसी प्रतिक्रिया को क्लिपबोर्ड पर कॉपी करें",
+    "RBACTTTxt": "क्लिपबोर्ड पर RBAC प्रतिक्रिया की प्रतिलिपि बनाएँ",
     "notificationMsg": "आरबीएसी से उपयोगकर्ता प्राप्त करने में विफल, कंसोल देखें",
     "notificationConsErr": "आरबीएसी से उपयोगकर्ता प्राप्त करने में त्रुटि"
   },
@@ -296,6 +299,30 @@
     "collapse": "गिर जाना",
     "actions": "कार्रवाई",
     "version": "संस्करण"
+  },
+  "formViewerMultiUpload": {
+    "important": "महत्वपूर्ण",
+    "uploadSucessMsg": "एकाधिक ड्राफ्ट सफलतापूर्वक अपलोड करना सुनिश्चित करने के लिए, कृपया प्रदान किए गए टेम्पलेट को डाउनलोड करें और उसका उपयोग करें।",
+    "confirmDownload": "क्या आप इसे डाउनलोड करना चाहते हैं?",
+    "jsonFileUpload": "अपलोड करने के लिए JSON फाइल चुनें",
+    "dragNDrop": "या इसे यहाँ खींच कर छोड़ दें",
+    "chooseAFile": "कोई फ़ाइल चुनें",
+    "downloadDraftSubmns": "कृपया ड्राफ्ट सबमिशन रिपोर्ट डाउनलोड करें और सुनिश्चित करें कि डेटा सही ढंग से दर्ज किया गया है।",
+    "downloadReport": "रिपोर्ट डाउनलोड करें",
+    "doYouWantToDownload": "क्या आप इसे डाउनलोड करना चाहते हैं?",
+    "uploadNewFile": "नई फ़ाइल अपलोड करें",
+    "uploadMultipleFileErr": "क्षमा करें, आप केवल एक फ़ाइल अपलोड कर सकते हैं",
+    "dragMultipleFileErr": "क्षमा करें, आप केवल एक फ़ाइल खींच सकते हैं",
+    "fileFormatErr": "क्षमा करें, हम केवल json फ़ाइलें ही स्वीकार करते हैं",
+    "fileSizeErr": "अनुमत अधिकतम फ़ाइल आकार 5MB है",
+    "parseJsonErr": "हम फ़ाइल से json डेटा को पार्स नहीं कर सकते",
+    "jsonObjNotArray": "गलत json फ़ाइल स्वरूप",
+    "jsonObjNotArrayConsErr": "एक अप्रत्याशित त्रुटि हुई।",
+    "jsonArrayEmpty": "यह json फाइल खाली है।",
+    "errorWhileValidate": "इस फाइल में कुछ गड़बड़ है",
+    "errWhileCheckValidity": "इस फाइल में कुछ गड़बड़ है",
+    "errAfterValidate": "कुछ त्रुटियाँ मिलीं, अधिक जानकारी के लिए नीचे देखें।",
+    "fileIsEmpty": "यह फाइल खाली है।"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "प्रपत्र डिजाइनरों के लिए अस्वीकरण और उत्तरदायित्व विवरण:",
@@ -374,7 +401,7 @@
   "manageSubmissionUsers": {
     "manageTeamMembers": "टीम के सदस्यों को प्रबंधित करें",
     "add": "जोड़ना",
-    "draftFormInvite": "आप टीम के सदस्यों को केवल आमंत्रित और प्रबंधित कर सकते हैं जबकि यह फ़ॉर्म एक ड्राफ़्ट है",
+    "draftFormInvite": "आप केवल टीम के सदस्यों को आमंत्रित और प्रबंधित कर सकते हैं जबकि यह फ़ॉर्म एक ड्राफ़्ट है",
     "submissionTeamMembers": "इस सबमिशन के लिए टीम के सदस्य",
     "actions": "कार्रवाई",
     "close": "बंद करना",
@@ -420,7 +447,19 @@
     "status": "दर्जा",
     "submissionDate": "स करने की तारीख",
     "draftUpdatedBy": "ड्राफ्ट द्वारा अपडेट किया गया",
-    "draftLastEdited": "मसौदा अंतिम संपादित"
+    "draftLastEdited": "मसौदा अंतिम संपादित",
+    "createLateSubmissn": "देर से सबमिशन बनाएं",
+    "formLoading": "कृपया प्रपत्र लोड होने तक प्रतीक्षा करें!!!",
+    "pleaseConfirm": "कृपया पुष्टि करें",
+    "wantToSaveDraft": "क्या आप ड्राफ़्ट सहेजना चाहते हैं?",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "multiDraftUploadSuccess": "आपका एकाधिक ड्राफ़्ट अपलोड सफल रहा है!",
+    "failedResSubmissn": "सबमिशन समापन बिंदु से विफल प्रतिक्रिया। प्रतिक्रिया कोड: {स्थिति}",
+    "errSubmittingForm": "इस फॉर्म को सबमिट करने में एक त्रुटि हुई",
+    "errorSavingFile": "फ़ाइलें सहेजने में त्रुटि. फ़ाइल का नाम: {fileName}. त्रुटि: {त्रुटि}",
+    "submittingDraftErrMsg": "ड्राफ़्ट सहेजते समय एक त्रुटि हुई",
+    "submittingDraftConsErrMsg": "ड्राफ़्ट सहेजने में त्रुटि. सबमिशन आईडी: {submissionId}। त्रुटि: {त्रुटि}"
   },
   "notesPanel": {
     "addNewNote": "नया नोट जोड़ें",
@@ -507,7 +546,8 @@
     "apiCallConsErrorMsg": "के लिए त्रुटि निर्यात सबमिशन",
     "selectAllFields": "सभी क्षेत्रों का चयन करें",
     "emailSentMsg": "आपका डेटा तैयार होने पर उसे डाउनलोड करने के लिए एक लिंक के साथ {email} पर एक ईमेल भेजा जाएगा",
-    "exportInProgress": "निर्यात प्रगति पर है"
+    "exportInProgress": "निर्यात प्रगति पर है",
+    "of": "का"
   },
   "printOptions": {
     "submitButtonTxt": "सीडीओजीएस को सबमिट करें और डाउनलोड करें",
@@ -517,11 +557,12 @@
     "print": "छाप",
     "browserPrint": "ब्राउज़र प्रिंट",
     "pageFromBrowser": "आपके ब्राउज़र से पृष्ठ",
-    "uploadA": "Télécharger un",
-    "uploadB": "avoir une version structurée",
+    "uploadA": "ए अपलोड करें",
+    "uploadB": "एक संरचित संस्करण होना",
     "docGrnSucess": "दस्तावेज़ सफलतापूर्वक जनरेट किया गया",
     "failedDocGenErrMsg": "दस्तावेज़ जनरेट करने में विफल",
-    "failedDocGenConsErrMsg": "टेम्प्लेट सबमिट करने में त्रुटि: {त्रुटि}"
+    "failedDocGenConsErrMsg": "टेम्प्लेट सबमिट करने में त्रुटि: {त्रुटि}",
+    "cDogsTemplate": "सीडीओजीएस टेम्पलेट"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "घटक सूचना लिंक",
@@ -547,11 +588,6 @@
     "edit": "संपादन करना",
     "formTitle": "प्रपत्र शीर्षक",
     "actions": "कार्रवाई"
-  },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "लिंक को क्लिपबोर्ड पर कॉपी किया गया",
-    "copyToClipboard": "क्लिपबोर्ड पर कॉपी करें",
-    "errCopyToClipboard": "क्लिपबोर्ड पर प्रतिलिपि बनाने का प्रयास करने में त्रुटि."
   },
   "formSubmission": {
     "editThisSubmission": "इस सबमिशन को संपादित करें",
@@ -585,7 +621,7 @@
     "delSelectedMemberWarning": "क्या आप वाकई चयनित सदस्य को हटाना चाहते हैं?",
     "idpMessage": "पहले से ही टीम में है।",
     "formOwnerErrMsg": "कम से कम एक प्रपत्र स्वामी हमेशा होना चाहिए",
-    "formOwnerConsoleErrMsg": "निकाला नहीं जा सकता क्योंकि वे ही इस फ़ॉर्म के शेष स्वामी हैं.",
+    "formOwnerConsoleErrMsg": "{userId} को निकाला नहीं जा सकता क्योंकि वे इस फ़ॉर्म के एकमात्र शेष स्वामी हैं.",
     "insufficientPermissnMsg": "टीम को प्रबंधित करने के लिए अपर्याप्त अनुमतियां",
     "getUserErrMsg": "प्रपत्र उपयोगकर्ता प्राप्त करने में त्रुटि:",
     "getRolesErrMsg": "भूमिकाओं की सूची प्राप्त करने में त्रुटि:",
@@ -593,7 +629,7 @@
     "removeUsersErrMsg": "चयनित उपयोगकर्ताओं को हटाने का प्रयास करते समय एक त्रुटि हुई",
     "removeUserConsoleErrMsg": "प्रपत्र {formId} से उपयोगकर्ताओं को हटाने में त्रुटि: {त्रुटि}",
     "updUserRolesErrMsg": "सभी उपयोगकर्ता भूमिकाओं को अपडेट करने का प्रयास करते समय एक त्रुटि हुई",
-    "updUserRolesConsoleErrMsg": "फ़ॉर्म {formId} के लिए सभी उपयोगकर्ता भूमिकाएँ सेट करने में त्रुटि: {त्रुटि}",
+    "updUserRolesConsoleErrMsg": "फ़ॉर्म {formId} के लिए सभी उपयोगकर्ता भूमिकाएं सेट करने में त्रुटि: {त्रुटि}",
     "setUserFormsErrMsg": "किसी उपयोगकर्ता के लिए भूमिकाओं को अपडेट करने का प्रयास करते समय एक त्रुटि हुई",
     "setUserFormsConsoleErrMsg": "फ़ॉर्म {formId} के लिए उपयोगकर्ता भूमिकाएं सेट करने में त्रुटि: {त्रुटि}"
   },
@@ -696,27 +732,24 @@
     "agreementErrMsg": "आपको ऊपर दिखाए गए गोपनीयता अस्वीकरण से सहमत होना होगा।"
   },
   "addTeamMember": {
-    "formDesign": "प्रपत्र डिजाइन",
-    "exportDesign": "निर्यात डिजाइन",
-    "importDesign": "आयात डिजाइन",
-    "important": "महत्वपूर्ण",
-    "formDesignInfoA": "जब आप इस फॉर्म का निर्माण पूरा कर लें तो <strong>सेव डिज़ाइन</strong> बटन का उपयोग करें।",
-    "formDesignInfoB": "<strong>सबमिट</strong> बटन आपके उपयोगकर्ता को यह फॉर्म जमा करने के लिए प्रदान किया गया है और इसे सहेजे जाने के बाद सक्रिय हो जाएगा।",
-    "formLoadErrMsg": "प्रपत्र डिज़ाइन लोड करते समय एक त्रुटि हुई.",
-    "formLoadConsoleErrMsg": "फ़ॉर्म {formId} स्कीमा लोड करने में त्रुटि (संस्करण: {versionId} ड्राफ़्ट: {draftId}): {त्रुटि}",
-    "formSchemaImportErrMsg": "प्रपत्र स्कीमा आयात करते समय एक त्रुटि उत्पन्न हुई।",
-    "formSchemaImportConsoleErrMsg": "प्रपत्र स्कीमा आयात करने में त्रुटि: {त्रुटि}",
-    "formDesignSaveErrMsg": "इस प्रपत्र डिज़ाइन को सहेजने का प्रयास करते समय एक त्रुटि हुई. यदि आपको बाद में पुनः प्रयास करने के लिए ताज़ा करने या छोड़ने की आवश्यकता है, तो आप बाद में सहेजने के लिए पृष्ठ पर मौजूदा डिज़ाइन निर्यात कर सकते हैं।",
-    "formDesignSaveConsoleErrMsg": "फ़ॉर्म को अपडेट करने या बनाने में त्रुटि (FormID: {formId}, versionId: {versionId},raftId: {draftId}) त्रुटि: {error}",
-    "saved": "बचाया",
-    "save": "बचाना",
-    "saving": "सहेजा जा रहा है",
-    "notSaved": "सहेजा नहीं गया",
-    "collapse": "गिर जाना",
-    "actions": "कार्रवाई"
+    "cantFindChefsUsers": "कोई नहीं मिला? हो सकता है कि उन्होंने शेफ्स में लॉग इन नहीं किया हो।<br /> कृपया उन्हें शेफ्स के लिए एक लिंक भेजें और उन्हें लॉग इन करने के लिए कहें।",
+    "cancel": "रद्द करना",
+    "mustSelectAUser": "इस उपयोगकर्ता को जोड़ने के लिए आपको कम से कम एक भूमिका का चयन करना होगा।",
+    "addNewMember": "एक नया सदस्य जोड़ें",
+    "enterUsername": "एक नाम, ई-मेल, या उपयोगकर्ता नाम दर्ज करें",
+    "enterExactUsername": "एक सटीक ई-मेल या उपयोगकर्ता नाम दर्ज करें",
+    "BCeIDInputSearchMaxLen": "बीसीईआईडी उपयोगकर्ता नाम/ईमेल के लिए खोज इनपुट 6 वर्णों से अधिक होना चाहिए।",
+    "BCeIDMustBeExact": "बीसीईआईडी के लिए ईमेल खोज सटीक होनी चाहिए।",
+    "errorGettingUsers": "उपयोगकर्ताओं को प्राप्त करने में त्रुटि {त्रुटि}"
   },
   "baseFilter": {
-    "cancel": "रद्द करना"
+    "cancel": "रद्द करना",
+    "columnName": "आम नाम",
+    "exampleText": "उदाहरण पाठ",
+    "exampleText2": "उदाहरण पाठ 2",
+    "filterPlaceholderTxt": "फ़िल्टर प्लेसहोल्डर टेक्स्ट",
+    "filter": "फ़िल्टर",
+    "value": "कीमत"
   },
   "formViewerActions": {
     "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",
@@ -725,29 +758,10 @@
     "switchSingleSubmssn": "एकल सबमिशन पर स्विच करें",
     "switchMultiSubmssn": "एकल सबमिशन पर स्विच करें"
   },
-  "formViewerMultiUpload": {
-    "important": "महत्वपूर्ण",
-    "uploadSucessMsg": "एकाधिक ड्राफ्ट सफलतापूर्वक अपलोड करना सुनिश्चित करने के लिए, कृपया प्रदान किए गए टेम्पलेट को डाउनलोड करें और उसका उपयोग करें।",
-    "confirmDownload": "क्या आप इसे डाउनलोड करना चाहते हैं?",
-    "jsonFileUpload": "अपलोड करने के लिए JSON फाइल चुनें",
-    "dragNDrop": "या इसे यहाँ खींच कर छोड़ दें",
-    "chooseAFile": "कोई फ़ाइल चुनें",
-    "downloadDraftSubmns": "कृपया ड्राफ्ट सबमिशन रिपोर्ट डाउनलोड करें और सुनिश्चित करें कि डेटा सही ढंग से दर्ज किया गया है।",
-    "downloadReport": "रिपोर्ट डाउनलोड करें",
-    "doYouWantToDownload": "क्या आप इसे डाउनलोड करना चाहते हैं?",
-    "uploadNewFile": "नई फ़ाइल अपलोड करें",
-    "uploadMultipleFileErr": "क्षमा करें, आप केवल एक फ़ाइल अपलोड कर सकते हैं",
-    "dragMultipleFileErr": "क्षमा करें, आप केवल एक फ़ाइल खींच सकते हैं",
-    "fileFormatErr": "क्षमा करें, हम केवल json फ़ाइलें ही स्वीकार करते हैं",
-    "fileSizeErr": "अनुमत अधिकतम फ़ाइल आकार 5MB है",
-    "parseJsonErr": "हम फ़ाइल से json डेटा को पार्स नहीं कर सकते",
-    "jsonObjNotArray": "गलत json फ़ाइल स्वरूप",
-    "jsonObjNotArrayConsErr": "एक अप्रत्याशित त्रुटि हुई।",
-    "jsonArrayEmpty": "यह json फाइल खाली है।",
-    "errorWhileValidate": "इस फाइल में कुछ गड़बड़ है",
-    "errWhileCheckValidity": "इस फाइल में कुछ गड़बड़ है",
-    "errAfterValidate": "कुछ त्रुटियाँ मिलीं, अधिक जानकारी के लिए नीचे देखें।",
-    "fileIsEmpty": "यह फाइल खाली है।"
+  "baseCopyToClipboard": {
+    "linkToClipboard": "लिंक को क्लिपबोर्ड पर कॉपी किया गया",
+    "copyToClipboard": "क्लिपबोर्ड पर कॉपी करें",
+    "errCopyToClipboard": "क्लिपबोर्ड पर प्रतिलिपि बनाने का प्रयास करने में त्रुटि."
   },
   "root": {
     "admin": "व्यवस्थापक"
@@ -755,7 +769,15 @@
   "sucess": {
     "sucessFormSubmissn": "आपका फॉर्म सफलतापूर्वक सबमिट कर दिया गया है",
     "keepRecord": "यदि आप इस सबमिशन का रिकॉर्ड रखना चाहते हैं, तो आप निम्नलिखित रख सकते हैं",
-    "confirmationId": "पुष्टिकरण आईडी:"
+    "confirmationId": "पुष्टि आईडी:"
+  },
+  "permissionUtils": {
+    "formNotAvailable": "प्रपत्र वर्तमान में अनुपलब्ध है। यह किसी गलत लिंक के कारण हो सकता है, या हो सकता है कि प्रपत्र को उसके स्वामी द्वारा हटा दिया गया हो.",
+    "missingFormIdAndSubmssId": "विकल्पों में फॉर्मआईडी और सबमिशन आईडी दोनों नहीं हैं",
+    "loadingFormErrMsg": "इस फॉर्म को लोड करते समय एक त्रुटि हुई।",
+    "loadingForm": "{विकल्प} लोड करते समय त्रुटि: {त्रुटि}",
+    "idpHintMsg": "इस फॉर्म के लिए {idpHint} प्रमाणीकरण की आवश्यकता है। कृपया पुनः लॉगिन करें और पुनः प्रयास करें।",
+    "formIdpMissMatch": "फॉर्म आईडीपी बेमेल। फ़ॉर्म के लिए {idpHint} की आवश्यकता है लेकिन उपयोगकर्ता के पास {userIdp} है।"
   },
   "store": {
     "admin": {
@@ -789,7 +811,7 @@
       "fecthingFormBuilderCompsConsErrMsg": "प्रपत्र निर्माता घटक प्राप्त करने में त्रुटि: {त्रुटि}"
     },
     "form": {
-      "getCurrUserFormsErrMsg": "आपके फॉर्म लाते समय एक त्रुटि हुई।",
+      "getCurrUserFormsErrMsg": "आपके फॉर्म लाने के दौरान एक त्रुटि हुई।",
       "getCurrUserFormsConsErrMsg": "उपयोगकर्ता डेटा प्राप्त करने में त्रुटि: {त्रुटि}",
       "getUserFormPermErrMsg": "इस प्रपत्र के लिए आपका उपयोगकर्ता डेटा प्राप्त करते समय एक त्रुटि हुई।",
       "getUserFormPermConsErrMsg": "फॉर्मआईडी {formId} का उपयोग कर उपयोगकर्ता डेटा प्राप्त करने में त्रुटि: {त्रुटि}",
@@ -833,7 +855,7 @@
       "fetchSubmissnConsErrMsg": "सबमिशन प्राप्त करने में त्रुटि {submissionId}: ${error}",
       "fetchFormCSVExptFieldsErrMsg": "इस फ़ॉर्म के लिए फ़ील्ड की सूची लाते समय एक गड़बड़ी हुई.",
       "fetchFormCSVExptFieldsConsErrMsg": "फ़ॉर्म प्राप्त करने में त्रुटि {formId}: {त्रुटि}",
-      "fetchSubmissnsErrMsg": "इस फॉर्म के लिए सबमिशन लाते समय एक त्रुटि हुई।",
+      "fetchSubmissnsErrMsg": "इस फ़ॉर्म के लिए सबमिशन लाते समय एक त्रुटि हुई।",
       "fetchSubmissnsConsErrMsg": "{formId} के लिए सबमिशन प्राप्त करने में त्रुटि: {error}",
       "fetchVersionErrMsg": "इस फॉर्म को लाने के दौरान एक त्रुटि हुई।",
       "fetchVersionConsErrMsg": "फ़ॉर्म {formId} के लिए संस्करण {versionId} प्राप्त करने में त्रुटि: {त्रुटि}",
@@ -852,13 +874,5 @@
       "downloadFileErrMsg": "फ़ाइल डाउनलोड करते समय एक त्रुटि हुई",
       "downloadFileConsErrMsg": "फ़ाइल डाउनलोड करने में त्रुटि: त्रुटि"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "प्रपत्र वर्तमान में अनुपलब्ध है। यह किसी गलत लिंक के कारण हो सकता है, या हो सकता है कि प्रपत्र को उसके स्वामी द्वारा हटा दिया गया हो.",
-    "missingFormIdAndSubmssId": "विकल्पों में फॉर्मआईडी और सबमिशन आईडी दोनों नहीं हैं",
-    "loadingFormErrMsg": "इस फॉर्म को लोड करते समय एक त्रुटि हुई।",
-    "loadingForm": "{विकल्प} लोड करते समय त्रुटि: {त्रुटि}",
-    "idpHintMsg": "इस फॉर्म के लिए {idpHint} प्रमाणीकरण की आवश्यकता है। कृपया पुनः लॉगिन करें और पुनः प्रयास करें।",
-    "formIdpMissMatch": "फॉर्म आईडीपी बेमेल। फ़ॉर्म के लिए {idpHint} की आवश्यकता है लेकिन उपयोगकर्ता के पास {userIdp} है।"
   }
 }
