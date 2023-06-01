@@ -322,7 +322,8 @@
     "errorWhileValidate": "مشکلی در این فایل وجود دارد",
     "errWhileCheckValidity": "مشکلی در این فایل وجود دارد",
     "errAfterValidate": "برخی از خطاهای یافت شده، برای اطلاعات بیشتر به زیر مراجعه کنید.",
-    "fileIsEmpty": "این فایل خالی است"
+    "fileIsEmpty": "این فایل خالی است",
+    "download": "دانلود"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "سلب مسئولیت و بیانیه مسئولیت برای طراحان فرم:",

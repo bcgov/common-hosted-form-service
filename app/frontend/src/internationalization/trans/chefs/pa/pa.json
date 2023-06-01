@@ -322,7 +322,8 @@
     "errorWhileValidate": "ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਕੁਝ ਗੜਬੜ ਹੈ",
     "errWhileCheckValidity": "ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਕੁਝ ਗੜਬੜ ਹੈ",
     "errAfterValidate": "ਕੁਝ ਗਲਤੀਆਂ ਮਿਲੀਆਂ, ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਹੇਠਾਂ ਦੇਖੋ।",
-    "fileIsEmpty": "ਇਹ ਫਾਈਲ ਖਾਲੀ ਹੈ।"
+    "fileIsEmpty": "ਇਹ ਫਾਈਲ ਖਾਲੀ ਹੈ।",
+    "download": "ਡਾਊਨਲੋਡ ਕਰੋ"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "ਬੇਦਾਅਵਾ ਅਤੇ ਫਾਰਮ ਡਿਜ਼ਾਈਨਰਾਂ ਲਈ ਜ਼ਿੰਮੇਵਾਰੀ ਦਾ ਬਿਆਨ:",

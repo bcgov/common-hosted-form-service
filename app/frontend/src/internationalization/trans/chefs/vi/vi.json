@@ -322,7 +322,8 @@
     "errorWhileValidate": "Có gì đó sai với tập tin này",
     "errWhileCheckValidity": "Có gì đó sai với tập tin này",
     "errAfterValidate": "Đã tìm thấy một số lỗi, xem bên dưới để biết thêm thông tin.",
-    "fileIsEmpty": "tập tin này là trống rỗng."
+    "fileIsEmpty": "tập tin này là trống rỗng.",
+    "download": "Tải xuống"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Tuyên bố miễn trừ trách nhiệm và tuyên bố trách nhiệm đối với Người thiết kế biểu mẫu:",

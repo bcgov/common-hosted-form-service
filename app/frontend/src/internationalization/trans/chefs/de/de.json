@@ -322,7 +322,8 @@
     "errorWhileValidate": "Mit dieser Datei stimmt etwas nicht",
     "errWhileCheckValidity": "Mit dieser Datei stimmt etwas nicht",
     "errAfterValidate": "Es wurden einige Fehler gefunden. Weitere Informationen finden Sie weiter unten.",
-    "fileIsEmpty": "Diese Datei ist leer."
+    "fileIsEmpty": "Diese Datei ist leer.",
+    "download": "Herunterladen"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Haftungsausschluss und Haftungsausschluss für Form Designers:",

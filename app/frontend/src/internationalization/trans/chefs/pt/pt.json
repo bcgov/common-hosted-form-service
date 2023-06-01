@@ -322,7 +322,8 @@
     "errorWhileValidate": "Há algo errado com este arquivo",
     "errWhileCheckValidity": "Há algo errado com este arquivo",
     "errAfterValidate": "Alguns erros encontrados, veja abaixo para mais informações.",
-    "fileIsEmpty": "este arquivo está vazio."
+    "fileIsEmpty": "este arquivo está vazio.",
+    "download": "Download"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Isenção de responsabilidade e declaração de responsabilidade para Designers de formulários:",

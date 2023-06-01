@@ -13,7 +13,7 @@
               tag-name="b"
               file-type="json"
               :file-name="json_csv.file_name"
-              title="Download "
+              :title="$t('trans.formViewerMultiUpload.download')"
               :data="json_csv.data"
               :confirm="this.$t('trans.formViewerMultiUpload.confirmDownload')"
             />

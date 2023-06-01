@@ -322,7 +322,8 @@
     "errorWhileValidate": "З цим файлом щось не так",
     "errWhileCheckValidity": "З цим файлом щось не так",
     "errAfterValidate": "Знайдено деякі помилки, див. нижче для отримання додаткової інформації.",
-    "fileIsEmpty": "цей файл порожній."
+    "fileIsEmpty": "цей файл порожній.",
+    "download": "Завантажити"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Відмова від відповідальності та заява про відповідальність для дизайнерів форм:",
