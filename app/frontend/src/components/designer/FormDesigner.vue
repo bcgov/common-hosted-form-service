@@ -646,7 +646,7 @@ export default {
           await this.schemaCreateNew();
         }
 
-        this.savedStatus = this.$t('trans.formDesigner.formDesignSaveErrMsg');
+        this.savedStatus = 'Saved';
         this.isFormSaved = true;
       } catch (error) {
         await this.setDirtyFlag(true);
