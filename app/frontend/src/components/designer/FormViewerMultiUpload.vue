@@ -173,32 +173,6 @@ export default {
       if (!this.error) return 'success-text';
       else return 'fail-text';
     },
-    ERROR() {
-      return {
-        UPLOAD_MULTIPLE_FILE_ERROR: this.$t(
-          'trans.formViewerMultiUpload.uploadMultipleFileErr'
-        ),
-        DRAG_MULPLE_FILE_ERROR: this.$t(
-          'trans.formViewerMultiUpload.dragMultipleFileErr'
-        ),
-        FILE_FORMAT_ERROR: this.$t('trans.formViewerMultiUpload.fileFormatErr'),
-        FILE_SIZE_ERROR: this.$t('trans.formViewerMultiUpload.fileSizeErr'),
-        PARSE_JSON_ERROR: this.$t('trans.formViewerMultiUpload.parseJsonErr'),
-        JSON_OBJECT_NOT_ARRAY: this.$t(
-          'trans.formViewerMultiUpload.jsonObjNotArray'
-        ),
-        JSON_ARRAY_EMPTY: this.$t('trans.formViewerMultiUpload.jsonArrayEmpty'),
-        ERROR_WHILE_VALIDATE: this.$t(
-          'trans.formViewerMultiUpload.errorWhileValidate'
-        ),
-        ERROR_WHILE_CHECKVALIDITY: this.$t(
-          'trans.formViewerMultiUpload.errWhileCheckValidity'
-        ),
-        ERROR_AFTER_VALIDATE: this.$t(
-          'trans.formViewerMultiUpload.errAfterValidate'
-        ),
-      };
-    },
     fileSize() {
       if (this.file.size < 1024) return this.file.size.toFixed(2) + ' bytes';
       if (this.file.size < 1024 * 1024)
@@ -215,8 +189,10 @@ export default {
 
       if (this.file != undefined) {
         this.addNotification({
-          message: this.ERROR.UPLOAD_MULTIPLE_FILE_ERROR,
-          consoleError: this.ERROR.UPLOAD_MULTIPLE_FILE_ERROR,
+          message: this.$t('trans.formViewerMultiUpload.uploadMultipleFileErr'),
+          consoleError: this.$t(
+            'trans.formViewerMultiUpload.uploadMultipleFileErr'
+          ),
         });
         return;
       }
@@ -227,24 +203,26 @@ export default {
 
         if (droppedFiles.length > 1) {
           this.addNotification({
-            message: this.ERROR.DRAG_MULPLE_FILE_ERROR,
-            consoleError: this.ERROR.DRAG_MULPLE_FILE_ERROR,
+            message: this.$t('trans.formViewerMultiUpload.dragMultipleFileErr'),
+            consoleError: this.$t(
+              'trans.formViewerMultiUpload.dragMultipleFileErr'
+            ),
           });
           return;
         }
 
         if (droppedFiles[0]['type'] != 'application/json') {
           this.addNotification({
-            message: this.ERROR.FILE_FORMAT_ERROR,
-            consoleError: this.ERROR.FILE_FORMAT_ERROR,
+            message: this.$t('trans.formViewerMultiUpload.fileFormatErr'),
+            consoleError: this.$t('trans.formViewerMultiUpload.fileFormatErr'),
           });
           return;
         }
         let size = droppedFiles[0].size / (1024 * 1024);
         if (size > this.max_file_size) {
           this.addNotification({
-            message: this.ERROR.FILE_SIZE_ERROR,
-            consoleError: this.ERROR.FILE_SIZE_ERROR,
+            message: this.$t('trans.formViewerMultiUpload.fileSizeErr'),
+            consoleError: this.$t('trans.formViewerMultiUpload.fileSizeErr'),
           });
           return;
         }
@@ -252,8 +230,10 @@ export default {
         this.parseFile();
       } catch (error) {
         this.addNotification({
-          message: this.ERROR.DRAG_MULPLE_FILE_ERROR,
-          consoleError: `${this.ERROR.DRAG_MULPLE_FILE_ERROR} ${error}`,
+          message: this.$t('trans.formViewerMultiUpload.dragMultipleFileErr'),
+          consoleError:
+            this.$t('trans.formViewerMultiUpload.dragMultipleFileErr') +
+            `${error}`,
         });
         return;
       }
@@ -279,7 +259,7 @@ export default {
       } catch (e) {
         this.resetUpload();
         this.addNotification({
-          message: this.ERROR.PARSE_JSON_ERROR,
+          message: this.$t('trans.formViewerMultiUpload.parseJsonErr'),
           consoleError: e,
         });
       }
@@ -289,7 +269,7 @@ export default {
         if (!Array.isArray(this.Json)) {
           this.resetUpload();
           this.addNotification({
-            message: this.ERROR.JSON_OBJECT_NOT_ARRAY,
+            message: this.$t('trans.formViewerMultiUpload.jsonObjNotArray'),
             consoleError: this.$t(
               'trans.formViewerMultiUpload.jsonObjNotArrayConsEr'
             ),
@@ -299,7 +279,7 @@ export default {
         if (this.Json.length == 0) {
           this.resetUpload();
           this.addNotification({
-            message: this.ERROR.JSON_ARRAY_EMPTY,
+            message: this.$t('trans.formViewerMultiUpload.jsonArrayEmpty'),
             consoleError: this.$t('trans.formViewerMultiUpload.fileIsEmpty'),
           });
           return;
@@ -314,10 +294,10 @@ export default {
         this.resetUpload();
         this.$emit('set-error', {
           error: true,
-          message: this.ERROR.ERROR_WHILE_VALIDATE,
+          message: this.$t('trans.formViewerMultiUpload.errorWhileValidate'),
         });
         this.addNotification({
-          message: this.ERROR.ERROR_WHILE_VALIDATE,
+          message: this.$t('trans.formViewerMultiUpload.errorWhileValidate'),
           consoleError: error,
         });
         return;
@@ -341,7 +321,9 @@ export default {
           } catch (error) {
             errors.push({
               submission: this.index,
-              message: this.ERROR.ERROR_WHILE_CHECKVALIDITY,
+              message: this.$t(
+                'trans.formViewerMultiUpload.errWhileCheckValidity'
+              ),
             });
           }
           this.index++;
@@ -371,7 +353,7 @@ export default {
       } else {
         this.$emit('toggleBlock', false);
         this.$emit('set-error', {
-          message: this.ERROR.ERROR_AFTER_VALIDATE,
+          message: this.$t('trans.formViewerMultiUpload.errAfterValidate'),
           error: true,
           upload_state: 10,
           response: this.globalError,
