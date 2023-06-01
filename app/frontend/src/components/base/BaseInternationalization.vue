@@ -26,15 +26,14 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import { faCaretDown, faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faCaretDown, faGlobe);
 
 export default {
-  name: 'BaseAuthButton',
+  name: 'BaseInternationalization',
   computed: {
-    ...mapGetters('auth', ['authenticated', 'keycloakReady']),
     hasLogin() {
       return this.$route && this.$route.meta && this.$route.meta.hasLogin;
     },

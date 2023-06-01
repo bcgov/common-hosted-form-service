@@ -62,9 +62,7 @@ export default {
   },
   data() {
     return {
-      consoleErrMsg: this.$t('trans.developer.notificationConsErr'),
       apiRes: '',
-      message: this.$t('trans.developer.notificationMsg'),
     };
   },
   computed: {
@@ -81,8 +79,10 @@ export default {
         this.apiRes = user.data;
       } catch (error) {
         this.addNotification({
-          message: this.message,
-          consoleError: this.consoleErrMsg + `: ${error.message}`,
+          message: this.$t('trans.developer.notificationMsg'),
+          consoleError:
+            this.$t('trans.developer.notificationConsErr') +
+            `: ${error.message}`,
         });
       }
     },
