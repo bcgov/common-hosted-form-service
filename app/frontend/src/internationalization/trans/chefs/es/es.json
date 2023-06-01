@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "aaaa-mm-dd"
+  },
   "formsTable": {
     "myForms": "Mis formularios",
     "createNewForm": "Crear un nuevo formulario",
@@ -110,7 +113,7 @@
     "formTitlemaxChars": "El título del formulario debe tener 255 caracteres o menos",
     "formTitleReq": "Se requiere el título del formulario",
     "atLeastOneEmailReq": "Por favor, introduzca al menos 1 dirección de correo electrónico",
-    "validEmailRequired": "Ingrese todas las direcciones de correo electrónico válidas",
+    "validEmailRequired": "Por favor, introduzca todas las direcciones de correo electrónico válidas",
     "fieldRequired": "Este campo es obligatorio.",
     "correctDateFormat": "La fecha debe estar en el formato correcto. es decir. aaaa-mm-dd",
     "dateDiffMsg": "La fecha de cierre de la presentación debe ser mayor que la fecha de apertura de la presentación.",
@@ -119,7 +122,7 @@
     "validInterval": "Este debería ser un intervalo válido.",
     "fieldRequiredAndInterval": "Este campo es obligatorio y debe ser un intervalo.",
     "dateGrtOpenSubmissnDate": "Repetir hasta la fecha debe ser mayor que la fecha de presentación abierta",
-    "public": "Pública (anónima)"
+    "public": "Público (anónimo)"
   },
   "apiKey": {
     "disclaimer": "Descargo de responsabilidad",
@@ -137,12 +140,12 @@
     "deleteMsg": "¿Está seguro de que desea eliminar su clave API?",
     "delete": "Borrar",
     "confirmKeyGen": "Confirmar generación de claves",
-    "createAPIKey": "¿Crear una clave de API para este formulario?<br /> Asegúrese de seguir el descargo de responsabilidad en esta página.",
-    "regenerateAPIKey": "¿Regenerar la clave API? <br /> <strong>Si continúa, se eliminará su acceso actual a la clave API</strong>.",
+    "createAPIKey": "¿Crear una clave API para este formulario?<br /> Asegúrese de seguir el Descargo de responsabilidad en esta página.",
+    "regenerateAPIKey": "¿Regenerar la clave API?<br /> <strong>Si continúa, se eliminará su acceso a la clave de API actual</strong> .",
     "formOwnerKeyAcess": "Debe ser el <strong>propietario del formulario</strong> para administrar las claves API.",
     "regenerate": "Regenerado",
-    "generate": "generar",
-    "secret": "Secreta",
+    "generate": "Generar",
+    "secret": "Secreto",
     "text": "texto",
     "password": "contraseña"
   },
@@ -260,7 +263,7 @@
   "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Cerrar sesión",
-    "login": "acceso"
+    "login": "Acceso"
   },
   "baseDialog": {
     "defaultText": "texto predeterminado",
@@ -293,9 +296,33 @@
     "formSchemaImportConsoleErrMsg": "Error al importar el esquema del formulario: {error}",
     "formDesignSaveErrMsg": "Se produjo un error al intentar guardar este diseño de formulario. Si necesita actualizar o salir para volver a intentarlo más tarde, puede exportar el diseño existente en la página para guardarlo más tarde.",
     "formDesignSaveConsoleErrMsg": "Error al actualizar o crear el formulario (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
-    "collapse": "colapsar",
+    "collapse": "Colapsar",
     "actions": "Comportamiento",
     "version": "Versión"
+  },
+  "formViewerMultiUpload": {
+    "important": "IMPORTANTE",
+    "uploadSucessMsg": "Para garantizar la carga exitosa de varios borradores, descargue y utilice la plantilla provista.",
+    "confirmDownload": "¿Quieres descargarlo?",
+    "jsonFileUpload": "Seleccione el archivo JSON para cargar",
+    "dragNDrop": "o arrástralo y suéltalo aquí",
+    "chooseAFile": "Escoge un archivo",
+    "downloadDraftSubmns": "Descargue el borrador del informe de presentación y asegúrese de que los datos se hayan ingresado correctamente.",
+    "downloadReport": "Descargar informe",
+    "doYouWantToDownload": "¿Quieres descargarlo?",
+    "uploadNewFile": "Subir archivo nuevo",
+    "uploadMultipleFileErr": "Lo sentimos, solo puedes subir un archivo.",
+    "dragMultipleFileErr": "Lo sentimos, solo puedes arrastrar un archivo",
+    "fileFormatErr": "Lo sentimos, solo aceptamos archivos json",
+    "fileSizeErr": "El tamaño máximo de archivo permitido es de 5 MB",
+    "parseJsonErr": "No podemos analizar los datos json del archivo.",
+    "jsonObjNotArray": "Formato de archivo json incorrecto",
+    "jsonObjNotArrayConsErr": "Ocurrió un error inesperado.",
+    "jsonArrayEmpty": "Este archivo json está vacío.",
+    "errorWhileValidate": "Hay algo mal con este archivo",
+    "errWhileCheckValidity": "Hay algo mal con este archivo",
+    "errAfterValidate": "Se encontraron algunos errores, consulte a continuación para obtener más información.",
+    "fileIsEmpty": "este archivo está vacío."
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",
@@ -420,7 +447,19 @@
     "status": "Estado",
     "submissionDate": "Día de entrega",
     "draftUpdatedBy": "Borrador actualizado por",
-    "draftLastEdited": "Borrador editado por última vez"
+    "draftLastEdited": "Borrador editado por última vez",
+    "createLateSubmissn": "Crear envío tardío",
+    "formLoading": "¡Por favor espere mientras se carga el formulario!",
+    "pleaseConfirm": "Por favor confirmar",
+    "wantToSaveDraft": "¿Quieres guardar el borrador?",
+    "yes": "Sí",
+    "no": "No",
+    "multiDraftUploadSuccess": "¡Tu carga de múltiples borradores ha sido exitosa!",
+    "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {estado}",
+    "errSubmittingForm": "Ocurrió un error al enviar este formulario",
+    "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {nombre de archivo}. Error: {error}",
+    "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
+    "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {Id de envío}. Error: {error}"
   },
   "notesPanel": {
     "addNewNote": "Agregar nueva nota",
@@ -461,12 +500,12 @@
     "statusCodesErr": "error al encontrar códigos de estado",
     "notifyErrorCode": "Se produjo un error al obtener el estado de este envío.",
     "notifyConsoleErrorCode": "Error al obtener estados:",
-    "fetchSubmissionUsersErr": "Se produjo un error al intentar recuperar los correos electrónicos de los destinatarios para este envío.",
+    "fetchSubmissionUsersErr": "Se produjo un error al intentar obtener los correos electrónicos de los destinatarios para este envío.",
     "fetchSubmissionUsersConsErr": "Error al obtener los correos electrónicos de los destinatarios para",
     "assignSubmissnToFormReviewer": "Los envíos se pueden asignar a revisores de formularios.<br /> Para agregar más miembros del equipo como revisores de formularios, vaya a la página Administrar de este formulario.",
     "update": "ACTUALIZAR",
     "revise": "REVISAR",
-    "complete": "COMPLETA",
+    "complete": "COMPLETO",
     "assign": "ASIGNAR"
   },
   "statusTable": {
@@ -507,7 +546,8 @@
     "apiCallConsErrorMsg": "Envíos de exportación de errores para",
     "selectAllFields": "Seleccionar todos los campos",
     "emailSentMsg": "Se enviará un correo electrónico a {email} con un enlace para descargar sus datos cuando esté listo",
-    "exportInProgress": "Exportación en curso"
+    "exportInProgress": "Exportación en curso",
+    "of": "de"
   },
   "printOptions": {
     "submitButtonTxt": "Enviar a CDOGS y descargar",
@@ -519,13 +559,14 @@
     "pageFromBrowser": "la página desde tu navegador",
     "uploadA": "Sube un",
     "uploadB": "tener una versión estructurada",
-    "docGrnSucess": "Documento generado con éxitoy",
+    "docGrnSucess": "Documento generado con éxito",
     "failedDocGenErrMsg": "No se pudo generar el documento",
-    "failedDocGenConsErrMsg": "Error al enviar la plantilla: {error}"
+    "failedDocGenConsErrMsg": "Error al enviar la plantilla: {error}",
+    "cDogsTemplate": "Plantilla CDDOGS"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Enlace de información del componente",
-    "learnMoreLinkTxt": "Más información El campo del enlace no puede estar vacío.",
+    "learnMoreLinkTxt": "Más información El campo de enlace no puede estar vacío.",
     "largeImgTxt": "imagen grande El tamaño de la imagen no puede ser mayor a .5mb",
     "componentName": "Nombre del componente:",
     "learnMoreLink": "Más información Enlace:",
@@ -547,11 +588,6 @@
     "edit": "EDITAR",
     "formTitle": "Título del formulario",
     "actions": "Comportamiento"
-  },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "Enlace copiado al portapapeles",
-    "copyToClipboard": "Copiar al portapapeles",
-    "errCopyToClipboard": "Error al intentar copiar al portapapeles."
   },
   "formSubmission": {
     "editThisSubmission": "Editar este envío",
@@ -585,7 +621,7 @@
     "delSelectedMemberWarning": "¿Está seguro de que desea eliminar al miembro seleccionado?",
     "idpMessage": "ya está en el equipo.",
     "formOwnerErrMsg": "Siempre debe haber al menos un propietario de formulario",
-    "formOwnerConsoleErrMsg": "No se puede eliminar porque es el único propietario restante de este formulario.",
+    "formOwnerConsoleErrMsg": "No se puede eliminar {userId} porque es el único propietario restante de este formulario.",
     "insufficientPermissnMsg": "Permisos insuficientes para administrar el equipo",
     "getUserErrMsg": "Error al obtener los usuarios del formulario:",
     "getRolesErrMsg": "Error al obtener la lista de roles:",
@@ -689,34 +725,31 @@
     "designForm": "Formulario de diseño",
     "formSettings": "Configuración de formulario",
     "disclaimer": "Descargo de responsabilidad",
-    "disclaimerStmt": "Acepto la exención de responsabilidad y la declaración de responsabilidad de Form Designers",
+    "disclaimerStmt": "Acepto el descargo de responsabilidad y la declaración de responsabilidad de Form Designers",
     "continue": "Continuar",
     "back": "Atrás",
     "confirmPageNav": "¿De verdad quieres salir de esta página? Los cambios que haya realizado no se guardarán.",
     "agreementErrMsg": "Debe aceptar el descargo de responsabilidad de privacidad que se muestra arriba."
   },
   "addTeamMember": {
-    "formDesign": "Diseño de formularios",
-    "exportDesign": "Diseño de exportación",
-    "importDesign": "Diseño de importación",
-    "important": "IMPORTANTE",
-    "formDesignInfoA": "Utilice el botón <strong>GUARDAR DISEÑO</strong> cuando haya terminado de crear este formulario.",
-    "formDesignInfoB": "El botón <strong>ENVIAR</strong> se proporciona para que su usuario envíe este formulario y se activará después de guardarlo.",
-    "formLoadErrMsg": "Ocurrió un error al cargar el diseño del formulario.",
-    "formLoadConsoleErrMsg": "Error al cargar el formulario {formId} esquema (versión: {versionId} borrador: {draftId}): {error}",
-    "formSchemaImportErrMsg": "Ocurrió un error al importar el esquema del formulario.",
-    "formSchemaImportConsoleErrMsg": "Error al importar el esquema del formulario: {error}",
-    "formDesignSaveErrMsg": "Se produjo un error al intentar guardar este diseño de formulario. Si necesita actualizar o salir para volver a intentarlo más tarde, puede exportar el diseño existente en la página para guardarlo más tarde.",
-    "formDesignSaveConsoleErrMsg": "Error al actualizar o crear el formulario (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
-    "saved": "Salvado",
-    "save": "Ahorrar",
-    "saving": "Ahorro",
-    "notSaved": "No guardado",
-    "collapse": "Colapsar",
-    "actions": "Comportamiento"
+    "cantFindChefsUsers": "¿No puedes encontrar a alguien? Es posible que no hayan iniciado sesión en CHEFS.<br /> Envíeles un enlace a CHEFS y pídales que inicien sesión.",
+    "cancel": "Cancelar",
+    "mustSelectAUser": "Debe seleccionar al menos un rol para agregar este usuario.",
+    "addNewMember": "Agregar un nuevo miembro",
+    "enterUsername": "Ingrese un nombre, correo electrónico o nombre de usuario",
+    "enterExactUsername": "Ingrese un correo electrónico o nombre de usuario exacto",
+    "BCeIDInputSearchMaxLen": "La entrada de búsqueda para el nombre de usuario/correo electrónico de BCeID debe tener más de 6 caracteres.",
+    "BCeIDMustBeExact": "Las búsquedas de correo electrónico para BCeID deben ser exactas.",
+    "errorGettingUsers": "Error al obtener usuarios {error}"
   },
   "baseFilter": {
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "columnName": "Nombre de columna",
+    "exampleText": "Texto de ejemplo",
+    "exampleText2": "Texto de ejemplo 2",
+    "filterPlaceholderTxt": "Filtrar texto de marcador de posición",
+    "filter": "Filtrar",
+    "value": "valor"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Ver todas las presentaciones",
@@ -725,37 +758,26 @@
     "switchSingleSubmssn": "Cambiar a envío único",
     "switchMultiSubmssn": "Cambiar a envío único"
   },
-  "root": {
-    "admin": "Administrador"
+  "baseCopyToClipboard": {
+    "linkToClipboard": "Enlace copiado al portapapeles",
+    "copyToClipboard": "Copiar al portapapeles",
+    "errCopyToClipboard": "Error al intentar copiar al portapapeles."
   },
-  "formViewerMultiUpload": {
-    "important": "IMPORTANTE",
-    "uploadSucessMsg": "Para garantizar la carga exitosa de varios borradores, descargue y utilice la plantilla provista.",
-    "confirmDownload": "¿Quieres descargarlo?",
-    "jsonFileUpload": "Seleccione el archivo JSON para cargar",
-    "dragNDrop": "o arrástralo y suéltalo aquí",
-    "chooseAFile": "Escoge un archivo",
-    "downloadDraftSubmns": "Descargue el borrador del informe de envío y asegúrese de que los datos se hayan ingresado correctamente.",
-    "downloadReport": "Descargar informe",
-    "doYouWantToDownload": "¿Quieres descargarlo?",
-    "uploadNewFile": "Subir archivo nuevo",
-    "uploadMultipleFileErr": "Lo sentimos, solo puedes subir un archivo.",
-    "dragMultipleFileErr": "Lo sentimos, solo puedes arrastrar un archivo",
-    "fileFormatErr": "Lo sentimos, solo aceptamos archivos json",
-    "fileSizeErr": "El tamaño máximo de archivo permitido es de 5 MB",
-    "parseJsonErr": "No podemos analizar los datos json del archivo.",
-    "jsonObjNotArray": "Formato de archivo json incorrecto",
-    "jsonObjNotArrayConsErr": "Ocurrió un error inesperado.",
-    "jsonArrayEmpty": "Este archivo json está vacío.",
-    "errorWhileValidate": "Hay algo mal con este archivo",
-    "errWhileCheckValidity": "Hay algo mal con este archivo",
-    "errAfterValidate": "Se encontraron algunos errores, consulte a continuación para obtener más información.",
-    "fileIsEmpty": "este archivo está vacío."
+  "root": {
+    "admin": "Administración"
   },
   "sucess": {
     "sucessFormSubmissn": "Su formulario ha sido enviado exitosamente",
     "keepRecord": "Si desea mantener un registro de este envío, puede conservar lo siguiente",
     "confirmationId": "Identificación de confirmación:"
+  },
+  "permissionUtils": {
+    "formNotAvailable": "El formulario no está disponible actualmente. Esto puede deberse a un enlace incorrecto, o puede que el propietario haya eliminado el formulario.",
+    "missingFormIdAndSubmssId": "Opciones que faltan tanto formId como submitId",
+    "loadingFormErrMsg": "Ocurrió un error al cargar este formulario.",
+    "loadingForm": "Error al cargar {opciones}: {error}",
+    "idpHintMsg": "Este formulario requiere autenticación {idpHint}. Vuelva a iniciar sesión y vuelva a intentarlo.",
+    "formIdpMissMatch": "Discrepancia de formulario IDP. El formulario requiere {idpHint} pero el usuario tiene {userIdp}."
   },
   "store": {
     "admin": {
@@ -852,13 +874,5 @@
       "downloadFileErrMsg": "Ocurrió un error al descargar el archivo",
       "downloadFileConsErrMsg": "Error al descargar el archivo: error"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "El formulario no está disponible actualmente. Esto puede deberse a un enlace incorrecto, o puede que el propietario haya eliminado el formulario.",
-    "missingFormIdAndSubmssId": "Opciones que faltan tanto formId como submitId",
-    "loadingFormErrMsg": "Ocurrió un error al cargar este formulario.",
-    "loadingForm": "Error al cargar {opciones}: {error}",
-    "idpHintMsg": "Este formulario requiere autenticación {idpHint}. Vuelva a iniciar sesión y vuelva a intentarlo.",
-    "formIdpMissMatch": "Discrepancia de formulario IDP. El formulario requiere {idpHint} pero el usuario tiene {userIdp}."
   }
 }

@@ -1,4 +1,7 @@
 {
+  "date": {
+    "date": "yyyy-mm-dd"
+  },
   "formsTable": {
     "myForms": "我的表格",
     "createNewForm": "创建新表单",
@@ -106,7 +109,7 @@
     "autoReminderNotificatn": "启用自动提醒通知",
     "autoReminderNotificatnToolTip": "在提交期间发送带有表单链接的提醒电子邮件。",
     "selectLoginType": "请选择一种登录类型",
-    "formDescriptnMaxChars": "表单说明必须不超过 255 个字符",
+    "formDescriptnMaxChars": "表格说明必须不超过 255 个字符",
     "formTitlemaxChars": "表单标题不得超过 255 个字符",
     "formTitleReq": "表格标题是必需的",
     "atLeastOneEmailReq": "请输入至少 1 个电子邮件地址",
@@ -119,7 +122,7 @@
     "validInterval": "这应该是一个有效的间隔。",
     "fieldRequiredAndInterval": "此字段是必需的并且应该是一个间隔。",
     "dateGrtOpenSubmissnDate": "重复直到日期应该大于开放提交日期",
-    "public": "公开（匿名)"
+    "public": "公开（匿名）"
   },
   "apiKey": {
     "disclaimer": "免责声明",
@@ -137,8 +140,8 @@
     "deleteMsg": "您确定要删除您的 API 密钥吗？",
     "delete": "删除",
     "confirmKeyGen": "确认密钥生成",
-    "createAPIKey": "为此表单创建一个 API 密钥？<br />确保您遵循此页面上的免责声明。",
-    "regenerateAPIKey": "重新生成 API 密钥？ <br /> <strong>继续将删除您当前的 API 密钥访问权限</strong>。",
+    "createAPIKey": "为此表单创建 API 密钥？<br />确保您遵循此页面上的免责声明。",
+    "regenerateAPIKey": "重新生成 API 密钥？<br /><strong>继续将删除您当前的 API 密钥访问权限</strong>。",
     "formOwnerKeyAcess": "您必须是<strong>表单所有者</strong>才能管理 API 密钥。",
     "regenerate": "再生",
     "generate": "产生",
@@ -175,7 +178,7 @@
     "publishingVersionInfo": "这将使您的表单的版本 {version} 生效。"
   },
   "addOwner": {
-    "infoA": "仅当当前表单所有者不再活跃或在优先事件中失去联系时才应执行此操作。否则让表单的当前所有者或团队管理员自己执行此操作。",
+    "infoA": "这应该只在当前表单所有者不再活跃或在优先事件中失去联系的情况下进行。否则让表单的当前所有者或团队管理员自己执行此操作。",
     "hint": "要查找所需的用户 ID，您可以转到管理门户中的“用户”选项卡并搜索它们。",
     "addowner": "添加所有者",
     "label": "用户 ID (guid)"
@@ -297,10 +300,34 @@
     "actions": "动作",
     "version": "版本"
   },
+  "formViewerMultiUpload": {
+    "important": "重要的",
+    "uploadSucessMsg": "为确保成功上传多个草稿，请下载并使用提供的模板。",
+    "confirmDownload": "你想下载吗？",
+    "jsonFileUpload": "选择要上传的 JSON 文件",
+    "dragNDrop": "或者拖放这里",
+    "chooseAFile": "选择一个文件",
+    "downloadDraftSubmns": "请下载提交报告草稿并确保数据输入正确。",
+    "downloadReport": "下载报告",
+    "doYouWantToDownload": "你想下载吗？",
+    "uploadNewFile": "上传新文件",
+    "uploadMultipleFileErr": "抱歉，您只能上传一个文件",
+    "dragMultipleFileErr": "抱歉，您只能拖动一个文件",
+    "fileFormatErr": "抱歉，我们只接受 json 文件",
+    "fileSizeErr": "允许的最大文件大小为 5MB",
+    "parseJsonErr": "我们无法从文件中解析 json 数据",
+    "jsonObjNotArray": "错误的 json 文件格式",
+    "jsonObjNotArrayConsErr": "一个意料之外的问题发生了。",
+    "jsonArrayEmpty": "这个 json 文件是空的。",
+    "errorWhileValidate": "这个文件有问题",
+    "errWhileCheckValidity": "这个文件有问题",
+    "errAfterValidate": "发现了一些错误，请参阅下文了解更多信息。",
+    "fileIsEmpty": "这个文件是空的。"
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Form Designers 的免责声明和责任声明：",
     "privacyLaw": "您有责任遵守有关收集、使用和披露个人身份信息的隐私法。",
-    "disclosure": "访问此表单设计器工具并不必然授予收集、使用或披露任何个人身份信息的权限。",
+    "disclosure": "访问此表单设计器工具并不意味着本身就授予收集、使用或披露任何个人身份信息的权限。",
     "consent": "您有责任根据法律要求征得同意收集信息。",
     "formIntention": "在发布或分发您的表格之前，您需要与您的",
     "privacyOfficer": "部隐私官",
@@ -353,7 +380,7 @@
   "auditHistory": {
     "viewEditHistory": "查看编辑历史",
     "editHistory": "编辑历史",
-    "auditLogMsg": "这是一份审计日志，记录了在原始提交后谁对此提交进行了更改。",
+    "auditLogMsg": "这是一份审计日志，记录了在原始提交之后谁对此提交进行了更改。",
     "loadingText": "加载请稍候",
     "close": "关闭",
     "userName": "用户名",
@@ -420,7 +447,19 @@
     "status": "地位",
     "submissionDate": "提交日期",
     "draftUpdatedBy": "草稿更新者",
-    "draftLastEdited": "上次编辑草稿"
+    "draftLastEdited": "上次编辑草稿",
+    "createLateSubmissn": "创建延迟提交",
+    "formLoading": "正在加载表格，请稍候！！！",
+    "pleaseConfirm": "请确认",
+    "wantToSaveDraft": "您要保存草稿吗？",
+    "yes": "是的",
+    "no": "不",
+    "multiDraftUploadSuccess": "您的多稿上传成功！",
+    "failedResSubmissn": "来自提交端点的失败响应。响应码：{status}",
+    "errSubmittingForm": "提交此表单时出错",
+    "errorSavingFile": "保存文件时出错。文件名：{fileName}。错误：{错误}",
+    "submittingDraftErrMsg": "保存草稿时出错",
+    "submittingDraftConsErrMsg": "保存草稿时出错。提交 ID：{submissionId}。错误：{错误}"
   },
   "notesPanel": {
     "addNewNote": "添加新注释",
@@ -507,7 +546,8 @@
     "apiCallConsErrorMsg": "导出提交时出错",
     "selectAllFields": "选择所有字段",
     "emailSentMsg": "准备好后，将向 {email} 发送一封电子邮件，其中包含下载数据的链接",
-    "exportInProgress": "正在导出"
+    "exportInProgress": "正在导出",
+    "of": "的"
   },
   "printOptions": {
     "submitButtonTxt": "提交到 CDOGS 并下载",
@@ -520,13 +560,14 @@
     "uploadA": "上传一个",
     "uploadB": "有一个结构化的版本",
     "docGrnSucess": "文档生成成功",
-    "failedDocGenErrMsg": "生成文件失败",
-    "failedDocGenConsErrMsg": "提交模板时出错：{error}"
+    "failedDocGenErrMsg": "生成文档失败",
+    "failedDocGenConsErrMsg": "提交模板时出错：{error}",
+    "cDogsTemplate": "CDOGS模板"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "组件信息链接",
     "learnMoreLinkTxt": "了解更多链接字段不能为空。",
-    "largeImgTxt": "大图。图片大小不能大于 0.5mb",
+    "largeImgTxt": "大图。图片大小不能大于 .5mb",
     "componentName": "组件名称：",
     "learnMoreLink": "了解更多链接：",
     "clickToEnableLink": "单击以启用链接",
@@ -548,11 +589,6 @@
     "formTitle": "表格标题",
     "actions": "动作"
   },
-  "baseCopyToClipboard": {
-    "linkToClipboard": "链接已复制到剪贴板",
-    "copyToClipboard": "复制到剪贴板",
-    "errCopyToClipboard": "尝试复制到剪贴板时出错。"
-  },
   "formSubmission": {
     "editThisSubmission": "编辑此提交",
     "submission": "提交",
@@ -572,7 +608,7 @@
     "loadingText": "加载请稍候",
     "noDataText": "无法加载团队角色数据",
     "removeSelectedUsers": "删除选定的用户",
-    "removeThisUser": "删除此用户",
+    "removeThisUser": "删除该用户",
     "confirmRemoval": "确认删除",
     "remove": "消除",
     "searchTeamManagementFields": "搜索团队管理字段",
@@ -585,7 +621,7 @@
     "delSelectedMemberWarning": "您确定要删除所选成员吗？",
     "idpMessage": "已经在队伍中了。",
     "formOwnerErrMsg": "必须始终至少有一个表单所有者",
-    "formOwnerConsoleErrMsg": "无法删除，因为他们是此表单的唯一剩余所有者。",
+    "formOwnerConsoleErrMsg": "无法删除 {userId}，因为他们是此表单的唯一剩余所有者。",
     "insufficientPermissnMsg": "管理团队的权限不足",
     "getUserErrMsg": "获取表单用户时出错：",
     "getRolesErrMsg": "获取角色列表时出错：",
@@ -613,7 +649,7 @@
     "notSaved": "未保存"
   },
   "formViewer": {
-    "lateFormSubmissions": "表格提交期限已过！您仍然可以通过单击下面的按钮创建延迟提交。",
+    "lateFormSubmissions": "表单提交期限已过！您仍然可以通过单击下面的按钮创建延迟提交。",
     "createLateSubmission": "创建延迟提交",
     "draftSaved": "草稿已保存",
     "saving": "保存",
@@ -685,7 +721,7 @@
   },
   "create": {
     "createNewForm": "创建新表格",
-    "setUpForm": "设置表单",
+    "setUpForm": "设置表格",
     "designForm": "设计形式",
     "formSettings": "表单设置",
     "disclaimer": "免责声明",
@@ -696,27 +732,24 @@
     "agreementErrMsg": "您必须同意上面显示的隐私免责声明。"
   },
   "addTeamMember": {
-    "formDesign": "表单设计",
-    "exportDesign": "导出设计",
-    "importDesign": "导入设计",
-    "important": "重要的",
-    "formDesignInfoA": "完成此表单的构建后，请使用<strong>“保存设计”</strong>按钮。",
-    "formDesignInfoB": "<strong>提交</strong>按钮供您的用户提交此表单，并在保存后激活。",
-    "formLoadErrMsg": "加载表单设计时出错。",
-    "formLoadConsoleErrMsg": "加载表单 {formId} 架构时出错（版本：{versionId} 草稿：{draftId}）：{error}",
-    "formSchemaImportErrMsg": "导入表单架构时出错。",
-    "formSchemaImportConsoleErrMsg": "导入表单架构时出错：{error}",
-    "formDesignSaveErrMsg": "试图保存此表单设计时出错。如果您需要刷新或离开以稍后重试，您可以导出页面上的现有设计以保存以备后用。",
-    "formDesignSaveConsoleErrMsg": "更新或创建表单时出错（FormID：{formId}，versionId：{versionId}，draftId：{draftId}）错误：{error}",
-    "saved": "已保存",
-    "save": "节省",
-    "saving": "保存",
-    "notSaved": "未保存",
-    "collapse": "坍塌",
-    "actions": "动作"
+    "cantFindChefsUsers": "找不到人？他们可能没有登录 CHEFS。<br />请向他们发送指向 CHEFS 的链接并请他们登录。",
+    "cancel": "取消",
+    "mustSelectAUser": "您必须选择至少一个角色才能添加此用户。",
+    "addNewMember": "添加新成员",
+    "enterUsername": "输入姓名、电子邮件或用户名",
+    "enterExactUsername": "输入准确的电子邮件或用户名",
+    "BCeIDInputSearchMaxLen": "BCeID 用户名/电子邮件的搜索输入必须大于 6 个字符。",
+    "BCeIDMustBeExact": "BCeID 的电子邮件搜索必须准确无误。",
+    "errorGettingUsers": "获取用户时出错 {error}"
   },
   "baseFilter": {
-    "cancel": "取消"
+    "cancel": "取消",
+    "columnName": "列名",
+    "exampleText": "示例文本",
+    "exampleText2": "示例文本 2",
+    "filterPlaceholderTxt": "筛选占位符文本",
+    "filter": "筛选",
+    "value": "价值"
   },
   "formViewerActions": {
     "viewAllSubmissions": "查看所有提交",
@@ -725,29 +758,10 @@
     "switchSingleSubmssn": "切换到单次提交",
     "switchMultiSubmssn": "切换到单次提交"
   },
-  "formViewerMultiUpload": {
-    "important": "重要的",
-    "uploadSucessMsg": "为确保成功上传多个草稿，请下载并使用提供的模板。",
-    "confirmDownload": "你想下载吗？",
-    "jsonFileUpload": "选择要上传的 JSON 文件",
-    "dragNDrop": "或者拖放这里",
-    "chooseAFile": "选择一个文件",
-    "downloadDraftSubmns": "请下载提交报告草稿并确保数据输入正确。",
-    "downloadReport": "下载报告",
-    "doYouWantToDownload": "你想下载吗？",
-    "uploadNewFile": "上传新文件",
-    "uploadMultipleFileErr": "抱歉，您只能上传一个文件",
-    "dragMultipleFileErr": "抱歉，您只能拖动一个文件",
-    "fileFormatErr": "抱歉，我们只接受 json 文件",
-    "fileSizeErr": "允许的最大文件大小为 5MB",
-    "parseJsonErr": "我们无法从文件中解析 json 数据",
-    "jsonObjNotArray": "错误的 json 文件格式",
-    "jsonObjNotArrayConsErr": "一个意料之外的问题发生了。",
-    "jsonArrayEmpty": "这个 json 文件是空的。",
-    "errorWhileValidate": "这个文件有问题",
-    "errWhileCheckValidity": "这个文件有问题",
-    "errAfterValidate": "发现了一些错误，请参阅下文了解更多信息。",
-    "fileIsEmpty": "这个文件是空的。"
+  "baseCopyToClipboard": {
+    "linkToClipboard": "链接已复制到剪贴板",
+    "copyToClipboard": "复制到剪贴板",
+    "errCopyToClipboard": "尝试复制到剪贴板时出错。"
   },
   "root": {
     "admin": "行政"
@@ -755,7 +769,15 @@
   "sucess": {
     "sucessFormSubmissn": "您的表单已成功提交",
     "keepRecord": "如果您希望保留此提交的记录，您可以保留以下内容",
-    "confirmationId": "确认编号:"
+    "confirmationId": "确认编号："
+  },
+  "permissionUtils": {
+    "formNotAvailable": "该表格目前不可用。这可能是由于链接不正确，或者表单可能已被其所有者删除。",
+    "missingFormIdAndSubmssId": "缺少 formId 和 submissionId 的选项",
+    "loadingFormErrMsg": "加载此表单时出错。",
+    "loadingForm": "加载 {options} 时出错：{error}",
+    "idpHintMsg": "此表单需要 {idpHint} 身份验证。请重新登录并重试。",
+    "formIdpMissMatch": "表单 IDP 不匹配。表单需要 {idpHint} 但用户有 {userIdp}。"
   },
   "store": {
     "admin": {
@@ -797,7 +819,7 @@
       "getUserFormRolesConsErrmsg": "使用 formID {formId} 获取用户数据时出错：{error}",
       "updCurrUserFormPrefErrMsg": "保存此表单的首选项时出错。",
       "updCurrUserFormPrefConsErrMsg": "使用 formID {formId} 和首选项 {preferences} 更新用户表单首选项时出错：{error}",
-      "getCurrUserFormPrefErrMsg": "获取您对此表单的首选项时出错。",
+      "getCurrUserFormPrefErrMsg": "获取您对此表单的偏好设置时出错。",
       "getCurrUserFormPrefConsErrMsg": "使用 formID {formId} 获取用户表单首选项时出错：{error}",
       "delCurrformNotiMsg": "表格“{state.form.name}”已成功删除。",
       "delCurrformErrMsg": "尝试删除“${state.form.name}”时出错。",
@@ -852,13 +874,5 @@
       "downloadFileErrMsg": "下载文件时出错",
       "downloadFileConsErrMsg": "下载文件时出错：error"
     }
-  },
-  "permissionUtils": {
-    "formNotAvailable": "该表格目前不可用。这可能是由于链接不正确，或者表单可能已被其所有者删除。",
-    "missingFormIdAndSubmssId": "缺少 formId 和 submissionId 的选项",
-    "loadingFormErrMsg": "加载此表单时出错。",
-    "loadingForm": "加载 {options} 时出错：{error}",
-    "idpHintMsg": "此表单需要 {idpHint} 身份验证。请重新登录并重试。",
-    "formIdpMissMatch": "表单 IDP 不匹配。表单需要 {idpHint} 但用户有 {userIdp}。"
   }
 }
