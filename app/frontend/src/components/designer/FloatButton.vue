@@ -132,7 +132,7 @@
         ref="saveButton"
         :class="{ 'disabled-router': isFormSaved }"
       >
-        <div class="text">{{ this.save1 }}</div>
+        <div class="text">{{ this.savedMsg }}</div>
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -202,7 +202,7 @@ export default {
       scrollName: this.$t('trans.floatButton.bottom'),
       baseFABItemName: this.$t('trans.floatButton.collapse'),
       scrollIconName: 'south',
-      save1: 'Save',
+      savedMsg: this.$t('trans.floatButton.save'),
     };
   },
   computed: {
@@ -418,13 +418,13 @@ export default {
 
     savedStatus(value) {
       if (value === 'Saved') {
-        this.save1 = this.$t('trans.floatButton.saved');
+        this.savedMsg = this.$t('trans.floatButton.saved');
       } else if (value === 'Save') {
-        this.save1 = this.$t('trans.floatButton.save');
+        this.savedMsg = this.$t('trans.floatButton.save');
       } else if (value === 'Saving') {
-        this.save1 = this.$t('trans.floatButton.saving');
+        this.savedMsg = this.$t('trans.floatButton.saving');
       } else if (value === 'Not Saved') {
-        this.save1 = this.$t('trans.floatButton.notSaved');
+        this.savedMsg = this.$t('trans.floatButton.notSaved');
       }
     },
     multiLanguage() {
@@ -437,13 +437,13 @@ export default {
       }
 
       if (this.savedStatus === 'Saved') {
-        this.save1 = this.$t('trans.floatButton.saved');
+        this.savedMsg = this.$t('trans.floatButton.saved');
       } else if (this.savedStatus === 'Save') {
-        this.save1 = this.$t('trans.floatButton.save');
+        this.savedMsg = this.$t('trans.floatButton.save');
       } else if (this.savedStatus === 'Saving') {
-        this.save1 = this.$t('trans.floatButton.saving');
+        this.savedMsg = this.$t('trans.floatButton.saving');
       } else if (this.savedStatus === 'Not Saved') {
-        this.save1 = this.$t('trans.floatButton.notSaved');
+        this.savedMsg = this.$t('trans.floatButton.notSaved');
       }
     },
   },
