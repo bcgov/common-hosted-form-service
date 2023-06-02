@@ -300,7 +300,7 @@ export default {
             },
           },
         },
-        language: this.multiLanguage,
+        language: this.multiLanguage ? this.multiLanguage : 'en',
         i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
