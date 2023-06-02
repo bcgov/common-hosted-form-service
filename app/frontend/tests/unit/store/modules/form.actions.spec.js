@@ -2,8 +2,11 @@ import { cloneDeep } from 'lodash';
 
 import { formService, rbacService, userService, adminService } from '@/services';
 import store from '@/store/modules/form';
+import i18n from '@/internationalization';
+
 
 jest.mock('@/services');
+jest.mock('@/internationalization', () => ({t: jest.fn(() => {}) }));
 
 describe('form actions', () => {
   const mockStore = {

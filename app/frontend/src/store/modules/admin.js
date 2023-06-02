@@ -1,5 +1,6 @@
 import { NotificationTypes } from '@/utils/constants';
 import { adminService } from '@/services';
+import i18n from '@/internationalization';
 
 /**
  * Admin Module
@@ -76,7 +77,9 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: `Added the Owner role for this form to ${response.data[0].fullName}`,
+            message: i18n.t('trans.store.admin.addFormOwnerRole', {
+              fullName: response.data[0].fullName,
+            }),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -87,8 +90,12 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while adding the role.',
-            consoleError: `Error adding user ${formUser.userId} to form ${formUser.formId}: ${error}`,
+            message: i18n.t('trans.store.admin.addRowError'),
+            consoleError: i18n.t('trans.store.admin.addRowError', {
+              userId: formUser.userId,
+              formId: formUser.formId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -101,7 +108,7 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'The API Key for this form has been deleted.',
+            message: i18n.t('trans.store.admin.apiKeyDelMsg'),
             ...NotificationTypes.SUCCESS,
           },
           { root: true }
@@ -110,8 +117,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while trying to delete the API Key.',
-            consoleError: `Error deleting API Key for form ${formId}: ${error}`,
+            message: i18n.t('trans.store.admin.errDeletingApiKey'),
+            consoleError: i18n.t('trans.store.admin.apiKeyDelMsg', {
+              formId: formId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -127,8 +137,10 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching forms.',
-            consoleError: `Error getting admin form data: ${error}`,
+            message: i18n.t('trans.store.admin.fecthingFormsErrMsg'),
+            consoleError: i18n.t('trans.store.admin.fecthingFormsErrMsg', {
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -144,8 +156,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching this form.',
-            consoleError: `Error getting admin form ${formId} data: ${error}`,
+            message: i18n.t('trans.store.admin.fecthingFormErrMsg'),
+            consoleError: i18n.t('trans.store.admin.fecthingFormsErrMsg', {
+              formId: formId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -160,8 +175,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching form user roles.',
-            consoleError: `Error getting admin roles data: ${error}`,
+            message: i18n.t('trans.store.admin.fecthFormUserRolesErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.admin.fecthFormUserRolesConsErrMsg',
+              { error: error }
+            ),
           },
           { root: true }
         );
@@ -176,9 +194,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              "An error occurred while fetching this form's API details.",
-            consoleError: `Error getting admin API details from form ${formId} data: ${error}`,
+            message: i18n.t('trans.store.admin.fecthApiDetailsErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.admin.fecthApiDetailsConsErrMsg',
+              { formId: formId, error: error }
+            ),
           },
           { root: true }
         );
@@ -193,8 +213,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while restoring this form.',
-            consoleError: `Error restoring form ${formId} data: ${error}`,
+            message: i18n.t('trans.store.admin.restoreFormErrMsg'),
+            consoleError: i18n.t('trans.store.admin.restoreFormConsErrMsg', {
+              formId: formId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -214,8 +237,10 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching users.',
-            consoleError: `Error getting admin users data: ${error}`,
+            message: i18n.t('trans.store.admin.getUsersErrMsg'),
+            consoleError: i18n.t('trans.store.admin.getUsersConsErrMsg', {
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -231,8 +256,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching this user.',
-            consoleError: `Error getting admin user ${userId} data: ${error}`,
+            message: i18n.t('trans.store.admin.getUserErrMsg'),
+            consoleError: i18n.t('trans.store.admin.getUserConsErrMsg', {
+              userId: userId,
+              error: error,
+            }),
           },
           { root: true }
         );
@@ -250,10 +278,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message:
-              'An error occurred while storing form component help information.',
-            consoleError:
-              'Error getting storing form component help information',
+            message: i18n.t('trans.store.admin.storingFCHelpInfoErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.admin.storingFCHelpInfoConsErrMsg',
+              { error: error }
+            ),
           },
           { root: true }
         );
@@ -272,8 +301,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while getting image url',
-            consoleError: 'Error getting image url',
+            message: i18n.t('trans.store.admin.gettingFCImgUrlErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.admin.gettingFCImgUrlConsErrMsg',
+              { error: error }
+            ),
           },
           { root: true }
         );
@@ -296,8 +328,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while updating publish status',
-            consoleError: 'Error updating publish status',
+            message: i18n.t('trans.store.admin.updatingFCStatusErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.admin.updatingFCStatusConsErrMsg',
+              { error: error }
+            ),
           },
           { root: true }
         );
@@ -315,8 +350,11 @@ export default {
         dispatch(
           'notifications/addNotification',
           {
-            message: 'An error occurred while fetching form builder components',
-            consoleError: 'Error getting form builder components',
+            message: i18n.t('trans.store.admin.fecthingFormBuilderCompsErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.admin.fecthingFormBuilderCompsConsErrMsg',
+              { error: error }
+            ),
           },
           { root: true }
         );

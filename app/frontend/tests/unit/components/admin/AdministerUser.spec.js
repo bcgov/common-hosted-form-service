@@ -1,9 +1,11 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import AdministerUser from '@/components/admin/AdministerUser.vue';
 import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
+
 
 describe('AdministerUser.vue', () => {
   const mockAdminGetter = jest.fn();
@@ -36,6 +38,7 @@ describe('AdministerUser.vue', () => {
     const wrapper = shallowMount(AdministerUser, {
       localVue,
       store,
+      i18n,
       mocks: {
         $config: {
           keycloak: {

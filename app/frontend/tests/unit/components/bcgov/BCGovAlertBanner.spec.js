@@ -1,10 +1,11 @@
 import { NotificationTypes } from '@/utils/constants';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import BCGovAlertBanner from '@/components/bcgov/BCGovAlertBanner.vue';
 
 const localVue = createLocalVue();
+
 localVue.use(Vuex);
 
 describe('BCGovAlertBanner.vue', () => {
@@ -28,6 +29,7 @@ describe('BCGovAlertBanner.vue', () => {
     const wrapper = shallowMount(BCGovAlertBanner, {
       localVue,
       store,
+      i18n
     });
     await localVue.nextTick();
 
@@ -42,6 +44,7 @@ describe('BCGovAlertBanner.vue', () => {
       localVue,
       propsData: { message: message },
       store,
+      i18n
     });
     await localVue.nextTick();
 
@@ -56,6 +59,7 @@ describe('BCGovAlertBanner.vue', () => {
       localVue,
       propsData: { message: message, type: 'info' },
       store,
+      i18n
     });
     await localVue.nextTick();
 
@@ -70,6 +74,7 @@ describe('BCGovAlertBanner.vue', () => {
       localVue,
       propsData: { message: message, type: 'success' },
       store,
+      i18n
     });
     await localVue.nextTick();
 
@@ -84,6 +89,7 @@ describe('BCGovAlertBanner.vue', () => {
       localVue,
       propsData: { message: message, type: 'warning' },
       store,
+      i18n
     });
     await localVue.nextTick();
 
@@ -98,6 +104,7 @@ describe('BCGovAlertBanner.vue', () => {
       localVue,
       propsData: { message: message, type: 'BROKEN' },
       store,
+      i18n
     });
     await localVue.nextTick();
 
@@ -112,6 +119,7 @@ describe('BCGovAlertBanner.vue', () => {
       localVue,
       propsData: { message: message, type: 'BROKEN' },
       store,
+      i18n
     });
     await localVue.nextTick();
 

@@ -1,6 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import BaseSecure from '@/components/base/BaseSecure.vue';
 
 const localVue = createLocalVue();
@@ -23,7 +23,7 @@ describe('BaseSecure.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseSecure, { localVue, store });
+    const wrapper = shallowMount(BaseSecure, { localVue, store, i18n });
 
     expect(wrapper.text()).toMatch('');
   });
@@ -34,7 +34,7 @@ describe('BaseSecure.vue', () => {
       getters: {
         authenticated: () => true,
         isUser: () => false,
-        keycloakReady: () => true,
+        keycloakReady: () => true
       },
     });
 
@@ -42,6 +42,7 @@ describe('BaseSecure.vue', () => {
       localVue,
       store,
       stubs: ['router-link'],
+      i18n
     });
 
     expect(wrapper.text()).toMatch('Unauthorized');
@@ -54,7 +55,7 @@ describe('BaseSecure.vue', () => {
         authenticated: () => true,
         isAdmin: () => false,
         isUser: () => true,
-        keycloakReady: () => true,
+        keycloakReady: () => true
       },
     });
 
@@ -63,8 +64,9 @@ describe('BaseSecure.vue', () => {
       store,
       stubs: ['router-link'],
       propsData: {
-        admin: true,
+        admin: true
       },
+      i18n
     });
 
     expect(wrapper.text()).toMatch('You do not have permission');
@@ -77,7 +79,7 @@ describe('BaseSecure.vue', () => {
         authenticated: () => true,
         isAdmin: () => false,
         isUser: () => true,
-        keycloakReady: () => true,
+        keycloakReady: () => true
       },
     });
 
@@ -86,8 +88,9 @@ describe('BaseSecure.vue', () => {
       store,
       stubs: ['router-link'],
       propsData: {
-        admin: true,
+        admin: true
       },
+      i18n
     });
 
     expect(wrapper.text()).toMatch('');
@@ -102,7 +105,7 @@ describe('BaseSecure.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseSecure, { localVue, store });
+    const wrapper = shallowMount(BaseSecure, { localVue, store, i18n });
 
     expect(wrapper.text()).toMatch('You must be logged in to use this feature.');
   });
@@ -116,7 +119,7 @@ describe('BaseSecure.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseSecure, { localVue, store });
+    const wrapper = shallowMount(BaseSecure, { localVue, store, i18n});
 
     expect(wrapper.text()).toMatch('You must be logged in to use this feature.');
   });
@@ -134,7 +137,7 @@ describe('BaseSecure.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseSecure, { localVue, store });
+    const wrapper = shallowMount(BaseSecure, { localVue, store, i18n });
     wrapper.vm.login();
 
     expect(wrapper.text()).toMatch('Login');

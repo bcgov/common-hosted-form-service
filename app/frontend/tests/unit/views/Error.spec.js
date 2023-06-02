@@ -1,9 +1,10 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import Error from '@/views/Error.vue';
 
 const localVue = createLocalVue();
+
 localVue.use(Vuex);
 
 describe('Error.vue', () => {
@@ -27,6 +28,7 @@ describe('Error.vue', () => {
     const wrapper = shallowMount(Error, {
       localVue,
       store,
+      i18n
     });
     await localVue.nextTick();
 
