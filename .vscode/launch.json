@@ -1,0 +1,32 @@
+{
+  "compounds": [
+    {
+      "configurations": ["CHEFS API", "CHEFS Frontend"],
+      "name": "CHEFS"
+    }
+  ],
+  "configurations": [
+    {
+      "cwd": "${workspaceFolder}/app",
+      "name": "CHEFS API",
+      "outputCapture": "std",
+      "request": "launch",
+      "runtimeArgs": ["run", "serve"],
+      "runtimeExecutable": "npm",
+      "type": "node"
+    },
+    {
+      "cwd": "${workspaceFolder}/app/frontend",
+      "env": {
+        "VUE_APP_TITLE": "Common Hosted Forms - Local"
+      },
+      "name": "CHEFS Frontend",
+      "outputCapture": "std",
+      "request": "launch",
+      "runtimeArgs": ["run", "serve"],
+      "runtimeExecutable": "npm",
+      "type": "node"
+    }
+  ],
+  "version": "0.2.0"
+}
