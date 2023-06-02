@@ -157,6 +157,7 @@
             @change="allowSubmitterToUploadFileChanged"
             class="my-0"
             v-model="allowSubmitterToUploadFile"
+            :disabled="userType === ID_MODE.PUBLIC"
           >
             <template #label>
               <span>
