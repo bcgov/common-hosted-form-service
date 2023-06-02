@@ -4,22 +4,19 @@
       <v-row justify="center">
         <v-col lg="8">
           <h1 class="my-5 d-block">
-            Create, publish forms, and receive submissions with the Common
-            Hosted Forms Service.
+            {{ $t('trans.homePage.title') }}
           </h1>
-          <p>
-            All B.C. Government employees or contractors with an IDIR account
-            can use our hosted version of Common Hosted Forms Service (CHEFS) to
-            create forms.<br />
-          </p>
+          <p>{{ $t('trans.homePage.subTitle') }}<br /></p>
 
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated">Log in with IDIR to get started</span>
-            <span v-else>Create a Form</span>
+            <span v-if="!authenticated">{{
+              $t('trans.homePage.loginToStart')
+            }}</span>
+            <span v-else>{{ $t('trans.homePage.createFormLabel') }}</span>
           </v-btn>
 
           <h2 id="video" class="pt-5">
-            Take a tour of CHEFS to see it in action.
+            {{ $t('trans.homePage.takeATourOfChefs') }}
           </h2>
           <div class="video-wrapper">
             <iframe
@@ -39,11 +36,12 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>CHEFS How-to Videos</h2>
+        <h2>{{ $t('trans.homePage.chefsHowToTitle') }}</h2>
         <p>
-          Our Quickstart Guide will introduce you to some of the basic functions
-          of CHEFS.
-          <a :href="howToVideoUrl" target="_blank">Get started!</a>
+          {{ $t('trans.homePage.chefsHowToSub') }}
+          <a :href="howToVideoUrl" target="_blank"
+            >{{ $t('trans.homePage.getStarted') }}!</a
+          >
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -57,11 +55,9 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>Create custom forms with the CHEFS form builder</h2>
+        <h2>{{ $t('trans.homePage.createCustomFormTitle') }}</h2>
         <p>
-          With CHEFS, you can create secure forms with an intuitive
-          drag-and-drop interface. You can add form components, re-arrange them,
-          and drop them into different layouts configurations.
+          {{ $t('trans.homePage.createCustomFormSub1') }}
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -75,14 +71,12 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>Manage access to your form</h2>
+        <h2>{{ $t('trans.homePage.manageAccessTitle') }}</h2>
         <p>
-          CHEFS allows you to create public forms, or you can manage access
-          through IDIR or BCeID authentication.
+          {{ $t('trans.homePage.manageAccessSub1') }}
         </p>
         <p>
-          You can also assign roles to your team to manage all of your
-          submissions.
+          {{ $t('trans.homePage.manageAccessSub2') }}
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -97,14 +91,15 @@
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h3 class="mb-5">Get started using CHEFS</h3>
+          <h3 class="mb-5">{{ $t('trans.homePage.getStartedToChefs') }}</h3>
           <p>
-            Create online forms to collect information from your clients and
-            improve your workflows.
+            {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated">Log in to get Started</span>
-            <span v-else>Create a Form</span>
+            <span v-if="!authenticated">{{
+              $t('trans.homePage.logInToGetStarted')
+            }}</span>
+            <span v-else>{{ $t('trans.homePage.createFormLabel') }}</span>
           </v-btn>
         </v-col>
       </v-row>

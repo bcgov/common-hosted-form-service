@@ -1,10 +1,10 @@
 <template>
   <div v-if="keycloakReady" class="d-print-none">
     <v-btn v-if="authenticated" dark outlined @click="logout">
-      <span>Logout</span>
+      <span>{{ $t('trans.baseAuthButton.logout') }}</span>
     </v-btn>
     <v-btn v-else-if="hasLogin" dark outlined @click="login()">
-      <span>Login</span>
+      <span>{{ $t('trans.baseAuthButton.login') }}</span>
     </v-btn>
   </div>
 </template>

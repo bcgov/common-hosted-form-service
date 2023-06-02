@@ -1,4 +1,5 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import i18n from '@/internationalization';
 
 jest.mock('vuex-map-fields', () => ({
   getterType: jest.fn(),
@@ -10,6 +11,7 @@ import Vuex from 'vuex';
 import Create from '@/views/form/Create.vue';
 
 const localVue = createLocalVue();
+
 localVue.use(Vuex);
 
 describe('Create.vue', () => {
@@ -44,6 +46,7 @@ describe('Create.vue', () => {
       localVue,
       store,
       stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer'],
+      i18n
     });
 
     expect(wrapper.html()).toMatch('basesecure');
@@ -56,6 +59,7 @@ describe('Create.vue', () => {
       localVue,
       store,
       stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer'],
+      i18n
     });
     Create.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 
