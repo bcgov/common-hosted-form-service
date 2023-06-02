@@ -1,10 +1,11 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import BaseNotificationBar from '@/components/base/BaseNotificationBar.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
+
 
 describe('BaseNotificationBar.vue', () => {
   let mockDeleteNotification = jest.fn();
@@ -43,6 +44,7 @@ describe('BaseNotificationBar.vue', () => {
         },
       },
       store,
+      i18n
     });
 
     expect(wrapper.html()).toMatch('v-alert');
@@ -58,6 +60,7 @@ describe('BaseNotificationBar.vue', () => {
         },
       },
       store,
+      i18n
     });
     wrapper.vm.alertClosed();
 
@@ -73,6 +76,7 @@ describe('BaseNotificationBar.vue', () => {
         },
       },
       store,
+      i18n
     });
     wrapper.destroy();
 

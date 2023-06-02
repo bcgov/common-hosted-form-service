@@ -1,6 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import ManageSubmissionUsers from '@/components/forms/submission/ManageSubmissionUsers.vue';
 
 const localVue = createLocalVue();
@@ -48,6 +48,7 @@ describe('ManageSubmissionUsers.vue', () => {
       propsData: { isDraft: false, submissionId: SUBMISSION_ID },
       store,
       stubs: ['BaseDialog'],
+      i18n
     });
 
     expect(wrapper.html()).toMatch('Manage Team Members');

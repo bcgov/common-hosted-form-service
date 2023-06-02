@@ -8,12 +8,12 @@
       disable-pagination
       :items="layoutList"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.generalLayout.loadingText')"
     >
       <template #[`item.componentName`]="{ item }">
         <div>
           <template>
-            <div style="text-transform: capitalize label">
+            <div style="text-transform: capitalize" class="label">
               {{ item.componentName }}
             </div>
           </template>
@@ -30,7 +30,9 @@
               @click="onOpenDialog(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-              <span class="d-none d-sm-flex" style="font-size: 16px">EDIT</span>
+              <span class="d-none d-sm-flex" style="font-size: 16px">{{
+                $t('trans.generalLayout.edit')
+              }}</span>
             </v-btn>
           </div>
           <div>
@@ -43,9 +45,9 @@
               :disabled="canDisabled(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-eye" />
-              <span class="d-none d-sm-flex" style="font-size: 16px"
-                >PREVIEW</span
-              >
+              <span class="d-none d-sm-flex" style="font-size: 16px">{{
+                $t('trans.generalLayout.preview')
+              }}</span>
             </v-btn>
           </div>
           <div>
@@ -66,14 +68,18 @@
               <span
                 style="width: 120px !important; font-size: 16px"
                 class="d-none d-sm-flex"
-                >{{ publish[index] ? 'PUBLISHED' : 'UNPUBLISHED' }}</span
+                >{{
+                  publish[index]
+                    ? $t('trans.generalLayout.published')
+                    : $t('trans.generalLayout.unpublished')
+                }}</span
               >
             </v-btn>
           </div>
         </div>
       </template>
     </v-data-table>
-    <InformationLinkDialog
+    <ProactiveHelpDialog
       :showDialog="showDialog"
       v-if="showDialog"
       :groupName="groupName"
@@ -81,7 +87,7 @@
       @close-dialog="onDialog"
       :component="component"
     />
-    <InformationLinkPreviewDialog
+    <ProactiveHelpPreviewDialog
       :showDialog="showPreviewDialog"
       v-if="showPreviewDialog"
       @close-dialog="onPreviewDialog"
@@ -95,14 +101,14 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { mapActions, mapGetters } from 'vuex';
 import { faPenToSquare, faEye } from '@fortawesome/free-solid-svg-icons';
-import InformationLinkDialog from '@/components/infolinks/InformationLinkDialog.vue';
-import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
+import ProactiveHelpDialog from '@/components/infolinks/ProactiveHelpDialog.vue';
+import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
 
 library.add(faPenToSquare, faEye);
 
 export default {
   name: 'GeneralLayout',
-  components: { InformationLinkDialog, InformationLinkPreviewDialog },
+  components: { ProactiveHelpDialog, ProactiveHelpPreviewDialog },
   data() {
     return {
       loading: false,
@@ -113,25 +119,27 @@ export default {
       componentName: '',
       component: {},
       listLength: this.componentsList.length,
-      headers: [
+    };
+  },
+  computed: {
+    headers() {
+      return [
         {
-          text: 'Form Title',
+          text: this.$t('trans.generalLayout.formTitle'),
           align: 'start',
           value: 'componentName',
           width: '1%',
         },
         {
-          text: 'Actions',
+          text: this.$t('trans.generalLayout.actions'),
           align: 'end',
           value: 'actions',
           filterable: false,
           sortable: false,
           width: '1%',
         },
-      ],
-    };
-  },
-  computed: {
+      ];
+    },
     ...mapGetters('admin', ['fcProactiveHelpImageUrl']),
   },
   props: {

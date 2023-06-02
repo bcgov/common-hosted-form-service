@@ -1,6 +1,7 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import AddOwner from '@/components/admin/AddOwner.vue';
 import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -30,6 +31,7 @@ describe('AddOwner.vue', () => {
     const wrapper = shallowMount(AddOwner, {
       localVue,
       store,
+      i18n,
       propsData: { formId: 'f' },
       mocks: {
         $config: {
@@ -42,6 +44,6 @@ describe('AddOwner.vue', () => {
     });
     await localVue.nextTick();
 
-    expect(wrapper.text()).toMatch('This should only be done');
+    expect(wrapper.text()).toMatch('Add owner');
   });
 });

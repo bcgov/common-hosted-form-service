@@ -1,11 +1,11 @@
 <template>
   <div>
     <h3>{{ user.fullName }}</h3>
-    <h4>User Details</h4>
+    <h4>{{ $t('trans.administerUser.userDetails') }}</h4>
     <pre>{{ user }}</pre>
 
     <v-btn color="primary" text small :href="userUrl" target="_blank">
-      <span>Open SSO console</span>
+      <span>{{ $t('trans.administerUser.openSSOConsole') }}</span>
     </v-btn>
   </div>
 </template>

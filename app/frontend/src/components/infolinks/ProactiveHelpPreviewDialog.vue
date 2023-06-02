@@ -63,7 +63,7 @@
                 }"
               >
                 <div class="mr-1 cursor">
-                  Learn more
+                  {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
                   <font-awesome-icon
                     icon="fa-solid fa-square-arrow-up-right"
                   /></div
@@ -84,7 +84,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark, faSquareArrowUpRight);
 
 export default {
-  name: 'InformationLinkPreviewDialog',
+  name: 'ProactiveHelpPreviewDialog',
 
   data() {
     return {
