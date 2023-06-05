@@ -4,38 +4,47 @@
       <v-row class="mt-6" no-gutters>
         <!-- page title -->
         <v-col cols="12" sm="6" order="2" order-sm="1">
-          <h1>Previous Submissions</h1>
+          <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
         </v-col>
         <!-- buttons -->
         <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
               <v-btn
+                @click="showColumnsDialog = true"
                 class="mx-1"
                 color="primary"
                 icon
-                v-bind="props"
-                @click="showColumnsDialog = true"
+                v-bind="attrs"
+                v-on="on"
               >
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
-            <span>Select Columns</span>
+            <span>{{ $t('trans.mySubmissionsTable.selectColumns') }}</span>
           </v-tooltip>
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
               <router-link
                 :to="{
                   name: 'FormSubmit',
                   query: { f: form.id },
                 }"
               >
-                <v-btn class="mx-1" color="primary" icon v-bind="props">
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
                   <v-icon>add_circle</v-icon>
                 </v-btn>
               </router-link>
             </template>
-            <span>Create a New Submission</span>
+            <span>{{
+              $t('trans.mySubmissionsTable.createNewSubmission')
+            }}</span>
           </v-tooltip>
         </v-col>
         <!-- form name -->
@@ -53,7 +62,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            :label="$t('trans.mySubmissionsTable.search')"
             single-line
             hide-details
             class="pb-5"
@@ -69,46 +78,49 @@
       :items="submissionTable"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
-      no-data-text="You have no submissions"
+      :loading-text="$t('trans.mySubmissionsTable.loadingText')"
+      :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
     >
-      <template v-slot:item.lastEdited="{ item }">
-        {{ $filters.formatDateLong(item.raw.lastEdited, false) }}
+      <template #[`item.lastEdited`]="{ item }">
+        {{ item.lastEdited | formatDateLong }}
       </template>
-      <template v-slot:item.submittedDate="{ item }">
-        {{ $filters.formatDateLong(item.raw.submittedDate, false) }}
+      <template #[`item.submittedDate`]="{ item }">
+        {{ item.submittedDate | formatDateLong }}
       </template>
-      <template v-slot:item.completedDate="{ item }">
-        {{ $filters.formatDateLong(item.raw.completedDate, false) }}
+
+      <template #[`item.completedDate`]="{ item }">
+        {{ item.completedDate | formatDateLong }}
       </template>
-      <template v-slot:item.actions="{ item }">
+      <template #[`item.actions`]="{ item }">
         <MySubmissionsActions
-          :submission="item.raw"
-          :form-id="formId"
-          :is-copy-from-existing-submission-enabled="
+          @draft-deleted="populateSubmissionsTable"
+          :submission="item"
+          :formId="formId"
+          :isCopyFromExistingSubmissionEnabled="
             isCopyFromExistingSubmissionEnabled
           "
-          @draft-deleted="populateSubmissionsTable"
         />
       </template>
     </v-data-table>
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
-        input-filter-placeholder="Search submission fields"
-        input-item-key="value"
-        input-save-button-text="Save"
-        :input-data="
+        :inputFilterPlaceholder="
+          $t('trans.mySubmissionsTable.searchSubmissionFields')
+        "
+        inputItemKey="value"
+        :inputSaveButtonText="$t('trans.mySubmissionsTable.save')"
+        :inputData="
           DEFAULT_HEADERS.filter(
             (h) => !filterIgnore.some((fd) => fd.value === h.value)
           )
         "
-        :preselected-data="PRESELECTED_DATA"
+        :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title
-          >Search and select columns to show under your dashboard</template
-        >
+        <template #filter-title>{{
+          $t('trans.mySubmissionsTable.filterTitle')
+        }}</template>
       </BaseFilter>
     </v-dialog>
   </div>
@@ -117,7 +129,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import MySubmissionsActions from '@src/components/forms/submission/MySubmissionsActions.vue';
+import MySubmissionsActions from '@/components/forms/submission/MySubmissionsActions.vue';
 
 export default {
   name: 'MySubmissionsTable',
@@ -136,10 +148,10 @@ export default {
       filterData: [],
       filterIgnore: [
         {
-          key: 'confirmationId',
+          value: 'confirmationId',
         },
         {
-          key: 'actions',
+          value: 'actions',
         },
       ],
       showColumnsDialog: false,
@@ -154,35 +166,35 @@ export default {
     DEFAULT_HEADERS() {
       let headers = [
         {
-          title: 'Confirmation Id',
+          text: this.$t('trans.mySubmissionsTable.confirmationId'),
           align: 'start',
-          key: 'confirmationId',
+          value: 'confirmationId',
           sortable: true,
         },
         {
-          title: 'Created By',
-          key: 'createdBy',
+          text: this.$t('trans.mySubmissionsTable.createdBy'),
+          value: 'createdBy',
           sortable: true,
         },
         {
-          title: 'Status Updated By',
-          key: 'username',
+          text: this.$t('trans.mySubmissionsTable.statusUpdatedBy'),
+          value: 'username',
           sortable: true,
         },
         {
-          title: 'Status',
-          key: 'status',
+          text: this.$t('trans.mySubmissionsTable.status'),
+          value: 'status',
           sortable: true,
         },
         {
-          title: 'Submission Date',
-          key: 'submittedDate',
+          text: this.$t('trans.mySubmissionsTable.submissionDate'),
+          value: 'submittedDate',
           sortable: true,
         },
         {
-          title: 'Actions',
+          text: this.$t('trans.mySubmissionsTable.actions'),
           align: 'end',
-          key: 'actions',
+          value: 'actions',
           filterable: false,
           sortable: false,
           width: '140px',
@@ -190,15 +202,15 @@ export default {
       ];
       if (this.showDraftLastEdited || !this.formId) {
         headers.splice(headers.length - 1, 0, {
-          title: 'Draft Updated By',
+          text: this.$t('trans.mySubmissionsTable.draftUpdatedBy'),
           align: 'start',
-          key: 'updatedBy',
+          value: 'updatedBy',
           sortable: true,
         });
         headers.splice(headers.length - 1, 0, {
-          title: 'Draft Last Edited',
+          text: this.$t('trans.mySubmissionsTable.draftLastEdited'),
           align: 'start',
-          key: 'lastEdited',
+          value: 'lastEdited',
           sortable: true,
         });
       }
@@ -228,10 +240,6 @@ export default {
     isCopyFromExistingSubmissionEnabled() {
       return this.form && this.form.enableCopyExistingSubmission;
     },
-  },
-  async mounted() {
-    await this.fetchForm(this.formId);
-    await this.populateSubmissionsTable();
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
@@ -294,6 +302,11 @@ export default {
       this.showColumnsDialog = false;
     },
   },
+
+  async mounted() {
+    await this.fetchForm(this.formId);
+    await this.populateSubmissionsTable();
+  },
 };
 </script>
 
@@ -318,15 +331,15 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table :deep(th) {
+  .submissions-table >>> th {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table :deep(tbody) tr:nth-of-type(odd) {
+.submissions-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;
 }
-.submissions-table :deep(thead) tr th {
+.submissions-table >>> thead tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

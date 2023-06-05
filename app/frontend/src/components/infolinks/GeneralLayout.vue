@@ -8,110 +8,107 @@
       disable-pagination
       :items="layoutList"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.generalLayout.loadingText')"
     >
-      <template v-slot:item.componentName="{ item }">
+      <template #[`item.componentName`]="{ item }">
         <div>
           <template>
-            <div style="text-transform: capitalize label">
-              {{ item.raw.componentName }}
+            <div style="text-transform: capitalize" class="label">
+              {{ item.componentName }}
             </div>
           </template>
         </div>
       </template>
-      <template v-slot:item.actions="{ item, index }">
+      <template #[`item.actions`]="{ item, index }">
         <div class="d-flex flex-row justify-end align-center actions">
           <div>
             <v-btn
               data-cy="edit_button"
               color="primary"
-              size="small"
-              variant="text"
-              @click="onOpenDialog(item.raw.componentName)"
+              small
+              text
+              @click="onOpenDialog(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-              <span class="d-none d-sm-flex" style="font-size: 16px">EDIT</span>
+              <span class="d-none d-sm-flex" style="font-size: 16px">{{
+                $t('trans.generalLayout.edit')
+              }}</span>
             </v-btn>
           </div>
           <div>
             <v-btn
               data-cy="preview_button"
               color="primary"
-              variant="text"
-              size="small"
-              :disabled="canDisabled(item.raw.componentName)"
-              @click="onOpenPreviewDialog(item.raw.componentName)"
+              text
+              small
+              @click="onOpenPreviewDialog(item.componentName)"
+              :disabled="canDisabled(item.componentName)"
             >
               <font-awesome-icon icon="fa-solid fa-eye" />
-              <span class="d-none d-sm-flex" style="font-size: 16px"
-                >PREVIEW</span
-              >
+              <span class="d-none d-sm-flex" style="font-size: 16px">{{
+                $t('trans.generalLayout.preview')
+              }}</span>
             </v-btn>
           </div>
           <div>
             <v-btn
               data-cy="status_button"
               color="primary"
-              variant="text"
-              size="small"
-              :disabled="canDisabled(item.raw.componentName)"
+              text
+              small
+              :disabled="canDisabled(item.componentName)"
             >
               <v-switch
-                v-model="publish[index]"
                 small
                 color="success"
-                :model-value="isComponentPublish(item.raw.componentName, index)"
-                @update:modelValue="
-                  onSwitchChange(item.raw.componentName, index)
-                "
+                :input-value="isComponentPublish(item.componentName, index)"
+                v-model="publish[index]"
+                @change="onSwitchChange(item.componentName, index)"
               ></v-switch>
               <span
                 style="width: 120px !important; font-size: 16px"
                 class="d-none d-sm-flex"
-                >{{ publish[index] ? 'PUBLISHED' : 'UNPUBLISHED' }}</span
+                >{{
+                  publish[index]
+                    ? $t('trans.generalLayout.published')
+                    : $t('trans.generalLayout.unpublished')
+                }}</span
               >
             </v-btn>
           </div>
         </div>
       </template>
     </v-data-table>
-    <InformationLinkDialog
+    <ProactiveHelpDialog
+      :showDialog="showDialog"
       v-if="showDialog"
-      :show-dialog="showDialog"
-      :group-name="groupName"
-      :component-name="componentName"
-      :component="component"
+      :groupName="groupName"
+      :componentName="componentName"
       @close-dialog="onDialog"
-    />
-    <InformationLinkPreviewDialog
-      v-if="showPreviewDialog"
-      :show-dialog="showPreviewDialog"
-      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
       :component="component"
+    />
+    <ProactiveHelpPreviewDialog
+      :showDialog="showPreviewDialog"
+      v-if="showPreviewDialog"
       @close-dialog="onPreviewDialog"
+      :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"
+      :component="component"
     />
   </div>
 </template>
 
 <script>
+import { library } from '@fortawesome/fontawesome-svg-core';
 import { mapActions, mapGetters } from 'vuex';
-import InformationLinkDialog from '@src/components/infolinks/InformationLinkDialog.vue';
-import InformationLinkPreviewDialog from '@src/components/infolinks/InformationLinkPreviewDialog.vue';
+import { faPenToSquare, faEye } from '@fortawesome/free-solid-svg-icons';
+import ProactiveHelpDialog from '@/components/infolinks/ProactiveHelpDialog.vue';
+import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
+
+library.add(faPenToSquare, faEye);
 
 export default {
   name: 'GeneralLayout',
-  components: { InformationLinkDialog, InformationLinkPreviewDialog },
-  props: {
-    layoutList: {
-      type: Array,
-      required: true,
-    },
-    componentsList: {
-      type: Array,
-      default: () => [],
-    },
-    groupName: String,
-  },
+  components: { ProactiveHelpDialog, ProactiveHelpPreviewDialog },
   data() {
     return {
       loading: false,
@@ -122,26 +119,39 @@ export default {
       componentName: '',
       component: {},
       listLength: this.componentsList.length,
-      headers: [
+    };
+  },
+  computed: {
+    headers() {
+      return [
         {
-          title: 'Form Title',
+          text: this.$t('trans.generalLayout.formTitle'),
           align: 'start',
-          key: 'componentName',
+          value: 'componentName',
           width: '1%',
         },
         {
-          title: 'Actions',
+          text: this.$t('trans.generalLayout.actions'),
           align: 'end',
-          key: 'actions',
+          value: 'actions',
           filterable: false,
           sortable: false,
           width: '1%',
         },
-      ],
-    };
-  },
-  computed: {
+      ];
+    },
     ...mapGetters('admin', ['fcProactiveHelpImageUrl']),
+  },
+  props: {
+    layoutList: {
+      type: Array,
+      required: true,
+    },
+    componentsList: {
+      type: Array,
+      default: () => [],
+    },
+    groupName: String,
   },
   methods: {
     ...mapActions('admin', [
@@ -206,7 +216,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.submissions-table :deep(tbody) tr {
+.submissions-table >>> tbody tr {
   background: #bfbdbd14 !important;
   border: 1px solid #7070703f !important;
   margin-bottom: 35px !important;

@@ -14,7 +14,7 @@
             <v-icon>remove_red_eye</v-icon>
           </v-btn>
         </template>
-        <span>View This Submission</span>
+        <span>{{ $t('trans.mySubmissionsActions.viewThisSubmission') }}</span>
       </v-tooltip>
     </router-link>
 
@@ -44,7 +44,7 @@
               <v-icon>app_registration</v-icon>
             </v-btn>
           </template>
-          <span>Copy This Submission</span>
+          <span>{{ $t('trans.mySubmissionsActions.copyThisSubmission') }}</span>
         </v-tooltip>
       </router-link>
     </span>
@@ -71,7 +71,7 @@
               <v-icon>mode_edit</v-icon>
             </v-btn>
           </template>
-          <span>Edit This Draft</span>
+          <span>{{ $t('trans.mySubmissionsActions.editThisDraft') }}</span>
         </v-tooltip>
       </router-link>
       <DeleteSubmission

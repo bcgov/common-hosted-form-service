@@ -1,9 +1,9 @@
 <template>
-  <FormViewer :form-id="f" display-title />
+  <FormViewer :formId="f" :bulkState="b" displayTitle />
 </template>
 
 <script>
-import FormViewer from '@src/components/designer/FormViewer.vue';
+import FormViewer from '@/components/designer/FormViewer.vue';
 
 export default {
   name: 'FormSubmit',
@@ -12,6 +12,7 @@ export default {
   },
   props: {
     f: String,
+    b: String,
   },
 };
 </script>

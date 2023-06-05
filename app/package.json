@@ -12,7 +12,7 @@
     "lint": "eslint . **/www --no-fix --ext .js",
     "lint:fix": "eslint . **/www --fix --ext .js",
     "prettier": "prettier --check './**/*.js'",
-    "prettier:fix": "prettier --write './**/*.js'",
+    "prettier:fix": "prettier --write \"src/**/*.{js,vue,css,scss}\"",
     "pretest": "npm run lint",
     "posttest": "node ./lcov-fix.js",
     "clean": "rm -rf coverage dist",

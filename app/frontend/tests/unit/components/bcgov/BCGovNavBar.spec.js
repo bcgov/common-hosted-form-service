@@ -1,7 +1,7 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import BCGovNavBar from '@/components/bcgov/BCGovNavBar.vue';
 
 const localVue = createLocalVue();
@@ -22,20 +22,21 @@ describe('BCGovNavBar.vue', () => {
         identityProvider: () => 'idir',
         authenticated: () => true,
         isAdmin: () => false,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BCGovNavBar, {
       localVue,
       mocks: {
         $route: {
-          meta: {}
-        }
+          meta: {},
+        },
       },
       store,
       stubs: ['router-link'],
-      vuetify
+      vuetify,
+      i18n
     });
 
     expect(wrapper.text()).toContain('About');
@@ -49,20 +50,21 @@ describe('BCGovNavBar.vue', () => {
         identityProvider: () => 'idir',
         authenticated: () => true,
         isAdmin: () => true,
-        keycloakReady: () => true
-      }
+        keycloakReady: () => true,
+      },
     });
 
     const wrapper = shallowMount(BCGovNavBar, {
       localVue,
+      i18n,
       mocks: {
         $route: {
-          meta: {}
-        }
+          meta: {},
+        },
       },
       store,
       stubs: ['router-link'],
-      vuetify
+      vuetify,
     });
 
     expect(wrapper.text()).toContain('About');

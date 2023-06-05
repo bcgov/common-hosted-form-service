@@ -1,11 +1,12 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import Admin from '@/views/Admin.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
+
 
 describe('Admin.vue', () => {
   let store;
@@ -15,8 +16,8 @@ describe('Admin.vue', () => {
     store.registerModule('auth', {
       namespaced: true,
       getters: {
-        isAdmin: () => false
-      }
+        isAdmin: () => false,
+      },
     });
   });
 
@@ -26,7 +27,8 @@ describe('Admin.vue', () => {
     const wrapper = shallowMount(Admin, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'router-view']
+      stubs: ['BaseSecure', 'router-view'],
+      i18n
     });
     await nextTick();
 

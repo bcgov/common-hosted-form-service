@@ -22,12 +22,12 @@
               </div>
             </v-col>
           </v-row>
-          <v-row v-if="fcProactiveHelpImageUrl" class="mt-6">
+          <v-row class="mt-6" v-if="fcProactiveHelpImageUrl">
             <v-col md="6">
               <div
-                ref="preview_text_field"
                 class="text"
                 data-cy="preview_text_field"
+                ref="preview_text_field"
               >
                 {{ component && component.description }}
               </div>
@@ -39,12 +39,12 @@
               ></v-img>
             </v-col>
           </v-row>
-          <v-row v-else class="mt-6">
+          <v-row class="mt-6" v-else>
             <v-col cols="12">
               <div
-                ref="preview_text_field"
                 class="text"
                 data-cy="preview_text_field"
+                ref="preview_text_field"
               >
                 {{ component && component.description }}
               </div>
@@ -63,7 +63,7 @@
                 }"
               >
                 <div class="mr-1 cursor">
-                  Learn more
+                  {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
                   <font-awesome-icon
                     icon="fa-solid fa-square-arrow-up-right"
                   /></div
@@ -75,7 +75,6 @@
     </v-dialog>
   </v-row>
 </template>
-
 <script>
 import {
   faXmark,
@@ -85,26 +84,26 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark, faSquareArrowUpRight);
 
 export default {
-  name: 'InformationLinkPreviewDialog',
-  props: {
-    showDialog: { type: Boolean, required: true },
-    component: { type: Object },
-    fcProactiveHelpImageUrl: undefined,
-  },
-  emits: ['close-dialog'],
+  name: 'ProactiveHelpPreviewDialog',
+
   data() {
     return {
       dialog: this.showDialog,
     };
   },
-  watch: {
-    showDialog() {
-      this.dialog = this.showDialog;
-    },
+  props: {
+    showDialog: { type: Boolean, required: true },
+    component: { type: Object },
+    fcProactiveHelpImageUrl: undefined,
   },
   methods: {
     onCloseDialog() {
       this.$emit('close-dialog');
+    },
+  },
+  watch: {
+    showDialog() {
+      this.dialog = this.showDialog;
     },
   },
 };

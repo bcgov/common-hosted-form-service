@@ -1,10 +1,11 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import Error from '@/views/Error.vue';
 
 const localVue = createLocalVue();
+
 localVue.use(Vuex);
 
 describe('Error.vue', () => {
@@ -19,15 +20,16 @@ describe('Error.vue', () => {
         keycloakReady: () => true,
       },
       actions: {
-        logout: () => jest.fn()
-      }
+        logout: () => jest.fn(),
+      },
     });
   });
 
   it('renders without error', async () => {
     const wrapper = shallowMount(Error, {
       localVue,
-      store
+      store,
+      i18n
     });
     await nextTick();
 

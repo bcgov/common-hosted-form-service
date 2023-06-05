@@ -7,13 +7,13 @@
         <v-col cols="12" sm="6" order="2" order-sm="1">
           <h1>{{ form.name }}</h1>
           <p>
-            <strong>Submitted:</strong>
-            {{ $filters.formatDateLong(formSubmission.createdAt) }}
+            <strong>{{ $t('trans.formSubmission.submitted') }}</strong>
+            {{ formSubmission.createdAt | formatDateLong }}
             <br />
-            <strong>Confirmation ID:</strong>
+            <strong>{{ $t('trans.formSubmission.confirmationID') }}</strong>
             {{ formSubmission.confirmationId }}
             <br />
-            <strong>Submitted By:</strong>
+            <strong>{{ $t('trans.formSubmission.submittedBy') }}</strong>
             {{ formSubmission.createdBy }}
             <br />
           </p>
@@ -27,23 +27,29 @@
           order-sm="2"
         >
           <span>
-            <PrintOptions :submission-id="submissionId" />
+            <PrintOptions :submissionId="submissionId" />
           </span>
           <span>
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
                 <router-link
                   :to="{ name: 'FormSubmissions', query: { f: form.id } }"
                 >
-                  <v-btn class="mx-1" color="primary" icon v-bind="props">
+                  <v-btn
+                    class="mx-1"
+                    color="primary"
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
                     <v-icon>list_alt</v-icon>
                   </v-btn>
                 </router-link>
               </template>
-              <span>View All Submissions</span>
+              <span>{{ $t('trans.formSubmission.viewAllSubmissions') }}</span>
             </v-tooltip>
           </span>
-          <DeleteSubmission :submission-id="submissionId" @deleted="onDelete" />
+          <DeleteSubmission @deleted="onDelete" :submissionId="submissionId" />
         </v-col>
       </v-row>
     </div>
@@ -56,15 +62,18 @@
         class="pl-0 pt-0"
       >
         <v-alert
-          v-if="!submissionReadOnly"
+          :value="!submissionReadOnly"
           :class="'d-print-none ' + NOTIFICATIONS_TYPES.INFO.class"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
-          text="After editing, re-submit the form to save your changes."
-        ></v-alert>
-        <v-card variant="outlined" class="review-form">
+          transition="scale-transition"
+          >{{ $t('trans.formSubmission.alertInfo') }}</v-alert
+        >
+        <v-card outlined class="review-form">
           <v-row no-gutters>
             <v-col cols="12" sm="6">
-              <h2 class="review-heading">Submission</h2>
+              <h2 class="review-heading">
+                {{ $t('trans.formSubmission.submission') }}
+              </h2>
             </v-col>
             <v-spacer />
             <v-col
@@ -74,39 +83,42 @@
               sm="6"
             >
               <span v-if="submissionReadOnly">
-                <AuditHistory :submission-id="submissionId" />
-                <v-tooltip location="bottom">
-                  <template #activator="{ props }">
+                <AuditHistory :submissionId="submissionId" />
+                <v-tooltip bottom>
+                  <template #activator="{ on, attrs }">
                     <v-btn
                       class="mx-1"
+                      @click="toggleSubmissionEdit(true)"
                       color="primary"
                       :disabled="isDraft"
                       icon
-                      v-bind="props"
-                      @click="toggleSubmissionEdit(true)"
+                      v-bind="attrs"
+                      v-on="on"
                     >
                       <v-icon>mode_edit</v-icon>
                     </v-btn>
                   </template>
-                  <span>Edit This Submission</span>
+                  <span>{{
+                    $t('trans.formSubmission.editThisSubmission')
+                  }}</span>
                 </v-tooltip>
               </span>
               <v-btn
                 v-else
-                variant="outlined"
+                outlined
                 color="textLink"
                 @click="toggleSubmissionEdit(false)"
               >
-                <span>CANCEL</span>
+                <span>{{ $t('trans.formSubmission.cancel') }}</span>
               </v-btn>
             </v-col>
           </v-row>
           <FormViewer
+            :displayTitle="false"
             :key="reRenderSubmission"
-            :display-title="false"
-            :read-only="submissionReadOnly"
-            :staff-edit-mode="true"
-            :submission-id="submissionId"
+            :readOnly="submissionReadOnly"
+            :staffEditMode="true"
+            :submissionId="submissionId"
             @submission-updated="toggleSubmissionEdit(false)"
           />
         </v-card>
@@ -121,25 +133,19 @@
         order="first"
         order-md="last"
       >
-        <v-card
-          variant="outlined"
-          class="review-form"
-          :disabled="!submissionReadOnly"
-        >
-          <h2 class="review-heading">Status</h2>
+        <v-card outlined class="review-form" :disabled="!submissionReadOnly">
+          <h2 class="review-heading">
+            {{ $t('trans.formSubmission.status') }}
+          </h2>
           <StatusPanel
-            :submission-id="submissionId"
-            :form-id="form.id"
+            :submissionId="submissionId"
+            :formId="form.id"
             @note-updated="refreshNotes"
             @draft-enabled="setDraft"
           />
         </v-card>
-        <v-card
-          variant="outlined"
-          class="review-form"
-          :disabled="!submissionReadOnly"
-        >
-          <NotesPanel ref="notesPanel" :submission-id="submissionId" />
+        <v-card outlined class="review-form" :disabled="!submissionReadOnly">
+          <NotesPanel :submissionId="submissionId" ref="notesPanel" />
         </v-card>
       </v-col>
     </v-row>
@@ -149,13 +155,13 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import AuditHistory from '@src/components/forms/submission/AuditHistory.vue';
-import DeleteSubmission from '@src/components/forms/submission/DeleteSubmission.vue';
-import FormViewer from '@src/components/designer/FormViewer.vue';
-import NotesPanel from '@src/components/forms/submission/NotesPanel.vue';
-import StatusPanel from '@src/components/forms/submission/StatusPanel.vue';
-import PrintOptions from '@src/components/forms/PrintOptions.vue';
-import { NotificationTypes } from '@src/utils/constants';
+import AuditHistory from '@/components/forms/submission/AuditHistory.vue';
+import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
+import FormViewer from '@/components/designer/FormViewer.vue';
+import NotesPanel from '@/components/forms/submission/NotesPanel.vue';
+import StatusPanel from '@/components/forms/submission/StatusPanel.vue';
+import PrintOptions from '@/components/forms/PrintOptions.vue';
+import { NotificationTypes } from '@/utils/constants';
 
 export default {
   name: 'FormSubmission',
@@ -184,12 +190,6 @@ export default {
       return NotificationTypes;
     },
   },
-  async mounted() {
-    await this.fetchSubmission({ submissionId: this.submissionId });
-    // get current user's permissions on associated form
-    await this.getFormPermissionsForUser(this.form.id);
-    this.loading = false;
-  },
   methods: {
     ...mapActions('form', ['fetchSubmission', 'getFormPermissionsForUser']),
     onDelete() {
@@ -210,6 +210,12 @@ export default {
       this.submissionReadOnly = !editing;
       this.reRenderSubmission += 1;
     },
+  },
+  async mounted() {
+    await this.fetchSubmission({ submissionId: this.submissionId });
+    // get current user's permissions on associated form
+    await this.getFormPermissionsForUser(this.form.id);
+    this.loading = false;
   },
 };
 </script>

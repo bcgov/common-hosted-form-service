@@ -90,7 +90,7 @@ jobs:
         run: |
           mv public/zap/report_md.md public/zap/README.md
       - name: ZAP Results
-        uses: JamesIves/github-pages-deploy-action@4.4.1
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           branch: zap-scan
           folder: public/zap

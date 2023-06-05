@@ -1,28 +1,27 @@
 <template>
   <div>
-    <FormViewer :submission-id="s" :read-only="true" display-title>
+    <FormViewer :submissionId="s" :readOnly="true" displayTitle>
       <template #alert="{ form }">
         <div class="mb-5">
           <h1 class="mb-5">
-            <v-icon size="large" color="success">check_circle</v-icon>
-            Your form has been submitted successfully
+            <v-icon large color="success">check_circle</v-icon>
+            {{ $t('trans.sucess.sucessFormSubmissn') }}
           </h1>
           <div v-if="form.showSubmissionConfirmation">
             <h3>
               <span class="d-print-none">
-                If you wish to keep a record of this submission, you can keep
-                the following
+                {{ $t('trans.sucess.keepRecord') }}
               </span>
               <span>
-                Confirmation ID:
+                {{ $t('trans.sucess.confirmationId') }}:
                 <mark>{{ s.substring(0, 8).toUpperCase() }}</mark>
               </span>
             </h3>
             <RequestReceipt
               class="d-print-none"
               :email="email"
-              :form-name="form.name"
-              :submission-id="s"
+              :formName="form.name"
+              :submissionId="s"
             />
           </div>
           <hr />
@@ -35,17 +34,17 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import FormViewer from '@src/components/designer/FormViewer.vue';
-import RequestReceipt from '@src/components/forms/RequestReceipt.vue';
+import FormViewer from '@/components/designer/FormViewer.vue';
+import RequestReceipt from '@/components/forms/RequestReceipt.vue';
 
 export default {
   name: 'FormView',
+  props: {
+    s: String,
+  },
   components: {
     FormViewer,
     RequestReceipt,
-  },
-  props: {
-    s: String,
   },
   computed: mapGetters('auth', ['email']),
 };

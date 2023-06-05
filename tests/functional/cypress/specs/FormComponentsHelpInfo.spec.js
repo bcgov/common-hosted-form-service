@@ -26,13 +26,13 @@ describe('Application About Page', () => {
 
 
     cy.intercept({https: false,
-      method:'GET', 
+      method:'GET',
       path:`${depEnv}/api/v1/forms/formComponents/helpInfo/list`},
       {fixture: 'formInitialBuilder/ccHelpLinkInfoList.json'}).as('getCommonCompLinkInfo');
 
-    
+
       cy.intercept({https: false,
-        method:'GET', 
+        method:'GET',
         path:`/${depEnv}/api/v1/formsformComponents/helpInfo/true/simplecols2`},
         {fixture: 'formInitialBuilder/ccHelpLinkInfoList.json'},
         (req) => {
@@ -42,7 +42,7 @@ describe('Application About Page', () => {
 
 
   });
- 
+
   it('Visits the admin page', () => {
     cy.get('[data-cy=infoLinks]').click().contains('Info Links');
   });
@@ -52,11 +52,11 @@ describe('Application About Page', () => {
     cy.get('[data-cy=infoLinks]').click();
     let children = cy.get('[data-cy=info_link_expansion_panels]').children();
     children.should('have.length.gt', 1);
-   
+
   });
 
 
-  
+
   it('Visits layout/group edit button in Info Links ', () => {
     cy.visit(`${depEnv}/admin/`);
     cy.get('[data-cy=infoLinks]').click();
@@ -74,8 +74,8 @@ describe('Application About Page', () => {
 
 
     //this open the information link dialog box when the edit button above is clicked
-    let informationLinkDialogue = firstChild.get('.v-dialog');
-    informationLinkDialogue.should('be.visible');
+    let proactiveHelpPreviewDialog = firstChild.get('.v-dialog');
+    proactiveHelpPreviewDialog.should('be.visible');
 
     let moreHelpInfoLinkTextField = cy.get('[data-cy=more_help_info_link_text_field]');
     moreHelpInfoLinkTextField.should('be.disabled');
@@ -94,13 +94,13 @@ describe('Application About Page', () => {
     //cy.fixture('formInitialBuilder/add1.png','base64').then((logo)=>{
       //let imageData = {componentName:"TestImage",image:logo}
       cy.intercept('POST', `${depEnv}/api/v1/admin/formComponents/helpInfo/upload`,).as('upload');
-  
+
       cy.wait('@upload').then((data) => {
         expect(data.response.body).to.not.be.null;
         expect(data.response.body.key).to.not.be.undefined;
       });
    // })
-   
+
 
     //input external link for form component help link into desribtion text area
     cy.get('[data-cy=more_help_info_link_text_field]')
@@ -119,7 +119,7 @@ describe('Application About Page', () => {
 
     //submit form component help link details to backend
     cy.get('[data-cy=more_help_info_link_save_button]').click();
-   
+
     cy.wait('@getCommonCompLinkInfo').then((data) => {
       expect(data.response.body).to.not.be.null;
     });
@@ -144,8 +144,8 @@ describe('Application About Page', () => {
     previewButton.should('not.be.disabled');
     previewButton.click();
 
-    let informationLinkDialogue = firstChild.get('.v-dialog');
-    informationLinkDialogue.should('be.visible');
+    let proactiveHelpPreviewDialog = firstChild.get('.v-dialog');
+    proactiveHelpPreviewDialog.should('be.visible');
 
     let previewTextField = firstChild.find('[data-cy=preview_text_field]').first();
     expect(previewTextField).to.not.be.null;
@@ -168,7 +168,7 @@ describe('Application About Page', () => {
 
     let published_unpublishedButton = firstChild.find('[data-cy=status_button]').first();
     expect(published_unpublishedButton).to.not.be.null;
-    
+
     //published_unpublishedButton.click;
 
     //published_unpublishedButton.trigger('change');
@@ -176,8 +176,8 @@ describe('Application About Page', () => {
     //cy.wait('@publishComponent').then((data) => {
      // cy.log(data);
     //});
-    
+
 
   });
-  
+
 });

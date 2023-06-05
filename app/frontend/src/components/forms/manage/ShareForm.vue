@@ -1,66 +1,72 @@
 <template>
   <span>
-    <v-tooltip location="bottom">
-      <template #activator="{ props }">
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
         <v-btn
           class="mx-1"
           data-cy="shareFormButton"
           color="primary"
-          icon
-          v-bind="props"
           @click="dialog = true"
+          icon
+          v-bind="attrs"
+          v-on="on"
         >
           <v-icon class="mr-1">share</v-icon>
         </v-btn>
       </template>
-      <span>Share Form</span>
+      <span>{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0">Share Link</v-card-title>
+        <v-card-title class="text-h5 pb-0">{{
+          $t('trans.shareForm.shareLink')
+        }}</v-card-title>
         <v-card-text>
           <hr />
-          <p class="mb-5">Copy the link below or download the QR code.</p>
+          <p class="mb-5">{{ $t('trans.shareForm.copyQRCode') }}</p>
           <v-alert
-            v-if="warning"
+            :value="warning"
             :class="NOTIFICATIONS_TYPES.WARNING.class"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
-            text="There is no published version of the form at this time. The link
-            below will not be reachable until a version is published."
-          ></v-alert>
+            transition="scale-transition"
+          >
+            {{ $t('trans.shareForm.warningMessage') }}
+          </v-alert>
           <v-text-field
             readonly
-            density="compact"
-            variant="outlined"
+            dense
+            flat
+            outlined
             label="URL"
             data-test="text-shareUrl"
-            :model-value="formLink"
+            :value="formLink"
           >
             <template #prepend>
               <v-icon>link</v-icon>
             </template>
-            <template #append>
+            <template #append-outer>
               <BaseCopyToClipboard
                 class="mt-n1"
-                :copy-text="formLink"
-                tooltip-text="Copy URL to clipboard"
+                :copyText="formLink"
+                :tooltipText="$t('trans.shareForm.copyURLToClipboard')"
               />
-              <v-tooltip location="bottom">
-                <template #activator="{ props }">
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
                   <v-btn
                     class="mt-n1"
                     color="primary"
                     :href="formLink"
                     icon
                     target="_blank"
-                    v-bind="props"
+                    v-bind="attrs"
                     data-cy="shareFormLinkButton"
+                    v-on="on"
                   >
                     <v-icon class="mr-1">open_in_new</v-icon>
                   </v-btn>
                 </template>
-                <span>Open this form</span>
+                <span>{{ $t('trans.shareForm.openThisForm') }}</span>
               </v-tooltip>
             </template>
           </v-text-field>
@@ -71,24 +77,25 @@
                 <qrcode-vue
                   :value="formLink"
                   :size="qrSize"
-                  render-as="canvas"
+                  renderAs="canvas"
                   :level="qrLevel"
                 />
               </div>
             </v-col>
             <v-col cols="1" class="text-center">
-              <v-tooltip location="bottom">
-                <template #activator="{ props }">
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
                   <v-btn
                     color="primary"
                     icon
-                    v-bind="props"
                     @click="downloadQr"
+                    v-bind="attrs"
+                    v-on="on"
                   >
                     <v-icon>get_app</v-icon>
                   </v-btn>
                 </template>
-                <span>Download QR Code</span>
+                <span>{{ $t('trans.shareForm.downloadQRCode') }}</span>
               </v-tooltip>
             </v-col>
           </v-row>
@@ -96,7 +103,7 @@
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span>Close</span>
+            <span>{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -106,7 +113,7 @@
 
 <script>
 import QrcodeVue from 'qrcode.vue';
-import { NotificationTypes } from '@src/utils/constants';
+import { NotificationTypes } from '@/utils/constants';
 
 export default {
   components: {
@@ -132,9 +139,7 @@ export default {
   computed: {
     formLink() {
       // TODO: Consider using vue-router to generate this url string instead
-      return `${window.location.origin}${
-        import.meta.env.BASE_URL
-      }/form/submit?f=${this.formId}`;
+      return `${window.location.origin}${process.env.BASE_URL}form/submit?f=${this.formId}`;
     },
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
@@ -152,14 +157,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'vuetify/settings';
+@import '~vuetify/src/styles/settings/_variables';
 
 .qrCodeContainer {
   @media #{map-get($display-breakpoints, 'sm-and-up')} {
     padding-left: 75px;
   }
 
-  :deep(canvas) {
+  ::v-deep canvas {
     margin-top: 50px;
     max-width: 250px;
     max-height: 250px;

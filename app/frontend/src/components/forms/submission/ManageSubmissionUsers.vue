@@ -1,18 +1,23 @@
-<!-- eslint-disable vue/no-v-model-argument -->
 <template>
   <span>
-    <v-tooltip location="bottom">
-      <template #activator="{ props }">
-        <v-btn color="primary" icon v-bind="props" @click="dialog = true">
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          color="primary"
+          @click="dialog = true"
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
           <v-icon>group</v-icon>
         </v-btn>
       </template>
-      <span>Manage Team Members</span>
+      <span>{{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card>
         <v-card-title class="text-h5 pb-0">
-          Manage Team Members
+          {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
           <v-radio-group v-model="selectedIdp" row>
             <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
             <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
@@ -30,40 +35,56 @@
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
+                  autocomplete="autocomplete_off"
                   v-model="userSearchSelection"
-                  v-model:search="findUsers"
-                  :items="items"
-                  chips
-                  closable-chips
                   clearable
-                  item-title="fullName"
-                  density="compact"
-                  :customFilter="filterObject"
+                  dense
+                  :filter="filterObject"
                   hide-details
+                  :items="userSearchResults"
                   :label="autocompleteLabel"
                   :loading="isLoadingDropdown"
                   return-object
+                  :search-input.sync="findUsers"
                 >
                   <!-- no data -->
-                  <template v-slot:no-data>
-                    <div class="px-2">
-                      Can't find someone? They may not have logged into
-                      CHEFS.<br />
-                      Kindly send them a link to CHEFS and ask them to log in.
-                    </div>
+                  <template #no-data>
+                    <div
+                      class="px-2"
+                      v-html="
+                        $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
+                      "
+                    ></div>
                   </template>
-                  <template v-slot:chip="{ props, item }">
-                    <v-chip v-bind="props" :text="item?.raw?.fullName"></v-chip>
-                  </template>
-
-                  <!-- users found in dropdown -->
-                  <template v-slot:item="{ props, item }">
-                    <v-list-item
-                      v-bind="props"
-                      :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
-                      :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
+                  <!-- selected user -->
+                  <template #selection="data">
+                    <span
+                      v-bind="data.attrs"
+                      :input-value="data.selected"
+                      close
+                      @click="data.select"
                     >
-                    </v-list-item>
+                      {{ data.item.fullName }}
+                    </span>
+                  </template>
+                  <!-- users found in dropdown -->
+                  <template #item="data">
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-item-content v-text="data.item" />
+                    </template>
+                    <template v-else>
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          {{ data.item.fullName }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                          {{ data.item.username }} ({{ data.item.idpCode }})
+                        </v-list-item-subtitle>
+                        <v-list-item-subtitle>
+                          {{ data.item.email }}
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+                    </template>
                   </template>
                 </v-autocomplete>
               </form>
@@ -75,52 +96,66 @@
                 :loading="isLoadingDropdown"
                 @click="addUser"
               >
-                <span>Add</span>
+                <span>{{ $t('trans.manageSubmissionUsers.add') }}</span>
               </v-btn>
             </v-col>
           </v-row>
           <div v-else>
-            You can only invite and manage team members while this form is a
-            draft
+            {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
           <p class="mt-5">
-            <strong>Team members for this submission:</strong>
+            <strong
+              >{{
+                $t('trans.manageSubmissionUsers.submissionTeamMembers')
+              }}:</strong
+            >
           </p>
 
           <v-skeleton-loader :loading="isLoadingTable" type="table-row">
-            <v-table dense>
-              <thead>
-                <tr>
-                  <th class="text-left">Name</th>
-                  <th class="text-left">Username</th>
-                  <th class="text-left">Email</th>
-                  <th v-if="isDraft" class="text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in userTableList" :key="item.id">
-                  <td>{{ item.fullName }}</td>
-                  <td>{{ item.username }}</td>
-                  <td>{{ item.email }}</td>
-                  <td v-if="isDraft">
-                    <v-btn
-                      color="red"
-                      :disabled="item.isOwner"
-                      @click="removeUser(item)"
-                      icon="mdi-minus-thick"
-                      size="x-small"
-                    ></v-btn>
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
+            <v-simple-table dense>
+              <template>
+                <thead>
+                  <tr>
+                    <th class="text-left">
+                      {{ $t('trans.manageSubmissionUsers.name') }}
+                    </th>
+                    <th class="text-left">
+                      {{ $t('trans.manageSubmissionUsers.username') }}
+                    </th>
+                    <th class="text-left">
+                      {{ $t('trans.manageSubmissionUsers.email') }}
+                    </th>
+                    <th class="text-left" v-if="isDraft">
+                      {{ $t('trans.manageSubmissionUsers.actions') }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr :key="item.userId" v-for="item in userTableList">
+                    <td>{{ item.fullName }}</td>
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.email }}</td>
+                    <td v-if="isDraft">
+                      <v-btn
+                        color="red"
+                        icon
+                        :disabled="item.isOwner"
+                        @click="removeUser(item)"
+                      >
+                        <v-icon>remove_circle</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
           </v-skeleton-loader>
         </v-card-text>
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span>Close</span>
+            <span> {{ $t('trans.manageSubmissionUsers.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -136,12 +171,12 @@
       >
         <template #title>Remove {{ userToDelete.username }}</template>
         <template #text>
-          Are you sure you wish to remove
+          {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
           <strong>{{ userToDelete.username }}</strong
-          >? They will no longer have permissions for this submission.
+          >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
         </template>
         <template #button-text-continue>
-          <span>Remove</span>
+          <span>{{ $t('trans.manageSubmissionUsers.remove') }}</span>
         </template>
       </BaseDialog>
     </v-dialog>
@@ -156,8 +191,8 @@ import {
   IdentityProviders,
   NotificationTypes,
   Regex,
-} from '@src/utils/constants';
-import { rbacService, userService } from '@src/services';
+} from '@/utils/constants';
+import { rbacService, userService } from '@/services';
 
 export default {
   name: 'ManageSubmissionUsers',
@@ -194,57 +229,9 @@ export default {
     },
     autocompleteLabel() {
       return this.selectedIdp == IdentityProviders.IDIR
-        ? 'Enter a name, e-mail, or username'
-        : 'Enter an exact e-mail or username.';
+        ? this.$t('trans.manageSubmissionUsers.requiredFiled')
+        : this.$t('trans.manageSubmissionUsers.exactEmailOrUsername');
     },
-    items() {
-      return this.userSearchResults;
-    },
-  },
-  watch: {
-    selectedIdp(newIdp, oldIdp) {
-      if (newIdp !== oldIdp) {
-        this.userSearchResults = [];
-      }
-    },
-    // Get a list of user objects from database
-    async findUsers(input) {
-      if (!input) return;
-      this.isLoadingDropdown = true;
-      try {
-        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
-        let params = {};
-        params.idpCode = this.selectedIdp;
-        if (
-          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
-          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
-        ) {
-          if (input.length < 6)
-            throw new Error(
-              'Search input for BCeID username/email must be greater than 6 characters.'
-            );
-          if (input.includes('@')) {
-            if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error('Email searches for BCeID must be exact.');
-            else params.email = input;
-          } else {
-            params.username = input;
-          }
-        } else {
-          params.search = input;
-        }
-        const response = await userService.getUsers(params);
-        this.userSearchResults = response.data;
-      } catch (error) {
-        // this.userSearchResults = [];
-        console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
-      } finally {
-        this.isLoadingDropdown = false;
-      }
-    },
-  },
-  created() {
-    this.getSubmissionUsers();
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -255,7 +242,9 @@ export default {
         if (this.userTableList.some((u) => u.id === id)) {
           this.addNotification({
             ...NotificationTypes.WARNING,
-            message: `User ${this.userSearchSelection.username} is already in the list of team members.`,
+            message: this.$t('trans.manageSubmissionUsers.remove', {
+              username: this.userSearchSelection.username,
+            }),
           });
         } else {
           this.modifyPermissions(id, [
@@ -285,9 +274,11 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occured while trying to fetch users for this submission.',
-          consoleError: `Error getting users for ${this.submissionId}: ${error}`,
+          message: this.$t('trans.manageSubmissionUsers.getSubmissionUsersErr'),
+          consoleError: this.$t(
+            'trans.manageSubmissionUsers.getSubmissionUsersConsoleErr',
+            { submissionId: this.submissionId, error: error }
+          ),
         });
       } finally {
         this.isLoadingTable = false;
@@ -313,15 +304,19 @@ export default {
           this.addNotification({
             ...NotificationTypes.SUCCESS,
             message: permissions.length
-              ? `Sent invite email to ${selectedEmail}`
-              : `Sent uninvited email to ${selectedEmail}`,
+              ? this.$t('trans.manageSubmissionUsers.sentInviteEmailTo') +
+                `${selectedEmail}`
+              : this.$t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
+                `${selectedEmail}`,
           });
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occured while trying to update users for this submission.',
-          consoleError: `Error setting user permissions. Sub: ${this.submissionId} User: ${userId} Error: ${error}`,
+          message: this.$t('trans.manageSubmissionUsers.updateUserErrMsg'),
+          consoleError: this.$t(
+            'trans.manageSubmissionUsers.updateUserErrMsg',
+            { submissionId: this.submissionId, userId: userId, error: error }
+          ),
         });
       } finally {
         this.isLoadingTable = false;
@@ -344,6 +339,58 @@ export default {
         })
         .sort((a, b) => b.isOwner - a.isOwner);
     },
+  },
+  watch: {
+    selectedIdp(newIdp, oldIdp) {
+      if (newIdp !== oldIdp) {
+        this.userSearchResults = [];
+      }
+    },
+    // Get a list of user objects from database
+    async findUsers(input) {
+      if (!input) return;
+      this.isLoadingDropdown = true;
+      try {
+        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
+        let params = {};
+        params.idpCode = this.selectedIdp;
+        if (
+          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
+          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
+        ) {
+          if (input.length < 6)
+            throw new Error(
+              this.$t('trans.manageSubmissionUsers.searchInputLength')
+            );
+          if (input.includes('@')) {
+            if (!new RegExp(Regex.EMAIL).test(input))
+              throw new Error(
+                this.$t('trans.manageSubmissionUsers.exactBCEIDSearch')
+              );
+            else params.email = input;
+          } else {
+            params.username = input;
+          }
+        } else {
+          params.search = input;
+        }
+        const response = await userService.getUsers(params);
+        this.userSearchResults = response.data;
+      } catch (error) {
+        // this.userSearchResults = [];
+        /* eslint-disable no-console */
+        console.error(
+          this.$t('trans.manageSubmissionUsers.getUsersErrMsg', {
+            error: error,
+          })
+        ); // eslint-disable-line no-console
+      } finally {
+        this.isLoadingDropdown = false;
+      }
+    },
+  },
+  created() {
+    this.getSubmissionUsers();
   },
 };
 </script>

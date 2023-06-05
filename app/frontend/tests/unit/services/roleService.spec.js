@@ -9,7 +9,7 @@ const mockAxios = new MockAdapter(mockInstance);
 
 jest.mock('@/services/interceptors', () => {
   return {
-    appAxios: () => mockInstance
+    appAxios: () => mockInstance,
   };
 });
 
@@ -28,5 +28,3 @@ describe('Role Service', () => {
     expect(mockAxios.history.get).toHaveLength(1);
   });
 });
-
-

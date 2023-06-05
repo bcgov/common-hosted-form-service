@@ -3,44 +3,46 @@
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>Form Design</h1>
+        <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
             <v-btn
               class="mx-1"
+              @click="onExportClick"
               color="primary"
               icon
-              v-bind="props"
-              @click="onExportClick"
+              v-bind="attrs"
+              v-on="on"
             >
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
-          <span>Export Design</span>
+          <span>{{ $t('trans.formDesigner.exportDesign') }}</span>
         </v-tooltip>
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
             <v-btn
               class="mx-1"
+              @click="$refs.uploader.click()"
               color="primary"
               icon
-              v-bind="props"
-              @click="$refs.uploader.click()"
+              v-bind="attrs"
+              v-on="on"
             >
               <v-icon>publish</v-icon>
               <input
-                ref="uploader"
                 class="d-none"
+                @change="loadFile"
+                ref="uploader"
                 type="file"
                 accept=".json"
-                @change="loadFile"
               />
             </v-btn>
           </template>
-          <span>Import Design</span>
+          <span>{{ $t('trans.formDesigner.importDesign') }}</span>
         </v-tooltip>
       </v-col>
       <!-- form name -->
@@ -49,83 +51,83 @@
       </v-col>
       <!-- version number-->
       <v-col cols="12" order="4">
-        <em>Version: {{ displayVersion }}</em>
+        <em
+          >{{ $t('trans.formDesigner.version') }} :
+          {{ this.displayVersion }}</em
+        >
       </v-col>
     </v-row>
     <BaseInfoCard class="my-6">
-      <h4 class="text-primary">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+      <h4 class="primary--text">
+        <v-icon class="mr-1" color="primary">info</v-icon
+        >{{ $t('trans.formDesigner.important') }}!
       </h4>
-      <p class="my-0">
-        Use the <strong>SAVE DESIGN</strong> button when you are done building
-        this form.
-      </p>
-      <p class="my-0">
-        The <strong>SUBMIT</strong> button is provided for your user to submit
-        this form and will be activated after it is saved.
-      </p>
+      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
+      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoB')"></p>
     </BaseInfoCard>
     <FormBuilder
-      :form="FORM_SCHEMA"
+      :form="formSchema"
       :key="reRenderFormIo"
-      ref="formioForm"
       :options="designerOptions"
-      class="form-designer"
+      ref="formioForm"
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
+      class="form-designer"
       @formLoad="onFormLoad"
     />
-    <InformationLinkPreviewDialog
-      :show-dialog="showHelpLinkDialog"
-      :component="component"
-      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
+    <ProactiveHelpPreviewDialog
+      :showDialog="showHelpLinkDialog"
       @close-dialog="onShowClosePreveiwDialog"
+      :component="component"
+      :fcProactiveHelpImageUrl="fcProactiveHelpImageUrl"
     />
 
     <FloatButton
       placement="bottom-right"
-      :base-f-a-b-items-b-g-color="'#ffffff'"
-      :base-f-a-b-icon-color="'#1976D2'"
-      :base-f-a-b-border-color="'#C0C0C0'"
-      :fab-z-index="1"
+      :baseFABItemsBGColor="'#ffffff'"
+      :baseFABIconColor="'#1976D2'"
+      :baseFABBorderColor="'#C0C0C0'"
+      :fabZIndex="1"
       :size="'small'"
-      fab-items-gap="7px"
-      :saving="saving"
-      :saved-status="savedStatus"
-      :saved="saved"
-      :is-form-saved="isFormSaved"
-      :form-id="formId"
-      :draft-id="draftId"
-      :undo-enabled="undoEnabled() === 0 ? false : undoEnabled()"
-      :redo-enabled="redoEnabled() === 0 ? false : redoEnabled()"
+      fabItemsGap="4px"
       @undo="onUndoClick"
       @redo="onRedoClick"
       @save="submitFormSchema"
+      :saving="saving"
+      :savedStatus="savedStatus"
+      :saved="saved"
+      :isFormSaved="isFormSaved"
+      :formId="formId"
+      :draftId="draftId"
+      :undoEnabled="undoEnabled() === 0 ? false : undoEnabled()"
+      :redoEnabled="redoEnabled() === 0 ? false : redoEnabled()"
     />
   </div>
 </template>
 
 <script>
+//import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
-import { FormBuilder } from '@formio/vue';
+import { FormBuilder } from 'vue-formio';
 import { mapFields } from 'vuex-map-fields';
 import { compare, applyPatch, deepClone } from 'fast-json-patch';
-import templateExtensions from '@src/plugins/templateExtensions';
-import { formService } from '@src/services';
-import { IdentityMode } from '@src/utils/constants';
-import InformationLinkPreviewDialog from '@src/components/infolinks/InformationLinkPreviewDialog.vue';
-import { generateIdps } from '@src/utils/transformUtils';
-import FloatButton from '@src/components/designer/FloatButton.vue';
+import templateExtensions from '@/plugins/templateExtensions';
+import { formService } from '@/services';
+import { IdentityMode } from '@/utils/constants';
+import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
+import { generateIdps } from '@/utils/transformUtils';
+import FloatButton from '@/components/designer/FloatButton.vue';
+import formioIl8next from '@/internationalization/trans/formio/formio.json';
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
     FloatButton,
-    InformationLinkPreviewDialog,
+    ProactiveHelpPreviewDialog,
   },
   props: {
     draftId: String,
@@ -146,13 +148,10 @@ export default {
   },
   data() {
     return {
+      offset: true,
       savedStatus: this.isSavedStatus,
       isFormSaved: !this.newVersion,
       scrollTop: true,
-      advancedItems: [
-        { text: 'Simple Mode', value: false },
-        { text: 'Advanced Mode', value: true },
-      ],
       designerStep: 1,
       formSchema: {
         display: 'form',
@@ -183,9 +182,10 @@ export default {
     ...mapGetters('form', [
       'fcProactiveHelpGroupList',
       'fcProactiveHelpImageUrl',
+      'multiLanguage',
+      'builder',
     ]),
     ...mapGetters('auth', ['tokenParsed', 'user']),
-    ...mapGetters('form', ['builder']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
@@ -194,6 +194,7 @@ export default {
       'form.idps',
       'form.name',
       'form.sendSubRecieviedEmail',
+      'form.allowSubmitterToUploadFile',
       'form.showSubmissionConfirmation',
       'form.snake',
       'form.submissionReceivedEmails',
@@ -201,6 +202,7 @@ export default {
       'form.versions',
       'form.isDirty',
     ]),
+
     ID_MODE() {
       return IdentityMode;
     },
@@ -298,6 +300,8 @@ export default {
             },
           },
         },
+        language: this.multiLanguage ? this.multiLanguage : 'en',
+        i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
           token: this.tokenParsed,
@@ -305,28 +309,6 @@ export default {
         },
       };
     },
-    FORM_SCHEMA() {
-      return this.formSchema;
-    },
-  },
-  watch: {
-    // if form userType (public, idir, team, etc) changes, re-render the form builder
-    userType() {
-      this.reRenderFormIo += 1;
-    },
-  },
-  async created() {
-    if (this.formId) {
-      await this.fetchForm(this.formId);
-      await this.getFormSchema();
-    }
-  },
-
-  mounted() {
-    if (!this.formId) {
-      // We are creating a new form, so we obtain the original schema here.
-      this.patch.originalSchema = deepClone(this.formSchema);
-    }
   },
   methods: {
     ...mapActions('form', [
@@ -353,11 +335,15 @@ export default {
           // using the original schema in the mount will give you the default schema
           this.patch.originalSchema = deepClone(this.formSchema);
         }
-        this.reRenderFormIo += 1;
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while loading the form design.',
-          consoleError: `Error loading form ${this.formId} schema (version: ${this.versionId} draft: ${this.draftId}): ${error}`,
+          message: this.$t('trans.formDesigner.formLoadErrMsg'),
+          consoleError: this.$t('trans.formDesigner.formLoadConsoleErrMsg', {
+            formId: this.formId,
+            versionId: this.versionId,
+            draftId: this.draftId,
+            error: error,
+          }),
         });
       }
       // get a version number to show in header
@@ -379,8 +365,13 @@ export default {
         fileReader.readAsText(file);
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while importing the form schema.',
-          consoleError: `Error importing form schema : ${error}`,
+          message: this.$t('trans.formDesigner.formSchemaImportErrMsg'),
+          consoleError: this.$t(
+            'trans.formDesigner.formSchemaImportConsoleErrMsg',
+            {
+              error: error,
+            }
+          ),
         });
       }
     },
@@ -590,7 +581,6 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
-        this.reRenderFormIo += 1;
       }
     },
     async redoPatchFromHistory() {
@@ -601,7 +591,6 @@ export default {
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
-        this.reRenderFormIo += 1;
       }
     },
     resetHistoryFlags(flag = false) {
@@ -664,9 +653,16 @@ export default {
         this.savedStatus = 'Not Saved';
         this.isFormSaved = false;
         this.addNotification({
-          message:
-            'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
-          consoleError: `Error updating or creating form (FormID: ${this.formId}, versionId: ${this.versionId}, draftId: ${this.draftId}) Error: ${error}`,
+          message: this.$t('trans.formDesigner.formDesignSaveErrMsg'),
+          consoleError: this.$t(
+            'trans.formDesigner.formSchemaImportConsoleErrMsg',
+            {
+              formId: this.formId,
+              versionId: this.versionId,
+              draftId: this.draftId,
+              error: error,
+            }
+          ),
         });
       } finally {
         this.saving = false;
@@ -686,7 +682,6 @@ export default {
         Array.isArray(this.submissionReceivedEmails)
           ? this.submissionReceivedEmails
           : [];
-
       const response = await formService.createForm({
         name: this.name,
         description: this.description,
@@ -699,6 +694,7 @@ export default {
         enableCopyExistingSubmission: this.enableCopyExistingSubmission,
         enableStatusUpdates: this.enableStatusUpdates,
         showSubmissionConfirmation: this.showSubmissionConfirmation,
+        allowSubmitterToUploadFile: this.allowSubmitterToUploadFile,
         submissionReceivedEmails: emailList,
         reminder_enabled: false,
       });
@@ -721,7 +717,6 @@ export default {
         schema: this.formSchema,
         formVersionId: this.versionId,
       });
-
       // Navigate back to this page with ID updated
       this.$router.push({
         name: 'FormDesigner',
@@ -741,14 +736,43 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true, svs: 'Saved' },
+        query: {
+          ...this.$route.query,
+          sv: true,
+          svs: 'Saved',
+        },
       });
+    },
+  },
+  created() {
+    if (this.formId) {
+      this.getFormSchema();
+      this.fetchForm(this.formId);
+    }
+  },
+
+  mounted() {
+    if (!this.formId) {
+      // We are creating a new form, so we obtain the original schema here.
+      this.patch.originalSchema = deepClone(this.formSchema);
+    }
+  },
+  watch: {
+    // if form userType (public, idir, team, etc) changes, re-render the form builder
+    userType() {
+      this.reRenderFormIo += 1;
+    },
+    multiLanguage() {
+      this.reRenderFormIo += 1;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+@import '~font-awesome/css/font-awesome.min.css';
+@import '~formiojs/dist/formio.builder.min.css';
+
 /* disable router-link */
 .disabled-router {
   pointer-events: none;

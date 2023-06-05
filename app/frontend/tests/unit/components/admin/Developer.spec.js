@@ -1,11 +1,13 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
 import { rbacService } from '@/services';
 import Developer from '@/components/admin/Developer.vue';
 
 const localVue = createLocalVue();
+
 localVue.use(Vuex);
 
 describe('Developer.vue', () => {
@@ -24,8 +26,8 @@ describe('Developer.vue', () => {
         fullName: () => 'fullName',
         token: () => 'token',
         tokenParsed: () => ({}),
-        userName: () => 'userName'
-      }
+        userName: () => 'userName',
+      },
     });
   });
 
@@ -40,7 +42,8 @@ describe('Developer.vue', () => {
     const wrapper = shallowMount(Developer, {
       localVue,
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
+      i18n
     });
     await nextTick();
 
@@ -56,7 +59,8 @@ describe('Developer.vue', () => {
     const wrapper = shallowMount(Developer, {
       localVue,
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
+      i18n
     });
     await nextTick();
 

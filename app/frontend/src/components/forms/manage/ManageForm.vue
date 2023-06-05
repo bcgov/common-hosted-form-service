@@ -1,37 +1,40 @@
 <template>
   <div>
-    <v-expansion-panels v-model="settingsPanel" class="nrmc-expand-collapse">
-      <v-expansion-panel v-if="canEditForm" flat>
+    <v-expansion-panels
+      v-model="settingsPanel"
+      flat
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat v-if="canEditForm">
         <!-- Form Settings -->
-        <v-expansion-panel-title>
-          <template #actions>
+        <v-expansion-panel-header>
+          <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <strong>Form Settings</strong>
+            <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
             <span>
               <small>
-                Created: {{ $filters.formatDate(form.createdAt) }} ({{
-                  form.createdBy
-                }})
+                {{ $t('trans.manageForm.created') }}:
+                {{ form.createdAt | formatDate }} ({{ form.createdBy }})
               </small>
               <v-btn
                 v-if="canEditForm"
-                size="small"
+                small
                 icon
                 color="primary"
-                @click.stop="enableSettingsEdit"
+                @click.native.stop="enableSettingsEdit"
               >
                 <v-icon>edit</v-icon>
               </v-btn>
             </span>
           </div>
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
           <v-form
             ref="settingsForm"
-            v-model="settingsFormValid"
             :disabled="formSettingsDisabled"
+            v-model="settingsFormValid"
             lazy-validation
           >
             <FormSettings :disabled="formSettingsDisabled" />
@@ -39,73 +42,76 @@
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
             <v-btn class="mr-5" color="primary" @click="updateSettings">
-              <span>Update</span>
+              <span>{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
-            <v-btn variant="outlined" @click="cancelSettingsEdit">
-              <span>Cancel</span>
+            <v-btn outlined @click="cancelSettingsEdit">
+              <span>{{ $t('trans.manageForm.cancel') }}</span>
             </v-btn>
           </div>
-        </v-expansion-panel-text>
+        </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
 
     <!-- Api Key -->
     <v-expansion-panels
-      v-if="canManageAPI"
       v-model="apiKeyPanel"
+      flat
       class="nrmc-expand-collapse"
+      v-if="canManageAPI"
     >
       <v-expansion-panel flat>
-        <v-expansion-panel-title>
-          <template #actions>
+        <v-expansion-panel-header>
+          <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <strong>API Key</strong>
+            <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
             <span v-if="apiKey">
               <small v-if="apiKey.updatedBy">
-                Updated: {{ $filters.formatDate(apiKey.updatedAt) }} ({{
-                  apiKey.updatedBy
-                }})
+                {{ $t('trans.manageForm.updated') }}:
+                {{ apiKey.updatedAt | formatDate }} ({{ apiKey.updatedBy }})
               </small>
               <small v-else>
-                Created: {{ $filters.formatDate(apiKey.createdAt) }} ({{
-                  apiKey.createdBy
-                }})
+                {{ $t('trans.manageForm.created') }}:
+                {{ apiKey.createdAt | formatDate }} ({{ apiKey.createdBy }})
               </small>
             </span>
           </div>
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
           <ApiKey />
-        </v-expansion-panel-text>
+        </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
 
     <!-- Form Design -->
-    <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
+    <v-expansion-panels
+      v-model="versionsPanel"
+      flat
+      class="nrmc-expand-collapse"
+    >
       <v-expansion-panel flat>
-        <v-expansion-panel-title>
-          <template #actions>
+        <v-expansion-panel-header>
+          <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <strong>Form Design History</strong>
+            <strong>{{ $t('trans.manageForm.formDesignHistory') }}</strong>
             <div>
               <span>
-                <strong>Total Versions:</strong>
+                <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
                 {{ combinedVersionAndDraftCount }}
               </span>
               <span class="ml-12 mr-2">
-                <strong>Status:</strong>
+                <strong>{{ $t('trans.manageForm.status') }}:</strong>
                 {{ versionState }}
               </span>
             </div>
           </div>
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
           <ManageVersions />
-        </v-expansion-panel-text>
+        </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
   </div>
@@ -114,10 +120,10 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import { FormPermissions, NotificationTypes } from '@src/utils/constants';
-import ApiKey from '@src/components/forms/manage/ApiKey.vue';
-import FormSettings from '@src/components/designer/FormSettings.vue';
-import ManageVersions from '@src/components/forms/manage/ManageVersions.vue';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
+import ApiKey from '@/components/forms/manage/ApiKey.vue';
+import FormSettings from '@/components/designer/FormSettings.vue';
+import ManageVersions from '@/components/forms/manage/ManageVersions.vue';
 
 export default {
   name: 'ManageForm',
@@ -185,9 +191,7 @@ export default {
     },
     async updateSettings() {
       try {
-        const { valid } = await this.$refs.settingsForm.validate();
-
-        if (valid) {
+        if (this.$refs.settingsForm.validate()) {
           await this.updateForm();
           this.formSettingsDisabled = true;
           this.addNotification({

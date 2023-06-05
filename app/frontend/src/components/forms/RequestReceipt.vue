@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-btn color="primary" variant="text" size="small" @click="displayDialog">
+    <v-btn color="primary" text small @click="displayDialog">
       <v-icon class="mr-1">email</v-icon>
-      <span>Email a receipt of this submission</span>
+      <span>{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
 
     <BaseDialog
@@ -12,9 +12,7 @@
       @continue-dialog="requestReceipt()"
     >
       <template #icon>
-        <v-icon size="large" color="primary" class="d-none d-sm-flex">
-          email
-        </v-icon>
+        <v-icon large color="primary" class="d-none d-sm-flex"> email </v-icon>
       </template>
       <template #text>
         <v-form
@@ -24,18 +22,19 @@
           @submit.prevent
         >
           <v-text-field
-            v-model="to"
-            density="compact"
+            dense
+            flat
             solid
-            variant="outlined"
-            label="Send to E-mail Address"
+            outlined
+            :label="$t('trans.requestReceipt.sendToEmailAddress')"
             :rules="emailRules"
+            v-model="to"
             data-test="text-form-to"
           />
         </v-form>
       </template>
-      <template #button-text-continue>
-        <span>SEND</span>
+      <template v-slot:button-text-continue>
+        <span>{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>
@@ -44,34 +43,17 @@
 <script>
 import { mapActions } from 'vuex';
 
-import { NotificationTypes } from '@src/utils/constants';
-import { formService } from '@src/services';
+import { NotificationTypes } from '@/utils/constants';
+import { formService } from '@/services';
 
 export default {
   name: 'RequestReceipt',
-  props: {
-    email: {
-      type: String,
-      required: true,
-    },
-    formName: {
-      type: String,
-      required: true,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
   data: () => ({
-    emailRules: [(v) => !!v || 'E-mail is required'],
+    emailRules: [(v) => !!v || this.$t('trans.requestReceipt.emailRequired')],
     showDialog: false,
     to: '',
     valid: false,
   }),
-  mounted() {
-    this.resetDialog();
-  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     displayDialog() {
@@ -84,13 +66,16 @@ export default {
             to: this.to,
           });
           this.addNotification({
-            message: `An email has been sent to ${this.to}.`,
+            message: this.$t('trans.requestReceipt.emailSent', { to: this.to }),
             ...NotificationTypes.SUCCESS,
           });
         } catch (error) {
           this.addNotification({
-            message: 'An error occured while attempting to send your email.',
-            consoleError: `Email confirmation to ${this.to} failed: ${error}`,
+            message: this.$t('trans.requestReceipt.sendingEmailErrMsg'),
+            consoleError: this.$t(
+              'trans.requestReceipt.sendingEmailConsErrMsg',
+              { to: this.to, error: error }
+            ),
           });
         } finally {
           this.showDialog = false;
@@ -100,6 +85,23 @@ export default {
     resetDialog() {
       this.to = this.email;
       this.valid = false;
+    },
+  },
+  mounted() {
+    this.resetDialog();
+  },
+  props: {
+    email: {
+      type: String,
+      required: true,
+    },
+    formName: {
+      type: String,
+      required: true,
+    },
+    submissionId: {
+      type: String,
+      required: true,
     },
   },
 };

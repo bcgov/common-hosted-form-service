@@ -5,42 +5,53 @@
     :items="versionList"
   >
     <!-- Version  -->
-    <template v-slot:item.version="{ item }">
-      <span> Version {{ item.raw.version }} </span>
+    <template #[`item.version`]="{ item }">
+      <span>
+        {{
+          $t('trans.adminVersions.version', {
+            versionNo: item.version,
+          })
+        }}
+      </span>
     </template>
 
     <!-- Status  -->
-    <template v-slot:item.status="{ item }">
-      <label>{{ item.raw.published ? 'Published' : 'Unpublished' }}</label>
+    <template #[`item.status`]="{ item }">
+      <label>{{
+        item.published
+          ? $t('trans.adminVersions.published')
+          : $t('trans.adminVersions.unpublished')
+      }}</label>
     </template>
 
     <!-- Created date  -->
-    <template v-slot:item.createdAt="{ item }">
-      {{ $filters.formatDateLong(item.raw.createdAt) }}
+    <template #[`item.createdAt`]="{ item }">
+      {{ item.createdAt | formatDateLong }}
     </template>
 
     <!-- Updated at  -->
-    <template v-slot:item.updatedAt="{ item }">
-      {{ $filters.formatDateLong(item.raw.updatedAt) }}
+    <template #[`item.updatedAt`]="{ item }">
+      {{ item.updatedAt | formatDateLong }}
     </template>
 
     <!-- Actions -->
-    <template v-slot:item.action="{ item }">
+    <template #[`item.action`]="{ item }">
       <!-- export -->
       <span>
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
             <v-btn
               color="primary"
               class="mx-1"
               icon
-              v-bind="props"
-              @click="onExportClick(item.raw.id, item.raw.isDraft)"
+              @click="onExportClick(item.id, item.isDraft)"
+              v-bind="attrs"
+              v-on="on"
             >
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
-          <span>Export Design</span>
+          <span>{{ $t('trans.adminVersions.exportDesign') }} </span>
         </v-tooltip>
       </span>
     </template>
@@ -49,21 +60,37 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { adminService } from '@src/services';
+import { adminService } from '@/services';
 
 export default {
   name: 'ManageVersions',
   data() {
     return {
       headers: [
-        { title: 'Versions', align: 'start', key: 'version' },
-        { title: 'Status', align: 'start', key: 'status' },
-        { title: 'Created', align: 'start', key: 'createdAt' },
-        { title: 'Last Updated', align: 'start', key: 'updatedAt' },
         {
-          title: 'Actions',
+          text: this.$t('trans.manageVersions.versions'),
+          align: 'start',
+          value: 'version',
+        },
+        {
+          text: this.$t('trans.manageVersions.status'),
+          align: 'start',
+          value: 'status',
+        },
+        {
+          text: this.$t('trans.manageVersions.created'),
+          align: 'start',
+          value: 'createdAt',
+        },
+        {
+          text: this.$t('trans.manageVersions.lastUpdated'),
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: this.$t('trans.manageVersions.actions'),
           align: 'end',
-          key: 'action',
+          value: 'action',
           filterable: false,
           sortable: false,
         },
@@ -119,7 +146,7 @@ export default {
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while loading the form design.',
+          message: this.$t('trans.adminVersions.notificationMsg'),
         });
       }
     },
@@ -133,15 +160,15 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table :deep(th) {
+  .submissions-table >>> th {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table :deep(tbody) tr:nth-of-type(odd) {
+.submissions-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;
 }
-.submissions-table :deep(thead) tr th {
+.submissions-table >>> thead tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;
