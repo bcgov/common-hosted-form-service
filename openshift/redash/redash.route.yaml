@@ -1,0 +1,34 @@
+---
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  app.kubernetes.io/component: server
+  app.kubernetes.io/instance: ${NAME}
+  app.kubernetes.io/managed-by: kubectl
+  app.kubernetes.io/name: redash
+  app.kubernetes.io/part-of: redash
+metadata:
+  name: ${NAME}
+objects:
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: ${NAME}
+    spec:
+      host: ${NAME}.apps.silver.devops.gov.bc.ca
+      port:
+        targetPort: http
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: ${NAME}
+        weight: 100
+      wildcardPolicy: None
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the objects defined in this template.
+    required: true
+    value: chefs-redash
