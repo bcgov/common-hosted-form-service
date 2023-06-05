@@ -305,7 +305,9 @@ export default {
             },
           }
         );
-        await this.validate(this.Json[this.index], []);
+        this.$nextTick(() => {
+          this.validate(this.Json[this.index], []);
+        });
       } catch (error) {
         this.resetUpload();
         this.$emit('set-error', {
@@ -321,30 +323,17 @@ export default {
     },
     async validate(element, errors) {
       try {
-        this.vForm.setSubmission({
-          data: element,
-        });
-
-        try {
-          await this.vForm.submit();
-        } catch (err) {
-          errors[this.index] = {
-            submission: this.index,
-            errors: err,
-          };
-        }
-
-        this.index++;
-        this.value = this.percentage(this.index);
-
-        const shouldContinueValidation = this.index < this.Json.length;
-        if (shouldContinueValidation) {
-          await this.delay(20);
-          await this.validate(this.Json[this.index], errors);
-        } else {
-          await this.delay(20);
-          this.endValidation(errors);
-        }
+        this.formIOValidation(element)
+          .then(() => {
+            this.validationDispatcher(errors);
+          })
+          .catch((err) => {
+            errors[this.index] = {
+              submission: this.index,
+              errors: err,
+            };
+            this.validationDispatcher(errors);
+          });
       } catch (error) {
         errors[this.index] = {
           submission: this.index,
@@ -352,7 +341,35 @@ export default {
         };
       }
     },
+    async validationDispatcher(errors) {
+      this.index++;
+      this.value = this.percentage(this.index);
 
+      const shouldContinueValidation = this.index < this.Json.length;
+
+      if (shouldContinueValidation) {
+        // await this.delay(10);
+        this.$nextTick(() => {
+          this.validate(this.Json[this.index], errors);
+        });
+      } else {
+       // await this.delay(10);
+        this.endValidation(errors);
+      }
+    },
+    formIOValidation(element) {
+      return new Promise((resolve, reject) => {
+        this.vForm.setSubmission({
+          data: element,
+        });
+        try {
+          this.vForm.submit();
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+    },
     delay(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
     },
