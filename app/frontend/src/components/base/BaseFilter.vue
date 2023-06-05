@@ -15,33 +15,33 @@
           clearable
           color="primary"
           prepend-inner-icon="search"
-          variant="filled"
-          density="compact"
+          filled
+          dense
           class="mt-3"
         >
         </v-text-field>
       </div>
       <v-data-table
-        v-model="selectedData"
         fixed-header
         show-select
         hide-default-footer
         height="300px"
+        v-model="selectedData"
         :headers="inputHeaders"
         :items="inputData"
-        :item-value="inputItemKey"
+        :item-key="inputItemKey"
         :search="inputFilter"
-        class="bg-grey-lighten-5"
+        class="grey lighten-5"
       >
       </v-data-table>
-      <v-btn class="bg-primary mt-3" @click="savingFilterData">{{
+      <v-btn @click="savingFilterData" class="primary mt-3">{{
         inputSaveButtonText
       }}</v-btn>
       <v-btn
-        class="mt-3 ml-3 text-primary"
-        variant="outlined"
         @click="cancelFilterData"
-        >Cancel</v-btn
+        class="mt-3 ml-3 primary--text"
+        outlined
+        >{{ this.$t('trans.baseFilter.cancel') }}</v-btn
       >
     </v-card-text>
   </v-card>
@@ -54,15 +54,26 @@ export default {
     inputHeaders: {
       type: Array,
       default: () => [
-        { title: 'Column Name', align: 'start', sortable: true, key: 'text' },
+        {
+          text: this.$t('trans.baseFilter.columnName'),
+          align: 'start',
+          sortable: true,
+          value: 'text',
+        },
       ],
     },
     // The data you will be filtering with
     inputData: {
       type: Array,
       default: () => [
-        { title: 'Example Text', key: 'exampleText1' },
-        { title: 'Example Text 2', key: 'exampleText2' },
+        {
+          text: this.$t('trans.baseFilter.exampleText'),
+          value: 'exampleText1',
+        },
+        {
+          text: this.$t('trans.baseFilter.exampleText2'),
+          value: 'exampleText2',
+        },
       ],
     },
     // The default selected data
@@ -72,7 +83,7 @@ export default {
     },
     inputItemKey: {
       type: String,
-      default: 'key',
+      default: 'value',
     },
     inputFilterLabel: {
       type: String,
@@ -80,27 +91,22 @@ export default {
     },
     inputFilterPlaceholder: {
       type: String,
-      default: 'Filter Placeholder Text',
+      default: 'Example Text 2',
     },
     inputSaveButtonText: {
       type: String,
       default: 'Filter',
     },
   },
-  emits: ['saving-filter-data', 'cancel-filter-data'],
   data() {
     return {
       selectedData: this.preselectedData,
       inputFilter: '',
     };
   },
-  created() {
-    console.log(this.$props);
-  },
   methods: {
     savingFilterData() {
       this.inputFilter = '';
-      console.log(this.selectedData);
       this.$emit('saving-filter-data', this.selectedData);
     },
     cancelFilterData() {

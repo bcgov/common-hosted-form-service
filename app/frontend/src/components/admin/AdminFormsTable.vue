@@ -3,9 +3,9 @@
     <v-row no-gutters>
       <v-col cols="12" sm="8">
         <v-checkbox
-          v-model="activeOnly"
           class="pl-3"
-          label="Show deleted forms"
+          v-model="activeOnly"
+          :label="$t('trans.adminFormsTable.showDeletedForms')"
           @click="refeshForms"
         />
       </v-col>
@@ -15,7 +15,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            :label="$t('trans.adminFormsTable.search')"
             single-line
             hide-details
             class="pb-5"
@@ -32,37 +32,37 @@
       :items="formList"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
-      no-data-text="There are no forms in your system"
+      :loading-text="$t('trans.adminFormsTable.loadingText')"
+      :no-data-text="$t('trans.adminFormsTable.noDataText')"
     >
-      <template v-slot:item.createdAt="{ item }">
-        {{ $filters.formatDateLong(item.raw.createdAt) }} -
-        {{ item.raw.createdBy }}
+      <template #[`item.createdAt`]="{ item }">
+        {{ item.createdAt | formatDateLong }} - {{ item.createdBy }}
       </template>
-      <template v-slot:item.updatedAt="{ item }">
-        {{ $filters.formatDateLong(item.raw.updatedAt) }} -
-        {{ item.raw.updatedBy }}
+      <template #[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | formatDateLong }} - {{ item.updatedBy }}
       </template>
-      <template v-slot:item.actions="{ item }">
-        <router-link
-          :to="{ name: 'AdministerForm', query: { f: item.raw.id } }"
-        >
-          <v-btn color="primary" variant="text" size="small">
+      <template #[`item.actions`]="{ item }">
+        <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
-            <span class="d-none d-sm-flex">Admin</span>
+            <span class="d-none d-sm-flex">{{
+              $t('trans.adminFormsTable.admin')
+            }}</span>
           </v-btn>
         </router-link>
 
         <router-link
           :to="{
             name: 'FormSubmit',
-            query: { f: item.raw.id },
+            query: { f: item.id },
           }"
           target="_blank"
         >
-          <v-btn color="primary" variant="text" size="small">
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">note_add</v-icon>
-            <span class="d-none d-sm-flex">Launch</span>
+            <span class="d-none d-sm-flex">{{
+              $t('trans.adminFormsTable.launch')
+            }}</span>
           </v-btn>
         </router-link>
       </template>
@@ -78,18 +78,7 @@ export default {
   data() {
     return {
       activeOnly: false,
-      headers: [
-        { title: 'Form Title', align: 'start', key: 'name' },
-        { title: 'Created', align: 'start', key: 'createdAt' },
-        { title: 'Deleted', align: 'start', key: 'updatedAt' },
-        {
-          title: 'Actions',
-          align: 'end',
-          key: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ],
+
       loading: true,
       search: '',
     };
@@ -98,13 +87,35 @@ export default {
     ...mapGetters('admin', ['formList']),
     calcHeaders() {
       return this.headers.filter(
-        (x) => x.key !== 'updatedAt' || this.activeOnly
+        (x) => x.value !== 'updatedAt' || this.activeOnly
       );
     },
-  },
-  async mounted() {
-    await this.getForms();
-    this.loading = false;
+    headers() {
+      return [
+        {
+          text: this.$t('trans.adminFormsTable.formTitle'),
+          align: 'start',
+          value: 'name',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.created'),
+          align: 'start',
+          value: 'createdAt',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.deleted'),
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.actions'),
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+        },
+      ];
+    },
   },
   methods: {
     ...mapActions('admin', ['getForms']),
@@ -113,6 +124,10 @@ export default {
       await this.getForms(!this.activeOnly);
       this.loading = false;
     },
+  },
+  async mounted() {
+    await this.getForms();
+    this.loading = false;
   },
 };
 </script>
@@ -139,15 +154,15 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table :deep(th) {
+  .submissions-table >>> th {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table :deep(tbody) tr:nth-of-type(odd) {
+.submissions-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;
 }
-.submissions-table :deep(thead) tr th {
+.submissions-table >>> thead tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

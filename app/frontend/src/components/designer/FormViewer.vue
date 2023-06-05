@@ -2,118 +2,184 @@
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <div v-if="isFormScheduleExpired">
       <template>
-        <v-alert
-          :text="
+        <v-alert text prominent type="error">
+          {{
             isLateSubmissionAllowed
-              ? 'The form submission period has expired! You can still create a late submission by clicking the button below.'
+              ? $t('trans.formViewer.lateFormSubmissions')
               : formScheduleExpireMessage
-          "
-          prominent
-          type="error"
-        >
+          }}
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
           <v-col cols="3" md="2">
             <v-btn color="primary" @click="isFormScheduleExpired = false">
-              <span>Create late submission</span>
+              <span>{{ $t('trans.formViewer.createLateSubmission') }}</span>
             </v-btn>
           </v-col>
         </div>
       </template>
     </div>
-
     <div v-else>
       <div v-if="displayTitle">
         <div v-if="!isFormPublic(form)">
           <FormViewerActions
-            :draft-enabled="form.enableSubmitterDraft"
-            :copy-existing-submission="form.enableCopyExistingSubmission"
-            :form-id="form.id"
-            :is-draft="submissionRecord.draft"
+            :block="block"
+            :draftEnabled="form.enableSubmitterDraft"
+            :formId="form.id"
+            :isDraft="submissionRecord.draft"
             :permissions="permissions"
-            :read-only="readOnly"
-            :submission-id="submissionId"
+            :readOnly="readOnly"
+            :submission="submission"
+            :submissionId="submissionId"
+            :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+            :bulkFile="bulkFile"
+            :copyExistingSubmission="form.enableCopyExistingSubmission"
+            @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
             @save-draft="saveDraft"
+            @switchView="switchView"
           />
         </div>
-        <h1 class="my-6 text-center">{{ form.name }}</h1>
+        <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }}</h1>
       </div>
       <div class="form-wrapper">
         <v-alert
-          v-if="saved || saving"
+          class="mt-2 mb-2"
+          :value="saved || saving"
           :class="
             saving
               ? NOTIFICATIONS_TYPES.INFO.class
               : NOTIFICATIONS_TYPES.SUCCESS.class
+          "
+          :color="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.color
+              : NOTIFICATIONS_TYPES.SUCCESS.color
           "
           :icon="
             saving
               ? NOTIFICATIONS_TYPES.INFO.icon
               : NOTIFICATIONS_TYPES.SUCCESS.icon
           "
+          transition="scale-transition"
         >
           <div v-if="saving">
             <v-progress-linear indeterminate />
-            Saving
+            {{ $t('trans.formViewer.saving') }}
           </div>
-          <div v-else>Draft Saved</div>
+          <div v-else>{{ $t('trans.formViewer.draftSaved') }}</div>
         </v-alert>
 
-        <slot name="alert" :form="form" />
+        <slot name="alert" v-bind:form="form" />
 
         <BaseDialog
           v-model="showSubmitConfirmDialog"
           type="CONTINUE"
-          :enable-custom-button="canSaveDraft"
+          :enableCustomButton="canSaveDraft"
           @close-dialog="showSubmitConfirmDialog = false"
           @continue-dialog="continueSubmit"
         >
-          <template #title>Please Confirm</template>
-          <template #text>Are you sure you wish to submit your form?</template>
+          <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
+          <template #text>{{
+            $t('trans.formViewer.submitFormWarningMsg')
+          }}</template>
           <template #button-text-continue>
-            <span>Submit</span>
+            <span>{{ $t('trans.formViewer.submit') }}</span>
           </template>
         </BaseDialog>
-
+        <v-alert
+          v-if="isLoading && !bulkFile && submissionId == undefined"
+          class="mt-2 mb-2"
+          :value="isLoading"
+          :class="NOTIFICATIONS_TYPES.INFO.class"
+          :color="NOTIFICATIONS_TYPES.INFO.color"
+          :icon="NOTIFICATIONS_TYPES.INFO.icon"
+          transition="scale-transition"
+        >
+          <div color="info" icon="$info">
+            <v-progress-linear
+              :indeterminate="true"
+              color="blue-grey lighten-4"
+              height="5"
+            ></v-progress-linear>
+            {{ $t('trans.formViewer.formLoading') }}
+          </div>
+        </v-alert>
+        <FormViewerMultiUpload
+          v-if="!isLoading && allowSubmitterToUploadFile && bulkFile"
+          :response="sbdMessage"
+          :formElement="formElement"
+          :form="form"
+          :formSchema="formSchema"
+          :json_csv="json_csv"
+          @save-bulk-data="saveBulkData"
+          @reset-message="resetMessage"
+          @set-error="setError"
+          :formFields="formFields"
+          @toggleBlock="toggleBlock"
+        />
         <Form
-          :key="reRenderFormIo"
+          class="mt-4"
+          v-if="!bulkFile"
+          ref="chefForm"
           :form="formSchema"
+          :key="reRenderFormIo"
           :submission="submission"
           :options="viewerOptions"
           @submit="onSubmit"
           @submitDone="onSubmitDone"
           @submitButton="onSubmitButton"
           @customEvent="onCustomEvent"
+          @change="formChange"
+          @render="onFormRender"
+          :language="multiLanguage"
         />
-        <p v-if="version" class="text-right">Version: {{ version }}</p>
+        <p v-if="version" class="text-right">
+          {{ $t('trans.formViewer.version', { version: version }) }}
+        </p>
       </div>
     </div>
+    <BaseDialog
+      v-model="doYouWantToSaveTheDraft"
+      type="SAVEDDELETE"
+      :enableCustomButton="false"
+      @close-dialog="closeBulkYesOrNo"
+      @delete-dialog="no"
+      @continue-dialog="yes"
+    >
+      <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
+      <template #text>{{ $t('trans.formViewer.wantToSaveDraft') }}</template>
+      <template #button-text-continue>
+        <span>{{ $t('trans.formViewer.yes') }}</span>
+      </template>
+      <template #button-text-delete>
+        <span>{{ $t('trans.formViewer.no') }}</span>
+      </template>
+    </BaseDialog>
   </v-skeleton-loader>
 </template>
 
 <script>
+import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
-import { Form } from '@formio/vue';
-
-import templateExtensions from '@src/plugins/templateExtensions';
-import { formService, rbacService } from '@src/services';
-import FormViewerActions from '@src/components/designer/FormViewerActions.vue';
-
-import { isFormPublic } from '@src/utils/permissionUtils';
-import { attachAttributesToLinks } from '@src/utils/transformUtils';
-import { FormPermissions, NotificationTypes } from '@src/utils/constants';
-
+import { Form } from 'vue-formio';
+import templateExtensions from '@/plugins/templateExtensions';
+import { formService, rbacService } from '@/services';
+import FormViewerActions from '@/components/designer/FormViewerActions.vue';
+import FormViewerMultiUpload from '@/components/designer/FormViewerMultiUpload.vue';
+import { isFormPublic } from '@/utils/permissionUtils';
+import { attachAttributesToLinks } from '@/utils/transformUtils';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
 import _ from 'lodash';
 
 export default {
   name: 'FormViewer',
   components: {
-    // eslint-disable-next-line vue/no-reserved-component-names
     Form,
     FormViewerActions,
+    FormViewerMultiUpload,
   },
   props: {
+    bulkState: String,
     displayTitle: {
       type: Boolean,
       default: false,
@@ -140,7 +206,6 @@ export default {
       default: false,
     },
   },
-  emits: ['submission-updated'],
   data() {
     return {
       confirmSubmit: false,
@@ -159,14 +224,37 @@ export default {
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      allowSubmitterToUploadFile: false,
+      formFields: [],
+      json_csv: {
+        data: [],
+        file_name: String,
+      },
+      bulkFile: false,
+      formElement: undefined,
+      // sbdMessage is submitBulkDraftMessage, it is use share information between this component and FormViewerMultiUpload component
+      sbdMessage: {
+        message: String,
+        error: Boolean,
+        upload_state: Number,
+        response: [],
+        file_name: String,
+      },
+      block: false,
+      doYouWantToSaveTheDraft: false,
       isFormScheduleExpired: false,
-      formScheduleExpireMessage:
-        'Form submission is not available as the scheduled submission period has expired.',
       isLateSubmissionAllowed: false,
+      saveDraftState: 0,
+      formDataEntered: false,
+      isLoading: true,
     };
   },
   computed: {
+    formScheduleExpireMessage() {
+      return this.$t('trans.formViewer.formScheduleExpireMessage');
+    },
     ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
+    ...mapGetters('form', ['multiLanguage']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -184,7 +272,7 @@ export default {
         // pass in options for custom components to use
         componentOptions: {
           simplefile: {
-            config: this.$config,
+            config: Vue.prototype.$config,
             chefsToken: this.getCurrentAuthHeader,
           },
         },
@@ -201,30 +289,18 @@ export default {
       );
     },
   },
-  async created() {
-    if (this.submissionId && this.isDuplicate) {
-      //Run when make new submission from existing one called.
-      await this.getFormData();
-      await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
-    } else if (this.submissionId && !this.isDuplicate) {
-      await this.getFormData();
-    } else {
-      await this.getFormSchema();
-    }
-    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-    if (!this.preview && !this.readOnly) {
-      window.onbeforeunload = () => true;
-    }
-  },
-  beforeUpdate() {
-    // This needs to be ran whenever we have a formSchema change
-    if (this.forceNewTabLinks) {
-      attachAttributesToLinks(this.formSchema.components);
-    }
+  watch: {
+    multiLanguage() {
+      this.reRenderFormIo += 1;
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     isFormPublic: isFormPublic,
+    // setBulkFile
+    setBulkFile(state) {
+      this.bulkFile = state;
+    },
     // Get the data for a form submission
     getCurrentAuthHeader() {
       return `Bearer ${this.token}`;
@@ -293,8 +369,10 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred fetching the submission for this form',
-          consoleError: `Error loading form submission data ${this.submissionId}: ${error}`,
+          message: this.$t('trans.formViewer.getUsersSubmissionsErrMsg'),
+          consoleError: this.$t(
+            'trans.formViewer.getUsersSubmissionsConsoleErrMsg'
+          ),
         });
       } finally {
         this.loadingSubmission = false;
@@ -310,7 +388,9 @@ export default {
           response = await formService.readVersion(this.formId, this.versionId);
           if (!response.data || !response.data.schema) {
             throw new Error(
-              `No schema in response. VersionId: ${this.versionId}`
+              this.$t('trans.formViewer.readVersionErrMsg', {
+                versionId: this.versionId,
+              })
             );
           }
           this.form = response.data;
@@ -319,7 +399,11 @@ export default {
           // If getting for a specific draft version of the form for preview
           response = await formService.readDraft(this.formId, this.draftId);
           if (!response.data || !response.data.schema) {
-            throw new Error(`No schema in response. DraftId: ${this.draftId}`);
+            throw new Error(
+              this.$t('trans.formViewer.readDraftErrMsg', {
+                draftId: this.draftId,
+              })
+            );
           }
           this.form = response.data;
           this.formSchema = response.data.schema;
@@ -334,19 +418,17 @@ export default {
             this.$router.push({
               name: 'Alert',
               params: {
-                message:
-                  'The form owner has not published the form, and it is not ' +
-                  'available for submissions.',
+                message: this.$t('trans.formViewer.alertRouteMsg'),
                 type: 'info',
               },
             });
             return;
           }
+
           this.form = response.data;
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
-
           if (response.data.schedule && response.data.schedule.expire) {
             let formScheduleStatus = response.data.schedule;
             this.isFormScheduleExpired = formScheduleStatus.expire;
@@ -355,22 +437,196 @@ export default {
             this.formScheduleExpireMessage = formScheduleStatus.message;
           }
         }
+        this.listenFormChangeEvent(response);
       } catch (error) {
         if (this.authenticated) {
           this.isFormScheduleExpired = true;
           this.isLateSubmissionAllowed = false;
           this.formScheduleExpireMessage = error.message;
           this.addNotification({
-            message: 'An error occurred fetching this form',
-            consoleError: `Error loading form schema ${this.versionId}: ${error}`,
+            message: this.$t('trans.formViewer.fecthingFormErrMsg'),
+            consoleError: this.$t(
+              'trans.formViewer.fecthingFormConsoleErrMsg',
+              { versionId: this.versionId, error: error }
+            ),
           });
         }
       }
     },
+    async listenFormChangeEvent(response) {
+      this.allowSubmitterToUploadFile =
+        response.data.allowSubmitterToUploadFile;
+      if (this.allowSubmitterToUploadFile && !this.draftId) this.jsonManager();
+    },
+    toggleBlock(e) {
+      this.block = e;
+    },
+    formChange(e) {
+      if (e.changed != undefined && !e.changed.flags.fromSubmission) {
+        this.formDataEntered = true;
+      }
+    },
+    jsonManager() {
+      this.formElement = this.$refs.chefForm.formio;
+      this.json_csv.data = [this.formElement.data, this.formElement.data];
+      this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
+    },
+    resetMessage() {
+      this.sbdMessage.message = undefined;
+      this.sbdMessage.error = false;
+      this.sbdMessage.upload_state = 0;
+      this.sbdMessage.response = [];
+      this.sbdMessage.file_name = undefined;
+      this.block = false;
+    },
+    async saveBulkData(submissions) {
+      const payload = {
+        draft: true,
+        submission: Object.freeze({ data: submissions }),
+      };
+      this.block = true;
+      this.sendMultiSubmissionData(payload);
+    },
+    async sendMultiSubmissionData(body) {
+      try {
+        this.saving = true;
+        let response = await formService.createMultiSubmission(
+          this.formId,
+          this.versionIdToSubmitTo,
+          body
+        );
+        if ([200, 201].includes(response.status)) {
+          // all is good, flag no errors and carry on...
+          // store our submission result...
+          this.sbdMessage.message = this.$t(
+            'trans.formViewer.multiDraftUploadSuccess'
+          );
+          this.sbdMessage.error = false;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = [];
+          this.block = false;
+          this.saving = false;
+          this.addNotification({
+            message: this.sbdMessage.message,
+            ...NotificationTypes.SUCCESS,
+          });
+          this.leaveThisPage();
+        } else {
+          this.sbdMessage.message = this.$t(
+            'trans.formViewer.failedResSubmissn',
+            { status: response.status }
+          );
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.block = false;
+          this.sbdMessage.response = [
+            { error_message: this.$t('trans.formViewer.errSubmittingForm') },
+          ];
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+          this.saving = false;
+          this.$t('trans.formViewer.errSubmittingForm');
+          throw new Error(
+            this.$t('trans.formViewer.failedResSubmissn', {
+              status: response.status,
+            })
+          );
+        }
+      } catch (error) {
+        this.saving = false;
+        this.block = false;
+        this.setFinalError(error);
+        this.addNotification({
+          message: this.sbdMessage.message,
+          consoleError: this.$t('trans.formViewer.errorSavingFile', {
+            fileName: this.json_csv.file_name,
+            error: error,
+          }),
+        });
+      }
+    },
+    async setFinalError(error) {
+      try {
+        if (error.response.data != undefined) {
+          this.sbdMessage.message =
+            error.response.data.title == undefined
+              ? this.$t('trans.formViewer.errSubmittingForm')
+              : error.response.data.title;
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response =
+            error.response.data.reports == undefined
+              ? [
+                  {
+                    error_message: this.$t(
+                      'trans.formViewer.errSubmittingForm'
+                    ),
+                  },
+                ]
+              : await this.formatResponse(error.response.data.reports);
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+        } else {
+          this.sbdMessage.message = this.$t(
+            'trans.formViewer.errSubmittingForm'
+          );
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = [
+            { error_message: this.$t('trans.formViewer.errSubmittingForm') },
+          ];
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+        }
+      } catch (error_2) {
+        this.sbdMessage.message = this.$t('trans.formViewer.errSubmittingForm');
+        this.sbdMessage.error = true;
+        this.sbdMessage.upload_state = 10;
+        this.sbdMessage.response = [
+          { error_message: this.$t('trans.formViewer.errSubmittingForm') },
+        ];
+        this.sbdMessage.file_name =
+          'error_report_' + this.form.name + '_' + Date.now();
+      }
+    },
+    async formatResponse(response) {
+      let newResponse = [];
+      await response.forEach((item, index) => {
+        if (item != null && item != undefined) {
+          item.details.forEach((obj) => {
+            let error = {};
+            if (obj.context != undefined) {
+              error = Object({
+                ' submission': index,
+                ' key': obj.context.key,
+                ' label': obj.context.label,
+                ' validator': obj.context.validator,
+                error_message: obj.message,
+              });
+            } else {
+              error = Object({
+                ' submission': index,
+                ' key': null,
+                ' label': null,
+                ' validator': null,
+                error_message: obj.message,
+              });
+            }
+            newResponse.push(error);
+          });
+        }
+      });
+      return newResponse;
+    },
+    setError(data) {
+      this.sbdMessage = data;
+    },
+    // Custom Event triggered from buttons with Action type "Event"
     async saveDraft() {
       try {
         this.saving = true;
         const response = await this.sendSubmission(true, this.submission);
+        this.formDataEntered = false;
         if (this.submissionId) {
           // Editing an existing draft
           // Update this route with saved flag
@@ -395,8 +651,11 @@ export default {
         this.showSubmitConfirmDialog = false;
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while saving a draft',
-          consoleError: `Error saving draft. SubmissionId: ${this.submissionId}. Error: ${error}`,
+          message: this.$t('trans.formViewer.savingDraftErrMsg'),
+          consoleError: this.$t('trans.formViewer.fecthingFormConsoleErrMsg', {
+            submissionId: this.submissionId,
+            error: error,
+          }),
         });
       }
     },
@@ -426,6 +685,9 @@ export default {
       }
       return response;
     },
+    onFormRender() {
+      if (this.isLoading) this.isLoading = false;
+    },
 
     // -----------------------------------------------------------------------------------------
     // FormIO Events
@@ -438,7 +700,7 @@ export default {
     // else onSubmitError
     onSubmitButton(event) {
       if (this.preview) {
-        alert('Submission disabled during form preview');
+        alert(this.$t('trans.formViewer.submissionsPreviewAlert'));
         return;
       }
       // this is our first event in the submission chain.
@@ -492,7 +754,7 @@ export default {
     // eslint-disable-next-line no-unused-vars
     async onSubmit(submission) {
       if (this.preview) {
-        alert('Submission disabled during form preview');
+        alert(this.$t('trans.formViewer.submissionsPreviewAlert'));
         return;
       }
 
@@ -505,7 +767,9 @@ export default {
       if (errors) {
         this.addNotification({
           message: errors,
-          consoleError: `Error submiting the form: ${errors}`,
+          consoleError: this.$t('trans.formViewer.submissionsSubmitErrMsg', {
+            errors: errors,
+          }),
         });
       } else {
         this.currentForm.events.emit('formio.submitDone');
@@ -534,12 +798,14 @@ export default {
           );
         } else {
           throw new Error(
-            `Failed response from submission endpoint. Response code: ${response.status}`
+            this.$t('trans.formViewer.sendSubmissionErrMsg', {
+              status: response.status,
+            })
           );
         }
       } catch (error) {
         console.error(error); // eslint-disable-line no-console
-        errMsg = 'An error occurred submitting this form';
+        errMsg = this.$t('trans.formViewer.errMsg');
       }
       return errMsg;
     },
@@ -562,11 +828,86 @@ export default {
         });
       }
     },
-    // Custom Event triggered from buttons with Action type "Event"
+
     onCustomEvent(event) {
       alert(
-        `Custom button events not supported yet. Event Type: ${event.type}`
+        this.$t('trans.formViewer.customEventAlert', { event: event.type })
       );
+    },
+    switchView() {
+      if (!this.bulkFile) {
+        this.showdoYouWantToSaveTheDraftModalForSwitch();
+        return;
+      }
+      this.bulkFile = !this.bulkFile;
+    },
+    showdoYouWantToSaveTheDraftModalForSwitch() {
+      this.saveDraftState = 1;
+      if (this.formDataEntered) {
+        this.doYouWantToSaveTheDraft = true;
+      } else {
+        this.leaveThisPage();
+      }
+    },
+    showdoYouWantToSaveTheDraftModal() {
+      if (!this.bulkFile) {
+        this.saveDraftState = 0;
+        if (this.submissionId == undefined || this.formDataEntered)
+          this.doYouWantToSaveTheDraft = true;
+        else this.leaveThisPage();
+      } else {
+        this.leaveThisPage();
+      }
+    },
+    goTo(path, params) {
+      this.$router.push({
+        name: path,
+        query: params,
+      });
+    },
+    leaveThisPage() {
+      if (this.saveDraftState == 0 || this.bulkFile) {
+        this.goTo('UserSubmissions', { f: this.form.id });
+      } else {
+        this.bulkFile = !this.bulkFile;
+      }
+    },
+    yes() {
+      this.saveDraftFromModal(true);
+    },
+    no() {
+      this.saveDraftFromModal(false);
+    },
+    saveDraftFromModal(event) {
+      this.doYouWantToSaveTheDraft = false;
+      if (event) {
+        this.saveDraftFromModalNow();
+      } else {
+        this.leaveThisPage();
+      }
+    },
+    // Custom Event triggered from buttons with Action type "Event"
+    async saveDraftFromModalNow() {
+      try {
+        this.saving = true;
+        await this.sendSubmission(true, this.submission);
+        this.saving = false;
+        // Creating a new submission in draft state
+        // Go to the user form draft page
+        this.leaveThisPage();
+        this.showSubmitConfirmDialog = false;
+      } catch (error) {
+        this.addNotification({
+          message: this.$t('trans.formViewer.submittingDraftErrMsg'),
+          consoleError: this.$t('trans.formViewer.submittingDraftConsErrMsg', {
+            submissionId: this.submissionId,
+            error: error,
+          }),
+        });
+      }
+    },
+    closeBulkYesOrNo() {
+      this.doYouWantToSaveTheDraft = false;
     },
     beforeWindowUnload(e) {
       if (!this.preview && !this.readOnly) {
@@ -585,7 +926,6 @@ export default {
     } else {
       await this.getFormSchema();
     }
-
     window.addEventListener('beforeunload', this.beforeWindowUnload);
   },
   beforeUpdate() {
@@ -601,10 +941,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'font-awesome/css/font-awesome.min.css';
-@import 'formiojs/dist/formio.form.min.css';
+@import '~font-awesome/css/font-awesome.min.css';
+@import '~formiojs/dist/formio.form.min.css';
 
-.form-wrapper :deep(.formio-form) {
+.form-wrapper ::v-deep .formio-form {
   &.formio-read-only {
     // in submission review mode, make readonly formio fields consistently greyed-out
     .form-control,

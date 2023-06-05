@@ -11,14 +11,13 @@ const zeroUuid = '00000000-0000-0000-0000-000000000000';
 
 jest.mock('@/services/interceptors', () => {
   return {
-    appAxios: () => mockInstance
+    appAxios: () => mockInstance,
   };
 });
 
 beforeEach(() => {
   mockAxios.reset();
 });
-
 
 describe('users', () => {
   const endpoint = `${ApiRoutes.USERS}/`;
@@ -51,5 +50,3 @@ describe('user preferences', () => {
     expect(mockAxios.history.put).toHaveLength(1);
   });
 });
-
-

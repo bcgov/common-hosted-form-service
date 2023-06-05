@@ -1,10 +1,11 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import Root from '@/views/admin/Root.vue';
 
 const localVue = createLocalVue();
+
 localVue.use(Vuex);
 
 describe('Root.vue', () => {
@@ -20,7 +21,8 @@ describe('Root.vue', () => {
     const wrapper = shallowMount(Root, {
       localVue,
       store,
-      stubs: ['BaseSecure']
+      stubs: ['BaseSecure'],
+      i18n
     });
     await nextTick();
 

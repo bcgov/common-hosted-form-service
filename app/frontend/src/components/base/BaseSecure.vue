@@ -2,43 +2,49 @@
   <div v-if="authenticated">
     <div v-if="isUser">
       <div v-if="admin && !isAdmin" class="text-center">
-        <h1 class="my-8">401: Unauthorized. :(</h1>
-        <p>You do not have permission to access this page.</p>
+        <h1 class="my-8">{{ $t('trans.baseSecure.401UnAuthorized') }}(</h1>
+        <p>{{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}</p>
       </div>
       <div
         v-else-if="idp && !idp.includes(identityProvider)"
         class="text-center"
       >
-        <h1 class="my-8">403: Forbidden. :(</h1>
-        <p>This page requires {{ idp }} authentication.</p>
+        <h1 class="my-8">{{ $t('trans.baseSecure.403Forbidden') }}(</h1>
+        <p>
+          {{
+            $t('trans.baseSecure.403ErrorMsg', {
+              idp: idp,
+            })
+          }}
+        </p>
       </div>
       <slot v-else />
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
-      <h1 class="my-8">401: Unauthorized. :(</h1>
+      <h1 class="my-8">{{ $t('trans.baseSecure.401UnAuthorized') }}(</h1>
       <p>
-        Your account is not set up correctly.<br />Please contact
+        <span v-html="$t('trans.baseSecure.401ErrorMsg')"></span>
         <a :href="mailToLink">{{ contactInfo }}</a>
       </p>
       <router-link :to="{ name: 'About' }">
-        <v-btn color="primary" class="about-btn" size="large">
-          <v-icon start>home</v-icon>
-          <span>About</span>
+        <v-btn color="primary" class="about-btn" large>
+          <v-icon left>home</v-icon>
+          <span>{{ $t('trans.baseSecure.about') }}</span>
         </v-btn>
       </router-link>
     </div>
   </div>
   <div v-else class="text-center">
-    <h1 class="my-8">You must be logged in to use this feature.</h1>
+    <h1 class="my-8">{{ $t('trans.baseSecure.loginInfo') }}</h1>
     <v-btn
       v-if="keycloakReady"
       color="primary"
       class="login-btn"
-      size="large"
       @click="login"
+      large
     >
-      <span>Login</span>
+      <span>{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>
   </div>
 </template>
@@ -68,13 +74,13 @@ export default {
     ]),
     mailToLink() {
       return `mailto:${
-        import.meta.env.VITE_CONTACT
+        process.env.VUE_APP_CONTACT
       }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
         location
       )}.`;
     },
     contactInfo() {
-      return import.meta.env.VITE_CONTACT;
+      return process.env.VUE_APP_CONTACT;
     },
   },
   methods: mapActions('auth', ['login']),

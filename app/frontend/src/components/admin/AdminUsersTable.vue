@@ -8,7 +8,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            :label="$t('trans.adminUsersTable.search')"
             single-line
             hide-details
             class="pb-5"
@@ -25,18 +25,18 @@
       :items="userList"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.adminUsersTable.loadingText')"
     >
-      <template v-slot:item.created="{ item }">
-        {{ $filters.formatDate(item.raw.createdAt) }}
+      <template #[`item.created`]="{ item }">
+        {{ item.createdAt | formatDate }}
       </template>
-      <template v-slot:item.actions="{ item }">
-        <router-link
-          :to="{ name: 'AdministerUser', query: { u: item.raw.id } }"
-        >
-          <v-btn color="primary" variant="text" size="small">
+      <template #[`item.actions`]="{ item }">
+        <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
+          <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
-            <span class="d-none d-sm-flex">Admin</span>
+            <span class="d-none d-sm-flex">{{
+              $t('trans.adminUsersTable.admin')
+            }}</span>
           </v-btn>
         </router-link>
       </template>
@@ -52,31 +52,45 @@ export default {
   data() {
     return {
       activeOnly: false,
-      headers: [
-        { title: 'Full Name', align: 'start', key: 'fullName' },
-        { title: 'User ID', align: 'start', key: 'username' },
-        { title: 'Created', align: 'start', key: 'created' },
-        {
-          title: 'Actions',
-          align: 'end',
-          key: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ],
       loading: true,
       search: '',
     };
   },
   computed: {
     ...mapGetters('admin', ['userList']),
+    headers() {
+      return [
+        {
+          text: this.$t('trans.adminUsersTable.fullName'),
+          align: 'start',
+          value: 'fullName',
+        },
+        {
+          text: this.$t('trans.adminUsersTable.userID'),
+          align: 'start',
+          value: 'username',
+        },
+        {
+          text: this.$t('trans.adminUsersTable.created'),
+          align: 'start',
+          value: 'created',
+        },
+        {
+          text: this.$t('trans.adminUsersTable.actions'),
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+        },
+      ];
+    },
+  },
+  methods: {
+    ...mapActions('admin', ['getUsers']),
   },
   async mounted() {
     await this.getUsers();
     this.loading = false;
-  },
-  methods: {
-    ...mapActions('admin', ['getUsers']),
   },
 };
 </script>
@@ -103,15 +117,15 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table :deep(th) {
+  .submissions-table >>> th {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table :deep(tbody) tr:nth-of-type(odd) {
+.submissions-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;
 }
-.submissions-table :deep(thead) tr th {
+.submissions-table >>> thead tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

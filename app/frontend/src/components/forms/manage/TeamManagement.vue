@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container fluid class="d-flex">
-      <h1 class="mr-auto">Team Management</h1>
+      <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
       <div style="z-index: 1">
         <span>
           <AddTeamMember
@@ -11,35 +11,37 @@
           />
         </span>
         <span v-if="!isAddingUsers">
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
               <v-btn
+                @click="showColumnsDialog = true"
                 class="mx-1"
                 color="primary"
                 icon
-                v-bind="props"
-                @click="showColumnsDialog = true"
+                v-bind="attrs"
+                v-on="on"
               >
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
-            <span>Select Columns</span>
+            <span>{{ $t('trans.teamManagement.selectColumns') }}</span>
           </v-tooltip>
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
                 <v-btn
                   class="mx-1"
                   color="primary"
                   :disabled="!formId"
                   icon
-                  v-bind="props"
+                  v-bind="attrs"
+                  v-on="on"
                 >
                   <v-icon>settings</v-icon>
                 </v-btn>
               </router-link>
             </template>
-            <span>Manage Form</span>
+            <span>{{ $t('trans.teamManagement.manageForm') }}</span>
           </v-tooltip>
         </span>
       </div>
@@ -55,155 +57,82 @@
           class="pb-5"
           :disabled="!canManageTeam"
           hide-details
-          label="Search"
+          :label="$t('trans.teamManagement.search')"
           single-line
         />
       </v-col>
     </v-row>
 
     <v-data-table
-      v-model="selectedUsers"
       class="team-table"
       show-select
+      v-model="selectedUsers"
       :single-select="false"
       :headers="HEADERS"
       :items="tableData"
-      item-value="id"
+      item-key="id"
       :loading="loading || updating"
-      loading-text="Loading... Please wait"
-      no-data-text="Failed to load team role data"
+      loading-text="$t('trans.teamManagement.loadingText')"
+      no-data-text="$t('trans.teamManagement.noDataText')"
       :search="search"
       dense
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
-      <template v-slot:column.form_designer="{ column }">
-        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
-          <template #activator="{ props }">
-            <span v-bind="props">{{ column.title }}</span>
+      <template v-for="h in HEADERS" v-slot:[`header.${h.value}`]="{ HEADERS }">
+        <v-tooltip v-if="roleOrder.includes(h.value)" :key="h.value" bottom>
+          <template v-slot:activator="{ on }">
+            <span v-on="on">{{ h.text }}</span>
           </template>
-          <span>{{ column.description }}</span>
+          <span>{{ h.description }}</span>
         </v-tooltip>
-        <span v-else>{{ column.title }}</span>
+        <span v-else :key="h.value">{{ h.text }}</span>
       </template>
-      <template v-slot:column.owner="{ column }">
-        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
-          <template #activator="{ props }">
-            <span v-bind="props">{{ column.title }}</span>
-          </template>
-          <span>{{ column.description }}</span>
-        </v-tooltip>
-        <span v-else>{{ column.title }}</span>
+      <template v-slot:[`header.actions`]>
+        <v-btn
+          @click="onRemoveClick(selectedUsers)"
+          color="red"
+          :disabled="updating || selectedUsers.length < 1"
+          icon
+        >
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon color="red" dark v-bind="attrs" v-on="on"
+                >remove_circle</v-icon
+              >
+            </template>
+            <span>{{ $t('trans.teamManagement.removeSelectedUsers') }}</span>
+          </v-tooltip>
+        </v-btn>
       </template>
-      <template v-slot:column.submission_reviewer="{ column }">
-        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
-          <template #activator="{ props }">
-            <span v-bind="props">{{ column.title }}</span>
-          </template>
-          <span>{{ column.description }}</span>
-        </v-tooltip>
-        <span v-else>{{ column.title }}</span>
-      </template>
-      <template v-slot:column.form_submitter="{ column }">
-        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
-          <template #activator="{ props }">
-            <span v-bind="props">{{ column.title }}</span>
-          </template>
-          <span>{{ column.description }}</span>
-        </v-tooltip>
-        <span v-else>{{ column.title }}</span>
-      </template>
-      <template v-slot:column.team_manager="{ column }">
-        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
-          <template #activator="{ props }">
-            <span v-bind="props">{{ column.title }}</span>
-          </template>
-          <span>{{ column.description }}</span>
-        </v-tooltip>
-        <span v-else>{{ column.title }}</span>
-      </template>
-      <template v-slot:column.actions>
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-btn
-              icon
-              v-bind="props"
-              :disabled="updating || selectedUsers.length < 1"
-              @click="onRemoveClick(selectedUsers)"
-              size="x-small"
-              color="red"
-            >
-              <v-icon color="white" icon="mdi:mdi-minus-thick"></v-icon>
-            </v-btn>
-          </template>
-          <span>Remove selected users</span>
-        </v-tooltip>
-      </template>
-      <template v-slot:item.form_designer="{ item }">
+      <template
+        v-for="role in roleList"
+        v-slot:[`item.${role.code}`]="{ item }"
+      >
         <v-checkbox
-          v-if="!disableRole('form_designer', item, userType)"
-          key="form_designer"
-          v-model="item.raw.form_designer"
+          v-if="!disableRole(role.code, item, userType)"
+          v-model="item[role.code]"
           v-ripple
           :disabled="updating"
-          @click="onCheckboxToggle(item.raw.userId)"
+          :key="role.code"
+          @click="onCheckboxToggle(item.userId)"
         ></v-checkbox>
       </template>
-      <template v-slot:item.owner="{ item }">
-        <v-checkbox
-          v-if="!disableRole('owner', item, userType)"
-          key="owner"
-          v-model="item.raw.owner"
-          v-ripple
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-btn
+          @click="onRemoveClick(item)"
+          color="red"
+          icon
           :disabled="updating"
-          @click="onCheckboxToggle(item.raw.userId)"
-        ></v-checkbox>
-      </template>
-      <template v-slot:item.submission_reviewer="{ item }">
-        <v-checkbox
-          v-if="!disableRole('submission_reviewer', item, userType)"
-          key="submission_reviewer"
-          v-model="item.raw.submission_reviewer"
-          v-ripple
-          :disabled="updating"
-          @click="onCheckboxToggle(item.raw.userId)"
-        ></v-checkbox>
-      </template>
-      <template v-slot:item.form_submitter="{ item }">
-        <v-checkbox
-          v-if="!disableRole('form_submitter', item, userType)"
-          key="form_submitter"
-          v-model="item.raw.form_submitter"
-          v-ripple
-          :disabled="updating"
-          @click="onCheckboxToggle(item.raw.userId)"
-        ></v-checkbox>
-      </template>
-      <template v-slot:item.team_manager="{ item }">
-        <v-checkbox
-          v-if="!disableRole('team_manager', item, userType)"
-          key="team_manager"
-          v-model="item.raw.team_manager"
-          v-ripple
-          :disabled="updating"
-          @click="onCheckboxToggle(item.raw.userId)"
-        ></v-checkbox>
-      </template>
-      <template v-slot:item.actions="{ item }">
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-btn
-              icon
-              v-bind="props"
-              :disabled="updating"
-              @click="onRemoveClick(item)"
-              size="x-small"
-              color="red"
-            >
-              <v-icon color="white" icon="mdi:mdi-minus-thick"></v-icon>
-            </v-btn>
-          </template>
-          <span>Remove this user</span>
-        </v-tooltip>
+        >
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon color="red" dark v-bind="attrs" v-on="on"
+                >remove_circle</v-icon
+              >
+            </template>
+            <span>{{ $t('trans.teamManagement.removeThisUser') }}</span>
+          </v-tooltip>
+        </v-btn>
       </template>
     </v-data-table>
 
@@ -213,32 +142,36 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="removeUser"
     >
-      <template #title>Confirm Removal</template>
+      <template #title>{{
+        $t('trans.teamManagement.confirmRemoval')
+      }}</template>
       <template #text>
         {{ DeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span>Remove</span>
+        <span>{{ $t('trans.teamManagement.remove') }}</span>
       </template>
     </BaseDialog>
 
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
-        input-filter-placeholder="Search team management fields"
-        input-item-key="value"
-        input-save-button-text="Save"
-        :input-data="
+        :inputFilterPlaceholder="
+          $t('trans.teamManagement.searchTeamManagementFields')
+        "
+        inputItemKey="value"
+        :inputSaveButtonText="$t('trans.teamManagement.save')"
+        :inputData="
           DEFAULT_HEADERS.filter(
             (h) => !filterIgnore.some((fd) => fd.value === h.value)
           )
         "
-        :preselected-data="PRESELECTED_DATA"
+        :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title
-          >Search and select columns to show under your dashboard</template
-        >
+        <template #filter-title>{{
+          $t('trans.teamManagement.teamMebersTitle')
+        }}</template>
       </BaseFilter>
     </v-dialog>
   </div>
@@ -247,15 +180,15 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
-import { rbacService, roleService } from '@src/services';
+import { rbacService, roleService } from '@/services';
 import {
   IdentityMode,
   FormPermissions,
   FormRoleCodes,
   IdentityProviders,
-} from '@src/utils/constants';
+} from '@/utils/constants';
 
-import AddTeamMember from '@src/components/forms/manage/AddTeamMember.vue';
+import AddTeamMember from '@/components/forms/manage/AddTeamMember.vue';
 
 export default {
   name: 'TeamManagement',
@@ -268,27 +201,6 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      formUsers: [],
-      filterData: [],
-      filterIgnore: [
-        {
-          key: 'actions',
-        },
-      ],
-      isAddingUsers: false,
-      loading: true,
-      roleList: [],
-      selectedUsers: [],
-      itemsToDelete: [],
-      search: '',
-      showDeleteDialog: false,
-      showColumnsDialog: false,
-      tableData: [],
-      updating: false,
-    };
-  },
   computed: {
     ...mapFields('form', ['form.userType']),
     ...mapGetters('form', ['permissions']),
@@ -299,14 +211,17 @@ export default {
     roleOrder: () => Object.values(FormRoleCodes),
     DeleteMessage() {
       return this.itemsToDelete.length > 1
-        ? 'Are you sure you want to remove the selected members?'
-        : 'Are you sure you want to remove the selected member?';
+        ? this.$t('trans.teamManagement.delSelectedMembersWarning"')
+        : this.$t('trans.teamManagement.delSelectedMemberWarning');
     },
     DEFAULT_HEADERS() {
       const headers = [
-        { title: 'Full Name', key: 'fullName' },
-        { title: 'Username', key: 'username' },
-        { title: 'Identity Provider', key: 'identityProvider' },
+        { text: this.$t('trans.teamManagement.fullName'), value: 'fullName' },
+        { text: this.$t('trans.teamManagement.username'), value: 'username' },
+        {
+          text: this.$t('trans.teamManagement.identityProvider'),
+          value: 'identityProvider',
+        },
       ];
       return headers
         .concat(
@@ -318,8 +233,8 @@ export default {
             )
             .map((role) => ({
               filterable: false,
-              title: role.display,
-              key: role.code,
+              text: role.display,
+              value: role.code,
               description: role.description,
             }))
             .sort((a, b) =>
@@ -328,7 +243,7 @@ export default {
                 : -1
             )
         )
-        .concat({ title: '', key: 'actions', width: '1rem', sortable: false });
+        .concat({ text: '', value: 'actions', width: '1rem', sortable: false });
     },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
@@ -346,14 +261,26 @@ export default {
       );
     },
   },
-  async mounted() {
-    // TODO: Make sure vuex fetchForm has been called at least once before this
-    await Promise.all([
-      this.fetchForm(this.formId),
-      this.getFormPermissionsForUser(this.formId),
-      this.getRolesList(),
-    ]);
-    await this.getFormUsers(), (this.loading = false);
+  data() {
+    return {
+      formUsers: [],
+      filterData: [],
+      filterIgnore: [
+        {
+          value: 'actions',
+        },
+      ],
+      isAddingUsers: false,
+      loading: true,
+      roleList: [],
+      selectedUsers: [],
+      itemsToDelete: [],
+      search: '',
+      showDeleteDialog: false,
+      showColumnsDialog: false,
+      tableData: [],
+      updating: false,
+    };
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'getFormPermissionsForUser']),
@@ -398,7 +325,9 @@ export default {
               this.setUserForms(user.id);
           } else {
             this.addNotification({
-              message: `${user.username}@${user.idpCode} is already in the team.`,
+              message:
+                `${user.username}@${user.idpCode}` +
+                this.$t('trans.teamManagement.idpMessage'),
             });
           }
         });
@@ -410,8 +339,10 @@ export default {
         2
       ) {
         this.addNotification({
-          message: 'There must always be at least one form owner',
-          consoleError: `Cannot remove ${userId} as they are the only remaining owner of this form.`,
+          message: this.$t('trans.teamManagement.formOwnerErrMsg'),
+          consoleError: this.$t('trans.teamManagement.formOwnerConsoleErrMsg', {
+            userId: userId,
+          }),
         });
         return false;
       }
@@ -432,6 +363,7 @@ export default {
           .forEach((role) => (row[role] = user.roles.includes(role)));
         return row;
       });
+
       this.selectedItemToDelete = new Array(this.tableData.length).fill(false);
     },
     // Is this the submitter column, and does this form have login type other than TEAM
@@ -460,8 +392,6 @@ export default {
       return false;
     },
     generateFormRoleUsers(user) {
-      console.log(user);
-      console.log(this.roleOrder);
       return Object.keys(user)
         .filter((role) => this.roleOrder.includes(role) && user[role])
         .map((role) => ({
@@ -473,7 +403,9 @@ export default {
     async getFormUsers() {
       try {
         if (!this.canManageTeam) {
-          throw new Error('Insufficient permissions to manage team');
+          throw new Error(
+            this.$t('trans.teamManagement.insufficientPermissnMsg')
+          );
         }
         const formUsersResponse = await rbacService.getFormUsers({
           formId: this.formId,
@@ -486,7 +418,9 @@ export default {
       } catch (error) {
         this.addNotification({
           message: error.message,
-          consoleError: `Error getting form users: ${error}`,
+
+          consoleError:
+            this.$t('trans.teamManagement.getUserErrMsg') + `${error}`,
         });
         this.formUsers = [];
       } finally {
@@ -500,7 +434,9 @@ export default {
       } catch (error) {
         this.addNotification({
           message: error.message,
-          consoleError: `Error getting list of roles: ${error}`,
+
+          consoleError:
+            this.$t('trans.teamManagement.getRolesErrMsg') + `${error}`,
         });
         this.roleList = [];
       }
@@ -516,26 +452,20 @@ export default {
         return;
       }
       if (item) {
-        this.itemsToDelete = Array.isArray(item)
-          ? item.map((i) => {
-              return { id: i };
-            })
-          : [item.raw];
+        this.itemsToDelete = Array.isArray(item) ? item : [item];
       }
       this.showDeleteDialog = true;
     },
     ownerError() {
       this.addNotification({
-        message: 'There must always be at least one form owner',
-        consoleError:
-          'Cannot remove as they are the only remaining owner of this form.',
+        message: this.$t('trans.teamManagement.formOwnerErrMsg'),
+        consoleError: this.$t('trans.teamManagement.formOwnerConsoleErrMsg'),
       });
     },
     userError() {
       this.addNotification({
         message: '',
-        consoleError:
-          'Cannot remove as they are the only remaining owner of this form.',
+        consoleError: this.$t('trans.teamManagement.formOwnerRemovalWarning'),
       });
     },
     async removeUser() {
@@ -556,8 +486,11 @@ export default {
             error.response.data &&
             error.response.data.detail
               ? error.response.data.detail
-              : 'An error occurred while attempting to delete the selected users',
-          consoleError: `Error deleting users from form ${this.formId}: ${error}`,
+              : this.$t('trans.teamManagement.removeUsersErrMsg'),
+          consoleError: this.$t(
+            'trans.teamManagement.removeUserConsoleErrMsg',
+            { formId: this.formId, error: error }
+          ),
         });
       } finally {
         this.itemsToDelete = [];
@@ -582,9 +515,11 @@ export default {
         await this.getFormUsers();
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to update all user roles',
-          consoleError: `Error setting all user roles for form ${this.formId}: ${error}`,
+          message: this.$t('trans.teamManagement.updUserRolesErrMsg'),
+          consoleError: this.$t(
+            'trans.teamManagement.updUserRolesConsoleErrMsg',
+            { formId: this.formId, error: error }
+          ),
         });
       }
       this.updating = false;
@@ -599,7 +534,6 @@ export default {
         this.updating = true;
         const user = this.tableData.filter((u) => u.userId === userId)[0];
         const userRoles = this.generateFormRoleUsers(user);
-        console.log(userRoles);
         await rbacService.setUserForms(userRoles, {
           formId: this.formId,
           userId: userId,
@@ -612,8 +546,14 @@ export default {
             error.response.data &&
             error.response.data.detail
               ? error.response.data.detail
-              : 'An error occurred while attempting to update roles for a user',
-          consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
+              : this.$t('trans.teamManagement.setUserFormsErrMsg'),
+          consoleError: this.$t(
+            'trans.teamManagement.setUserFormsConsoleErrMsg',
+            {
+              formId: this.formId,
+              error: error,
+            }
+          ),
         });
       } finally {
         await this.getFormPermissionsForUser(this.formId);
@@ -636,6 +576,15 @@ export default {
       this.showColumnsDialog = false;
     },
   },
+  async mounted() {
+    // TODO: Make sure vuex fetchForm has been called at least once before this
+    await Promise.all([
+      this.fetchForm(this.formId),
+      this.getFormPermissionsForUser(this.formId),
+      this.getRolesList(),
+    ]);
+    await this.getFormUsers(), (this.loading = false);
+  },
 };
 </script>
 
@@ -647,17 +596,17 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .team-table :deep(th) {
+  .team-table >>> th {
     vertical-align: top;
   }
 }
-.team-table :deep(thead) tr th {
+.team-table >>> thead tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;
 }
 /* remove extra padding on data-table rows for mobile view */
-.team-table :deep(thead.v-data-table-header-mobile) th,
+.team-table >>> thead.v-data-table-header-mobile th,
 .team-table tr.v-data-table__mobile-table-row td {
   padding: 0;
 }

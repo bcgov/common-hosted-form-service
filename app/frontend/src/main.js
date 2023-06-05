@@ -1,94 +1,60 @@
 import 'nprogress/nprogress.css';
 import '@bcgov/bc-sans/css/BCSans.css';
-import 'vue-json-pretty/lib/styles.css';
-import '@src/assets/scss/style.scss';
-import 'font-awesome/css/font-awesome.min.css';
-import 'formiojs/dist/formio.builder.min.css';
-
+import '@/assets/scss/style.scss';
+import i18n from '@/internationalization';
 import axios from 'axios';
 import NProgress from 'nprogress';
-import { createApp, h } from 'vue';
-
-import App from '@src/App.vue';
-import { formatDate, formatDateLong } from '@src/filters';
-import auth from '@src/store/modules/auth.js';
-import getRouter from '@src/router';
-import store from '@src/store';
-
-const app = createApp({
-  render: () => h(App),
-});
-
-app.config.unwrapInjectedRef = true;
-app.config.globalProperties.$filters = {
-  formatDate,
-  formatDateLong,
-};
+import Vue from 'vue';
+import App from '@/App.vue';
+import '@/filters';
+import auth from '@/store/modules/auth.js';
+import getRouter from '@/router';
+import store from '@/store';
 
 // Add our custom components to the formio instance
 // importing the main formio dependency (whether through vue-formio or directly)
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
-import BcGovFormioComponents from '@src/formio/lib';
-import { Formio } from '@formio/vue';
+import BcGovFormioComponents from '@/formio/lib';
+import { Formio } from 'vue-formio';
 Formio.use(BcGovFormioComponents);
 
-import { library } from '@fortawesome/fontawesome-svg-core';
+/* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import {
-  faFlask,
-  faXmark,
-  faSquareArrowUpRight,
-  faCheck,
-  faPenToSquare,
-  faEye,
-} from '@fortawesome/free-solid-svg-icons';
-library.add(
-  faFlask,
-  faXmark,
-  faSquareArrowUpRight,
-  faCheck,
-  faPenToSquare,
-  faEye
-);
-app.component('font-awesome-icon', FontAwesomeIcon);
+/* add font awesome icon component */
+Vue.component('font-awesome-icon', FontAwesomeIcon);
+import VueBlobJsonCsv from 'vue-blob-json-csv';
+Vue.use(VueBlobJsonCsv);
 
-import VueKeycloakJs from '@src/plugins/keycloak';
-import vuetify from '@src/plugins/vuetify';
-app.use(vuetify);
+import VueKeycloakJs from '@/plugins/keycloak';
+import vuetify from '@/plugins/vuetify';
 
-/* import clipboard */
-import Clipboard from 'vue3-clipboard';
-app.use(Clipboard, {
-  autoSetContainer: true,
-  appendToBody: true,
-});
-
-// Globally register all components with base in the name
-const modules = import.meta.glob('@src/components/**/*.(vue|js)');
-for (const path in modules) {
-  if (path.includes('Base')) {
-    modules[path]().then((mod) => {
-      const componentName = mod.default.__file
-        .split('/')
-        .pop()
-        .replace(/\.\w+$/, '');
-      app.component(componentName, mod.default);
-    });
-  }
-}
+Vue.config.productionTip = false;
 
 NProgress.configure({ showSpinner: false });
 NProgress.start();
 
+// Globally register all components with base in the name
+const requireComponent = require.context(
+  '@/components',
+  true,
+  /Base[A-Z]\w+\.(vue|js)$/
+);
+requireComponent.keys().forEach((fileName) => {
+  const componentConfig = requireComponent(fileName);
+  const componentName = fileName
+    .split('/')
+    .pop()
+    .replace(/\.\w+$/, '');
+  Vue.component(componentName, componentConfig.default || componentConfig);
+});
+
 // IE11 Detection (https://stackoverflow.com/a/21825207)
 if (!!window.MSInputMethodContext && !!document.documentMode) {
   document.write(`<div style="padding-top: 5em; text-align: center;">
-      <h1>We're sorry but ${
-        import.meta.env.VITE_TITLE
-      } is not supported in Internet Explorer.</h1>
-      <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
-    </div>`);
+    <h1>We're sorry but ${process.env.VUE_APP_TITLE} is not supported in Internet Explorer.</h1>
+    <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
+  </div>`);
   NProgress.done();
 } else {
   loadConfig();
@@ -101,16 +67,15 @@ if (!!window.MSInputMethodContext && !!document.documentMode) {
  * @param {string} [basepath='/'] base server path
  */
 function initializeApp(kcSuccess = false, basePath = '/') {
-  if (kcSuccess && !store.hasModule('auth')) {
-    store.registerModule('auth', auth(app));
-  }
+  if (kcSuccess && !store.hasModule('auth')) store.registerModule('auth', auth);
 
-  const router = getRouter(basePath);
-  app.use(router);
-  router.app = app;
-  app.use(store);
-
-  app.mount('#app');
+  new Vue({
+    router: getRouter(basePath),
+    i18n,
+    store,
+    vuetify,
+    render: (h) => h(App),
+  }).$mount('#app');
 
   NProgress.done();
 }
@@ -122,9 +87,9 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 async function loadConfig() {
   // App publicPath is ./ - so use relative path here, will hit the backend server using relative path to root.
   const configUrl =
-    import.meta.env.MODE === 'production'
+    process.env.NODE_ENV === 'production'
       ? 'config'
-      : `${import.meta.env.BASE_URL}/config`;
+      : `${process.env.BASE_URL}/config`;
   const storageKey = 'config';
   try {
     // Get configuration if it isn't already in session storage
@@ -135,7 +100,7 @@ async function loadConfig() {
 
     // Mount the configuration as a prototype for easier access from Vue
     const config = JSON.parse(sessionStorage.getItem(storageKey));
-    app.config.globalProperties.$config = Object.freeze(config);
+    Vue.prototype.$config = Object.freeze(config);
 
     if (
       !config ||
@@ -161,7 +126,7 @@ async function loadConfig() {
  * @param {object} config A config object
  */
 function loadKeycloak(config) {
-  app.use(VueKeycloakJs, {
+  Vue.use(VueKeycloakJs, {
     init: { onLoad: 'check-sso' },
     config: {
       clientId: config.keycloak.clientId,
@@ -177,9 +142,3 @@ function loadKeycloak(config) {
     },
   });
 }
-
-/*
-Taken from https://stackoverflow.com/a/73919230 so that we can access the
-global properties from other JS files.
-*/
-export const useAppConfig = () => app.config;

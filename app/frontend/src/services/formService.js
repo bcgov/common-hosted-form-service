@@ -241,6 +241,21 @@ export default {
   },
 
   /**
+   * @function createBulkSubmission
+   * Submit the form data
+   * @param {string} formId The form uuid
+   * @param {string} versionId The form uuid
+   * @param {Object} requestBody The files data for multi submission
+   * @returns {Promise} An axios response
+   */
+  createMultiSubmission(formId, versionId, requestBody) {
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/multiSubmission`,
+      requestBody
+    );
+  },
+
+  /**
    * @function deleteSubmission
    * Soft delete a specific submission
    * @param {string} submissionId The form submission identifier

@@ -1,24 +1,21 @@
 <template>
   <v-form ref="addUserForm" v-model="valid">
     <p>
-      This should only be done in the event that the current form owner is no
-      longer active or is out of contact in a priority event. Otherwise have the
-      current Owner or a Team Administrator for the form do this themselves.
+      {{ $t('trans.addOwner.infoA') }}
     </p>
-
     <v-row class="mt-4">
       <v-col cols="9" sm="6" md="6" lg="4">
         <v-text-field
+          :label="$t('trans.addOwner.label')"
           v-model="userGuid"
-          label="User ID (guid)"
           :rules="userGuidRules"
-          hint="To find the User ID needed you can go to the 'USERS' tab in the Admin portal and search for them."
+          :hint="$t('trans.addOwner.hint')"
           persistent-hint
         />
       </v-col>
       <v-col cols="3" md="2">
-        <v-btn color="primary" :disabled="!valid" @click="addOwner">
-          <span>Add owner</span>
+        <v-btn color="primary" @click="addOwner" :disabled="!valid">
+          <span>{{ $t('trans.addOwner.addowner') }}</span>
         </v-btn>
       </v-col>
     </v-row>
@@ -28,7 +25,7 @@
 <script>
 import { mapActions } from 'vuex';
 
-import { FormRoleCodes } from '@src/utils/constants';
+import { FormRoleCodes } from '@/utils/constants';
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
 
 export default {
@@ -43,7 +40,6 @@ export default {
     return {
       userGuid: '',
       valid: false,
-
       userGuidRules: [
         (v) => !!v || 'User ID required',
         (v) =>
@@ -55,8 +51,7 @@ export default {
   methods: {
     ...mapActions('admin', ['addFormUser', 'readRoles']),
     async addOwner() {
-      const { valid } = this.$refs.addUserForm.validate();
-      if (valid) {
+      if (this.$refs.addUserForm.validate()) {
         await this.addFormUser({
           userId: this.userGuid,
           formId: this.formId,

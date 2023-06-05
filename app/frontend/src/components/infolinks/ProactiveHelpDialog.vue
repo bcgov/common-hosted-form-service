@@ -10,17 +10,17 @@
         <v-container>
           <v-row>
             <v-col>
-              <span class="text-h5" style="font-weight: bold"
-                >Component Information Link</span
-              >
+              <span class="text-h5" style="font-weight: bold">{{
+                $t('trans.proactiveHelpDialog.componentInfoLink')
+              }}</span>
             </v-col>
           </v-row>
           <v-row v-if="linkError">
             <v-col>
               <div
                 style="margin: 0px; padding: 0px"
-                class="text-red"
-                v-text="'Learn More Link field cannot be empty.'"
+                :v-text="$t('trans.proactiveHelpDialog.learnMoreLinkTxt')"
+                class="red--text"
               />
             </v-col>
           </v-row>
@@ -28,32 +28,33 @@
             <v-col>
               <div
                 style="margin: 0px; padding: 0px"
-                class="text-red"
-                v-text="'Large image. Image size cannot be large than .5mb'"
+                :v-text="$t('trans.proactiveHelpDialog.largeImgTxt')"
+                class="red--text"
               />
             </v-col>
           </v-row>
 
           <v-row class="mt-5" no-gutters>
             <span class="text-decoration-underline mr-2 blackColorWrapper">
-              Component Name:
+              {{ $t('trans.proactiveHelpDialog.componentName') }}
             </span>
-            <span class="blueColorWrapper" v-text="componentName_" />
+            <span v-text="componentName_" class="blueColorWrapper" />
           </v-row>
           <v-row class="mt-1" no-gutters>
             <v-col>
               <div class="d-flex flex-row align-center">
                 <p class="mr-2 mt-2 text-decoration-underline blueColorWrapper">
-                  Learn More Link:
+                  {{ $t('trans.proactiveHelpDialog.learnMoreLink') }}
                 </p>
                 <v-col cols="5">
                   <v-text-field
-                    v-model="moreHelpInfoLink"
-                    density="compact"
+                    dense
                     enable
                     style="width: 100%"
+                    v-model="moreHelpInfoLink"
+                    flat
                     :disabled="!isLinkEnabled"
-                    :model-value="moreHelpInfoLink"
+                    :value="moreHelpInfoLink"
                     data-cy="more_help_info_link_text_field"
                     class="text-style"
                     color="#1A5A96"
@@ -62,11 +63,11 @@
                   </v-text-field>
                 </v-col>
                 <v-checkbox v-model="isLinkEnabled" class="checkbox_data_cy">
-                  <template #label>
+                  <template v-slot:label>
                     <span class="v-label">{{
                       !isLinkEnabled
-                        ? 'Click to enable link'
-                        : 'Click to disable link'
+                        ? $t('trans.proactiveHelpDialog.clickToEnableLink')
+                        : $t('trans.proactiveHelpDialog.clickToDisableLink')
                     }}</span>
                   </template>
                 </v-checkbox>
@@ -76,17 +77,17 @@
 
           <v-row no-gutters>
             <v-col cols="12" sm="12" md="12" class="mb-2 blackColorWrapper">
-              Description
+              {{ $t('trans.proactiveHelpDialog.description') }}
             </v-col>
             <v-col cols="12" sm="12" md="12">
               <v-textarea
-                v-model="description"
                 clear-icon="mdi-close-circle"
-                variant="outlined"
+                v-model="description"
+                outlined
                 hide-details
                 clearable
                 data-cy="more_help_info_link_text_area"
-                model-value="description"
+                value="description"
                 class="text-style"
               ></v-textarea>
             </v-col>
@@ -108,7 +109,9 @@
                     counter
                     accept="image/*"
                     :label="
-                      imagePlaceholder ? imagePlaceholder : 'Image Upload:'
+                      imagePlaceholder
+                        ? imagePlaceholder
+                        : this.$t('trans.proactiveHelpDialog.imageUpload')
                     "
                     class="file_upload_data-cy"
                     @change="selectImage"
@@ -123,17 +126,17 @@
                 <div>
                   <v-btn
                     class="mr-4 saveButtonWrapper"
-                    data-cy="more_help_info_link_save_button"
                     @click="submit"
+                    data-cy="more_help_info_link_save_button"
                   >
-                    Save
+                    {{ $t('trans.proactiveHelpDialog.save') }}
                   </v-btn>
                   <v-btn
                     class="cancelButtonWrapper"
-                    data-cy="more_help_info_link_cancel_button"
                     @click="onCloseDialog"
+                    data-cy="more_help_info_link_cancel_button"
                   >
-                    Cancel
+                    {{ $t('trans.proactiveHelpDialog.cancel') }}
                   </v-btn>
                 </div>
               </div>
@@ -153,14 +156,7 @@ library.add(faCloudArrowUp);
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: 'InformationLinkDialog',
-  props: {
-    showDialog: { type: Boolean, required: true },
-    component: { type: Object },
-    componentName: { type: String, require: true, default: '' },
-    groupName: { type: String, require: true },
-  },
-  emits: ['close-dialog'],
+  name: 'ProactiveHelpDialog',
   data() {
     return {
       errors: [],
@@ -197,16 +193,11 @@ export default {
       linkError: false,
     };
   },
-  computed: {
-    ...mapGetters('admin', ['fcHelpInfoImageUpload', 'fcProactiveHelpVersion']),
-  },
-  watch: {
-    showDialog() {
-      this.dialog = this.showDialog;
-    },
-    componentName() {
-      this.componentName_ = this.componentName;
-    },
+  props: {
+    showDialog: { type: Boolean, required: true },
+    component: { type: Object },
+    componentName: { type: String, require: true, default: '' },
+    groupName: { type: String, require: true },
   },
   methods: {
     ...mapActions('admin', [
@@ -276,6 +267,17 @@ export default {
       this.description = '';
       this.link = '';
     },
+  },
+  watch: {
+    showDialog() {
+      this.dialog = this.showDialog;
+    },
+    componentName() {
+      this.componentName_ = this.componentName;
+    },
+  },
+  computed: {
+    ...mapGetters('admin', ['fcHelpInfoImageUpload', 'fcProactiveHelpVersion']),
   },
 };
 </script>

@@ -3,28 +3,30 @@
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 
-    <div v-if="form.active === false" class="text-red mb-6">
-      (DELETED)
+    <div v-if="form.active === false" class="red--text mb-6">
+      ({{ $t('trans.administerForm.deleted') }})
       <v-btn
         color="primary"
         class="mt-0"
-        variant="text"
-        size="small"
         @click="showRestoreDialog = true"
+        text
+        small
       >
         <v-icon class="mr-1">build_circle</v-icon>
-        <span class="d-none d-sm-flex">Restore this form</span>
+        <span class="d-none d-sm-flex">{{
+          $t('trans.administerForm.restoreForm')
+        }}</span>
       </v-btn>
     </div>
 
     <v-container>
       <v-row no-gutters>
         <v-col md="6">
-          <h4>Form Details</h4>
+          <h4>{{ $t('trans.administerForm.formDetails') }}</h4>
           <vue-json-pretty :data="formDetails" />
 
           <div v-if="apiKey" class="mt-6">
-            <h4>API Key Details</h4>
+            <h4>{{ $t('trans.administerForm.apiKeyDetails') }}</h4>
             <vue-json-pretty :data="apiKey" />
             <v-btn
               class="mt-6 mb-6"
@@ -32,25 +34,25 @@
               :disabled="!apiKey"
               @click="showDeleteDialog = true"
             >
-              <span>Delete API Key</span>
+              <span>{{ $t('trans.administerForm.deleteApiKey') }}</span>
             </v-btn>
           </div>
         </v-col>
         <v-col md="6">
-          <h4>Form Users</h4>
+          <h4>{{ $t('trans.administerForm.formUsers') }}</h4>
           <vue-json-pretty :data="roles" />
         </v-col>
       </v-row>
     </v-container>
 
     <div v-if="form.active" class="mt-12">
-      <h4>Form Versions</h4>
+      <h4>{{ $t('trans.administerForm.formVersions') }}</h4>
       <AdminVersions />
     </div>
 
     <div v-if="form.active" class="mt-12">
-      <h4>Assign A New Owner</h4>
-      <AddOwner :form-id="form.id" />
+      <h4>{{ $t('trans.administerForm.assignANewOwner') }}</h4>
+      <AddOwner :formId="form.id" />
     </div>
 
     <BaseDialog
@@ -59,20 +61,23 @@
       @close-dialog="showRestoreDialog = false"
       @continue-dialog="restore"
     >
-      <template #title>Confirm Restore</template>
+      <template #title>{{
+        $t('trans.administerForm.confirmRestore')
+      }}</template>
       <template #text>
         <div v-if="restoreInProgress" class="text-center">
           <v-progress-circular indeterminate color="primary" :size="100">
-            Restoring
+            {{ $t('trans.administerForm.restoring') }}
           </v-progress-circular>
         </div>
         <div v-else>
-          Restore
-          <strong>{{ form.name }}</strong> to active state?
+          {{ $t('trans.administerForm.restore') }}
+          <strong>{{ form.name }}</strong>
+          {{ $t('trans.administerForm.toActiveState') }}?
         </div>
       </template>
       <template #button-text-continue>
-        <span>Restore</span>
+        <span>{{ $t('trans.administerForm.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -83,10 +88,14 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="deleteKey"
     >
-      <template #title>Confirm Deletion</template>
-      <template #text>Are you sure you want to delete this API Key?</template>
+      <template #title>{{
+        $t('trans.administerForm.confirmDeletion')
+      }}</template>
+      <template #text>{{
+        $t('trans.administerForm.confirmDeletionMsg')
+      }}</template>
       <template #button-text-continue>
-        <span>Delete</span>
+        <span>{{ $t('trans.administerForm.delete') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>
@@ -94,8 +103,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import AddOwner from '@src/components/admin/AddOwner.vue';
-import AdminVersions from '@src/components/admin/AdminVersions.vue';
+import AddOwner from './AddOwner.vue';
+import AdminVersions from './AdminVersions.vue';
 
 import VueJsonPretty from 'vue-json-pretty';
 
@@ -125,18 +134,6 @@ export default {
   computed: {
     ...mapGetters('admin', ['form', 'roles', 'apiKey']),
   },
-  async mounted() {
-    await Promise.all([
-      this.readForm(this.formId),
-      this.readApiDetails(this.formId),
-      this.readRoles(this.formId),
-    ]);
-
-    this.formDetails = { ...this.form };
-    delete this.formDetails.versions;
-
-    this.loading = false;
-  },
   methods: {
     ...mapActions('admin', [
       'deleteApiKey',
@@ -155,6 +152,18 @@ export default {
       this.restoreInProgress = false;
       this.showRestoreDialog = false;
     },
+  },
+  async mounted() {
+    await Promise.all([
+      this.readForm(this.formId),
+      this.readApiDetails(this.formId),
+      this.readRoles(this.formId),
+    ]);
+
+    this.formDetails = { ...this.form };
+    delete this.formDetails.versions;
+
+    this.loading = false;
   },
 };
 </script>

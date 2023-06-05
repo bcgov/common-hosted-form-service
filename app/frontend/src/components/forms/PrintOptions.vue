@@ -1,18 +1,19 @@
 <template>
   <span>
-    <v-tooltip location="bottom">
-      <template #activator="{ props }">
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
         <v-btn
           class="mx-1"
+          @click="dialog = true"
           color="primary"
           icon
-          v-bind="props"
-          @click="dialog = true"
+          v-bind="attrs"
+          v-on="on"
         >
           <v-icon>print</v-icon>
         </v-btn>
       </template>
-      <span>Print</span>
+      <span>{{ $t('trans.printOptions.print') }}</span>
     </v-tooltip>
 
     <v-dialog
@@ -21,59 +22,61 @@
       content-class="export-submissions-dlg"
     >
       <v-card>
-        <v-card-title class="text-h5 pb-0">Download Options</v-card-title>
+        <v-card-title class="text-h5 pb-0">{{
+          $t('trans.printOptions.downloadOptions')
+        }}</v-card-title>
         <v-card-text>
           <hr />
           <p>
-            <strong>1.</strong>
+            <strong>1. </strong>
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
               target="blank"
-              >Print</a
+              >{{ $t('trans.printOptions.print') }}</a
             >
-            the page from your browser
+            {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span>Browser Print</span>
+            <span>{{ $t('trans.printOptions.browserPrint') }}</span>
           </v-btn>
 
           <p>
-            <strong>2.</strong> Upload a
+            <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
               target="blank"
-              >CDOGS template</a
+              >{{ $t('trans.printOptions.cDogsTemplate') }}</a
             >
-            to have a structured version
+            {{ $t('trans.printOptions.uploadB') }}
           </p>
           <v-file-input
-            v-model="templateForm.files"
             counter
             :clearable="true"
-            label="Upload template file"
+            :label="$t('trans.printOptions.uploadTemplateFile')"
             persistent-hint
             prepend-icon="attachment"
             required
             mandatory
             show-size
+            v-model="templateForm.files"
           />
           <v-card-actions>
-            <v-tooltip location="top">
-              <template #activator="{ props }">
+            <v-tooltip top>
+              <template #activator="{ on }">
                 <v-btn
-                  id="file-input-submit"
                   color="primary"
                   class="btn-file-input-submit"
                   :disabled="!templateForm.files"
+                  id="file-input-submit"
                   :loading="loading"
                   @click="generate"
-                  v-bind="props"
+                  v-on="on"
                 >
-                  <v-icon :start="$vuetify.display.smAndUp">save</v-icon>
-                  <span>Template Print</span>
+                  <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
+                  <span>{{ $t('trans.printOptions.templatePrint') }}</span>
                 </v-btn>
               </template>
-              <span>Submit to CDOGS and Download</span>
+              <span>{{ $t('trans.printOptions.submitButtonTxt') }}</span>
             </v-tooltip>
           </v-card-actions>
         </v-card-text>
@@ -84,13 +87,10 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { formService } from '@src/services';
-import { NotificationTypes } from '@src/utils/constants';
+import { formService, utilsService } from '@/services';
+import { NotificationTypes } from '@/utils/constants';
 
 export default {
-  props: {
-    submissionId: String,
-  },
   data() {
     return {
       dialog: false,
@@ -103,20 +103,16 @@ export default {
       },
     };
   },
+  props: {
+    submissionId: String,
+    submission: {
+      type: Object,
+      default: undefined,
+    },
+  },
   computed: {
     files() {
       return this.templateForm.files;
-    },
-  },
-  watch: {
-    files() {
-      if (this.templateForm.files && this.templateForm.files instanceof File) {
-        const { name, extension } = this.splitFileName(this.files.name);
-        if (!this.templateForm.outputFileName) {
-          this.templateForm.outputFileName = name;
-        }
-        this.templateForm.contentFileType = extension;
-      }
     },
   },
   methods: {
@@ -182,8 +178,17 @@ export default {
           outputFileType
         );
 
+        let response = null;
         // Submit Template to CDOGS API
-        const response = await formService.docGen(this.submissionId, body);
+        if (this.submissionId?.length > 0) {
+          response = await formService.docGen(this.submissionId, body);
+        } else {
+          const draftData = {
+            template: body,
+            submission: this.submission,
+          };
+          response = await utilsService.draftDocGen(draftData);
+        }
 
         // create file to download
         const filename = this.getDispositionFilename(
@@ -197,13 +202,15 @@ export default {
         // Generate Temporary Download Link
         this.createDownload(blob, filename);
         this.addNotification({
-          message: 'Document generated successfully',
+          message: this.$t('trans.printOptions.docGrnSucess'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (e) {
         this.addNotification({
-          message: 'Failed to generate Document',
-          consoleError: `Error submitting template: ${e.message}`,
+          message: this.$t('trans.printOptions.failedDocGenErrMsg'),
+          consoleError: this.$t('trans.printOptions.failedDocGenErrMsg', {
+            error: e.message,
+          }),
         });
       } finally {
         this.loading = false;
@@ -222,6 +229,17 @@ export default {
           fileType: contentFileType,
         },
       };
+    },
+  },
+  watch: {
+    files() {
+      if (this.templateForm.files && this.templateForm.files instanceof File) {
+        const { name, extension } = this.splitFileName(this.files.name);
+        if (!this.templateForm.outputFileName) {
+          this.templateForm.outputFileName = name;
+        }
+        this.templateForm.contentFileType = extension;
+      }
     },
   },
 };
