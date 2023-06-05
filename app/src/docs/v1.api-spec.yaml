@@ -443,37 +443,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /forms/{formId}/versions:
-    get:
-      summary: List all versions of a form
-      operationId: listVersions
-      security:
-        - BasicAuth: []
-        - BearerAuth: []
-          OpenID: []
-      tags:
-        - Version
-      parameters:
-        - $ref: '#/components/parameters/formIdParam'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FormVersion'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /forms/{formId}/versions/{formVersionId}:
     get:
       summary: Get a single form version
@@ -3083,23 +3052,23 @@ components:
       allOf:
         - type: array
           items:
-          - type: object
-            properties:
-              draft:
-                type: boolean
-                description: >-
-                  Used to indicate if submission came from a draft version of a
-                  form.
-                example: false
-              submission:
-                type: object
-                description: this object should contain one property named data as an array. This array named data should store all the multiple drafts as object in this array.
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/FormSubmissionObjectForMultipleUpload'
-                    description: this is an array of multiple objects, each object contain data of single the form submissions.
+            - type: object
+              properties:
+                draft:
+                  type: boolean
+                  description: >-
+                    Used to indicate if submission came from a draft version of a
+                    form.
+                  example: false
+                submission:
+                  type: object
+                  description: this object should contain one property named data as an array. This array named data should store all the multiple drafts as object in this array.
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/FormSubmissionObjectForMultipleUpload'
+                      description: this is an array of multiple objects, each object contain data of single the form submissions.
     FormSubmissionMultiple:
       allOf:
         - type: object
@@ -3202,7 +3171,7 @@ components:
             preferences:
               type: object
               description: form submissions export preferences
-              example: {minDate, maxDate}
+              example: { minDate, maxDate }
             fields:
               type: array
               description: List of form submission fields to be exported to CSV
