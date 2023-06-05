@@ -221,7 +221,8 @@
     "forms": "Formen",
     "users": "Benutzer",
     "developer": "Entwickler",
-    "infoLinks": "Info-Links"
+    "infoLinks": "Info-Links",
+    "metrics": "Metriken"
   },
   "adminUsersTable": {
     "search": "Suchen",

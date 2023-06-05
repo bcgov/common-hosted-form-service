@@ -221,7 +221,8 @@
     "forms": "تشکیل می دهد",
     "users": "کاربران",
     "developer": "توسعه دهنده",
-    "infoLinks": "لینک های اطلاعات"
+    "infoLinks": "لینک های اطلاعات",
+    "metrics": "معیارهای"
   },
   "adminUsersTable": {
     "search": "جستجو کردن",

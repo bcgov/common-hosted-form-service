@@ -4,7 +4,7 @@
     <v-tab>{{ $t('trans.adminPage.users') }}</v-tab>
     <v-tab>{{ $t('trans.adminPage.developer') }}</v-tab>
     <v-tab data-cy="infoLinks">{{ $t('trans.adminPage.infoLinks') }}</v-tab>
-    <v-tab v-if="adminDashboardUrl">Metrics</v-tab>
+    <v-tab v-if="adminDashboardUrl">{{ $t('trans.adminPage.metrics') }}</v-tab>
 
     <v-tab-item> <AdminFormsTable /> </v-tab-item>
     <v-tab-item> <AdminUsersTable /> </v-tab-item>

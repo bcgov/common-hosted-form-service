@@ -4,7 +4,6 @@ import i18n from '@/internationalization';
 
 const localVue = createLocalVue();
 
-
 describe('AdminPage.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(AdminPage, {
@@ -19,7 +18,7 @@ describe('AdminPage.vue', () => {
         'FormComponentsProactiveHelp',
         'Metrics',
       ],
-      i18n
+      i18n,
     });
 
     expect(wrapper.text()).toContain('Forms');
@@ -39,6 +38,7 @@ describe('AdminPage.vue', () => {
         'FormComponentsProactiveHelp',
         'Metrics',
       ],
+      i18n,
     });
 
     expect(wrapper.text()).not.toContain('Metrics');
@@ -57,6 +57,7 @@ describe('AdminPage.vue', () => {
         'FormComponentsProactiveHelp',
         'Metrics',
       ],
+      i18n,
     });
 
     expect(wrapper.text()).toContain('Metrics');
