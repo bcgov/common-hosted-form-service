@@ -443,37 +443,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /forms/{formId}/versions:
-    get:
-      summary: List all versions of a form
-      operationId: listVersions
-      security:
-        - BasicAuth: []
-        - BearerAuth: []
-          OpenID: []
-      tags:
-        - Version
-      parameters:
-        - $ref: '#/components/parameters/formIdParam'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FormVersion'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /forms/{formId}/versions/{formVersionId}:
     get:
       summary: Get a single form version
