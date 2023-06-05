@@ -221,7 +221,8 @@
     "forms": "フォーム",
     "users": "ユーザー",
     "developer": "デベロッパー",
-    "infoLinks": "情報リンク"
+    "infoLinks": "情報リンク",
+    "metrics": "メトリクス"
   },
   "adminUsersTable": {
     "search": "検索",
