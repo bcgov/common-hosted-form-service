@@ -325,6 +325,10 @@
     "fileIsEmpty": "このファイルは空です。",
     "download": "ダウンロード"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "エラー: 何か問題が発生しました",
+    "error": "エラー"
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "フォームデザイナーに対する免責事項と責任声明:",
     "privacyLaw": "個人を特定できる情報の収集、使用、開示を規定するプライバシー法を遵守するのはあなたの責任です。",

@@ -775,6 +775,10 @@
     "keepRecord": "If you wish to keep a record of this submission, you can keep the following",
     "confirmationId": "Confirmation ID:"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Error: Something went wrong",
+    "error": "error"
+  },
   "store": {
     "admin": {
       "addFormOwnerRole": "Added the Owner role for this form to {fullName}",
