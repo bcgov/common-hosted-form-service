@@ -762,8 +762,10 @@ export default {
     userType() {
       this.reRenderFormIo += 1;
     },
-    multiLanguage() {
-      this.reRenderFormIo += 1;
+    multiLanguage(value) {
+      if (value) {
+        this.reRenderFormIo += 1;
+      }
     },
   },
 };
