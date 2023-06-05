@@ -2,7 +2,7 @@
   <v-row class="d-print-none">
     <v-col v-if="formId">
       <v-btn outlined @click="goToAllSubmissionOrDraft">
-        <span>view all submission</span>
+        <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }}</span>
       </v-btn>
     </v-col>
     <v-col class="text-right">
@@ -22,8 +22,8 @@
           </template>
           <span>{{
             bulkFile
-              ? 'Switch to single submission'
-              : 'Switch to multiple submission'
+              ? $t('trans.formViewerActions.switchSingleSubmssn')
+              : $t('trans.formViewerActions.switchMultiSubmssn')
           }}</span>
         </v-tooltip>
       </span>
@@ -46,7 +46,7 @@
               <v-icon>save</v-icon>
             </v-btn>
           </template>
-          <span>Save as a Draft</span>
+          <span>{{ $t('trans.formViewerActions.saveAsADraft') }}</span>
         </v-tooltip>
       </span>
 
@@ -66,7 +66,7 @@
                 <v-icon>mode_edit</v-icon>
               </v-btn>
             </template>
-            <span>Edit this Draft</span>
+            <span>{{ $t('trans.formViewerActions.editThisDraft') }}</span>
           </v-tooltip>
         </router-link>
       </span>

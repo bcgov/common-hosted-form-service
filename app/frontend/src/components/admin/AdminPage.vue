@@ -1,9 +1,9 @@
 <template>
   <v-tabs>
-    <v-tab>Forms</v-tab>
-    <v-tab>Users</v-tab>
-    <v-tab>Developer</v-tab>
-    <v-tab data-cy="infoLinks">Info Links</v-tab>
+    <v-tab>{{ $t('trans.adminPage.forms') }}</v-tab>
+    <v-tab>{{ $t('trans.adminPage.users') }}</v-tab>
+    <v-tab>{{ $t('trans.adminPage.developer') }}</v-tab>
+    <v-tab data-cy="infoLinks">{{ $t('trans.adminPage.infoLinks') }}</v-tab>
     <v-tab v-if="adminDashboardUrl">Metrics</v-tab>
 
     <v-tab-item> <AdminFormsTable /> </v-tab-item>

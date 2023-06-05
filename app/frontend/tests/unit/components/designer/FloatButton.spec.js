@@ -1,17 +1,36 @@
 import { shallowMount, createLocalVue, RouterLinkStub } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
-
 import FloatButton from '@/components/designer/FloatButton.vue';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
 const localVue = createLocalVue();
 localVue.use(Vuetify);
 localVue.use(VueRouter);
+localVue.use(Vuex);
 
 describe('FloatButton.vue', () => {
-  it('test that undo event was triggered', async () => {
+  const mockMultiLanguageGetter = jest.fn();
+  let store;
+  beforeEach(() => {
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            multiLanguage: mockMultiLanguageGetter
+          },
+        }
+      }
+    });
+  });
+
+  it('test that undo event was triggered', async() => {
     const wrapper = shallowMount(FloatButton, {
       localVue,
+      store,
+      i18n
     });
 
     expect(wrapper.find({ ref: 'undoButton' }).exists()).toBe(true);
@@ -29,6 +48,8 @@ describe('FloatButton.vue', () => {
   it('test that undo event was triggered', async () => {
     const wrapper = shallowMount(FloatButton, {
       localVue,
+      store,
+      i18n
     });
 
     expect(wrapper.find({ ref: 'redoButton' }).exists()).toBe(true);
@@ -46,6 +67,8 @@ describe('FloatButton.vue', () => {
   it('test that save event was triggered', async () => {
     const wrapper = shallowMount(FloatButton, {
       localVue,
+      store,
+      i18n
     });
 
     expect(wrapper.find({ ref: 'saveButton' }).exists()).toBe(true);
@@ -69,7 +92,9 @@ describe('FloatButton.vue', () => {
     const wrapper = shallowMount(FloatButton, {
       localVue,
       RouterLink: RouterLinkStub,
-      propsData: { formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6' },
+      propsData: { formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId:'0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6' },
+      store,
+      i18n,
       mocks: {
         $route: mockRoute,
       },
@@ -91,7 +116,9 @@ describe('FloatButton.vue', () => {
     const wrapper = shallowMount(FloatButton, {
       localVue,
       RouterLink: RouterLinkStub,
-      propsData: { formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229' },
+      propsData: { formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229' },
+      store,
+      i18n,
       mocks: {
         $route: mockRoute,
       },
@@ -119,7 +146,9 @@ describe('FloatButton.vue', () => {
     const wrapper = shallowMount(FloatButton, {
       localVue,
       RouterLink: RouterLinkStub,
-      propsData: { formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6' },
+      propsData: { formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId:'0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6' },
+      store,
+      i18n,
       mocks: {
         $route: mockRoute,
         $router: mockRouter,

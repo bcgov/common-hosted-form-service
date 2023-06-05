@@ -12,12 +12,11 @@
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <strong>Form Settings</strong>
+            <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
             <span>
               <small>
-                Created: {{ form.createdAt | formatDate }} ({{
-                  form.createdBy
-                }})
+                {{ $t('trans.manageForm.created') }}:
+                {{ form.createdAt | formatDate }} ({{ form.createdBy }})
               </small>
               <v-btn
                 v-if="canEditForm"
@@ -43,10 +42,10 @@
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
             <v-btn class="mr-5" color="primary" @click="updateSettings">
-              <span>Update</span>
+              <span>{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
             <v-btn outlined @click="cancelSettingsEdit">
-              <span>Cancel</span>
+              <span>{{ $t('trans.manageForm.cancel') }}</span>
             </v-btn>
           </div>
         </v-expansion-panel-content>
@@ -66,17 +65,15 @@
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <strong>API Key</strong>
+            <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
             <span v-if="apiKey">
               <small v-if="apiKey.updatedBy">
-                Updated: {{ apiKey.updatedAt | formatDate }} ({{
-                  apiKey.updatedBy
-                }})
+                {{ $t('trans.manageForm.updated') }}:
+                {{ apiKey.updatedAt | formatDate }} ({{ apiKey.updatedBy }})
               </small>
               <small v-else>
-                Created: {{ apiKey.createdAt | formatDate }} ({{
-                  apiKey.createdBy
-                }})
+                {{ $t('trans.manageForm.created') }}:
+                {{ apiKey.createdAt | formatDate }} ({{ apiKey.createdBy }})
               </small>
             </span>
           </div>
@@ -99,14 +96,14 @@
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <strong>Form Design History</strong>
+            <strong>{{ $t('trans.manageForm.formDesignHistory') }}</strong>
             <div>
               <span>
-                <strong>Total Versions:</strong>
+                <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
                 {{ combinedVersionAndDraftCount }}
               </span>
               <span class="ml-12 mr-2">
-                <strong>Status:</strong>
+                <strong>{{ $t('trans.manageForm.status') }}:</strong>
                 {{ versionState }}
               </span>
             </div>

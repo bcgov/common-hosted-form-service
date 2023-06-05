@@ -4,6 +4,7 @@ import { adminService } from '@/services';
 import store from '@/store/modules/admin';
 
 jest.mock('@/services');
+jest.mock('@/internationalization', () => ({t: jest.fn(() => {}) }));
 
 describe('admin actions', () => {
   const mockStore = {

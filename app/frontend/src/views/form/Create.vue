@@ -1,31 +1,31 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
-    <h1 class="my-6 text-center">Create New Form</h1>
+    <h1 class="my-6 text-center">{{ $t('trans.create.createNewForm') }}</h1>
     <v-stepper v-model="creatorStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
         <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
-          Set up Form
+          {{ $t('trans.create.setUpForm') }}
         </v-stepper-step>
         <v-divider />
         <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
-          Design Form
+          {{ $t('trans.create.designForm') }}
         </v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
         <v-stepper-content step="1" class="pa-1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
-            <h1>Form Settings</h1>
+            <h1>{{ $t('trans.create.formSettings') }}</h1>
             <FormSettings />
 
             <BasePanel class="my-6">
-              <template #title>Disclaimer</template>
+              <template #title>{{ $t('trans.create.disclaimer') }}</template>
               <FormDisclaimer />
 
               <v-checkbox
                 :rules="disclaimerRules"
                 required
-                label="I agree to the disclaimer and statement of responsibility for Form Designers"
+                :label="$t('trans.create.disclaimerStmt')"
               />
             </BasePanel>
           </v-form>
@@ -35,13 +35,13 @@
             :disabled="!settingsFormValid"
             @click="reRenderFormDesigner"
           >
-            <span>Continue</span>
+            <span>{{ $t('trans.create.continue') }}</span>
           </v-btn>
         </v-stepper-content>
         <v-stepper-content step="2" class="pa-1">
           <FormDesigner ref="formDesigner" />
           <v-btn class="my-4" outlined @click="creatorStep = 1">
-            <span>Back</span>
+            <span>{{ $t('trans.create.back') }}</span>
           </v-btn>
         </v-stepper-content>
       </v-stepper-items>
@@ -72,9 +72,7 @@ export default {
     return {
       creatorStep: 1,
       settingsFormValid: false,
-      disclaimerRules: [
-        (v) => !!v || 'You must agree to the privacy disclaimer shown above.',
-      ],
+      disclaimerRules: [(v) => !!v || this.$t('trans.create.confirmPageNav')],
     };
   },
   methods: {
@@ -101,11 +99,7 @@ export default {
   },
   beforeRouteLeave(_to, _from, next) {
     this.isDirty
-      ? next(
-          window.confirm(
-            'Do you really want to leave this page? Changes you made will not be saved.'
-          )
-        )
+      ? next(window.confirm(this.$t('trans.create.agreementErrMsg')))
       : next();
   },
 };

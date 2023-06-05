@@ -1,7 +1,9 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import AdminPage from '@/components/admin/AdminPage.vue';
+import i18n from '@/internationalization';
 
 const localVue = createLocalVue();
+
 
 describe('AdminPage.vue', () => {
   it('renders', () => {
@@ -17,6 +19,7 @@ describe('AdminPage.vue', () => {
         'FormComponentsProactiveHelp',
         'Metrics',
       ],
+      i18n
     });
 
     expect(wrapper.text()).toContain('Forms');
