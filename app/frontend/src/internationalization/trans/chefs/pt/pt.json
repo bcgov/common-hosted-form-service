@@ -221,7 +221,8 @@
     "forms": "Formulários",
     "users": "Usuários",
     "developer": "Desenvolvedor",
-    "infoLinks": "Links de informações"
+    "infoLinks": "Links de informações",
+    "metrics": "Métricas"
   },
   "adminUsersTable": {
     "search": "Procurar",
