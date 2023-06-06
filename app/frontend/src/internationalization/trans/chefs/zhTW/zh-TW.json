@@ -221,7 +221,8 @@
     "forms": "形式",
     "users": "用戶",
     "developer": "開發商",
-    "infoLinks": "信息鏈接"
+    "infoLinks": "信息鏈接",
+    "metrics": "指標"
   },
   "adminUsersTable": {
     "search": "搜索",
