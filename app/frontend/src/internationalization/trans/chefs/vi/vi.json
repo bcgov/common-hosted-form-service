@@ -326,6 +326,10 @@
     "fileIsEmpty": "tập tin này là trống rỗng.",
     "download": "Tải xuống"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Lỗi: Đã xảy ra sự cố",
+    "error": "lỗi"
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Tuyên bố miễn trừ trách nhiệm và tuyên bố trách nhiệm đối với Người thiết kế biểu mẫu:",
     "privacyLaw": "Bạn có trách nhiệm tuân thủ các luật về Quyền riêng tư điều chỉnh việc thu thập, sử dụng và tiết lộ thông tin nhận dạng cá nhân.",

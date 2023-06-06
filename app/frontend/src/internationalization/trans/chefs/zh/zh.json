@@ -326,6 +326,10 @@
     "fileIsEmpty": "这个文件是空的。",
     "download": "下载"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "错误：出了点问题",
+    "error": "错误"
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Form Designers 的免责声明和责任声明：",
     "privacyLaw": "您有责任遵守有关收集、使用和披露个人身份信息的隐私法。",
