@@ -221,7 +221,8 @@
     "forms": "Формы",
     "users": "Пользователи",
     "developer": "Разработчик",
-    "infoLinks": "Информационные ссылки"
+    "infoLinks": "Информационные ссылки",
+    "metrics": "Метрики"
   },
   "adminUsersTable": {
     "search": "Поиск",

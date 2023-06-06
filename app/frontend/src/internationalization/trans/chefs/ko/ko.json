@@ -221,7 +221,8 @@
     "forms": "양식",
     "users": "사용자",
     "developer": "개발자",
-    "infoLinks": "정보 링크"
+    "infoLinks": "정보 링크",
+    "metrics": "측정항목"
   },
   "adminUsersTable": {
     "search": "찾다",
