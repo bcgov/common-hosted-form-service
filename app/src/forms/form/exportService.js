@@ -138,12 +138,16 @@ const service = {
     return `${form.snake()}_${type}.${format}`.toLowerCase();
   },
 
-  _submissionsColumns: (form) => {
+  _submissionsColumns: (form, params) => {
     // Custom columns not defined - return default column selection behavior
     let columns = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email'];
     // if form has 'status updates' enabled in the form settings include these in export
     if (form.enableStatusUpdates) {
       columns = columns.concat(['status', 'assignee', 'assigneeEmail']);
+    }
+    // Let's add form level columns like deleted or draft
+    if (params?.columns?.length) {
+      columns = columns.concat(params.columns);
     }
     // and join the submission data
     return columns.concat(['submission']);
@@ -195,6 +199,7 @@ const service = {
       .where('formId', form.id)
       .modify('filterVersion', version)
       .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
+      .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault');
