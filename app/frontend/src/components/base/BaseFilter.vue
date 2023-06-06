@@ -41,13 +41,14 @@
         @click="cancelFilterData"
         class="mt-3 ml-3 primary--text"
         outlined
-        >{{ this.$t('trans.baseFilter.cancel') }}</v-btn
+        >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
     </v-card-text>
   </v-card>
 </template>
 
 <script>
+import i18n from '@/internationalization';
 export default {
   name: 'BaseFilter',
   props: {
@@ -55,7 +56,7 @@ export default {
       type: Array,
       default: () => [
         {
-          text: this.$t('trans.baseFilter.columnName'),
+          text: i18n.t('trans.baseFilter.columnName'),
           align: 'start',
           sortable: true,
           value: 'text',
@@ -67,11 +68,11 @@ export default {
       type: Array,
       default: () => [
         {
-          text: this.$t('trans.baseFilter.exampleText'),
+          text: i18n.t('trans.baseFilter.exampleText'),
           value: 'exampleText1',
         },
         {
-          text: this.$t('trans.baseFilter.exampleText2'),
+          text: i18n.t('trans.baseFilter.exampleText2'),
           value: 'exampleText2',
         },
       ],
@@ -91,11 +92,11 @@ export default {
     },
     inputFilterPlaceholder: {
       type: String,
-      default: 'Example Text 2',
+      default: i18n.t('trans.baseFilter.exampleText2'),
     },
     inputSaveButtonText: {
       type: String,
-      default: 'Filter',
+      default: i18n.t('trans.baseFilter.filter'),
     },
   },
   data() {

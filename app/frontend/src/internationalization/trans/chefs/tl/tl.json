@@ -326,6 +326,10 @@
     "fileIsEmpty": "walang laman ang file na ito.",
     "download": "I-download"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Error: Nagkaproblema",
+    "error": "pagkakamali"
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer at pahayag ng responsibilidad para sa mga Form Designer:",
     "privacyLaw": "Responsibilidad mong sumunod sa mga batas sa Privacy na namamahala sa pagkolekta, paggamit at pagsisiwalat ng impormasyong nagbibigay ng personal na pagkakakilanlan.",
