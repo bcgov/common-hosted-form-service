@@ -11,6 +11,7 @@ import { createApp, h } from 'vue';
 import App from '~/App.vue';
 
 import { formatDate, formatDateLong } from '~/filters';
+import i18n from '~/internationalization';
 import vuetify from '~/plugins/vuetify';
 import getRouter from '~/router';
 import { useAuthStore } from '~/store/auth';
@@ -20,7 +21,9 @@ import { assertOptions, getConfig, sanitizeConfig } from '~/utils/keycloak';
 let keycloak = null;
 const pinia = createPinia();
 
-const app = createApp({ render: () => h(App) });
+const app = createApp({
+  render: () => h(App),
+});
 
 app.config.globalProperties.$filters = {
   formatDate,
@@ -69,6 +72,8 @@ if (!!window.MSInputMethodContext && !!document.documentMode) {
  */
 function initializeApp(kcSuccess = false, basePath = '/') {
   if (!kcSuccess) return;
+
+  app.use(i18n);
 
   const router = getRouter(basePath);
   app.use(router);

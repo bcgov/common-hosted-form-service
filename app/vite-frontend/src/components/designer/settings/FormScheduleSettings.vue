@@ -232,15 +232,17 @@ function scheduleTypeChanged() {
 
 <template>
   <BasePanel class="fill-height">
-    <template #title>Form Schedule Settings</template>
+    <template #title>{{
+      $t('trans.formSettings.formScheduleSettings')
+    }}</template>
     <v-row class="m-0">
       <v-col cols="8" md="8" class="pl-0 pr-0 pb-0">
         <v-text-field
           v-model="form.schedule.openSubmissionDateTime"
           type="date"
-          placeholder="yyyy-mm-dd"
+          :placeholder="$t('trans.date.date')"
           append-icon="event"
-          label="Open submissions"
+          :label="$t('trans.formSettings.opensubmissions')"
           density="compact"
           variant="outlined"
           :rules="scheduleOpenDate"
@@ -250,7 +252,7 @@ function scheduleTypeChanged() {
 
       <v-col cols="12" md="12" class="p-0">
         <p class="font-weight-black">
-          How long do you want to receive submissions?
+          {{ $t('trans.formSettings.submissionsDeadline') }}
         </p>
         <v-expand-transition>
           <v-row>
@@ -262,17 +264,17 @@ function scheduleTypeChanged() {
             >
               <v-radio
                 class="mx-2"
-                label="Keep open until manually unpublished"
+                :label="$t('trans.formSettings.keepSubmissnOpenTilUnplished')"
                 :value="SCHEDULE_TYPE.MANUAL"
               />
               <v-radio
                 class="mx-2"
-                label="Schedule a closing date"
+                :label="$t('trans.formSettings.submissionsClosingDate')"
                 :value="SCHEDULE_TYPE.CLOSINGDATE"
               />
               <v-radio
                 class="mx-2"
-                label="Set up submission period"
+                :label="$t('trans.formSettings.submissionPeriod')"
                 :value="SCHEDULE_TYPE.PERIOD"
               />
             </v-radio-group>
@@ -289,9 +291,9 @@ function scheduleTypeChanged() {
         <v-text-field
           v-model="form.schedule.closeSubmissionDateTime"
           type="date"
-          placeholder="yyyy-mm-dd"
+          :placeholder="$t('trans.date.date')"
           append-icon="event"
-          label="Close submissions"
+          :label="$t('trans.formSettings.closeSubmissions')"
           density="compact"
           variant="outlined"
           :rules="scheduleCloseDate"
@@ -306,7 +308,7 @@ function scheduleTypeChanged() {
       >
         <v-text-field
           v-model="form.schedule.keepOpenForTerm"
-          label="Keep open for"
+          :label="$t('trans.formSettings.keepOpenFor')"
           type="number"
           density="compact"
           solid
@@ -325,7 +327,7 @@ function scheduleTypeChanged() {
         <v-select
           v-model="form.schedule.keepOpenForInterval"
           :items="['days', 'weeks', 'months', 'quarters', 'years']"
-          label="Period"
+          :label="$t('trans.formSettings.period')"
           density="compact"
           solid
           variant="outlined"
@@ -345,7 +347,7 @@ function scheduleTypeChanged() {
       class="my-0 m-0 p-0"
     >
       <template #label>
-        Allow late submissions
+        {{ $t('trans.formSettings.allowLateSubmissions') }}
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-icon
@@ -357,8 +359,7 @@ function scheduleTypeChanged() {
             </v-icon>
           </template>
           <span>
-            If checked, submitters will be able to submit data after the closing
-            date.
+            {{ $t('trans.formSettings.allowLateSubmissionsInfoTip') }}
           </span>
         </v-tooltip>
       </template>
@@ -377,7 +378,7 @@ function scheduleTypeChanged() {
         <v-col cols="4" md="4" class="m-0 p-0">
           <v-text-field
             v-model="form.schedule.allowLateSubmissions.forNext.term"
-            label="After close date for"
+            :label="$t('trans.formSettings.afterCloseDateFor')"
             type="number"
             density="compact"
             solid
@@ -391,7 +392,7 @@ function scheduleTypeChanged() {
           <v-select
             v-model="form.schedule.allowLateSubmissions.forNext.intervalType"
             :items="['days', 'weeks', 'months', 'quarters', 'years']"
-            label="Period"
+            :label="$t('trans.formSettings.period')"
             density="compact"
             solid
             variant="outlined"
@@ -408,7 +409,7 @@ function scheduleTypeChanged() {
       class="my-0 pt-0"
       @update:modelValue="repeatSubmissionChanged"
     >
-      <template #label> Repeat period </template>
+      <template #label>{{ $t('trans.formSettings.repeatPeriod') }}</template>
     </v-checkbox>
 
     <v-expand-transition
@@ -421,7 +422,7 @@ function scheduleTypeChanged() {
         <v-col cols="4" class="m-0 p-0">
           <v-text-field
             v-model="form.schedule.repeatSubmission.everyTerm"
-            label="Every"
+            :label="$t('trans.formSettings.every')"
             type="number"
             density="compact"
             solid
@@ -435,7 +436,7 @@ function scheduleTypeChanged() {
           <v-select
             v-model="form.schedule.repeatSubmission.everyIntervalType"
             :items="AVAILABLE_PERIOD_OPTIONS"
-            label="Period"
+            :label="$t('trans.formSettings.period')"
             density="compact"
             solid
             variant="outlined"
@@ -448,9 +449,9 @@ function scheduleTypeChanged() {
           <v-text-field
             v-model="form.schedule.repeatSubmission.repeatUntil"
             type="date"
-            placeholder="yyyy-mm-dd"
+            :placeholder="$t('trans.date.date')"
             append-icon="event"
-            label="Repeat until"
+            :label="$t('trans.formSettings.repeatUntil')"
             density="compact"
             variant="outlined"
             :rules="repeatUntilDate"
@@ -475,7 +476,9 @@ function scheduleTypeChanged() {
       class="p-0 m-0"
     >
       <v-col class="p-0 m-0" cols="12" md="12">
-        <p class="font-weight-black m-0">Summary</p>
+        <p class="font-weight-black m-0">
+          {{ $t('trans.formSettings.summary') }}
+        </p>
       </v-col>
 
       <v-col
@@ -486,8 +489,9 @@ function scheduleTypeChanged() {
         class="p-0 m-0"
         cols="12"
         md="12"
-        >This form will be open for submissions from
-        <b>{{ form.schedule.openSubmissionDateTime }}</b> to
+        >{{ $t('trans.formSettings.submissionsOpenDateRange') }}
+        <b>{{ form.schedule.openSubmissionDateTime }}</b>
+        {{ $t('trans.formSettings.to') }}
         <b>
           {{
             form.schedule.scheduleType === SCHEDULE_TYPE.PERIOD
@@ -509,7 +513,7 @@ function scheduleTypeChanged() {
           form.schedule.allowLateSubmissions.enabled &&
           form.schedule.allowLateSubmissions.forNext.intervalType &&
           form.schedule.allowLateSubmissions.forNext.term
-            ? ', allowing late submissions for ' +
+            ? $t('trans.formSettings.allowLateSubmissnInterval') +
               form.schedule.allowLateSubmissions.forNext.term +
               ' ' +
               form.schedule.allowLateSubmissions.forNext.intervalType +
@@ -526,9 +530,10 @@ function scheduleTypeChanged() {
             form.schedule.repeatSubmission.everyIntervalType &&
             AVAILABLE_DATES[1]
           "
-          >The schedule will repeat every
+          >{{ $t('trans.formSettings.scheduleRepetition') }}
           <b>{{ form.schedule.repeatSubmission.everyTerm }} </b>
-          <b>{{ form.schedule.repeatSubmission.everyIntervalType }}</b> until
+          <b>{{ form.schedule.repeatSubmission.everyIntervalType }}</b>
+          {{ $t('trans.formSettings.until') }}
           <b>{{ form.schedule.repeatSubmission.repeatUntil }}</b
           >.
           <v-tooltip location="bottom">
@@ -542,22 +547,23 @@ function scheduleTypeChanged() {
             </template>
             <span>
               <!-- MORE FUTURE OCCURENCES -->
-              As per the settings these are the available dates of submissions:
+              {{ $t('trans.formSettings.datesOfSubmissnInfo') }}
               <ul>
                 <li
                   v-for="date in AVAILABLE_DATES"
                   :key="date.startDate + Math.random()"
                 >
-                  This form will be open for submissions from
+                  {{ $t('trans.formSettings.formOpenInterval') }}
                   {{ date.startDate.split(' ')[0] }}
                   <span v-if="form.schedule.enabled">
-                    to {{ date.closeDate.split(' ')[0] }}
+                    {{ $t('trans.formSettings.to') }}
+                    {{ date.closeDate.split(' ')[0] }}
                     <span
                       v-if="
                         form.schedule.allowLateSubmissions.enabled &&
                         date.closeDate !== date.graceDate
                       "
-                      >with allowing late submission until
+                      >{{ $t('trans.formSettings.allowDateSubmissionDate') }}
                       {{ date.graceDate.split(' ')[0] }}</span
                     ></span
                   >
@@ -595,7 +601,7 @@ function scheduleTypeChanged() {
           class="my-0 pt-0"
         >
           <template #label>
-            Set custom closing message
+            {{ $t('trans.formSettings.customClosingMessage') }}
             <v-tooltip location="bottom">
               <template #activator="{ props }">
                 <v-icon
@@ -606,8 +612,7 @@ function scheduleTypeChanged() {
                 ></v-icon>
               </template>
               <span>
-                Allow you to add a customized message for your users when they
-                visit a closed form.
+                {{ $t('trans.formSettings.customClosingMessageToolTip') }}
               </span>
             </v-tooltip>
           </template>
@@ -618,14 +623,16 @@ function scheduleTypeChanged() {
         <v-expand-transition v-if="form.schedule.closingMessageEnabled">
           <v-row class="mb-0 mt-0">
             <v-col class="mb-0 mt-0 pb-0 pt-0">
-              <template #title>Closing Message</template>
+              <template #title>{{
+                $t('trans.formSettings.closingMessage')
+              }}</template>
               <v-textarea
                 v-model="form.schedule.closingMessage"
                 density="compact"
                 rows="2"
                 solid
                 variant="outlined"
-                label="Closing Message"
+                :label="$t('trans.formSettings.closingMessage')"
                 data-test="text-name"
                 :rules="closeMessage"
               />
@@ -647,10 +654,12 @@ function scheduleTypeChanged() {
         >
           <v-row class="mb-0 mt-0">
             <v-col class="mb-0 mt-0 pb-0 pt-0">
-              <template #title>SEND Reminder email</template>
+              <template #title>{{
+                $t('trans.formSettings.sendReminderEmail')
+              }}</template>
               <v-checkbox v-model="form.reminder_enabled" class="my-0 m-0 p-0">
                 <template #label>
-                  Enable automatic reminder notification
+                  {{ $t('trans.formSettings.sendReminderEmail') }}
                   <v-tooltip close-delay="2500" location="bottom">
                     <template #activator="{ props }">
                       <v-icon
@@ -661,14 +670,15 @@ function scheduleTypeChanged() {
                       ></v-icon>
                     </template>
                     <span>
-                      Send reminder email/s with the form link during the
-                      submission period.
+                      {{
+                        $t('trans.formSettings.autoReminderNotificatnToolTip')
+                      }}
                       <a
                         :href="githubLinkScheduleAndReminderFeature"
                         class="preview_info_link_field_white"
                         :target="'_blank'"
                       >
-                        Learn more
+                        {{ $t('trans.formSettings.learnMore') }}
                         <v-icon
                           icon="mdi:mdi-arrow-top-right-bold-box-outline"
                         ></v-icon

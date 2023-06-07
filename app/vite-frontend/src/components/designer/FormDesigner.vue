@@ -3,10 +3,12 @@ import { FormBuilder } from '@formio/vue';
 import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import FloatButton from '~/components/designer/FloatButton.vue';
-import InformationLinkPreviewDialog from '~/components/forms/infolinks/InformationLinkPreviewDialog.vue';
+import ProactiveHelpPreviewDialog from '~/components/forms/infolinks/ProactiveHelpPreviewDialog.vue';
+import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
 import getRouter from '~/router';
 import { formService } from '~/services';
@@ -15,6 +17,8 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
+
+const { locale, t } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   draftId: {
@@ -171,6 +175,8 @@ const designerOptions = computed(() => {
         },
       },
     },
+    language: locale?.value ? locale.value : 'en',
+    i18n: formioIl8next,
     templates: templateExtensions,
     evalContext: {
       token: tokenParsed,
@@ -207,8 +213,13 @@ async function getFormSchema() {
     reRenderFormIo.value += 1;
   } catch (error) {
     notificationStore.addNotification({
-      text: 'An error occurred while loading the form design.',
-      consoleError: `Error loading form ${properties.formId} schema (version: ${properties.versionId} draft: ${properties.draftId}): ${error}`,
+      text: t('trans.formDesigner.formLoadErrMsg'),
+      consoleError: t('trans.formDesigner.formLoadConsoleErrMsg', {
+        formId: properties.formId,
+        versionId: properties.versionId,
+        draftId: properties.draftId,
+        error: error,
+      }),
     });
   }
   // get a version number to show in header
@@ -231,8 +242,10 @@ async function loadFile(event) {
     fileReader.readAsText(file);
   } catch (error) {
     notificationStore.addNotification({
-      text: 'An error occurred while importing the form schema.',
-      consoleError: `Error importing form schema : ${error}`,
+      text: t('trans.formDesigner.formSchemaImportErrMsg'),
+      consoleError: t('trans.formDesigner.formSchemaImportConsoleErrMsg', {
+        error: error,
+      }),
     });
   }
 }
@@ -511,8 +524,13 @@ async function submitFormSchema() {
     savedStatus.value = 'Not Saved';
     isFormSaved.value = false;
     notificationStore.addNotification({
-      text: 'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
-      consoleError: `Error updating or creating form (FormID: ${properties.formId}, versionId: ${properties.versionId}, draftId: ${properties.draftId}) Error: ${error}`,
+      text: t('trans.formDesigner.formDesignSaveErrMsg'),
+      consoleError: t('trans.formDesigner.formSchemaImportConsoleErrMsg', {
+        formId: properties.formId,
+        versionId: properties.versionId,
+        draftId: properties.draftId,
+        error: error,
+      }),
     });
   } finally {
     saving.value = false;
@@ -610,7 +628,7 @@ onMounted(() => {
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>Form Design</h1>
+        <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
@@ -627,7 +645,7 @@ onMounted(() => {
               <v-icon icon="mdi:mdi-download"></v-icon>
             </v-btn>
           </template>
-          <span>Export Design</span>
+          <span>{{ $t('trans.formDesigner.exportDesign') }}</span>
         </v-tooltip>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
@@ -649,7 +667,7 @@ onMounted(() => {
               />
             </v-btn>
           </template>
-          <span>Import Design</span>
+          <span>{{ $t('trans.formDesigner.importDesign') }}</span>
         </v-tooltip>
       </v-col>
       <!-- form name -->
@@ -658,22 +676,16 @@ onMounted(() => {
       </v-col>
       <!-- version number-->
       <v-col cols="12" order="4">
-        <em>Version: {{ displayVersion }}</em>
+        <em>{{ $t('trans.formDesigner.version') }} : {{ displayVersion }}</em>
       </v-col>
     </v-row>
     <BaseInfoCard class="my-6">
       <h4 class="text-primary">
         <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
-        >IMPORTANT!
+        >{{ $t('trans.formDesigner.important') }}!
       </h4>
-      <p class="my-0">
-        Use the <strong>SAVE DESIGN</strong> button when you are done building
-        this form.
-      </p>
-      <p class="my-0">
-        The <strong>SUBMIT</strong> button is provided for your user to submit
-        this form and will be activated after it is saved.
-      </p>
+      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
+      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoB')"></p>
     </BaseInfoCard>
     <FormBuilder
       ref="formioForm"
@@ -688,11 +700,11 @@ onMounted(() => {
       @removeComponent="onRemoveSchemaComponent"
       @formLoad="onFormLoad"
     />
-    <InformationLinkPreviewDialog
+    <ProactiveHelpPreviewDialog
       :show-dialog="showHelpLinkDialog"
       :component="component"
       :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
-      @close-dialog="onShowClosePreveiwDialog"
+      @close-dialog="onShowClosePreviewDialog"
     />
     <FloatButton
       placement="bottom-right"

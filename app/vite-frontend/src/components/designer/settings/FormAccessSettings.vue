@@ -44,7 +44,7 @@ function userTypeChanged() {
 
 <template>
   <BasePanel class="fill-height">
-    <template #title>Form Access</template>
+    <template #title>{{ $t('trans.formSettings.formAccess') }}</template>
     <v-radio-group
       ref="formAccess"
       v-model="form.userType"
@@ -56,7 +56,7 @@ function userTypeChanged() {
       <v-radio
         class="mb-4"
         label="Public (anonymous)"
-        :value="ID_MODE.PUBLIC"
+        :value="$t('trans.formSettings.public')"
       />
       <v-expand-transition>
         <BaseInfoCard v-if="form.userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
@@ -66,13 +66,10 @@ function userTypeChanged() {
               color="primary"
               icon="mdi:mdi-information"
             ></v-icon
-            >IMPORTANT!
+            >{{ $t('trans.formSettings.important') }}!
           </h4>
           <p class="mt-2 mb-0">
-            If you will be using this form to gather information from the
-            general public on topics that are of general interest to the public,
-            you are required to contact the GCPE so that your engagement can be
-            listed on
+            {{ $t('trans.formSettings.info') }}
             <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
               govTogetherBC.
               <v-icon
@@ -84,7 +81,11 @@ function userTypeChanged() {
           </p>
         </BaseInfoCard>
       </v-expand-transition>
-      <v-radio class="mb-4" label="Log-in Required" :value="ID_MODE.LOGIN" />
+      <v-radio
+        class="mb-4"
+        :label="$t('trans.formSettings.loginRequired')"
+        :value="ID_MODE.LOGIN"
+      />
       <v-expand-transition>
         <v-row v-if="form.userType === ID_MODE.LOGIN" class="pl-6">
           <v-radio-group v-model="form.idps[0]" class="my-0">
@@ -117,22 +118,21 @@ function userTypeChanged() {
                     color="primary"
                     icon="mdi:mdi-information"
                   ></v-icon
-                  >IMPORTANT!
+                  >{{ $t('trans.formSettings.important') }}!
                 </h4>
                 <p class="my-2">
-                  You must notify the Identity Information Management (IDIM)
-                  team by email (<a href="mailto:IDIM.Consulting@gov.bc.ca"
+                  {{ $t('trans.formSettings.idimNotifyA') }} (<a
+                    href="mailto:IDIM.Consulting@gov.bc.ca"
                     >IDIM.Consulting@gov.bc.ca</a
-                  >) your intent to leverage BCeID to verify the identities of
-                  your form submitters.
+                  >) {{ $t('trans.formSettings.idimNotifyB') }}
                 </p>
                 <p class="mt-2 mb-0">
-                  Please reference our
+                  {{ $t('trans.formSettings.referenceGuideA') }}
                   <a
                     href="https://github.com/bcgov/common-hosted-form-service/wiki/Accessing-forms#Notify-the-idim-team-if-you-are-using-bceid"
-                    >user guide</a
+                    >{{ $t('trans.formSettings.referenceGuideB') }}</a
                   >
-                  for more details.
+                  {{ $t('trans.formSettings.referenceGuideC') }}.
                 </p>
               </BaseInfoCard>
             </v-expand-transition>
@@ -140,7 +140,7 @@ function userTypeChanged() {
         </v-row>
       </v-expand-transition>
       <v-radio
-        label="Specific Team Members (You can specify users on the form's management screen once created.)"
+        :label="$t('trans.formSettings.specificTeamMembers')"
         :value="ID_MODE.TEAM"
       />
     </v-radio-group>

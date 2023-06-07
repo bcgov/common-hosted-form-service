@@ -76,7 +76,7 @@ function customDialog() {
             </slot>
           </div>
           <div class="dialog-text">
-            <slot name="text">default text</slot>
+            <slot name="text">{{ $t('trans.baseDialog.defaultText') }}</slot>
           </div>
         </v-card-text>
       </div>
@@ -89,7 +89,7 @@ function customDialog() {
             @click="closeDialog"
           >
             <slot name="button-text">
-              <span>OK</span>
+              <span>{{ $t('trans.baseDialog.ok') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -101,12 +101,12 @@ function customDialog() {
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>Continue</span>
+              <span>{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn class="mb-5" variant="outlined" @click="closeDialog">
             <slot name="button-text-cancel">
-              <span>Cancel</span>
+              <span>{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -118,12 +118,12 @@ function customDialog() {
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>Continue</span>
+              <span>{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn class="mb-5" variant="outlined" @click="deleteDialog">
             <slot name="button-text-delete">
-              <span>Cancel</span>
+              <span>{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -135,7 +135,7 @@ function customDialog() {
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>Continue</span>
+              <span>{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -146,12 +146,12 @@ function customDialog() {
             @click="customDialog"
           >
             <slot name="button-text-custom">
-              <span>Custom</span>
+              <span>{{ $t('trans.baseDialog.custom') }}</span>
             </slot>
           </v-btn>
           <v-btn class="mb-5" variant="outlined" @click="closeDialog">
             <slot name="button-text-cancel">
-              <span>Cancel</span>
+              <span>{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>

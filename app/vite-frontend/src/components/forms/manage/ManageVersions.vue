@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed, inject, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import getRouter from '~/router';
@@ -8,6 +9,8 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { formService } from '~/services';
 import { FormPermissions } from '~/utils/constants';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const fd = inject('fd');
 const draftId = inject('draftId');
@@ -17,12 +20,20 @@ const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
 const headers = ref([
-  { title: 'Version', align: 'start', key: 'version' },
-  { title: 'Status', align: 'start', key: 'status' },
-  { title: 'Date Created', align: 'start', key: 'createdAt' },
-  { title: 'Created By', align: 'start', key: 'createdBy' },
+  { title: t('trans.manageVersions.version'), align: 'start', key: 'version' },
+  { title: t('trans.manageVersions.status'), align: 'start', key: 'status' },
   {
-    title: 'Actions',
+    title: t('trans.manageVersions.dateCreated'),
+    align: 'start',
+    key: 'createdAt',
+  },
+  {
+    title: t('trans.manageVersions.createdBy'),
+    align: 'start',
+    key: 'createdBy',
+  },
+  {
+    title: t('trans.manageVersions.actions'),
     align: 'end',
     key: 'action',
     filterable: false,
@@ -207,19 +218,14 @@ if (fd) {
     <BaseInfoCard class="my-4">
       <h4 class="text-primary">
         <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
-        >IMPORTANT!
+        >{{ $t('trans.manageVersions.important') }}!
       </h4>
-      <p>
-        If there are no published versions, users are unable to access this form
-        until there is a published version assigned. Once a version is
-        published, that version is no longer editable. You must create a new
-        version based on one of the previous form versions to continue editing.
-      </p>
+      <p>{{ $t('trans.manageVersions.infoA') }}</p>
     </BaseInfoCard>
 
     <div class="mt-8 mb-5">
       <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
-      >Note: Only one version can be published.
+      >{{ $t('trans.manageVersions.infoB') }}
     </div>
     <v-data-table
       :key="rerenderTable"
@@ -247,19 +253,19 @@ if (fd) {
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <span v-bind="props">
-                Version {{ item.raw.version }}
+                {{ $t('trans.manageVersions.version') }} {{ item.raw.version }}
                 <v-chip
                   v-if="item.raw.isDraft"
                   color="secondary"
                   class="mb-5 px-1"
                   x-small
                 >
-                  Draft
+                  {{ $t('trans.manageVersions.draft') }}
                 </v-chip>
               </span>
             </template>
             <span>
-              Click to preview
+              {{ $t('trans.manageVersions.clickToPreview') }}
               <v-icon icon="mdi:mdi-open-in-new"></v-icon>
             </span>
           </v-tooltip>
@@ -272,7 +278,11 @@ if (fd) {
           v-model="item.raw.published"
           data-cy="formPublishedSwitch"
           color="success"
-          :label="item.raw.published ? 'Published' : 'Unpublished'"
+          :label="
+            item.raw.published
+              ? $t('trans.manageVersions.published')
+              : $t('trans.manageVersions.unpublished')
+          "
           :disabled="!canPublish"
           @update:modelValue="
             togglePublish(
@@ -318,7 +328,7 @@ if (fd) {
                 </v-btn>
               </router-link>
             </template>
-            <span>Edit Version</span>
+            <span>{{ $t('trans.manageVersions.editVersion') }}</span>
           </v-tooltip>
         </span>
 
@@ -337,7 +347,7 @@ if (fd) {
                 <v-icon icon="mdi:mdi-download"></v-icon>
               </v-btn>
             </template>
-            <span>Export Design</span>
+            <span>{{ $t('trans.manageVersions.exportDesign') }}</span>
           </v-tooltip>
         </span>
 
@@ -359,11 +369,14 @@ if (fd) {
               </span>
             </template>
             <span v-if="hasDraft">
-              Please publish or delete your latest draft version before starting
-              a new version.
+              {{ $t('trans.manageVersions.infoC') }}
             </span>
             <span v-else>
-              Use version {{ item.raw.version }} as the base for a new version
+              {{
+                $t('trans.manageVersions.useVersionInfo', {
+                  version: item.raw.version,
+                })
+              }}
             </span>
           </v-tooltip>
         </span>
@@ -385,7 +398,7 @@ if (fd) {
                 </v-btn>
               </span>
             </template>
-            <span>Delete Version</span>
+            <span>{{ $t('trans.manageVersions.deleteVersion') }}</span>
           </v-tooltip>
         </span>
       </template>
@@ -396,10 +409,11 @@ if (fd) {
       type="OK"
       @close-dialog="showHasDraftsDialog = false"
     >
-      <template #title>Draft already exists</template>
+      <template #title>{{
+        $t('trans.manageVersions.draftAlreadyExists')
+      }}</template>
       <template #text>
-        Please edit, publish or delete the existing draft before starting a new
-        draft.
+        {{ $t('trans.manageVersions.infoD') }}
       </template>
     </BaseDialog>
 
@@ -411,17 +425,24 @@ if (fd) {
     >
       <template #title>
         <span v-if="publishOpts.publishing">
-          Publish Version {{ publishOpts.version }}
+          {{ $t('trans.manageVersions.publishVersion') }}
+          {{ publishOpts.version }}
         </span>
-        <span v-else>Unpublish Version {{ publishOpts.version }}</span>
+        <span v-else
+          >{{ $t('trans.manageVersions.unpublishVersion') }}
+          {{ publishOpts.version }}</span
+        >
       </template>
       <template #text>
         <span v-if="publishOpts.publishing">
-          This will make Version {{ publishOpts.version }} of your form live.
+          {{
+            $t('trans.manageVersions.useVersionInfo', {
+              version: publishOpts.version,
+            })
+          }}
         </span>
         <span v-else>
-          Unpublishing this form will take the form out of circulation until a
-          version is published again.
+          {{ $t('trans.manageVersions.infoE') }}
         </span>
       </template>
     </BaseDialog>
@@ -432,10 +453,12 @@ if (fd) {
       @close-dialog="showDeleteDraftDialog = false"
       @continue-dialog="deleteCurrentDraft"
     >
-      <template #title>Confirm Deletion</template>
-      <template #text>Are you sure you wish to delete this Version?</template>
+      <template #title
+        >{{ $t('trans.manageVersions.confirmDeletion') }}
+      </template>
+      <template #text>{{ $t('trans.manageVersions.infoF') }}</template>
       <template #button-text-continue>
-        <span>Delete</span>
+        <span>{{ $t('trans.manageVersions.delete') }}</span>
       </template>
     </BaseDialog>
   </div>

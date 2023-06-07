@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import BCLogo from '~/assets/images/bc_logo.svg';
 import PrintLogo from '~/assets/images/bc_logo_print.svg';
 import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
+import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
 import router from '~/router';
 
 const formSubmitMode = ref(router?.meta?.formSubmitMode);
@@ -55,6 +56,7 @@ const appTitle = ref(
       </h1>
       <v-spacer />
       <BaseAuthButton />
+      <BaseInternationalization />
     </v-toolbar>
   </header>
 </template>

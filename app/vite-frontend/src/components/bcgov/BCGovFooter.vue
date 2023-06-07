@@ -14,45 +14,45 @@ const formSubmitMode = ref(router?.meta?.formSubmitMode);
   >
     <v-row no-gutters>
       <v-btn id="footer-home" variant="text" href="https://www.gov.bc.ca/">
-        <span>Home</span>
+        <span>{{ $t('trans.bCGovFooter.home') }}</span>
       </v-btn>
       <v-btn
         id="footer-about"
         variant="text"
         href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
       >
-        <span>About gov.bc.ca</span>
+        <span>{{ $t('trans.bCGovFooter.about') }}</span>
       </v-btn>
       <v-btn
         id="footer-disclaimer"
         variant="text"
         href="http://gov.bc.ca/disclaimer"
       >
-        <span>Disclaimer</span>
+        <span>{{ $t('trans.bCGovFooter.disclaimer') }}</span>
       </v-btn>
       <v-btn id="footer-privacy" variant="text" href="http://gov.bc.ca/privacy">
-        <span>Privacy</span>
+        <span>{{ $t('trans.bCGovFooter.privacy') }}</span>
       </v-btn>
       <v-btn
         id="footer-accessibility"
         variant="text"
         href="http://gov.bc.ca/webaccessibility"
       >
-        <span>Accessibility</span>
+        <span>{{ $t('trans.bCGovFooter.accessibility') }}</span>
       </v-btn>
       <v-btn
         id="footer-copyright"
         variant="text"
         href="http://gov.bc.ca/copyright"
       >
-        <span>Copyright</span>
+        <span>{{ $t('trans.bCGovFooter.copyRight') }}</span>
       </v-btn>
       <v-btn
         id="footer-contact"
         variant="text"
         href="https://www2.gov.bc.ca/gov/content/home/contact-us"
       >
-        <span>Contact Us</span>
+        <span>{{ $t('trans.bCGovFooter.contactUs') }}</span>
       </v-btn>
     </v-row>
   </v-footer>

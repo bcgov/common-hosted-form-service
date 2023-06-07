@@ -1,9 +1,12 @@
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import getRouter from '~/router';
 
-const props = defineProps({
+const { locale, t } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
   formId: {
     type: String,
     default: null,
@@ -72,7 +75,7 @@ const fabItemsSize = ref(36);
 const fabItemsIconsSize = ref(31);
 
 //base fab item variable start
-const baseFABItemName = ref('Collapse');
+const baseFABItemName = ref(t('trans.floatButton.collapse'));
 const baseIconName = ref('mdi:mdi-close');
 const baseIconColor = ref('#ffffff'); //end
 
@@ -82,11 +85,49 @@ const fabItemsInvertedColor = ref('#ffffff');
 const disabledInvertedFabItemsColor = ref('#ffffff');
 const disabledFabItemsColor = ref('#707070C1'); // end
 
+const savedMsg = ref(t('trans.floatButton.save'));
 const scrollIconName = ref('mdi:mdi-arrow-down');
-const scrollName = ref('Bottom');
+const scrollName = ref(t('trans.floatButton.bottom'));
 
-watch(props.size, () => {
+watch(properties.size, () => {
   setSizes();
+});
+
+watch(properties.savedStatus, (value) => {
+  switch (value) {
+    case 'Saved':
+      savedMsg.value = t('trans.floatButton.saved');
+      break;
+    case 'Save':
+      savedMsg.value = t('trans.floatButton.save');
+      break;
+    case 'Saving':
+      savedMsg.value = t('trans.floatButton.saving');
+      break;
+    case 'Not Saved':
+      savedMsg.value = t('trans.floatButton.notSaved');
+      break;
+  }
+});
+
+watch(locale, () => {
+  scrollName.value = t('trans.floatButton.bottom');
+
+  if (isFABActionsOpen.value) {
+    baseFABItemName.value = t('trans.floatButton.actions');
+  } else {
+    baseFABItemName.value = t('trans.floatButton.collapse');
+  }
+
+  if (properties.savedStatus === 'Saved') {
+    savedMsg.value = t('trans.floatButton.saved');
+  } else if (properties.savedStatus === 'Save') {
+    savedMsg.value = t('trans.floatButton.save');
+  } else if (properties.savedStatus === 'Saving') {
+    savedMsg.value = t('trans.floatButton.saving');
+  } else if (properties.savedStatus === 'Not Saved') {
+    savedMsg.value = t('trans.floatButton.notSaved');
+  }
 });
 
 onMounted(() => {
@@ -107,23 +148,23 @@ function onOpenFABActionItems() {
   if (isFABActionsOpen.value) {
     baseIconName.value = 'mdi:mdi-menu';
     isFABActionsOpen.value = false;
-    baseFABItemName.value = 'Actions';
+    baseFABItemName.value = t('trans.floatButton.actions');
   } else {
     baseIconName.value = 'mdi:mdi-close';
     isFABActionsOpen.value = true;
-    baseFABItemName.value = 'Collapse';
+    baseFABItemName.value = t('trans.floatButton.collapse');
   }
 }
 
 function gotoPreview() {
   let route = router.push({
     name: 'FormPreview',
-    query: { f: props.formId, d: props.draftId },
+    query: { f: properties.formId, d: properties.draftId },
   });
   window.open(route.href);
 }
 function setSizes() {
-  switch (props.size) {
+  switch (properties.size) {
     case 'x-large':
       fabItemsSize.value = 52;
       fabItemsIconsSize.value = 47;
@@ -148,14 +189,20 @@ function setSizes() {
 
 //checks if FAB is placed at the top right or top left of the screen
 function topLeftRight() {
-  if (props.placement === 'top-right' || props.placement === 'top-left') {
+  if (
+    properties.placement === 'top-right' ||
+    properties.placement === 'top-left'
+  ) {
     fabItemsDirection.value = 'column';
   }
 }
 
 //checks if FAB is placed at the bottom right or bottom left of the screen
 function bottomLeftRight() {
-  if (props.placement === 'bottom-right' || props.placement === 'bottom-left') {
+  if (
+    properties.placement === 'bottom-right' ||
+    properties.placement === 'bottom-left'
+  ) {
     fabItemsDirection.value = 'column-reverse';
   }
 }
@@ -168,13 +215,13 @@ function setPosition() {
   topLeftRight();
 
   if (
-    props.positionOffset.value &&
-    Object.keys(props.positionOffset.value).length > 0
+    properties.positionOffset.value &&
+    Object.keys(properties.positionOffset.value).length > 0
   ) {
-    Object.assign(fabItemsPosition.value, props.positionOffset.value);
+    Object.assign(fabItemsPosition.value, properties.positionOffset.value);
     return;
   }
-  switch (props.placement) {
+  switch (properties.placement) {
     case 'bottom-right':
       fabItemsPosition.value.right = '-.5vw';
       fabItemsPosition.value.bottom = '7vh';
@@ -201,13 +248,13 @@ function setPosition() {
 function handleScroll() {
   if (window.scrollY === 0) {
     scrollIconName.value = 'mdi:mdi-arrow-down';
-    scrollName.value = 'Bottom';
+    scrollName.value = t('trans.floatButton.bottom');
   } else if (
     window.pageYOffset + window.innerHeight >=
     document.documentElement.scrollHeight - 50
   ) {
     scrollIconName.value = 'mdi:mdi-arrow-up';
-    scrollName.value = 'Top';
+    scrollName.value = t('trans.floatButton.top');
   }
 }
 
@@ -215,9 +262,15 @@ function handleScroll() {
 function onHandleScroll() {
   if (window.scrollY === 0) {
     bottomScroll();
-  } else if (scrollName.value === 'Bottom' && window.scrollY > 0) {
+  } else if (
+    scrollName.value === t('trans.floatButton.bottom') &&
+    window.scrollY > 0
+  ) {
     bottomScroll();
-  } else if (scrollName.value === 'Top' && window.scrollY > 0) {
+  } else if (
+    scrollName.value === t('trans.floatButton.top') &&
+    window.scrollY > 0
+  ) {
     topScroll();
   } else {
     topScroll();
@@ -226,7 +279,7 @@ function onHandleScroll() {
 function topScroll() {
   window.scrollTo(0, 0);
   scrollIconName.value = 'mdi:mdi-arrow-down';
-  scrollName.value = 'Bottom';
+  scrollName.value = t('trans.floatButton.bottom');
 }
 function bottomScroll() {
   window.scrollTo({
@@ -235,7 +288,7 @@ function bottomScroll() {
     behavior: 'smooth',
   });
   scrollIconName.value = 'mdi:mdi-arrow-up';
-  scrollName.value = 'Top';
+  scrollName.value = t('trans.floatButton.top');
 }
 
 window.addEventListener('scroll', handleScroll);
@@ -286,7 +339,7 @@ window.addEventListener('scroll', handleScroll);
           data-cy="publishRouterLink"
           :class="{ fabAction: true, 'disabled-router': !formId }"
         >
-          <div v-text="'Publish'" />
+          <div v-text="$t('trans.floatButton.publish')" />
           <v-avatar
             class="fabItemsInverColor"
             :size="fabItemsSize"
@@ -314,7 +367,7 @@ window.addEventListener('scroll', handleScroll);
           data-cy="settingsRouterLink"
           :class="{ fabAction: true, 'disabled-router': !formId }"
         >
-          <div v-text="'Manage'" />
+          <div class="text" v-text="$t('trans.floatButton.manage')" />
           <v-avatar
             class="fabItemsInverColor"
             :size="fabItemsSize"
@@ -338,7 +391,7 @@ window.addEventListener('scroll', handleScroll);
         data-cy="redoButton"
         :class="{ 'disabled-router': !redoEnabled }"
       >
-        <div v-text="'Redo'" />
+        <div class="text" v-text="$t('trans.floatButton.redo')" />
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -358,7 +411,7 @@ window.addEventListener('scroll', handleScroll);
         data-cy="undoButton"
         :class="{ 'disabled-router': !undoEnabled }"
       >
-        <div v-text="'Undo'" />
+        <div class="text" v-text="$t('trans.floatButton.undo')" />
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -378,7 +431,7 @@ window.addEventListener('scroll', handleScroll);
         :class="{ 'disabled-router': !formId || !draftId }"
         @click="gotoPreview"
       >
-        <div v-text="'Preview'" />
+        <div class="text" v-text="$t('trans.floatButton.preview')" />
         <v-avatar class="fabItems" :size="fabItemsSize">
           <v-icon
             :color="formId ? fabItemsColor : disabledFabItemsColor"
@@ -394,7 +447,7 @@ window.addEventListener('scroll', handleScroll);
         data-cy="saveButton"
         :class="{ 'disabled-router': isFormSaved }"
       >
-        <div>{{ savedStatus }}</div>
+        <div class="text">{{ savedMsg }}</div>
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"

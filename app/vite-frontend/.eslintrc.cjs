@@ -63,6 +63,7 @@ module.exports = {
       but there may be more Vuetify components that are deprecated or in labs */
     'vuetify/no-deprecated-components': 'off',
     'vue/v-on-event-hyphenation': 'off',
+    'vue/no-v-html': 'off',
   },
   overrides: [
     {

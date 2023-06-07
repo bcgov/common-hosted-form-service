@@ -63,7 +63,7 @@ function deleteForm() {
             </v-btn>
           </router-link>
         </template>
-        <span>View Submissions</span>
+        <span>{{ $t('trans.manageFormActions.viewSubmissions') }}</span>
       </v-tooltip>
     </span>
 
@@ -82,7 +82,7 @@ function deleteForm() {
             </v-btn>
           </router-link>
         </template>
-        <span>Team Management</span>
+        <span>{{ $t('trans.manageFormActions.teamManagement') }}</span>
       </v-tooltip>
     </span>
 
@@ -100,7 +100,7 @@ function deleteForm() {
             <v-icon icon="mdi:mdi-delete"></v-icon>
           </v-btn>
         </template>
-        <span>Delete Form</span>
+        <span>{{ $t('trans.manageFormActions.deleteForm') }}</span>
       </v-tooltip>
 
       <BaseDialog
@@ -109,14 +109,16 @@ function deleteForm() {
         @close-dialog="showDeleteDialog = false"
         @continue-dialog="deleteForm"
       >
-        <template #title>Confirm Deletion</template>
+        <template #title>{{
+          $t('trans.manageFormActions.confirmDeletion')
+        }}</template>
         <template #text>
-          Are you sure you wish to delete
+          {{ $t('trans.manageFormActions.deleteMessageA') }}
           <strong>{{ form.name }}</strong
-          >? This form will no longer be accessible.
+          >? {{ $t('trans.manageFormActions.deleteMessageB') }}
         </template>
         <template #button-text-continue>
-          <span>Delete</span>
+          <span>{{ $t('trans.manageFormActions.deleteForm') }}</span>
         </template>
       </BaseDialog>
     </span>

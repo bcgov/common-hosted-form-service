@@ -45,6 +45,17 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
+        path: '/admin',
+        component: () => import('~/views/Admin.vue'),
+        children: [
+          {
+            path: '',
+            name: 'Admin',
+            component: () => import('~/views/admin/Root.vue'),
+          },
+        ],
+      },
+      {
         path: '/form',
         component: () => import('~/views/Form.vue'),
         children: [
