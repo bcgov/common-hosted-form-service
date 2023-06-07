@@ -1,7 +1,7 @@
 {
   "auth": {
     "clientId": "chefs-load-test",
-    "host": "https://dev.loginproxy.gov.bc.ca",
+    "host": "http://localhost:8082",
     "realm": "chefs",
     "password": "",
     "username": "chefs-load-test"
@@ -9,7 +9,7 @@
   "api": {
     "apiPath": "api/v1",
     "basePath": "/app",
-    "host": "https://chefs-dev.apps.silver.devops.gov.bc.ca"
+    "host": "http://localhost:8080"
   },
   "submissions": {
     "count": 1000,

@@ -1,3 +1,4 @@
+const apiAccess = require('../auth/middleware/apiAccess');
 const routes = require('express').Router();
 
 const controller = require('./controller');
@@ -38,7 +39,7 @@ routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UP
   await controller.addNote(req, res, next);
 });
 
-routes.get('/:formSubmissionId/status', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+routes.get('/:formSubmissionId/status', apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.getStatus(req, res, next);
 });
 
