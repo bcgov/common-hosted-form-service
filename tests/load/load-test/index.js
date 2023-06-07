@@ -2,9 +2,14 @@ const bytes = require('bytes');
 const config = require('config');
 const jwt = require('jsonwebtoken');
 const log = require('npmlog');
-const unirest = require('unirest');
 
 const { performance } = require('perf_hooks');
+
+// We need different libraries depending on whether the endpoints are HTTP
+// (localhost) or HTTPS (deployed application).
+const http = config.get('auth.host').startsWith('https://')
+  ? require('https')
+  : require('http');
 
 log.level = config.get('logLevel');
 log.addLevel('debug', 1500, { fg: 'cyan' });
@@ -48,27 +53,17 @@ const tokenExpired = (token) => {
   return expired;
 };
 
-const parseOk = (start, res) => {
+const parseOk = (start, json) => {
   const finish = performance.now();
   const elapsedMs = finish - start;
-  let size = 0;
-  let json = {};
-  try {
-    json = res.body;
-  } catch (e) {
-    log.error(`Error getting json body of response: ${e.message}`);
-  }
-  try {
-    size = Buffer.from(JSON.stringify(json), 'utf8').length;
-  } catch (e) {
-    log.error(`Error calculating size of response: ${e.message}`);
-  }
+  let size = json.length;
+
   return {
     metrics: {
       elapsedMs: elapsedMs,
       size: size,
     },
-    json: res.body,
+    json: JSON.parse(json),
   };
 };
 
@@ -77,22 +72,30 @@ const getToken = async () => {
   const auth = config.get('auth');
 
   return new Promise((resolve, reject) => {
-    const endpoint = `${auth.host}/realms/${auth.realm}/protocol/openid-connect/token`;
     const start = performance.now();
-    unirest('POST', endpoint)
-      .headers({
+    const endpoint = `${auth.host}/realms/${auth.realm}/protocol/openid-connect/token`;
+    const postData = `grant_type=password&client_id=${auth.clientId}&username=${auth.username}&password=${auth.password}`;
+
+    const options = {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-      })
-      .send('grant_type=password')
-      .send(`client_id=${auth.clientId}`)
-      .send(`username=${auth.username}`)
-      .send(`password=${auth.password}`)
-      .end(function (res) {
-        if (res.error) {
-          log.debug(`Failure in getToken for POST "${endpoint}": ` + res.error);
-          reject(new Error(res.error));
+      },
+    };
+
+    const req = http.request(endpoint, options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        if (res.statusCode >= 400) {
+          log.error(`Failure in getToken for POST "${endpoint}": ${data}`);
+          reject(new Error(data));
         } else {
-          const result = parseOk(start, res);
+          const result = parseOk(start, data);
           log.debug('>', result);
           resolve({
             ...result.metrics,
@@ -100,6 +103,15 @@ const getToken = async () => {
           });
         }
       });
+    });
+
+    req.on('error', (error) => {
+      log.error(`Error in getToken for POST "${endpoint}": ${error}`);
+      reject(error);
+    });
+
+    req.write(postData);
+    req.end();
   });
 };
 
@@ -111,26 +123,37 @@ const apiPath = () => {
 
 const createForm = async (token, schema) => {
   log.debug('===========> createForm');
+
   return new Promise((resolve, reject) => {
+    const start = performance.now();
     log.info(`creating form ${formName()}`);
     const form = {
       name: formName(),
       description: 'Load testing',
       schema: schema,
     };
-    // send it...
-    const start = performance.now();
-    unirest('POST', `${apiPath()}/forms`)
-      .headers({
+    const postData = JSON.stringify(form);
+
+    const options = {
+      method: 'POST',
+      headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-      })
-      .send(form)
-      .end(function (res) {
-        if (res.error) {
-          reject(new Error(res.error));
+      },
+    };
+
+    const req = http.request(`${apiPath()}/forms`, options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        if (res.statusCode >= 400) {
+          reject(new Error(data));
         } else {
-          const result = parseOk(start, res);
+          const result = parseOk(start, data);
           log.debug('>', result);
           resolve({
             ...result.metrics,
@@ -139,26 +162,46 @@ const createForm = async (token, schema) => {
           });
         }
       });
+    });
+
+    req.on('error', (error) => {
+      log.error(`Error creating form: ${error}`);
+      reject(error);
+    });
+
+    req.write(postData);
+    req.end();
   });
 };
 
 const publish = async (token, formId, formVersionId) => {
   log.debug('===========> publish');
+
   return new Promise((resolve, reject) => {
-    const endpoint = `${apiPath()}/forms/${formId}/drafts/${formVersionId}/publish`;
     const start = performance.now();
-    // send it...
-    unirest('POST', endpoint)
-      .headers({
+    const endpoint = `${apiPath()}/forms/${formId}/drafts/${formVersionId}/publish`;
+
+    const options = {
+      method: 'POST',
+      headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-      })
-      .end(function (res) {
-        if (res.error) {
-          log.debug(`Failure in publish for POST "${endpoint}": ` + res.error);
-          reject(new Error(res.error));
+      },
+    };
+
+    const req = http.request(endpoint, options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        if (res.statusCode >= 400) {
+          log.error(`Failure in publish for POST "${endpoint}": ${data}`);
+          reject(new Error(data));
         } else {
-          const result = parseOk(start, res);
+          const result = parseOk(start, data);
           log.debug('>', result);
           resolve({
             ...result.metrics,
@@ -167,81 +210,147 @@ const publish = async (token, formId, formVersionId) => {
           });
         }
       });
+    });
+
+    req.on('error', (error) => {
+      log.error(`Error in publish for POST "${endpoint}": ${error}`);
+      reject(error);
+    });
+
+    req.end();
   });
 };
 
 const createSubmission = async (token, formId, formVersionId, submission) => {
   log.debug('===========> createSubmission');
+
   return new Promise((resolve, reject) => {
-    const endpoint = `${apiPath()}/forms/${formId}/versions/${formVersionId}/submissions`;
     const start = performance.now();
-    // send it...
-    unirest('POST', endpoint)
-      .headers({
+    const endpoint = `${apiPath()}/forms/${formId}/versions/${formVersionId}/submissions`;
+    const postData = JSON.stringify(submission);
+
+    const options = {
+      method: 'POST',
+      headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-      })
-      .send(submission)
-      .end(function (res) {
-        if (res.error) {
-          log.debug(
-            `Failure in createSubmission for POST "${endpoint}": ` + res.error
+      },
+    };
+
+    const req = http.request(endpoint, options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        if (res.statusCode >= 400) {
+          log.error(
+            `Failure in createSubmission for POST "${endpoint}": ${data}`
           );
-          reject(new Error(res.error));
+          reject(new Error(data));
         } else {
-          const result = parseOk(start, res);
+          const result = parseOk(start, data);
           log.debug('>', result);
           resolve(result.metrics);
         }
       });
+    });
+
+    req.on('error', (error) => {
+      log.error(`Error in createSubmission for POST "${endpoint}": ${error}`);
+      reject(error);
+    });
+
+    req.write(postData);
+    req.end();
   });
 };
 
 const getSubmissions = async (token, formId) => {
   log.debug('===========> getSubmissions');
+
   return new Promise((resolve, reject) => {
-    const endpoint = `${apiPath()}/forms/${formId}/submissions`;
     const start = performance.now();
-    unirest('GET', endpoint)
-      .headers({
+    const endpoint = `${apiPath()}/forms/${formId}/submissions`;
+
+    const options = {
+      method: 'GET',
+      headers: {
         Authorization: `Bearer ${token}`,
-      })
-      .end(function (res) {
-        if (res.error) {
-          log.debug(
-            `Failure in getSubmissions for GET "${endpoint}": ` + res.error
-          );
-          reject(new Error(res.error));
+      },
+    };
+
+    const req = http.request(endpoint, options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        if (res.statusCode >= 400) {
+          log.error(`Failure in getSubmissions for GET "${endpoint}": ${data}`);
+          reject(new Error(data));
         } else {
-          const result = parseOk(start, res);
+          const result = parseOk(start, data);
           log.debug('>', result);
           resolve(result.metrics);
         }
       });
+    });
+
+    req.on('error', (error) => {
+      log.error(`Error in getSubmissions for GET "${endpoint}": ${error}`);
+      reject(error);
+    });
+
+    req.end();
   });
 };
 
 const exportSubmissions = async (token, formId) => {
   log.debug('===========> exportSubmissions');
+
   return new Promise((resolve, reject) => {
-    const endpoint = `${apiPath()}/forms/${formId}/export?format=json&type=submissions`;
     const start = performance.now();
-    unirest('GET', endpoint)
-      .headers({
+    const endpoint = `${apiPath()}/forms/${formId}/export?format=json&type=submissions`;
+
+    const options = {
+      method: 'GET',
+      headers: {
         Authorization: `Bearer ${token}`,
-      })
-      .end(function (res) {
-        if (res.error) {
-          log.debug(
-            `Failure in exportSubmissions for GET "${endpoint}": ` + res.error
+      },
+    };
+
+    const req = http.request(endpoint, options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        if (res.statusCode >= 400) {
+          log.error(
+            `Failure in exportSubmissions for GET "${endpoint}": ${data}`
           );
-          reject(new Error(res.error));
+          reject(new Error(data));
         } else {
-          const result = parseOk(start, res);
+          const result = parseOk(start, data);
           log.debug('>', result);
           resolve(result.metrics);
         }
       });
+    });
+
+    req.on('error', (error) => {
+      log.error(`Error in exportSubmissions for GET "${endpoint}": ${error}`);
+      reject(error);
+    });
+
+    req.end();
   });
 };
 
