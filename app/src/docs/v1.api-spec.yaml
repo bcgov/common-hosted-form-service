@@ -358,7 +358,7 @@ paths:
           name: columns
           schema:
             type: array
-          description: (optional) List of form level columns to be include
+          description: (optional) List of form level columns (Only Allowed draft, deleted, updatedAt columns) to be include. Other then allowed columns will be ignored
           example:
             - draft,
             - deleted,

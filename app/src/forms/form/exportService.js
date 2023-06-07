@@ -147,7 +147,8 @@ const service = {
     }
     // Let's add form level columns like deleted or draft
     if (params?.columns?.length) {
-      columns = columns.concat(params.columns);
+      let optionalAcceptedColumns = ['draft', 'deleted', 'updatedAt']; //'draft', 'deleted', 'updatedAt' columns needed for ETL process at this moment
+      columns = columns.concat([...params.columns].filter((column) => optionalAcceptedColumns.includes(column)));
     }
     // and join the submission data
     return columns.concat(['submission']);
