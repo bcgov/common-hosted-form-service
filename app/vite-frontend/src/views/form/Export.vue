@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import BaseSecure from '~/components/base/BaseSecure.vue';
-import SubmissionsTable from '~/components/forms/SubmissionsTable.vue';
+import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
 import { IdentityProviders } from '~/utils/constants';
 
 defineProps({
@@ -16,6 +16,6 @@ const IDP = computed(() => IdentityProviders);
 
 <template>
   <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
-    <SubmissionsTable :form-id="f" />
+    <ExportSubmissions :form-id="f" />
   </BaseSecure>
 </template>

@@ -132,8 +132,8 @@ const showEditToggle = computed(
         >
           <v-tooltip location="bottom">
             <template #activator="{ props }">
-              <v-btn color="primary" icon v-bind="props">
-                <v-icon>mode_edit</v-icon>
+              <v-btn color="primary" icon size="small" v-bind="props">
+                <v-icon icon="mdi:mdi-pencil"></v-icon>
               </v-btn>
             </template>
             <span>{{ $t('trans.formViewerActions.editThisDraft') }}</span>

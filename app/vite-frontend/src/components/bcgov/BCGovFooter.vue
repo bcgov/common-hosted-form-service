@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue';
-import router from '~/router';
-const formSubmitMode = ref(router?.meta?.formSubmitMode);
+import getRouter from '~/router';
+const router = getRouter();
+const formSubmitMode = ref(router?.currentRoute?.value?.meta?.formSubmitMode);
 </script>
 
 <template>
