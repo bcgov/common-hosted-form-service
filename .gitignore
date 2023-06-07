@@ -43,6 +43,7 @@ yarn-error.log*
 .vscode/*
 !.vscode/launch.json
 !.vscode/tasks.json
+!.vscode/README.md
 
 # temp office files
 ~$*
