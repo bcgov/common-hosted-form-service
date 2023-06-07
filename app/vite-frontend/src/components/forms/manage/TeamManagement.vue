@@ -569,7 +569,7 @@ async function removeUser() {
         :input-filter-placeholder="
           $t('trans.teamManagement.searchTeamManagementFields')
         "
-        input-item-key="value"
+        input-item-key="key"
         :input-save-button-text="$t('trans.teamManagement.save')"
         :input-data="
           DEFAULT_HEADERS.filter(

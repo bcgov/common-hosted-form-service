@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 
+import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 
 const properties = defineProps({
@@ -39,10 +40,11 @@ async function deleteSubmission() {
           color="red"
           :disabled="disabled"
           icon
+          size="small"
           v-bind="props"
           @click="showDeleteDialog = true"
         >
-          <v-icon>delete</v-icon>
+          <v-icon icon="mdi:mdi-delete"></v-icon>
         </v-btn>
       </template>
       <span
@@ -68,8 +70,8 @@ async function deleteSubmission() {
         {{ $t('trans.deleteSubmission.deleteWarning') }}
         {{
           isDraft
-            ? "$t('trans.deleteSubmission.drafts')"
-            : "$t('trans.deleteSubmission.formSubmission')"
+            ? $t('trans.deleteSubmission.drafts')
+            : $t('trans.deleteSubmission.formSubmission')
         }}?
       </template>
       <template #button-text-continue>

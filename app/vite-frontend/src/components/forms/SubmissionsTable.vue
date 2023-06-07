@@ -33,13 +33,13 @@ const deletedOnly = ref(false);
 const filterData = ref([]);
 const filterIgnore = ref([
   {
-    value: 'confirmationId',
+    key: 'confirmationId',
   },
   {
-    value: 'actions',
+    key: 'actions',
   },
   {
-    value: 'event',
+    key: 'event',
   },
 ]);
 const loading = ref(true);
@@ -73,9 +73,9 @@ const checkFormManage = computed(() =>
 const DEFAULT_HEADERS = computed(() => {
   let headers = [
     {
-      text: t('trans.submissionsTable.confirmationID'),
+      title: t('trans.submissionsTable.confirmationID'),
       align: 'start',
-      value: 'confirmationId',
+      key: 'confirmationId',
     },
   ];
 
@@ -84,9 +84,9 @@ const DEFAULT_HEADERS = computed(() => {
       headers = [
         ...headers,
         {
-          text: t('trans.submissionsTable.submissionDate'),
+          title: t('trans.submissionsTable.submissionDate'),
           align: 'start',
-          value: 'date',
+          key: 'date',
         },
       ];
     }
@@ -95,9 +95,9 @@ const DEFAULT_HEADERS = computed(() => {
       headers = [
         ...headers,
         {
-          text: t('trans.submissionsTable.submitter'),
+          title: t('trans.submissionsTable.submitter'),
           align: 'start',
-          value: 'submitter',
+          key: 'submitter',
         },
       ];
     }
@@ -106,9 +106,9 @@ const DEFAULT_HEADERS = computed(() => {
       headers = [
         ...headers,
         {
-          text: t('trans.submissionsTable.status'),
+          title: t('trans.submissionsTable.status'),
           align: 'start',
-          value: 'status',
+          key: 'status',
         },
       ];
     }
@@ -116,19 +116,19 @@ const DEFAULT_HEADERS = computed(() => {
     headers = [
       ...headers,
       {
-        text: t('trans.submissionsTable.submissionDate'),
+        title: t('trans.submissionsTable.submissionDate'),
         align: 'start',
-        value: 'date',
+        key: 'date',
       },
       {
-        text: t('trans.submissionsTable.submitter'),
+        title: t('trans.submissionsTable.submitter'),
         align: 'start',
-        value: 'submitter',
+        key: 'submitter',
       },
       {
-        text: t('trans.submissionsTable.status'),
+        title: t('trans.submissionsTable.status'),
         align: 'start',
-        value: 'status',
+        key: 'status',
       },
     ];
   }
@@ -138,9 +138,9 @@ const DEFAULT_HEADERS = computed(() => {
     headers = [
       ...headers,
       {
-        text: t('trans.submissionsTable.lateSubmission'),
+        title: t('trans.submissionsTable.lateSubmission'),
         align: 'start',
-        value: 'lateEntry',
+        key: 'lateEntry',
       },
     ];
   }
@@ -149,20 +149,20 @@ const DEFAULT_HEADERS = computed(() => {
   const maxHeaderLength = 25;
   userColumns.value.forEach((col) => {
     headers.push({
-      text:
+      title:
         col.length > maxHeaderLength
           ? `${col.substring(0, maxHeaderLength)}...`
           : col,
       align: 'end',
-      value: col,
+      key: col,
     });
   });
 
   // Actions column at the end
   headers.push({
-    text: t('trans.submissionsTable.view'),
+    title: t('trans.submissionsTable.view'),
     align: 'end',
-    value: 'actions',
+    key: 'actions',
     filterable: false,
     sortable: false,
     width: '40px',
@@ -170,15 +170,15 @@ const DEFAULT_HEADERS = computed(() => {
 
   // Actions column at the end
   headers.push({
-    text: t('trans.submissionsTable.event'),
+    title: t('trans.submissionsTable.event'),
     align: 'end',
-    value: 'event',
+    key: 'event',
     filterable: false,
     sortable: false,
     width: '40px',
   });
 
-  return headers.filter((x) => x.value !== 'updatedAt' || deletedOnly.value);
+  return headers.filter((x) => x.key !== 'updatedAt' || deletedOnly.value);
 });
 
 const HEADERS = computed(() => {
@@ -186,44 +186,43 @@ const HEADERS = computed(() => {
   if (filterData.value.length > 0)
     headers = headers.filter(
       (h) =>
-        filterData.value.some((fd) => fd.value === h.value) ||
-        filterIgnore.value.some((ign) => ign.value === h.value)
+        filterData.value.some((fd) => fd.key === h.key) ||
+        filterIgnore.value.some((ign) => ign.key === h.key)
     );
   return headers;
 });
 
 const FILTER_HEADERS = computed(() => {
   let filteredHeader = DEFAULT_HEADERS.value
-    .filter((h) => !filterIgnore.value.some((fd) => fd.value === h.value))
+    .filter((h) => !filterIgnore.value.some((fd) => fd.key === h.key))
     .concat(
       formFields.value.map((ff) => {
-        return { text: ff, value: ff, align: 'end' };
+        return { title: ff, key: ff, align: 'end' };
       })
     );
 
   filteredHeader = [
     {
-      text: t('trans.submissionsTable.submissionDate'),
+      title: t('trans.submissionsTable.submissionDate'),
       align: 'start',
-      value: 'date',
+      key: 'date',
     },
     {
-      text: t('trans.submissionsTable.submitter'),
+      title: t('trans.submissionsTable.submitter'),
       align: 'start',
-      value: 'submitter',
+      key: 'submitter',
     },
     {
-      text: t('trans.submissionsTable.status'),
+      title: t('trans.submissionsTable.status'),
       align: 'start',
-      value: 'status',
+      key: 'status',
     },
     ...filteredHeader,
   ];
 
   return filteredHeader.filter(function (item, index, inputArray) {
     return (
-      inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-      index
+      inputArray.findIndex((arrayItem) => arrayItem.key === item.key) == index
     );
   });
 });
@@ -234,15 +233,15 @@ const PRESELECTED_DATA = computed(() => {
     preselectedData = userFormPreferences.value.preferences.columns.map(
       (column) => {
         return {
+          title: column,
           align: 'end',
-          text: column,
-          value: column,
+          key: column,
         };
       }
     );
   } else {
     preselectedData = DEFAULT_HEADERS.value.filter(
-      (h) => !filterIgnore.value.some((fd) => fd.value === h.value)
+      (h) => !filterIgnore.value.some((fd) => fd.key === h.key)
     );
   }
   return preselectedData;
@@ -293,7 +292,7 @@ async function populateSubmissionsTable() {
   try {
     loading.value = true;
     // Get user prefs for this form
-    await this.getFormPreferencesForCurrentUser(properties.formId);
+    await formStore.getFormPreferencesForCurrentUser(properties.formId);
     // Get the submissions for this form
     let criteria = {
       formId: properties.formId,
@@ -375,13 +374,10 @@ async function refreshSubmissions() {
         });
       }
     }),
-  ])
-    .then(async () => {
-      await populateSubmissionsTable();
-    })
-    .finally(() => {
-      selectedSubmissions.value = [];
-    });
+  ]).finally(async () => {
+    await populateSubmissionsTable();
+    selectedSubmissions.value = [];
+  });
 }
 
 async function restoreSingleSub() {
@@ -412,7 +408,11 @@ async function updateFilter(data) {
     columns: [],
   };
   data.forEach((d) => {
-    if (formFields.value.includes(d.value)) preferences.columns.push(d.value);
+    if (
+      formFields.value.includes(d) ||
+      ['date', 'submitter', 'status', 'lateEntry'].includes(d)
+    )
+      preferences.columns.push(d);
   });
 
   await formStore.updateFormPreferencesForCurrentUser({
@@ -420,7 +420,7 @@ async function updateFilter(data) {
     preferences: preferences,
   });
   showColumnsDialog.value = false;
-  await this.populateSubmissionsTable();
+  await populateSubmissionsTable();
 }
 
 onMounted(() => {
@@ -548,7 +548,13 @@ onMounted(() => {
           >
             <v-tooltip location="bottom">
               <template #activator="{ props }">
-                <v-icon color="red" dark v-bind="props">remove_circle</v-icon>
+                <v-icon
+                  color="red"
+                  dark
+                  v-bind="props"
+                  icon="mdi:mdi-minus"
+                  size="x-small"
+                ></v-icon>
               </template>
               <span>{{
                 $t('trans.submissionsTable.delSelectedSubmissions')
@@ -561,15 +567,19 @@ onMounted(() => {
             color="red"
             :disabled="selectedSubmissions.length === 0"
             icon
+            size="x-small"
             @click="
               (showRestoreDialog = true), (singleSubmissionRestore = false)
             "
           >
             <v-tooltip location="bottom">
               <template #activator="{ props }">
-                <v-icon color="green" dark v-bind="props"
-                  >restore_from_trash</v-icon
-                >
+                <v-icon
+                  color="green"
+                  dark
+                  v-bind="props"
+                  icon="mdi:mdi-delete-restore"
+                ></v-icon>
               </template>
               <span>{{
                 $t('trans.submissionsTable.resSelectedSubmissions')
@@ -579,72 +589,74 @@ onMounted(() => {
         </span>
       </template>
 
-      <template #[`item.date`]="{ item }">
-        {{ $filters.formatDateLong(item.raw.date) }}
+      <template #item.date="{ item }">
+        {{ $filters.formatDateLong(item.columns.date) }}
       </template>
-      <template #[`item.status`]="{ item }">
-        {{ item.status }}
+      <template #item.status="{ item }">
+        {{ item.columns.status }}
       </template>
-      <template #[`item.lateEntry`]="{ item }">
+      <template #item.lateEntry="{ item }">
         {{
-          item.lateEntry === true
+          item.columns.lateEntry === true
             ? $t('trans.submissionsTable.yes')
             : $t('trans.submissionsTable.no')
         }}
       </template>
-      <template #[`item.actions`]="{ item }">
+      <template #item.actions="{ item }">
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <router-link
               :to="{
                 name: 'FormView',
                 query: {
-                  s: item.submissionId,
+                  s: item.raw.submissionId,
                 },
               }"
             >
-              <v-btn color="primary" icon v-bind="props">
-                <v-icon>remove_red_eye</v-icon>
+              <v-btn color="primary" icon size="x-small" v-bind="props">
+                <v-icon icon="mdi:mdi-eye"></v-icon>
               </v-btn>
             </router-link>
           </template>
           <span>{{ $t('trans.submissionsTable.viewSubmission') }}</span>
         </v-tooltip>
       </template>
-      <template #[`item.event`]="{ item }">
+      <template #item.event="{ item }">
         <span>
-          <v-tooltip v-if="!item.deleted" location="bottom">
+          <v-tooltip v-if="!item.raw.deleted" location="bottom">
             <template #activator="{ props }">
               <v-btn
                 color="red"
                 icon
+                size="x-small"
                 v-bind="props"
                 @click="
                   (showDeleteDialog = true),
-                    (deleteItem = item),
+                    (deleteItem = item.raw),
                     (singleSubmissionDelete = true)
                 "
               >
-                <v-icon>remove_circle</v-icon>
+                <v-icon icon="mdi:mdi-minus" color="white"></v-icon>
               </v-btn>
             </template>
             <span>{{ $t('trans.submissionsTable.deleteSubmission') }}</span>
           </v-tooltip>
         </span>
-        <span v-if="item.deleted">
+        <span v-if="item.raw.deleted">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-btn
                 color="green"
                 icon
+                size="x-small"
                 v-bind="props"
                 @click="
-                  restoreItem = item;
+                  restoreItem = item.raw;
                   showRestoreDialog = true;
                   singleSubmissionRestore = true;
                 "
               >
-                <v-icon>restore_from_trash</v-icon>
+                <v-icon icon="mdi:mdi-delete-restore"></v-icon>
               </v-btn>
             </template>
             <span>{{ $t('trans.submissionsTable.restore') }}</span>
@@ -691,7 +703,7 @@ onMounted(() => {
         :input-filter-placeholder="
           $t('trans.submissionsTable.searchSubmissionFields')
         "
-        input-item-key="value"
+        input-item-key="key"
         :input-save-button-text="$t('trans.submissionsTable.save')"
         :input-data="FILTER_HEADERS"
         :preselected-data="PRESELECTED_DATA"
