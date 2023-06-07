@@ -28,16 +28,15 @@ const { email } = storeToRefs(authStore);
               color="success"
               icon="mdi:mdi-check-circle"
             ></v-icon>
-            Your form has been submitted successfully
+            {{ $t('trans.sucess.sucessFormSubmissn') }}
           </h1>
           <div v-if="form.showSubmissionConfirmation">
             <h3>
               <span class="d-print-none">
-                If you wish to keep a record of this submission, you can keep
-                the following
+                {{ $t('trans.sucess.keepRecord') }}
               </span>
               <span>
-                Confirmation ID:
+                {{ $t('trans.sucess.confirmationId') }}:
                 <mark>{{ s.substring(0, 8).toUpperCase() }}</mark>
               </span>
             </h3>

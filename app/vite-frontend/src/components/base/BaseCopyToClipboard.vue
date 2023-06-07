@@ -38,7 +38,7 @@ function clipboardSuccessHandler() {
 }
 function clipboardErrorHandler() {
   notificationStore.addNotification({
-    text: 'Error attempting to copy to clipboard.',
+    text: this.$t('trans.baseCopyToClipboard.errCopyToClipboard'),
   });
 }
 </script>

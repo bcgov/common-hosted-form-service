@@ -119,9 +119,9 @@ function resetDialog() {
         <v-container>
           <v-row>
             <v-col>
-              <span class="text-h5" style="font-weight: bold"
-                >Component Information Link</span
-              >
+              <span class="text-h5" style="font-weight: bold">{{
+                $t('trans.proactiveHelpDialog.componentInfoLink')
+              }}</span>
             </v-col>
           </v-row>
           <v-row v-if="linkError">
@@ -129,7 +129,7 @@ function resetDialog() {
               <div
                 style="margin: 0px; padding: 0px"
                 class="text-red"
-                v-text="'Learn More Link field cannot be empty.'"
+                :v-text="$t('trans.proactiveHelpDialog.learnMoreLinkTxt')"
               />
             </v-col>
           </v-row>
@@ -138,14 +138,14 @@ function resetDialog() {
               <div
                 style="margin: 0px; padding: 0px"
                 class="text-red"
-                v-text="'Large image. Image size cannot be large than .5mb'"
+                :v-text="$t('trans.proactiveHelpDialog.largeImgTxt')"
               />
             </v-col>
           </v-row>
 
           <v-row class="mt-5" no-gutters>
             <span class="text-decoration-underline mr-2 blackColorWrapper">
-              Component Name:
+              {{ $t('trans.proactiveHelpDialog.componentName') }}
             </span>
             <span class="blueColorWrapper" v-text="componentName_" />
           </v-row>
@@ -153,7 +153,7 @@ function resetDialog() {
             <v-col>
               <div class="d-flex flex-row align-center">
                 <p class="mr-2 mt-2 text-decoration-underline blueColorWrapper">
-                  Learn More Link:
+                  {{ $t('trans.proactiveHelpDialog.learnMoreLink') }}
                 </p>
                 <v-col cols="5">
                   <v-text-field
@@ -174,8 +174,8 @@ function resetDialog() {
                   <template #label>
                     <span class="v-label">{{
                       !isLinkEnabled
-                        ? 'Click to enable link'
-                        : 'Click to disable link'
+                        ? $t('trans.proactiveHelpDialog.clickToEnableLink')
+                        : $t('trans.proactiveHelpDialog.clickToDisableLink')
                     }}</span>
                   </template>
                 </v-checkbox>
@@ -185,7 +185,7 @@ function resetDialog() {
 
           <v-row no-gutters>
             <v-col cols="12" sm="12" md="12" class="mb-2 blackColorWrapper">
-              Description
+              {{ $t('trans.proactiveHelpDialog.description') }}
             </v-col>
             <v-col cols="12" sm="12" md="12">
               <v-textarea
@@ -217,7 +217,9 @@ function resetDialog() {
                     counter
                     accept="image/*"
                     :label="
-                      imagePlaceholder ? imagePlaceholder : 'Image Upload:'
+                      imagePlaceholder
+                        ? imagePlaceholder
+                        : $t('trans.proactiveHelpDialog.imageUpload')
                     "
                     class="file_upload_data-cy"
                     @change="selectImage"
@@ -235,14 +237,14 @@ function resetDialog() {
                     data-cy="more_help_info_link_save_button"
                     @click="submit"
                   >
-                    Save
+                    {{ $t('trans.proactiveHelpDialog.save') }}
                   </v-btn>
                   <v-btn
                     class="cancelButtonWrapper"
                     data-cy="more_help_info_link_cancel_button"
                     @click="onCloseDialog"
                   >
-                    Cancel
+                    {{ $t('trans.proactiveHelpDialog.cancel') }}
                   </v-btn>
                 </div>
               </div>

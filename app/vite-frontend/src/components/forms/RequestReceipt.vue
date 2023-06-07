@@ -1,10 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { formService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   email: {
@@ -42,13 +45,16 @@ async function requestReceipt() {
         to: to.value,
       });
       notificationStore.addNotification({
-        text: `An email has been sent to ${to.value}.`,
+        text: t('trans.requestReceipt.emailSent', { to: to.value }),
         ...NotificationTypes.SUCCESS,
       });
     } catch (error) {
       notificationStore.addNotification({
-        text: 'An error occured while attempting to send your email.',
-        consoleError: `Email confirmation to ${to.value} failed: ${error}`,
+        text: t('trans.requestReceipt.sendingEmailErrMsg'),
+        consoleError: t('trans.requestReceipt.sendingEmailConsErrMsg', {
+          to: to.value,
+          error: error,
+        }),
       });
     } finally {
       showDialog.value = false;
@@ -64,7 +70,7 @@ function resetDialog() {
   <div>
     <v-btn color="primary" variant="text" size="small" @click="displayDialog">
       <v-icon icon="mdi:mdi-email"></v-icon>
-      <span>Email a receipt of this submission</span>
+      <span>{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
 
     <BaseDialog
@@ -80,7 +86,7 @@ function resetDialog() {
             density="compact"
             solid
             variant="outlined"
-            label="Send to E-mail Address"
+            :label="$t('trans.requestReceipt.sendToEmailAddress')"
             :rules="emailRules"
             data-test="text-form-to"
           >
@@ -95,7 +101,7 @@ function resetDialog() {
         </v-form>
       </template>
       <template #button-text-continue>
-        <span>SEND</span>
+        <span>{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>

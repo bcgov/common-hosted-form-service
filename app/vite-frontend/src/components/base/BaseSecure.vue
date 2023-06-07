@@ -15,7 +15,8 @@ defineProps({
 
 const authStore = useAuthStore();
 
-const { authenticated, identityProvider, ready } = storeToRefs(authStore);
+const { authenticated, identityProvider, isAdmin, isUser, ready } =
+  storeToRefs(authStore);
 
 const mailToLink = computed(
   () =>
@@ -31,37 +32,43 @@ const contactInfo = computed(() => import.meta.env.VITE_CONTACT);
 
 <template>
   <div v-if="authenticated">
-    <div v-if="authStore.isUser">
-      <div v-if="admin && !authStore.isAdmin" class="text-center">
-        <h1 class="my-8">401: Unauthorized. :(</h1>
-        <p>You do not have permission to access this page.</p>
+    <div v-if="isUser">
+      <div v-if="admin && !isAdmin" class="text-center">
+        <h1 class="my-8">{{ $t('trans.baseSecure.401UnAuthorized') }}(</h1>
+        <p>{{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}</p>
       </div>
       <div
         v-else-if="idp && !idp.includes(identityProvider)"
         class="text-center"
       >
-        <h1 class="my-8">403: Forbidden. :(</h1>
-        <p>This page requires {{ idp }} authentication.</p>
+        <h1 class="my-8">{{ $t('trans.baseSecure.403Forbidden') }}(</h1>
+        <p>
+          {{
+            $t('trans.baseSecure.403ErrorMsg', {
+              idp: idp,
+            })
+          }}
+        </p>
       </div>
       <slot v-else />
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
-      <h1 class="my-8">401: Unauthorized. :(</h1>
+      <h1 class="my-8">{{ $t('trans.baseSecure.401UnAuthorized') }}(</h1>
       <p>
-        Your account is not set up correctly.<br />Please contact
+        <span v-html="$t('trans.baseSecure.401ErrorMsg')"> </span>
         <a :href="mailToLink">{{ contactInfo }}</a>
       </p>
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" size="large">
           <v-icon start icon="mdi:mdi-home"></v-icon>
-          <span>About</span>
+          <span>{{ $t('trans.baseSecure.about') }}</span>
         </v-btn>
       </router-link>
     </div>
   </div>
   <div v-else class="text-center">
-    <h1 class="my-8">You must be logged in to use this feature.</h1>
+    <h1 class="my-8">{{ $t('trans.baseSecure.loginInfo') }}</h1>
     <v-btn
       v-if="ready"
       color="primary"
@@ -69,7 +76,7 @@ const contactInfo = computed(() => import.meta.env.VITE_CONTACT);
       size="large"
       @click="login"
     >
-      <span>Login</span>
+      <span>{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>
   </div>
 </template>

@@ -18,7 +18,7 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
       variant="outlined"
       @click="authStore.logout()"
     >
-      <span>Logout</span>
+      <span>{{ $t('trans.baseAuthButton.logout') }}</span>
     </v-btn>
     <v-btn
       v-else-if="hasLogin"
@@ -26,7 +26,7 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
       variant="outlined"
       @click="authStore.login()"
     >
-      <span>Login</span>
+      <span>{{ $t('trans.baseAuthButton.login') }}</span>
     </v-btn>
   </div>
 </template>

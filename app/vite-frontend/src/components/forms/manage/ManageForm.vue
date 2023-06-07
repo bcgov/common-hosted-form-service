@@ -96,12 +96,11 @@ async function updateSettings() {
         <!-- Form Settings -->
         <v-expansion-panel-title>
           <div class="header">
-            <strong>Form Settings</strong>
+            <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
             <span>
               <small>
-                Created: {{ $filters.formatDate(form.createdAt) }} ({{
-                  form.createdBy
-                }})
+                {{ $t('trans.manageForm.created') }}:
+                {{ $filters.formatDate(form.createdAt) }} ({{ form.createdBy }})
               </small>
               <v-btn
                 v-if="canEditForm"
@@ -128,10 +127,10 @@ async function updateSettings() {
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
             <v-btn class="mr-5" color="primary" @click="updateSettings">
-              <span>Update</span>
+              <span>{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
             <v-btn variant="outlined" @click="cancelSettingsEdit">
-              <span>Cancel</span>
+              <span>{{ $t('trans.manageForm.cancel') }}</span>
             </v-btn>
           </div>
         </v-expansion-panel-text>
@@ -147,15 +146,17 @@ async function updateSettings() {
       <v-expansion-panel flat>
         <v-expansion-panel-title>
           <div class="header">
-            <strong>API Key</strong>
+            <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
             <span v-if="apiKey">
               <small v-if="apiKey.updatedBy">
-                Updated: {{ $filters.formatDate(apiKey.updatedAt) }} ({{
+                {{ $t('trans.manageForm.updated') }}:
+                {{ $filters.formatDate(apiKey.updatedAt) }} ({{
                   apiKey.updatedBy
                 }})
               </small>
               <small v-else>
-                Created: {{ $filters.formatDate(apiKey.createdAt) }} ({{
+                {{ $t('trans.manageForm.created') }}:
+                {{ $filters.formatDate(apiKey.createdAt) }} ({{
                   apiKey.createdBy
                 }})
               </small>
@@ -174,19 +175,19 @@ async function updateSettings() {
         <v-expansion-panel-title>
           <v-row no-gutters>
             <v-col cols="7" class="d-flex justify-start">
-              <strong>Form Design History</strong>
+              <strong>{{ $t('trans.manageForm.formDesignHistory') }}</strong>
             </v-col>
             <v-col class="d-flex justify-end">
               <div>
                 <span>
-                  <strong>Total Versions:</strong>
+                  <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
                   {{ combinedVersionAndDraftCount }}
                 </span>
               </div>
             </v-col>
             <v-col class="d-flex justify-end">
               <span class="ml-12 mr-2">
-                <strong>Status:</strong>
+                <strong>{{ $t('trans.manageForm.status') }}:</strong>
                 {{ versionState }}
               </span>
             </v-col>

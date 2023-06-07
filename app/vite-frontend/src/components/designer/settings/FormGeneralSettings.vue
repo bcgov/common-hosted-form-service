@@ -24,13 +24,13 @@ const descriptionRules = [
 
 <template>
   <BasePanel class="fill-height">
-    <template #title>Form Title</template>
+    <template #title>{{ $t('trans.formSettings.formTitle') }}</template>
     <v-text-field
       v-model="form.name"
       density="compact"
       solid
       variant="outlined"
-      label="Form Title"
+      :label="$t('trans.formSettings.formTitle')"
       data-test="text-name"
       :rules="nameRules"
     />
@@ -40,7 +40,7 @@ const descriptionRules = [
       density="compact"
       solid
       variant="outlined"
-      label="Form Description"
+      :label="$t('trans.formSettings.formDescription')"
       data-test="text-description"
       :rules="descriptionRules"
     />

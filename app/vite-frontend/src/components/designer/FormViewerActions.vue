@@ -2,9 +2,22 @@
 import { computed } from 'vue';
 
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
+import PrintOptions from '~/components/forms/PrintOptions.vue';
 import { FormPermissions } from '~/utils/constants';
 
 const properties = defineProps({
+  block: {
+    type: Boolean,
+    default: false,
+  },
+  bulkFile: {
+    type: Boolean,
+    default: false,
+  },
+  allowSubmitterToUploadFile: {
+    type: Boolean,
+    default: false,
+  },
   draftEnabled: {
     type: Boolean,
     default: false,
@@ -29,9 +42,17 @@ const properties = defineProps({
     type: String,
     default: undefined,
   },
+  submission: {
+    type: Object,
+    default: undefined,
+  },
 });
 
-defineEmits(['save-draft']);
+const emits = defineEmits([
+  'save-draft',
+  'switchView',
+  'showdoYouWantToSaveTheDraftModal',
+]);
 
 const canSaveDraft = computed(() => !properties.readOnly);
 const showEditToggle = computed(
@@ -45,14 +66,40 @@ const showEditToggle = computed(
   <v-row class="d-print-none">
     <v-col v-if="formId">
       <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
-        <v-btn color="primary" variant="outlined">
-          <span>View All Submissions</span>
+        <v-btn
+          color="primary"
+          variant="outlined"
+          @click="emits('showdoYouWantToSaveTheDraftModal')"
+        >
+          <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }}</span>
         </v-btn>
       </router-link>
     </v-col>
     <v-col v-if="draftEnabled" class="text-right">
+      <!-- Bulk button -->
+      <span v-if="allowSubmitterToUploadFile && !block" class="ml-2">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <v-btn
+              color="primary"
+              icon
+              v-bind="props"
+              size="small"
+              @click="emits('switchView')"
+            >
+              <v-icon icon="mdi:mdi-repeat"></v-icon>
+            </v-btn>
+          </template>
+          <span>{{
+            bulkFile
+              ? $t('trans.formViewerActions.switchSingleSubmssn')
+              : $t('trans.formViewerActions.switchMultiSubmssn')
+          }}</span>
+        </v-tooltip>
+      </span>
+
       <!-- Save a draft -->
-      <span v-if="canSaveDraft" class="ml-2">
+      <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -65,12 +112,16 @@ const showEditToggle = computed(
               <v-icon icon="mdi:mdi-content-save"></v-icon>
             </v-btn>
           </template>
-          <span>Save as a Draft</span>
+          <span>{{ $t('trans.formViewerActions.saveAsADraft') }}</span>
         </v-tooltip>
       </span>
 
+      <span v-if="draftEnabled" class="ml-2">
+        <PrintOptions :submission="submission" />
+      </span>
+
       <!-- Go to draft edit -->
-      <span v-if="showEditToggle && isDraft" class="ml-2">
+      <span v-if="showEditToggle && isDraft && draftEnabled" class="ml-2">
         <router-link
           :to="{
             name: 'UserFormDraftEdit',
@@ -85,13 +136,13 @@ const showEditToggle = computed(
                 <v-icon>mode_edit</v-icon>
               </v-btn>
             </template>
-            <span>Edit this Draft</span>
+            <span>{{ $t('trans.formViewerActions.editThisDraft') }}</span>
           </v-tooltip>
         </router-link>
       </span>
 
       <!-- Go to draft edit -->
-      <span v-if="submissionId" class="ml-2">
+      <span v-if="submissionId && draftEnabled" class="ml-2">
         <ManageSubmissionUsers
           :is-draft="isDraft"
           :submission-id="submissionId"

@@ -51,21 +51,22 @@ function downloadQr() {
           <v-icon icon="mdi:mdi-share-variant"></v-icon>
         </v-btn>
       </template>
-      <span>Share Form</span>
+      <span>{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0">Share Link</v-card-title>
+        <v-card-title class="text-h5 pb-0">{{
+          $t('trans.shareForm.shareLink')
+        }}</v-card-title>
         <v-card-text>
           <hr />
-          <p class="mb-5">Copy the link below or download the QR code.</p>
+          <p class="mb-5">{{ $t('trans.shareForm.copyQRCode') }}</p>
           <v-alert
             v-if="warning"
             :class="NOTIFICATIONS_TYPES.WARNING.class"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
-            text="There is no published version of the form at this time. The link
-            below will not be reachable until a version is published."
+            :text="$t('trans.shareForm.warningMessage')"
           ></v-alert>
           <v-text-field
             readonly
@@ -82,7 +83,7 @@ function downloadQr() {
               <BaseCopyToClipboard
                 class="mt-n1"
                 :copy-text="formLink"
-                tooltip-text="Copy URL to clipboard"
+                :tooltip-text="$t('trans.shareForm.copyURLToClipboard')"
               />
               <v-tooltip location="bottom">
                 <template #activator="{ props }">
@@ -99,7 +100,7 @@ function downloadQr() {
                     <v-icon icon="mdi:mdi-open-in-new"></v-icon>
                   </v-btn>
                 </template>
-                <span>Open this form</span>
+                <span>{{ $t('trans.shareForm.openThisForm') }}</span>
               </v-tooltip>
             </template>
           </v-text-field>
@@ -128,7 +129,7 @@ function downloadQr() {
                     <v-icon icon="mdi:mdi-download"></v-icon>
                   </v-btn>
                 </template>
-                <span>Download QR Code</span>
+                <span>{{ $t('trans.shareForm.downloadQRCode') }}</span>
               </v-tooltip>
             </v-col>
           </v-row>
@@ -136,7 +137,7 @@ function downloadQr() {
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span>Close</span>
+            <span>{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>

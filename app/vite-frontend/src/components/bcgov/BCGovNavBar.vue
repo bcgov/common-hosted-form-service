@@ -7,7 +7,7 @@ import { IdentityProviders } from '~/utils/constants';
 
 const authStore = useAuthStore();
 
-const { authenticated } = storeToRefs(authStore);
+const { authenticated, isAdmin } = storeToRefs(authStore);
 const hideNavBar = computed(() => useRoute()?.meta?.formSubmitMode);
 const hasPrivileges = computed(
   () => authStore?.tokenParsed?.identity_provider === IdentityProviders.IDIR
@@ -22,39 +22,41 @@ const hasPrivileges = computed(
     <div class="nav-holder">
       <ul>
         <li>
-          <router-link data-cy="aboutLinks" :to="{ name: 'About' }"
-            >About</router-link
-          >
+          <router-link data-cy="aboutLinks" :to="{ name: 'About' }">{{
+            $t('trans.bCGovNavBar.about')
+          }}</router-link>
         </li>
         <li v-if="authenticated">
-          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }"
-            >My Forms</router-link
-          >
+          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }">{{
+            $t('trans.bCGovNavBar.myForms')
+          }}</router-link>
         </li>
         <li v-if="hasPrivileges">
-          <router-link :to="{ name: 'FormCreate' }"
-            >Create a New Form</router-link
-          >
+          <router-link :to="{ name: 'FormCreate' }">{{
+            $t('trans.bCGovNavBar.createNewForm')
+          }}</router-link>
         </li>
         <li v-if="hasPrivileges">
           <a
             href="https://github.com/bcgov/common-hosted-form-service/wiki"
             target="_blank"
-            >Help</a
+            >{{ $t('trans.bCGovNavBar.help') }}</a
           >
         </li>
         <li v-if="hasPrivileges">
           <a
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
-            >Feedback</a
+            >{{ $t('trans.bCGovNavBar.feedback') }}</a
           >
         </li>
         <!-- <li>
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li> -->
         <li v-if="isAdmin">
-          <router-link :to="{ name: 'Admin' }">Admin</router-link>
+          <router-link :to="{ name: 'Admin' }">{{
+            $t('trans.bCGovNavBar.admin')
+          }}</router-link>
         </li>
       </ul>
     </div>

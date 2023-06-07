@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import userService from '~/services/userService';
 import { FormRoleCodes, IdentityProviders, Regex } from '~/utils/constants';
@@ -12,6 +13,8 @@ const selectedIdp = ref(IdentityProviders.IDIR);
 const selectedRoles = ref([]);
 const showError = ref(false);
 const entries = ref([]);
+
+const { t } = useI18n({ useScope: 'global' });
 
 defineProps({
   disabled: {
@@ -39,8 +42,8 @@ const FORM_ROLES = computed(() => {
 });
 const autocompleteLabel = computed(() =>
   selectedIdp.value == IdentityProviders.IDIR
-    ? 'Enter a name, e-mail, or username'
-    : 'Enter an exact e-mail or username'
+    ? t('trans.addTeamMember.enterUsername')
+    : t('trans.addTeamMember.enterExactUsername')
 );
 
 watch(selectedIdp, (newIdp, oldIdp) => {
@@ -165,10 +168,10 @@ function save() {
             >
               <!-- no data -->
               <template #no-data>
-                <div class="px-2">
-                  Can't find someone? They may not have logged into CHEFS.<br />
-                  Kindly send them a link to CHEFS and ask them to log in.
-                </div>
+                <div
+                  class="px-2"
+                  v-html="$t('trans.addTeamMember.cantFindChefsUsers')"
+                ></div>
               </template>
               <template #chip="{ props, item }">
                 <v-chip v-bind="props" :text="item?.raw?.fullName"></v-chip>
@@ -235,9 +238,9 @@ function save() {
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="text-red"
-              >You must select at least one role to add this user.</span
-            >
+            <span class="text-red">{{
+              $t('trans.addTeamMember.mustSelectAUser')
+            }}</span>
           </v-col>
         </v-row>
       </v-sheet>
@@ -257,7 +260,7 @@ function save() {
             <v-icon icon="mdi:mdi-account-plus"></v-icon>
           </v-btn>
         </template>
-        <span>Add a New Member</span>
+        <span>{{ $t('trans.addTeamMember.addNewMember') }}</span>
       </v-tooltip>
     </span>
   </span>

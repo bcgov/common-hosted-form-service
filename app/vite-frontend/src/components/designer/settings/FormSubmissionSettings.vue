@@ -22,10 +22,10 @@ const emailArrayRules = [
 
 <template>
   <BasePanel class="fill-height">
-    <template #title>After Submission</template>
+    <template #title>{{ $t('trans.formSettings.afterSubmission') }}</template>
     <v-checkbox v-model="form.showSubmissionConfirmation" class="my-0">
       <template #label>
-        Show the submission confirmation details
+        {{ $t('trans.formSettings.submissionConfirmation') }}
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-icon color="primary" class="ml-3" v-bind="props">
@@ -33,14 +33,13 @@ const emailArrayRules = [
             </v-icon>
           </template>
           <span>
-            Selecting this option controls what the submitting user of this form
-            will see on successful submission. <br />
-            If checked, it will display
+            <span
+              v-html="$t('trans.formSettings.submissionConfirmationToolTip')"
+            />
             <ul>
-              <li>the Confirmation ID</li>
+              <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
               <li>
-                the option for the user to email themselves a submission
-                confirmation
+                {{ $t('trans.formSettings.infoB') }}
               </li>
             </ul>
           </span>
@@ -50,7 +49,7 @@ const emailArrayRules = [
 
     <v-checkbox v-model="form.sendSubReceivedEmail" class="my-0">
       <template #label>
-        Send my team a notification email
+        {{ $t('trans.formSettings.emailNotificatnToTeam') }}
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-icon color="primary" class="ml-3" v-bind="props">
@@ -58,8 +57,7 @@ const emailArrayRules = [
             </v-icon>
           </template>
           <span>
-            Send a notification to your specified email address when any user
-            submits this form
+            {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
           </span>
         </v-tooltip>
       </template>
@@ -74,8 +72,8 @@ const emailArrayRules = [
       variant="outlined"
       hide-selected
       clearable
-      hint="Add one or more valid email addresses"
-      label="Notification Email Addresses"
+      :hint="$t('trans.formSettings.addMoreValidEmailAddrs')"
+      :label="$t('trans.formSettings.notificationEmailAddrs')"
       multiple
       chips
       closable-chips

@@ -38,8 +38,8 @@ export const useAuthStore = defineStore('auth', {
         if (!state.authenticated) return false;
         if (!roles.length) return true; // No roles to check against
 
-        if (this.resourceAccess && this.resourceAccess[resource]) {
-          return hasRoles(this.resourceAccess[resource].roles, roles);
+        if (state.resourceAccess && state.resourceAccess[resource]) {
+          return hasRoles(state.resourceAccess[resource].roles, roles);
         }
         return false; // There are roles to check, but nothing in token to check against
       };
@@ -48,6 +48,8 @@ export const useAuthStore = defineStore('auth', {
       state.keycloak.tokenParsed
         ? state.keycloak.tokenParsed.identity_provider
         : null,
+    isAdmin: (state) => state.hasResourceRoles('chefs', ['admin']),
+    isUser: (state) => state.hasResourceRoles('chefs', ['user']),
     keycloakSubject: (state) => state.keycloak.subject,
     identityProviderIdentity: (state) => state.keycloak.tokenParsed.idp_userid,
     moduleLoaded: (state) => !!state.keycloak,
@@ -83,12 +85,6 @@ export const useAuthStore = defineStore('auth', {
     },
   },
   actions: {
-    isAdmin: () => this.hasResourceRoles('chefs', ['admin']),
-    /**
-     * Checks if the state has the required resource roles
-     * @returns (T/F) Whether the state has the required roles
-     */
-    isUser: () => this.hasResourceRoles('chefs', ['user']),
     updateKeycloak(keycloak, isAuthenticated) {
       this.keycloak = keycloak;
       this.authenticated = isAuthenticated;

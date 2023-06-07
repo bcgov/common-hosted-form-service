@@ -5,14 +5,19 @@ const properties = defineProps({
   inputHeaders: {
     type: Array,
     default: () => [
-      { title: 'Column Name', align: 'start', sortable: true, key: 'title' },
+      {
+        title: 'Column Name',
+        align: 'start',
+        sortable: true,
+        key: 'title',
+      },
     ],
   },
   // The data you will be filtering with
   inputData: {
     type: Array,
     default: () => [
-      { title: 'Example Text', key: 'exampleText1' },
+      { title: 'Example Text 1', key: 'exampleText1' },
       { title: 'Example Text 2', key: 'exampleText2' },
     ],
   },
@@ -31,7 +36,7 @@ const properties = defineProps({
   },
   inputFilterPlaceholder: {
     type: String,
-    default: 'Filter Placeholder Text',
+    default: 'Example Text 2',
   },
   inputSaveButtonText: {
     type: String,
@@ -97,7 +102,7 @@ function cancelFilterData() {
         class="mt-3 ml-3 text-primary"
         variant="outlined"
         @click="cancelFilterData"
-        >Cancel</v-btn
+        >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
     </v-card-text>
   </v-card>

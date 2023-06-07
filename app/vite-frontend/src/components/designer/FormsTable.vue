@@ -1,18 +1,25 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { IdentityProviders } from '~/utils/constants';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
+const { t } = useI18n({ useScope: 'global' });
 const formStore = useFormStore();
 
 const headers = ref([
-  { title: 'Form Title', align: 'start', key: 'name', width: '1%' },
   {
-    title: 'Actions',
+    title: t('trans.formsTable.formTitle'),
+    align: 'start',
+    key: 'name',
+    width: '1%',
+  },
+  {
+    title: t('trans.formsTable.action'),
     align: 'end',
     key: 'actions',
     filterable: false,
@@ -82,7 +89,7 @@ function onDescriptionClick(fId, fDescription) {
               </v-btn>
             </router-link>
           </template>
-          <span>Create a New Form</span>
+          <span>{{ $t('trans.formsTable.createNewForm') }}</span>
         </v-tooltip>
       </v-col>
     </v-row>
@@ -98,7 +105,7 @@ function onDescriptionClick(fId, fDescription) {
             variant="underlined"
             append-inner-icon="mdi-magnify"
             single-line
-            label="Search"
+            :label="$t('trans.formsTable.createNewForm')"
             class="pb-5"
           />
         </div>
@@ -113,7 +120,7 @@ function onDescriptionClick(fId, fDescription) {
     :items="filteredFormList"
     item-value="name"
     :loading="loading"
-    loading-text="Loading... Please wait"
+    :loading-text="$t('trans.formsTable.loadingText')"
   >
     <template #item.name="{ item }">
       <router-link
@@ -129,7 +136,7 @@ function onDescriptionClick(fId, fDescription) {
             <span v-bind="props">{{ item.columns.name }}</span>
           </template>
           <span>
-            View Form
+            {{ $t('trans.formsTable.viewForm') }}
             <v-icon icon="mdi:mdi-open-in-new"></v-icon>
           </span>
         </v-tooltip>
@@ -140,7 +147,7 @@ function onDescriptionClick(fId, fDescription) {
         size="small"
         class="description-icon ml-2 mr-4"
         color="primary"
-        icon="mdi:mdi-description"
+        icon="mdi:mdi-note-text"
         @click="onDescriptionClick(item.raw.id, item.raw.description)"
       ></v-icon>
     </template>
@@ -151,7 +158,9 @@ function onDescriptionClick(fId, fDescription) {
       >
         <v-btn color="primary" variant="text" size="small">
           <v-icon class="mr-1" icon="mdi:mdi-cog"></v-icon>
-          <span class="d-none d-sm-flex">Manage</span>
+          <span class="d-none d-sm-flex">{{
+            $t('trans.formsTable.manage')
+          }}</span>
         </v-btn>
       </router-link>
       <router-link
@@ -161,7 +170,9 @@ function onDescriptionClick(fId, fDescription) {
       >
         <v-btn color="primary" variant="text" size="small">
           <v-icon class="mr-1" icon="mdi:mdi-list-box-outline"></v-icon>
-          <span class="d-none d-sm-flex">Submissions</span>
+          <span class="d-none d-sm-flex">{{
+            $t('trans.formsTable.submissions')
+          }}</span>
         </v-btn>
       </router-link>
     </template>
@@ -173,7 +184,7 @@ function onDescriptionClick(fId, fDescription) {
     @close-dialog="showDescriptionDialog = false"
   >
     <template #title>
-      <span class="pl-5">Description:</span>
+      <span class="pl-5">{{ $t('trans.formsTable.Description') }}</span>
     </template>
     <template #text>
       <slot name="formDescription">{{ formDescription }}</slot>

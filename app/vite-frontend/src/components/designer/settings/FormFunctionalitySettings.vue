@@ -9,6 +9,9 @@ const formStore = useFormStore();
 
 const { form } = storeToRefs(formStore);
 
+const githubLinkBulkUpload = ref(
+  'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload'
+);
 const githubLinkCopyFromExistingFeature = ref(
   'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission'
 );
@@ -21,48 +24,33 @@ const ID_MODE = computed(() => IdentityMode);
 
 <template>
   <BasePanel class="fill-height">
-    <template #title>Form Functionality</template>
+    <template #title>{{ $t('trans.formSettings.formFunctionality') }}</template>
     <v-checkbox
       v-model="form.enableSubmitterDraft"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
     >
       <template #label>
-        <span>
-          Submitters can
-          <strong>Save and Edit Drafts</strong>
-        </span>
+        <span v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"></span>
       </template>
     </v-checkbox>
 
     <v-checkbox v-model="form.enableStatusUpdates" class="my-0">
       <template #label>
-        <span>
-          Reviewers can <strong>Update the Status</strong> of this form (i.e.
-          Submitted, Assigned, Completed)
-        </span>
+        <span
+          v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
+        ></span>
       </template>
     </v-checkbox>
 
     <v-checkbox
-      v-if="!formStore.isFormPublished"
-      v-model="form.schedule.enabled"
-      disabled
+      v-model="form.allowSubmitterToUploadFile"
       class="my-0"
+      :disabled="userType === ID_MODE.PUBLIC"
+      @update:modelValue="allowSubmitterToUploadFileChanged"
     >
       <template #label>
-        The Form Submissions Schedule will be available in the Form Settings
-        after the form is published.
-      </template>
-    </v-checkbox>
-
-    <v-checkbox
-      v-if="formStore.isFormPublished"
-      v-model="form.schedule.enabled"
-      class="my-0"
-    >
-      <template #label>
-        Form Submissions Schedule
+        Allow <strong> multiple draft</strong> upload
         <v-tooltip location="bottom" close-delay="2500">
           <template #activator="{ props }">
             <v-icon
@@ -73,13 +61,56 @@ const ID_MODE = computed(() => IdentityMode);
             ></v-icon>
           </template>
           <span
-            >Experimental
+            >{{ $t('trans.formSettings.experimental') }}
+            <a
+              :href="githubLinkBulkUpload"
+              class="preview_info_link_field_white"
+              :target="'_blank'"
+            >
+              {{ $t('trans.formSettings.learnMore') }}
+              <v-icon
+                icon="mdi:mdi-arrow-top-right-bold-box-outline"
+              ></v-icon></a
+          ></span>
+        </v-tooltip>
+      </template>
+    </v-checkbox>
+
+    <v-checkbox
+      v-if="!formStore.isFormPublished"
+      v-model="form.schedule.enabled"
+      disabled
+      class="my-0"
+    >
+      <template #label>
+        {{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
+      </template>
+    </v-checkbox>
+
+    <v-checkbox
+      v-if="formStore.isFormPublished"
+      v-model="form.schedule.enabled"
+      class="my-0"
+    >
+      <template #label>
+        {{ $t('trans.formSettings.formSubmissionsSchedule') }}
+        <v-tooltip location="bottom" close-delay="2500">
+          <template #activator="{ props }">
+            <v-icon
+              color="primary"
+              class="ml-3"
+              v-bind="props"
+              icon="mdi:mdi-flask"
+            ></v-icon>
+          </template>
+          <span
+            >{{ $t('trans.formSettings.experimental') }}
             <a
               :href="githubLinkScheduleAndReminderFeature"
               class="preview_info_link_field_white"
               :target="'_blank'"
             >
-              Learn more
+              {{ $t('trans.formSettings.learnMore') }}
               <v-icon
                 icon="mdi:mdi-arrow-top-right-bold-box-outline"
               ></v-icon></a
@@ -94,7 +125,10 @@ const ID_MODE = computed(() => IdentityMode);
       :disabled="form.userType === ID_MODE.PUBLIC"
     >
       <template #label>
-        <span>Submitters can <strong>Copy an existing submission</strong></span>
+        <span
+          style="max-width: 80%"
+          v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
+        />
         <v-tooltip location="bottom" close-delay="2500">
           <template #activator="{ props }">
             <v-icon
@@ -105,13 +139,13 @@ const ID_MODE = computed(() => IdentityMode);
             ></v-icon>
           </template>
           <span
-            >Experimental
+            >{{ $t('trans.formSettings.experimental') }}
             <a
               :href="githubLinkCopyFromExistingFeature"
               class="preview_info_link_field_white"
               :target="'_blank'"
             >
-              Learn more
+              {{ $t('trans.formSettings.learnMore') }}
               <v-icon
                 icon="mdi:mdi-arrow-top-right-bold-box-outline"
               ></v-icon></a

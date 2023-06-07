@@ -3,6 +3,7 @@ import { apiKeyService, formService, rbacService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
+import { useI18n } from 'vue-i18n';
 
 const genInitialSchedule = () => ({
   enabled: null,
@@ -32,6 +33,7 @@ const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
+  allowSubmitterToUploadFile: false,
   id: '',
   idps: [],
   isDirty: false,
@@ -87,10 +89,13 @@ export const useFormStore = defineStore('form', {
         }));
         this.formList = forms;
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while fetching your forms.',
-          consoleError: `Error getting user data: ${error}`,
+          text: i18n.t('trans.store.form.getCurrUserFormsErrMsg'),
+          consoleError: i18n.t('trans.store.form.getCurrUserFormsErrMsg', {
+            error: error,
+          }),
         });
       }
     },
@@ -98,10 +103,14 @@ export const useFormStore = defineStore('form', {
       try {
         await formService.deleteDraft(formId, draftId);
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while deleting this draft.',
-          consoleError: `Error deleting ${draftId}: ${error}`,
+          text: i18n.t('trans.store.form.delDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.delDraftConsErrMsg', {
+            draftId: draftId,
+            error: error,
+          }),
         });
       }
     },
@@ -111,10 +120,14 @@ export const useFormStore = defineStore('form', {
         const { data } = await formService.listDrafts(formId);
         this.drafts = data;
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while scanning for drafts for this form.',
-          consoleError: `Error getting drafts for form ${formId}: ${error}`,
+          text: i18n.t('trans.store.form.fecthDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.fecthDraftConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
         });
       }
     },
@@ -135,10 +148,14 @@ export const useFormStore = defineStore('form', {
 
         this.form = data;
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while fetching this form.',
-          consoleError: `Error getting form ${formId}: ${error}`,
+          text: i18n.t('trans.store.form.fecthFormErrMsg'),
+          consoleError: i18n.t('trans.store.form.fecthFormErrMsg', {
+            formId: formId,
+            error: error,
+          }),
         });
       }
     },
@@ -146,10 +163,14 @@ export const useFormStore = defineStore('form', {
       try {
         await formService.publishDraft(formId, draftId);
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while publishing.',
-          consoleError: `Error publishing ${draftId}: ${error}`,
+          text: i18n.t('trans.store.form.publishDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.publishDraftConsErrMsg', {
+            draftId: draftId,
+            error: error,
+          }),
         });
       }
     },
@@ -157,16 +178,18 @@ export const useFormStore = defineStore('form', {
       try {
         await formService.publishVersion(formId, versionId, publish);
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
-        notificationStore.addNotification(
-          {
-            text: `An error occurred while ${
-              publish ? 'publishing' : 'unpublishing'
-            }.`,
-            consoleError: `Error in toggleVersionPublish ${versionId} ${publish}: ${error}`,
-          },
-          { root: true }
-        );
+        notificationStore.addNotification({
+          text: `An error occurred while ${
+            publish ? 'publishing' : 'unpublishing'
+          }.`,
+          consoleError: i18n.t('trans.store.form.toggleVersnPublConsErrMsg', {
+            versionId: versionId,
+            publish: publish,
+            error: error,
+          }),
+        });
       }
     },
     async getFormPermissionsForUser(formId) {
@@ -181,10 +204,14 @@ export const useFormStore = defineStore('form', {
           throw new Error('No form found');
         }
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while fetching your user data for this form.',
-          consoleError: `Error getting user data using formID ${formId}: ${error}`,
+          text: i18n.t('trans.store.form.getUserFormPermErrMsg'),
+          consoleError: i18n.t('trans.store.form.getUserFormPermConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
         });
       }
     },
@@ -192,17 +219,25 @@ export const useFormStore = defineStore('form', {
     // Form
     //
     async deleteCurrentForm() {
+      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         await formService.deleteForm(this.form.id);
         notificationStore.addNotification({
-          text: `Form "${this.form.name}" has been deleted successfully.`,
+          text: i18n.t('trans.store.form.delCurrformNotiMsg', {
+            name: this.form.name,
+          }),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: `An error occurred while attempting to delete "${this.form.name}".`,
-          consoleError: `Error deleting form ${this.form.id}: ${error}`,
+          text: i18n.t('trans.store.form.delCurrformNotiMsg', {
+            name: this.form.name,
+          }),
+          consoleError: i18n.t('trans.store.form.delCurrFormConsErMsg', {
+            id: this.form.id,
+            error: error,
+          }),
         });
       }
     },
@@ -231,6 +266,7 @@ export const useFormStore = defineStore('form', {
           showSubmissionConfirmation: this.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
+          allowSubmitterToUploadFile: this.form.allowSubmitterToUploadFile,
           reminder_enabled: this.form.reminder_enabled
             ? this.form.reminder_enabled
             : false,
@@ -239,10 +275,14 @@ export const useFormStore = defineStore('form', {
             : false,
         });
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while updating the settings for this form.',
-          consoleError: `Error updating form ${this.form.id}: ${error}`,
+          text: i18n.t('trans.store.form.updateFormErrMsg'),
+          consoleError: i18n.t('trans.store.form.updateFormConsErrMsg', {
+            id: this.form.id,
+            error: error,
+          }),
         });
       }
     },
@@ -253,10 +293,14 @@ export const useFormStore = defineStore('form', {
         this.formSubmission = response.data.submission;
         this.form = response.data.form;
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while fetching this submission.',
-          consoleError: `Error getting submission ${submissionId}: ${error}`,
+          text: i18n.t('trans.store.form.fetchSubmissnErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchSubmissnConsErrMsg', {
+            submissionId: submissionId,
+            error: error,
+          }),
         });
       }
     },
@@ -264,28 +308,33 @@ export const useFormStore = defineStore('form', {
     // API Keys
     //
     async deleteApiKey(formId) {
+      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         await apiKeyService.deleteApiKey(formId);
         this.apiKey = null;
         notificationStore.addNotification({
-          text: 'The API Key for this form has been deleted.',
+          text: i18n.t('trans.store.form.deleteApiKeyNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: 'An error occurred while trying to delete the API Key.',
-          consoleError: `Error deleting API Key for form ${formId}: ${error}`,
+          text: i18n.t('trans.store.form.deleteApiKeyErrMsg'),
+          consoleError: i18n.t('trans.store.form.deleteApiKeyConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
         });
       }
     },
     async generateApiKey(formId) {
+      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         const { data } = await apiKeyService.generateApiKey(formId);
         this.apiKey = data;
         notificationStore.addNotification({
-          text: 'An API Key for this form has been created.',
+          text: i18n.t('trans.store.form.generateApiKeyNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
@@ -300,10 +349,14 @@ export const useFormStore = defineStore('form', {
         const { data } = await apiKeyService.readApiKey(formId);
         this.apiKey = data;
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while trying to fetch the API Key.',
-          consoleError: `Error getting API Key for form ${formId}: ${error}`,
+          text: i18n.t('trans.store.form.generateApiKeyErrMsg'),
+          consoleError: i18n.t('trans.store.form.generateApiKeyConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
         });
       }
     },
@@ -322,10 +375,13 @@ export const useFormStore = defineStore('form', {
           this.fcProactiveHelpImageUrl = response.data.url;
         }
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: 'An error occurred while getting image url',
-          consoleError: 'Error getting image url',
+          text: i18n.t('trans.store.form.getFCPHImageUrlErrMsg'),
+          consoleError: i18n.t('trans.store.form.getFCPHImageUrlConsErrMsg', {
+            error: error,
+          }),
         });
       }
     },
