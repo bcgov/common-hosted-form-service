@@ -64,6 +64,7 @@ export const useFormStore = defineStore('form', {
     formFields: [],
     formSubmission: {
       confirmationId: '',
+      originalName: '',
       submission: {
         data: {},
       },
@@ -73,7 +74,9 @@ export const useFormStore = defineStore('form', {
     permissions: [],
     roles: [],
     submissionList: [],
+    submissionUsers: [],
     userFormPreferences: {},
+    version: {},
   }),
   getters: {
     isFormPublished: (state) =>
@@ -377,16 +380,18 @@ export const useFormStore = defineStore('form', {
     // Submission
     //
     async deleteSubmission(submissionId) {
-      const i18n = useI18n({ useScope: 'global' });
-      const notificationStore = useNotificationStore();
       try {
         // Get this submission
         await formService.deleteSubmission(submissionId);
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionErrMsg'),
           consoleError: i18n.t('trans.store.form.deleteSubmissionConsErrMsg', {
@@ -419,18 +424,19 @@ export const useFormStore = defineStore('form', {
     },
 
     async restoreMultiSubmissions({ formId, submissionIds }) {
-      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         // Get this submission
         await formService.restoreMutipleSubmissions(submissionIds[0], formId, {
           submissionIds: submissionIds,
         });
+        const i18n = useI18n({ useScope: 'global' });
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.restoreSubmissionsNotiMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.restoreSubmissionsErrMsg'),
           consoleError: i18n.t(
@@ -442,16 +448,17 @@ export const useFormStore = defineStore('form', {
     },
 
     async restoreSubmission({ submissionId, deleted }) {
-      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         // Get this submission
         await formService.restoreSubmission(submissionId, { deleted });
+        const i18n = useI18n({ useScope: 'global' });
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.restoreSubmissionsErrMsg'),
           consoleError: i18n.t(
@@ -514,6 +521,31 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async fetchVersion({ formId, versionId }) {
+      try {
+        // TODO: need a better 'set back to initial state' ability
+        this.formSubmission = {
+          submission: {
+            data: {},
+          },
+        };
+        // Get details about the sepecific form version
+        const response = await formService.readVersion(formId, versionId);
+        this.version = response.data;
+      } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fetchVersionErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchVersionConsErrMsg', {
+            versionId: versionId,
+            formId: formId,
+            error: error,
+          }),
+        });
+      }
+    },
+
     //
     // API Keys
     //

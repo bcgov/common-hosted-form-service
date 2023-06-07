@@ -7,10 +7,11 @@
           @click="loadHistory"
           color="primary"
           icon
+          size="small"
           v-bind="attrs"
           v-on="on"
         >
-          <v-icon>history</v-icon>
+          <v-icon icon="mdi:mdi-history"></v-icon>
         </v-btn>
       </template>
       <span>{{ $t('trans.auditHistory.viewEditHistory') }}</span>

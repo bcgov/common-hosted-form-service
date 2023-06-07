@@ -21,10 +21,10 @@ const formStore = useFormStore();
 const filterData = ref([]);
 const filterIgnore = ref([
   {
-    value: 'confirmationId',
+    key: 'confirmationId',
   },
   {
-    value: 'actions',
+    key: 'actions',
   },
 ]);
 const loading = ref(true);
@@ -289,11 +289,11 @@ onMounted(async () => {
         :input-filter-placeholder="
           $t('trans.mySubmissionsTable.searchSubmissionFields')
         "
-        input-item-key="value"
+        input-item-key="key"
         :input-save-button-text="$t('trans.mySubmissionsTable.save')"
         :input-data="
           DEFAULT_HEADERS.filter(
-            (h) => !filterIgnore.some((fd) => fd.value === h.value)
+            (h) => !filterIgnore.some((fd) => fd.key === h.key)
           )
         "
         :preselected-data="PRESELECTED_DATA"

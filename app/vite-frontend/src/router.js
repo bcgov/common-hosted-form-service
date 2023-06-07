@@ -173,6 +173,17 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
           },
+          {
+            path: 'view',
+            name: 'FormView',
+            component: () => import('~/views/form/View.vue'),
+            meta: {
+              breadcrumbTitle: 'View Submission',
+              requiresAuth: true,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
         ],
       },
       {
