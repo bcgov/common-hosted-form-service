@@ -1,0 +1,37 @@
+{
+  "clients": [
+    {
+      "clientId": "chefs-load-test",
+      "name": "chefs-load-test",
+      "directAccessGrantsEnabled": true,
+      "publicClient": true,
+      "redirectUris": ["*"],
+      "protocolMappers": [
+        {
+          "name": "idp",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": {
+            "claim.value": "idir",
+            "claim.name": "identity_provider",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "idpUserId",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "idir_user_guid",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "idp_userid",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ]
+}
