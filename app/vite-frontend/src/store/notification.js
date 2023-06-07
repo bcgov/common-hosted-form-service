@@ -10,15 +10,11 @@ export const useNotificationStore = defineStore('notification', {
   getters: {},
   actions: {
     errorNavigate(msg) {
-      const router = getRouter(
-        router.app.config.globalProperties.$config.basePath
-      );
+      const router = getRouter();
       router.replace({ name: 'Error', params: { msg: msg } });
     },
     alertNavigate(type, message) {
-      const router = getRouter(
-        router.app.config.globalProperties.$config.basePath
-      );
+      const router = getRouter();
       router.replace({
         name: 'Alert',
         params: { text: message, type: type },

@@ -714,7 +714,7 @@ function showdoYouWantToSaveTheDraftModal() {
 }
 
 function goTo(path, params) {
-  this.$router.push({
+  router.push({
     name: path,
     query: params,
   });
@@ -833,9 +833,9 @@ if (!properties.preview && !properties.readOnly) {
         <div v-if="displayTitle">
           <div v-if="!isFormPublic(form)">
             <FormViewerActions
-              :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+              :allow-submitter-to-upload-file="allowSubmitterToUploadFile"
               :block="block"
-              :bulkFile="bulkFile"
+              :bulk-file="bulkFile"
               :copy-existing-submission="form.enableCopyExistingSubmission"
               :draft-enabled="form.enableSubmitterDraft"
               :form-id="form.id"
@@ -914,14 +914,14 @@ if (!properties.preview && !properties.readOnly) {
           <FormViewerMultiUpload
             v-if="!isLoading && allowSubmitterToUploadFile && bulkFile"
             :response="sbdMessage"
-            :formElement="formElement"
+            :form-element="formElement"
             :form="form"
-            :formSchema="formSchema"
+            :form-schema="formSchema"
             :json_csv="json_csv"
+            :form-fields="formFields"
             @save-bulk-data="saveBulkData"
             @reset-message="resetMessage"
             @set-error="setError"
-            :formFields="formFields"
             @toggleBlock="toggleBlock"
           />
 
@@ -948,7 +948,7 @@ if (!properties.preview && !properties.readOnly) {
       <BaseDialog
         v-model="doYouWantToSaveTheDraft"
         type="SAVEDDELETE"
-        :enableCustomButton="false"
+        :enable-custom-button="false"
         @close-dialog="closeBulkYesOrNo"
         @delete-dialog="no"
         @continue-dialog="yes"

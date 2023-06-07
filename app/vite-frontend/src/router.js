@@ -92,6 +92,17 @@ export default function getRouter(basePath = '/') {
             },
           },
           {
+            path: 'export',
+            name: 'SubmissionsExport',
+            component: () => import('~/views/form/Export.vue'),
+            meta: {
+              breadcrumbTitle: 'Submissions Export',
+              requiresAuth: true,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
             path: 'manage',
             name: 'FormManage',
             component: () => import('~/views/form/Manage.vue'),
@@ -226,6 +237,19 @@ export default function getRouter(basePath = '/') {
             props: createProps,
             beforeEnter(to, _from, next) {
               preFlightAuth({ formId: to.query.f }, next);
+            },
+          },
+          {
+            path: 'view',
+            name: 'UserFormView',
+            component: () => import('~/views/user/SubmissionView.vue'),
+            meta: {
+              breadcrumbTitle: 'Submission',
+              formSubmitMode: true,
+            },
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth({ submissionId: to.query.s }, next);
             },
           },
         ],

@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia';
-import { apiKeyService, formService, rbacService } from '~/services';
+import {
+  apiKeyService,
+  formService,
+  rbacService,
+  userService,
+} from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
@@ -56,6 +61,7 @@ export const useFormStore = defineStore('form', {
     fcProactiveHelpGroupList: {},
     fcProactiveHelpImageUrl: '',
     form: genInitialForm(),
+    formFields: [],
     formSubmission: {
       confirmationId: '',
       submission: {
@@ -65,6 +71,9 @@ export const useFormStore = defineStore('form', {
     formList: [],
     imageList: new Map(),
     permissions: [],
+    roles: [],
+    submissionList: [],
+    userFormPreferences: {},
   }),
   getters: {
     isFormPublished: (state) =>
@@ -159,6 +168,26 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async fetchFormFields({ formId, formVersionId }) {
+      try {
+        this.formFields = [];
+        const { data } = await formService.readVersionFields(
+          formId,
+          formVersionId
+        );
+        this.formFields = data;
+      } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fetchFormFieldsErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchFormFieldsConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
+        });
+      }
+    },
     async publishDraft(formId, draftId) {
       try {
         await formService.publishDraft(formId, draftId);
@@ -212,6 +241,64 @@ export const useFormStore = defineStore('form', {
             formId: formId,
             error: error,
           }),
+        });
+      }
+    },
+    async getFormRolesForUser(formId) {
+      try {
+        this.roles = [];
+        // Get the forms based on the user's permissions
+        const response = await rbacService.getCurrentUser({ formId: formId });
+        const data = response.data;
+        if (data.forms[0]) {
+          this.roles = data.forms[0].roles;
+        } else {
+          throw new Error('No form found');
+        }
+      } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.getUserFormRolesErrmsg'),
+          consoleError: i18n.t('trans.store.form.getUserFormRolesConsErrmsg', {
+            formId: formId,
+            error: error,
+          }),
+        });
+      }
+    },
+    async getFormPreferencesForCurrentUser(formId) {
+      try {
+        const response = await userService.getUserFormPreferences(formId);
+        this.userFormPreferences = response.data;
+      } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.getCurrUserFormPrefErrMsg'),
+          consoleError: i18n.t('trans.store.form.getCurrUserFormPrefErrMsg', {
+            formId: formId,
+            error: error,
+          }),
+        });
+      }
+    },
+    async updateFormPreferencesForCurrentUser({ formId, preferences }) {
+      try {
+        const response = await userService.updateUserFormPreferences(
+          formId,
+          preferences
+        );
+        this.userFormPreferences = response.data;
+      } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.updCurrUserFormPrefErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.updCurrUserFormPrefConsErrMsg',
+            { formId: formId, preferences: preferences, error: error }
+          ),
         });
       }
     },
@@ -286,6 +373,94 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    //
+    // Submission
+    //
+    async deleteSubmission(submissionId) {
+      const i18n = useI18n({ useScope: 'global' });
+      const notificationStore = useNotificationStore();
+      try {
+        // Get this submission
+        await formService.deleteSubmission(submissionId);
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.deleteSubmissionNotifyMsg'),
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.deleteSubmissionErrMsg'),
+          consoleError: i18n.t('trans.store.form.deleteSubmissionConsErrMsg', {
+            submissionId: submissionId,
+            error: error,
+          }),
+        });
+      }
+    },
+
+    async deleteMultiSubmissions({ formId, submissionIds }) {
+      const i18n = useI18n({ useScope: 'global' });
+      const notificationStore = useNotificationStore();
+      try {
+        await formService.deleteMultipleSubmissions(submissionIds[0], formId, {
+          data: { submissionIds: submissionIds },
+        });
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.deleteSubmissionsErrMsg'),
+          consoleError: i18n.t('trans.store.form.deleteSubmissionsConsErrMsg', {
+            error: error,
+          }),
+        });
+      }
+    },
+
+    async restoreMultiSubmissions({ formId, submissionIds }) {
+      const i18n = useI18n({ useScope: 'global' });
+      const notificationStore = useNotificationStore();
+      try {
+        // Get this submission
+        await formService.restoreMutipleSubmissions(submissionIds[0], formId, {
+          submissionIds: submissionIds,
+        });
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.restoreSubmissionsNotiMsg'),
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.restoreSubmissionsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.restoreSubmissionsConsErrMsg',
+            { error: error }
+          ),
+        });
+      }
+    },
+
+    async restoreSubmission({ submissionId, deleted }) {
+      const i18n = useI18n({ useScope: 'global' });
+      const notificationStore = useNotificationStore();
+      try {
+        // Get this submission
+        await formService.restoreSubmission(submissionId, { deleted });
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.restoreSubmissionsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.restoreSubmissionsConsErrMsg',
+            { error: error, submissionId: submissionId }
+          ),
+        });
+      }
+    },
     async fetchSubmission({ submissionId }) {
       try {
         // Get this submission
@@ -299,6 +474,41 @@ export const useFormStore = defineStore('form', {
           text: i18n.t('trans.store.form.fetchSubmissnErrMsg'),
           consoleError: i18n.t('trans.store.form.fetchSubmissnConsErrMsg', {
             submissionId: submissionId,
+            error: error,
+          }),
+        });
+      }
+    },
+    async fetchSubmissions({
+      formId,
+      userView,
+      deletedOnly = false,
+      createdBy = '',
+      createdAt,
+    }) {
+      try {
+        this.submissionList = [];
+        // Get list of active submissions for this form (for either all submissions, or just single user)
+        const fields =
+          this.userFormPreferences && this.userFormPreferences.preferences
+            ? this.userFormPreferences.preferences.columns
+            : undefined;
+        const response = userView
+          ? await rbacService.getUserSubmissions({ formId: formId })
+          : await formService.listSubmissions(formId, {
+              deleted: deletedOnly,
+              fields: fields,
+              createdBy: createdBy,
+              createdAt: createdAt,
+            });
+        this.submissionList = response.data;
+      } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fetchSubmissnsErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchSubmissnsConsErrMsg', {
+            formId: formId,
             error: error,
           }),
         });

@@ -1,3 +1,4 @@
+import { useI18n } from 'vue-i18n';
 import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
@@ -74,9 +75,8 @@ function getErrorMessage(options, error) {
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
-      errorMessage =
-        'The form is currently unavailable. This may be due to an incorrect ' +
-        'link, or the form may have been deleted by its owner.';
+      const i18n = useI18n({ useScope: 'global' });
+      errorMessage = i18n.t('trans.permissionUtils.formNotAvailable');
     }
   }
 
@@ -112,7 +112,8 @@ export async function preFlightAuth(options = {}, next) {
       );
       idpHint = getIdpHint(data.form.idpHints);
     } else {
-      throw new Error('Options missing both formId and submissionId');
+      const i18n = useI18n({ useScope: 'global' });
+      throw new Error(i18n.t('trans.permissionUtils.missingFormIdAndSubmssId'));
     }
   } catch (error) {
     // Halt user with error page, use alertNavigate for "friendly" messages.
@@ -122,11 +123,13 @@ export async function preFlightAuth(options = {}, next) {
       // Don't display the 'An error has occurred...' popup notification.
       notificationStore.alertNavigate('error', message);
     } else {
+      const i18n = useI18n({ useScope: 'global' });
       notificationStore.addNotification({
-        message: 'An error occurred while loading this form.',
-        consoleError: `Error while loading ${JSON.stringify(
-          options
-        )}: ${error}`,
+        text: i18n.t('trans.permissionUtils.loadingFormErrMsg'),
+        consoleError: i18n.t('trans.permissionUtils.loadingForm', {
+          options: options,
+          error: error,
+        }),
       });
       notificationStore.errorNavigate();
     }
@@ -142,9 +145,12 @@ export async function preFlightAuth(options = {}, next) {
     } else if (isValidIdp(idpHint) && userIdp === idpHint) {
       next(); // Permit navigation if idps match
     } else {
-      const msg = `This form requires ${idpHint.toUpperCase()} authentication. Please re-login and try again.`;
+      const i18n = useI18n({ useScope: 'global' });
+      const msg = i18n.t('trans.permissionUtils.idpHintMsg', {
+        idpHint: idpHint.toUpperCase(),
+      });
       notificationStore.addNotification({
-        message: msg,
+        text: msg,
         consoleError: `Form IDP mismatch. Form requires ${idpHint} but user has ${userIdp}.`,
       });
       notificationStore.errorNavigate(msg); // Halt user with idp mismatch error page
