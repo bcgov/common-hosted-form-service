@@ -220,6 +220,22 @@ export default function getRouter(basePath = '/') {
             },
           },
           {
+            path: 'duplicate',
+            name: 'UserFormDuplicate',
+            component: () => import('~/views/user/SubmissionDuplicate.vue'),
+            meta: {
+              breadcrumbTitle: 'Create from existing',
+              formSubmitMode: true,
+            },
+            props: createProps,
+            beforeEnter(to, _from, next) {
+              preFlightAuth(
+                { submissionId: to.query.s, formId: to.query.f, sv: true },
+                next
+              );
+            },
+          },
+          {
             path: 'forms',
             name: 'UserForms',
             component: () => import('~/views/user/Forms.vue'),
