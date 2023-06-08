@@ -17,6 +17,10 @@ const properties = defineProps({
     type: String,
     required: true,
   },
+  iconSize: {
+    type: String,
+    default: () => 'small',
+  },
 });
 
 const emits = defineEmits(['deleted']);
@@ -40,7 +44,7 @@ async function deleteSubmission() {
           color="red"
           :disabled="disabled"
           icon
-          size="small"
+          :size="iconSize"
           v-bind="props"
           @click="showDeleteDialog = true"
         >

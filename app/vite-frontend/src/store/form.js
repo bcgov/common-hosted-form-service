@@ -475,6 +475,7 @@ export const useFormStore = defineStore('form', {
         this.formSubmission = response.data.submission;
         this.form = response.data.form;
       } catch (error) {
+        console.log(error);
         const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
@@ -483,6 +484,29 @@ export const useFormStore = defineStore('form', {
             submissionId: submissionId,
             error: error,
           }),
+        });
+      }
+    },
+    async fetchFormCSVExportFields({ formId, type, draft, deleted, version }) {
+      try {
+        this.formFields = [];
+        const { data } = await formService.readCSVExportFields(
+          formId,
+          type,
+          draft,
+          deleted,
+          version
+        );
+        this.formFields = data;
+      } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fetchFormCSVExptFieldsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.fetchFormCSVExptFieldsErrMsg',
+            { formId: formId, error: error }
+          ),
         });
       }
     },

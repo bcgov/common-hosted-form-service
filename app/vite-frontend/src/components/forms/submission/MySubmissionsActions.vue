@@ -76,7 +76,7 @@ function draftDeleted() {
 
     <span
       v-if="
-        submission.status === 'SUBMITTED' &&
+        submission.value.status === 'SUBMITTED' &&
         isCopyFromExistingSubmissionEnabled === true
       "
     >
@@ -84,7 +84,7 @@ function draftDeleted() {
         :to="{
           name: 'UserFormDuplicate',
           query: {
-            s: submission.submissionId,
+            s: submission.value.submissionId,
             f: formId,
           },
         }"
@@ -95,7 +95,7 @@ function draftDeleted() {
               color="primary"
               :disabled="!hasViewPermission"
               icon
-              size="small"
+              size="x-small"
               v-bind="props"
             >
               <v-icon icon="mdi:mdi-pencil-box-multiple"></v-icon>
@@ -107,13 +107,16 @@ function draftDeleted() {
     </span>
 
     <span
-      v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
+      v-if="
+        submission.value.status === 'DRAFT' ||
+        submission.value.status === 'REVISING'
+      "
     >
       <router-link
         :to="{
           name: 'UserFormDraftEdit',
           query: {
-            s: submission.submissionId,
+            s: submission.value.submissionId,
           },
         }"
       >
@@ -123,7 +126,7 @@ function draftDeleted() {
               color="primary"
               :disabled="!hasEditPermission"
               icon
-              size="small"
+              size="x-small"
               v-bind="props"
             >
               <v-icon icon="mdi:mdi-pencil"></v-icon>
@@ -136,7 +139,8 @@ function draftDeleted() {
         v-if="submission.status !== 'REVISING'"
         :disabled="!hasDeletePermission"
         is-draft
-        :submission-id="submission.submissionId"
+        :submission-id="submission.value.submissionId"
+        icon-size="x-small"
         @deleted="draftDeleted"
       />
     </span>
