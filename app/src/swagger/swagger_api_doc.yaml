@@ -1,0 +1,46 @@
+definition:
+  openapi: 3.0.0
+  info:
+    title: Common Hosted Form Service (CHEFS)
+    description: The API for an application for teams to create, manage and publish web forms. These back-end operations can work for different form builder tools that define the form as a json schema. Form management features include role-based access for administrators, form versioning, submission review and export, as well as notifications, document generation and reporting.
+    contact:
+      name: Forminators
+      email: submit.digital@gov.bc.ca
+    license:
+      name: Apache 2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0.html
+    version: 1.0
+  components:
+    securitySchemes:
+      openId:
+        type: openIdConnect
+        openIdConnectUrl: ~
+      basicAuth:
+        type: http
+        scheme: basic
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+  externalDocs:
+    description: Project Readmes
+    url: https://github.com/bcgov/common-hosted-form-service
+  servers:
+    - url: /api/v1
+      description: This Server
+  security:
+    - bearerAuth: []
+      openId: []
+
+apis:
+  - ./src/forms/admin/routes.js
+  - ./src/forms/bcgeoaddress/routes.js
+  - ./src/forms/file/routes.js
+  - ./src/forms/form/routes.js
+  - ./src/forms/permission/routes.js
+  - ./src/forms/public/routes.js
+  - ./src/forms/rbac/routes.js
+  - ./src/forms/role/routes.js
+  - ./src/forms/submission/routes.js
+  - ./src/forms/user/routes.js
+  - ./src/forms/utils/routes.js

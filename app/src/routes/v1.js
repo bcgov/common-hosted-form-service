@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const router = require('express').Router();
 const yaml = require('js-yaml');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('../swagger/swaggerui');
 
 const admin = require('../forms/admin');
 const bcgeoaddress = require('../forms/bcgeoaddress');
@@ -51,14 +53,27 @@ router.get('/docs', (_req, res) => {
   res.send(docs.getDocHTML('v1'));
 });
 
+var options = {
+  explorer: true,
+};
+
+/** OpenAPI Docs */
+router.use('/docss', swaggerUi.serve);
+router.get('/docss', swaggerUi.setup(swaggerSpec, options));
+
 /** OpenAPI YAML Spec */
 router.get('/api-spec.yaml', (_req, res) => {
   res.status(200).type('application/yaml').send(yaml.dump(getSpec()));
 });
 
 /** OpenAPI JSON Spec */
+router.get('docs.json', (_req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+/** OpenAPI JSON Spec */
 router.get('/api-spec.json', (_req, res) => {
   res.status(200).json(getSpec());
 });
-
 module.exports = router;
