@@ -365,7 +365,7 @@
                   <template v-slot:activator="{ on }">
                     <v-text-field
                       v-model="schedule.openSubmissionDateTime"
-                      :placeholder="this.$t('trans.date.date')"
+                      :placeholder="$t('trans.date.date')"
                       append-icon="event"
                       v-on:click:append="openSubmissionDateDraw = true"
                       :label="$t('trans.formSettings.opensubmissions')"
@@ -439,7 +439,7 @@
                   <template v-slot:activator="{ on }">
                     <v-text-field
                       v-model="schedule.closeSubmissionDateTime"
-                      :placeholder="this.$t('trans.date.date')"
+                      :placeholder="$t('trans.date.date')"
                       append-icon="event"
                       v-on:click:append="closeSubmissionDateDraw = true"
                       :label="$t('trans.formSettings.closeSubmissions')"
@@ -629,7 +629,7 @@
                     <template v-slot:activator="{ on }">
                       <v-text-field
                         v-model="schedule.repeatSubmission.repeatUntil"
-                        :placeholder="this.$t('trans.date.date')"
+                        :placeholder="$t('trans.date.date')"
                         append-icon="event"
                         v-on:click:append="repeatUntil = true"
                         :label="$t('trans.formSettings.repeatUntil')"
