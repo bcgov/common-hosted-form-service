@@ -323,17 +323,18 @@ export default {
     },
     async validate(element, errors) {
       try {
-        this.formIOValidation(element)
-          .then(() => {
+        this.formIOValidation(element).then((response) => {
+          if (!response.error) {
             this.validationDispatcher(errors);
-          })
-          .catch((err) => {
+          } else {
             errors[this.index] = {
               submission: this.index,
-              errors: err,
+              errors: response.data,
             };
+            console.log(errors);
             this.validationDispatcher(errors);
-          });
+          }
+        });
       } catch (error) {
         errors[this.index] = {
           submission: this.index,
@@ -348,26 +349,29 @@ export default {
       const shouldContinueValidation = this.index < this.Json.length;
 
       if (shouldContinueValidation) {
-        // await this.delay(10);
+        await this.delay(1000);
         this.$nextTick(() => {
           this.validate(this.Json[this.index], errors);
         });
       } else {
-       // await this.delay(10);
-        this.endValidation(errors);
+        this.$nextTick(() => {
+          this.endValidation(errors);
+        });
       }
     },
-    formIOValidation(element) {
-      return new Promise((resolve, reject) => {
+    async formIOValidation(element) {
+      return new Promise((resolve) => {
         this.vForm.setSubmission({
           data: element,
         });
-        try {
-          this.vForm.submit();
-          resolve();
-        } catch (err) {
-          reject(err);
-        }
+        this.vForm
+          .submit()
+          .then((submission) => {
+            resolve({ error: false, data: submission });
+          })
+          .catch((error) => {
+            resolve({ error: true, data: error });
+          });
       });
     },
     delay(ms) {
