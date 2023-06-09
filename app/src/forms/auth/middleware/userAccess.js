@@ -86,6 +86,11 @@ const hasFormPermissions = (permissions) => {
 
 const hasSubmissionPermissions = (permissions) => {
   return async (req, _res, next) => {
+    // Skip permission checks if requesting as API entity
+    if (req.apiUser) {
+      return next();
+    }
+
     if (!Array.isArray(permissions)) {
       permissions = [permissions];
     }

@@ -72,8 +72,8 @@
       :items="tableData"
       item-key="id"
       :loading="loading || updating"
-      loading-text="$t('trans.teamManagement.loadingText')"
-      no-data-text="$t('trans.teamManagement.noDataText')"
+      :loading-text="$t('trans.teamManagement.loadingText')"
+      :no-data-text="$t('trans.teamManagement.noDataText')"
       :search="search"
       dense
     >
