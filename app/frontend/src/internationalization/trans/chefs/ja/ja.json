@@ -221,7 +221,8 @@
     "forms": "フォーム",
     "users": "ユーザー",
     "developer": "デベロッパー",
-    "infoLinks": "情報リンク"
+    "infoLinks": "情報リンク",
+    "metrics": "メトリクス"
   },
   "adminUsersTable": {
     "search": "検索",
@@ -324,6 +325,10 @@
     "errAfterValidate": "いくつかのエラーが見つかりました。詳細については、以下を参照してください。",
     "fileIsEmpty": "このファイルは空です。",
     "download": "ダウンロード"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "エラー: 何か問題が発生しました",
+    "error": "エラー"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "フォームデザイナーに対する免責事項と責任声明:",

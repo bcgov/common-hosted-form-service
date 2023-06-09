@@ -368,12 +368,12 @@ parameters:
     description: Starting amount of memory the container can use.
     displayName: Memory Request
     required: true
-    value: 256Mi
+    value: 384Mi
   - name: MEMORY_LIMIT
     description: Maximum amount of memory the container can use.
     displayName: Memory Limit
     required: true
-    value: 512Mi
+    value: 768Mi
   - name: PVC_SIZE
     description: The size of the persistent volume to create.
     displayName: Persistent Volume Size

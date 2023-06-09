@@ -17,7 +17,7 @@
       "path": "FILES_UPLOADS_PATH"
     },
     "permanent": "FILES_PERMANENT",
-    "localStorage" : {
+    "localStorage": {
       "path": "FILES_LOCALSTORAGE_PATH"
     },
     "objectStorage": {
@@ -29,6 +29,7 @@
     }
   },
   "frontend": {
+    "adminDashboardUrl": "VUE_APP_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VUE_APP_FRONTEND_BASEPATH",
     "keycloak": {
@@ -39,7 +40,7 @@
   },
   "server": {
     "apiPath": "SERVER_APIPATH",
-    "basePath" : "SERVER_BASEPATH",
+    "basePath": "SERVER_BASEPATH",
     "bodyLimit": "SERVER_BODYLIMIT",
     "keycloak": {
       "clientId": "SERVER_KC_CLIENTID",
