@@ -339,3 +339,93 @@ describe('', () => {
     expect(fields.length).toEqual(19);
   });
 });
+
+describe('_submissionsColumns', () => {
+  const form = {
+    id: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
+    name: 'Fisheries',
+    description: '',
+    active: true,
+    labels: [],
+    createdBy: 'AIDOWU@idir',
+    createdAt: '2023-03-29T14:09:28.457Z',
+    updatedBy: 'AIDOWU@idir',
+    updatedAt: '2023-04-10T16:19:43.491Z',
+    showSubmissionConfirmation: true,
+    submissionReceivedEmails: [],
+    enableStatusUpdates: false,
+    enableSubmitterDraft: true,
+    schedule: {},
+    reminder_enabled: false,
+    enableCopyExistingSubmission: false,
+  };
+
+  it('should return right number of columns, when no prefered columns passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(8);
+  });
+
+  it('should return right number of columns, when 1 prefered column (deleted) passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['deleted'],
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(9);
+  });
+
+  it('should return right number of columns, when 1 prefered column (draft) passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['draft'],
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(9);
+  });
+
+  it('should return right number of columns, when 2 prefered column (draft & deleted) passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['draft', 'deleted'],
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(10);
+  });
+
+  it('should return right number of columns, when a garbage or NON-allowed column (testCol1 & testCol2) passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['testCol1', 'testCol2'],
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(8);
+  });
+});
