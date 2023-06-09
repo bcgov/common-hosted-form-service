@@ -68,27 +68,27 @@ export default {
     return {
       headers: [
         {
-          text: this.$t('trans.manageVersions.versions'),
+          text: this.$t('trans.adminVersions.versions'),
           align: 'start',
           value: 'version',
         },
         {
-          text: this.$t('trans.manageVersions.status'),
+          text: this.$t('trans.adminVersions.status'),
           align: 'start',
           value: 'status',
         },
         {
-          text: this.$t('trans.manageVersions.created'),
+          text: this.$t('trans.adminVersions.created'),
           align: 'start',
           value: 'createdAt',
         },
         {
-          text: this.$t('trans.manageVersions.lastUpdated'),
+          text: this.$t('trans.adminVersions.lastUpdated'),
           align: 'start',
           value: 'updatedAt',
         },
         {
-          text: this.$t('trans.manageVersions.actions'),
+          text: this.$t('trans.adminVersions.actions'),
           align: 'end',
           value: 'action',
           filterable: false,
@@ -117,7 +117,7 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('admin', ['restoreForm']),
 
-    // ----------------------------------------------------------------------/ Publish/unpublish actions
+    // ---------------------------------------------/ Publish/unpublish actions
     async onExportClick(id, isDraft) {
       await this.getFormSchema(id, isDraft);
       let snek = this.form.snake;
