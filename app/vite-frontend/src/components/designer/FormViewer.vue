@@ -1,11 +1,19 @@
 <script setup>
 import { Form } from '@formio/vue';
 import { storeToRefs } from 'pinia';
-import { computed, onBeforeUpdate, onBeforeUnmount, ref, watch } from 'vue';
+import {
+  computed,
+  onBeforeUpdate,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
+import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
 import templateExtensions from '~/plugins/templateExtensions';
 import getRouter from '~/router';
 import { formService, rbacService } from '~/services';
@@ -61,13 +69,12 @@ const properties = defineProps({
 
 const emits = defineEmits(['submission-updated']);
 
-const allowSubmitterToUploadFile = ref(false);
+const isSingleSubmission = ref(true);
 const block = ref(false);
-const bulkFile = ref(false);
-const chefForm = ref(false);
+const chefForm = ref(null);
 const confirmSubmit = ref(false);
 const currentForm = ref({});
-const doYouWantToSaveTheDraft = ref(false);
+const saveDraftDialog = ref(false);
 const forceNewTabLinks = ref(true);
 const form = ref({});
 const formDataEntered = ref(false);
@@ -84,7 +91,6 @@ const json_csv = ref({
 const loadingSubmission = ref(false);
 const permissions = ref([]);
 const reRenderFormIo = ref(0);
-const saveDraftState = ref(false);
 const saving = ref(false);
 const sbdMessage = ref({
   message: String,
@@ -98,6 +104,8 @@ const submission = ref({ data: { lateEntry: false } });
 const submissionRecord = ref({});
 const version = ref(0);
 const versionIdToSubmitTo = ref(properties.versionId);
+
+defineExpose({ chefForm });
 
 const appStore = useAppStore();
 const authStore = useAuthStore();
@@ -282,7 +290,6 @@ async function getFormSchema() {
         formScheduleExpireMessage.value = formScheduleStatus.message;
       }
     }
-    listenFormChangeEvent(response);
   } catch (error) {
     if (authenticated.value) {
       isFormScheduleExpired.value = true;
@@ -299,11 +306,6 @@ async function getFormSchema() {
   }
 }
 
-async function listenFormChangeEvent(response) {
-  allowSubmitterToUploadFile.value = response.data.allowSubmitterToUploadFile;
-  if (allowSubmitterToUploadFile.value && !properties.draftId) jsonManager();
-}
-
 function toggleBlock(e) {
   block.value = e;
 }
@@ -312,12 +314,20 @@ function formChange(e) {
   if (e.changed != undefined && !e.changed.flags.fromSubmission) {
     formDataEntered.value = true;
   }
+
+  // Seems to be the only place the form changes on load
+  jsonManager();
 }
 
 function jsonManager() {
-  formElement.value = chefForm.value.formio;
-  json_csv.value.data = [formElement.value.data, formElement.value.data];
   json_csv.value.file_name = 'template_' + form.value.name + '_' + Date.now();
+  if (chefForm?.value?.formio) {
+    formElement.value = chefForm.value.formio;
+    json_csv.value.data = [
+      JSON.parse(JSON.stringify(formElement.value._data)),
+      JSON.parse(JSON.stringify(formElement.value._data)),
+    ];
+  }
 }
 
 function resetMessage() {
@@ -359,7 +369,6 @@ async function sendMultiSubmissionData(body) {
         text: sbdMessage.value.message,
         ...NotificationTypes.SUCCESS,
       });
-      leaveThisPage();
     } else {
       sbdMessage.value.message = t('trans.formViewer.failedResSubmissn', {
         status: response.status,
@@ -472,6 +481,7 @@ function setError(data) {
 async function saveDraft() {
   try {
     saving.value = true;
+
     const response = await sendSubmission(true, submission.value);
     if (properties.submissionId) {
       // Editing an existing draft
@@ -495,6 +505,7 @@ async function saveDraft() {
       });
     }
     showSubmitConfirmDialog.value = false;
+    saveDraftDialog.value = false;
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.formViewer.savingDraftErrMsg'),
@@ -685,89 +696,13 @@ function onCustomEvent(event) {
   alert(t('trans.formViewer.customEventAlert', { event: event.type }));
 }
 
-function switchView() {
-  if (bulkFile.value) {
-    showdoYouWantToSaveTheDraftModalForSwitch();
+function toggleSubmissionView() {
+  // If it's single submission and the form is dirty
+  if (isSingleSubmission.value && formDataEntered.value) {
+    saveDraftDialog.value = true;
     return;
   }
-  bulkFile.value = !bulkFile.value;
-}
-
-function showdoYouWantToSaveTheDraftModalForSwitch() {
-  saveDraftState.value = 1;
-  if (formDataEntered.value) {
-    doYouWantToSaveTheDraft.value = true;
-  } else {
-    leaveThisPage();
-  }
-}
-
-function showdoYouWantToSaveTheDraftModal() {
-  if (!bulkFile.value) {
-    saveDraftState.value = 0;
-    if (properties.submissionId == undefined || formDataEntered.value)
-      doYouWantToSaveTheDraft.value = true;
-    else leaveThisPage();
-  } else {
-    leaveThisPage();
-  }
-}
-
-function goTo(path, params) {
-  router.push({
-    name: path,
-    query: params,
-  });
-}
-
-function leaveThisPage() {
-  if (saveDraftState.value == 0 || bulkFile.value) {
-    goTo('UserSubmissions', { f: form.value.id });
-  } else {
-    bulkFile.value = !bulkFile.value;
-  }
-}
-
-function yes() {
-  saveDraftFromModal(true);
-}
-
-function no() {
-  saveDraftFromModal(false);
-}
-
-function saveDraftFromModal(event) {
-  doYouWantToSaveTheDraft.value = false;
-  if (event) {
-    saveDraftFromModalNow();
-  } else {
-    leaveThisPage();
-  }
-}
-
-// Custom Event triggered from buttons with Action type "Event"
-async function saveDraftFromModalNow() {
-  try {
-    saving.value = true;
-    await sendSubmission(true, submission.value);
-    saving.value = false;
-    // Creating a new submission in draft state
-    // Go to the user form draft page
-    leaveThisPage();
-    showSubmitConfirmDialog.value = false;
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.formViewer.submittingDraftErrMsg'),
-      consoleError: t('trans.formViewer.submittingDraftConsErrMsg', {
-        submissionId: properties.submissionId,
-        error: error,
-      }),
-    });
-  }
-}
-
-function closeBulkYesOrNo() {
-  doYouWantToSaveTheDraft.value = false;
+  isSingleSubmission.value = !isSingleSubmission.value;
 }
 
 function beforeWindowUnload(e) {
@@ -787,22 +722,24 @@ onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', beforeWindowUnload);
 });
 
-if (properties.submissionId && properties.isDuplicate) {
-  //Run when make new submission from existing one called.
-  Promise.all([
-    getFormData(),
-    getFormSchema(), //We need this to be called as well, because we need latest version of form
-  ]);
-} else if (properties.submissionId && !properties.isDuplicate) {
-  getFormData();
-} else {
-  getFormSchema();
-}
+onMounted(async () => {
+  if (properties.submissionId && properties.isDuplicate) {
+    //Run when make new submission from existing one called.
+    await Promise.all([
+      await getFormData(),
+      await getFormSchema(), //We need this to be called as well, because we need latest version of form
+    ]);
+  } else if (properties.submissionId && !properties.isDuplicate) {
+    await getFormData();
+  } else {
+    await getFormSchema();
+  }
 
-// If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-if (!properties.preview && !properties.readOnly) {
-  window.addEventListener('beforeunload', beforeWindowUnload);
-}
+  // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
+  if (!properties.preview && !properties.readOnly) {
+    window.addEventListener('beforeunload', beforeWindowUnload);
+  }
+});
 </script>
 
 <template>
@@ -833,9 +770,9 @@ if (!properties.preview && !properties.readOnly) {
         <div v-if="displayTitle">
           <div v-if="!isFormPublic(form)">
             <FormViewerActions
-              :allow-submitter-to-upload-file="allowSubmitterToUploadFile"
+              :allow-submitter-to-upload-file="form.allowSubmitterToUploadFile"
               :block="block"
-              :bulk-file="bulkFile"
+              :is-single-submission="isSingleSubmission"
               :copy-existing-submission="form.enableCopyExistingSubmission"
               :draft-enabled="form.enableSubmitterDraft"
               :form-id="form.id"
@@ -848,14 +785,14 @@ if (!properties.preview && !properties.readOnly) {
                 showdoYouWantToSaveTheDraftModal
               "
               @save-draft="saveDraft"
-              @switchView="switchView"
+              @toggleSubmissionView="toggleSubmissionView"
             />
           </div>
           <h1 class="my-6 text-center">{{ form.name }}</h1>
         </div>
         <div class="form-wrapper">
           <v-alert
-            v-if="saved || saving"
+            v-if="isSingleSubmission && (saved || saving)"
             :class="
               saving
                 ? NOTIFICATIONS_TYPES.INFO.class
@@ -912,12 +849,16 @@ if (!properties.preview && !properties.readOnly) {
             </div>
           </v-alert>
           <FormViewerMultiUpload
-            v-if="!isLoading && allowSubmitterToUploadFile && bulkFile"
+            v-if="
+              !isLoading &&
+              form.allowSubmitterToUploadFile &&
+              !isSingleSubmission
+            "
             :response="sbdMessage"
-            :form-element="formElement"
             :form="form"
+            :form-element="formElement"
             :form-schema="formSchema"
-            :json_csv="json_csv"
+            :json-csv="json_csv"
             :form-fields="formFields"
             @save-bulk-data="saveBulkData"
             @reset-message="resetMessage"
@@ -926,10 +867,11 @@ if (!properties.preview && !properties.readOnly) {
           />
 
           <Form
-            v-if="!bulkFile"
+            v-if="isSingleSubmission"
             :key="reRenderFormIo"
             ref="chefForm"
             :form="formSchema"
+            :form-element="formElement"
             :submission="submission"
             :options="viewerOptions"
             :language="$i18n.locale"
@@ -946,12 +888,12 @@ if (!properties.preview && !properties.readOnly) {
         </div>
       </div>
       <BaseDialog
-        v-model="doYouWantToSaveTheDraft"
+        v-model="saveDraftDialog"
         type="SAVEDDELETE"
         :enable-custom-button="false"
-        @close-dialog="closeBulkYesOrNo"
-        @delete-dialog="no"
-        @continue-dialog="yes"
+        @close-dialog="saveDraftDialog = false"
+        @delete-dialog="(saveDraftDialog = false), (isSingleSubmission = false)"
+        @continue-dialog="saveDraft"
       >
         <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
         <template #text>{{ $t('trans.formViewer.wantToSaveDraft') }}</template>

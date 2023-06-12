@@ -10,7 +10,7 @@ const properties = defineProps({
     type: Boolean,
     default: false,
   },
-  bulkFile: {
+  isSingleSubmission: {
     type: Boolean,
     default: false,
   },
@@ -50,7 +50,7 @@ const properties = defineProps({
 
 const emits = defineEmits([
   'save-draft',
-  'switchView',
+  'toggleSubmissionView',
   'showdoYouWantToSaveTheDraftModal',
 ]);
 
@@ -85,13 +85,13 @@ const showEditToggle = computed(
               icon
               v-bind="props"
               size="small"
-              @click="emits('switchView')"
+              @click="emits('toggleSubmissionView')"
             >
               <v-icon icon="mdi:mdi-repeat"></v-icon>
             </v-btn>
           </template>
           <span>{{
-            bulkFile
+            isSingleSubmission
               ? $t('trans.formViewerActions.switchSingleSubmssn')
               : $t('trans.formViewerActions.switchMultiSubmssn')
           }}</span>
@@ -99,7 +99,10 @@ const showEditToggle = computed(
       </span>
 
       <!-- Save a draft -->
-      <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
+      <span
+        v-if="canSaveDraft && draftEnabled && isSingleSubmission"
+        class="ml-2"
+      >
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
