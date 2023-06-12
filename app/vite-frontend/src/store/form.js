@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import {
   apiKeyService,
   formService,
+  fileService,
   rbacService,
   userService,
 } from '~/services';
@@ -57,6 +58,10 @@ const genInitialForm = () => ({
 export const useFormStore = defineStore('form', {
   state: () => ({
     apiKey: undefined,
+    downloadedFile: {
+      data: null,
+      headers: null,
+    },
     drafts: [],
     fcProactiveHelpGroupList: {},
     fcProactiveHelpImageUrl: '',
@@ -475,7 +480,6 @@ export const useFormStore = defineStore('form', {
         this.formSubmission = response.data.submission;
         this.form = response.data.form;
       } catch (error) {
-        console.log(error);
         const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
@@ -657,6 +661,24 @@ export const useFormStore = defineStore('form', {
       // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
       if (!this.form || this.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       this.form.isDirty = isDirty;
+    },
+    async downloadFile(fileId) {
+      try {
+        this.downloadedFile.data = null;
+        this.downloadedFile.headers = null;
+        const response = await fileService.getFile(fileId);
+        this.downloadedFile.data = response.data;
+        this.downloadedFile.headers = response.headers;
+      } catch (error) {
+        const i18n = useI18n({ useScope: 'global' });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.downloadFileErrMsg'),
+          consoleError: i18n.t('trans.store.form.downloadFileConsErrMsg', {
+            error: error,
+          }),
+        });
+      }
     },
   },
 });
