@@ -20,6 +20,15 @@ const githubLinkScheduleAndReminderFeature = ref(
 );
 
 const ID_MODE = computed(() => IdentityMode);
+
+function allowSubmitterToUploadFileChanged() {
+  if (
+    form.value.allowSubmitterToUploadFile &&
+    !form.value.enableSubmitterDraft
+  ) {
+    form.value.enableSubmitterDraft = true;
+  }
+}
 </script>
 
 <template>
@@ -46,8 +55,8 @@ const ID_MODE = computed(() => IdentityMode);
     <v-checkbox
       v-model="form.allowSubmitterToUploadFile"
       class="my-0"
-      :disabled="userType === ID_MODE.PUBLIC"
-      @update:modelValue="allowSubmitterToUploadFileChanged"
+      :disabled="form.userType === ID_MODE.PUBLIC"
+      @update:model-value="allowSubmitterToUploadFileChanged"
     >
       <template #label>
         Allow <strong> multiple draft</strong> upload

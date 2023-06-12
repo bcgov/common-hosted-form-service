@@ -191,7 +191,7 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
-    async publishDraft(formId, draftId) {
+    async publishDraft({ formId, draftId }) {
       try {
         await formService.publishDraft(formId, draftId);
       } catch (error) {
