@@ -195,15 +195,23 @@ const service = {
     }
 
     // params for this export include minDate and maxDate (full timestamp dates).
-    let submissionData = await SubmissionData.query()
-      .column(service._submissionsColumns(form, params))
+    SubmissionData.query()
+      .select(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterVersion', version)
       .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
       .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
-      .modify('orderDefault');
+      .modify('orderDefault')
+      .then((submissionData) => {
+        console.log(submissionData);
+        if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
+        return service._submissionFilterByUnsubmit(submissionData);
+      });
+  },
+
+  _submissionFilterByUnsubmit: (submissionData) => {
     for (let index in submissionData) {
       let keys = Object.keys(submissionData[index].submission);
       for (let key of keys) {
@@ -214,7 +222,6 @@ const service = {
     }
     return submissionData;
   },
-
   _formatSubmissionsJson: (form, data) => {
     return {
       data: data,

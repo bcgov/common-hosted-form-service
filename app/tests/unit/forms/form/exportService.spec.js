@@ -1,19 +1,16 @@
-const { MockModel, MockTransaction } = require('../../../common/dbHelper');
-
-jest.mock('../../../../src/forms/common/models/tables/user', () => MockModel);
-jest.mock('../../../../src/forms/common/models/tables/userFormPreferences', () => MockModel);
-
 const exportService = require('../../../../src/forms/form/exportService');
-
-beforeEach(() => {
-  MockModel.mockReset();
-  MockTransaction.mockReset();
-});
+const MockModel = require('../../../../src/forms/common/models/views/submissionData');
+jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
+  query: jest.fn().mockReturnThis(),
+  select: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  modify: jest.fn().mockReturnThis(),
+  then: jest.fn().mockReturnThis(),
+}));
 
 describe('_getSubmissions', () => {
   it('sh_getSubmissions_getSubmissions_getSubmissions_getSubmissionsmultiple components', async () => {
     // form schema from db
-    const submission = require('../../../fixtures/submission/kitchen_sink_submission_extract_field_csv_export.json');
 
     const form = {
       id: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
@@ -41,22 +38,20 @@ describe('_getSubmissions', () => {
       version: 1,
     };
 
-    exportService._getSubmissions = jest.fn(() => {
-      return submission;
-    });
+    MockModel.query.mockImplementation(() => MockModel);
+    exportService._submissionsColumns = jest.fn().mockReturnThis();
 
-    const result = await exportService._getSubmissions(form, params, params.version);
+    let preference;
+    if (params.preference && _.isString(params.preference)) {
+      preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
+    }
+    await exportService._getSubmissions(form, params, params.version);
 
-    expect(result).toHaveLength(10);
-    // expect(MockModel.query).toHaveBeenCalledTimes(1);
-    // expect(MockModel.query).toHaveBeenCalledWith(form, params, params.version);
-    // expect(MockModel.modify).toHaveBeenCalledTimes(1);
-    // expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', '2023-06-06T14:33:28.898Z', '2023-06-09T14:33:28.898Z');
-    // expect(exportService._getSubmissions).toHaveBeenCalledTimes(1);
-    // expect(exportService._getSubmissions).toHaveBeenCalledWith(form, params, params.version);
-
-    // restore mocked function to it's original implementation
-    // exportService._getSubmissions.mockRestore();
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenCalledTimes(6);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
   });
 });
 
