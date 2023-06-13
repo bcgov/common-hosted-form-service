@@ -167,7 +167,6 @@ function resetDialog() {
                     class="text-style"
                     color="#1A5A96"
                   >
-                    {{ moreHelpInfoLink }}
                   </v-text-field>
                 </v-col>
                 <v-checkbox v-model="isLinkEnabled" class="checkbox_data_cy">
@@ -195,7 +194,7 @@ function resetDialog() {
                 hide-details
                 clearable
                 data-cy="more_help_info_link_text_area"
-                model-value="description"
+                :model-value="description"
                 class="text-style"
               ></v-textarea>
             </v-col>
@@ -203,12 +202,12 @@ function resetDialog() {
           <v-row class="mt-2" no-gutters>
             <v-col>
               <div class="d-flex align-center">
-                <font-awesome-icon
-                  icon="fa-solid fa-cloud-arrow-up"
-                  size="xl"
+                <v-icon
                   color="#1A5A96"
                   class="mr-1 mt-2"
-                />
+                  size="x-large"
+                  icon="mdi:mdi-upload"
+                ></v-icon>
                 <v-col>
                   <v-file-input
                     style="width: 50%"

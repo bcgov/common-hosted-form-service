@@ -53,7 +53,23 @@ export default function getRouter(basePath = '/') {
             name: 'Admin',
             component: () => import('~/views/admin/Root.vue'),
           },
+          {
+            path: 'form',
+            name: 'AdministerForm',
+            component: () => import('~/views/admin/Form.vue'),
+            props: createProps,
+          },
+          {
+            path: 'user',
+            name: 'AdministerUser',
+            component: () => import('~/views/admin/User.vue'),
+            props: createProps,
+          },
         ],
+        meta: {
+          requiresAuth: true,
+          hasLogin: true,
+        },
       },
       {
         path: '/form',
