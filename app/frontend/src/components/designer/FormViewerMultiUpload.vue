@@ -294,20 +294,7 @@ export default {
         this.max = 100;
         this.progress = true;
         this.$emit('toggleBlock', true);
-        this.vForm = await Formio.createForm(
-          document.getElementById('validateForm'),
-          this.formSchema,
-          {
-            highlightErrors: true,
-            alwaysDirty: true,
-            hide: {
-              submit: true,
-            },
-          }
-        );
-        this.$nextTick(() => {
-          this.validate(this.Json[this.index], []);
-        });
+        this.startValidation();
       } catch (error) {
         this.resetUpload();
         this.$emit('set-error', {
@@ -321,19 +308,31 @@ export default {
         return;
       }
     },
+    async startValidation() {
+      const formHtml = document.getElementById('validateForm');
+      this.vForm = await Formio.createForm(formHtml, this.formSchema, {
+        highlightErrors: true,
+        alwaysDirty: true,
+        hide: {
+          submit: true,
+        },
+      });
+      this.$nextTick(() => {
+        this.validate(this.Json[this.index], []);
+      });
+    },
     async validate(element, errors) {
       try {
-        this.formIOValidation(element).then((response) => {
-          if (!response.error) {
-            this.validationDispatcher(errors);
-          } else {
-            errors[this.index] = {
-              submission: this.index,
-              errors: response.data,
-            };
-            this.validationDispatcher(errors);
-          }
-        });
+        const response = await this.formIOValidation(element);
+        if (response.error) {
+          errors[this.index] = {
+            submission: this.index,
+            errors: response.data,
+          };
+        }
+        this.validationDispatcher(errors);
+        //  .then((response) => {
+        //   });
       } catch (error) {
         errors[this.index] = {
           submission: this.index,
@@ -342,21 +341,23 @@ export default {
       }
     },
     async validationDispatcher(errors) {
-      this.index++;
-      this.value = this.percentage(this.index);
-
-      const shouldContinueValidation = this.index < this.Json.length;
-
-      if (shouldContinueValidation) {
-        await this.delay(1000);
-        this.$nextTick(() => {
-          this.validate(this.Json[this.index], errors);
-        });
-      } else {
-        this.$nextTick(() => {
-          this.endValidation(errors);
-        });
-      }
+      /* we need this timer allow to the gargabe colector to have time
+       to clean the memory before starting  a new form validation */
+      const timer = setTimeout(() => {
+        this.index++;
+        this.value = this.percentage(this.index);
+        const shouldContinueValidation = this.index < this.Json.length;
+        if (shouldContinueValidation) {
+          this.$nextTick(() => {
+            this.validate(this.Json[this.index], errors);
+          });
+        } else {
+          this.$nextTick(() => {
+            this.endValidation(errors);
+          });
+        }
+        clearTimeout(timer);
+      }, 500);
     },
     async formIOValidation(element) {
       return new Promise((resolve) => {
@@ -373,10 +374,9 @@ export default {
           });
       });
     },
-    delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    },
-
+    // delay(ms) {
+    //   return new Promise((resolve) => setTimeout(resolve, ms));
+    // },
     percentage(i) {
       let number_of_submission = this.Json.length;
       if (number_of_submission > 0) {
