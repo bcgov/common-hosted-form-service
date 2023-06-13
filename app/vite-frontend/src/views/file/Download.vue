@@ -79,7 +79,7 @@ async function getFile(fileId) {
         indeterminate
       ></v-progress-circular>
       <div v-if="!showDownloadLink">Preparing for download...</div>
-      <div class="mt-5 center_vertical_content" v-if="showDownloadLink">
+      <div v-if="showDownloadLink" class="mt-5 center_vertical_content">
         <v-icon class="mb-2" size="90">file_download</v-icon><br />
         If your file does not automatically download
         <a href="#" @click="getFile(id)">click here to try again</a>
