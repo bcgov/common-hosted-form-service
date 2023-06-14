@@ -326,6 +326,10 @@
     "fileIsEmpty": "este archivo está vacío.",
     "download": "Descargar"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Error: Algo salió mal",
+    "error": "error"
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",
     "privacyLaw": "Es su responsabilidad cumplir con las leyes de privacidad que rigen la recopilación, el uso y la divulgación de información de identificación personal.",

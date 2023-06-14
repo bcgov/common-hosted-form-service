@@ -1144,6 +1144,10 @@ paths:
     get:
       summary: Get the list of status history for a submission
       operationId: readSubmissionStatus
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Status
       parameters:

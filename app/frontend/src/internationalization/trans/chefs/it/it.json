@@ -326,6 +326,10 @@
     "fileIsEmpty": "questo file è vuoto.",
     "download": "Scaricamento"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Errore: qualcosa è andato storto",
+    "error": "errore"
+  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Dichiarazione di non responsabilità e dichiarazione di responsabilità per i progettisti di moduli:",
     "privacyLaw": "È tua responsabilità rispettare le leggi sulla privacy che regolano la raccolta, l'uso e la divulgazione di informazioni di identificazione personale.",
