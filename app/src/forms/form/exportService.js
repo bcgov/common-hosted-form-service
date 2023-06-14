@@ -161,7 +161,6 @@ const service = {
   _getData: async (exportType, formVersion, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
       let subs = await service._getSubmissions(form, params, formVersion);
-      console.log('subs-', subs);
       return subs;
     }
     return {};
@@ -387,7 +386,6 @@ const service = {
     const exportTemplate = params.template ? params.template : 'multiRowEmptySpacesCSVExport';
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, params.version, form, params);
-    console.log('data-', data);
     const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version, params.emailExport, currentUser, referer);
     return { data: result.data, headers: result.headers };
   },
