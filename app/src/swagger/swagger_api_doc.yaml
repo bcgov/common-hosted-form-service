@@ -36,6 +36,12 @@ definition:
           application/json:
             schema:
               $ref: '#/components/schemas/NoFormAccessError'
+      UnprocessableEntityDB:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnprocessableEntityDBError'
     schemas:
       Error:
         type: object
@@ -69,6 +75,8 @@ definition:
                 example: Sorry... we still haven't found what you're looking for :(
               status:
                 example: 422
+              error:
+                example: {}
               title:
                 example: Unprocessable Entity
               type:
@@ -79,11 +87,28 @@ definition:
           - type: object
             properties:
               detail:
+                example: Validation Error
+              error:
                 example:
                   {
                     'role': [{ 'message': "must have required property 'role'", 'keyword': 'required', 'params': { 'missingProperty': 'role' } }],
                     'owner': [{ 'message': 'must NOT have additional properties', 'keyword': 'additionalProperties', 'params': { 'additionalProperty': 'owner' } }]
                   }
+              status:
+                example: 422
+              title:
+                example: Validation Error
+              type:
+                example: https://httpstatuses.com/422
+      PropertyRequiredValidationError:
+        allOf:
+          - $ref: '#/components/schemas/Problem'
+          - type: object
+            properties:
+              detail:
+                example: Validation Error
+              error:
+                example: { 'propertyName': [{ 'message': "must have required property 'propertyName'", 'keyword': 'required', 'params': { 'missingProperty': 'propertyName' } }] }
               status:
                 example: 422
               title:
@@ -97,6 +122,8 @@ definition:
             properties:
               detail:
                 example: The specified resource was not found
+              error:
+                example: {}
               status:
                 example: 404
               title:
@@ -110,6 +137,8 @@ definition:
             properties:
               detail:
                 example: Authorization token is invalid.
+              error:
+                example: {}
               status:
                 example: 403
               title:
@@ -125,6 +154,8 @@ definition:
                 example: Must supply userId and formId
               status:
                 example: 422
+              error:
+                example: {}
               title:
                 example: Unprocessable Entity
               type:
@@ -138,6 +169,8 @@ definition:
                 example: Current user has no access to form.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -151,6 +184,8 @@ definition:
                 example: Current user not found on request.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -164,6 +199,8 @@ definition:
                 example: Form Id not found on request.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -177,6 +214,8 @@ definition:
                 example: Current user does not have required permission(s) on form.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -190,6 +229,8 @@ definition:
                 example: You do not have permission to update this role.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -203,6 +244,8 @@ definition:
                 example: You can not update an owner's roles.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -216,6 +259,8 @@ definition:
                 example: Submission Id (s) not found on request.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -227,6 +272,8 @@ definition:
             properties:
               detail:
                 example: You do not have access to this submission.
+              error:
+                example: {}
               status:
                 example: 401
               title:
@@ -240,6 +287,8 @@ definition:
             properties:
               detail:
                 example: Invalid submissionId(s) in the submissionIds list.
+              error:
+                example: {}
               status:
                 example: 401
               title:
@@ -255,6 +304,8 @@ definition:
                 example: Current user does not have required permission(s) for some submissions in the submissionIds list.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -268,6 +319,8 @@ definition:
                 example: Invalid authorization credentials.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -281,6 +334,8 @@ definition:
                 example: Current user does not have required permission(s) for to delete submissions.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -294,6 +349,8 @@ definition:
                 example: You can not update an owner's roles.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -306,7 +363,9 @@ definition:
               detail:
                 example: You can't remove a form designer role.
               status:
-                example: 401
+                example:
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -320,6 +379,8 @@ definition:
                 example: You can't update an owner's roles.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -333,6 +394,8 @@ definition:
                 example: You can't add an owner role.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -346,6 +409,8 @@ definition:
                 example: User Id not found on request.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -359,6 +424,8 @@ definition:
                 example: You can't remove your own team manager role.
               status:
                 example: 401
+              error:
+                example: {}
               title:
                 example: Unauthorized
               type:
@@ -369,6 +436,7 @@ definition:
           - title
           - status
           - detail
+          - error
         properties:
           type:
             type: string
@@ -382,6 +450,9 @@ definition:
           detail:
             type: string
             description: short description of why this problem was raised.
+          error:
+            type: object
+            description: description of the error that was raised
     securitySchemes:
       openId:
         type: openIdConnect

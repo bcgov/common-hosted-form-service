@@ -812,8 +812,8 @@ routes.get('/users', async (req, res, next) => {
  *                    description: List of idps
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
- *    '401':
- *      $ref: '#/components/responses/NoFormAccess'
+ *    '404':
+ *      $ref: '#/components/responses/ResourceNotFound'
  */
 routes.get('/users/:userId', async (req, res, next) => {
   await userController.read(req, res, next);
@@ -823,18 +823,285 @@ routes.get('/users/:userId', async (req, res, next) => {
 //Form componets help info
 //
 
+/**
+ * @openapi
+ * /admin/formcomponents/proactivehelp/object:
+ *  post:
+ *   tags:
+ *    - Admin
+ *   description: Create or update proactive help details form.io component
+ *   security:
+ *    - bearerAuth: []
+ *    - basicAuth: []
+ *    - openId: []
+ *   requestBody:
+ *    required: true
+ *    content:
+ *      application/json:
+ *        schema:
+ *          type: object
+ *          properties:
+ *            componentName:
+ *              type: string
+ *              description: Name of Form.io component
+ *              example: File Upload
+ *            description:
+ *              type: string
+ *              description: Full details about the component
+ *              example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+ *            externalLink:
+ *              type: string
+ *              description: Link to the external documentation for the component
+ *              example: https://help.form.io/userguide/form-building/layout-components#panel
+ *            groupName:
+ *              type: string
+ *              description: Name of the group
+ *              example: Basic Layout
+ *            image:
+ *              type: binary
+ *              description: binary image of the component
+ *              example: ''
+ *            imageName:
+ *              type: string
+ *              description: name of the image
+ *              example: FileUpload.jpg
+ *            isLinkEnabled:
+ *              type: boolean
+ *              description: This hides or shows external link
+ *              example: true
+ *            status:
+ *              type: boolean
+ *              description: This determines the publish status of the component.
+ *              example: true
+ *   responses:
+ *    '200':
+ *      description: Success
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              Basic Layout:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  properties:
+ *                    id:
+ *                      example: "3a7efb05-52d4-4538-aedf-53a2c3429c85"
+ *                    status:
+ *                      example: true
+ *                    componentName:
+ *                      example: "File Upload"
+ *                    externalLink:
+ *                      example: "www.google.com"
+ *                    groupName:
+ *                      example: "BC Government"
+ *                    description:
+ *                      example: "fgyjgugu"
+ *                    isLinkEnabled:
+ *                      example: true
+ *                    imageName:
+ *                      example: "internationale.png"
+ *              Advanced Data:
+ *                type: array
+ *                example: []
+ *              Basic Fields:
+ *                type: array
+ *                example: []
+ *              Advanced Layout:
+ *                type: array
+ *                example: []
+ *              BC Government:
+ *                type: array
+ *                example: []
+ *              Advanced Fields:
+ *                type: array
+ *                example: []
+ *    '403':
+ *      $ref: '#/components/responses/Forbidden'
+ *    '422':
+ *      $ref: '#/components/responses/UnprocessableEntityDB'
+ */
 routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
   await controller.createFormComponentsProactiveHelp(req, res, next);
 });
 
+/**
+ * @openapi
+ * /admin/formcomponents/proactivehelp/{publishStatus}/{componentId}:
+ *  put:
+ *   tags:
+ *    - Admin
+ *   description: Update the selected form.io component proactive help publish status
+ *   security:
+ *    - bearerAuth: []
+ *    - basicAuth: []
+ *    - openId: []
+ *   parameters:
+ *      - in: path
+ *        name: publishStatus
+ *        schema:
+ *          type: boolean
+ *        description: publish status of the Firm.io component.
+ *        required: true
+ *        example: true
+ *      - in: path
+ *        name: componentId
+ *        schema:
+ *          type: string
+ *        description: Id of the Form.io component. This is a database generated Id.
+ *        required: true
+ *        example: true
+ *   responses:
+ *    '200':
+ *      description: Success
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              Basic Layout:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  properties:
+ *                    id:
+ *                      example: "3a7efb05-52d4-4538-aedf-53a2c3429c85"
+ *                    status:
+ *                      example: true
+ *                    componentName:
+ *                      example: "File Upload"
+ *                    externalLink:
+ *                      example: "www.google.com"
+ *                    groupName:
+ *                      example: "BC Government"
+ *                    description:
+ *                      example: "fgyjgugu"
+ *                    isLinkEnabled:
+ *                      example: true
+ *                    imageName:
+ *                      example: "internationale.png"
+ *              Advanced Data:
+ *                type: array
+ *                example: []
+ *              Basic Fields:
+ *                type: array
+ *                example: []
+ *              Advanced Layout:
+ *                type: array
+ *                example: []
+ *              BC Government:
+ *                type: array
+ *                example: []
+ *              Advanced Fields:
+ *                type: array
+ *                example: []
+ *    '403':
+ *      $ref: '#/components/responses/Forbidden'
+ *    '422':
+ *      $ref: '#/components/responses/UnprocessableEntityDB'
+ */
 routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (req, res, next) => {
   await controller.updateFormComponentsProactiveHelp(req, res, next);
 });
 
+/**
+ * @openapi
+ * /admin/formcomponents/proactivehelp/imageUrl/{componentId}:
+ *  get:
+ *   tags:
+ *    - Admin
+ *   description: Get all Users added as members to this form and their roles/permissions on the form
+ *   security:
+ *    - bearerAuth: []
+ *    - basicAuth: []
+ *    - openId: []
+ *   parameters:
+ *    - in: path
+ *      name: componentId
+ *      schema:
+ *        type: string
+ *      description: Id of the Form.io component. This is a database generated Id.
+ *      required: true
+ *      example: true
+ *   responses:
+ *    '200':
+ *      description: Success
+ *      content:
+ *        image/png:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              url:
+ *                type: string
+ *                format: binary
+ *    '403':
+ *      $ref: '#/components/responses/Forbidden'
+ *    '422':
+ *      $ref: '#/components/responses/UnprocessableEntityDB'
+ */
 routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
   await controller.getFCProactiveHelpImageUrl(req, res, next);
 });
 
+/**
+ * @openapi
+ * /admin/formcomponents/proactivehelp/list:
+ *  get:
+ *   tags:
+ *    - Admin
+ *   description: Get all Users added as members to this form and their roles/permissions on the form
+ *   security:
+ *    - bearerAuth: []
+ *    - basicAuth: []
+ *    - openId: []
+ *   responses:
+ *    '200':
+ *      description: Success
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              Basic Layout:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  properties:
+ *                    id:
+ *                      example: "3a7efb05-52d4-4538-aedf-53a2c3429c85"
+ *                    status:
+ *                      example: true
+ *                    componentName:
+ *                      example: "File Upload"
+ *                    externalLink:
+ *                      example: "www.google.com"
+ *                    groupName:
+ *                      example: "BC Government"
+ *                    description:
+ *                      example: "fgyjgugu"
+ *                    isLinkEnabled:
+ *                      example: true
+ *                    imageName:
+ *                      example: "internationale.png"
+ *              Advanced Data:
+ *                type: array
+ *                example: []
+ *              Basic Fields:
+ *                type: array
+ *                example: []
+ *              Advanced Layout:
+ *                type: array
+ *                example: []
+ *              BC Government:
+ *                type: array
+ *                example: []
+ *              Advanced Fields:
+ *                type: array
+ *                example: []
+ *    '403':
+ *      $ref: '#/components/responses/Forbidden'
+ */
 routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
