@@ -687,7 +687,8 @@
     "errSubmittingForm": "Під час надсилання цієї форми сталася помилка",
     "errorSavingFile": "Помилка збереження файлів. Ім'я файлу: {fileNname}. Помилка: {error}",
     "submittingDraftErrMsg": "Під час збереження чернетки сталася помилка",
-    "submittingDraftConsErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}"
+    "submittingDraftConsErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}",
+    "formDraftAccessErrMsg": "Запитане подання вже подано, переспрямовує на сторінку перегляду"
   },
   "bCGovFooter": {
     "home": "додому",

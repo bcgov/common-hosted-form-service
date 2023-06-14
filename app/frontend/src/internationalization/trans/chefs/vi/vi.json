@@ -687,7 +687,8 @@
     "errSubmittingForm": "Đã xảy ra lỗi khi gửi biểu mẫu này",
     "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileNname}. Lỗi: {lỗi}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
-    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {lỗi}"
+    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {lỗi}",
+    "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang"
   },
   "bCGovFooter": {
     "home": "Trang chủ",
