@@ -687,7 +687,8 @@
     "errSubmittingForm": "هنگام ارسال این فرم خطایی روی داد",
     "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileNname}. خطا: {خطا}",
     "submittingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
-    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {خطا}"
+    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {خطا}",
+    "formDraftAccessErrMsg": "ارسال درخواستی قبلا ارسال شده است، به صفحه مشاهده هدایت می شود"
   },
   "bCGovFooter": {
     "home": "صفحه اصلی",
