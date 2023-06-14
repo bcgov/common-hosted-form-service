@@ -160,7 +160,9 @@ const service = {
 
   _getData: async (exportType, formVersion, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return service._getSubmissions(form, params, formVersion);
+      let subs = await service._getSubmissions(form, params, formVersion);
+      console.log('subs-', subs);
+      return subs;
     }
     return {};
   },
@@ -193,17 +195,26 @@ const service = {
     } else {
       preference = params.preference;
     }
-
+    // let submissionData;
     // params for this export include minDate and maxDate (full timestamp dates).
-    let submissionData = await SubmissionData.query()
-      .column(service._submissionsColumns(form, params))
+    return SubmissionData.query()
+      .select(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterVersion', version)
       .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
       .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
-      .modify('orderDefault');
+      .modify('orderDefault')
+      .then((submissionData) => {
+        if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
+        return service._submissionFilterByUnsubmit(submissionData);
+      });
+
+    // return submissionData;
+  },
+
+  _submissionFilterByUnsubmit: (submissionData) => {
     for (let index in submissionData) {
       let keys = Object.keys(submissionData[index].submission);
       for (let key of keys) {
@@ -214,7 +225,6 @@ const service = {
     }
     return submissionData;
   },
-
   _formatSubmissionsJson: (form, data) => {
     return {
       data: data,
@@ -377,6 +387,7 @@ const service = {
     const exportTemplate = params.template ? params.template : 'multiRowEmptySpacesCSVExport';
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, params.version, form, params);
+    console.log('data-', data);
     const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version, params.emailExport, currentUser, referer);
     return { data: result.data, headers: result.headers };
   },
