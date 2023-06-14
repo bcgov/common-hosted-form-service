@@ -10,7 +10,6 @@ jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
   then: jest.fn().mockReturnThis(),
 }));
 
-/*
 describe('_readSchemaFields', () => {
   it('should get form fields in the order they appear in the kitchen sink form', async () => {
     // form schema from db
@@ -440,7 +439,6 @@ describe('_submissionsColumns', () => {
     expect(submissions.length).toEqual(8);
   });
 });
-*/
 
 describe('_getSubmissions', () => {
   // form schema from db
@@ -484,7 +482,7 @@ describe('_getSubmissions', () => {
     } else {
       preference = params.preference;
     }
-    await exportService._getSubmissions(form, params, params.version);
+    exportService._getSubmissions(form, params, params.version);
     expect(MockModel.query).toHaveBeenCalledTimes(1);
     expect(MockModel.modify).toHaveBeenCalledTimes(6);
     expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
@@ -500,8 +498,7 @@ describe('_getSubmissions', () => {
 
     MockModel.query.mockImplementation(() => MockModel);
     exportService._submissionsColumns = jest.fn().mockReturnThis();
-
-    await exportService._getSubmissions(form, params, params.version);
+    exportService._getSubmissions(form, params, params.version);
     expect(MockModel.query).toHaveBeenCalledTimes(1);
     expect(MockModel.modify).toHaveBeenCalledTimes(6);
   });
@@ -527,7 +524,7 @@ describe('_getSubmissions', () => {
     } else {
       preference = params.preference;
     }
-    await exportService._getSubmissions(form, params, params.version);
+    exportService._getSubmissions(form, params, params.version);
     expect(MockModel.query).toHaveBeenCalledTimes(1);
     expect(MockModel.modify).toHaveBeenCalledTimes(6);
     expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);

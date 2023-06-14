@@ -214,43 +214,6 @@ const service = {
     // return submissionData;
   },
 
-  _getSubmissionsd: async (form, params, version) => {
-    //let preference = params.preference ? JSON.parse(params.preference) : undefined;
-    let preference;
-    if (params.preference && _.isString(params.preference)) {
-      preference = JSON.parse(params.preference);
-    } else {
-      preference = params.preference;
-    }
-
-    // params for this export include minDate and maxDate (full timestamp dates).
-    return await SubmissionData.query()
-      .select(service._submissionsColumns(form, params))
-      .where('formId', form.id)
-      .modify('filterVersion', version)
-      .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
-      .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
-      .modify('filterDeleted', params.deleted)
-      .modify('filterDrafts', params.drafts)
-      .modify('orderDefault')
-      .then((submissionData) => {
-        if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
-        submissionData = service._submissionFilterByUnsubmit(submissionData);
-        // for (let index in submissionData) {
-
-        //   let keys = Object.keys(submissionData[index].submission);
-
-        //   for (let key of keys) {
-        //     if (key === 'submit') {
-        //       delete submissionData[index].submission[key];
-        //     }
-        //   }
-        // }
-        // console.log('=then submissionData-', submissionData);
-        return submissionData;
-      });
-  },
-
   _submissionFilterByUnsubmit: (submissionData) => {
     for (let index in submissionData) {
       let keys = Object.keys(submissionData[index].submission);
