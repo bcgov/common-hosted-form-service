@@ -58,8 +58,7 @@ export default {
       });
       this.addNotification({
         ...NotificationTypes.WARNING,
-        message:
-          'Requsted submission is already submitted, redirecting to "View" page',
+        message: this.$t('trans.formViewer.formDraftAccessErrMsg'),
       });
     }
     this.loading = false;

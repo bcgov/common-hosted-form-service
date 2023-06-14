@@ -687,7 +687,8 @@
     "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
     "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileNname}. Erro: {erro}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
-    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissionId: {submissionId}. Erro: {erro}"
+    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissionId: {submissionId}. Erro: {erro}",
+    "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir"
   },
   "bCGovFooter": {
     "home": "Lar",
