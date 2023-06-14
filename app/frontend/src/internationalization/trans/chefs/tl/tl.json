@@ -221,7 +221,8 @@
     "forms": "Mga porma",
     "users": "Mga gumagamit",
     "developer": "Developer",
-    "infoLinks": "Mga Link ng Impormasyon"
+    "infoLinks": "Mga Link ng Impormasyon",
+    "metrics": "Mga sukatan"
   },
   "adminUsersTable": {
     "search": "Maghanap",
@@ -324,6 +325,10 @@
     "errAfterValidate": "May nakitang ilang error, tingnan sa ibaba para sa higit pang impormasyon.",
     "fileIsEmpty": "walang laman ang file na ito.",
     "download": "I-download"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Error: Nagkaproblema",
+    "error": "pagkakamali"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer at pahayag ng responsibilidad para sa mga Form Designer:",

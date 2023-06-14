@@ -221,7 +221,8 @@
     "forms": "形式",
     "users": "用户",
     "developer": "开发商",
-    "infoLinks": "信息链接"
+    "infoLinks": "信息链接",
+    "metrics": "指标"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -324,6 +325,10 @@
     "errAfterValidate": "发现了一些错误，请参阅下文了解更多信息。",
     "fileIsEmpty": "这个文件是空的。",
     "download": "下载"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "错误：出了点问题",
+    "error": "错误"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Form Designers 的免责声明和责任声明：",

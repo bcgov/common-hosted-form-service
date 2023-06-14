@@ -221,7 +221,8 @@
     "forms": "Forme",
     "users": "Utenti",
     "developer": "Sviluppatore",
-    "infoLinks": "Collegamenti informativi"
+    "infoLinks": "Collegamenti informativi",
+    "metrics": "Metrica"
   },
   "adminUsersTable": {
     "search": "Ricerca",
@@ -324,6 +325,10 @@
     "errAfterValidate": "Sono stati rilevati alcuni errori, vedere di seguito per ulteriori informazioni.",
     "fileIsEmpty": "questo file è vuoto.",
     "download": "Scaricamento"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Errore: qualcosa è andato storto",
+    "error": "errore"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Dichiarazione di non responsabilità e dichiarazione di responsabilità per i progettisti di moduli:",

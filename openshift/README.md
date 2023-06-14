@@ -15,13 +15,13 @@ Our builds and deployments are orchestrated with Jenkins. Refer to [Jenkinsfile]
 
 ## Openshift Deployment Prerequisites
 
-We assume you are logged into OpenShift and are in the repo/openshift local directory.  We will run the scripts from there.
+We assume you are logged into OpenShift and are in the repo/openshift local directory. We will run the scripts from there.
 
 ### Add Default Kubernetes Network Policies
 
 Before deploying, ensure that you have the Network Policies `deny-by-default` and `allow-from-openshift-ingress` by running the following:
 
-``` sh
+```sh
 export NAMESPACE=<yournamespace>
 oc process -n $NAMESPACE -f https://raw.githubusercontent.com/wiki/bcgov/nr-get-token/assets/templates/default.np.yaml | oc apply -n $NAMESPACE -f -
 ```
@@ -30,13 +30,13 @@ oc process -n $NAMESPACE -f https://raw.githubusercontent.com/wiki/bcgov/nr-get-
 
 There are some requirements in the target Openshift namespace/project which are **outside** of the CI/CD pipeline process. This application requires that a few Secrets as well as Config Maps are already present in the environment before it is able to function as intended. Otherwise the Jenkins pipeline will fail the deployment by design.
 
-In order to prepare an environment, you will need to ensure that all of the following configmaps and secrets are populated. This is achieved by executing the following commands as a project administrator of the targeted environment. Note that this must be repeated on *each* of the target deployment namespace/projects (i.e. `dev`, `test` and `prod`) as that they are independent of each other. Deployments will fail otherwise. Refer to [custom-environment-variables](../app/config/custom-environment-variables.json) for the direct mapping of environment variables to the app.
+In order to prepare an environment, you will need to ensure that all of the following configmaps and secrets are populated. This is achieved by executing the following commands as a project administrator of the targeted environment. Note that this must be repeated on _each_ of the target deployment namespace/projects (i.e. `dev`, `test` and `prod`) as that they are independent of each other. Deployments will fail otherwise. Refer to [custom-environment-variables](../app/config/custom-environment-variables.json) for the direct mapping of environment variables to the app.
 
 ### Config Maps
 
-*Note:* Replace anything in angle brackets with the appropriate value!
+_Note:_ Replace anything in angle brackets with the appropriate value!
 
-*Note 2:* The Keycloak Public Key can be found in the Keycloak Admin Panel under Realm Settings > Keys. Look for the Public key button (normally under RS256 row), and click to see the key. The key should begin with a pattern of `MIIBIjANB...`.
+_Note 2:_ The Keycloak Public Key can be found in the Keycloak Admin Panel under Realm Settings > Keys. Look for the Public key button (normally under RS256 row), and click to see the key. The key should begin with a pattern of `MIIBIjANB...`.
 
 ```sh
 export NAMESPACE=<yournamespace>
@@ -77,7 +77,7 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_PORT=8080
 ```
 
-*Note:* We use the NRS [Object Storage](https://github.com/bcgov/nr-get-token/wiki/Object-Storage) for CHEFS.
+_Note:_ We use the NRS [Object Storage](https://github.com/bcgov/nr-get-token/wiki/Object-Storage) for CHEFS.
 
 ```sh
 oc create -n $NAMESPACE configmap $APP_NAME-files-config \
@@ -171,12 +171,12 @@ The Jenkins pipeline heavily leverages Openshift Templates in order to ensure th
 
 Build configurations will emit and handle the chained builds or standard builds as necessary. They take in the following parameters:
 
-| Name | Required | Description |
-| --- | --- | --- |
-| REPO_NAME | yes | Application repository name |
-| JOB_NAME | yes | Job identifier (i.e. 'pr-5' OR 'master') |
-| SOURCE_REPO_REF | yes | Git Pull Request Reference (i.e. 'pull/CHANGE_ID/head') |
-| SOURCE_REPO_URL | yes | Git Repository URL |
+| Name            | Required | Description                                             |
+| --------------- | -------- | ------------------------------------------------------- |
+| REPO_NAME       | yes      | Application repository name                             |
+| JOB_NAME        | yes      | Job identifier (i.e. 'pr-5' OR 'master')                |
+| SOURCE_REPO_REF | yes      | Git Pull Request Reference (i.e. 'pull/CHANGE_ID/head') |
+| SOURCE_REPO_URL | yes      | Git Repository URL                                      |
 
 The template can be manually invoked and deployed via Openshift CLI. For example:
 
@@ -199,7 +199,7 @@ Finally, we generally tag the resultant image so that the deployment config will
 oc tag -n $NAMESPACE <buildname>:latest <buildname>:master
 ```
 
-*Note: Remember to swap out the bracketed values with the appropriate values!*
+_Note: Remember to swap out the bracketed values with the appropriate values!_
 
 ### Deployment Configurations
 
@@ -207,14 +207,14 @@ Deployment configurations will emit and handle the deployment lifecycles of runn
 
 Our application template take in the following parameters:
 
-| Name | Required | Description |
-| --- | --- | --- |
-| REPO_NAME | yes | Application repository name |
-| JOB_NAME | yes | Job identifier (i.e. 'pr-5' OR 'master') |
-| NAMESPACE | yes | which namespace/"environment" are we deploying to? dev, test, prod? |
-| APP_NAME | yes | short name for the application |
-| ROUTE_HOST | yes | base domain for the publicly accessible URL |
-| ROUTE_PATH | yes | base path for the publicly accessible URL |
+| Name       | Required | Description                                                         |
+| ---------- | -------- | ------------------------------------------------------------------- |
+| REPO_NAME  | yes      | Application repository name                                         |
+| JOB_NAME   | yes      | Job identifier (i.e. 'pr-5' OR 'master')                            |
+| NAMESPACE  | yes      | which namespace/"environment" are we deploying to? dev, test, prod? |
+| APP_NAME   | yes      | short name for the application                                      |
+| ROUTE_HOST | yes      | base domain for the publicly accessible URL                         |
+| ROUTE_PATH | yes      | base path for the publicly accessible URL                           |
 
 The Jenkins pipeline will handle deployment invocation automatically. However should you need to run it manually, you can do so with the following for example:
 
@@ -231,7 +231,7 @@ Due to the triggers that are set in the deploymentconfig, the deployment will be
 oc rollout -n $NAMESPACE latest dc/<buildname>-master
 ```
 
-*Note: Remember to swap out the bracketed values with the appropriate values!*
+_Note: Remember to swap out the bracketed values with the appropriate values!_
 
 ## Sidecar Logging
 
@@ -306,6 +306,26 @@ Refer to the `patroni.dc.yaml` and `patroni.secret.yaml` files found below for a
 #### Database Backup
 
 - [Documentation & Templates](https://github.com/bcgov/nr-get-token/wiki/Database-Backup)
+
+After backups are made a verification job should be run to restore the backup into a temporary database and check that tables are created and data is written. This is not a full verification to ensure all data integrity, but it is an automatable first step.
+
+Using the `backup-cronjon-verify.yaml` file from the `redash` directory:
+
+```sh
+export NAMESPACE=<yournamespace>
+export PVC=<yourpvcname>
+
+oc process -f backup-cronjob-verify.yaml \
+    -p BACKUP_JOB_CONFIG=backup-postgres-config \
+    -p DATABASE_DEPLOYMENT_NAME=patroni-master-secret \
+    -p DATABASE_PASSWORD_KEY_NAME=app-db-password \
+    -p DATABASE_USER_KEY_NAME=app-db-username \
+    -p JOB_NAME=backup-postgres-verify \
+    -p JOB_PERSISTENT_STORAGE_NAME=$PVC \
+    -p SCHEDULE="0 9 * * *" \
+    -p TAG_NAME=2.6.1 \
+    | oc -n $NAMESPACE apply -f -
+```
 
 ### Redis
 

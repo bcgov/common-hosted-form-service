@@ -221,7 +221,8 @@
     "forms": "Formen",
     "users": "Benutzer",
     "developer": "Entwickler",
-    "infoLinks": "Info-Links"
+    "infoLinks": "Info-Links",
+    "metrics": "Metriken"
   },
   "adminUsersTable": {
     "search": "Suchen",
@@ -648,6 +649,10 @@
     "save": "Speichern",
     "saving": "Sparen",
     "notSaved": "Nicht gespeichert"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Fehler: Etwas ist schief gelaufen",
+    "error": "Fehler"
   },
   "formViewer": {
     "lateFormSubmissions": "Die Frist zum Einreichen des Formulars ist abgelaufen! Sie können dennoch eine verspätete Einreichung erstellen, indem Sie auf die Schaltfläche unten klicken.",

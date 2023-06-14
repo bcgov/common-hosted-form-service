@@ -221,7 +221,8 @@
     "forms": "ਫਾਰਮ",
     "users": "ਉਪਭੋਗਤਾ",
     "developer": "ਵਿਕਾਸਕਾਰ",
-    "infoLinks": "ਜਾਣਕਾਰੀ ਲਿੰਕ"
+    "infoLinks": "ਜਾਣਕਾਰੀ ਲਿੰਕ",
+    "metrics": "ਮੈਟ੍ਰਿਕਸ"
   },
   "adminUsersTable": {
     "search": "ਖੋਜ",
@@ -324,6 +325,10 @@
     "errAfterValidate": "ਕੁਝ ਗਲਤੀਆਂ ਮਿਲੀਆਂ, ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਹੇਠਾਂ ਦੇਖੋ।",
     "fileIsEmpty": "ਇਹ ਫਾਈਲ ਖਾਲੀ ਹੈ।",
     "download": "ਡਾਊਨਲੋਡ ਕਰੋ"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "ਤਰੁੱਟੀ: ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ",
+    "error": "ਗਲਤੀ"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "ਬੇਦਾਅਵਾ ਅਤੇ ਫਾਰਮ ਡਿਜ਼ਾਈਨਰਾਂ ਲਈ ਜ਼ਿੰਮੇਵਾਰੀ ਦਾ ਬਿਆਨ:",

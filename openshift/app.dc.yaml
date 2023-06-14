@@ -117,7 +117,7 @@ objects:
                   port: 8080
                   scheme: HTTP
                 initialDelaySeconds: 10
-                timeoutSeconds: 1
+                timeoutSeconds: 3
                 failureThreshold: 3
               ports:
                 - containerPort: 8080
@@ -128,7 +128,7 @@ objects:
                   port: 8080
                   scheme: HTTP
                 initialDelaySeconds: 10
-                timeoutSeconds: 1
+                timeoutSeconds: 3
                 failureThreshold: 1
               resources:
                 requests:
@@ -408,15 +408,15 @@ parameters:
   - name: CPU_LIMIT
     description: Limit Peak CPU per pod (in millicores ex. 1000m)
     displayName: CPU Limit
-    value: 250m
+    value: 1500m
   - name: CPU_REQUEST
     description: Requested CPU per pod (in millicores ex. 500m)
     displayName: CPU Request
-    value: 50m
+    value: 250m
   - name: MEMORY_LIMIT
     description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
     displayName: Memory Limit
-    value: 1Gi
+    value: 2Gi
   - name: MEMORY_REQUEST
     description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
     displayName: Memory Request
