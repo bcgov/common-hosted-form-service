@@ -160,7 +160,7 @@
     "exportDesign": "Export Design",
     "infoC": "Please publish or delete your latest draft version before starting a new version.",
     "deleteVersion": "Delete Version",
-    "draftAlreadyExists": "Le brouillon existe déjà",
+    "draftAlreadyExists": "Draft already exists",
     "infoD": "Please edit, publish or delete the existing draft before starting a new draft.",
     "publishVersion": "Publish Version",
     "unpublishVersion": "Unpublish Version",
@@ -221,7 +221,8 @@
     "forms": "Forms",
     "users": "Users",
     "developer": "Developer",
-    "infoLinks": "Info Links"
+    "infoLinks": "Info Links",
+    "metrics": "Metrics"
   },
   "adminUsersTable": {
     "search": "Search",
@@ -774,6 +775,10 @@
     "sucessFormSubmissn": "Your form has been submitted successfully",
     "keepRecord": "If you wish to keep a record of this submission, you can keep the following",
     "confirmationId": "Confirmation ID:"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Error: Something went wrong",
+    "error": "error"
   },
   "store": {
     "admin": {

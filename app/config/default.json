@@ -27,6 +27,7 @@
     }
   },
   "frontend": {
+    "adminDashboardUrl": "",
     "apiPath": "api/v1",
     "basePath": "/app",
     "keycloak": {

@@ -221,7 +221,8 @@
     "forms": "양식",
     "users": "사용자",
     "developer": "개발자",
-    "infoLinks": "정보 링크"
+    "infoLinks": "정보 링크",
+    "metrics": "측정항목"
   },
   "adminUsersTable": {
     "search": "찾다",
@@ -324,6 +325,10 @@
     "errAfterValidate": "일부 오류가 발견되었습니다. 자세한 내용은 아래를 참조하세요.",
     "fileIsEmpty": "이 파일은 비어 있습니다.",
     "download": "다운로드"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "오류: 문제가 발생했습니다.",
+    "error": "오류"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "양식 설계자에 대한 면책 및 책임 진술:",

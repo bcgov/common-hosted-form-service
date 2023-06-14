@@ -221,7 +221,8 @@
     "forms": "نماذج",
     "users": "المستخدمون",
     "developer": "مطور",
-    "infoLinks": "روابط المعلومات"
+    "infoLinks": "روابط المعلومات",
+    "metrics": "المقاييس"
   },
   "adminUsersTable": {
     "search": "يبحث",
@@ -324,6 +325,10 @@
     "errAfterValidate": "تم العثور على بعض الأخطاء ، انظر أدناه لمزيد من المعلومات.",
     "fileIsEmpty": "هذا الملف فارغ.",
     "downlaod": "تحميل"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "خطأ: حدث خطأ ما",
+    "error": "خطأ"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "إخلاء المسؤولية وبيان المسؤولية لمصممي النماذج:",

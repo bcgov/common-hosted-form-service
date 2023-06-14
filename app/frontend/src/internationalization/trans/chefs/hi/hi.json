@@ -221,7 +221,8 @@
     "forms": "फार्म",
     "users": "उपयोगकर्ताओं",
     "developer": "डेवलपर",
-    "infoLinks": "जानकारी लिंक"
+    "infoLinks": "जानकारी लिंक",
+    "metrics": "मेट्रिक्स"
   },
   "adminUsersTable": {
     "search": "खोज",
@@ -324,6 +325,10 @@
     "errAfterValidate": "कुछ त्रुटियाँ मिलीं, अधिक जानकारी के लिए नीचे देखें।",
     "fileIsEmpty": "यह फाइल खाली है।",
     "download": "डाउनलोड करना"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "त्रुटि: कुछ गलत हो गया",
+    "error": "गलती"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "प्रपत्र डिजाइनरों के लिए अस्वीकरण और उत्तरदायित्व विवरण:",

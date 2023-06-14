@@ -218,10 +218,11 @@
     "openSSOConsole": "Abrir consola SSO"
   },
   "adminPage": {
-    "forms": "formularios",
+    "forms": "Formularios",
     "users": "Usuarios",
     "developer": "Desarrollador",
-    "infoLinks": "Enlaces de información"
+    "infoLinks": "Enlaces de información",
+    "metrics": "Métrica"
   },
   "adminUsersTable": {
     "search": "Buscar",
@@ -324,6 +325,10 @@
     "errAfterValidate": "Se encontraron algunos errores, consulte a continuación para obtener más información.",
     "fileIsEmpty": "este archivo está vacío.",
     "download": "Descargar"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Error: Algo salió mal",
+    "error": "error"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",

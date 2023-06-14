@@ -1,14 +1,22 @@
 # CHEFS Load Test Utility
 
-This utility is intended to be run by a developer against any fully running instance of CHEFS.  The developer will need to ensure the configured client and user are valid and have the appropriate permissions to create a form, submit data to that form, and read/export the submissions.
+This utility is intended to be run by a developer against any fully running instance of CHEFS. The default configuration is against CHEFS Dev Master, using a Keycloak client (chefs-load-test) and user (chefs-load-test).
 
-The default configuration is against CHEFS Dev Master, using a Keycloak client (chefs-load-test) and user (chefs-load-test).  It is important that the Keycloak client allows for username/password login.
+## Red Hat SSO (Keycloak) Setup
+
+Create the `chefs-load-test` client by importing [sso_client_chefs-load-test.json](./sso_client_chefs-load-test.json).
+
+Create a `User` also named `chefs-load-test` with:
+
+- an `Attribute` called `idir_user_guid` and the value `chefs-load-test@idir`
+- a password set in the `Credentials`
+- a `Role Mapping` of `default-role-chefs`
 
 ## Configuration
 
-The utility leverages the [config](https://www.npmjs.com/package/config) library, which can read environment variables or files (see [/config](./config)).  The default configuration does not contain a password, so the developer can set it via a local.json or environment variable `AUTH_PASSWORD`.
+The utility leverages the [config](https://www.npmjs.com/package/config) library, which can read environment variables or files (see [/config](./config)). The default configuration does not contain a password, so the developer can set it via a local.json or environment variable `AUTH_PASSWORD`.
 
-There is currently a single valid schema/submission: `kitchen_sink_advanced`.  To add another, follow the naming and folder location layout (`./schema/<new_type>_schema.json` and `./submissions/<new_type>_submission.json`).  Set via the submissions.schema configuration variable.
+There is currently a single valid schema/submission: `kitchen_sink_advanced`. To add another, follow the naming and folder location layout (`./schema/<new_type>_schema.json` and `./submissions/<new_type>_submission.json`). Set via the submissions.schema configuration variable.
 
 ## Running
 

@@ -7,7 +7,8 @@
 </template>
 
 <script>
-import { NotificationTypes } from '@src/utils/constants';
+import { NotificationTypes } from '@/utils/constants';
+import i18n from '@/internationalization';
 
 export default {
   computed: {
@@ -31,11 +32,11 @@ export default {
 
   props: {
     message: {
-      default: 'Error: Something went wrong.',
+      default: i18n.t('trans.bcGovAlertBanner.defaultErrMsg'),
       type: String,
     },
     type: {
-      default: 'error',
+      default: i18n.t('trans.bcGovAlertBanner.error'),
       type: String,
     },
   },

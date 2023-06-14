@@ -22,6 +22,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import i18n from '@/internationalization';
 import { NotificationTypes } from '@src/utils/constants';
 
 export default {
@@ -40,11 +41,11 @@ export default {
     },
     snackBarText: {
       type: String,
-      default: 'Link copied to clipboard',
+      default: i18n.t('trans.baseCopyToClipboard.linkToClipboard'),
     },
     tooltipText: {
       type: String,
-      default: 'Copy to Clipboard',
+      default: i18n.t('trans.baseCopyToClipboard.copyToClipboard'),
     },
   },
   emits: ['copied'],

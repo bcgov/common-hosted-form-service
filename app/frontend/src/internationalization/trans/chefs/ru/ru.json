@@ -221,7 +221,8 @@
     "forms": "Формы",
     "users": "Пользователи",
     "developer": "Разработчик",
-    "infoLinks": "Информационные ссылки"
+    "infoLinks": "Информационные ссылки",
+    "metrics": "Метрики"
   },
   "adminUsersTable": {
     "search": "Поиск",
@@ -324,6 +325,10 @@
     "errAfterValidate": "Обнаружены некоторые ошибки, дополнительную информацию см. ниже.",
     "fileIsEmpty": "этот файл пустой.",
     "download": "Скачать"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Ошибка: Что-то пошло не так",
+    "error": "ошибка"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Отказ от ответственности и заявление об ответственности дизайнеров форм:",
