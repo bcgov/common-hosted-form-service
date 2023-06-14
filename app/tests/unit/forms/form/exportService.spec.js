@@ -1,59 +1,14 @@
 const exportService = require('../../../../src/forms/form/exportService');
 const MockModel = require('../../../../src/forms/common/models/views/submissionData');
+const _ = require('lodash');
 jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
   query: jest.fn().mockReturnThis(),
   select: jest.fn().mockReturnThis(),
+  column: jest.fn().mockReturnThis(),
   where: jest.fn().mockReturnThis(),
   modify: jest.fn().mockReturnThis(),
   then: jest.fn().mockReturnThis(),
 }));
-
-describe('_getSubmissions', () => {
-  it('sh_getSubmissions_getSubmissions_getSubmissions_getSubmissionsmultiple components', async () => {
-    // form schema from db
-
-    const form = {
-      id: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
-      name: 'Fisheries',
-      description: '',
-      active: true,
-      labels: [],
-      createdBy: 'AIDOWU@idir',
-      createdAt: '2023-03-29T14:09:28.457Z',
-      updatedBy: 'AIDOWU@idir',
-      updatedAt: '2023-04-10T16:19:43.491Z',
-      showSubmissionConfirmation: true,
-      submissionReceivedEmails: [],
-      enableStatusUpdates: false,
-      enableSubmitterDraft: true,
-      schedule: {},
-      reminder_enabled: false,
-      enableCopyExistingSubmission: false,
-    };
-
-    const params = {
-      type: 'submissions',
-      draft: false,
-      deleted: false,
-      version: 1,
-    };
-
-    MockModel.query.mockImplementation(() => MockModel);
-    exportService._submissionsColumns = jest.fn().mockReturnThis();
-
-    let preference;
-    if (params.preference && _.isString(params.preference)) {
-      preference = JSON.parse(params.preference);
-    } else {
-      preference = params.preference;
-    }
-    await exportService._getSubmissions(form, params, params.version);
-
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledTimes(6);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
-  });
-});
 
 /*
 describe('_readSchemaFields', () => {
@@ -486,3 +441,95 @@ describe('_submissionsColumns', () => {
   });
 });
 */
+
+describe('_getSubmissions', () => {
+  // form schema from db
+  const form = {
+    id: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
+    name: 'Fisheries',
+    description: '',
+    active: true,
+    labels: [],
+    createdBy: 'AIDOWU@idir',
+    createdAt: '2023-03-29T14:09:28.457Z',
+    updatedBy: 'AIDOWU@idir',
+    updatedAt: '2023-04-10T16:19:43.491Z',
+    showSubmissionConfirmation: true,
+    submissionReceivedEmails: [],
+    enableStatusUpdates: false,
+    enableSubmitterDraft: true,
+    schedule: {},
+    reminder_enabled: false,
+    enableCopyExistingSubmission: false,
+  };
+
+  it('Should pass this test with empty preference passed to _getSubmissions', async () => {
+    const params = {
+      type: 'submissions',
+      draft: false,
+      deleted: false,
+      version: 1,
+      preference: {
+        updatedMinDate: '',
+        updatedMaxDate: '',
+      },
+    };
+
+    MockModel.query.mockImplementation(() => MockModel);
+    exportService._submissionsColumns = jest.fn().mockReturnThis();
+
+    let preference;
+    if (params.preference && _.isString(params.preference)) {
+      preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
+    }
+    await exportService._getSubmissions(form, params, params.version);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenCalledTimes(6);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
+  });
+
+  it('Should pass this test without preference passed to _getSubmissions and without calling updatedAt modifier', async () => {
+    const params = {
+      type: 'submissions',
+      draft: false,
+      deleted: false,
+      version: 1,
+    };
+
+    MockModel.query.mockImplementation(() => MockModel);
+    exportService._submissionsColumns = jest.fn().mockReturnThis();
+
+    await exportService._getSubmissions(form, params, params.version);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenCalledTimes(6);
+  });
+
+  it('Should pass this test with preference passed to _getSubmissions', async () => {
+    const params = {
+      type: 'submissions',
+      draft: false,
+      deleted: false,
+      version: 1,
+      preference: {
+        updatedMinDate: '2020-12-10T08:00:00Z',
+        updatedMaxDate: '2020-12-17T08:00:00Z',
+      },
+    };
+
+    MockModel.query.mockImplementation(() => MockModel);
+    exportService._submissionsColumns = jest.fn().mockReturnThis();
+
+    let preference;
+    if (params.preference && _.isString(params.preference)) {
+      preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
+    }
+    await exportService._getSubmissions(form, params, params.version);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenCalledTimes(6);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
+  });
+});

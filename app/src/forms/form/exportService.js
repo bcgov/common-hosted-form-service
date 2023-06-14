@@ -160,7 +160,9 @@ const service = {
 
   _getData: async (exportType, formVersion, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return service._getSubmissions(form, params, formVersion);
+      let subs = await service._getSubmissions(form, params, formVersion);
+      console.log('subs-', subs);
+      return subs;
     }
     return {};
   },
@@ -193,9 +195,9 @@ const service = {
     } else {
       preference = params.preference;
     }
-
+    // let submissionData;
     // params for this export include minDate and maxDate (full timestamp dates).
-    SubmissionData.query()
+    return SubmissionData.query()
       .select(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterVersion', version)
@@ -205,9 +207,47 @@ const service = {
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault')
       .then((submissionData) => {
-        console.log(submissionData);
         if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
         return service._submissionFilterByUnsubmit(submissionData);
+      });
+
+    // return submissionData;
+  },
+
+  _getSubmissionsd: async (form, params, version) => {
+    //let preference = params.preference ? JSON.parse(params.preference) : undefined;
+    let preference;
+    if (params.preference && _.isString(params.preference)) {
+      preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
+    }
+
+    // params for this export include minDate and maxDate (full timestamp dates).
+    return await SubmissionData.query()
+      .select(service._submissionsColumns(form, params))
+      .where('formId', form.id)
+      .modify('filterVersion', version)
+      .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
+      .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
+      .modify('filterDeleted', params.deleted)
+      .modify('filterDrafts', params.drafts)
+      .modify('orderDefault')
+      .then((submissionData) => {
+        if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
+        submissionData = service._submissionFilterByUnsubmit(submissionData);
+        // for (let index in submissionData) {
+
+        //   let keys = Object.keys(submissionData[index].submission);
+
+        //   for (let key of keys) {
+        //     if (key === 'submit') {
+        //       delete submissionData[index].submission[key];
+        //     }
+        //   }
+        // }
+        // console.log('=then submissionData-', submissionData);
+        return submissionData;
       });
   },
 
@@ -384,6 +424,7 @@ const service = {
     const exportTemplate = params.template ? params.template : 'multiRowEmptySpacesCSVExport';
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, params.version, form, params);
+    console.log('data-', data);
     const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version, params.emailExport, currentUser, referer);
     return { data: result.data, headers: result.headers };
   },
