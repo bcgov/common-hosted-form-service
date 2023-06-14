@@ -22,27 +22,27 @@ const { form } = storeToRefs(adminStore);
 
 const headers = computed(() => [
   {
-    title: t('trans.manageVersions.versions'),
+    title: t('trans.adminVersions.versions'),
     align: 'start',
     key: 'version',
   },
   {
-    title: t('trans.manageVersions.status'),
+    title: t('trans.adminVersions.status'),
     align: 'start',
     key: 'status',
   },
   {
-    title: t('trans.manageVersions.created'),
+    title: t('trans.adminVersions.created'),
     align: 'start',
     key: 'createdAt',
   },
   {
-    title: t('trans.manageVersions.lastUpdated'),
+    title: t('trans.adminVersions.lastUpdated'),
     align: 'start',
     key: 'updatedAt',
   },
   {
-    title: t('trans.manageVersions.actions'),
+    title: t('trans.adminVersions.actions'),
     align: 'end',
     key: 'action',
     filterable: false,
@@ -51,7 +51,7 @@ const headers = computed(() => [
 ]);
 const versionList = computed(() => (form.value ? form.value.versions : []));
 
-// ----------------------------------------------------------------------/ Publish/unpublish actions
+// ---------------------------------------------/ Publish/unpublish actions
 async function onExportClick(id, isDraft) {
   await getFormSchema(id, isDraft);
   let snek = form.value.snake;

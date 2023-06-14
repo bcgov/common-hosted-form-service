@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import AdminFormsTable from '~/components/admin/AdminFormsTable.vue';
 import AdminUsersTable from '~/components/admin/AdminUsersTable.vue';
+import Dashboard from '~/components/admin/Dashboard.vue';
 import Developer from '~/components/admin/Developer.vue';
 import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
 
@@ -13,6 +14,9 @@ const tab = ref(null);
     <v-tab value="users">{{ $t('trans.adminPage.users') }}</v-tab>
     <v-tab value="developer">{{ $t('trans.adminPage.developer') }}</v-tab>
     <v-tab value="infoLinks">{{ $t('trans.adminPage.infoLinks') }}</v-tab>
+    <v-tab v-if="adminDashboardUrl" value="dashboard">{{
+      $t('trans.adminPage.metrics')
+    }}</v-tab>
   </v-tabs>
 
   <v-card-text>
@@ -28,6 +32,9 @@ const tab = ref(null);
       </v-window-item>
       <v-window-item value="infoLinks">
         <FormComponentsProactiveHelp />
+      </v-window-item>
+      <v-window-item value="dashboard">
+        <Dashboard />
       </v-window-item>
     </v-window>
   </v-card-text>

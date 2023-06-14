@@ -221,7 +221,8 @@
     "forms": "تشکیل می دهد",
     "users": "کاربران",
     "developer": "توسعه دهنده",
-    "infoLinks": "لینک های اطلاعات"
+    "infoLinks": "لینک های اطلاعات",
+    "metrics": "معیارهای"
   },
   "adminUsersTable": {
     "search": "جستجو کردن",
@@ -324,6 +325,10 @@
     "errAfterValidate": "برخی از خطاهای یافت شده، برای اطلاعات بیشتر به زیر مراجعه کنید.",
     "fileIsEmpty": "این فایل خالی است",
     "download": "دانلود"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "خطا: مشکلی پیش آمد",
+    "error": "خطا"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "سلب مسئولیت و بیانیه مسئولیت برای طراحان فرم:",

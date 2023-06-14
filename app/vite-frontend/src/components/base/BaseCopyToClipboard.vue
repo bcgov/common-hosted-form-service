@@ -1,6 +1,10 @@
 <script setup>
+import { useI18n } from 'vue-i18n';
+
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const notificationStore = useNotificationStore();
 
@@ -19,11 +23,11 @@ const properties = defineProps({
   },
   snackBarText: {
     type: String,
-    default: 'Link copied to clipboard',
+    default: t('trans.baseCopyToClipboard.linkToClipboard'),
   },
   tooltipText: {
     type: String,
-    default: 'Copy to Clipboard',
+    default: t('trans.baseCopyToClipboard.copyToClipboard'),
   },
 });
 
@@ -38,7 +42,7 @@ function clipboardSuccessHandler() {
 }
 function clipboardErrorHandler() {
   notificationStore.addNotification({
-    text: this.$t('trans.baseCopyToClipboard.errCopyToClipboard'),
+    text: t('trans.baseCopyToClipboard.errCopyToClipboard'),
   });
 }
 </script>

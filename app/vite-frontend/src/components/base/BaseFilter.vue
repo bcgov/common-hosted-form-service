@@ -1,12 +1,15 @@
 <script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   inputHeaders: {
     type: Array,
     default: () => [
       {
-        title: 'Column Name',
+        title: t('trans.baseFilter.columnName'),
         align: 'start',
         sortable: true,
         key: 'title',
@@ -17,8 +20,8 @@ const properties = defineProps({
   inputData: {
     type: Array,
     default: () => [
-      { title: 'Example Text 1', key: 'exampleText1' },
-      { title: 'Example Text 2', key: 'exampleText2' },
+      { title: t('trans.baseFilter.exampleText'), key: 'exampleText1' },
+      { title: t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
     ],
   },
   // The default selected data
@@ -36,11 +39,11 @@ const properties = defineProps({
   },
   inputFilterPlaceholder: {
     type: String,
-    default: 'Example Text 2',
+    default: t('trans.baseFilter.exampleText2'),
   },
   inputSaveButtonText: {
     type: String,
-    default: 'Filter',
+    default: t('trans.baseFilter.filter'),
   },
 });
 
