@@ -1,4 +1,14 @@
 const exportService = require('../../../../src/forms/form/exportService');
+const MockModel = require('../../../../src/forms/common/models/views/submissionData');
+const _ = require('lodash');
+jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
+  query: jest.fn().mockReturnThis(),
+  select: jest.fn().mockReturnThis(),
+  column: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  modify: jest.fn().mockReturnThis(),
+  then: jest.fn().mockReturnThis(),
+}));
 
 describe('_readSchemaFields', () => {
   it('should get form fields in the order they appear in the kitchen sink form', async () => {
@@ -337,5 +347,186 @@ describe('', () => {
     expect(exportService._buildCsvHeaders).toHaveBeenCalledTimes(1);
     // test cases
     expect(fields.length).toEqual(19);
+  });
+});
+
+describe('_submissionsColumns', () => {
+  const form = {
+    id: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
+    name: 'Fisheries',
+    description: '',
+    active: true,
+    labels: [],
+    createdBy: 'AIDOWU@idir',
+    createdAt: '2023-03-29T14:09:28.457Z',
+    updatedBy: 'AIDOWU@idir',
+    updatedAt: '2023-04-10T16:19:43.491Z',
+    showSubmissionConfirmation: true,
+    submissionReceivedEmails: [],
+    enableStatusUpdates: false,
+    enableSubmitterDraft: true,
+    schedule: {},
+    reminder_enabled: false,
+    enableCopyExistingSubmission: false,
+  };
+
+  it('should return right number of columns, when no prefered columns passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(8);
+  });
+
+  it('should return right number of columns, when 1 prefered column (deleted) passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['deleted'],
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(9);
+  });
+
+  it('should return right number of columns, when 1 prefered column (draft) passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['draft'],
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(9);
+  });
+
+  it('should return right number of columns, when 2 prefered column (draft & deleted) passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['draft', 'deleted'],
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(10);
+  });
+
+  it('should return right number of columns, when a garbage or NON-allowed column (testCol1 & testCol2) passed as params.', async () => {
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['testCol1', 'testCol2'],
+    };
+
+    const submissions = exportService._submissionsColumns(form, params);
+    expect(submissions.length).toEqual(8);
+  });
+});
+
+describe('_getSubmissions', () => {
+  // form schema from db
+  const form = {
+    id: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
+    name: 'Fisheries',
+    description: '',
+    active: true,
+    labels: [],
+    createdBy: 'AIDOWU@idir',
+    createdAt: '2023-03-29T14:09:28.457Z',
+    updatedBy: 'AIDOWU@idir',
+    updatedAt: '2023-04-10T16:19:43.491Z',
+    showSubmissionConfirmation: true,
+    submissionReceivedEmails: [],
+    enableStatusUpdates: false,
+    enableSubmitterDraft: true,
+    schedule: {},
+    reminder_enabled: false,
+    enableCopyExistingSubmission: false,
+  };
+
+  it('Should pass this test with empty preference passed to _getSubmissions', async () => {
+    const params = {
+      type: 'submissions',
+      draft: false,
+      deleted: false,
+      version: 1,
+      preference: {
+        updatedMinDate: '',
+        updatedMaxDate: '',
+      },
+    };
+
+    MockModel.query.mockImplementation(() => MockModel);
+    exportService._submissionsColumns = jest.fn().mockReturnThis();
+
+    let preference;
+    if (params.preference && _.isString(params.preference)) {
+      preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
+    }
+    exportService._getSubmissions(form, params, params.version);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenCalledTimes(6);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
+  });
+
+  it('Should pass this test without preference passed to _getSubmissions and without calling updatedAt modifier', async () => {
+    const params = {
+      type: 'submissions',
+      draft: false,
+      deleted: false,
+      version: 1,
+    };
+
+    MockModel.query.mockImplementation(() => MockModel);
+    exportService._submissionsColumns = jest.fn().mockReturnThis();
+    exportService._getSubmissions(form, params, params.version);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenCalledTimes(6);
+  });
+
+  it('Should pass this test with preference passed to _getSubmissions', async () => {
+    const params = {
+      type: 'submissions',
+      draft: false,
+      deleted: false,
+      version: 1,
+      preference: {
+        updatedMinDate: '2020-12-10T08:00:00Z',
+        updatedMaxDate: '2020-12-17T08:00:00Z',
+      },
+    };
+
+    MockModel.query.mockImplementation(() => MockModel);
+    exportService._submissionsColumns = jest.fn().mockReturnThis();
+
+    let preference;
+    if (params.preference && _.isString(params.preference)) {
+      preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
+    }
+    exportService._getSubmissions(form, params, params.version);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenCalledTimes(6);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
   });
 });

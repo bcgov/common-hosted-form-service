@@ -1,6 +1,5 @@
 exports.up = function(knex) {
   return Promise.resolve()
-
     .then(() => knex.schema.dropViewIfExists('submissions_data_vw'))
     .then(() => knex.schema.raw(`create or replace view submissions_data_vw as
       select
@@ -65,14 +64,13 @@ exports.down = function(knex) {
         end as "username",
         u.email,
         fs.submission -> 'data' as "submission",
-        fs."updatedAt",
         s.deleted,
         s.draft,
         s."submissionId",
         s."formId",
         s."formVersionId",
         u.id as "userId",
-        u."keycloakId",
+        u."idpUserId",
         u."firstName",
         u."lastName",
         s."formSubmissionStatusCode" as "status",

@@ -148,7 +148,7 @@ const service = {
     // Let's add form level columns like deleted or draft
     if (params?.columns?.length) {
       let optionalAcceptedColumns = ['draft', 'deleted', 'updatedAt']; //'draft', 'deleted', 'updatedAt' columns needed for ETL process at this moment
-      columns = columns.concat([...params.columns].filter((column) => optionalAcceptedColumns.includes(column)));
+      columns = columns.concat((Array.isArray(params.columns) ? [...params.columns] : [params.columns]).filter((column) => optionalAcceptedColumns.includes(column)));
     }
     // and join the submission data
     return columns.concat(['submission']);
@@ -160,7 +160,8 @@ const service = {
 
   _getData: async (exportType, formVersion, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return service._getSubmissions(form, params, formVersion);
+      let subs = await service._getSubmissions(form, params, formVersion);
+      return subs;
     }
     return {};
   },
@@ -193,17 +194,26 @@ const service = {
     } else {
       preference = params.preference;
     }
-
+    // let submissionData;
     // params for this export include minDate and maxDate (full timestamp dates).
-    let submissionData = await SubmissionData.query()
-      .column(service._submissionsColumns(form, params))
+    return SubmissionData.query()
+      .select(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterVersion', version)
       .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
       .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
-      .modify('orderDefault');
+      .modify('orderDefault')
+      .then((submissionData) => {
+        if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
+        return service._submissionFilterByUnsubmit(submissionData);
+      });
+
+    // return submissionData;
+  },
+
+  _submissionFilterByUnsubmit: (submissionData) => {
     for (let index in submissionData) {
       let keys = Object.keys(submissionData[index].submission);
       for (let key of keys) {
@@ -214,7 +224,6 @@ const service = {
     }
     return submissionData;
   },
-
   _formatSubmissionsJson: (form, data) => {
     return {
       data: data,
