@@ -101,12 +101,15 @@
       :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
+      :server-items-length="submissionListCount"
+      :options="tableOptions"
       :search="search"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
+      @update:options="updateTableOptions"
     >
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
@@ -327,6 +330,10 @@ export default {
       singleSubmissionRestore: false,
       deleteItem: {},
       switchSubmissionView: false,
+      page: 1,
+      itemsPerPage: 10,
+      sortBy: null,
+      sortDesc: null,
     };
   },
   computed: {
@@ -350,6 +357,7 @@ export default {
       'formFields',
       'permissions',
       'submissionList',
+      'submissionListCount',
       'userFormPreferences',
       'roles',
       'deletedSubmissions',
@@ -584,6 +592,15 @@ export default {
     ]),
     ...mapActions('notifications', ['addNotification']),
 
+    updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
+      this.page = page;
+      this.itemsPerPage = itemsPerPage;
+      this.sortBy = sortBy;
+      this.sortDesc = sortDesc;
+      //if (this.isPageLoaded && this.allowReload) {
+      this.populateSubmissionsTable();
+      //}
+    },
     async delSub() {
       this.singleSubmissionDelete
         ? this.deleteSingleSubs()
@@ -618,7 +635,11 @@ export default {
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        let criteria = {
+        const criteria = {
+          page: this.page,
+          itemsPerPage: this.itemsPerPage,
+          sortBy: this.sortBy,
+          sortDesc: this.sortDesc,
           formId: this.formId,
           createdAt: Object.values({
             minDate:
