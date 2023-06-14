@@ -221,7 +221,8 @@
     "forms": "Formulários",
     "users": "Usuários",
     "developer": "Desenvolvedor",
-    "infoLinks": "Links de informações"
+    "infoLinks": "Links de informações",
+    "metrics": "Métricas"
   },
   "adminUsersTable": {
     "search": "Procurar",
@@ -324,6 +325,10 @@
     "errAfterValidate": "Alguns erros encontrados, veja abaixo para mais informações.",
     "fileIsEmpty": "este arquivo está vazio.",
     "download": "Download"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Erro: algo deu errado",
+    "error": "erro"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Isenção de responsabilidade e declaração de responsabilidade para Designers de formulários:",

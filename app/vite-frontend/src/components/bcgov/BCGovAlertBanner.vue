@@ -1,8 +1,11 @@
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const notificationStore = useNotificationStore();
 
@@ -17,10 +20,10 @@ const props = defineProps({
   },
   text: {
     type: String,
-    default: 'Error: Something went wrong.',
+    default: t('trans.baseFilter.exampleText'),
   },
   type: {
-    default: 'error',
+    default: t('trans.bcGovAlertBanner.error'),
     type: String,
   },
 });

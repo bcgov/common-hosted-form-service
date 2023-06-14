@@ -221,7 +221,8 @@
     "forms": "Formes",
     "users": "Utilisateurs",
     "developer": "Développeur",
-    "infoLinks": "Liens d'information"
+    "infoLinks": "Liens d'information",
+    "metrics": "Métrique"
   },
   "adminUsersTable": {
     "search": "Recherche",
@@ -324,6 +325,10 @@
     "errAfterValidate": "Quelques erreurs trouvées, voir ci-dessous pour plus d'informations.",
     "fileIsEmpty": "ce fichier est vide.",
     "download": "Télécharger"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Erreur : une erreur s'est produite",
+    "error": "erreur"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Clause de non-responsabilité et déclaration de responsabilité pour les concepteurs de formulaire :",

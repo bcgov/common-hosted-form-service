@@ -191,6 +191,12 @@ watch(form.value.userType, (newUserType, oldUserType) => {
   }
 });
 
+watch(locale, (value) => {
+  if (value) {
+    reRenderFormIo.value += 1;
+  }
+});
+
 async function getFormSchema() {
   try {
     let res;

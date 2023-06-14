@@ -221,7 +221,8 @@
     "forms": "Các hình thức",
     "users": "người dùng",
     "developer": "nhà phát triển",
-    "infoLinks": "Liên kết thông tin"
+    "infoLinks": "Liên kết thông tin",
+    "metrics": "số liệu"
   },
   "adminUsersTable": {
     "search": "Tìm kiếm",
@@ -324,6 +325,10 @@
     "errAfterValidate": "Đã tìm thấy một số lỗi, xem bên dưới để biết thêm thông tin.",
     "fileIsEmpty": "tập tin này là trống rỗng.",
     "download": "Tải xuống"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Lỗi: Đã xảy ra sự cố",
+    "error": "lỗi"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Tuyên bố miễn trừ trách nhiệm và tuyên bố trách nhiệm đối với Người thiết kế biểu mẫu:",
