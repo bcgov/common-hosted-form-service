@@ -687,7 +687,8 @@
     "errSubmittingForm": "Beim Absenden dieses Formulars ist ein Fehler aufgetreten",
     "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileNname}. Fehler: {error}",
     "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
-    "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}"
+    "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
+    "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet"
   },
   "bCGovFooter": {
     "home": "Heim",

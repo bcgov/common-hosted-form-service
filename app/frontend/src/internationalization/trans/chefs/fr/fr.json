@@ -687,7 +687,8 @@
     "errSubmittingForm": "Une erreur s'est produite lors de la soumission de ce formulaire",
     "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileNname}. Erreur : {error}",
     "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
-    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}"
+    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}",
+    "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher"
   },
   "bCGovFooter": {
     "home": "Maison",

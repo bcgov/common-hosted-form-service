@@ -687,7 +687,8 @@
     "errSubmittingForm": "Si è verificato un errore durante l'invio di questo modulo",
     "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {nomeNfile}. Errore: {errore}",
     "submittingDraftErrMsg": "Si è verificato un errore durante il salvataggio di una bozza",
-    "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {errore}"
+    "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {errore}",
+    "formDraftAccessErrMsg": "L'invio richiesto è già stato inviato, reindirizzamento alla pagina Visualizza"
   },
   "bCGovFooter": {
     "home": "Casa",

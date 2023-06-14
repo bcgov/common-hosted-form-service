@@ -687,7 +687,8 @@
     "errSubmittingForm": "このフォームの送信中にエラーが発生しました",
     "errorSavingFile": "ファイルの保存中にエラーが発生しました。ファイル名: {fileNname}。エラー: {エラー}",
     "submittingDraftErrMsg": "下書きの保存中にエラーが発生しました",
-    "submittingDraftConsErrMsg": "下書きの保存中にエラーが発生しました。送信 ID: {submissionId}。エラー: {エラー}"
+    "submittingDraftConsErrMsg": "下書きの保存中にエラーが発生しました。送信 ID: {submissionId}。エラー: {エラー}",
+    "formDraftAccessErrMsg": "リクエストされた送信はすでに送信されており、[表示] ページにリダイレクトされます。"
   },
   "bCGovFooter": {
     "home": "家",
