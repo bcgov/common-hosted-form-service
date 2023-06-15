@@ -249,7 +249,11 @@ const service = {
     // add "order by" after we count total items, cause overwise we get error:
     // "must appear in the GROUP BY clause or be used in an aggregate function"
     const count = await query.clone().count().first();
-    query.modify('orderDefault');
+    if (params.sortBy && params.sortBy.length > 0) {
+      query.modify('userOrder', params.sortBy, params.sortDesc);
+    } else {
+      query.modify('orderDefault');
+    }
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
     let fields = [];
     if (params.fields && params.fields.length) {
@@ -269,14 +273,6 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
-
-    // const { page, itemsPerPage } = params;
-    // let { limit, offset } = getPagination(page, itemsPerPage);
-    // if (itemsPerPage === '-1') {
-    //   limit = parseInt(count['count'], 10);
-    //   offset = 0;
-    // }
-    // const data = await query.clone().limit(limit).offset(offset);
     return getPagingData(query, params, parseInt(count['count'], 10));
   },
 

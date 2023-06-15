@@ -102,7 +102,6 @@
       item-key="submissionId"
       :items="submissionTable"
       :server-items-length="submissionListCount"
-      :options="tableOptions"
       :search="search"
       :loading="loading"
       :show-select="!switchSubmissionView"
@@ -441,6 +440,7 @@ export default {
             text: this.$t('trans.submissionsTable.lateSubmission'),
             align: 'start',
             value: 'lateEntry',
+            sortable: false,
           },
         ];
       }
@@ -455,6 +455,7 @@ export default {
               : col,
           align: 'end',
           value: col,
+          sortable: false,
         });
       });
 
@@ -597,9 +598,7 @@ export default {
       this.itemsPerPage = itemsPerPage;
       this.sortBy = sortBy;
       this.sortDesc = sortDesc;
-      //if (this.isPageLoaded && this.allowReload) {
       this.populateSubmissionsTable();
-      //}
     },
     async delSub() {
       this.singleSubmissionDelete

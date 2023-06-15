@@ -740,6 +740,17 @@ const getPagingData = async (query, params, count) => {
   return { totalItems: count, data, totalPages, currentPage };
 };
 
+const getSortBy = (sortBy) => {
+  if (sortBy === 'date') {
+    return 'createdAt';
+  } else if (sortBy === 'status') {
+    return 'formSubmissionStatusCode';
+  } else if (sortBy === 'submitter') {
+    return 'createdBy';
+  }
+  return 'confirmationId';
+};
+
 module.exports = {
   falsey,
   setupMount,
@@ -758,4 +769,5 @@ module.exports = {
   validateScheduleObject,
   getPagination,
   getPagingData,
+  getSortBy,
 };
