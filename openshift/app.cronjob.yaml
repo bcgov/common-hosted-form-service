@@ -53,18 +53,18 @@ objects:
                 type: trigger
             spec:
               containers:
-              - name: my-container
-                image: docker.io/curlimages/curl:7.82.0
-                env:
-                - name: APITOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: "chefs-${JOB_NAME}-secret"
-                      key: mailapitoken
-                command:
-                  - /bin/sh
-                  - -ec
-                  - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "http://${APP_NAME}-app-${JOB_NAME}:8080${ROUTE_PATH}/api/v1/public/reminder"||exit 0'
+                - name: my-container
+                  image: docker.io/curlimages/curl:8.1.0
+                  env:
+                    - name: APITOKEN
+                      valueFrom:
+                        secretKeyRef:
+                          name: "chefs-${JOB_NAME}-secret"
+                          key: mailapitoken
+                  command:
+                    - /bin/sh
+                    - -ec
+                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "http://${APP_NAME}-app-${JOB_NAME}:8080${ROUTE_PATH}/api/v1/public/reminder"||exit 0'
               restartPolicy: OnFailure
 parameters:
   - name: APP_NAME
