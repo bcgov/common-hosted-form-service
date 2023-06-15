@@ -58,13 +58,20 @@
             height="15"
           >
             <template v-slot:default="{ value }">
-              <strong>{{ value }}%</strong>
+              <strong>{{ value }}% </strong>
             </template>
           </v-progress-linear>
           <v-row class="fileinfo">
             <v-col cols="12" md="12">
-              <label class="label-left">{{ file.name }}</label>
-              <label class="label-right">{{ fileSize }}</label>
+              <label class="label-left" v-bind:title="file.name">{{
+                fileName
+              }}</label>
+              <label class="label-right"
+                >{{ fileSize }}
+                <p v-if="index > 0 && Json.length > 0">
+                  {{ index + '/' + Json.length }}
+                </p>
+              </label>
             </v-col>
           </v-row>
         </div>
@@ -192,6 +199,14 @@ export default {
         return (this.file.size / 1024).toFixed(2) + ' KB';
       return (this.file.size / (1024 * 1024)).toFixed(2) + ' MB';
     },
+    fileName() {
+      try {
+        const fs = this.file.name.split('_');
+        return fs[0] + '...' + fs[fs.length - 1];
+      } catch (e) {
+        return this.file.name;
+      }
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -294,7 +309,17 @@ export default {
         this.max = 100;
         this.progress = true;
         this.$emit('toggleBlock', true);
-        this.startValidation();
+        const formHtml = document.getElementById('validateForm');
+        this.vForm = await Formio.createForm(formHtml, this.formSchema, {
+          highlightErrors: true,
+          alwaysDirty: true,
+          hide: {
+            submit: true,
+          },
+        });
+        this.$nextTick(() => {
+          this.validate(this.Json[this.index], []);
+        });
       } catch (error) {
         this.resetUpload();
         this.$emit('set-error', {
@@ -308,31 +333,18 @@ export default {
         return;
       }
     },
-    async startValidation() {
-      const formHtml = document.getElementById('validateForm');
-      this.vForm = await Formio.createForm(formHtml, this.formSchema, {
-        highlightErrors: true,
-        alwaysDirty: true,
-        hide: {
-          submit: true,
-        },
-      });
-      this.$nextTick(() => {
-        this.validate(this.Json[this.index], []);
-      });
-    },
+    async startValidation() {},
     async validate(element, errors) {
       try {
-        const response = await this.formIOValidation(element);
-        if (response.error) {
-          errors[this.index] = {
-            submission: this.index,
-            errors: response.data,
-          };
-        }
-        this.validationDispatcher(errors);
-        //  .then((response) => {
-        //   });
+        this.formIOValidation(element).then((response) => {
+          if (response.error) {
+            errors[this.index] = {
+              submission: this.index,
+              errors: response.data,
+            };
+          }
+          this.validationDispatcher(errors);
+        });
       } catch (error) {
         errors[this.index] = {
           submission: this.index,
@@ -343,21 +355,16 @@ export default {
     async validationDispatcher(errors) {
       /* we need this timer allow to the gargabe colector to have time
        to clean the memory before starting  a new form validation */
-      const timer = setTimeout(() => {
+      await this.delay(24);
+      const shouldContinueValidation = this.index < this.Json.length;
+      if (shouldContinueValidation) {
         this.index++;
         this.value = this.percentage(this.index);
-        const shouldContinueValidation = this.index < this.Json.length;
-        if (shouldContinueValidation) {
-          this.$nextTick(() => {
-            this.validate(this.Json[this.index], errors);
-          });
-        } else {
-          this.$nextTick(() => {
-            this.endValidation(errors);
-          });
-        }
-        clearTimeout(timer);
-      }, 500);
+
+        this.validate(this.Json[this.index], errors);
+      } else {
+        this.endValidation(errors);
+      }
     },
     async formIOValidation(element) {
       return new Promise((resolve) => {
@@ -374,12 +381,12 @@ export default {
           });
       });
     },
-    // delay(ms) {
-    //   return new Promise((resolve) => setTimeout(resolve, ms));
-    // },
+    delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    },
     percentage(i) {
       let number_of_submission = this.Json.length;
-      if (number_of_submission > 0) {
+      if (number_of_submission > 0 && i > 0) {
         return Math.ceil((i * this.max) / number_of_submission);
       }
       return 0;
@@ -485,6 +492,9 @@ export default {
         .label-right {
           text-align: right;
           float: right;
+          p {
+            color: #38598a;
+          }
         }
         .label-left {
           text-align: left;
