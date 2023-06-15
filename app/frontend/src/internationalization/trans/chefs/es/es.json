@@ -687,7 +687,8 @@
     "errSubmittingForm": "Ocurrió un error al enviar este formulario",
     "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileNname}. Error: {error}",
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
-    "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {Id de envío}. Error: {error}"
+    "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {Id de envío}. Error: {error}",
+    "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver"
   },
   "bCGovFooter": {
     "home": "Hogar",

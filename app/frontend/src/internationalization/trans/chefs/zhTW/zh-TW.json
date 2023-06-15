@@ -687,7 +687,8 @@
     "errSubmittingForm": "提交此表單時出錯",
     "errorSavingFile": "保存文件時出錯。文件名：{fileNname}。錯誤：{錯誤}",
     "submittingDraftErrMsg": "保存草稿時出錯",
-    "submittingDraftConsErrMsg": "保存草稿時出錯。提交 ID：{submissionId}。錯誤：{錯誤}"
+    "submittingDraftConsErrMsg": "保存草稿時出錯。提交 ID：{submissionId}。錯誤：{錯誤}",
+    "formDraftAccessErrMsg": "請求的提交已經提交，重定向到查看頁面"
   },
   "bCGovFooter": {
     "home": "家",
