@@ -115,6 +115,9 @@ routes.use(currentUser);
  *                    type: array
  *                    example: [id: '33707cbd-7e69-4c66-bd2e-88596896a670', formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644', version: 2, published: true, createdBy: 'AIDOWU@idir', createdAt: '2023-05-18T20:11:41.329Z', updatedBy: null, updatedAt: '2023-05-18T20:11:41.241Z']
  *                    description: List of form versions
+ *                  snake:
+ *                    type: string
+ *                    example: Ministry Survey
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -887,21 +890,38 @@ routes.get('/users/:userId', async (req, res, next) => {
  *                  type: object
  *                  properties:
  *                    id:
+ *                      type: string
+ *                      format: uuid
+ *                      description: Database generated Id of Form.io component
  *                      example: "3a7efb05-52d4-4538-aedf-53a2c3429c85"
- *                    status:
- *                      example: true
  *                    componentName:
- *                      example: "File Upload"
- *                    externalLink:
- *                      example: "www.google.com"
- *                    groupName:
- *                      example: "BC Government"
+ *                      type: string
+ *                      description: Name of Form.io component
+ *                      example: File Upload
  *                    description:
- *                      example: "fgyjgugu"
- *                    isLinkEnabled:
- *                      example: true
+ *                      type: string
+ *                      description: Full details about the component
+ *                      example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+ *                    externalLink:
+ *                      type: string
+ *                      description: Link to the external documentation for the component
+ *                      example: https://help.form.io/userguide/form-building/layout-components#panel
+ *                    groupName:
+ *                      type: string
+ *                      description: Name of the group
+ *                      example: Basic Layout
  *                    imageName:
- *                      example: "internationale.png"
+ *                      type: string
+ *                      description: name of the image
+ *                      example: FileUpload.jpg
+ *                    isLinkEnabled:
+ *                      type: boolean
+ *                      description: This hides or shows external link
+ *                      example: true
+ *                    status:
+ *                      type: boolean
+ *                      description: This determines the publish status of the component.
+ *                      example: true
  *              Advanced Data:
  *                type: array
  *                example: []
@@ -966,21 +986,38 @@ routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
  *                  type: object
  *                  properties:
  *                    id:
+ *                      type: string
+ *                      format: uuid
+ *                      description: Database generated Id of Form.io component
  *                      example: "3a7efb05-52d4-4538-aedf-53a2c3429c85"
- *                    status:
- *                      example: true
  *                    componentName:
- *                      example: "File Upload"
- *                    externalLink:
- *                      example: "www.google.com"
- *                    groupName:
- *                      example: "BC Government"
+ *                      type: string
+ *                      description: Name of Form.io component
+ *                      example: File Upload
  *                    description:
- *                      example: "fgyjgugu"
- *                    isLinkEnabled:
- *                      example: true
+ *                      type: string
+ *                      description: Full details about the component
+ *                      example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+ *                    externalLink:
+ *                      type: string
+ *                      description: Link to the external documentation for the component
+ *                      example: https://help.form.io/userguide/form-building/layout-components#panel
+ *                    groupName:
+ *                      type: string
+ *                      description: Name of the group
+ *                      example: Basic Layout
  *                    imageName:
- *                      example: "internationale.png"
+ *                      type: string
+ *                      description: name of the image
+ *                      example: FileUpload.jpg
+ *                    isLinkEnabled:
+ *                      type: boolean
+ *                      description: This hides or shows external link
+ *                      example: true
+ *                    status:
+ *                      type: boolean
+ *                      description: This determines the publish status of the component.
+ *                      example: true
  *              Advanced Data:
  *                type: array
  *                example: []
@@ -1069,21 +1106,38 @@ routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, re
  *                  type: object
  *                  properties:
  *                    id:
+ *                      type: string
+ *                      format: uuid
+ *                      description: Database generated Id of Form.io component
  *                      example: "3a7efb05-52d4-4538-aedf-53a2c3429c85"
- *                    status:
- *                      example: true
  *                    componentName:
- *                      example: "File Upload"
- *                    externalLink:
- *                      example: "www.google.com"
- *                    groupName:
- *                      example: "BC Government"
+ *                      type: string
+ *                      description: Name of Form.io component
+ *                      example: File Upload
  *                    description:
- *                      example: "fgyjgugu"
- *                    isLinkEnabled:
- *                      example: true
+ *                      type: string
+ *                      description: Full details about the component
+ *                      example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+ *                    externalLink:
+ *                      type: string
+ *                      description: Link to the external documentation for the component
+ *                      example: https://help.form.io/userguide/form-building/layout-components#panel
+ *                    groupName:
+ *                      type: string
+ *                      description: Name of the group
+ *                      example: Basic Layout
  *                    imageName:
- *                      example: "internationale.png"
+ *                      type: string
+ *                      description: name of the image
+ *                      example: FileUpload.jpg
+ *                    isLinkEnabled:
+ *                      type: boolean
+ *                      description: This hides or shows external link
+ *                      example: true
+ *                    status:
+ *                      type: boolean
+ *                      description: This determines the publish status of the component.
+ *                      example: true
  *              Advanced Data:
  *                type: array
  *                example: []

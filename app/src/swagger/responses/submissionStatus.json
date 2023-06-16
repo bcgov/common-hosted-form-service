@@ -1,0 +1,52 @@
+[
+  {
+    "id": "09e2e18e-4be8-4cde-80b9-c0e751af0e09",
+    "submissionId": "70531344-c77f-47bb-83d6-74c22223abe0",
+    "code": "REVISING",
+    "assignedToUserId": null,
+    "actionDate": null,
+    "createdBy": "AIDOWU@idir",
+    "createdAt": "2023-06-15T22:27:20.815Z",
+    "updatedBy": null,
+    "updatedAt": "2023-06-15T22:27:20.810Z",
+    "user": null
+  },
+  {
+    "id": "1e98db0a-03f7-4e4a-90a9-830c36a2ba79",
+    "submissionId": "70531344-c77f-47bb-83d6-74c22223abe0",
+    "code": "COMPLETED",
+    "assignedToUserId": null,
+    "actionDate": null,
+    "createdBy": "AIDOWU@idir",
+    "createdAt": "2023-06-15T22:26:00.109Z",
+    "updatedBy": null,
+    "updatedAt": "2023-06-15T22:26:00.097Z",
+    "user": null
+  },
+  {
+    "id": "0f8cde06-0666-4fe4-8f4c-dff759ab5e7d",
+    "submissionId": "70531344-c77f-47bb-83d6-74c22223abe0",
+    "code": "ASSIGNED",
+    "assignedToUserId": "2a4770b7-6f0e-4629-a359-bf820295f23a",
+    "actionDate": null,
+    "createdBy": "AIDOWU@idir",
+    "createdAt": "2023-06-15T21:51:43.203Z",
+    "updatedBy": null,
+    "updatedAt": "2023-06-15T21:51:43.196Z",
+    "user": {
+      "id": "2a4770b7-6f0e-4629-a359-bf820295f23a",
+      "keycloakId": "ea94678c-5f00-42b2-9f56-bd401091fb7c",
+      "firstName": "Ayobamii",
+      "fullName": "Ayobamii Idowu",
+      "lastName": "Idowu",
+      "username": "AIDOWU",
+      "email": "ayobamii.idowu@gov.bc.ca",
+      "createdBy": "public",
+      "createdAt": "2023-03-29T14:08:34.202Z",
+      "updatedBy": null,
+      "updatedAt": "2023-06-15T22:27:20.781Z",
+      "idpCode": "idir",
+      "idpUserId": "085F22D7201D4C1B88BB26970264E1F3"
+    }
+  }
+]

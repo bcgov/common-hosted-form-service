@@ -8,6 +8,31 @@ const keycloak = require('../../components/keycloak');
 
 routes.use(currentUser);
 
+/**
+ * @openapi
+ * admin/roles/:
+ *  get:
+ *    tags:
+ *      - Roles
+ *    description: Get a list of all users
+ *    security:
+ *      - bearerAuth: []
+ *      - basicAuth: []
+ *      - openId: []
+ *    responses:
+ *      '200':
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            examples:
+ *              CHEFSRolesPermissionsEx:
+ *                $ref: '#/components/examples/CHEFSRolesPermissionsEx'
+ *            schema:
+ *              type: array
+ *              description: returns a list of permissions. See the example for more
+ *      '403':
+ *        $ref: '#/components/responses/Forbidden'
+ */
 routes.get('/', keycloak.protect(), async (req, res, next) => {
   await controller.list(req, res, next);
 });

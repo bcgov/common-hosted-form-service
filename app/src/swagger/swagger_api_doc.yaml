@@ -1,5 +1,5 @@
 definition:
-  openapi: 3.0.0
+  openapi: 3.0.3
   info:
     title: Common Hosted Form Service (CHEFS)
     description: The API for an application for teams to create, manage and publish web forms. These back-end operations can work for different form builder tools that define the form as a json schema. Form management features include role-based access for administrators, form versioning, submission review and export, as well as notifications, document generation and reporting.
@@ -43,6 +43,59 @@ definition:
             schema:
               $ref: '#/components/schemas/UnprocessableEntityDBError'
     schemas:
+      AssignedSubmissionStatus:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Form submission status
+            example: ASSIGNED
+          submissionUserEmail:
+            type: string
+            description: Email of the user that submitted the form submission
+            example: test@gov.bc.ca
+          revisionNotificationEmailContent:
+            type: string
+            description: Notification email content to be sent to the user that the form submission was assigned
+            example: This form submission has been assigned to you
+          assignedToUserId:
+            type: string
+            description: User Id of the user that the form submission has been assigned
+            example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+          assignmentNotificationEmail:
+            type: string
+            description: email of the user that the form submission has been assigned. Status chnage notification will be sent to this email
+            email: test@gov.bc.ca
+      CompletedSubmissionStatus:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Form submission status
+            example: COMPLETED
+          submissionUserEmail:
+            type: string
+            description: Email of the user that submitted the form submission
+            example: ayobamii.idowu@gov.bc.ca
+          revisionNotificationEmailContent:
+            type: string
+            description: Notification email content to be sent to the user that the form submission was assigned
+            example: This form submission status has been changed to completed
+      RevisedSubmissionStatus:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Form submission status
+            example: REVISING
+          submissionUserEmail:
+            type: string
+            description: Email of the user that submitted the form submission
+            example: ayobamii.idowu@gov.bc.ca
+          revisionNotificationEmailContent:
+            type: string
+            description: Notification email content to be sent to the user that the form submission was assigned
+            example: This form submission status has been changed to revised
       Error:
         type: object
         properties:
