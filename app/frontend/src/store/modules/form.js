@@ -707,6 +707,7 @@ export default {
         itemsPerPage,
         sortBy,
         sortDesc,
+        search,
       }
     ) {
       try {
@@ -717,7 +718,14 @@ export default {
             ? state.userFormPreferences.preferences.columns
             : undefined;
         const response = userView
-          ? await rbacService.getUserSubmissions({ formId: formId })
+          ? await rbacService.getUserSubmissions({
+              formId: formId,
+              page,
+              itemsPerPage,
+              sortBy,
+              sortDesc,
+              search,
+            })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
               fields: fields,
@@ -727,6 +735,7 @@ export default {
               itemsPerPage,
               sortBy,
               sortDesc,
+              search,
             });
         commit('SET_SUBMISSIONLIST', response.data.data);
         commit('SET_SUBMISSIONLIST_COUNT', response.data.totalItems);

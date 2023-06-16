@@ -53,6 +53,11 @@ class SubmissionMetadata extends Model {
           query.where('version', value);
         }
       },
+      filterSearch(query, value) {
+        if (value) {
+          query.where('confirmationId', 'ilike', `%${value}%`).orWhere('createdBy', 'ilike', `%${value}%`).orWhere('formSubmissionStatusCode', 'ilike', `%${value}%`);
+        }
+      },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
       },

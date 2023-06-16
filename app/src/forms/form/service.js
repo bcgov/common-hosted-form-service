@@ -246,6 +246,9 @@ const service = {
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
+    if (params.search && params.search.length > 2) {
+      query.modify('filterSearch', params.search);
+    }
     // add "order by" after we count total items, cause overwise we get error:
     // "must appear in the GROUP BY clause or be used in an aggregate function"
     const count = await query.clone().count().first();

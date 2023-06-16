@@ -102,7 +102,6 @@
       item-key="submissionId"
       :items="submissionTable"
       :server-items-length="submissionListCount"
-      :search="search"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
@@ -334,6 +333,16 @@ export default {
       sortBy: null,
       sortDesc: null,
     };
+  },
+  watch: {
+    search(newValue, oldValue) {
+      if (
+        newValue.length > 2 ||
+        (oldValue.length > 0 && newValue.length === 0)
+      ) {
+        this.populateSubmissionsTable();
+      }
+    },
   },
   computed: {
     multiDeleteMessage() {
@@ -639,6 +648,7 @@ export default {
           itemsPerPage: this.itemsPerPage,
           sortBy: this.sortBy,
           sortDesc: this.sortDesc,
+          search: this.search,
           formId: this.formId,
           createdAt: Object.values({
             minDate:
