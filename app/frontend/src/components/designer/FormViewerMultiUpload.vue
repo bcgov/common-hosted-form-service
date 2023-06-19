@@ -335,33 +335,30 @@ export default {
     },
     async startValidation() {},
     async validate(element, errors) {
-      try {
-        this.formIOValidation(element).then((response) => {
-          if (response.error) {
-            errors[this.index] = {
-              submission: this.index,
-              errors: response.data,
-            };
-          }
-          this.validationDispatcher(errors);
-        });
-      } catch (error) {
-        errors[this.index] = {
-          submission: this.index,
-          message: this.ERROR.ERROR_WHILE_CHECKVALIDITY,
-        };
-      }
+      this.formIOValidation(element).then((response) => {
+        if (response.error) {
+          errors[this.index] = {
+            submission: this.index,
+            errors: response.data,
+          };
+        }
+        delete response.error;
+        delete response.data;
+        this.validationDispatcher(errors);
+      });
     },
     async validationDispatcher(errors) {
       /* we need this timer allow to the gargabe colector to have time
        to clean the memory before starting  a new form validation */
-      await this.delay(24);
-      const shouldContinueValidation = this.index < this.Json.length;
-      if (shouldContinueValidation) {
+      await this.delay(1000);
+      const check = { shouldContinueValidation: this.index < this.Json.length };
+      if (check.shouldContinueValidation) {
         this.index++;
         this.value = this.percentage(this.index);
-
-        this.validate(this.Json[this.index], errors);
+        delete check.shouldContinueValidation;
+        this.$nextTick(() => {
+          this.validate(this.Json[this.index], errors);
+        });
       } else {
         this.endValidation(errors);
       }
@@ -382,7 +379,12 @@ export default {
       });
     },
     delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
+      return new Promise((resolve) => {
+        const c = setTimeout(() => {
+          clearTimeout(c);
+          resolve();
+        }, ms);
+      });
     },
     percentage(i) {
       let number_of_submission = this.Json.length;
