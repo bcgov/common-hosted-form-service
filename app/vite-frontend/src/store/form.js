@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import i18n from '~/internationalization';
+import { i18n } from '~/internationalization';
 import {
   apiKeyService,
   formService,
@@ -10,8 +10,6 @@ import {
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
-
-const { t } = i18n.global;
 
 const genInitialSchedule = () => ({
   enabled: null,
@@ -110,8 +108,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.getCurrUserFormsErrMsg'),
-          consoleError: t('trans.store.form.getCurrUserFormsErrMsg', {
+          text: i18n.t('trans.store.form.getCurrUserFormsErrMsg'),
+          consoleError: i18n.t('trans.store.form.getCurrUserFormsErrMsg', {
             error: error,
           }),
         });
@@ -123,8 +121,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.delDraftErrMsg'),
-          consoleError: t('trans.store.form.delDraftConsErrMsg', {
+          text: i18n.t('trans.store.form.delDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.delDraftConsErrMsg', {
             draftId: draftId,
             error: error,
           }),
@@ -139,8 +137,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.fecthDraftErrMsg'),
-          consoleError: t('trans.store.form.fecthDraftConsErrMsg', {
+          text: i18n.t('trans.store.form.fecthDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.fecthDraftConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -166,8 +164,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.fecthFormErrMsg'),
-          consoleError: t('trans.store.form.fecthFormErrMsg', {
+          text: i18n.t('trans.store.form.fecthFormErrMsg'),
+          consoleError: i18n.t('trans.store.form.fecthFormErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -185,8 +183,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.fetchFormFieldsErrMsg'),
-          consoleError: t('trans.store.form.fetchFormFieldsConsErrMsg', {
+          text: i18n.t('trans.store.form.fetchFormFieldsErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchFormFieldsConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -199,8 +197,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.publishDraftErrMsg'),
-          consoleError: t('trans.store.form.publishDraftConsErrMsg', {
+          text: i18n.t('trans.store.form.publishDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.publishDraftConsErrMsg', {
             draftId: draftId,
             error: error,
           }),
@@ -216,7 +214,7 @@ export const useFormStore = defineStore('form', {
           text: `An error occurred while ${
             publish ? 'publishing' : 'unpublishing'
           }.`,
-          consoleError: t('trans.store.form.toggleVersnPublConsErrMsg', {
+          consoleError: i18n.t('trans.store.form.toggleVersnPublConsErrMsg', {
             versionId: versionId,
             publish: publish,
             error: error,
@@ -238,8 +236,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.getUserFormPermErrMsg'),
-          consoleError: t('trans.store.form.getUserFormPermConsErrMsg', {
+          text: i18n.t('trans.store.form.getUserFormPermErrMsg'),
+          consoleError: i18n.t('trans.store.form.getUserFormPermConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -260,8 +258,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.getUserFormRolesErrmsg'),
-          consoleError: t('trans.store.form.getUserFormRolesConsErrmsg', {
+          text: i18n.t('trans.store.form.getUserFormRolesErrmsg'),
+          consoleError: i18n.t('trans.store.form.getUserFormRolesConsErrmsg', {
             formId: formId,
             error: error,
           }),
@@ -275,8 +273,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.getCurrUserFormPrefErrMsg'),
-          consoleError: t('trans.store.form.getCurrUserFormPrefErrMsg', {
+          text: i18n.t('trans.store.form.getCurrUserFormPrefErrMsg'),
+          consoleError: i18n.t('trans.store.form.getCurrUserFormPrefErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -293,12 +291,15 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.updCurrUserFormPrefErrMsg'),
-          consoleError: t('trans.store.form.updCurrUserFormPrefConsErrMsg', {
-            formId: formId,
-            preferences: preferences,
-            error: error,
-          }),
+          text: i18n.t('trans.store.form.updCurrUserFormPrefErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.updCurrUserFormPrefConsErrMsg',
+            {
+              formId: formId,
+              preferences: preferences,
+              error: error,
+            }
+          ),
         });
       }
     },
@@ -310,17 +311,17 @@ export const useFormStore = defineStore('form', {
       try {
         await formService.deleteForm(this.form.id);
         notificationStore.addNotification({
-          text: t('trans.store.form.delCurrformNotiMsg', {
+          text: i18n.t('trans.store.form.delCurrformNotiMsg', {
             name: this.form.name,
           }),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: t('trans.store.form.delCurrformNotiMsg', {
+          text: i18n.t('trans.store.form.delCurrformNotiMsg', {
             name: this.form.name,
           }),
-          consoleError: t('trans.store.form.delCurrFormConsErMsg', {
+          consoleError: i18n.t('trans.store.form.delCurrFormConsErMsg', {
             id: this.form.id,
             error: error,
           }),
@@ -363,8 +364,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.updateFormErrMsg'),
-          consoleError: t('trans.store.form.updateFormConsErrMsg', {
+          text: i18n.t('trans.store.form.updateFormErrMsg'),
+          consoleError: i18n.t('trans.store.form.updateFormConsErrMsg', {
             id: this.form.id,
             error: error,
           }),
@@ -380,14 +381,14 @@ export const useFormStore = defineStore('form', {
         await formService.deleteSubmission(submissionId);
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.deleteSubmissionNotifyMsg'),
+          text: i18n.t('trans.store.form.deleteSubmissionNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.deleteSubmissionErrMsg'),
-          consoleError: t('trans.store.form.deleteSubmissionConsErrMsg', {
+          text: i18n.t('trans.store.form.deleteSubmissionErrMsg'),
+          consoleError: i18n.t('trans.store.form.deleteSubmissionConsErrMsg', {
             submissionId: submissionId,
             error: error,
           }),
@@ -402,13 +403,13 @@ export const useFormStore = defineStore('form', {
           data: { submissionIds: submissionIds },
         });
         notificationStore.addNotification({
-          text: t('trans.store.form.deleteSubmissionsNotifyMsg'),
+          text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: t('trans.store.form.deleteSubmissionsErrMsg'),
-          consoleError: t('trans.store.form.deleteSubmissionsConsErrMsg', {
+          text: i18n.t('trans.store.form.deleteSubmissionsErrMsg'),
+          consoleError: i18n.t('trans.store.form.deleteSubmissionsConsErrMsg', {
             error: error,
           }),
         });
@@ -423,15 +424,18 @@ export const useFormStore = defineStore('form', {
           submissionIds: submissionIds,
         });
         notificationStore.addNotification({
-          text: t('trans.store.form.restoreSubmissionsNotiMsg'),
+          text: i18n.t('trans.store.form.restoreSubmissionsNotiMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: t('trans.store.form.restoreSubmissionsErrMsg'),
-          consoleError: t('trans.store.form.restoreSubmissionsConsErrMsg', {
-            error: error,
-          }),
+          text: i18n.t('trans.store.form.restoreSubmissionsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.restoreSubmissionsConsErrMsg',
+            {
+              error: error,
+            }
+          ),
         });
       }
     },
@@ -442,16 +446,19 @@ export const useFormStore = defineStore('form', {
         // Get this submission
         await formService.restoreSubmission(submissionId, { deleted });
         notificationStore.addNotification({
-          text: t('trans.store.form.deleteSubmissionsNotifyMsg'),
+          text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: t('trans.store.form.restoreSubmissionsErrMsg'),
-          consoleError: t('trans.store.form.restoreSubmissionsConsErrMsg', {
-            error: error,
-            submissionId: submissionId,
-          }),
+          text: i18n.t('trans.store.form.restoreSubmissionsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.restoreSubmissionsConsErrMsg',
+            {
+              error: error,
+              submissionId: submissionId,
+            }
+          ),
         });
       }
     },
@@ -464,8 +471,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.fetchSubmissnErrMsg'),
-          consoleError: t('trans.store.form.fetchSubmissnConsErrMsg', {
+          text: i18n.t('trans.store.form.fetchSubmissnErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchSubmissnConsErrMsg', {
             submissionId: submissionId,
             error: error,
           }),
@@ -486,11 +493,14 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.fetchFormCSVExptFieldsErrMsg'),
-          consoleError: t('trans.store.form.fetchFormCSVExptFieldsErrMsg', {
-            formId: formId,
-            error: error,
-          }),
+          text: i18n.t('trans.store.form.fetchFormCSVExptFieldsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.fetchFormCSVExptFieldsErrMsg',
+            {
+              formId: formId,
+              error: error,
+            }
+          ),
         });
       }
     },
@@ -520,8 +530,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.fetchSubmissnsErrMsg'),
-          consoleError: t('trans.store.form.fetchSubmissnsConsErrMsg', {
+          text: i18n.t('trans.store.form.fetchSubmissnsErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchSubmissnsConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -542,8 +552,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.fetchVersionErrMsg'),
-          consoleError: t('trans.store.form.fetchVersionConsErrMsg', {
+          text: i18n.t('trans.store.form.fetchVersionErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchVersionConsErrMsg', {
             versionId: versionId,
             formId: formId,
             error: error,
@@ -561,13 +571,13 @@ export const useFormStore = defineStore('form', {
         await apiKeyService.deleteApiKey(formId);
         this.apiKey = null;
         notificationStore.addNotification({
-          text: t('trans.store.form.deleteApiKeyNotifyMsg'),
+          text: i18n.t('trans.store.form.deleteApiKeyNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: t('trans.store.form.deleteApiKeyErrMsg'),
-          consoleError: t('trans.store.form.deleteApiKeyConsErrMsg', {
+          text: i18n.t('trans.store.form.deleteApiKeyErrMsg'),
+          consoleError: i18n.t('trans.store.form.deleteApiKeyConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -580,7 +590,7 @@ export const useFormStore = defineStore('form', {
         const { data } = await apiKeyService.generateApiKey(formId);
         this.apiKey = data;
         notificationStore.addNotification({
-          text: t('trans.store.form.generateApiKeyNotifyMsg'),
+          text: i18n.t('trans.store.form.generateApiKeyNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
@@ -597,8 +607,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.generateApiKeyErrMsg'),
-          consoleError: t('trans.store.form.generateApiKeyConsErrMsg', {
+          text: i18n.t('trans.store.form.generateApiKeyErrMsg'),
+          consoleError: i18n.t('trans.store.form.generateApiKeyConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -622,8 +632,25 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.getFCPHImageUrlErrMsg'),
-          consoleError: t('trans.store.form.getFCPHImageUrlConsErrMsg', {
+          text: i18n.t('trans.store.form.getFCPHImageUrlErrMsg'),
+          consoleError: i18n.t('trans.store.form.getFCPHImageUrlConsErrMsg', {
+            error: error,
+          }),
+        });
+      }
+    },
+    //listFormComponentsProactiveHelp
+    async listFCProactiveHelp() {
+      try {
+        // Get Form Components Proactive Help Group Object
+        this.fcProactiveHelpGroupList = {};
+        const response = await formService.listFCProactiveHelp();
+        this.fcProactiveHelpGroupList = response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.listFCPHErrMsg'),
+          consoleError: i18n.t('trans.store.form.listFCPHConsErrMsg', {
             error: error,
           }),
         });
@@ -646,8 +673,8 @@ export const useFormStore = defineStore('form', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.form.downloadFileErrMsg'),
-          consoleError: t('trans.store.form.downloadFileConsErrMsg', {
+          text: i18n.t('trans.store.form.downloadFileErrMsg'),
+          consoleError: i18n.t('trans.store.form.downloadFileConsErrMsg', {
             error: error,
           }),
         });

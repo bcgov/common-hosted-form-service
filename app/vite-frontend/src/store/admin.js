@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia';
-import i18n from '~/internationalization';
+import { i18n } from '~/internationalization';
+
 import { adminService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
-
-const { t } = i18n.global;
 
 export const useAdminStore = defineStore('admin', {
   state: () => ({
@@ -31,18 +30,18 @@ export const useAdminStore = defineStore('admin', {
           formUser.formId,
           formUser.roles
         );
+        // Re-get the form users
+        this.readRoles(formUser.formId);
         notificationStore.addNotification({
-          text: t('trans.store.admin.addFormOwnerRole', {
+          text: i18n.t('trans.store.admin.addFormOwnerRole', {
             fullName: response.data[0].fullName,
           }),
           ...NotificationTypes.SUCCESS,
         });
-        // Re-get the form users
-        this.readRoles(formUser.formId);
       } catch (error) {
         notificationStore.addNotification({
-          text: t('trans.store.admin.addRowError'),
-          consoleError: t('trans.store.admin.addRowError', {
+          text: i18n.t('trans.store.admin.addRowError'),
+          consoleError: i18n.t('trans.store.admin.addRowError', {
             userId: formUser.userId,
             formId: formUser.formId,
             error: error,
@@ -56,14 +55,14 @@ export const useAdminStore = defineStore('admin', {
         this.apiKey = undefined;
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.apiKeyDelMsg'),
+          text: i18n.t('trans.store.admin.apiKeyDelMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.errDeletingApiKey'),
-          consoleError: t('trans.store.admin.apiKeyDelMsg', {
+          text: i18n.t('trans.store.admin.errDeletingApiKey'),
+          consoleError: i18n.t('trans.store.admin.apiKeyDelMsg', {
             formId: formId,
             error: error,
           }),
@@ -79,8 +78,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.fecthingFormsErrMsg'),
-          consoleError: t('trans.store.admin.fecthingFormsErrMsg', {
+          text: i18n.t('trans.store.admin.fecthingFormsErrMsg'),
+          consoleError: i18n.t('trans.store.admin.fecthingFormsErrMsg', {
             error: error,
           }),
         });
@@ -95,8 +94,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.fecthingFormErrMsg'),
-          consoleError: t('trans.store.admin.fecthingFormsErrMsg', {
+          text: i18n.t('trans.store.admin.fecthingFormErrMsg'),
+          consoleError: i18n.t('trans.store.admin.fecthingFormsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -111,10 +110,13 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.fecthFormUserRolesErrMsg'),
-          consoleError: t('trans.store.admin.fecthFormUserRolesConsErrMsg', {
-            error: error,
-          }),
+          text: i18n.t('trans.store.admin.fecthFormUserRolesErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.fecthFormUserRolesConsErrMsg',
+            {
+              error: error,
+            }
+          ),
         });
       }
     },
@@ -126,8 +128,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.fecthApiDetailsErrMsg'),
-          consoleError: t('trans.store.admin.fecthApiDetailsConsErrMsg', {
+          text: i18n.t('trans.store.admin.fecthApiDetailsErrMsg'),
+          consoleError: i18n.t('trans.store.admin.fecthApiDetailsConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -142,8 +144,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.restoreFormErrMsg'),
-          consoleError: t('trans.store.admin.restoreFormConsErrMsg', {
+          text: i18n.t('trans.store.admin.restoreFormErrMsg'),
+          consoleError: i18n.t('trans.store.admin.restoreFormConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -163,8 +165,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.getUsersErrMsg'),
-          consoleError: t('trans.store.admin.getUsersConsErrMsg', {
+          text: i18n.t('trans.store.admin.getUsersErrMsg'),
+          consoleError: i18n.t('trans.store.admin.getUsersConsErrMsg', {
             error: error,
           }),
         });
@@ -179,8 +181,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.getUserErrMsg'),
-          consoleError: t('trans.store.admin.getUserConsErrMsg', {
+          text: i18n.t('trans.store.admin.getUserErrMsg'),
+          consoleError: i18n.t('trans.store.admin.getUserConsErrMsg', {
             userId: userId,
             error: error,
           }),
@@ -198,10 +200,13 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.storingFCHelpInfoErrMsg'),
-          consoleError: t('trans.store.admin.storingFCHelpInfoConsErrMsg', {
-            error: error,
-          }),
+          text: i18n.t('trans.store.admin.storingFCHelpInfoErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.storingFCHelpInfoConsErrMsg',
+            {
+              error: error,
+            }
+          ),
         });
       }
     },
@@ -217,8 +222,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.gettingFCImgUrlErrMsg'),
-          consoleError: t('trans.store.admin.gettingFCImgUrlConsErrMsg', {
+          text: i18n.t('trans.store.admin.gettingFCImgUrlErrMsg'),
+          consoleError: i18n.t('trans.store.admin.gettingFCImgUrlConsErrMsg', {
             error: error,
           }),
         });
@@ -237,8 +242,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.updatingFCStatusErrMsg'),
-          consoleError: t('trans.store.admin.updatingFCStatusConsErrMsg', {
+          text: i18n.t('trans.store.admin.updatingFCStatusErrMsg'),
+          consoleError: i18n.t('trans.store.admin.updatingFCStatusConsErrMsg', {
             error: error,
           }),
         });
@@ -255,8 +260,8 @@ export const useAdminStore = defineStore('admin', {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: t('trans.store.admin.fecthingFormBuilderCompsErrMsg'),
-          consoleError: t(
+          text: i18n.t('trans.store.admin.fecthingFormBuilderCompsErrMsg'),
+          consoleError: i18n.t(
             'trans.store.admin.fecthingFormBuilderCompsConsErrMsg',
             { error: error }
           ),
