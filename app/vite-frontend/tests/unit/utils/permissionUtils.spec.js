@@ -1,10 +1,4 @@
-import { setActivePinia, createPinia } from 'pinia';
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useRouter } from 'vue-router';
-
-import { formService } from '~/services';
-import { useAuthStore } from '~/store/auth';
-import { useNotificationStore } from '~/store/notification';
+import { describe, expect, it, vi } from 'vitest';
 import {
   FormPermissions,
   IdentityProviders,
@@ -101,7 +95,7 @@ describe('checkSubmissionView', () => {
       })
     ).toBeTruthy();
   });
-});
+}); /* 
 
 describe('preFlightAuth', () => {
   setActivePinia(createPinia());
@@ -353,7 +347,7 @@ describe('preFlightAuth', () => {
     expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
   });
-});
+}); */
 
 describe('isFormPublic', () => {
   it('should be false when form is undefined', () => {

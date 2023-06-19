@@ -41,9 +41,13 @@ const messages = {
 };
 
 // Create VueI18n instance with options
-export default createI18n({
+const instance = createI18n({
   legacy: false, // set to false to use Composition API
   locale: 'en', // set locale
   fallbackLocale: 'en',
   messages, // set locale messages
 });
+
+export default instance;
+
+export const i18n = instance.global;

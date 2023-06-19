@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { useRouter } from 'vue-router';
+
 import { NotificationTypes } from '~/utils/constants';
 
 export const useNotificationStore = defineStore('notification', {
@@ -11,13 +12,19 @@ export const useNotificationStore = defineStore('notification', {
   actions: {
     errorNavigate(msg) {
       const router = useRouter();
-      router.replace({ name: 'Error', params: { msg: msg } });
+      router.replace({
+        name: 'Error',
+        params: { msg },
+      });
     },
-    alertNavigate(type, message) {
+    alertNavigate(type, msg) {
       const router = useRouter();
       router.replace({
         name: 'Alert',
-        params: { text: message, type: type },
+        params: {
+          text: msg,
+          type: type,
+        },
       });
     },
     addNotification(notification) {
