@@ -741,7 +741,7 @@ const getPagingData = async (query, params, count) => {
 };
 
 const getSortBy = (sortBy) => {
-  if (sortBy === 'date') {
+  if (sortBy === 'submittedDate') {
     return 'createdAt';
   } else if (sortBy === 'status') {
     return 'formSubmissionStatusCode';
