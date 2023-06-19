@@ -35,4 +35,5 @@ export default defineConfig({
       '~vuetify': resolve(__dirname, './node_modules/vuetify'),
     },
   },
+  test: {},
 });
