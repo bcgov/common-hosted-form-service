@@ -2,7 +2,7 @@ const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
 const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess, UserSubmissions } = require('../common/models');
 const { Roles } = require('../common/constants');
-const { queryUtils } = require('../common/utils');
+const { getPagingData, queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
 
 const service = {
@@ -82,15 +82,26 @@ const service = {
 
   getCurrentUserSubmissions: async (currentUser, params) => {
     params = queryUtils.defaultActiveOnly(params);
-    const items = await UserSubmissions.query()
-      .withGraphFetched('submissionStatus(orderDescending)')
-      .withGraphFetched('submission')
+    const items = UserSubmissions.query()
       .modify('filterFormId', params.formId)
       .modify('filterFormSubmissionId', params.formSubmissionId)
       .modify('filterUserId', currentUser.id)
-      .modify('filterActive', params.active)
-      .modify('orderDefault');
-    return items;
+      .modify('filterActive', params.active);
+    if (params.search && typeof params.search === 'string' && params.search.length > 2) {
+      items.modify('filterSearch', params.search);
+    }
+    // add "order by" and "GraphFetched" after we count total items, cause overwise we get error:
+    // "must appear in the GROUP BY clause or be used in an aggregate function"
+    const count = await items.clone().count().first();
+
+    items.withGraphFetched('submissionStatus(orderDescending)');
+    items.withGraphFetched('submission');
+    if (params.sortBy && params.sortBy.length > 0) {
+      items.modify('userOrder', params.sortBy, params.sortDesc);
+    } else {
+      items.modify('orderDefault');
+    }
+    return getPagingData(items, params, parseInt(count['count'], 10));
   },
 
   getFormUsers: async (params) => {
