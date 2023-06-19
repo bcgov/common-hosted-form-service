@@ -43,7 +43,6 @@
     "moment": "^2.29.4",
     "nprogress": "^0.2.0",
     "qrcode.vue": "^1.7.0",
-    "rxjs": "^7.8.1",
     "uuid": "^8.3.2",
     "vue": "^2.7.14",
     "vue-blob-json-csv": "^0.1.7",
