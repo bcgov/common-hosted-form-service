@@ -246,7 +246,7 @@ const service = {
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
-    if (params.search && Array.isArray(params.search) && params.search.length > 2) {
+    if (params.search && typeof params.search === 'string' && params.search.length > 2) {
       query.modify('filterSearch', params.search);
     }
     // add "order by" after we count total items, cause overwise we get error:

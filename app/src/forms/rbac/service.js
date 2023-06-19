@@ -87,7 +87,7 @@ const service = {
       .modify('filterFormSubmissionId', params.formSubmissionId)
       .modify('filterUserId', currentUser.id)
       .modify('filterActive', params.active);
-    if (params.search && Array.isArray(params.search) && params.search.length > 2) {
+    if (params.search && typeof params.search === 'string' && params.search.length > 2) {
       items.modify('filterSearch', params.search);
     }
     // add "order by" and "GraphFetched" after we count total items, cause overwise we get error:
