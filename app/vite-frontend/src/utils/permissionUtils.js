@@ -1,4 +1,4 @@
-import { useI18n } from 'vue-i18n';
+import i18n from '~/internationalization';
 import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
@@ -8,6 +8,8 @@ import {
   IdentityMode,
   IdentityProviders,
 } from '~/utils/constants';
+
+const { t } = i18n.global;
 
 //
 // Utility Functions for determining permissions
@@ -75,8 +77,7 @@ function getErrorMessage(options, error) {
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
-      const i18n = useI18n({ useScope: 'global' });
-      errorMessage = i18n.t('trans.permissionUtils.formNotAvailable');
+      errorMessage = t('trans.permissionUtils.formNotAvailable');
     }
   }
 
@@ -97,7 +98,6 @@ export async function preFlightAuth(options = {}, next) {
   const isValidIdp = (value) =>
     Object.values(IdentityProviders).includes(value);
 
-  const authStore = useAuthStore();
   const notificationStore = useNotificationStore();
 
   // Determine current form or submission idpHint if available
@@ -112,8 +112,7 @@ export async function preFlightAuth(options = {}, next) {
       );
       idpHint = getIdpHint(data.form.idpHints);
     } else {
-      const i18n = useI18n({ useScope: 'global' });
-      throw new Error(i18n.t('trans.permissionUtils.missingFormIdAndSubmssId'));
+      throw new Error(t('trans.permissionUtils.missingFormIdAndSubmssId'));
     }
   } catch (error) {
     // Halt user with error page, use alertNavigate for "friendly" messages.
@@ -123,10 +122,9 @@ export async function preFlightAuth(options = {}, next) {
       // Don't display the 'An error has occurred...' popup notification.
       notificationStore.alertNavigate('error', message);
     } else {
-      const i18n = useI18n({ useScope: 'global' });
       notificationStore.addNotification({
-        text: i18n.t('trans.permissionUtils.loadingFormErrMsg'),
-        consoleError: i18n.t('trans.permissionUtils.loadingForm', {
+        text: t('trans.permissionUtils.loadingFormErrMsg'),
+        consoleError: t('trans.permissionUtils.loadingForm', {
           options: options,
           error: error,
         }),
@@ -137,6 +135,8 @@ export async function preFlightAuth(options = {}, next) {
     return; // Short circuit this function - no point executing further logic
   }
 
+  const authStore = useAuthStore();
+
   if (authStore.authenticated) {
     const userIdp = authStore.identityProvider;
 
@@ -145,8 +145,7 @@ export async function preFlightAuth(options = {}, next) {
     } else if (isValidIdp(idpHint) && userIdp === idpHint) {
       next(); // Permit navigation if idps match
     } else {
-      const i18n = useI18n({ useScope: 'global' });
-      const msg = i18n.t('trans.permissionUtils.idpHintMsg', {
+      const msg = t('trans.permissionUtils.idpHintMsg', {
         idpHint: idpHint.toUpperCase(),
       });
       notificationStore.addNotification({

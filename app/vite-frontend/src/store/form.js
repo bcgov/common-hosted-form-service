@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import i18n from '~/internationalization';
 import {
   apiKeyService,
   formService,
@@ -9,7 +10,8 @@ import {
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
-import { useI18n } from 'vue-i18n';
+
+const { t } = i18n.global;
 
 const genInitialSchedule = () => ({
   enabled: null,
@@ -106,11 +108,10 @@ export const useFormStore = defineStore('form', {
         }));
         this.formList = forms;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.getCurrUserFormsErrMsg'),
-          consoleError: i18n.t('trans.store.form.getCurrUserFormsErrMsg', {
+          text: t('trans.store.form.getCurrUserFormsErrMsg'),
+          consoleError: t('trans.store.form.getCurrUserFormsErrMsg', {
             error: error,
           }),
         });
@@ -120,11 +121,10 @@ export const useFormStore = defineStore('form', {
       try {
         await formService.deleteDraft(formId, draftId);
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.delDraftErrMsg'),
-          consoleError: i18n.t('trans.store.form.delDraftConsErrMsg', {
+          text: t('trans.store.form.delDraftErrMsg'),
+          consoleError: t('trans.store.form.delDraftConsErrMsg', {
             draftId: draftId,
             error: error,
           }),
@@ -137,11 +137,10 @@ export const useFormStore = defineStore('form', {
         const { data } = await formService.listDrafts(formId);
         this.drafts = data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fecthDraftErrMsg'),
-          consoleError: i18n.t('trans.store.form.fecthDraftConsErrMsg', {
+          text: t('trans.store.form.fecthDraftErrMsg'),
+          consoleError: t('trans.store.form.fecthDraftConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -165,11 +164,10 @@ export const useFormStore = defineStore('form', {
 
         this.form = data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fecthFormErrMsg'),
-          consoleError: i18n.t('trans.store.form.fecthFormErrMsg', {
+          text: t('trans.store.form.fecthFormErrMsg'),
+          consoleError: t('trans.store.form.fecthFormErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -185,11 +183,10 @@ export const useFormStore = defineStore('form', {
         );
         this.formFields = data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fetchFormFieldsErrMsg'),
-          consoleError: i18n.t('trans.store.form.fetchFormFieldsConsErrMsg', {
+          text: t('trans.store.form.fetchFormFieldsErrMsg'),
+          consoleError: t('trans.store.form.fetchFormFieldsConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -200,11 +197,10 @@ export const useFormStore = defineStore('form', {
       try {
         await formService.publishDraft(formId, draftId);
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.publishDraftErrMsg'),
-          consoleError: i18n.t('trans.store.form.publishDraftConsErrMsg', {
+          text: t('trans.store.form.publishDraftErrMsg'),
+          consoleError: t('trans.store.form.publishDraftConsErrMsg', {
             draftId: draftId,
             error: error,
           }),
@@ -215,13 +211,12 @@ export const useFormStore = defineStore('form', {
       try {
         await formService.publishVersion(formId, versionId, publish);
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: `An error occurred while ${
             publish ? 'publishing' : 'unpublishing'
           }.`,
-          consoleError: i18n.t('trans.store.form.toggleVersnPublConsErrMsg', {
+          consoleError: t('trans.store.form.toggleVersnPublConsErrMsg', {
             versionId: versionId,
             publish: publish,
             error: error,
@@ -241,11 +236,10 @@ export const useFormStore = defineStore('form', {
           throw new Error('No form found');
         }
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.getUserFormPermErrMsg'),
-          consoleError: i18n.t('trans.store.form.getUserFormPermConsErrMsg', {
+          text: t('trans.store.form.getUserFormPermErrMsg'),
+          consoleError: t('trans.store.form.getUserFormPermConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -264,11 +258,10 @@ export const useFormStore = defineStore('form', {
           throw new Error('No form found');
         }
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.getUserFormRolesErrmsg'),
-          consoleError: i18n.t('trans.store.form.getUserFormRolesConsErrmsg', {
+          text: t('trans.store.form.getUserFormRolesErrmsg'),
+          consoleError: t('trans.store.form.getUserFormRolesConsErrmsg', {
             formId: formId,
             error: error,
           }),
@@ -280,11 +273,10 @@ export const useFormStore = defineStore('form', {
         const response = await userService.getUserFormPreferences(formId);
         this.userFormPreferences = response.data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.getCurrUserFormPrefErrMsg'),
-          consoleError: i18n.t('trans.store.form.getCurrUserFormPrefErrMsg', {
+          text: t('trans.store.form.getCurrUserFormPrefErrMsg'),
+          consoleError: t('trans.store.form.getCurrUserFormPrefErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -299,14 +291,14 @@ export const useFormStore = defineStore('form', {
         );
         this.userFormPreferences = response.data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.updCurrUserFormPrefErrMsg'),
-          consoleError: i18n.t(
-            'trans.store.form.updCurrUserFormPrefConsErrMsg',
-            { formId: formId, preferences: preferences, error: error }
-          ),
+          text: t('trans.store.form.updCurrUserFormPrefErrMsg'),
+          consoleError: t('trans.store.form.updCurrUserFormPrefConsErrMsg', {
+            formId: formId,
+            preferences: preferences,
+            error: error,
+          }),
         });
       }
     },
@@ -314,22 +306,21 @@ export const useFormStore = defineStore('form', {
     // Form
     //
     async deleteCurrentForm() {
-      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         await formService.deleteForm(this.form.id);
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.delCurrformNotiMsg', {
+          text: t('trans.store.form.delCurrformNotiMsg', {
             name: this.form.name,
           }),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.delCurrformNotiMsg', {
+          text: t('trans.store.form.delCurrformNotiMsg', {
             name: this.form.name,
           }),
-          consoleError: i18n.t('trans.store.form.delCurrFormConsErMsg', {
+          consoleError: t('trans.store.form.delCurrFormConsErMsg', {
             id: this.form.id,
             error: error,
           }),
@@ -370,11 +361,10 @@ export const useFormStore = defineStore('form', {
             : false,
         });
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.updateFormErrMsg'),
-          consoleError: i18n.t('trans.store.form.updateFormConsErrMsg', {
+          text: t('trans.store.form.updateFormErrMsg'),
+          consoleError: t('trans.store.form.updateFormConsErrMsg', {
             id: this.form.id,
             error: error,
           }),
@@ -388,18 +378,16 @@ export const useFormStore = defineStore('form', {
       try {
         // Get this submission
         await formService.deleteSubmission(submissionId);
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.deleteSubmissionNotifyMsg'),
+          text: t('trans.store.form.deleteSubmissionNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.deleteSubmissionErrMsg'),
-          consoleError: i18n.t('trans.store.form.deleteSubmissionConsErrMsg', {
+          text: t('trans.store.form.deleteSubmissionErrMsg'),
+          consoleError: t('trans.store.form.deleteSubmissionConsErrMsg', {
             submissionId: submissionId,
             error: error,
           }),
@@ -408,20 +396,19 @@ export const useFormStore = defineStore('form', {
     },
 
     async deleteMultiSubmissions({ formId, submissionIds }) {
-      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         await formService.deleteMultipleSubmissions(submissionIds[0], formId, {
           data: { submissionIds: submissionIds },
         });
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
+          text: t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.deleteSubmissionsErrMsg'),
-          consoleError: i18n.t('trans.store.form.deleteSubmissionsConsErrMsg', {
+          text: t('trans.store.form.deleteSubmissionsErrMsg'),
+          consoleError: t('trans.store.form.deleteSubmissionsConsErrMsg', {
             error: error,
           }),
         });
@@ -435,19 +422,16 @@ export const useFormStore = defineStore('form', {
         await formService.restoreMutipleSubmissions(submissionIds[0], formId, {
           submissionIds: submissionIds,
         });
-        const i18n = useI18n({ useScope: 'global' });
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.restoreSubmissionsNotiMsg'),
+          text: t('trans.store.form.restoreSubmissionsNotiMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.restoreSubmissionsErrMsg'),
-          consoleError: i18n.t(
-            'trans.store.form.restoreSubmissionsConsErrMsg',
-            { error: error }
-          ),
+          text: t('trans.store.form.restoreSubmissionsErrMsg'),
+          consoleError: t('trans.store.form.restoreSubmissionsConsErrMsg', {
+            error: error,
+          }),
         });
       }
     },
@@ -457,19 +441,17 @@ export const useFormStore = defineStore('form', {
       try {
         // Get this submission
         await formService.restoreSubmission(submissionId, { deleted });
-        const i18n = useI18n({ useScope: 'global' });
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
+          text: t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.restoreSubmissionsErrMsg'),
-          consoleError: i18n.t(
-            'trans.store.form.restoreSubmissionsConsErrMsg',
-            { error: error, submissionId: submissionId }
-          ),
+          text: t('trans.store.form.restoreSubmissionsErrMsg'),
+          consoleError: t('trans.store.form.restoreSubmissionsConsErrMsg', {
+            error: error,
+            submissionId: submissionId,
+          }),
         });
       }
     },
@@ -480,11 +462,10 @@ export const useFormStore = defineStore('form', {
         this.formSubmission = response.data.submission;
         this.form = response.data.form;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fetchSubmissnErrMsg'),
-          consoleError: i18n.t('trans.store.form.fetchSubmissnConsErrMsg', {
+          text: t('trans.store.form.fetchSubmissnErrMsg'),
+          consoleError: t('trans.store.form.fetchSubmissnConsErrMsg', {
             submissionId: submissionId,
             error: error,
           }),
@@ -503,14 +484,13 @@ export const useFormStore = defineStore('form', {
         );
         this.formFields = data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fetchFormCSVExptFieldsErrMsg'),
-          consoleError: i18n.t(
-            'trans.store.form.fetchFormCSVExptFieldsErrMsg',
-            { formId: formId, error: error }
-          ),
+          text: t('trans.store.form.fetchFormCSVExptFieldsErrMsg'),
+          consoleError: t('trans.store.form.fetchFormCSVExptFieldsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
         });
       }
     },
@@ -538,11 +518,10 @@ export const useFormStore = defineStore('form', {
             });
         this.submissionList = response.data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fetchSubmissnsErrMsg'),
-          consoleError: i18n.t('trans.store.form.fetchSubmissnsConsErrMsg', {
+          text: t('trans.store.form.fetchSubmissnsErrMsg'),
+          consoleError: t('trans.store.form.fetchSubmissnsConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -561,11 +540,10 @@ export const useFormStore = defineStore('form', {
         const response = await formService.readVersion(formId, versionId);
         this.version = response.data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fetchVersionErrMsg'),
-          consoleError: i18n.t('trans.store.form.fetchVersionConsErrMsg', {
+          text: t('trans.store.form.fetchVersionErrMsg'),
+          consoleError: t('trans.store.form.fetchVersionConsErrMsg', {
             versionId: versionId,
             formId: formId,
             error: error,
@@ -578,19 +556,18 @@ export const useFormStore = defineStore('form', {
     // API Keys
     //
     async deleteApiKey(formId) {
-      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         await apiKeyService.deleteApiKey(formId);
         this.apiKey = null;
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.deleteApiKeyNotifyMsg'),
+          text: t('trans.store.form.deleteApiKeyNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.deleteApiKeyErrMsg'),
-          consoleError: i18n.t('trans.store.form.deleteApiKeyConsErrMsg', {
+          text: t('trans.store.form.deleteApiKeyErrMsg'),
+          consoleError: t('trans.store.form.deleteApiKeyConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -598,13 +575,12 @@ export const useFormStore = defineStore('form', {
       }
     },
     async generateApiKey(formId) {
-      const i18n = useI18n({ useScope: 'global' });
       const notificationStore = useNotificationStore();
       try {
         const { data } = await apiKeyService.generateApiKey(formId);
         this.apiKey = data;
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.generateApiKeyNotifyMsg'),
+          text: t('trans.store.form.generateApiKeyNotifyMsg'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (error) {
@@ -619,11 +595,10 @@ export const useFormStore = defineStore('form', {
         const { data } = await apiKeyService.readApiKey(formId);
         this.apiKey = data;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.generateApiKeyErrMsg'),
-          consoleError: i18n.t('trans.store.form.generateApiKeyConsErrMsg', {
+          text: t('trans.store.form.generateApiKeyErrMsg'),
+          consoleError: t('trans.store.form.generateApiKeyConsErrMsg', {
             formId: formId,
             error: error,
           }),
@@ -645,11 +620,10 @@ export const useFormStore = defineStore('form', {
           this.fcProactiveHelpImageUrl = response.data.url;
         }
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.getFCPHImageUrlErrMsg'),
-          consoleError: i18n.t('trans.store.form.getFCPHImageUrlConsErrMsg', {
+          text: t('trans.store.form.getFCPHImageUrlErrMsg'),
+          consoleError: t('trans.store.form.getFCPHImageUrlConsErrMsg', {
             error: error,
           }),
         });
@@ -670,11 +644,10 @@ export const useFormStore = defineStore('form', {
         this.downloadedFile.data = response.data;
         this.downloadedFile.headers = response.headers;
       } catch (error) {
-        const i18n = useI18n({ useScope: 'global' });
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.store.form.downloadFileErrMsg'),
-          consoleError: i18n.t('trans.store.form.downloadFileConsErrMsg', {
+          text: t('trans.store.form.downloadFileErrMsg'),
+          consoleError: t('trans.store.form.downloadFileConsErrMsg', {
             error: error,
           }),
         });

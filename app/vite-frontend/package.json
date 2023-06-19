@@ -10,6 +10,10 @@
     "prebuild": "node ./component-update.js",
     "build:formio": "node ./component-update.js build",
     "deploy:formio": "node ./component-update.js deploy",
+    "test": "npm run test:unit",
+    "test:unit": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch",
     "lint": "eslint \"src/**/*.{js,vue}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,vue}\"",
     "prettier": "prettier --check \"src/**/*.{js,vue,css,scss}\"",
@@ -36,7 +40,7 @@
     "mitt": "^3.0.0",
     "moment": "^2.29.4",
     "nprogress": "^0.2.0",
-    "pinia": "^2.1.1",
+    "pinia": "^2.1.4",
     "qrcode.vue": "^3.4.0",
     "vue": "^3.2.47",
     "vue-i18n": "^9.2.2",
@@ -48,6 +52,9 @@
   "devDependencies": {
     "@mdi/font": "^7.2.96",
     "@vitejs/plugin-vue": "^4.1.0",
+    "@vitest/coverage-v8": "^0.32.0",
+    "@vue/test-utils": "^2.3.2",
+    "axios-mock-adapter": "^1.21.5",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -58,6 +65,7 @@
     "terser": "^5.17.4",
     "vite": "^4.3.2",
     "vite-plugin-eslint": "^1.8.1",
-    "vite-plugin-vuetify": "^1.0.2"
+    "vite-plugin-vuetify": "^1.0.2",
+    "vitest": "^0.32.0"
   }
 }
