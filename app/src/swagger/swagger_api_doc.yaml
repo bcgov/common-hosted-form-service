@@ -43,6 +43,1243 @@ definition:
             schema:
               $ref: '#/components/schemas/UnprocessableEntityDBError'
     schemas:
+      request:
+        AdminReqProactiveHelpObject:
+          type: object
+          properties:
+            componentName:
+              type: string
+              description: Name of the Form.io component.
+              example: File Upload
+            description:
+              type: string
+              description: Full details about the Form.io component.
+              example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+            externalLink:
+              type: string
+              description: Link to the external documentation for the Form.io component.
+              example: https://help.form.io/userguide/form-building/layout-components#panel
+            groupName:
+              type: string
+              description: Name of the group.
+              example: Basic Layout
+            image:
+              type: string
+              format: binary
+              description: Binary image of the Form.io component.
+              example: ''
+            imageName:
+              type: string
+              description: Name of the image.
+              example: FileUpload.jpg
+            isLinkEnabled:
+              type: boolean
+              description: This hides or shows external link
+              example: true
+            status:
+              type: boolean
+              description: This determines the publish status of the component.
+              example: true
+        FormReqCreateForm:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the form.
+              example: test
+            description:
+              type: string
+              description: Short details about the form.
+              example: ''
+            schema:
+              type: object
+              description: Form schema
+              example:
+                display: form
+                type: form
+                components:
+                  - label: Text Field
+                    labelPosition: top
+                    placeholder: ''
+                    description: ''
+                    tooltip: ''
+                    inputMask: ''
+                    allowMultipleMasks: false
+                    hideLabel: false
+                    showWordCount: false
+                    showCharCount: false
+                    spellcheck: true
+                    disabled: false
+                    multiple: false
+                    case: ''
+                    validate:
+                      isUseForCopy: false
+                      required: false
+                      customMessage: ''
+                      minLength: ''
+                      maxLength: ''
+                      custom: ''
+                      customPrivate: false
+                      strictDateValidation: false
+                      multiple: false
+                      unique: false
+                      pattern: ''
+                    key: simpletextfield
+                    conditional:
+                      show:
+                      when:
+                      eq: ''
+                      json: ''
+                    customConditional: ''
+                    addons: []
+                    type: simpletextfield
+                    input: true
+                    prefix: ''
+                    customClass: ''
+                    suffix: ''
+                    protected: false
+                    unique: false
+                    persistent: true
+                    hidden: false
+                    clearOnHide: true
+                    refreshOn: ''
+                    redrawOn: ''
+                    tableView: false
+                    modalEdit: false
+                    dataGridLabel: false
+                    errorLabel: ''
+                    tabindex: ''
+                    autofocus: false
+                    dbIndex: false
+                    customDefaultValue: ''
+                    calculateValue: ''
+                    calculateServer: false
+                    widget:
+                      type: input
+                    attributes: {}
+                    validateOn: change
+                    overlay:
+                      style: ''
+                      left: ''
+                      top: ''
+                      width: ''
+                      height: ''
+                    allowCalculateOverride: false
+                    encrypted: false
+                    properties: {}
+                    mask: false
+                    inputType: text
+                    inputFormat: plain
+                    displayMask: ''
+                    truncateMultipleSpaces: false
+            identityProviders:
+              type: string
+              description: List of identity providers that can be used to login to the form
+              example:
+                - idir
+                - Bceid
+            enableSubmitterDraft:
+              type: boolean
+              description: Setting this to true will allow submitters to be able to save submissions
+                as drafts
+              example: false
+              default: false
+            enableCopyExistingSubmission:
+              type: boolean
+              description: If enabled, users can copy or duplicate submissions
+              example: false
+              default: false
+            enableStatusUpdates:
+              type: boolean
+              example: true
+              description: Enables or disables form reviewers from updating this form status (i.e.
+                Submitted, Assigned, Completed)
+              default: true
+            showSubmissionConfirmation:
+              type: boolean
+              description: toggle to set if submission confirmation should shown when the form
+                submission is submitted
+              example: true
+            allowSubmitterToUploadFile:
+              type: boolean
+              description: If enabled, Submitters can upload when submitting submissions
+              example: false
+              default: false
+            submissionReceivedEmails:
+              type: array
+              description: List of emails to send notifications to when submission is received
+              example: []
+            reminder_enabled:
+              type: boolean
+              example: true
+              description: A form submission reminder will be sent to users if set to true.
+              default: false
+        FormReqSubmissionExport:
+          type: object
+          properties:
+            format:
+              type: string
+              description: Form submission export format/type. It can either be "csv" or "json"
+              example: csv
+            template:
+              type: string
+              description: 'Chosen CSV format for the submission data exported. Use one of these templates 1) multiRowEmptySpacesCSVExport 2) multiRowBackFilledCSVExport 3) singleRowCSVExport 4) unFormattedCSVExport to export submission to CSV Note: use this parameter only if export format/type is csv'
+              example: multiRowEmptySpacesCSVExport
+              default: multiRowEmptySpacesCSVExport
+            version:
+              type: number
+              description: 'The version number of the form for the submission data exported. Note: use this parameter only if export format/type is csv'
+              example: 2
+            type:
+              type: string
+              example: submissions
+              description: Default value is submissions and should not be changed.
+              default: submissions
+            preference:
+              type: object
+              description: Form submissions export preferences
+              example: { minDate: '2023-05-19T07:00:00Z', maxDate: '2023-06-19T06:59:59Z' }
+        FormReqSubmissionExportWithFields:
+          type: object
+          properties:
+            format:
+              type: string
+              description: Form submission export format/type. It can either be "csv" or "json"
+              example: csv
+            template:
+              type: string
+              description: 'Chosen CSV format for the submission data exported. Use one of these templates 1) multiRowEmptySpacesCSVExport 2) multiRowBackFilledCSVExport 3) singleRowCSVExport 4) unFormattedCSVExport to export submission to CSV Note: use this parameter only if export format/type is csv'
+              example: multiRowEmptySpacesCSVExport
+              default: multiRowEmptySpacesCSVExport
+            version:
+              type: number
+              description: 'The version number of the form for the submission data exported. Note: use this parameter only if export format/type is csv'
+              example: 2
+            type:
+              type: string
+              example: submissions
+              description: Default value is submissions and should be changed.
+              default: submissions
+            preference:
+              type: object
+              description: Form submissions export preferences.
+              example: { minDate: '2023-05-19T07:00:00Z', maxDate: '2023-06-19T06:59:59Z' }
+            fields:
+              type: array
+              description: List of form submission fields to be exported to CSV.
+              example: []
+            emailExport:
+              type: boolean
+              description: This parameter should be set to true if the form submissions are large (e.g. above 500) or the form is big
+              example: false
+      response:
+        AdminsFormGetEx:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: ID of the form
+              name:
+                type: string
+                example: Ministry Survey
+                description: Name of the form
+              description:
+                type: string
+                example: ''
+                description: A summary of the form
+              active:
+                type: boolean
+                example: true
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted
+              label:
+                type: string
+                example: ''
+              createdBy:
+                type: string
+                description: The username of the user that created this form
+                example: 'ADOGE@idir'
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-04T02:46:50.983Z
+              updatedBy:
+                type: string
+                example: 'ADOGE@idir'
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-05-28T01:48:04.363Z
+              showSubmissionConfirmation:
+                type: boolean
+                example: true
+                description: Submission confirmation will be sent to the designated authority email(s) if set to true..
+              submissionReceivedEmails:
+                type: array
+                example: []
+              enableStatusUpdates:
+                type: boolean
+                example: true
+                description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
+              enableSubmitterDraft:
+                type: boolean
+                example: true
+                description: Users can save or edit this form draft if set to true.
+              schedule:
+                type: object
+                example: {}
+              reminder_enabled:
+                type: boolean
+                example: true
+                description: A form submission reminder will be sent to users if set to true.
+              enableCopyExistingSubmission:
+                type: boolean
+                example: true
+                description: Users can copy existing submission if set to true.
+              allowSubmitterToUploadFile:
+                type: boolean
+                example: true
+                description: Users can upload files with their submissions if set to true.
+              identityProviders:
+                type: array
+                example: ['idir', 'Bceid']
+                description: List of identity providers that can be used to access the form.
+              versions:
+                type: array
+                example:
+                  [
+                    id: '33707cbd-7e69-4c66-bd2e-88596896a670',
+                    formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
+                    version: 2,
+                    published: true,
+                    createdBy: 'AIDOWU@idir',
+                    createdAt: '2023-05-18T20:11:41.329Z',
+                    updatedBy: null,
+                    updatedAt: '2023-05-18T20:11:41.241Z'
+                  ]
+                description: List of form versions.
+              snake:
+                type: string
+                example: Ministry Survey
+        AdminReadFormEx:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the form
+              example: c6455376-382c-439d-a811-0381a012d696
+            name:
+              type: string
+              description: Name of the form.
+              example: Ministry Survey
+            description:
+              type: string
+              example: ''
+              description: A summary of the form.
+            active:
+              type: boolean
+              example: true
+              description: It determines if the form is deleted. A value of false means the form is deleted.
+            label:
+              type: string
+              example: ''
+            createdBy:
+              type: string
+              example: ADOGE@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: ADOGE@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+            showSubmissionConfirmation:
+              type: boolean
+              example: true
+              description: Submission confirmation will be sent to the designated authority email(s) if set to true..
+            submissionReceivedEmails:
+              type: array
+              example: []
+            enableStatusUpdates:
+              type: boolean
+              example: true
+              description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
+            enableSubmitterDraft:
+              type: boolean
+              example: true
+              description: Users can save or edit this form draft if set to true.
+            schedule:
+              type: object
+              example: {}
+            reminder_enabled:
+              type: boolean
+              example: true
+              description: A form submission reminder will be sent to users if set to true.
+            enableCopyExistingSubmission:
+              type: boolean
+              example: true
+              description: Users can copy existing submission if set to true.
+            allowSubmitterToUploadFile:
+              type: boolean
+              example: true
+              description: Users can upload files with their submissions if set to true.
+            identityProviders:
+              type: array
+              example: ['idir', 'Bceid']
+              description: List of identity providers that can be used to access the form.
+            versions:
+              type: array
+              example:
+                [
+                  id: '33707cbd-7e69-4c66-bd2e-88596896a670',
+                  formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
+                  version: 2,
+                  published: true,
+                  createdBy: 'AIDOWU@idir',
+                  createdAt: '2023-05-18T20:11:41.329Z',
+                  updatedBy: null,
+                  updatedAt: '2023-05-18T20:11:41.241Z'
+                ]
+              description: List of form versions.
+        AdminReadAPIKeyDetails:
+          type: object
+          properties:
+            id:
+              type: string
+              description: ID of the API key
+              example: 2
+            formId:
+              type: string
+              format: uuid
+              example: 306040aa-c045-46d9-8a5a-78bd6fc7c724
+              description: ID of the form
+            createdBy:
+              type: string
+              example: ADOGE@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: ADOGE@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+        AdminRestoreForm:
+          type: object
+          properties:
+            id:
+              type: string
+              description: ID of the form.
+              example: 2
+            name:
+              type: string
+              example: Ministry Survey
+              description: Name of the form
+            description:
+              type: string
+              example: 'This is a ministry survey form'
+              description: A summary of the form
+            active:
+              type: boolean
+              example: true
+              description: This is used to determine if the form is deleted. A value of false means the form is deleted
+            label:
+              type: string
+              example: ''
+            createdBy:
+              type: string
+              example: ADOGE@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: ADOGE@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+            showSubmissionConfirmation:
+              type: boolean
+              example: true
+              description: Submission confirmation will be sent to the designated authority email(s) if set to true..
+            submissionReceivedEmails:
+              type: array
+              example: []
+            enableStatusUpdates:
+              type: boolean
+              example: true
+              description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
+            enableSubmitterDraft:
+              type: boolean
+              example: true
+              description: Users can save or edit this form draft if set to true.
+            schedule:
+              type: object
+              example: {}
+            reminder_enabled:
+              type: boolean
+              example: true
+              description: A form submission reminder will be sent to users if set to true.
+            enableCopyExistingSubmission:
+              type: boolean
+              example: true
+              description: Users can copy existing submission if set to true.
+            allowSubmitterToUploadFile:
+              type: boolean
+              example: true
+              description: Users can upload files with their submissions if set to true.
+            identityProviders:
+              type: array
+              example: ['idir', 'Bceid']
+              description: List of identity providers that can be used to access the form.
+            versions:
+              type: array
+              example:
+                [
+                  id: '33707cbd-7e69-4c66-bd2e-88596896a670',
+                  formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
+                  version: 2,
+                  published: true,
+                  createdBy: 'AIDOWU@idir',
+                  createdAt: '2023-05-18T20:11:41.329Z',
+                  updatedBy: null,
+                  updatedAt: '2023-05-18T20:11:41.241Z'
+                ]
+              description: List of form versions.
+        AdminGetFormUserRoles:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                format: uuid
+                example: 7cc11a0f-a7c9-4cbe-bd92-a3a22781bc8d
+                description: ID of the User.
+              idpUserId:
+                type: string
+                example: 084F23D7201D4C1B88BB26971264E1F2
+                description: IDP ID of the user.
+              username:
+                type: string
+                example: AODOWI
+                description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id)).
+              email:
+                type: string
+                example: test@gov.bc.ca,
+                description: User registered email from IDP login details (IDIR, Basic BCeID, or Business BCeID).
+              roles:
+                type: array
+                example: ['form_designer', 'form_submitter', 'owner', 'submission_reviewer', 'team_manager']
+                description: List of assigned roles to a user for this form.
+        AdminSetFormUserRoles:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                format: uuid
+                description: ID of the User.
+                example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
+              idpUserId:
+                type: string
+                example: 084F23D7201D4C1B88BB26971264E1F2
+                description: IDP ID of the user.
+              username:
+                type: string
+                example: AODOWI
+                description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id)).
+              fullName:
+                type: string
+                example: George Banner
+                description: User registered fullname.
+              lastName:
+                type: string
+                example: Banner
+                description: User registered lastname.
+              email:
+                type: string
+                example: test@gov.bc.ca
+                description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID).
+              formId:
+                type: string
+                description: ID of the form.
+                format: uuid
+                example: c6455376-382c-439d-a811-0381a012d696
+              formName:
+                type: string
+                example: BC Gov Form
+                description: Name of the form.
+              label:
+                type: string
+                example: ''
+              identityProviders:
+                type: array
+                example: []
+                description: List of identity providers
+              idps:
+                type: array
+                example: []
+                description: List of idps
+              active:
+                type: boolean
+                example: true,
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted.
+              formVerisonId:
+                type: string
+                example: 33707cbd-7e69-4c66-bd2e-88596896a670
+                description: Id of the form version.
+              version:
+                type: number
+                example: 2
+                description: Published version of the form.
+              roles:
+                type: array
+                example: ['owner']
+                description: List of assigned roles to user for this form.
+              permissions:
+                type: array
+                example:
+                  [
+                    'design_create',
+                    'design_delete',
+                    'design_read',
+                    'design_update',
+                    'form_api_create',
+                    'form_api_delete',
+                    'form_api_read',
+                    'form_api_update',
+                    'form_delete',
+                    'form_read',
+                    'form_update',
+                    'submission_create',
+                    'submission_delete',
+                    'submission_read',
+                    'submission_update',
+                    'team_read',
+                    'team_update'
+                  ]
+                description: List of permissions to user for this form.
+              published:
+                type: boolean
+                example: true
+                description: This is used to set the publish status of the form.
+              versionUpdatedAt:
+                type: string
+                format: date-time
+                example: 2023-06-04T02:46:50.983Z
+              formDescription:
+                type: string
+                example: This is a form description
+                description: A summary of the form
+        AdminGetUsers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: ID of the User
+                example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
+              keycloakId:
+                type: string
+                example: 084F23D7201D4C1B88BB26971264E1F2
+                description: ID from the keycloak.
+              idpUserId:
+                type: string
+                example: 084F23D7201D4C1B88BB26971264E1F2
+                description: IDP ID of the user.
+              firstName:
+                type: string
+                example: George
+                description: User registered firstname.
+              username:
+                type: string
+                example: AODOWI
+                description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id)).
+              fullName:
+                type: string
+                example: George Banner
+                description: User registered fullname.
+              lastName:
+                type: string
+                example: Banner
+                description: User registered lastname.
+              email:
+                type: string
+                example: test@gov.bc.ca
+                description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID).
+              idpCode:
+                type: array
+                example: []
+                description: List of idps.
+              createdBy:
+                type: string
+                example: ADOGE@idir
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-04T02:46:50.983Z
+              updatedBy:
+                type: string
+                example: ADOGE@idir
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-05-28T01:48:04.363Z
+        AdminReadUser:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: ID of the User.
+                example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
+              keycloakId:
+                type: string
+                example: 084F23D7201D4C1B88BB26971264E1F2
+                description: ID of the keycloak.
+              idpUserId:
+                type: string
+                example: 084F23D7201D4C1B88BB26971264E1F2
+                description: IDP ID of the user.
+              idpCode:
+                type: string
+                example: idir
+                description: IDP Code.
+        AdminGetProactiveHelpObject:
+          type: object
+          properties:
+            Basic Layout:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: ID of the Form.io component.
+                    example: '3a7efb05-52d4-4538-aedf-53a2c3429c85'
+                  componentName:
+                    type: string
+                    description: Name of the Form.io component
+                    example: File Upload
+                  description:
+                    type: string
+                    description: Full details about the Form.io component.
+                    example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+                  externalLink:
+                    type: string
+                    description: Link to the external documentation for the Form.io component.
+                    example: https://help.form.io/userguide/form-building/layout-components#panel
+                  groupName:
+                    type: string
+                    description: Name of the group
+                    example: Basic Layout
+                  imageName:
+                    type: string
+                    description: name of the image
+                    example: FileUpload.jpg
+                  isLinkEnabled:
+                    type: boolean
+                    description: This hides or shows external link.
+                    example: true
+                  status:
+                    type: boolean
+                    description: It is used to set the publish status of the component.
+                    example: true
+                  Advanced Data:
+                    type: array
+                    example: []
+                  Basic Fields:
+                    type: array
+                    example: []
+                  Advanced Layout:
+                    type: array
+                    example: []
+                  BC Government:
+                    type: array
+                    example: []
+                  Advanced Fields:
+                    type: array
+                    example: []
+        AdminProactiveHelpPublishStatus:
+          type: object
+          properties:
+            Basic Layout:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: ID of the Form.io component.
+                    example: '3a7efb05-52d4-4538-aedf-53a2c3429c85'
+                  componentName:
+                    type: string
+                    description: Name of the Form.io component
+                    example: File Upload
+                  description:
+                    type: string
+                    description: Full details about the Form.io component.
+                    example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+                  externalLink:
+                    type: string
+                    description: Link to the external documentation for the Form.io component.
+                    example: https://help.form.io/userguide/form-building/layout-components#panel
+                  groupName:
+                    type: string
+                    description: Name of the group
+                    example: Basic Layout
+                  imageName:
+                    type: string
+                    description: name of the image
+                    example: FileUpload.jpg
+                  isLinkEnabled:
+                    type: boolean
+                    description: This hides or shows external link.
+                    example: true
+                  status:
+                    type: boolean
+                    description: It is used to set the publish status of the component.
+                    example: true
+                  Advanced Data:
+                    type: array
+                    example: []
+                  Basic Fields:
+                    type: array
+                    example: []
+                  Advanced Layout:
+                    type: array
+                    example: []
+                  BC Government:
+                    type: array
+                    example: []
+                  Advanced Fields:
+                    type: array
+                    example: []
+        AdminProactiveHelpList:
+          type: object
+          properties:
+            Basic Layout:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: ID of the Form.io component.
+                    example: '3a7efb05-52d4-4538-aedf-53a2c3429c85'
+                  componentName:
+                    type: string
+                    description: Name of the Form.io component
+                    example: File Upload
+                  description:
+                    type: string
+                    description: Full details about the Form.io component.
+                    example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+                  externalLink:
+                    type: string
+                    description: Link to the external documentation for the Form.io component.
+                    example: https://help.form.io/userguide/form-building/layout-components#panel
+                  groupName:
+                    type: string
+                    description: Name of the group
+                    example: Basic Layout
+                  imageName:
+                    type: string
+                    description: name of the image
+                    example: FileUpload.jpg
+                  isLinkEnabled:
+                    type: boolean
+                    description: This hides or shows external link.
+                    example: true
+                  status:
+                    type: boolean
+                    description: It is used to set the publish status of the component.
+                    example: true
+                  Advanced Data:
+                    type: array
+                    example: []
+                  Basic Fields:
+                    type: array
+                    example: []
+                  Advanced Layout:
+                    type: array
+                    example: []
+                  BC Government:
+                    type: array
+                    example: []
+                  Advanced Fields:
+                    type: array
+                    example: []
+        FormListForms:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: ID of the form
+              name:
+                type: string
+                example: Ministry Survey
+                description: Name of the form.
+              description:
+                type: string
+                example: This is ministry survey form.
+                description: A summary of the form
+              active:
+                type: boolean
+                example: true
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted
+              label:
+                type: string
+                example: ''
+              createdBy:
+                type: string
+                example: ADOGE@idir
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-04T02:46:50.983Z
+              updatedBy:
+                type: string
+                example: ADOGE@idir
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-05-28T01:48:04.363Z
+              showSubmissionConfirmation:
+                type: boolean
+                example: true
+                description: Submission confirmation will be sent to the designated authority email(s) if set to true..
+              submissionReceivedEmails:
+                type: array
+                example: []
+              enableStatusUpdates:
+                type: boolean
+                example: true
+                description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
+              enableSubmitterDraft:
+                type: boolean
+                example: true
+                description: Users can save or edit this form draft if set to true.
+              schedule:
+                type: object
+                example: {}
+              reminder_enabled:
+                type: boolean
+                example: true
+                description: A form submission reminder will be sent to users if set to true
+              enableCopyExistingSubmission:
+                type: boolean
+                example: true
+                description: Users can copy existing submission if set to true.
+              allowSubmitterToUploadFile:
+                type: boolean
+                example: true
+                description: Users can upload files with their submissions if set to true.
+              identityProviders:
+                type: array
+                example: ['idir', 'Bceid']
+                description: List of identity providers that can be used to acess the form.
+              versions:
+                type: array
+                example:
+                  [
+                    {
+                      id: '33707cbd-7e69-4c66-bd2e-88596896a670',
+                      formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
+                      version: 2,
+                      published: true,
+                      createdBy: 'AIDOWU@idir',
+                      createdAt: '2023-05-18T20:11:41.329Z',
+                      updatedBy: null,
+                      updatedAt: '2023-05-18T20:11:41.241Z'
+                    }
+                  ]
+                description: List of form versions.
+              snake:
+                type: string
+                example: Ministry Survey
+        FormCreateForm:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: ID of the form.
+                example: baf428d5-acae-424a-a6ca-a02e68052107
+              name:
+                type: string
+                description: Name or title of the form
+                example: Ministry Survey Form
+              description:
+                type: string
+                description: short description of the form
+                example: This is the ministry survey form
+              active:
+                type: boolean
+                example: true
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted
+              labels:
+                type: string
+              createdBy:
+                type: string
+                example: Example@idir
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-16T16:32:36.173Z
+              updatedBy:
+                type: string
+                example: null
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-06-16T16:32:36.158Z
+              showSubmissionConfirmation:
+                type: boolean
+                example: true
+                description: Submission confirmation will be sent to the designated authority email(s) if set to true..
+              submissionReceivedEmails:
+                type: array
+                example: []
+              enableStatusUpdates:
+                type: boolean
+                example: true
+                description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
+              enableSubmitterDraft:
+                type: boolean
+                example: true
+                description: Users can save or edit this form draft if set to true.
+              schedule:
+                type: object
+                example: {}
+              reminder_enabled:
+                type: boolean
+                example: true
+                description: A form submission reminder will be sent to users if set to true.
+              enableCopyExistingSubmission:
+                type: boolean
+                example: true
+                description: Users can copy existing submission if set to true.
+              allowSubmitterToUploadFile:
+                type: boolean
+                example: true
+                description: Users can upload files with their submissions if set to true.
+              identityProviders:
+                type: array
+                example: ['idir', 'Bceid']
+                description: List of identity providers that can be used to access the form.
+              versions:
+                type: array
+                description: List of form versions
+                example: []
+              draft:
+                type: object
+                description: Form draft.
+                example:
+                  {
+                    'id': '374bfefe-9115-4993-b4ef-871ecee1e58e',
+                    'formId': 'baf428d5-acae-424a-a6ca-a02e68052107',
+                    'createdBy': 'AIDOWU@idir',
+                    'schema':
+                      {
+                        'display': 'form',
+                        'type': 'form',
+                        'components':
+                          [
+                            {
+                              'label': 'Text Field',
+                              'labelPosition': 'top',
+                              'placeholder': '',
+                              'description': '',
+                              'tooltip': '',
+                              'inputMask': '',
+                              'allowMultipleMasks': false,
+                              'hideLabel': false,
+                              'showWordCount': false,
+                              'showCharCount': false,
+                              'spellcheck': true,
+                              'disabled': false,
+                              'multiple': false,
+                              'case': '',
+                              'validate':
+                                {
+                                  'isUseForCopy': false,
+                                  'required': false,
+                                  'customMessage': '',
+                                  'minLength': '',
+                                  'maxLength': '',
+                                  'custom': '',
+                                  'customPrivate': false,
+                                  'strictDateValidation': false,
+                                  'multiple': false,
+                                  'unique': false,
+                                  'pattern': ''
+                                },
+                              'key': 'simpletextfield',
+                              'conditional': { 'show': null, 'when': null, 'eq': '', 'json': '' },
+                              'customConditional': '',
+                              'addons': [],
+                              'type': 'simpletextfield',
+                              'input': true,
+                              'prefix': '',
+                              'customClass': '',
+                              'suffix': '',
+                              'protected': false,
+                              'unique': false,
+                              'persistent': true,
+                              'hidden': false,
+                              'clearOnHide': true,
+                              'refreshOn': '',
+                              'redrawOn': '',
+                              'tableView': false,
+                              'modalEdit': false,
+                              'dataGridLabel': false,
+                              'errorLabel': '',
+                              'tabindex': '',
+                              'autofocus': false,
+                              'dbIndex': false,
+                              'customDefaultValue': '',
+                              'calculateValue': '',
+                              'calculateServer': false,
+                              'widget': { 'type': 'input' },
+                              'attributes': {},
+                              'validateOn': 'change',
+                              'overlay': { 'style': '', 'left': '', 'top': '', 'width': '', 'height': '' },
+                              'allowCalculateOverride': false,
+                              'encrypted': false,
+                              'properties': {},
+                              'mask': false,
+                              'inputType': 'text',
+                              'inputFormat': 'plain',
+                              'displayMask': '',
+                              'truncateMultipleSpaces': false,
+                              'id': 'elfbvm',
+                              'defaultValue': null
+                            }
+                          ]
+                      }
+                  }
+        FormReadForm:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the form.
+            name:
+              type: string
+              example: Ministry Survey
+              description: Name of the form.
+            description:
+              type: string
+              example: The ministry fr=orm survey
+              description: A summary of the form.
+            active:
+              type: boolean
+              example: true
+              description: This is used to determine if the form is deleted. A value of false means the form is deleted.
+            labels:
+              type: string
+              example: ''
+            createdBy:
+              type: string
+              example: ADOGE@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: ADOGE@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+            showSubmissionConfirmation:
+              type: boolean
+              description: toggle to set if submission confirmation should shown when the form.
+                submission is submitted
+              example: true
+            submissionReceivedEmails:
+              type: array
+              description: List of emails to send notifications to when submission is received.
+              example: []
+            enableStatusUpdates:
+              type: boolean
+              example: true
+              description: Enables or disables form reviewers from updating this form status (i.e.
+                Submitted, Assigned, Completed).
+              default: true
+            enableSubmitterDraft:
+              type: boolean
+              description: Setting this to true will allow submitters to be able to save submissions
+                as drafts
+              example: false
+              default: false
+            schedule:
+              type: object
+              example: {}
+            reminder_enabled:
+              type: boolean
+              example: true
+              description: A form submission reminder will be sent to users if set to true.
+            enableCopyExistingSubmission:
+              type: boolean
+              description: If enabled, users can copy or duplicate submissions.
+              example: false
+            allowSubmitterToUploadFile:
+              type: boolean
+              description: If enabled, Submitters can upload when submitting submissions.
+              example: false
+            identityProviders:
+              type: array
+              example: ['idir', 'Bceid']
+              description: List of identity providers that can be used to login to the form
+            versions:
+              type: array
+              example:
+                [
+                  {
+                    id: '33707cbd-7e69-4c66-bd2e-88596896a670',
+                    formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
+                    version: 2,
+                    published: true,
+                    createdBy: 'AIDOWU@idir',
+                    createdAt: '2023-05-18T20:11:41.329Z',
+                    updatedBy: null,
+                    updatedAt: '2023-05-18T20:11:41.241Z'
+                  }
+                ]
+              description: List of form versions.
+            snake:
+              type: string
+              example: Ministry Survey.
       AssignedSubmissionStatus:
         type: object
         properties:
@@ -125,7 +1362,7 @@ definition:
           - type: object
             properties:
               detail:
-                example: Sorry... we still haven't found what you're looking for :(
+                example: Sorry... the database does not like the data you provided :(
               status:
                 example: 422
               error:

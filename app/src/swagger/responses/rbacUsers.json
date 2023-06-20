@@ -1,0 +1,48 @@
+[
+  {
+    "userId": "2a4770b7-6f0e-4629-a359-bf820295f23a",
+    "idpUserId": "085F22D7201D4C1B88BB26970264E1F3",
+    "username": "AIDOWU",
+    "fullName": "Ayobamii Idowu",
+    "firstName": "Ayobamii",
+    "lastName": "Idowu",
+    "email": "ayobamii.idowu@gov.bc.ca",
+    "formId": "eadb042d-2425-494e-bbc8-0fda92a743ce",
+    "formName": "bbb",
+    "labels": null,
+    "identityProviders": [],
+    "idps": [],
+    "active": true,
+    "formVersionId": null,
+    "version": null,
+    "roles": [
+      "form_designer",
+      "form_submitter",
+      "owner",
+      "submission_reviewer",
+      "team_manager"
+    ],
+    "permissions": [
+      "design_create",
+      "design_delete",
+      "design_read",
+      "design_update",
+      "form_api_create",
+      "form_api_delete",
+      "form_api_read",
+      "form_api_update",
+      "form_delete",
+      "form_read",
+      "form_update",
+      "submission_create",
+      "submission_delete",
+      "submission_read",
+      "submission_update",
+      "team_read",
+      "team_update"
+    ],
+    "published": null,
+    "versionUpdatedAt": null,
+    "formDescription": ""
+  }
+]

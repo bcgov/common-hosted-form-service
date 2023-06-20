@@ -1,0 +1,46 @@
+{
+  "id": "f572d35e-f60c-4fa2-823d-f2ca77d96683",
+  "name": "Formula",
+  "description": "acdasdsad",
+  "active": true,
+  "labels": [],
+  "createdBy": "AIDOWU@idir",
+  "createdAt": "2023-06-16T21:55:13.084Z",
+  "updatedBy": "AIDOWU@idir",
+  "updatedAt": "2023-06-16T23:43:30.599Z",
+  "showSubmissionConfirmation": true,
+  "submissionReceivedEmails": [
+    "ayobamii.idowu@gov.bc.ca"
+  ],
+  "enableStatusUpdates": true,
+  "enableSubmitterDraft": true,
+  "schedule": {},
+  "reminder_enabled": false,
+  "enableCopyExistingSubmission": true,
+  "allowSubmitterToUploadFile": true,
+  "versions": [
+    {
+      "id": "d95d5136-9709-48ca-9a23-e77281ce55f0",
+      "formId": "f572d35e-f60c-4fa2-823d-f2ca77d96683",
+      "version": 3,
+      "published": true,
+      "createdBy": "AIDOWU@idir",
+      "createdAt": "2023-06-16T22:22:30.427Z",
+      "updatedBy": null,
+      "updatedAt": "2023-06-16T22:22:30.424Z"
+    }
+  ],
+  "identityProviders": [
+    {
+      "code": "idir",
+      "display": "IDIR",
+      "active": true,
+      "idp": "idir",
+      "createdBy": "migration-002",
+      "createdAt": "2023-03-29T14:07:46.684Z",
+      "updatedBy": null,
+      "updatedAt": "2023-03-29T14:07:46.684Z"
+    }
+  ],
+  "snake": "formula"
+}

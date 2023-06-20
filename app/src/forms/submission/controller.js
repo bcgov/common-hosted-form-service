@@ -57,6 +57,7 @@ module.exports = {
   readOptions: async (req, res, next) => {
     try {
       const response = await service.readOptions(req.params.formSubmissionId);
+      console.log('-------------->>  ', response);
       res.status(200).json(response);
     } catch (error) {
       next(error);

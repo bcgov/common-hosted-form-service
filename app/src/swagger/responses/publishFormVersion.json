@@ -1,0 +1,25 @@
+{
+  "id": "306040aa-c045-46d9-8a5a-78bd6fc7c644",
+  "name": "Fisheries",
+  "description": "",
+  "active": true,
+  "labels": [],
+  "createdBy": "AIDOWU@idir",
+  "createdAt": "2023-04-21T20:11:26.360Z",
+  "updatedBy": "AIDOWU@idir",
+  "updatedAt": "2023-06-12T06:59:19.718Z",
+  "showSubmissionConfirmation": true,
+  "enableStatusUpdates": true,
+  "enableSubmitterDraft": true,
+  "schedule": {
+    "allowLateSubmissions": false,
+    "expire": false,
+    "message": ""
+  },
+  "reminder_enabled": false,
+  "enableCopyExistingSubmission": false,
+  "allowSubmitterToUploadFile": false,
+  "identityProviders": [],
+  "versions": [],
+  "snake": "fisheries"
+}

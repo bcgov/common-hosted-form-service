@@ -1,0 +1,66 @@
+{
+  "id": "f572d35e-f60c-4fa2-823d-f2ca77d96683",
+  "name": "Formula",
+  "description": "acdasdsad",
+  "active": true,
+  "labels": [],
+  "createdBy": "AIDOWU@idir",
+  "createdAt": "2023-06-16T21:55:13.084Z",
+  "updatedBy": "AIDOWU@idir",
+  "updatedAt": "2023-06-16T23:43:30.599Z",
+  "showSubmissionConfirmation": true,
+  "submissionReceivedEmails": [
+    "ayobamii.idowu@gov.bc.ca"
+  ],
+  "enableStatusUpdates": true,
+  "enableSubmitterDraft": true,
+  "schedule": {},
+  "reminder_enabled": false,
+  "enableCopyExistingSubmission": true,
+  "allowSubmitterToUploadFile": true,
+  "identityProviders": [
+    {
+      "code": "idir",
+      "display": "IDIR",
+      "active": true,
+      "idp": "idir",
+      "createdBy": "migration-002",
+      "createdAt": "2023-03-29T14:07:46.684Z",
+      "updatedBy": null,
+      "updatedAt": "2023-03-29T14:07:46.684Z"
+    }
+  ],
+  "versions": [
+    {
+      "id": "d95d5136-9709-48ca-9a23-e77281ce55f0",
+      "formId": "f572d35e-f60c-4fa2-823d-f2ca77d96683",
+      "version": 3,
+      "published": true,
+      "createdBy": "AIDOWU@idir",
+      "createdAt": "2023-06-16T22:22:30.427Z",
+      "updatedBy": null,
+      "updatedAt": "2023-06-16T22:22:30.424Z"
+    },
+    {
+      "id": "4b31a514-5cdd-4d08-a148-b9bdad63e98e",
+      "formId": "f572d35e-f60c-4fa2-823d-f2ca77d96683",
+      "version": 2,
+      "published": false,
+      "createdBy": "AIDOWU@idir",
+      "createdAt": "2023-06-16T22:19:56.770Z",
+      "updatedBy": null,
+      "updatedAt": "2023-06-16T22:22:30.424Z"
+    },
+    {
+      "id": "f99a1ab4-b635-4a57-89a3-48fac71e7ed0",
+      "formId": "f572d35e-f60c-4fa2-823d-f2ca77d96683",
+      "version": 1,
+      "published": false,
+      "createdBy": "AIDOWU@idir",
+      "createdAt": "2023-06-16T22:17:41.172Z",
+      "updatedBy": null,
+      "updatedAt": "2023-06-16T22:22:30.424Z"
+    }
+  ],
+  "snake": "formula"
+}

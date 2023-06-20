@@ -273,7 +273,8 @@ routes.put('/:formSubmissionId/restore', hasSubmissionPermissions(P.SUBMISSION_D
  *                      example: Test Form
  *                    idpHints:
  *                      type: array
- *                      example: []
+ *                      description: Form access options. Options are "public", "bceid-basic", and "bceid-business"
+ *                      example: ["public"]
  *                    snake:
  *                      type: string
  *                      example: multiple_submission_file_download
@@ -454,7 +455,7 @@ routes.get('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_REA
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  *    '422':
- *      $ref: '#/components/responses/ResourceNotFound'
+ *      $ref: '#/components/responses/ResourceNotFoundError'
  */
 routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
   await controller.addNote(req, res, next);
@@ -621,7 +622,7 @@ routes.post('/:formSubmissionId/status', hasSubmissionPermissions(P.SUBMISSION_U
 
 /**
  * @openapi
- * /submissions/{formSubmissionId}/email:
+ * /submissions/{formSubmissionId}/status:
  *  post:
  *    tags:
  *      - Submissions

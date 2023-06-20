@@ -71,7 +71,7 @@ routes.delete('/preferences', async (req, res, next) => {
  *                    example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
  *                  keycloakId:
  *                    type: string
- *                    example: 084F23D7201D4C1B88BB26971264E1F2
+ *                    example: ea94678c-5f00-42b2-9f56-bd401091fb8a
  *                    description: Id from the keycloak
  *                  idpUserId:
  *                    type: string

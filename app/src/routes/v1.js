@@ -55,6 +55,7 @@ router.get('/docs', (_req, res) => {
 
 var options = {
   explorer: true,
+  layout: 'OperationsLayout',
 };
 
 /** OpenAPI Docs */
@@ -67,9 +68,9 @@ router.get('/api-spec.yaml', (_req, res) => {
 });
 
 /** OpenAPI JSON Spec */
-router.get('docs.json', (_req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
+router.get('/docs.json', (_req, res) => {
+  res.status(200).type('application/yaml').send(yaml.dump(swaggerSpec));
+  // res.setHeader('Content-Type', 'application/json');
 });
 
 /** OpenAPI JSON Spec */
