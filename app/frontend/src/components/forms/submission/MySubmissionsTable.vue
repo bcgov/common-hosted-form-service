@@ -77,11 +77,9 @@
       item-key="title"
       :items="submissionTable"
       :search="search"
-      :server-items-length="submissionListCount"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
-      @update:options="updateTableOptions"
     >
       <template #[`item.lastEdited`]="{ item }">
         {{ item.lastEdited | formatDateLong }}
@@ -160,29 +158,10 @@ export default {
       submissionTable: [],
       loading: true,
       search: '',
-      page: 1,
-      itemsPerPage: 10,
-      sortBy: null,
-      sortDesc: null,
     };
   },
-  watch: {
-    search(newValue, oldValue) {
-      if (
-        newValue.length > 2 ||
-        (oldValue.length > 0 && newValue.length === 0)
-      ) {
-        this.populateSubmissionsTable();
-      }
-    },
-  },
   computed: {
-    ...mapGetters('form', [
-      'form',
-      'submissionList',
-      'submissionListCount',
-      'permissions',
-    ]),
+    ...mapGetters('form', ['form', 'submissionList', 'permissions']),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
       let headers = [
@@ -265,13 +244,6 @@ export default {
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
 
-    updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
-      this.page = page;
-      this.itemsPerPage = itemsPerPage;
-      this.sortBy = sortBy;
-      this.sortDesc = sortDesc;
-      this.populateSubmissionsTable();
-    },
     // Status columns in the table
     getCurrentStatus(record) {
       // Current status is most recent status (top in array, query returns in
@@ -300,15 +272,7 @@ export default {
     async populateSubmissionsTable() {
       this.loading = true;
       // Get the submissions for this form
-      await this.fetchSubmissions({
-        formId: this.formId,
-        userView: true,
-        page: this.page,
-        itemsPerPage: this.itemsPerPage,
-        sortBy: this.sortBy,
-        sortDesc: this.sortDesc,
-        search: this.search,
-      });
+      await this.fetchSubmissions({ formId: this.formId, userView: true });
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
