@@ -172,7 +172,6 @@ export default {
         newValue.length > 2 ||
         (oldValue.length > 0 && newValue.length === 0)
       ) {
-        this.page = 1;
         this.populateSubmissionsTable();
       }
     },

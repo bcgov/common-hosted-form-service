@@ -729,13 +729,13 @@ const getPagingData = async (query, params, count) => {
   const { page, itemsPerPage } = params;
   let { limit, offset } = getPagination(page, itemsPerPage);
   // if user requested to fetch 'All' items
-  if (itemsPerPage === '-1' || !itemsPerPage || itemsPerPage === undefined) {
+  if (itemsPerPage === '-1') {
     limit = count;
     offset = 0;
   }
   const data = await query.clone().limit(limit).offset(offset);
 
-  const currentPage = parseInt(page, 10) || 1;
+  const currentPage = page || 1;
   const totalPages = Math.ceil(count / limit);
   return { totalItems: count, data, totalPages, currentPage };
 };
