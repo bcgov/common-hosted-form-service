@@ -1,4 +1,4 @@
-import { appAxios } from '@/services/interceptors';
+import { appAxios, subAxios } from '@/services/interceptors';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
@@ -541,7 +541,6 @@ export default {
    * @returns {Promise} An axios response
    */
   async sendSubscriptionEndpoint(formData, endpointToken, endpointUrl) {
-    return subAxios(endpointToken).post(endpointUrl, formData);  
+    return subAxios(endpointToken).post(endpointUrl, formData);
   },
-
 };
