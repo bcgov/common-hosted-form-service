@@ -349,7 +349,7 @@ const service = {
       .modify('filterVersion', version)
       .modify('orderVersionDescending')
       .first()
-      .then((row) => row?.schema);
+      .then((row) => row.schema);
   },
   fieldsForCSVExport: async (formId, params = {}) => {
     const form = await service._getForm(formId);
