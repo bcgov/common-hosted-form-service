@@ -1,6 +1,6 @@
 const { Model } = require('objection');
 
-class SubscriptionMetadata extends Model {
+class SubscriptionData extends Model {
   static get tableName() {
     return 'subscriptions_vw';
   }
@@ -21,4 +21,4 @@ class SubscriptionMetadata extends Model {
   }
 }
 
-module.exports = SubscriptionMetadata;
+module.exports = SubscriptionData;
