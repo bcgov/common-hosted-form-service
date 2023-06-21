@@ -71,7 +71,7 @@ export function checkSubmissionView(userForm) {
 function getErrorMessage(options, error) {
   let errorMessage = undefined;
   if (options.formId) {
-    const status = error?.response?.status;
+    const status = error.response.status;
     if (status === 404 || status === 422) {
       errorMessage = i18n.t('trans.permissionUtils.formNotAvailable');
     }

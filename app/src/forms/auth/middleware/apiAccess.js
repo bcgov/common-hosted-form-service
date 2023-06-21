@@ -19,7 +19,7 @@ module.exports = async (req, res, next) => {
       formId = params.formId;
     } else if (params.formSubmissionId && uuidValidate(params.formSubmissionId)) {
       const result = await submissionService.read(params.formSubmissionId);
-      formId = result?.form?.id;
+      formId = result.form.id;
     }
 
     let secret = ''; // Must be initialized as a string
