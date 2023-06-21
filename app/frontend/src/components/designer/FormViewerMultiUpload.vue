@@ -317,6 +317,7 @@ export default {
             submit: true,
           },
         });
+        console.error(this.vForm);
         this.$nextTick(() => {
           this.validate(this.Json[this.index], []);
         });
@@ -333,8 +334,8 @@ export default {
         return;
       }
     },
-    async startValidation() {},
     async validate(element, errors) {
+      await this.delay(500);
       this.formIOValidation(element).then((response) => {
         if (response.error) {
           errors[this.index] = {
@@ -344,17 +345,24 @@ export default {
         }
         delete response.error;
         delete response.data;
+
         this.validationDispatcher(errors);
       });
     },
     async validationDispatcher(errors) {
       /* we need this timer allow to the gargabe colector to have time
        to clean the memory before starting  a new form validation */
-      await this.delay(1000);
-      const check = { shouldContinueValidation: this.index < this.Json.length };
+      await this.delay(500);
+      this.vForm.clearServerErrors();
+      this.vForm.resetValue();
+      const check = {
+        shouldContinueValidation: this.index < this.Json.length,
+      };
       if (check.shouldContinueValidation) {
-        this.index++;
-        this.value = this.percentage(this.index);
+        this.$nextTick(() => {
+          this.index++;
+          this.value = this.percentage(this.index);
+        });
         delete check.shouldContinueValidation;
         this.$nextTick(() => {
           this.validate(this.Json[this.index], errors);
