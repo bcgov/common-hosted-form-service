@@ -531,4 +531,17 @@ export default {
       `${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`
     );
   },
+
+  /**
+   * @function sendSubscriptionEndpoint
+   * Send the submitted for data to the subscribed endpoint
+   * @param {string} endpointToken The token for the endpoint
+   * @param {string} endpointUtl The url for the endpoint
+   * @param {Object} formData An object containing the form details
+   * @returns {Promise} An axios response
+   */
+  async sendSubscriptionEndpoint(formData, endpointToken, endpointUrl) {
+    return subAxios(endpointToken).post(endpointUrl, formData);  
+  },
+
 };

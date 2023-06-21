@@ -34,3 +34,27 @@ export function appAxios(timeout = 10000) {
 
   return instance;
 }
+
+/**
+ * @function subAxios
+ * Returns an Axios instance with auth header for the subscribed endpoint
+ * @param {string} endpointToken The token for the endpoint
+ * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
+ * @returns {object} An axios instance
+ */
+export function subAxios(endpointToken, timeout = 10000) {
+  const axiosOptions = { timeout: timeout };
+  const instance = axios.create(axiosOptions);
+
+  instance.interceptors.request.use(
+    (cfg) => {
+      cfg.headers.Authorization = `Bearer ${endpointToken}`;
+      return Promise.resolve(cfg);
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  return instance;
+}
