@@ -2,6 +2,8 @@ const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 const { getPagingData, validateScheduleObject } = require('../common/utils');
+const { SubscriptionEvent } = require('../common/constants');
+const axios = require('axios');
 
 const {
   FileStorage,
@@ -17,6 +19,7 @@ const {
   FormSubmissionUser,
   IdentityProvider,
   SubmissionMetadata,
+  SubscriptionData,
   FormComponentsProactiveHelp,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
@@ -368,7 +371,7 @@ const service = {
 
       if (!isPublicForm && !currentUser.public) {
         // Provide the submission creator appropriate CRUD permissions if this is a non-public form
-        // we decided that subitter cannot delete or update their own submission unless it's a draft
+        // we decided that submitter cannot delete or update their own submission unless it's a draft
         // We know this is the submission creator when we see the SUBMISSION_CREATE permission
         // These are adjusted at the update point if going from draft to submitted, or when adding
         // team submitters to a draft
@@ -400,6 +403,26 @@ const service = {
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
 
+      // Check if there are endpoints subscribed for form submission event
+      const subscriptionData = await SubscriptionData.query().where('formId', formVersion.formId).where('subscribeEvent', SubscriptionEvent.FORM_SUBMITTED).first();
+      if(subscriptionData) {
+
+          const axiosOptions = { timeout: 10000 };
+          const axiosInstance = axios.create(axiosOptions);
+
+          axiosInstance.interceptors.request.use(
+            (cfg) => {
+              cfg.headers.Authorization = `Bearer ${subscriptionData.endPointToken}`;
+              return Promise.resolve(cfg);
+            },
+            (error) => {
+              return Promise.reject(error);
+            }
+          );
+
+          const response = await axiosInstance.post(subscriptionData.endPointUrl, data);
+      }
+
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.
       // use the schema to determine if there are uploads, fetch the ids from the submission data...
@@ -410,6 +433,7 @@ const service = {
 
       await trx.commit();
       const result = await service.readSubmission(obj.id);
+      result.subscribed = subscriptionData;
       return result;
     } catch (err) {
       if (trx) await trx.rollback();

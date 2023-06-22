@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 
-const { Statuses, SubscriptionEvent } = require('../common/constants');
+const { Statuses } = require('../common/constants');
 const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata, SubscriptionData } = require('../common/models');
 const emailService = require('../email/emailService');
 const formService = require('../form/service');
@@ -71,12 +71,7 @@ const service = {
             await service.changeStatusState(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser, trx);
             // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
             const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
-            emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => {});            
-            // Check if there are endpoints subscribed for form submission event
-            const subscriptionData = await SubscriptionData.query().where('formId', submissionMetaData.formId).where('subscribeEvent', SubscriptionEvent.FORM_SUBMITTED).first();
-            if(subscriptionData) {
-              formService.sendSubscriptionEndpoint(submissionMetaData.FormSubmission, subscriptionData.endPointToken, subscriptionData.endPointUrl);
-            }
+            emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => {});
           }
         }
 
