@@ -5,11 +5,11 @@ import { useAuthStore } from '~/store/auth';
 defineProps({
   admin: {
     type: Boolean,
-    default: false,
+    required: false,
   },
   idp: {
     type: Array,
-    default: () => [],
+    default: undefined,
   },
 });
 
@@ -38,7 +38,7 @@ const contactInfo = computed(() => import.meta.env.VITE_CONTACT);
         <p>{{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}</p>
       </div>
       <div
-        v-else-if="idp && !idp.includes(identityProvider)"
+        v-else-if="idp && idp.length > 0 && !idp.includes(identityProvider)"
         class="text-center"
       >
         <h1 class="my-8">{{ $t('trans.baseSecure.403Forbidden') }}(</h1>
@@ -71,10 +71,11 @@ const contactInfo = computed(() => import.meta.env.VITE_CONTACT);
     <h1 class="my-8">{{ $t('trans.baseSecure.loginInfo') }}</h1>
     <v-btn
       v-if="ready"
+      data-test="login-btn"
       color="primary"
       class="login-btn"
       size="large"
-      @click="login"
+      @click="authStore.login"
     >
       <span>{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>

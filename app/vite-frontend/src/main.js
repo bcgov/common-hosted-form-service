@@ -77,9 +77,9 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 
   const router = getRouter(basePath);
   app.use(router);
+  router.app = app;
 
   app.mount('#app');
-  router.app = app;
 
   NProgress.done();
 }

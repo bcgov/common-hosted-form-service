@@ -24,6 +24,7 @@ const dialog = ref(false);
     <v-hover>
       <template #default="{ isHovering, props }">
         <v-img
+          data-test="v-hover-img"
           v-bind="props"
           :class="`elevation-${isHovering ? 24 : 6}`"
           class="thumbnail"
@@ -36,8 +37,8 @@ const dialog = ref(false);
       </template>
     </v-hover>
 
-    <v-dialog v-model="dialog" width="100vh">
-      <v-card><v-img :alt="alt" :src="src" /></v-card>
+    <v-dialog v-model="dialog" data-test="v-dialog" width="100vh">
+      <v-card><v-img data-test="v-dialog-img" :alt="alt" :src="src" /></v-card>
     </v-dialog>
   </div>
 </template>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useRouter } from 'vue-router';
+import getRouter from '~/router';
 
 /**
  * @function hasRoles
@@ -105,10 +105,10 @@ export const useAuthStore = defineStore('auth', {
           window.location.replace(this.createLoginUrl(options));
         } else {
           // Navigate to internal login page if no idpHint specified
-          const router = useRouter();
+          const router = getRouter();
           router.replace({
             name: 'Login',
-            params: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
+            query: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
           });
         }
       }

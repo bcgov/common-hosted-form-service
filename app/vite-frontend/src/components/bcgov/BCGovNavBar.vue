@@ -32,12 +32,13 @@ const hasPrivileges = computed(
           }}</router-link>
         </li>
         <li v-if="hasPrivileges">
-          <router-link :to="{ name: 'FormCreate' }">{{
+          <router-link data-cy="createNewForm" :to="{ name: 'FormCreate' }">{{
             $t('trans.bCGovNavBar.createNewForm')
           }}</router-link>
         </li>
         <li v-if="hasPrivileges">
           <a
+            data-cy="help"
             href="https://github.com/bcgov/common-hosted-form-service/wiki"
             target="_blank"
             >{{ $t('trans.bCGovNavBar.help') }}</a
@@ -45,6 +46,7 @@ const hasPrivileges = computed(
         </li>
         <li v-if="hasPrivileges">
           <a
+            data-cy="feedback"
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
             >{{ $t('trans.bCGovNavBar.feedback') }}</a
@@ -54,7 +56,7 @@ const hasPrivileges = computed(
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li> -->
         <li v-if="isAdmin">
-          <router-link :to="{ name: 'Admin' }">{{
+          <router-link data-cy="admin" :to="{ name: 'Admin' }">{{
             $t('trans.bCGovNavBar.admin')
           }}</router-link>
         </li>

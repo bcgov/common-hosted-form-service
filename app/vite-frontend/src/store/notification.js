@@ -28,7 +28,9 @@ export const useNotificationStore = defineStore('notification', {
       });
     },
     addNotification(notification) {
-      if (notification.consoleError) console.error(notification.consoleError); // eslint-disable-line no-console
+      if (notification.consoleError) {
+        console.error(notification.consoleError); // eslint-disable-line no-console
+      }
       if (!notification.type)
         notification = { ...notification, ...NotificationTypes.ERROR };
       this.notifications.push({

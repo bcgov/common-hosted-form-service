@@ -427,7 +427,7 @@ export default function getRouter(basePath = '/') {
         path: '/login',
         name: 'Login',
         component: () => import('~/views/Login.vue'),
-        props: createProps,
+        props: true,
         beforeEnter(to, from, next) {
           // Block navigation to login page if already authenticated
           NProgress.done();

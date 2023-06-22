@@ -12,6 +12,7 @@ const formSubmitMode = ref(router?.currentRoute?.value?.meta?.formSubmitMode);
       'gov-footer': true,
       'd-print-none': formSubmitMode,
     }"
+    absolute
   >
     <v-row no-gutters>
       <v-btn id="footer-home" variant="text" href="https://www.gov.bc.ca/">

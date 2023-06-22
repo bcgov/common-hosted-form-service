@@ -9,7 +9,7 @@ const { t } = useI18n({ useScope: 'global' });
 
 const notificationStore = useNotificationStore();
 
-const props = defineProps({
+const properties = defineProps({
   id: {
     type: Number,
     default: 0,
@@ -20,16 +20,16 @@ const props = defineProps({
   },
   text: {
     type: String,
-    default: t('trans.baseFilter.exampleText'),
+    default: '',
   },
   type: {
-    default: t('trans.bcGovAlertBanner.error'),
     type: String,
+    default: '',
   },
 });
 
 const notificationType = computed(() => {
-  switch (props.type) {
+  switch (TYPE.value) {
     case NotificationTypes.ERROR.type:
       return NotificationTypes.ERROR;
     case NotificationTypes.INFO.type:
@@ -43,19 +43,28 @@ const notificationType = computed(() => {
   }
 });
 
+const TYPE = computed(() =>
+  properties.type ? properties.type : t('trans.bcGovAlertBanner.error')
+);
+const TEXT = computed(() =>
+  properties.text
+    ? properties.text.replace(/(<([^>]+)>)/gi, '')
+    : t('trans.bcGovAlertBanner.defaultErrMsg')
+);
+
 const onClose = () => {
-  notificationStore.deleteNotification({ id: props.id });
+  notificationStore.deleteNotification({ id: properties.id });
 };
 </script>
 
 <template>
   <div class="ma-5">
     <v-alert
-      :id="props.id"
+      :id="properties.id"
       :color="notificationType.color"
       :icon="notificationType.icon"
-      :title="props.title"
-      :text="props.text"
+      :title="properties.title"
+      :text="TEXT"
       closable
       @click="onClose"
     >
