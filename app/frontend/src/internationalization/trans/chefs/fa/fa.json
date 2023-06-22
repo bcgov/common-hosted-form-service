@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "آیا مطمئن هستید که می خواهید فرم خود را ارسال کنید؟",
     "submit": "ارسال",
     "wantToSaveDraft": "آیا می خواهید پیش نویس را ذخیره کنید؟",
-    "version": "نسخه: { نسخه }",
+    "version": "{version} :نسخه",
     "formScheduleExpireMessage": "ارسال فرم در دسترس نیست زیرا دوره برنامه ریزی شده ارسال به پایان رسیده است.",
     "getUsersSubmissionsErrMsg": "هنگام واکشی ارسال برای این فرم خطایی روی داد",
     "getUsersSubmissionsConsoleErrMsg": "خطا در بارگیری داده‌های ارسال فرم {submissionId}: {error}",
