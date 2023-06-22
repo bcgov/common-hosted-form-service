@@ -2,7 +2,7 @@ const { Model } = require('objection');
 
 class SubscriptionData extends Model {
   static get tableName() {
-    return 'subscriptions_vw';
+    return 'subscription_vw';
   }
 
   static get modifiers() {
