@@ -403,26 +403,6 @@ const service = {
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
 
-      // Check if there are endpoints subscribed for form submission event
-      const subscriptionData = await SubscriptionData.query().where('formId', formVersion.formId).where('subscribeEvent', SubscriptionEvent.FORM_SUBMITTED).first();
-      if(subscriptionData) {
-
-          const axiosOptions = { timeout: 10000 };
-          const axiosInstance = axios.create(axiosOptions);
-
-          axiosInstance.interceptors.request.use(
-            (cfg) => {
-              cfg.headers.Authorization = `Bearer ${subscriptionData.endPointToken}`;
-              return Promise.resolve(cfg);
-            },
-            (error) => {
-              return Promise.reject(error);
-            }
-          );
-
-          const response = await axiosInstance.post(subscriptionData.endPointUrl, data);
-      }
-
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.
       // use the schema to determine if there are uploads, fetch the ids from the submission data...
@@ -433,6 +413,26 @@ const service = {
 
       await trx.commit();
       const result = await service.readSubmission(obj.id);
+
+      // Check if there are endpoints subscribed for form submission event
+      const subscriptionData = await SubscriptionData.query().where('formId', formVersion.formId).where('subscribeEvent', SubscriptionEvent.FORM_SUBMITTED).first();
+      if (subscriptionData) {
+        const axiosOptions = { timeout: 10000 };
+        const axiosInstance = axios.create(axiosOptions);
+
+        axiosInstance.interceptors.request.use(
+          (cfg) => {
+            cfg.headers.Authorization = `Bearer ${subscriptionData.endPointToken}`;
+            return Promise.resolve(cfg);
+          },
+          (error) => {
+            return Promise.reject(error);
+          }
+        );
+
+        const response = await axiosInstance.post(subscriptionData.endPointUrl, data);
+        result.end_response = response;
+      }
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
