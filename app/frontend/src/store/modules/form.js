@@ -76,7 +76,6 @@ export default {
     permissions: [],
     roles: [],
     submissionList: [],
-    submissionListCount: 0,
     submissionUsers: [],
     userFormPreferences: {},
     version: {},
@@ -100,7 +99,6 @@ export default {
     permissions: (state) => state.permissions,
     roles: (state) => state.roles,
     submissionList: (state) => state.submissionList,
-    submissionListCount: (state) => state.submissionListCount,
     submissionUsers: (state) => state.submissionUsers,
     userFormPreferences: (state) => state.userFormPreferences,
     fcNamesProactiveHelpList: (state) => state.fcNamesProactiveHelpList, // Form Components Proactive Help Group Object
@@ -145,9 +143,6 @@ export default {
     },
     SET_SUBMISSIONLIST(state, submissions) {
       state.submissionList = submissions;
-    },
-    SET_SUBMISSIONLIST_COUNT(state, count) {
-      state.submissionListCount = count;
     },
     SET_SUBMISSIONUSERS(state, users) {
       state.submissionUsers = users;
@@ -697,18 +692,7 @@ export default {
     },
     async fetchSubmissions(
       { commit, dispatch, state },
-      {
-        formId,
-        userView,
-        deletedOnly = false,
-        createdBy = '',
-        createdAt,
-        page,
-        itemsPerPage,
-        sortBy,
-        sortDesc,
-        search,
-      }
+      { formId, userView, deletedOnly = false, createdBy = '', createdAt }
     ) {
       try {
         commit('SET_SUBMISSIONLIST', []);
@@ -718,27 +702,14 @@ export default {
             ? state.userFormPreferences.preferences.columns
             : undefined;
         const response = userView
-          ? await rbacService.getUserSubmissions({
-              formId: formId,
-              page,
-              itemsPerPage,
-              sortBy,
-              sortDesc,
-              search,
-            })
+          ? await rbacService.getUserSubmissions({ formId: formId })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
               fields: fields,
               createdBy: createdBy,
               createdAt: createdAt,
-              page,
-              itemsPerPage,
-              sortBy,
-              sortDesc,
-              search,
             });
-        commit('SET_SUBMISSIONLIST', response.data.data);
-        commit('SET_SUBMISSIONLIST_COUNT', response.data.totalItems);
+        commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
         dispatch(
           'notifications/addNotification',
