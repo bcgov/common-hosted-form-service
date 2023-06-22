@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "Sind Sie sicher, dass Sie Ihr Formular absenden möchten?",
     "submit": "Einreichen",
     "wantToSaveDraft": "Möchten Sie den Entwurf speichern?",
-    "version": "Version: {Version}",
+    "version": "Ausführung: {version}",
     "formScheduleExpireMessage": "Die Einreichung des Formulars ist nicht möglich, da die geplante Einreichungsfrist abgelaufen ist.",
     "getUsersSubmissionsErrMsg": "Beim Abrufen der Übermittlung für dieses Formular ist ein Fehler aufgetreten",
     "getUsersSubmissionsConsoleErrMsg": "Fehler beim Laden der Formularübermittlungsdaten {submissionId}: {error}",

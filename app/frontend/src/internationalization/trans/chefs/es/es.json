@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "¿Está seguro de que desea enviar su formulario?",
     "submit": "Entregar",
     "wantToSaveDraft": "¿Quieres guardar el borrador?",
-    "version": "Versión: { versión }",
+    "version": "Versión: {version}",
     "formScheduleExpireMessage": "El envío de formularios no está disponible porque el período de envío programado ha expirado.",
     "getUsersSubmissionsErrMsg": "Se produjo un error al obtener el envío de este formulario",
     "getUsersSubmissionsConsoleErrMsg": "Error al cargar los datos de envío del formulario {submissionId}: {error}",
