@@ -57,7 +57,7 @@ function customDialog() {
   >
     <v-card>
       <div>
-        <div v-f="showCloseButton">
+        <div v-if="showCloseButton">
           <v-spacer />
           <v-icon
             color="primary"
@@ -95,6 +95,7 @@ function customDialog() {
         </div>
         <div v-else-if="type === 'CONTINUE'">
           <v-btn
+            data-test="continue-btn-continue"
             class="mb-5 mr-5"
             color="primary"
             variant="flat"
@@ -104,7 +105,12 @@ function customDialog() {
               <span>{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
-          <v-btn class="mb-5" variant="outlined" @click="closeDialog">
+          <v-btn
+            data-test="continue-btn-cancel"
+            class="mb-5"
+            variant="outlined"
+            @click="closeDialog"
+          >
             <slot name="button-text-cancel">
               <span>{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>

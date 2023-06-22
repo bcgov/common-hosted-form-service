@@ -4,12 +4,10 @@ import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
 describe('notifications actions', () => {
-  setActivePinia(createPinia());
-  const mockStore = useNotificationStore();
   const mockConsoleError = vi.spyOn(console, 'error');
 
   beforeEach(() => {
-    mockStore.$reset();
+    setActivePinia(createPinia());
     mockConsoleError.mockReset();
   });
 
@@ -18,6 +16,7 @@ describe('notifications actions', () => {
   });
 
   it('addNotification should add notification', () => {
+    const mockStore = useNotificationStore();
     const obj = {
       message: 'foo',
       consoleError: 'bar',
@@ -38,6 +37,7 @@ describe('notifications actions', () => {
   });
 
   it('addNotification as warning should add notification', () => {
+    const mockStore = useNotificationStore();
     const obj = {
       message: 'foo',
       consoleError: 'bar',
@@ -60,6 +60,7 @@ describe('notifications actions', () => {
   });
 
   it('addNotification without consoleError should add notification', () => {
+    const mockStore = useNotificationStore();
     const obj = {
       message: 'foo',
     };
@@ -79,6 +80,7 @@ describe('notifications actions', () => {
   });
 
   it('deleteNotification should commit to DELETE', () => {
+    const mockStore = useNotificationStore();
     const obj = {
       id: 1,
     };

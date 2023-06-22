@@ -82,7 +82,7 @@ function downloadQr() {
             <template #append>
               <BaseCopyToClipboard
                 class="mt-n1"
-                :copy-text="formLink"
+                :text-to-copy="formLink"
                 :tooltip-text="$t('trans.shareForm.copyURLToClipboard')"
               />
               <v-tooltip location="bottom">

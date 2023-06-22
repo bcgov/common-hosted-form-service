@@ -1,22 +1,15 @@
 import { setActivePinia, createPinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createApp } from 'vue';
-import { useRouter } from 'vue-router';
+import getRouter from '~/router';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 
-vi.mock('vue-router');
-
 describe('auth actions', () => {
-  useRouter.mockReturnValue({
-    replace: vi.fn(),
-  });
-  const replaceSpy = vi.spyOn(window.location, 'replace');
-  const app = createApp({});
-  const pinia = createPinia();
-  app.use(pinia);
-  setActivePinia(pinia);
+  let router = getRouter();
+  const replaceSpy = vi.spyOn(router, 'replace');
+  const windowReplaceSpy = vi.spyOn(window.location, 'replace');
+  setActivePinia(createPinia());
   const mockStore = useAuthStore();
   const formStore = useFormStore();
 
@@ -29,14 +22,15 @@ describe('auth actions', () => {
         createLogoutUrl: vi.fn(() => 'about:blank'),
       };
       replaceSpy.mockReset();
-      useRouter().replace.mockReset();
+      windowReplaceSpy.mockReset();
+      router.replace.mockReset();
     });
 
     it('should do nothing if keycloak is not ready', () => {
       mockStore.ready = false;
       mockStore.login();
 
-      expect(replaceSpy).toHaveBeenCalledTimes(0);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(0);
     });
 
     it('should update redirectUri if not defined', () => {
@@ -45,7 +39,7 @@ describe('auth actions', () => {
 
       mockStore.login('test');
 
-      expect(replaceSpy).toHaveBeenCalledTimes(1);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
       expect(mockStore.redirectUri).toEqual('about:blank');
     });
 
@@ -55,7 +49,7 @@ describe('auth actions', () => {
 
       mockStore.login('test');
 
-      expect(replaceSpy).toHaveBeenCalledTimes(1);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
       expect(mockStore.redirectUri).toEqual('value');
     });
 
@@ -65,20 +59,20 @@ describe('auth actions', () => {
 
       mockStore.login('test');
 
-      expect(replaceSpy).toHaveBeenCalledTimes(1);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should navigate with vuex store idpHint', () => {
+    it('should navigate with pinia store idpHint', () => {
       mockStore.ready = true;
       mockStore.redirectUri = undefined;
       formStore.form = { idps: ['test'] };
 
       mockStore.login();
 
-      expect(useRouter().replace).toHaveBeenCalledTimes(1);
-      expect(useRouter().replace).toHaveBeenCalledWith({
+      expect(replaceSpy).toHaveBeenCalledTimes(1);
+      expect(replaceSpy).toHaveBeenCalledWith({
         name: 'Login',
-        params: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
+        query: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
       });
     });
 
@@ -103,21 +97,21 @@ describe('auth actions', () => {
         createLoginUrl: vi.fn(() => 'about:blank'),
         createLogoutUrl: vi.fn(() => 'about:blank'),
       };
-      useRouter().replace.mockReset();
+      windowReplaceSpy.mockReset();
     });
 
     it('should do nothing if keycloak is not ready', () => {
       mockStore.ready = false;
       mockStore.logout();
 
-      expect(replaceSpy).toHaveBeenCalledTimes(0);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(0);
     });
 
     it('should trigger navigation action if keycloak is ready', () => {
       mockStore.ready = true;
       mockStore.logout();
 
-      expect(replaceSpy).toHaveBeenCalledTimes(1);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

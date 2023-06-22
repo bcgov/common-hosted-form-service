@@ -28,18 +28,22 @@ notificationStore.$onAction(({ name, _store, args, after, onError }) => {
     console.error(error); // eslint-disable-line no-console
   });
 });
+
+function alertClosed() {
+  notificationStore.deleteNotification(props.notification);
+}
 </script>
 
 <template>
   <v-alert
     :id="notification.id"
-    :class="'target-notification ' + notification.class"
+    :class="'target-notification ' + notification.type"
     :icon="notification.icon"
     prominent
-    dismissable
+    closable
     :title="notification.title"
     :text="notification.text"
-    @update:modelValue="alertClosed"
+    @update:model-value="alertClosed"
   ></v-alert>
 </template>
 

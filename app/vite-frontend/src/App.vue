@@ -6,17 +6,17 @@ import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
 </script>
 
 <template>
-  <v-app>
-    <BaseNotificationContainer />
-    <BCGovHeader />
-    <BCGovNavBar />
+  <v-layout ref="app">
     <v-main>
-      <router-view v-slot="{ Component }">
+      <BaseNotificationContainer />
+      <BCGovHeader />
+      <BCGovNavBar />
+      <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">
-          <component :is="Component"></component>
+          <component :is="Component" />
         </transition>
-      </router-view>
+      </RouterView>
+      <BCGovFooter />
     </v-main>
-    <BCGovFooter />
-  </v-app>
+  </v-layout>
 </template>

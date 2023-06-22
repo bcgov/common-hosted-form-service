@@ -1,10 +1,11 @@
 <script setup>
-import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
+import { i18n } from '~/internationalization';
 
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t } = i18n;
 
 const notificationStore = useNotificationStore();
 
@@ -17,32 +18,43 @@ const properties = defineProps({
     type: Boolean,
     default: false,
   },
-  copyText: {
+  textToCopy: {
     required: true,
     type: String,
   },
   snackBarText: {
     type: String,
-    default: t('trans.baseCopyToClipboard.linkToClipboard'),
+    default: '',
   },
   tooltipText: {
     type: String,
-    default: t('trans.baseCopyToClipboard.copyToClipboard'),
+    default: '',
   },
 });
 
-const emits = defineEmits(['copied']);
+const SNACKBAR_TEXT = computed(() =>
+  properties.snackBarText.value
+    ? properties.snackBarText.value
+    : t('trans.baseCopyToClipboard.linkToClipboard')
+);
 
-function clipboardSuccessHandler() {
-  emits('copied');
+const TOOLTIP_TEXT = computed(() =>
+  properties.tooltipText.value
+    ? properties.tooltipText.value
+    : t('trans.baseCopyToClipboard.copyToClipboard')
+);
+
+function onCopy() {
   notificationStore.addNotification({
-    text: properties.snackBarText,
+    text: SNACKBAR_TEXT.value,
     ...NotificationTypes.INFO,
   });
 }
-function clipboardErrorHandler() {
+
+function onError(e) {
   notificationStore.addNotification({
     text: t('trans.baseCopyToClipboard.errCopyToClipboard'),
+    consoleError: e,
   });
 }
 </script>
@@ -52,9 +64,9 @@ function clipboardErrorHandler() {
     <v-tooltip location="bottom">
       <template #activator="{ props }">
         <v-btn
-          v-clipboard:copy="copyText"
-          v-clipboard:success="clipboardSuccessHandler"
-          v-clipboard:error="clipboardErrorHandler"
+          v-clipboard:copy="textToCopy"
+          v-clipboard:success="onCopy"
+          v-clipboard:error="onError"
           color="primary"
           :disabled="disabled"
           icon
@@ -65,7 +77,7 @@ function clipboardErrorHandler() {
           <span v-if="buttonText">{{ buttonText }}</span>
         </v-btn>
       </template>
-      <span>{{ tooltipText }}</span>
+      <span>{{ TOOLTIP_TEXT }}</span>
     </v-tooltip>
   </span>
 </template>

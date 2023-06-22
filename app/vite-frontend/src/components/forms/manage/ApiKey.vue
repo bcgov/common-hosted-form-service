@@ -133,7 +133,7 @@ if (canGenerateKey.value) {
           <BaseCopyToClipboard
             :disabled="!canReadSecret || !showSecret"
             class="ml-2"
-            :copy-text="secret"
+            :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
             :tooltip-text="$t('trans.apiKey.cSTC')"
           />

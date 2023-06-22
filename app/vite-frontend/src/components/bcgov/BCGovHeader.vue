@@ -55,8 +55,8 @@ const appTitle = ref(
         {{ appTitle }}
       </h1>
       <v-spacer />
-      <BaseAuthButton />
-      <BaseInternationalization />
+      <BaseAuthButton data-test="base-auth-btn" />
+      <BaseInternationalization data-test="base-internationalization" />
     </v-toolbar>
   </header>
 </template>

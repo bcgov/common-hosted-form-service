@@ -52,7 +52,7 @@ getUser();
         <h4>
           {{ $t('trans.developer.JWTContents') }}
           <BaseCopyToClipboard
-            :copy-text="JSON.stringify(tokenParsed)"
+            :text-tp-copy="JSON.stringify(tokenParsed)"
             :snack-bar-text="$t('trans.developer.JWTContentsSBTxt')"
             :tooltip-text="$t('trans.developer.JWTContentsTTTxt')"
           />
@@ -61,7 +61,7 @@ getUser();
         <h4>
           {{ $t('trans.developer.JWTToken') }}
           <BaseCopyToClipboard
-            :copy-text="token"
+            :text-to-copy="token"
             :snack-bar-text="$t('trans.developer.JWTTokenSBTxt')"
             :tooltip-text="$t('trans.developer.JWTTokenTTTxt')"
           />
@@ -74,7 +74,7 @@ getUser();
         <h4>
           /rbac/current
           <BaseCopyToClipboard
-            :copy-text="JSON.stringify(apiRes)"
+            :text-to-copy="JSON.stringify(apiRes)"
             :snack-bar-text="$t('trans.developer.RBACSBTxt')"
             :tooltip-text="$t('trans.developer.RBACTTTxt')"
           />
