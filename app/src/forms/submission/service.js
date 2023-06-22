@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 
 const { Statuses } = require('../common/constants');
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata, SubscriptionData } = require('../common/models');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 const emailService = require('../email/emailService');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
