@@ -101,13 +101,12 @@
       :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
-      :server-items-length="submissionListCount"
+      :search="search"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
-      @update:options="updateTableOptions"
     >
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
@@ -328,22 +327,7 @@ export default {
       singleSubmissionRestore: false,
       deleteItem: {},
       switchSubmissionView: false,
-      page: 1,
-      itemsPerPage: 10,
-      sortBy: null,
-      sortDesc: null,
     };
-  },
-  watch: {
-    search(newValue, oldValue) {
-      if (
-        newValue.length > 2 ||
-        (oldValue.length > 0 && newValue.length === 0)
-      ) {
-        this.page = 1;
-        this.populateSubmissionsTable();
-      }
-    },
   },
   computed: {
     multiDeleteMessage() {
@@ -366,7 +350,6 @@ export default {
       'formFields',
       'permissions',
       'submissionList',
-      'submissionListCount',
       'userFormPreferences',
       'roles',
       'deletedSubmissions',
@@ -450,7 +433,6 @@ export default {
             text: this.$t('trans.submissionsTable.lateSubmission'),
             align: 'start',
             value: 'lateEntry',
-            sortable: false,
           },
         ];
       }
@@ -465,7 +447,6 @@ export default {
               : col,
           align: 'end',
           value: col,
-          sortable: false,
         });
       });
 
@@ -603,13 +584,6 @@ export default {
     ]),
     ...mapActions('notifications', ['addNotification']),
 
-    updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
-      this.page = page;
-      this.itemsPerPage = itemsPerPage;
-      this.sortBy = sortBy;
-      this.sortDesc = sortDesc;
-      this.populateSubmissionsTable();
-    },
     async delSub() {
       this.singleSubmissionDelete
         ? this.deleteSingleSubs()
@@ -644,12 +618,7 @@ export default {
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        const criteria = {
-          page: this.page,
-          itemsPerPage: this.itemsPerPage,
-          sortBy: this.sortBy,
-          sortDesc: this.sortDesc,
-          search: this.search,
+        let criteria = {
           formId: this.formId,
           createdAt: Object.values({
             minDate:
@@ -767,8 +736,7 @@ export default {
         columns: [],
       };
       data.forEach((d) => {
-        if (this.formFields.includes(d.value))
-          preferences.columns.push(d.value);
+        preferences.columns.push(d.value);
       });
 
       await this.updateFormPreferencesForCurrentUser({
