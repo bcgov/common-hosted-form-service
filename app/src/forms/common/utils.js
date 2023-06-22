@@ -2,7 +2,6 @@ const falsey = require('falsey');
 const moment = require('moment');
 const clone = require('lodash/clone');
 const _ = require('lodash');
-const { PAGE_SIZE } = require('./constants');
 const setupMount = (type, app, routes, dataErrors) => {
   const p = `/${type}`;
   app.use(p, routes);
@@ -718,39 +717,6 @@ const isClosingMessageValid = (schedule) => {
   return true;
 };
 
-const getPagination = (page, size) => {
-  const limit = size || PAGE_SIZE;
-  const offset = page ? (page - 1) * limit : 0;
-
-  return { limit, offset };
-};
-
-const getPagingData = async (query, params, count) => {
-  const { page, itemsPerPage } = params;
-  let { limit, offset } = getPagination(page, itemsPerPage);
-  // if user requested to fetch 'All' items
-  if (itemsPerPage === '-1' || !itemsPerPage || itemsPerPage === undefined) {
-    limit = count;
-    offset = 0;
-  }
-  const data = await query.clone().limit(limit).offset(offset);
-
-  const currentPage = parseInt(page, 10) || 1;
-  const totalPages = Math.ceil(count / limit);
-  return { totalItems: count, data, totalPages, currentPage };
-};
-
-const getSortBy = (sortBy) => {
-  if (sortBy === 'submittedDate' || sortBy === 'date') {
-    return 'createdAt';
-  } else if (sortBy === 'status') {
-    return 'formSubmissionStatusCode';
-  } else if (sortBy === 'submitter') {
-    return 'createdBy';
-  }
-  return 'confirmationId';
-};
-
 module.exports = {
   falsey,
   setupMount,
@@ -767,7 +733,4 @@ module.exports = {
   submissionHeaders,
   encodeURI,
   validateScheduleObject,
-  getPagination,
-  getPagingData,
-  getSortBy,
 };

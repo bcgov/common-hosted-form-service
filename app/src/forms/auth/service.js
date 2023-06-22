@@ -115,6 +115,7 @@ const service = {
 
     // if this user does not exists, add...
     let user = await User.query().first().where('keycloakId', obj.keycloakId);
+
     if (!user) {
       // add to the system.
       user = await service.createUser(obj);
