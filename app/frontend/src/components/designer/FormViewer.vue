@@ -247,6 +247,7 @@ export default {
       saveDraftState: 0,
       formDataEntered: false,
       isLoading: true,
+      showModal: false,
     };
   },
   computed: {
@@ -344,6 +345,13 @@ export default {
         const response = await formService.getSubmission(this.submissionId);
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
+        this.showModal =
+          this.submission.data.submit ||
+          this.submission.data.state == 'submitted' ||
+          !this.submissionRecord.draft ||
+          this.readOnly
+            ? false
+            : true;
         this.form = response.data.form;
         if (!this.isDuplicate) {
           //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
@@ -843,7 +851,7 @@ export default {
     },
     showdoYouWantToSaveTheDraftModalForSwitch() {
       this.saveDraftState = 1;
-      if (this.formDataEntered) {
+      if (this.formDataEntered && this.showModal) {
         this.doYouWantToSaveTheDraft = true;
       } else {
         this.leaveThisPage();
@@ -852,7 +860,10 @@ export default {
     showdoYouWantToSaveTheDraftModal() {
       if (!this.bulkFile) {
         this.saveDraftState = 0;
-        if (this.submissionId == undefined || this.formDataEntered)
+        if (
+          (this.submissionId == undefined || this.formDataEntered) &&
+          this.showModal
+        )
           this.doYouWantToSaveTheDraft = true;
         else this.leaveThisPage();
       } else {
@@ -924,6 +935,7 @@ export default {
     } else if (this.submissionId && !this.isDuplicate) {
       await this.getFormData();
     } else {
+      this.showModal = true;
       await this.getFormSchema();
     }
     window.addEventListener('beforeunload', this.beforeWindowUnload);

@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "您確定要提交表格嗎？",
     "submit": "提交",
     "wantToSaveDraft": "您要保存草稿嗎？",
-    "version": "版本：{版本}",
+    "version": "版本：{version}",
     "formScheduleExpireMessage": "由於預定的提交期限已過，無法提交表單。",
     "getUsersSubmissionsErrMsg": "獲取此表單的提交時出錯",
     "getUsersSubmissionsConsoleErrMsg": "加載表單提交數據 {submissionId} 時出錯：{error}",

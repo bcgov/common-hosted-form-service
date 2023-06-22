@@ -1,5 +1,4 @@
 const { Model } = require('objection');
-const { getSortBy } = require('../../utils');
 
 class SubmissionMetadata extends Model {
   static get tableName() {
@@ -53,16 +52,8 @@ class SubmissionMetadata extends Model {
           query.where('version', value);
         }
       },
-      filterSearch(query, value) {
-        if (value) {
-          query.where('confirmationId', 'ilike', `%${value}%`).orWhere('createdBy', 'ilike', `%${value}%`).orWhere('formSubmissionStatusCode', 'ilike', `%${value}%`);
-        }
-      },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
-      },
-      userOrder(query, sortBy, sortDesc) {
-        query.orderBy(getSortBy(sortBy[0]), sortDesc[0] === 'true' ? 'DESC' : 'ASC');
       },
       filterCreatedAt(query, minDate, maxDate) {
         if (minDate && maxDate) {
