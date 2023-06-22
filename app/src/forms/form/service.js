@@ -403,17 +403,6 @@ const service = {
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
 
-      // does this submission contain any file uploads?
-      // if so, we need to update the file storage records.
-      // use the schema to determine if there are uploads, fetch the ids from the submission data...
-      const fileIds = service._findFileIds(formVersion.schema, data);
-      for (const fileId of fileIds) {
-        await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: obj.id, updatedBy: currentUser.usernameIdp });
-      }
-
-      await trx.commit();
-      const result = await service.readSubmission(obj.id);
-
       // Check if there are endpoints subscribed for form submission event
       const subscriptionData = await SubscriptionData.query().where('formId', formVersion.formId).where('subscribeEvent', SubscriptionEvent.FORM_SUBMITTED).first();
       if (subscriptionData) {
@@ -430,9 +419,20 @@ const service = {
           }
         );
 
-        const response = await axiosInstance.post(subscriptionData.endPointUrl, data);
-        result.end_response = response;
+        axiosInstance.post(subscriptionData.endPointUrl, data);
       }
+
+      // does this submission contain any file uploads?
+      // if so, we need to update the file storage records.
+      // use the schema to determine if there are uploads, fetch the ids from the submission data...
+      const fileIds = service._findFileIds(formVersion.schema, data);
+      for (const fileId of fileIds) {
+        await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: obj.id, updatedBy: currentUser.usernameIdp });
+      }
+
+      await trx.commit();
+      const result = await service.readSubmission(obj.id);
+
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
