@@ -354,6 +354,7 @@ export default {
       await this.delay(500);
       this.vForm.clearServerErrors();
       this.vForm.resetValue();
+      this.vForm.clear();
       const check = {
         shouldContinueValidation: this.index < this.Json.length,
       };
@@ -403,6 +404,7 @@ export default {
     endValidation(errors) {
       this.progress = false;
       this.globalError = errors;
+      this.vForm.destroy();
       if (this.globalError.length == 0) {
         this.$emit('save-bulk-data', this.Json);
       } else {
