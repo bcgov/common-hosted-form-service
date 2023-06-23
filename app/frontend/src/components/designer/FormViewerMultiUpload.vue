@@ -405,6 +405,7 @@ export default {
       this.progress = false;
       this.globalError = errors;
       this.vForm.destroy();
+      this.vForm = null;
       if (this.globalError.length == 0) {
         this.$emit('save-bulk-data', this.Json);
       } else {
