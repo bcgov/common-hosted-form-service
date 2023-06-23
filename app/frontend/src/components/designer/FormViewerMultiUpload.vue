@@ -345,7 +345,9 @@ export default {
         }
         delete response.error;
         delete response.data;
-
+        this.vForm.setSubmission({
+          data: undefined,
+        });
         this.validationDispatcher(errors);
       });
     },
