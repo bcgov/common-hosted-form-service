@@ -315,7 +315,6 @@ export default {
             submit: true,
           },
         });
-        console.error(this.vForm);
         this.$nextTick(() => {
           this.validate(this.Json[this.index], []);
         });
