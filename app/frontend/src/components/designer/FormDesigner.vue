@@ -3,7 +3,7 @@
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>Form Design</h1>
+        <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
       </v-col>
       <!-- buttons -->
       <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
@@ -20,7 +20,7 @@
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
-          <span>Export Design</span>
+          <span>{{ $t('trans.formDesigner.exportDesign') }}</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
@@ -42,7 +42,7 @@
               />
             </v-btn>
           </template>
-          <span>Import Design</span>
+          <span>{{ $t('trans.formDesigner.importDesign') }}</span>
         </v-tooltip>
       </v-col>
       <!-- form name -->
@@ -51,21 +51,19 @@
       </v-col>
       <!-- version number-->
       <v-col cols="12" order="4">
-        <em>Version: {{ this.displayVersion }}</em>
+        <em
+          >{{ $t('trans.formDesigner.version') }} :
+          {{ this.displayVersion }}</em
+        >
       </v-col>
     </v-row>
     <BaseInfoCard class="my-6">
       <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+        <v-icon class="mr-1" color="primary">info</v-icon
+        >{{ $t('trans.formDesigner.important') }}!
       </h4>
-      <p class="my-0">
-        Use the <strong>SAVE DESIGN</strong> button when you are done building
-        this form.
-      </p>
-      <p class="my-0">
-        The <strong>SUBMIT</strong> button is provided for your user to submit
-        this form and will be activated after it is saved.
-      </p>
+      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
+      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoB')"></p>
     </BaseInfoCard>
     <FormBuilder
       :form="formSchema"
@@ -80,7 +78,7 @@
       class="form-designer"
       @formLoad="onFormLoad"
     />
-    <InformationLinkPreviewDialog
+    <ProactiveHelpPreviewDialog
       :showDialog="showHelpLinkDialog"
       @close-dialog="onShowClosePreveiwDialog"
       :component="component"
@@ -94,7 +92,7 @@
       :baseFABBorderColor="'#C0C0C0'"
       :fabZIndex="1"
       :size="'small'"
-      fabItemsGap="7px"
+      fabItemsGap="4px"
       @undo="onUndoClick"
       @redo="onRedoClick"
       @save="submitFormSchema"
@@ -119,16 +117,17 @@ import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService } from '@/services';
 import { IdentityMode } from '@/utils/constants';
-import InformationLinkPreviewDialog from '@/components/infolinks/InformationLinkPreviewDialog.vue';
+import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
+import formioIl8next from '@/internationalization/trans/formio/formio.json';
 
 export default {
   name: 'FormDesigner',
   components: {
     FormBuilder,
     FloatButton,
-    InformationLinkPreviewDialog,
+    ProactiveHelpPreviewDialog,
   },
   props: {
     draftId: String,
@@ -149,20 +148,10 @@ export default {
   },
   data() {
     return {
-      items: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' },
-      ],
       offset: true,
       savedStatus: this.isSavedStatus,
       isFormSaved: !this.newVersion,
       scrollTop: true,
-      advancedItems: [
-        { text: 'Simple Mode', value: false },
-        { text: 'Advanced Mode', value: true },
-      ],
       designerStep: 1,
       formSchema: {
         display: 'form',
@@ -193,9 +182,10 @@ export default {
     ...mapGetters('form', [
       'fcProactiveHelpGroupList',
       'fcProactiveHelpImageUrl',
+      'multiLanguage',
+      'builder',
     ]),
     ...mapGetters('auth', ['tokenParsed', 'user']),
-    ...mapGetters('form', ['builder']),
     ...mapFields('form', [
       'form.description',
       'form.enableSubmitterDraft',
@@ -212,6 +202,7 @@ export default {
       'form.versions',
       'form.isDirty',
     ]),
+
     ID_MODE() {
       return IdentityMode;
     },
@@ -309,6 +300,8 @@ export default {
             },
           },
         },
+        language: this.multiLanguage ? this.multiLanguage : 'en',
+        i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
           token: this.tokenParsed,
@@ -344,8 +337,13 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while loading the form design.',
-          consoleError: `Error loading form ${this.formId} schema (version: ${this.versionId} draft: ${this.draftId}): ${error}`,
+          message: this.$t('trans.formDesigner.formLoadErrMsg'),
+          consoleError: this.$t('trans.formDesigner.formLoadConsoleErrMsg', {
+            formId: this.formId,
+            versionId: this.versionId,
+            draftId: this.draftId,
+            error: error,
+          }),
         });
       }
       // get a version number to show in header
@@ -367,8 +365,13 @@ export default {
         fileReader.readAsText(file);
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while importing the form schema.',
-          consoleError: `Error importing form schema : ${error}`,
+          message: this.$t('trans.formDesigner.formSchemaImportErrMsg'),
+          consoleError: this.$t(
+            'trans.formDesigner.formSchemaImportConsoleErrMsg',
+            {
+              error: error,
+            }
+          ),
         });
       }
     },
@@ -650,9 +653,16 @@ export default {
         this.savedStatus = 'Not Saved';
         this.isFormSaved = false;
         this.addNotification({
-          message:
-            'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
-          consoleError: `Error updating or creating form (FormID: ${this.formId}, versionId: ${this.versionId}, draftId: ${this.draftId}) Error: ${error}`,
+          message: this.$t('trans.formDesigner.formDesignSaveErrMsg'),
+          consoleError: this.$t(
+            'trans.formDesigner.formSchemaImportConsoleErrMsg',
+            {
+              formId: this.formId,
+              versionId: this.versionId,
+              draftId: this.draftId,
+              error: error,
+            }
+          ),
         });
       } finally {
         this.saving = false;
@@ -726,7 +736,11 @@ export default {
       // Update this route with saved flag
       this.$router.replace({
         name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true, svs: 'Saved' },
+        query: {
+          ...this.$route.query,
+          sv: true,
+          svs: 'Saved',
+        },
       });
     },
   },
@@ -747,6 +761,11 @@ export default {
     // if form userType (public, idir, team, etc) changes, re-render the form builder
     userType() {
       this.reRenderFormIo += 1;
+    },
+    multiLanguage(value) {
+      if (value) {
+        this.reRenderFormIo += 1;
+      }
     },
   },
 };

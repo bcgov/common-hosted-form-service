@@ -1,6 +1,7 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
 import FormViewerMultiUpload from '@/components/designer/FormViewerMultiUpload.vue';
 
@@ -96,6 +97,7 @@ describe('FormViewerMultiUpload.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(FormViewerMultiUpload, {
       localVue,
+      i18n,
       propsData: {
         formElement: undefined,
         form: {},
@@ -128,6 +130,7 @@ describe('FormViewerMultiUpload.vue', () => {
         localVue,
         propsData: props,
         store,
+        i18n,
         methods: methods,
         stubs: stubs,
       });
@@ -144,6 +147,7 @@ describe('FormViewerMultiUpload.vue', () => {
         propsData: props,
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       // act
@@ -158,6 +162,7 @@ describe('FormViewerMultiUpload.vue', () => {
         propsData: props,
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       // act
@@ -172,6 +177,7 @@ describe('FormViewerMultiUpload.vue', () => {
         propsData: props,
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       const file = new File(['{}'], 'test.json', { type: 'application/json' });
@@ -190,6 +196,7 @@ describe('FormViewerMultiUpload.vue', () => {
         propsData: props,
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       // act
@@ -208,6 +215,7 @@ describe('FormViewerMultiUpload.vue', () => {
         propsData: props,
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       // act
@@ -225,6 +233,7 @@ describe('FormViewerMultiUpload.vue', () => {
         propsData: props,
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       // act
@@ -244,6 +253,7 @@ describe('FormViewerMultiUpload.vue', () => {
         propsData: props,
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       // act
@@ -265,6 +275,7 @@ describe('FormViewerMultiUpload.vue', () => {
         },
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       // act
@@ -281,6 +292,7 @@ describe('FormViewerMultiUpload.vue', () => {
         propsData: props,
         methods: methods,
         store,
+        i18n,
         stubs: stubs,
       });
       // act

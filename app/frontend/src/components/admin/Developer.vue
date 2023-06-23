@@ -5,42 +5,42 @@
       <v-col cols="6">
         <h3>Keycloak</h3>
         <br />
-        <h4>User</h4>
-        <strong>Name:</strong>
+        <h4>{{ $t('trans.developer.user') }}</h4>
+        <strong>{{ $t('trans.developer.name') }}:</strong>
         {{ fullName }}
         <br />
-        <strong>UserName:</strong>
+        <strong>{{ $t('trans.developer.userName') }}:</strong>
         {{ userName }}
         <br />
         <br />
         <h4>
-          JWT Contents
+          {{ $t('trans.developer.JWTContents') }}
           <BaseCopyToClipboard
             :copyText="JSON.stringify(tokenParsed)"
-            snackBarText="JWT Contents copied to clipboard"
-            tooltipText="Copy JWT Contents to clipboard"
+            :snackBarText="$t('trans.developer.JWTContentsSBTxt')"
+            :tooltipText="$t('trans.developer.JWTContentsTTTxt')"
           />
         </h4>
         <vue-json-pretty :data="tokenParsed" />
         <h4>
-          JWT Token
+          {{ $t('trans.developer.JWTToken') }}
           <BaseCopyToClipboard
             :copyText="token"
-            snackBarText="JWT Token copied to clipboard"
-            tooltipText="Copy JWT Token to clipboard"
+            :snackBarText="$t('trans.developer.JWTTokenSBTxt')"
+            :tooltipText="$t('trans.developer.JWTTokenTTTxt')"
           />
         </h4>
         <div style="word-break: break-all">{{ token }}</div>
       </v-col>
       <v-col cols="5" offset="1">
-        <h3>CHEFS API</h3>
+        <h3>{{ $t('trans.developer.chefsAPI') }}</h3>
         <br />
         <h4>
           /rbac/current
           <BaseCopyToClipboard
             :copyText="JSON.stringify(apiRes)"
-            snackBarText="RBAC Response copied to clipboard"
-            tooltipText="Copy RBAC Response to clipboard"
+            :snackBarText="$t('trans.developer.RBACSBTxt')"
+            :tooltipText="$t('trans.developer.RBACTTTxt')"
           />
         </h4>
         <vue-json-pretty :data="apiRes" />
@@ -79,8 +79,10 @@ export default {
         this.apiRes = user.data;
       } catch (error) {
         this.addNotification({
-          message: 'Failed to get user from RBAC, see console',
-          consoleError: `Error getting User from RBAC: ${error.message}`,
+          message: this.$t('trans.developer.notificationMsg'),
+          consoleError:
+            this.$t('trans.developer.notificationConsErr') +
+            `: ${error.message}`,
         });
       }
     },
