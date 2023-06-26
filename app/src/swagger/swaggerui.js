@@ -8,6 +8,7 @@ const submission = require('../swagger/responses/submission.json');
 const deletedsubmission = require('../swagger/responses/deletedsubmission.json');
 const deleteMultiSubmission = require('../swagger/responses/deleteMultiSubmission.json');
 const restoreMultiSubmission = require('../swagger/responses/restoreMultiSubmission.json');
+const listSubmissions = require('../swagger/responses/listSubmissions.json');
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../swagger/swagger_api_doc.yaml'), 'utf8');
   const spec = yaml.load(rawSpec);
@@ -26,19 +27,23 @@ const exampleDocGen = (spec) => {
 
   //submission example
   spec.definition.components.examples['SubmissionEx'] = {};
-  spec.definition.components.examples.SubmissionEx['value'] = yaml.load(yaml.dump(submission));
+  spec.definition.components.examples.SubmissionEx['value'] = submission;
 
   //deleted submission example
   spec.definition.components.examples['DeletedSubmissionEx'] = {};
-  spec.definition.components.examples.DeletedSubmissionEx['value'] = yaml.load(yaml.dump(deletedsubmission));
+  spec.definition.components.examples.DeletedSubmissionEx['value'] = deletedsubmission;
 
-  //deleted submission example
+  //deleted multiple submission example
   spec.definition.components.examples['DeleteMultiSubmissionEx'] = {};
-  spec.definition.components.examples.DeleteMultiSubmissionEx['value'] = yaml.load(yaml.dump(deleteMultiSubmission));
+  spec.definition.components.examples.DeleteMultiSubmissionEx['value'] = deleteMultiSubmission;
 
-  //deleted submission example
+  //Restore multiple submission example
   spec.definition.components.examples['RestoreMultiSubmissionEx'] = {};
-  spec.definition.components.examples.RestoreMultiSubmissionEx['value'] = yaml.load(yaml.dump(restoreMultiSubmission));
+  spec.definition.components.examples.RestoreMultiSubmissionEx['value'] = restoreMultiSubmission;
+
+  //List submission example
+  spec.definition.components.examples['ListSubmissionsEx'] = {};
+  spec.definition.components.examples.ListSubmissionsEx['value'] = listSubmissions;
 };
 
 const swaggerSpec = swaggerJsdoc(getSpec());

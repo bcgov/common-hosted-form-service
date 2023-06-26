@@ -10,7 +10,7 @@ routes.use(currentUser);
 
 /**
  * @openapi
- * roles/:
+ * /roles/:
  *  get:
  *    tags:
  *      - Roles
@@ -35,7 +35,7 @@ routes.get('/', keycloak.protect(), async (req, res, next) => {
 
 /**
  * @openapi
- * roles/:
+ * /roles/:
  *  post:
  *    tags:
  *      - Roles
@@ -66,7 +66,7 @@ routes.post('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:adm
 
 /**
  * @openapi
- * roles/code/:
+ * /roles/code/:
  *  get:
  *    tags:
  *      - Roles
@@ -99,7 +99,7 @@ routes.get('/:code', keycloak.protect(), async (req, res, next) => {
 
 /**
  * @openapi
- * roles/:
+ * /roles/:
  *  post:
  *    tags:
  *      - Roles

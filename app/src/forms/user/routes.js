@@ -14,7 +14,7 @@ routes.use(currentUser);
 
 /**
  * @openapi
- * users/preferences:
+ * /users/preferences:
  *  get:
  *    tags:
  *      - Users
@@ -46,7 +46,7 @@ routes.put('/preferences', async (req, res, next) => {
 
 /**
  * @openapi
- * users/preferences:
+ * /users/preferences:
  *  delete:
  *    tags:
  *      - Users
@@ -71,7 +71,7 @@ routes.delete('/preferences', async (req, res, next) => {
 
 /**
  * @openapi
- * users/:
+ * /users/:
  *  get:
  *    tags:
  *      - Users
@@ -94,8 +94,55 @@ routes.get('/', async (req, res, next) => {
   await controller.list(req, res, next);
 });
 
-/*
- * take a look. Not returning what it should
+/**
+ * @openapi
+ * /users/{userId}/:
+ *  get:
+ *    tags:
+ *      - Users
+ *    description: This endpoint will return user IDP User ID, IDP code, and Keycloak ID.
+ *    security:
+ *      - bearerAuth: []
+ *      - basicAuth: []
+ *      - openId: []
+ *    parameters:
+ *      - in: path
+ *        name: userId
+ *        schema:
+ *          type: string
+ *        format: uuid
+ *        description: ID of the user.
+ *        required: true
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *    responses:
+ *      '200':
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                id:
+ *                  description: User ID.
+ *                  type: string
+ *                  format: uuid
+ *                  example: a2794923-5a4f-4945-be9c-9655dc2f09c8
+ *                idpUserId:
+ *                  description: User IDP ID
+ *                  format: uuid
+ *                  type: string
+ *                  example: 085F22D7201D4C1B88BB26970264E1F3
+ *                keycloakId:
+ *                  type: string
+ *                  format: uuid
+ *                  description: Keycloak ID.
+ *                  example: ea94678c-5f00-42b2-9f56-bd401091fb7c
+ *                idpCode:
+ *                  type: string
+ *                  descriprion: IDP code
+ *                  example: idir
+ *      '403':
+ *        $ref: '#/components/responses/Forbidden'
  */
 routes.get('/:userId', async (req, res, next) => {
   await controller.read(req, res, next);
@@ -107,7 +154,7 @@ routes.get('/:userId', async (req, res, next) => {
 
 /**
  * @openapi
- * users/preferences/forms/{formId}:
+ * /users/preferences/forms/{formId}:
  *  get:
  *    tags:
  *      - Users
@@ -141,7 +188,7 @@ routes.get('/preferences/forms/:formId', async (req, res, next) => {
 
 /**
  * @openapi
- * users/preferences/forms/{formId}:
+ * /users/preferences/forms/{formId}:
  *  put:
  *    tags:
  *      - Users
@@ -185,7 +232,7 @@ routes.put('/preferences/forms/:formId', async (req, res, next) => {
 
 /**
  * @openapi
- * users/preferences/forms/{formId}:
+ * /users/preferences/forms/{formId}:
  *  delete:
  *    tags:
  *      - Users

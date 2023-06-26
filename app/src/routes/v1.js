@@ -1,9 +1,5 @@
-const config = require('config');
-const fs = require('fs');
-const path = require('path');
 const router = require('express').Router();
 const yaml = require('js-yaml');
-const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('../swagger/swaggerui');
 
 const admin = require('../forms/admin');

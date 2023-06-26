@@ -11,7 +11,7 @@ routes.use(currentUser);
 
 /**
  * @openapi
- * files/:
+ * /files/:
  *  post:
  *    tags:
  *      - Files
@@ -72,7 +72,7 @@ routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload,
 
 /**
  * @openapi
- * files/:
+ * /files/:
  *  get:
  *    tags:
  *      - Files
@@ -105,7 +105,7 @@ routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), asy
 
 /**
  * @openapi
- * files/:
+ * /files/:
  *  delete:
  *    tags:
  *      - Files

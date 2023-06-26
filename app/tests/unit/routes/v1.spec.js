@@ -48,16 +48,3 @@ describe(`GET ${basePath}/api-spec.yaml`, () => {
     expect(response.text).toContain('title: Common Hosted Form Service (CHEFS)');
   });
 });
-
-describe(`GET ${basePath}/api-spec.json`, () => {
-  it('should return the OpenAPI spec in json', async () => {
-    const response = await request(app).get(`${basePath}/api-spec.json`);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.headers['content-type']).toBeTruthy();
-    expect(response.headers['content-type']).toMatch('application/json; charset=utf-8');
-    expect(response.body).toBeTruthy();
-    expect(response.body.openapi).toMatch('3.0.3');
-    expect(response.body.info.title).toMatch('Common Hosted Form Service (CHEFS)');
-  });
-});

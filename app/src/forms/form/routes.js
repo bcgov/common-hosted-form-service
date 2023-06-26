@@ -13,7 +13,7 @@ routes.use(currentUser);
 
 /**
  * @openapi
- * forms/:
+ * /forms/:
  *  get:
  *    tags:
  *      - Forms
@@ -38,7 +38,7 @@ routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admi
 
 /**
  * @openapi
- * forms/:
+ * /forms/:
  *  post:
  *    tags:
  *      - Forms
@@ -69,7 +69,7 @@ routes.post('/', async (req, res, next) => {
 
 /**
  * @openapi
- * forms/{formId}:
+ * /forms/{formId}:
  *  get:
  *    tags:
  *      - Forms
@@ -105,7 +105,7 @@ routes.get('/:formId', apiAccess, hasFormPermissions(P.FORM_READ), async (req, r
 
 /**
  * @openapi
- * forms/{formId}/export:
+ * /forms/{formId}/export:
  *  get:
  *    tags:
  *      - Forms
@@ -147,7 +147,7 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
 
 /**
  * @openapi
- * forms/{formId}/export/fields:
+ * /forms/{formId}/export/fields:
  *  post:
  *    tags:
  *      - Forms
@@ -189,7 +189,7 @@ routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, h
 
 /**
  * @openapi
- * forms/{formId}/options:
+ * /forms/{formId}/options:
  *  get:
  *    tags:
  *      - Forms
@@ -232,7 +232,7 @@ routes.get('/:formId/version', apiAccess, hasFormPermissions(P.FORM_READ), async
 
 /**
  * @openapi
- * forms/{formId}:
+ * /forms/{formId}:
  *  put:
  *    tags:
  *      - Forms
@@ -306,7 +306,7 @@ routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DEL
 
 /**
  * @openapi
- * forms/{formId}/submissions:
+ * /forms/{formId}/submissions:
  *  get:
  *    tags:
  *      - Forms
@@ -420,7 +420,7 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
 
 /**
  * @openapi
- * forms/{formId}/versions/{formVersionId}/fields:
+ * /forms/{formId}/versions/{formVersionId}/fields:
  *  get:
  *    tags:
  *      - Version
@@ -520,20 +520,76 @@ routes.post('/:formId/versions/:formVersionId/publish', apiAccess, hasFormPermis
   await controller.publishVersion(req, res, next);
 });
 
-/*
-Suggested for clean up
-*/
+/**
+ * @openapi
+ * /forms/{formId}/versions/{formVersionId}/submissions:
+ *  get:
+ *    tags:
+ *      - Forms
+ *    description: This endpoint will update the Form Submission details for the submission ID
+ *    security:
+ *      - bearerAuth: []
+ *      - basicAuth: []
+ *      - openId: []
+ *    parameters:
+ *      - in: path
+ *        name: formSubmissionId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the form submission.
+ *        required: true
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *      - in: path
+ *        name: formVersionId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the form version.
+ *        required: true
+ *        example: 767a431b-24b1-4b8b-92e5-783144f7caf9
+ *    responses:
+ *      '200':
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            examples:
+ *              ListSubmissionsEx:
+ *                $ref: '#/components/examples/ListSubmissionsEx'
+ *            schema:
+ *              type: array
+ *              items:
+ *                type: object
+ *                description: Form submission details for the formSubmissionId in the request parameter
+ *                properties:
+ *                  form:
+ *                    type: object
+ *                    description: Form Details.
+ *                    example: {}
+ *                  submission:
+ *                    type: object
+ *                    description: Submission Details.
+ *                    example: {}
+ *                  version:
+ *                    type: object
+ *                    description: Version Details.
+ *                    example: {}
+ *      '403':
+ *        $ref: '#/components/responses/Forbidden'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
 routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.listSubmissions(req, res, next);
 });
 
 /**
  * @openapi
- * forms/{formId}/versions/{formVersionId}/submissions:
+ * /forms/{formId}/versions/{formVersionId}/submissions:
  *  post:
  *    tags:
  *      - Forms
- *    description: This endpoint will create form submission
+ *    description: This endpoint will create form submission.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -606,7 +662,7 @@ routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, h
 
 /**
  * @openapi
- * forms/{formId}/drafts:
+ * /forms/{formId}/drafts:
  *  get:
  *    tags:
  *      - Draft
@@ -642,7 +698,7 @@ routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESI
 
 /**
  * @openapi
- * forms/{formId}/drafts:
+ * /forms/{formId}/drafts:
  *  post:
  *    tags:
  *      - Draft
@@ -684,7 +740,7 @@ routes.post('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DES
 
 /**
  * @openapi
- * forms/{formId}/draft/{formVersionDraftId}:
+ * /forms/{formId}/draft/{formVersionDraftId}:
  *  get:
  *    tags:
  *      - Draft
@@ -728,7 +784,7 @@ routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
 
 /**
  * @openapi
- * forms/{formId}/draft/{formVersionDraftId}:
+ * /forms/{formId}/draft/{formVersionDraftId}:
  *  put:
  *    tags:
  *      - Draft

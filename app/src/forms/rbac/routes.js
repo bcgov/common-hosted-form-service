@@ -11,7 +11,7 @@ routes.use(currentUser);
 
 /**
  * @openapi
- * rbac/current:
+ * /rbac/current:
  *  get:
  *    tags:
  *      - RBAC
@@ -34,7 +34,7 @@ routes.get('/current', keycloak.protect(), async (req, res, next) => {
 
 /**
  * @openapi
- * rbac/current/submissions:
+ * /rbac/current/submissions:
  *  get:
  *    tags:
  *      - RBAC
@@ -57,7 +57,7 @@ routes.get('/current/submissions', keycloak.protect(), async (req, res, next) =>
 
 /**
  * @openapi
- * rbac/idps:
+ * /rbac/idps:
  *  get:
  *    tags:
  *      - RBAC
@@ -80,7 +80,7 @@ routes.get('/idps', async (req, res, next) => {
 
 /**
  * @openapi
- * rbac/forms:
+ * /rbac/forms:
  *  get:
  *    tags:
  *      - RBAC
@@ -206,7 +206,7 @@ routes.put('/forms', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) =
 
 /**
  * @openapi
- * rbac/submissions:
+ * /rbac/submissions:
  *  get:
  *    tags:
  *      - RBAC
@@ -247,7 +247,7 @@ routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (r
 
 /**
  * @openapi
- * rbac/submissions:
+ * /rbac/submissions:
  *  put:
  *    tags:
  *      - RBAC

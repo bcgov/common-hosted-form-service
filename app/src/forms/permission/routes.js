@@ -11,7 +11,7 @@ routes.use(currentUser);
 
 /**
  * @openapi
- * permission/:
+ * /permission/:
  *  get:
  *    tags:
  *      - Permissions
@@ -36,7 +36,7 @@ routes.get('/', async (req, res, next) => {
 
 /**
  * @openapi
- * permission/:
+ * /permission/:
  *  post:
  *    tags:
  *      - Permissions
@@ -67,7 +67,7 @@ routes.post('/', async (req, res, next) => {
 
 /**
  * @openapi
- * permission/:code/:
+ * /permission/:code/:
  *  get:
  *    tags:
  *      - Permissions
@@ -100,7 +100,7 @@ routes.get('/:code', async (req, res, next) => {
 
 /**
  * @openapi
- * permission/:code/:
+ * /permission/:code/:
  *  put:
  *    tags:
  *      - Permissions
