@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "Bạn có chắc chắn muốn gửi biểu mẫu của mình không?",
     "submit": "Nộp",
     "wantToSaveDraft": "Bạn có muốn lưu bản nháp không?",
-    "version": "Phiên bản: {phiên bản}",
+    "version": "Phiên bản: {version}",
     "formScheduleExpireMessage": "Gửi biểu mẫu không khả dụng vì thời gian gửi theo lịch trình đã hết hạn.",
     "getUsersSubmissionsErrMsg": "Đã xảy ra lỗi khi tìm nạp nội dung gửi cho biểu mẫu này",
     "getUsersSubmissionsConsoleErrMsg": "Lỗi khi tải dữ liệu gửi biểu mẫu {submissionId}: {error}",
@@ -687,7 +687,8 @@
     "errSubmittingForm": "Đã xảy ra lỗi khi gửi biểu mẫu này",
     "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileNname}. Lỗi: {lỗi}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
-    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {lỗi}"
+    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {lỗi}",
+    "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang"
   },
   "bCGovFooter": {
     "home": "Trang chủ",

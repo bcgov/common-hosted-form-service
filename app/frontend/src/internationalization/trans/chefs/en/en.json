@@ -662,7 +662,7 @@
     "submitFormWarningMsg": "Are you sure you wish to submit your form?",
     "submit": "Submit",
     "wantToSaveDraft": "Do you want to save the draft?",
-    "version": "Version: { version }",
+    "version": "Version: {version}",
     "formScheduleExpireMessage": "Form submission is not available as the scheduled submission period has expired.",
     "getUsersSubmissionsErrMsg": "An error occurred fetching the submission for this form",
     "getUsersSubmissionsConsoleErrMsg": "Error loading form submission data {submissionId}: {error}",
@@ -686,7 +686,8 @@
     "errSubmittingForm": "An error occurred submitting this form",
     "errorSavingFile": "Error saving files. Filename: {fileNname}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
-    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}"
+    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
+    "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page"
   },
   "bCGovFooter": {
     "home": "Home",
