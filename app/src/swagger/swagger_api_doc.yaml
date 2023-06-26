@@ -237,7 +237,7 @@ definition:
         AdminGetUsers:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/model/User'
         AdminReadUser:
           type: array
           items:
@@ -2106,7 +2106,7 @@ definition:
                   as drafts
                 example: false
               users:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/model/User'
         RBACsetSubmissionUserPermissions:
           type: array
           items:
@@ -2830,7 +2830,6 @@ definition:
                 type: string
                 description: The actual changes or edit that was made
                 example: "U"
-
     requestBodies:
       AdminReqProactiveHelpObject:
         type: object

@@ -357,7 +357,7 @@ routes.get('/:formSubmissionId/options', async (req, res, next) => {
  * /submissions/{formSubmissionId}/notes:
  *  get:
  *    tags:
- *      - Submissions
+ *      - Status
  *    description: This endpoint will get form submission notes
  *    security:
  *      - bearerAuth: []
@@ -393,7 +393,7 @@ routes.get('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_REA
  * /submissions/{formSubmissionId}/notes:
  *  post:
  *    tags:
- *      - Submissions
+ *      - Status
  *    description: This endpoint will add notes to form submission
  *    security:
  *      - bearerAuth: []
@@ -447,7 +447,7 @@ routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UP
  * /submissions/{formSubmissionId}/status:
  *  get:
  *    tags:
- *      - Submissions
+ *      - Status
  *    description: This endpoint will list of status history for a submission.
  *    security:
  *      - bearerAuth: []
@@ -483,7 +483,7 @@ routes.get('/:formSubmissionId/status', apiAccess, hasSubmissionPermissions(P.SU
  * /submissions/{formSubmissionId}/status:
  *  post:
  *    tags:
- *      - Submissions
+ *      - Status
  *    description: This endpoint add a new status to a submission, and optionally provides email notification depending on the status being assigned.
  *    security:
  *      - bearerAuth: []

@@ -50,7 +50,7 @@ routes.put('/preferences', async (req, res, next) => {
  *  delete:
  *    tags:
  *      - Users
- *    description: This endpoint will delete all the current user preferences. Note: This endpoint will delete all the preferences for all the form.
+ *    description: 'This endpoint will delete all the current user preferences. Note: This endpoint will delete all the preferences for all the form.'
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []

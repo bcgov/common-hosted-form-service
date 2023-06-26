@@ -377,7 +377,7 @@ routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P
  * forms/{formId}/versions/{formVersionId}:
  *  get:
  *    tags:
- *      - Forms
+ *      - Version
  *    description: This endpoint will fetch all the submissions for the form.
  *    security:
  *      - bearerAuth: []
@@ -423,7 +423,7 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
  * forms/{formId}/versions/{formVersionId}/fields:
  *  get:
  *    tags:
- *      - Forms
+ *      - Version
  *    description: This endpoint will fetch submission fields for the form ID and form version ID passed in the path parameter.
  *    security:
  *      - bearerAuth: []
@@ -474,7 +474,7 @@ routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissi
  * /forms/{formId}/versions/{formVersionId}/publish:
  *  post:
  *    tags:
- *      - Forms
+ *      - Version
  *    description: This endpoint will publish form draft
  *    security:
  *      - bearerAuth: []
@@ -609,7 +609,7 @@ routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, h
  * forms/{formId}/drafts:
  *  get:
  *    tags:
- *      - Forms
+ *      - Draft
  *    description: This endpoint will fetch list of all form drafts.
  *    security:
  *      - bearerAuth: []
@@ -645,7 +645,7 @@ routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESI
  * forms/{formId}/drafts:
  *  post:
  *    tags:
- *      - Forms
+ *      - Draft
  *    description: This endpoint will create form draft from published form version.
  *    security:
  *      - bearerAuth: []
@@ -687,7 +687,7 @@ routes.post('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DES
  * forms/{formId}/draft/{formVersionDraftId}:
  *  get:
  *    tags:
- *      - Forms
+ *      - Draft
  *    description: This endpoint will fetch form draft.
  *    security:
  *      - bearerAuth: []
@@ -731,7 +731,7 @@ routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  * forms/{formId}/draft/{formVersionDraftId}:
  *  put:
  *    tags:
- *      - Forms
+ *      - Draft
  *    description: This endpoint will fetch form draft.
  *    security:
  *      - bearerAuth: []
@@ -781,7 +781,7 @@ routes.put('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  * /forms/{formId}/drafts/{formVersionDraftId}:
  *  delete:
  *    tags:
- *      - Forms
+ *      - Draft
  *    description: This endpoint will delete the form draft.
  *    security:
  *      - bearerAuth: []
@@ -821,7 +821,7 @@ routes.delete('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissio
  * /forms/{formId}/drafts/{formVersionDraftId}/publish:
  *  post:
  *    tags:
- *      - Forms
+ *      - Draft
  *    description: This endpoint will publish the form draft.
  *    security:
  *      - bearerAuth: []
@@ -871,7 +871,7 @@ routes.post('/:formId/drafts/:formVersionDraftId/publish', apiAccess, hasFormPer
  * /forms/{formId}/statusCodes:
  *  get:
  *    tags:
- *      - Forms
+ *      - Status
  *    description: This endpoint will fetch Form API Key details.
  *    security:
  *      - bearerAuth: []
@@ -907,7 +907,7 @@ routes.get('/:formId/statusCodes', apiAccess, hasFormPermissions([P.FORM_READ]),
  * /forms/{formId}/apiKey:
  *  get:
  *    tags:
- *      - Forms
+ *      - Form API Key
  *    description: This endpoint will fetch Form API Key details.
  *    security:
  *      - bearerAuth: []
@@ -943,7 +943,7 @@ routes.get('/:formId/apiKey', hasFormPermissions(P.FORM_API_READ), async (req, r
  * /forms/{formId}/apiKey:
  *  put:
  *    tags:
- *      - Forms
+ *      - Form API Key
  *    description: This endpoint will create Form API Key.
  *    security:
  *      - bearerAuth: []
@@ -979,7 +979,7 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
  * /forms/{formId}/apiKey:
  *  delete:
  *    tags:
- *      - Forms
+ *      - Form API Key
  *    description: This endpoint will delete the Form API Key
  *    security:
  *      - bearerAuth: []
