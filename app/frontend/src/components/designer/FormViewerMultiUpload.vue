@@ -335,60 +335,20 @@ export default {
       //Check if Used Heap size is beyond 70% of Limit
       return heapLimit >= heapUsed * 0.7;
     },
-
-    // formatBytes(bytes, decimals = 2) {
-    //   if (!+bytes) return '0 Bytes';
-
-    //   const k = 1024;
-    //   const dm = decimals < 0 ? 0 : decimals;
-    //   const sizes = [
-    //     'Bytes',
-    //     'KiB',
-    //     'MiB',
-    //     'GiB',
-    //     'TiB',
-    //     'PiB',
-    //     'EiB',
-    //     'ZiB',
-    //     'YiB',
-    //   ];
-
-    //   const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    //   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-    // },
-
     checkMemoryUsage() {
-      //console.group();
       if (window.performance && window.performance.memory) {
         const memory = window.performance.memory;
-        /*console.log(
-          '  Memory Usage: Used JS Heap: ' +
-            this.formatBytes(memory.usedJSHeapSize) +
-            ' .'
-        );
-        console.log(
-          '  Memory Usage: Total JS Heap: ' +
-            this.formatBytes(memory.totalJSHeapSize) +
-            ' .'
-        );
-        console.log(
-          '  Memory Usage: Limit JS Heap: ' +
-            this.formatBytes(memory.jsHeapSizeLimit) +
-            ' .'
-        );*/
         if (
           this.isMemoryExcessed(memory.jsHeapSizeLimit, memory.usedJSHeapSize)
         ) {
           //having memory leakage so let's add some more time to clear garbage.
           this.delay(500);
         }
-      } else {
+      } /*else {
         console.log(
           'Memory usage information is not available in this browser.'
         );
-      }
-      //console.groupEnd();
+      }*/
     },
     async validate(element, errors) {
       await this.delay(500);
