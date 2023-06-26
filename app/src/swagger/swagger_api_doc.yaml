@@ -55,6 +55,19 @@ definition:
           application/json:
             schema:
               $ref: '#/components/schemas/UnprocessableEntityDBError'
+      UnExpected:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnExpectedError'
+      AccessDenied:
+        description: Acess Denied
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessDeniedError'
+
 
       responseBody:
         AdminsFormGetEx:
@@ -4143,6 +4156,21 @@ definition:
                 example: Unauthorized
               type:
                 example: https://httpstatuses.com/401
+      AccessDeniedError:
+        allOf:
+          - $ref: '#/components/schemas/Problem'
+          - type: object
+            properties:
+              detail:
+                example: Access Denied (Lack required role to perform this action).
+              error:
+                example: {}
+              status:
+                example: 403
+              title:
+                example: Access Denied
+              type:
+                example: https://httpstatuses.com/403
       InvalidSubmissionIdError:
         allOf:
           - $ref: '#/components/schemas/Problem'
@@ -4152,12 +4180,8 @@ definition:
                 example: Invalid submissionId(s) in the submissionIds list.
               error:
                 example: {}
-              status:
-                example: 401
               title:
                 example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
       RequiredSubmissionPermissionError:
         allOf:
           - $ref: '#/components/schemas/Problem'
@@ -4291,6 +4315,21 @@ definition:
                 example: {}
               title:
                 example: Unauthorized
+              type:
+                example: https://httpstatuses.com/401
+      UnExpectedError:
+        allOf:
+          - $ref: '#/components/schemas/Problem'
+          - type: object
+            properties:
+              detail:
+                example: Unexpected Error.
+              status:
+                example: 5XX
+              error:
+                example: {}
+              title:
+                example: Unexpected
               type:
                 example: https://httpstatuses.com/401
       Problem:

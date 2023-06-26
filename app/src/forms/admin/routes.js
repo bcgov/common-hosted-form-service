@@ -27,8 +27,6 @@ routes.use(currentUser);
  *      - Admin
  *    description: This endpoint will fetch all forms under the admin access.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    responses:
  *      '200':
@@ -38,11 +36,9 @@ routes.use(currentUser);
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminsFormGetEx'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
- *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
- *      '404':
- *        $ref: '#/components/responses/ResourceNotFound'
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
  */
 routes.get('/forms', async (req, res, next) => {
   await controller.listForms(req, res, next);
@@ -56,8 +52,6 @@ routes.get('/forms', async (req, res, next) => {
  *      - Admin
  *    description: This endpoint will fetch the form details(and metadata for versions).
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -76,9 +70,9 @@ routes.get('/forms', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminReadFormEx'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
- *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
  */
 routes.get('/forms/:formId', async (req, res, next) => {
   await controller.readForm(req, res, next);
@@ -92,8 +86,6 @@ routes.get('/forms/:formId', async (req, res, next) => {
  *      - Admin
  *    description: This endpoint will delete the form API key.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -108,9 +100,9 @@ routes.get('/forms/:formId', async (req, res, next) => {
  *      '200':
  *        description: Success
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
- *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
  */
 routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
   await controller.deleteApiKey(req, res, next);
@@ -124,8 +116,6 @@ routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
  *      - Admin
  *    description: This endpoint will fetch the API key details for this form.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -144,9 +134,9 @@ routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminReadAPIKeyDetails'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
- *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
  */
 routes.get('/forms/:formId/apiKey', async (req, res, next) => {
   await controller.readApiDetails(req, res, next);
@@ -160,8 +150,6 @@ routes.get('/forms/:formId/apiKey', async (req, res, next) => {
  *      - Admin
  *    description: This endpoint will restore deleted form.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -180,9 +168,9 @@ routes.get('/forms/:formId/apiKey', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminRestoreForm'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
- *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
  */
 routes.put('/forms/:formId/restore', async (req, res, next) => {
   await controller.restoreForm(req, res, next);
@@ -200,8 +188,6 @@ routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
  *      - Admin
  *    description: This endpoint will fetch all the users added as team members to this form and their roles/permissions.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -220,9 +206,9 @@ routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminGetFormUserRoles'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
- *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
  * */
 routes.get('/forms/:formId/formUsers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
@@ -236,8 +222,6 @@ routes.get('/forms/:formId/formUsers', async (req, res, next) => {
  *    - Admin
  *   description: This endpoint will fetch all the users added as team members to this form and their roles/permissions.
  *   security:
- *    - bearerAuth: []
- *    - basicAuth: []
  *    - openId: []
  *   parameters:
  *    - in: path
@@ -295,10 +279,10 @@ routes.get('/forms/:formId/formUsers', async (req, res, next) => {
  *        application/json:
  *          schema:
  *            $ref: '#/components/responses/responseBody/AdminSetFormUserRoles'
- *    '403':
- *      $ref: '#/components/responses/Forbidden'
- *    '401':
- *      $ref: '#/components/responses/NoFormAccess'
+ *      '403':
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
  *    '422':
  *      description: 'Unprocessable Entity'
  *      content:
@@ -325,8 +309,6 @@ routes.put('/forms/:formId/addUser', async (req, res, next) => {
  *    - Admin
  *   description: This endpoint will fetch all the users.
  *   security:
- *    - bearerAuth: []
- *    - basicAuth: []
  *    - openId: []
  *   responses:
  *    '200':
@@ -335,8 +317,10 @@ routes.put('/forms/:formId/addUser', async (req, res, next) => {
  *        application/json:
  *          schema:
  *            $ref: '#/components/responses/responseBody/AdminGetUsers'
- *    '403':
- *      $ref: '#/components/responses/Forbidden'
+ *      '403':
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
  */
 routes.get('/users', async (req, res, next) => {
   await controller.getUsers(req, res, next);
@@ -350,8 +334,6 @@ routes.get('/users', async (req, res, next) => {
  *      - Admin
  *    description: This endpoint will fetch a single user using the userId passed through the endpoint path.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -369,11 +351,14 @@ routes.get('/users', async (req, res, next) => {
  *          application/json:
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminReadUser'
- *    '403':
- *      $ref: '#/components/responses/Forbidden'
- *    '404':
- *      $ref: '#/components/responses/ResourceNotFound'
+ *      '403':
+ *        $ref: '#/components/responses/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/ResourceNotFound'
  */
+
 routes.get('/users/:userId', async (req, res, next) => {
   await userController.read(req, res, next);
 });
@@ -390,8 +375,6 @@ routes.get('/users/:userId', async (req, res, next) => {
  *    - Admin
  *   description: This endpoint will create or update proactive help details form.io component
  *   security:
- *    - bearerAuth: []
- *    - basicAuth: []
  *    - openId: []
  *   requestBody:
  *    required: true
@@ -407,7 +390,9 @@ routes.get('/users/:userId', async (req, res, next) => {
  *          schema:
  *            $ref: '#/components/responses/responseBody/AdminGetProactiveHelpObject'
  *    '403':
- *      $ref: '#/components/responses/Forbidden'
+ *      $ref: '#/components/responses/AccessDenied'
+ *    '5XX':
+ *      $ref: '#/components/responses/UnExpected'
  *    '422':
  *      $ref: '#/components/responses/UnprocessableEntityDB'
  */
@@ -423,8 +408,6 @@ routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
  *    - Admin
  *   description: This endpoint will update form.io component proactive help publish status.
  *   security:
- *    - bearerAuth: []
- *    - basicAuth: []
  *    - openId: []
  *   parameters:
  *      - in: path
@@ -449,7 +432,9 @@ routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
  *          schema:
  *            $ref: '#/components/responses/responseBody/AdminProactiveHelpPublishStatus'
  *    '403':
- *      $ref: '#/components/responses/Forbidden'
+ *      $ref: '#/components/responses/AccessDenied'
+ *    '5XX':
+ *      $ref: '#/components/responses/UnExpected'
  *    '422':
  *      $ref: '#/components/responses/UnprocessableEntityDB'
  */
@@ -465,8 +450,6 @@ routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (r
  *    - Admin
  *   description: This endpoint will get the image of the form.io component proactive help.
  *   security:
- *    - bearerAuth: []
- *    - basicAuth: []
  *    - openId: []
  *   parameters:
  *    - in: path
@@ -488,7 +471,9 @@ routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (r
  *                type: string
  *                format: binary
  *    '403':
- *      $ref: '#/components/responses/Forbidden'
+ *      $ref: '#/components/responses/AccessDenied'
+ *    '5XX':
+ *      $ref: '#/components/responses/UnExpected'
  *    '422':
  *      $ref: '#/components/responses/UnprocessableEntityDB'
  */
@@ -504,8 +489,6 @@ routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, re
  *    - Admin
  *   description: This endpoint will fetch the list of all the proactive help details.
  *   security:
- *    - bearerAuth: []
- *    - basicAuth: []
  *    - openId: []
  *   responses:
  *    '200':
@@ -515,7 +498,9 @@ routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, re
  *          schema:
  *           $ref: '#/components/responses/responseBody/AdminProactiveHelpList'
  *    '403':
- *      $ref: '#/components/responses/Forbidden'
+ *      $ref: '#/components/responses/AccessDenied'
+ *    '5XX':
+ *      $ref: '#/components/responses/UnExpected'
  */
 routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
