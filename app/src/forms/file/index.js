@@ -1,6 +1,12 @@
 const config = require('config');
 const dataErrors = require('../common/middleware').dataErrors;
 const routes = require('./routes');
+const swaggerSpec = require('../../swagger/swaggerui');
+
+swaggerSpec.tags.push({
+  name: 'Files',
+  description: 'API endpoints to upload and retrieve files stored in CHEFS.',
+});
 
 const _PATH = config.get('files.uploads.path') || 'files';
 

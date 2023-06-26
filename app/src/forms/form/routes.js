@@ -6,6 +6,7 @@ const { currentUser, hasFormPermissions } = require('../auth/middleware/userAcce
 const P = require('../common/constants').Permissions;
 
 const keycloak = require('../../components/keycloak');
+
 const controller = require('./controller');
 
 routes.use(currentUser);
@@ -27,7 +28,7 @@ routes.use(currentUser);
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/FormListForms'
+ *              $ref: '#/components/responses/responseBody/FormListForms'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  */
@@ -51,14 +52,14 @@ routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admi
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/request/FormReqCreateForm'
+ *            $ref: '#/components/requestBodies/FormReqCreateForm'
  *    responses:
  *      '200':
  *        description: Success
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/FormCreateForm'
+ *              $ref: '#/components/responses/responseBody/FormCreateForm'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  */
@@ -92,7 +93,7 @@ routes.post('/', async (req, res, next) => {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/FormReadForm'
+ *              $ref: '#/components/responses/responseBody/FormReadForm'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -127,7 +128,7 @@ routes.get('/:formId', apiAccess, hasFormPermissions(P.FORM_READ), async (req, r
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/request/FormReqSubmissionExport'
+ *            $ref: '#/components/requestBodies/FormReqSubmissionExport'
  *    responses:
  *      '200':
  *        description: Success
@@ -150,7 +151,7 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
  *  post:
  *    tags:
  *      - Forms
- *    description: Get form
+ *    description: This endpoint will export submissions to either CSV or JSON.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -169,7 +170,7 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/request/FormReqSubmissionExportWithFields'
+ *            $ref: '#/components/requestBodies/FormReqSubmissionExportWithFields'
  *    responses:
  *      '200':
  *        description: Success
@@ -192,7 +193,7 @@ routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, h
  *  get:
  *    tags:
  *      - Forms
- *    description: Get form options
+ *    description: This endpoint will fetch form options.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -212,27 +213,7 @@ routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, h
  *        content:
  *          application/json:
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                  format: uuid
- *                  description: ID of the form
- *                name:
- *                  type: string
- *                  example: Ministry Survey
- *                  description: Name of the form
- *                description:
- *                  type: string
- *                  example: ''
- *                  description: A summary of the form
- *                idpHints:
- *                  type: array
- *                  description: Form access options. Options are "public", "bceid-basic", and "bceid-business"
- *                  example: ["public"]
- *                snake:
- *                  type: string
- *                  example: Ministry Survey
+ *              $ref: '#/components/responses/responseBody/FormReadFormOptions'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -255,7 +236,7 @@ routes.get('/:formId/version', apiAccess, hasFormPermissions(P.FORM_READ), async
  *  put:
  *    tags:
  *      - Forms
- *    description: update form
+ *    description: This endpoint will update this form.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -274,86 +255,14 @@ routes.get('/:formId/version', apiAccess, hasFormPermissions(P.FORM_READ), async
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              $ref: '#/components/schemas/CreateForm'
+ *            $ref: '#/components/requestBodies/FormReqUpdateForm'
  *    responses:
  *      '200':
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              UpdateFormEx:
- *                $ref: '#/components/examples/UpdateFormEx'
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    format: uuid
- *                    description: Database generated form Id
- *                  name:
- *                    type: string
- *                    description: Name or title of the form
- *                  description:
- *                    type: string
- *                    description: short description of the form
- *                  active:
- *                    type: boolean
- *                    description: toggle that determines if the form is deleted
- *                  labels:
- *                    type: string
- *                  createdBy:
- *                    type: string
- *                    description: The username of user that created the form
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the form was initially created
- *                  updatedBy:
- *                    type: string
- *                    description: The username of the user that last updated the form
- *                  updatedAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the form was last updated
- *                  showSubmissionConfirmation:
- *                    type: boolean
- *                    description: toggle to set if submission confirmation should shown when the form submission is submitted
- *                  submissionReceivedEmails:
- *                    type: string
- *                    format: email
- *                    description: List emails where submissions notifications will be sent
- *                  enableStatusUpdates:
- *                    type: boolean
- *                    description: Setting this to true will enabled submission status to be updated
- *                  enableSubmitterDraft:
- *                    type: boolean
- *                    description: Setting this to true will allow submitters to be able to save submissions as drafts
- *                    default: false
- *                  schedule:
- *                    type: object
- *                    description: submission s
- *                  reminder_enabled:
- *                    type: boolean
- *                    description: If enabled, a reminder notification will be sent to users before the submissions deadline
- *                    default: false
- *                  enableCopyExistingSubmission:
- *                    type: boolean
- *                    description: If enabled, users can copy or duplicate submissions
- *                    default: false
- *                  allowSubmitterToUploadFile:
- *                    type: boolean
- *                    description: If enabled, Submitters can upload when submitting submissions
- *                    default: false
- *                  identityProviders:
- *                    type: array
- *                    description: List of identity providers that can be used to login to the form
- *                  versions:
- *                    type: array
- *                    description: List of form versions
+ *              $ref: '#/components/responses/responseBody/FormUpdateForm'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -369,7 +278,7 @@ routes.put('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE
  *  delete:
  *    tags:
  *      - Forms
- *    description: Delete the form
+ *    description: This endpoint will delete this form.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -401,7 +310,7 @@ routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DEL
  *  get:
  *    tags:
  *      - Forms
- *    description: Get all submissions for the form
+ *    description: This endpoint will get all submissions for this form
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -419,28 +328,28 @@ routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DEL
  *        name: deleted
  *        schema:
  *          type: boolean
- *        description: The endpoint will fetch all the active form submissions if set to false. Otherwise,  the endpoint will fetch all the deleted form submissions
+ *        description: The endpoint will fetch all the active form submissions if set to false. Otherwise,  the endpoint will fetch all the deleted form submissions.
  *        required: true
  *        example: false
  *      - in: query
  *        name: fields
  *        schema:
  *          type: string
- *        description: List of submissions fields to be fetched. If empty, all the submissions fields will be fetched
+ *        description: List of submissions fields to be fetched. If empty, all the submissions fields will be fetched.
  *        default: []
  *        example: ['firstName', 'lastName']
  *      - in: query
  *        name: createdBy
  *        schema:
  *          type: string
- *        description: The endpoint will filter the form submissions using the username in createdBy
+ *        description: The endpoint will filter the form submissions using the username in createdBy.
  *        default: ""
  *        example: ["example@idir"]
  *      - in: query
  *        name: createdAt
  *        schema:
  *          type: string
- *        description: The endpoint will filter the form submissions using the start and end date in createdAt
+ *        description: The endpoint will filter the form submissions using the start and end date in createdAt.
  *        default: ['1973-06-18 07:02:45', '2073-06-18 07:02:45']
  *        example: ['1973-06-18 07:02:45', '2073-06-18 07:02:45']
  *    responses:
@@ -449,50 +358,7 @@ routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DEL
  *        content:
  *          application/json:
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  confirmationId:
- *                    type: string
- *                    description: Submission confirmation ID
- *                    example: 9100A7D1
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                    example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
- *                  formSubmissionStatusCode:
- *                    type: string
- *                    description: Code for the submission status
- *                    example: "ASSIGNED"
- *                  submissionId:
- *                    type: string
- *                    format: uuid
- *                    description: Submission ID
- *                    example: 9100a7d1-7017-4c07-bf10-9e19ea41777c
- *                  deleted:
- *                    type: boolean
- *                    description: toggle that determines if the form is deleted
- *                    example: true
- *                  formVersionId:
- *                    type: string
- *                    description: Form version ID
- *                    format: uuid
- *                    example: be1aac0a-8149-4987-bef8-470d538304a8
- *                  createdBy:
- *                    type: string
- *                    description: The username of user that submitted the submissions
- *                    example: "example@idir"
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the form was initially submitted
- *                    example: 2023-06-18T04:47:56.622Z
- *                  lateEntry:
- *                    type: boolean
- *                    description: toggle that determines if the submission was submitted after the submission deadline
- *                    example: true
+ *              $ref: '#/components/responses/responseBody/FormListFormSubmissions'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -512,7 +378,7 @@ routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P
  *  get:
  *    tags:
  *      - Forms
- *    description: Get all submissions for the form
+ *    description: This endpoint will fetch all the submissions for the form.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -539,42 +405,8 @@ routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              FormVersionEx:
- *                $ref: '#/components/examples/FormVersionEx'
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    format: uuid
- *                    description: Database generated form Id
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                  versions:
- *                    type: number
- *                    description: Form version number
- *                  schema:
- *                    type: object
- *                    description: Form schema created by Form Designer
- *                  updatedBy:
- *                    type: string
- *                    description: The username of the user that last updated the form
- *                  updatedAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the form was last updated
- *                  createdBy:
- *                    type: string
- *                    description: The username of user that submitted the submissions
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the form was initially submitted
+ *              $ref: '#/components/responses/responseBody/FormReadVersion'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -592,7 +424,7 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
  *  get:
  *    tags:
  *      - Forms
- *    description: Get submission fields for the form ID and form version ID passed in the path parameter
+ *    description: This endpoint will fetch submission fields for the form ID and form version ID passed in the path parameter.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -643,7 +475,7 @@ routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissi
  *  post:
  *    tags:
  *      - Forms
- *    description: Publish form draft
+ *    description: This endpoint will publish form draft
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -677,76 +509,8 @@ routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissi
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              PublishFormVersionEx:
- *                $ref: '#/components/examples/PublishFormVersionEx'
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                  format: uuid
- *                  description: Database generated form Id
- *                name:
- *                  type: string
- *                  description: Name or title of the form
- *                description:
- *                  type: string
- *                  description: short description of the form
- *                active:
- *                  type: boolean
- *                  description: toggle that determines if the form is deleted
- *                labels:
- *                  type: string
- *                createdBy:
- *                  type: string
- *                  description: The username of user that created the form
- *                createdAt:
- *                  type: string
- *                  format: date-time
- *                  description: Date the form was initially created
- *                updatedBy:
- *                  type: string
- *                  description: The username of the user that last updated the form
- *                updatedAt:
- *                  type: string
- *                  format: date-time
- *                  description: Date the form was last updated
- *                showSubmissionConfirmation:
- *                  type: boolean
- *                  description: toggle to set if submission confirmation should shown when the form submission is submitted
- *                submissionReceivedEmails:
- *                  type: string
- *                  format: email
- *                  description: List emails where submissions notifications will be sent
- *                enableStatusUpdates:
- *                  type: boolean
- *                  description: Setting this to true will enabled submission status to be updated
- *                enableSubmitterDraft:
- *                  type: boolean
- *                  description: Setting this to true will allow submitters to be able to save submissions as drafts
- *                  default: false
- *                schedule:
- *                  type: object
- *                  description: submission s
- *                reminder_enabled:
- *                  type: boolean
- *                  description: If enabled, a reminder notification will be sent to users before the submissions deadline
- *                  default: false
- *                enableCopyExistingSubmission:
- *                  type: boolean
- *                  description: If enabled, users can copy or duplicate submissions
- *                  default: false
- *                allowSubmitterToUploadFile:
- *                  type: boolean
- *                  description: If enabled, Submitters can upload when submitting submissions
- *                  default: false
- *                identityProviders:
- *                  type: array
- *                  description: List of identity providers that can be used to login to the form
- *                versions:
- *                  type: array
- *                  description: List of form versions
+ *              $ref: '#/components/responses/responseBody/FormPublishVersion'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -769,7 +533,7 @@ routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPer
  *  post:
  *    tags:
  *      - Forms
- *    description: Create form submission
+ *    description: This endpoint will create form submission
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -796,80 +560,14 @@ routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPer
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              draft:
- *                type: boolean
- *                description: This will be true if the submission is a draft
- *                default: true
- *                example: true
- *              submission:
- *                type: object
- *                properties:
- *                  data:
- *                    type: object
- *                    descritpion: submission data (submission entries)
- *                    example: {firstName: "Testd", lateEntry: false, middleName: "Ghust", submit: true}
- *                  metadata:
- *                    type: object
- *                    description: submission metadata
- *                    example: {"timezone": "America/Los_Angeles", "offset": -420, "origin": "http://localhost:8082", "referrer": "", "browserName": "Netscape", "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36", "pathName": "/app/form/submit", "onLine": true}
- *                  state:
- *                    type: string
- *                    description: state of the submission
- *                    example: submitted
+ *            $ref: '#/components/requestBodies/FormReqCreatSubmission'
  *    responses:
  *      '200':
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              CreateFormSubmissionEx:
- *                $ref: '#/components/examples/CreateFormSubmissionEx'
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    description: Submission ID
- *                    format: uuid
- *                    example: 095f15a1-7d85-4919-8f40-5a0a3477cd7f
- *                  formVersionId:
- *                    type: string
- *                    description: Form version ID
- *                    format: uuid
- *                    example: e766899b-a4f9-438b-8382-17af8f10bff5
- *                  confirmationId:
- *                    type: string
- *                    description: Submission confirmation ID
- *                    example: "095F15A1"
- *                  deleted:
- *                    type: boolean
- *                    description: If set to true, the submission will be regarded as deleted
- *                    example: true
- *                  draft:
- *                    type: boolean
- *                    description: If set to true, the submission will be regarded as a draft
- *                    example: true
- *                  submission:
- *                    type: number
- *                    description: Form version number
- *                  updatedBy:
- *                    type: string
- *                    description: The username of the user that last updated the form submission
- *                  updatedAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the form submission was last updated
- *                  createdBy:
- *                    type: string
- *                    description: The username of user that submitted the submissions
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the form was initially submitted
+ *              $ref: '#/components/responses/responseBody/FormCreateFormSubmission'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -912,7 +610,7 @@ routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, h
  *  get:
  *    tags:
  *      - Forms
- *    description: update form
+ *    description: This endpoint will fetch list of all form drafts.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -932,37 +630,7 @@ routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, h
  *        content:
  *          application/json:
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    description: Database generated Id
- *                    format: uuid
- *                    example: 793a3311-f8d2-4073-8460-1f418e953a35
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                    example: f572d35e-f60c-4fa2-823d-f2ca77d96683
- *                  formVersionId:
- *                    type: string
- *                    description: Form version Id
- *                  createdBy:
- *                    type: string
- *                    description: The username of user that created the draft
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the draft was initially created
- *                  updatedBy:
- *                    type: string
- *                    description: The username of the user that last updated the draft
- *                  updatedAt:
- *                    type: string
- *                    format: date-time
- *                    description: Date the draft was last updated
+ *              $ref: '#/components/responses/responseBody/FormListsDraft'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -978,7 +646,7 @@ routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESI
  *  post:
  *    tags:
  *      - Forms
- *    description: Create form draft
+ *    description: This endpoint will create form draft from published form version.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -988,16 +656,7 @@ routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESI
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              formVersionId:
- *                type: string
- *                description: Form version Id
- *                format: uuid
- *              schema:
- *                type: object
- *                description: Form schema created by Form Designer
- *                example: {}
+ *            $ref: '#/components/requestBodies/FormReqCreateDraft'
  *    parameters:
  *      - in: path
  *        name: formId
@@ -1012,38 +671,8 @@ routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESI
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              FormDraftEx:
- *                $ref: '#/components/examples/FormDraftEx'
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                  format: uuid
- *                  description: Database generated form Id
- *                formId:
- *                  type: string
- *                  description: Form ID
- *                  format: uuid
- *                formVersionId:
- *                  type: string
- *                  format: uuid
- *                  description: Form version Id
- *                createdBy:
- *                  type: string
- *                  description: The username of user that created the draft
- *                createdAt:
- *                  type: string
- *                  format: date-time
- *                  description: Date the draft was initially created
- *                updatedBy:
- *                  type: string
- *                  description: The username of the user that last updated the draft
- *                updatedAt:
- *                  type: string
- *                  format: date-time
- *                  description: Date the draft was last updated
+ *               $ref: '#/components/responses/responseBody/FormCreateDraft'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -1059,7 +688,7 @@ routes.post('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DES
  *  get:
  *    tags:
  *      - Forms
- *    description: Get form draft
+ *    description: This endpoint will fetch form draft.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -1078,7 +707,7 @@ routes.post('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DES
  *        schema:
  *          type: string
  *          format: uuid
- *        description: Form draft ID.
+ *        description: ID of the form draft.
  *        required: true
  *        example: c6455376-382c-439d-a811-0381a012d696
  *    responses:
@@ -1086,38 +715,8 @@ routes.post('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DES
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              FormDraftEx:
- *                $ref: '#/components/examples/FormDraftEx'
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                  format: uuid
- *                  description: Database generated form Id
- *                formId:
- *                  type: string
- *                  description: Form ID
- *                  format: uuid
- *                formVersionId:
- *                  type: string
- *                  format: uuid
- *                  description: Form version Id
- *                createdBy:
- *                  type: string
- *                  description: The username of user that created the draft
- *                createdAt:
- *                  type: string
- *                  format: date-time
- *                  description: Date the draft was initially created
- *                updatedBy:
- *                  type: string
- *                  description: The username of the user that last updated the draft
- *                updatedAt:
- *                  type: string
- *                  format: date-time
- *                  description: Date the draft was last updated
+ *              $ref: '#/components/responses/responseBody/FormReadDraft'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -1133,7 +732,7 @@ routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  *  put:
  *    tags:
  *      - Forms
- *    description: Get form draft
+ *    description: This endpoint will fetch form draft.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -1155,43 +754,19 @@ routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  *        description: Form version draft ID.
  *        required: true
  *        example: c6455376-382c-439d-a811-0381a012d696
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/requestBodies/FormReqUpdateDraft'
  *    responses:
  *      '200':
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              FormDraftEx:
- *                $ref: '#/components/examples/FormDraftEx'
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                  format: uuid
- *                  description: Database generated form Id
- *                formId:
- *                  type: string
- *                  description: Form ID
- *                  format: uuid
- *                formVersionId:
- *                  type: string
- *                  format: uuid
- *                  description: Form version Id
- *                createdBy:
- *                  type: string
- *                  description: The username of user that created the draft
- *                createdAt:
- *                  type: string
- *                  format: date-time
- *                  description: Date the draft was initially created
- *                updatedBy:
- *                  type: string
- *                  description: The username of the user that last updated the draft
- *                updatedAt:
- *                  type: string
- *                  format: date-time
- *                  description: Date the draft was last updated
+ *              $ref: '#/components/responses/responseBody/FormUpdateDraft'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -1207,7 +782,7 @@ routes.put('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  *  delete:
  *    tags:
  *      - Forms
- *    description: Delete the form draft
+ *    description: This endpoint will delete the form draft.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -1247,7 +822,7 @@ routes.delete('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissio
  *  post:
  *    tags:
  *      - Forms
- *    description: Publish form draft
+ *    description: This endpoint will publish the form draft.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -1274,81 +849,14 @@ routes.delete('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissio
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              id:
- *                type: string
- *                format: uuid
- *                description: Database generated form Id
- *              formVersionId:
- *                type: string
- *                description: Form version Id
- *                format: uuid
- *              formId:
- *                type: string
- *                description: Form ID
- *                format: uuid
- *              schema:
- *                type: object
- *                description: Form schema created by Form Designer
- *                example: {}
- *              updatedBy:
- *                type: string
- *                description: The username of the user that published the form version draft
- *              updatedAt:
- *                type: string
- *                format: date-time
- *                description: Date the form version draft was published
- *              version:
- *                type: number
- *                description: Form draft version to be published
- *                example: 2
- *              publish:
- *                type: boolean
- *                description: If set to true will publish the form draft version
- *                example: true
+ *            $ref: '#/components/requestBodies/FormReqPublishDraft'
  *    responses:
  *      '200':
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              FormDraftEx:
- *                $ref: '#/components/examples/FormDraftEx'
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                type: string
- *                format: uuid
- *                description: Database generated form Id
- *              formVersionId:
- *                type: string
- *                description: Form version Id
- *                format: uuid
- *              formId:
- *                type: string
- *                description: Form ID
- *                format: uuid
- *              schema:
- *                type: object
- *                description: Form schema created by Form Designer
- *                example: {}
- *              updatedBy:
- *                type: string
- *                description: The username of the user that published the form version draft
- *              updatedAt:
- *                type: string
- *                format: date-time
- *                description: Date the form version draft was published
- *              version:
- *                type: number
- *                description: Form draft version to be published
- *                example: 2
- *              publish:
- *                type: boolean
- *                description: If set to true will publish the form draft version
- *                example: true
+ *              $ref: '#/components/responses/responseBody/FormPublishDraft'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -1364,7 +872,7 @@ routes.post('/:formId/drafts/:formVersionDraftId/publish', apiAccess, hasFormPer
  *  get:
  *    tags:
  *      - Forms
- *    description: create Form API Key
+ *    description: This endpoint will fetch Form API Key details.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -1384,62 +892,7 @@ routes.post('/:formId/drafts/:formVersionDraftId/publish', apiAccess, hasFormPer
  *        content:
  *          application/json:
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    description: Database generated Id
- *                    format: uuid
- *                    example: 793a3311-f8d2-4073-8460-1f418e953a35
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                    example: f572d35e-f60c-4fa2-823d-f2ca77d96683
- *                  code:
- *                    type: string
- *                    descript: Submission Status Code
- *                  createdBy:
- *                    type: string
- *                    example: "AIDOWU@idir"
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                    example: 2023-06-16T21:55:13.138Z
- *                  updatedBy:
- *                    type: string
- *                    example: null
- *                  updatedAt:
- *                    type: string
- *                    format: date-time
- *                    example: "2023-06-16T21:55:13.055Z"
- *                  statusCode:
- *                    type: object
- *                    properties:
- *                      code:
- *                        type: string
- *                        example: "SUBMITTED"
- *                      display:
- *                        type: string
- *                        example: "Submitted"
- *                      nextCodes:
- *                        type: array
- *                        example: [ "ASSIGNED", "COMPLETED", "REVISING"]
- *                      createdBy:
- *                        type: string
- *                        example: "migration-012"
- *                      createdAt:
- *                        type: string
- *                        example: "2023-03-29T14:07:46.684Z"
- *                      updatedBy:
- *                        type: string
- *                        example: migration-024
- *                      updatedAt:
- *                        type: string
- *                        format: date-time
- *                        example: 2023-03-29T14:07:46.684Z
+ *              $ref: '#/components/responses/responseBody/FormGetStatusCodes'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -1455,7 +908,7 @@ routes.get('/:formId/statusCodes', apiAccess, hasFormPermissions([P.FORM_READ]),
  *  get:
  *    tags:
  *      - Forms
- *    description: Get Form API Key
+ *    description: This endpoint will fetch Form API Key details.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -1475,39 +928,7 @@ routes.get('/:formId/statusCodes', apiAccess, hasFormPermissions([P.FORM_READ]),
  *        content:
  *          application/json:
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                  format: uuid
- *                  description: ID of the form
- *                formId:
- *                  type: string
- *                  example: 306040aa-c045-46d9-8a5a-78bd6fc7c724
- *                  description: ID of the form
- *                createdBy:
- *                  type: string
- *                  description: The username of the user that created this form
- *                  example: 'ADOGE@idir'
- *                createdAt:
- *                  type: string
- *                  format: timestamp
- *                  description: The timestamp the form was created
- *                  example: 2023-06-04T02:46:50.983Z
- *                updatedBy:
- *                  type: string
- *                  description: The username of the latest user that updated the form,
- *                  example: 'ADOGE@idir'
- *                updatedAt:
- *                  type: string
- *                  format: timestamp
- *                  description: The timestamp the form was last updated
- *                  example: 2023-05-28T01:48:04.363Z
- *                secret:
- *                  type: string
- *                  format: uuid
- *                  description: API secret generated
- *                  example: cb55d586-39d8-4fbb-9f80-0244cb4cb5cf
+ *              $ref: '#/components/responses/responseBody/FormReadAPIkey'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -1523,7 +944,7 @@ routes.get('/:formId/apiKey', hasFormPermissions(P.FORM_API_READ), async (req, r
  *  put:
  *    tags:
  *      - Forms
- *    description: create Form API Key
+ *    description: This endpoint will create Form API Key.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -1537,90 +958,13 @@ routes.get('/:formId/apiKey', hasFormPermissions(P.FORM_API_READ), async (req, r
  *        description: ID of the form.
  *        required: true
  *        example: c6455376-382c-439d-a811-0381a012d696
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              id:
- *                type: string
- *                description: Database generated ID
- *                example: 1
- *                required: true
- *              formId:
- *                type: string
- *                example: 306040aa-c045-46d9-8a5a-78bd6fc7c724
- *                description: ID of the form
- *                required: true
- *              createdBy:
- *                type: string
- *                description: The username of the user that created this form
- *                example: 'ADOGE@idir'
- *                required: true
- *              createdAt:
- *                type: string
- *                format: timestamp
- *                description: The timestamp the form was created
- *                example: 2023-06-04T02:46:50.983Z
- *                required: true
- *              updatedBy:
- *                type: string
- *                description: The username of the latest user that updated the form,
- *                example: 'ADOGE@idir'
- *                required: true
- *              updatedAt:
- *                type: string
- *                format: timestamp
- *                description: The timestamp the form was last updated
- *                example: 2023-05-28T01:48:04.363Z
- *                required: true
- *              secret:
- *                type: string
- *                format: uuid
- *                description: API secret generated
- *                example: cb55d586-39d8-4fbb-9f80-0244cb4cb5cf
- *                required: true
  *    responses:
  *      '200':
  *        description: Success
  *        content:
  *          application/json:
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                  description: Database generated ID
- *                  example: 1
- *                formId:
- *                  type: string
- *                  example: 306040aa-c045-46d9-8a5a-78bd6fc7c724
- *                  description: ID of the form
- *                createdBy:
- *                  type: string
- *                  description: The username of the user that created this form
- *                  example: 'ADOGE@idir'
- *                createdAt:
- *                  type: string
- *                  format: timestamp
- *                  description: The timestamp the form was created
- *                  example: 2023-06-04T02:46:50.983Z
- *                updatedBy:
- *                  type: string
- *                  description: The username of the latest user that updated the form,
- *                  example: 'ADOGE@idir'
- *                updatedAt:
- *                  type: string
- *                  format: timestamp
- *                  description: The timestamp the form was last updated
- *                  example: 2023-05-28T01:48:04.363Z
- *                secret:
- *                  type: string
- *                  format: uuid
- *                  description: API secret generated
- *                  example: cb55d586-39d8-4fbb-9f80-0244cb4cb5cf
+ *              $ref: '#/components/responses/responseBody/FormCreateOrReplaceApiKey'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -1636,7 +980,7 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
  *  delete:
  *    tags:
  *      - Forms
- *    description: delete the Form API Key
+ *    description: This endpoint will delete the Form API Key
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -1668,7 +1012,7 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
  *  get:
  *   tags:
  *    - Forms
- *   description: Get all Users added as members to this form and their roles/permissions on the form
+ *   description: This endpoint will fetch the list of all the proactive help details.
  *   security:
  *    - bearerAuth: []
  *    - basicAuth: []
@@ -1679,61 +1023,7 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              Basic Layout:
- *                type: array
- *                items:
- *                  type: object
- *                  properties:
- *                    id:
- *                      type: string
- *                      format: uuid
- *                      description: Database generated Id of Form.io component
- *                      example: "3a7efb05-52d4-4538-aedf-53a2c3429c85"
- *                    componentName:
- *                      type: string
- *                      description: Name of Form.io component
- *                      example: File Upload
- *                    description:
- *                      type: string
- *                      description: Full details about the component
- *                      example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
- *                    externalLink:
- *                      type: string
- *                      description: Link to the external documentation for the component
- *                      example: https://help.form.io/userguide/form-building/layout-components#panel
- *                    groupName:
- *                      type: string
- *                      description: Name of the group
- *                      example: Basic Layout
- *                    imageName:
- *                      type: string
- *                      description: name of the image
- *                      example: FileUpload.jpg
- *                    isLinkEnabled:
- *                      type: boolean
- *                      description: This hides or shows external link
- *                      example: true
- *                    status:
- *                      type: boolean
- *                      description: This determines the publish status of the component.
- *                      example: true
- *              Advanced Data:
- *                type: array
- *                example: []
- *              Basic Fields:
- *                type: array
- *                example: []
- *              Advanced Layout:
- *                type: array
- *                example: []
- *              BC Government:
- *                type: array
- *                example: []
- *              Advanced Fields:
- *                type: array
- *                example: []
+ *            $ref: '#/components/responses/responseBody/FormProactiveHelpList'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  */
@@ -1741,6 +1031,9 @@ routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
 
+/*
+Suggested for clean up
+*/
 routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readFieldsForCSVExport(req, res, next);
 });
@@ -1751,7 +1044,7 @@ routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess,
  *  get:
  *   tags:
  *    - Forms
- *   description: Get all Users added as members to this form and their roles/permissions on the form
+ *   description: This endpoint will get the image of the form.io component proactive help.
  *   security:
  *    - bearerAuth: []
  *    - basicAuth: []

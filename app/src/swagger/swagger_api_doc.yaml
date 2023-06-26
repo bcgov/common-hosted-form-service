@@ -10,6 +10,7 @@ definition:
       name: Apache 2.0
       url: https://www.apache.org/licenses/LICENSE-2.0.html
     version: 1.0
+  tags: []
   components:
     responses:
       NotFound:
@@ -36,418 +37,54 @@ definition:
           application/json:
             schema:
               $ref: '#/components/schemas/NoFormAccessError'
+      FormIdNotFound:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormIdNotFoundError'
+      SubmissionIdNotFound:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionIdNotFoundError'
       UnprocessableEntityDB:
         description: Unauthorized
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UnprocessableEntityDBError'
-    schemas:
-      request:
-        AdminReqProactiveHelpObject:
-          type: object
-          properties:
-            componentName:
-              type: string
-              description: Name of the Form.io component.
-              example: File Upload
-            description:
-              type: string
-              description: Full details about the Form.io component.
-              example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
-            externalLink:
-              type: string
-              description: Link to the external documentation for the Form.io component.
-              example: https://help.form.io/userguide/form-building/layout-components#panel
-            groupName:
-              type: string
-              description: Name of the group.
-              example: Basic Layout
-            image:
-              type: string
-              format: binary
-              description: Binary image of the Form.io component.
-              example: ''
-            imageName:
-              type: string
-              description: Name of the image.
-              example: FileUpload.jpg
-            isLinkEnabled:
-              type: boolean
-              description: This hides or shows external link
-              example: true
-            status:
-              type: boolean
-              description: This determines the publish status of the component.
-              example: true
-        FormReqCreateForm:
-          type: object
-          properties:
-            name:
-              type: string
-              description: Name of the form.
-              example: test
-            description:
-              type: string
-              description: Short details about the form.
-              example: ''
-            schema:
-              type: object
-              description: Form schema
-              example:
-                display: form
-                type: form
-                components:
-                  - label: Text Field
-                    labelPosition: top
-                    placeholder: ''
-                    description: ''
-                    tooltip: ''
-                    inputMask: ''
-                    allowMultipleMasks: false
-                    hideLabel: false
-                    showWordCount: false
-                    showCharCount: false
-                    spellcheck: true
-                    disabled: false
-                    multiple: false
-                    case: ''
-                    validate:
-                      isUseForCopy: false
-                      required: false
-                      customMessage: ''
-                      minLength: ''
-                      maxLength: ''
-                      custom: ''
-                      customPrivate: false
-                      strictDateValidation: false
-                      multiple: false
-                      unique: false
-                      pattern: ''
-                    key: simpletextfield
-                    conditional:
-                      show:
-                      when:
-                      eq: ''
-                      json: ''
-                    customConditional: ''
-                    addons: []
-                    type: simpletextfield
-                    input: true
-                    prefix: ''
-                    customClass: ''
-                    suffix: ''
-                    protected: false
-                    unique: false
-                    persistent: true
-                    hidden: false
-                    clearOnHide: true
-                    refreshOn: ''
-                    redrawOn: ''
-                    tableView: false
-                    modalEdit: false
-                    dataGridLabel: false
-                    errorLabel: ''
-                    tabindex: ''
-                    autofocus: false
-                    dbIndex: false
-                    customDefaultValue: ''
-                    calculateValue: ''
-                    calculateServer: false
-                    widget:
-                      type: input
-                    attributes: {}
-                    validateOn: change
-                    overlay:
-                      style: ''
-                      left: ''
-                      top: ''
-                      width: ''
-                      height: ''
-                    allowCalculateOverride: false
-                    encrypted: false
-                    properties: {}
-                    mask: false
-                    inputType: text
-                    inputFormat: plain
-                    displayMask: ''
-                    truncateMultipleSpaces: false
-            identityProviders:
-              type: string
-              description: List of identity providers that can be used to login to the form
-              example:
-                - idir
-                - Bceid
-            enableSubmitterDraft:
-              type: boolean
-              description: Setting this to true will allow submitters to be able to save submissions
-                as drafts
-              example: false
-              default: false
-            enableCopyExistingSubmission:
-              type: boolean
-              description: If enabled, users can copy or duplicate submissions
-              example: false
-              default: false
-            enableStatusUpdates:
-              type: boolean
-              example: true
-              description: Enables or disables form reviewers from updating this form status (i.e.
-                Submitted, Assigned, Completed)
-              default: true
-            showSubmissionConfirmation:
-              type: boolean
-              description: toggle to set if submission confirmation should shown when the form
-                submission is submitted
-              example: true
-            allowSubmitterToUploadFile:
-              type: boolean
-              description: If enabled, Submitters can upload when submitting submissions
-              example: false
-              default: false
-            submissionReceivedEmails:
-              type: array
-              description: List of emails to send notifications to when submission is received
-              example: []
-            reminder_enabled:
-              type: boolean
-              example: true
-              description: A form submission reminder will be sent to users if set to true.
-              default: false
-        FormReqSubmissionExport:
-          type: object
-          properties:
-            format:
-              type: string
-              description: Form submission export format/type. It can either be "csv" or "json"
-              example: csv
-            template:
-              type: string
-              description: 'Chosen CSV format for the submission data exported. Use one of these templates 1) multiRowEmptySpacesCSVExport 2) multiRowBackFilledCSVExport 3) singleRowCSVExport 4) unFormattedCSVExport to export submission to CSV Note: use this parameter only if export format/type is csv'
-              example: multiRowEmptySpacesCSVExport
-              default: multiRowEmptySpacesCSVExport
-            version:
-              type: number
-              description: 'The version number of the form for the submission data exported. Note: use this parameter only if export format/type is csv'
-              example: 2
-            type:
-              type: string
-              example: submissions
-              description: Default value is submissions and should not be changed.
-              default: submissions
-            preference:
-              type: object
-              description: Form submissions export preferences
-              example: { minDate: '2023-05-19T07:00:00Z', maxDate: '2023-06-19T06:59:59Z' }
-        FormReqSubmissionExportWithFields:
-          type: object
-          properties:
-            format:
-              type: string
-              description: Form submission export format/type. It can either be "csv" or "json"
-              example: csv
-            template:
-              type: string
-              description: 'Chosen CSV format for the submission data exported. Use one of these templates 1) multiRowEmptySpacesCSVExport 2) multiRowBackFilledCSVExport 3) singleRowCSVExport 4) unFormattedCSVExport to export submission to CSV Note: use this parameter only if export format/type is csv'
-              example: multiRowEmptySpacesCSVExport
-              default: multiRowEmptySpacesCSVExport
-            version:
-              type: number
-              description: 'The version number of the form for the submission data exported. Note: use this parameter only if export format/type is csv'
-              example: 2
-            type:
-              type: string
-              example: submissions
-              description: Default value is submissions and should be changed.
-              default: submissions
-            preference:
-              type: object
-              description: Form submissions export preferences.
-              example: { minDate: '2023-05-19T07:00:00Z', maxDate: '2023-06-19T06:59:59Z' }
-            fields:
-              type: array
-              description: List of form submission fields to be exported to CSV.
-              example: []
-            emailExport:
-              type: boolean
-              description: This parameter should be set to true if the form submissions are large (e.g. above 500) or the form is big
-              example: false
-      response:
+
+      responseBody:
         AdminsFormGetEx:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-                description: ID of the form
-              name:
-                type: string
-                example: Ministry Survey
-                description: Name of the form
-              description:
-                type: string
-                example: ''
-                description: A summary of the form
-              active:
-                type: boolean
-                example: true
-                description: This is used to determine if the form is deleted. A value of false means the form is deleted
-              label:
-                type: string
-                example: ''
-              createdBy:
-                type: string
-                description: The username of the user that created this form
-                example: 'ADOGE@idir'
-              createdAt:
-                type: string
-                format: date-time
-                example: 2023-06-04T02:46:50.983Z
-              updatedBy:
-                type: string
-                example: 'ADOGE@idir'
-              updatedAt:
-                type: string
-                format: date-time
-                example: 2023-05-28T01:48:04.363Z
-              showSubmissionConfirmation:
-                type: boolean
-                example: true
-                description: Submission confirmation will be sent to the designated authority email(s) if set to true..
-              submissionReceivedEmails:
-                type: array
-                example: []
-              enableStatusUpdates:
-                type: boolean
-                example: true
-                description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
-              enableSubmitterDraft:
-                type: boolean
-                example: true
-                description: Users can save or edit this form draft if set to true.
-              schedule:
-                type: object
-                example: {}
-              reminder_enabled:
-                type: boolean
-                example: true
-                description: A form submission reminder will be sent to users if set to true.
-              enableCopyExistingSubmission:
-                type: boolean
-                example: true
-                description: Users can copy existing submission if set to true.
-              allowSubmitterToUploadFile:
-                type: boolean
-                example: true
-                description: Users can upload files with their submissions if set to true.
-              identityProviders:
-                type: array
-                example: ['idir', 'Bceid']
-                description: List of identity providers that can be used to access the form.
-              versions:
-                type: array
-                example:
-                  [
-                    id: '33707cbd-7e69-4c66-bd2e-88596896a670',
-                    formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
-                    version: 2,
-                    published: true,
-                    createdBy: 'AIDOWU@idir',
-                    createdAt: '2023-05-18T20:11:41.329Z',
-                    updatedBy: null,
-                    updatedAt: '2023-05-18T20:11:41.241Z'
-                  ]
-                description: List of form versions.
-              snake:
-                type: string
-                example: Ministry Survey
+            allOf:
+              - $ref: '#/components/schemas/model/Form'
+              - type: object
+                properties:
+                  versions:
+                    type: array
+                    description: List of form versions.
+                    items:
+                      $ref: '#/components/schemas/model/Version'
+                  snake:
+                    type: string
+                    example: Ministry Survey.
         AdminReadFormEx:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-              description: ID of the form
-              example: c6455376-382c-439d-a811-0381a012d696
-            name:
-              type: string
-              description: Name of the form.
-              example: Ministry Survey
-            description:
-              type: string
-              example: ''
-              description: A summary of the form.
-            active:
-              type: boolean
-              example: true
-              description: It determines if the form is deleted. A value of false means the form is deleted.
-            label:
-              type: string
-              example: ''
-            createdBy:
-              type: string
-              example: ADOGE@idir
-            createdAt:
-              type: string
-              format: date-time
-              example: 2023-06-04T02:46:50.983Z
-            updatedBy:
-              type: string
-              example: ADOGE@idir
-            updatedAt:
-              type: string
-              format: date-time
-              example: 2023-05-28T01:48:04.363Z
-            showSubmissionConfirmation:
-              type: boolean
-              example: true
-              description: Submission confirmation will be sent to the designated authority email(s) if set to true..
-            submissionReceivedEmails:
-              type: array
-              example: []
-            enableStatusUpdates:
-              type: boolean
-              example: true
-              description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
-            enableSubmitterDraft:
-              type: boolean
-              example: true
-              description: Users can save or edit this form draft if set to true.
-            schedule:
-              type: object
-              example: {}
-            reminder_enabled:
-              type: boolean
-              example: true
-              description: A form submission reminder will be sent to users if set to true.
-            enableCopyExistingSubmission:
-              type: boolean
-              example: true
-              description: Users can copy existing submission if set to true.
-            allowSubmitterToUploadFile:
-              type: boolean
-              example: true
-              description: Users can upload files with their submissions if set to true.
-            identityProviders:
-              type: array
-              example: ['idir', 'Bceid']
-              description: List of identity providers that can be used to access the form.
-            versions:
-              type: array
-              example:
-                [
-                  id: '33707cbd-7e69-4c66-bd2e-88596896a670',
-                  formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
-                  version: 2,
-                  published: true,
-                  createdBy: 'AIDOWU@idir',
-                  createdAt: '2023-05-18T20:11:41.329Z',
-                  updatedBy: null,
-                  updatedAt: '2023-05-18T20:11:41.241Z'
-                ]
-              description: List of form versions.
+          allOf:
+            - $ref: '#/components/schemas/model/Form'
+            - type: object
+              properties:
+                versions:
+                  type: array
+                  description: List of form versions.
+                  items:
+                    $ref: '#/components/schemas/model/Version'
+                snake:
+                  type: string
+                  example: Ministry Survey.
         AdminReadAPIKeyDetails:
           type: object
           properties:
@@ -475,89 +112,18 @@ definition:
               format: date-time
               example: 2023-05-28T01:48:04.363Z
         AdminRestoreForm:
-          type: object
-          properties:
-            id:
-              type: string
-              description: ID of the form.
-              example: 2
-            name:
-              type: string
-              example: Ministry Survey
-              description: Name of the form
-            description:
-              type: string
-              example: 'This is a ministry survey form'
-              description: A summary of the form
-            active:
-              type: boolean
-              example: true
-              description: This is used to determine if the form is deleted. A value of false means the form is deleted
-            label:
-              type: string
-              example: ''
-            createdBy:
-              type: string
-              example: ADOGE@idir
-            createdAt:
-              type: string
-              format: date-time
-              example: 2023-06-04T02:46:50.983Z
-            updatedBy:
-              type: string
-              example: ADOGE@idir
-            updatedAt:
-              type: string
-              format: date-time
-              example: 2023-05-28T01:48:04.363Z
-            showSubmissionConfirmation:
-              type: boolean
-              example: true
-              description: Submission confirmation will be sent to the designated authority email(s) if set to true..
-            submissionReceivedEmails:
-              type: array
-              example: []
-            enableStatusUpdates:
-              type: boolean
-              example: true
-              description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
-            enableSubmitterDraft:
-              type: boolean
-              example: true
-              description: Users can save or edit this form draft if set to true.
-            schedule:
-              type: object
-              example: {}
-            reminder_enabled:
-              type: boolean
-              example: true
-              description: A form submission reminder will be sent to users if set to true.
-            enableCopyExistingSubmission:
-              type: boolean
-              example: true
-              description: Users can copy existing submission if set to true.
-            allowSubmitterToUploadFile:
-              type: boolean
-              example: true
-              description: Users can upload files with their submissions if set to true.
-            identityProviders:
-              type: array
-              example: ['idir', 'Bceid']
-              description: List of identity providers that can be used to access the form.
-            versions:
-              type: array
-              example:
-                [
-                  id: '33707cbd-7e69-4c66-bd2e-88596896a670',
-                  formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
-                  version: 2,
-                  published: true,
-                  createdBy: 'AIDOWU@idir',
-                  createdAt: '2023-05-18T20:11:41.329Z',
-                  updatedBy: null,
-                  updatedAt: '2023-05-18T20:11:41.241Z'
-                ]
-              description: List of form versions.
+          allOf:
+            - $ref: '#/components/schemas/model/Form'
+            - type: object
+              properties:
+                versions:
+                  type: array
+                  description: List of form versions.
+                  items:
+                    $ref: '#/components/schemas/model/Version'
+                snake:
+                  type: string
+                  example: Ministry Survey.
         AdminGetFormUserRoles:
           type: array
           items:
@@ -627,9 +193,11 @@ definition:
                 type: string
                 example: ''
               identityProviders:
-                type: array
-                example: []
-                description: List of identity providers
+                type: string
+                description: List of identity providers that can be used to acess this form.
+                example:
+                  - idir
+                  - Bceid
               idps:
                 type: array
                 example: []
@@ -652,26 +220,7 @@ definition:
                 description: List of assigned roles to user for this form.
               permissions:
                 type: array
-                example:
-                  [
-                    'design_create',
-                    'design_delete',
-                    'design_read',
-                    'design_update',
-                    'form_api_create',
-                    'form_api_delete',
-                    'form_api_read',
-                    'form_api_update',
-                    'form_delete',
-                    'form_read',
-                    'form_update',
-                    'submission_create',
-                    'submission_delete',
-                    'submission_read',
-                    'submission_update',
-                    'team_read',
-                    'team_update'
-                  ]
+                example: ['design_create', 'design_delete', 'design_read', 'design_update']
                 description: List of permissions to user for this form.
               published:
                 type: boolean
@@ -688,59 +237,7 @@ definition:
         AdminGetUsers:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-                description: ID of the User
-                example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
-              keycloakId:
-                type: string
-                example: 084F23D7201D4C1B88BB26971264E1F2
-                description: ID from the keycloak.
-              idpUserId:
-                type: string
-                example: 084F23D7201D4C1B88BB26971264E1F2
-                description: IDP ID of the user.
-              firstName:
-                type: string
-                example: George
-                description: User registered firstname.
-              username:
-                type: string
-                example: AODOWI
-                description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id)).
-              fullName:
-                type: string
-                example: George Banner
-                description: User registered fullname.
-              lastName:
-                type: string
-                example: Banner
-                description: User registered lastname.
-              email:
-                type: string
-                example: test@gov.bc.ca
-                description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID).
-              idpCode:
-                type: array
-                example: []
-                description: List of idps.
-              createdBy:
-                type: string
-                example: ADOGE@idir
-              createdAt:
-                type: string
-                format: date-time
-                example: 2023-06-04T02:46:50.983Z
-              updatedBy:
-                type: string
-                example: ADOGE@idir
-              updatedAt:
-                type: string
-                format: date-time
-                example: 2023-05-28T01:48:04.363Z
+            $ref: '#/components/schemas/User'
         AdminReadUser:
           type: array
           items:
@@ -860,22 +357,1307 @@ definition:
                     type: boolean
                     description: It is used to set the publish status of the component.
                     example: true
-                  Advanced Data:
-                    type: array
-                    example: []
-                  Basic Fields:
-                    type: array
-                    example: []
-                  Advanced Layout:
-                    type: array
-                    example: []
-                  BC Government:
-                    type: array
-                    example: []
-                  Advanced Fields:
-                    type: array
-                    example: []
+            Advanced Data:
+              type: array
+              example: []
+            Basic Fields:
+              type: array
+              example: []
+            Advanced Layout:
+              type: array
+              example: []
+            BC Government:
+              type: array
+              example: []
+            Advanced Fields:
+              type: array
+              example: []
         AdminProactiveHelpList:
+          type: object
+          properties:
+            Basic Layout:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: ID of the Form.io component.
+                    example: '3a7efb05-52d4-4538-aedf-53a2c3429c85'
+                  componentName:
+                    type: string
+                    description: Name of the Form.io component
+                    example: File Upload
+                  description:
+                    type: string
+                    description: Full details about the Form.io component.
+                    example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+                  externalLink:
+                    type: string
+                    description: Link to the external documentation for the Form.io component.
+                    example: https://help.form.io/userguide/form-building/layout-components#panel
+                  groupName:
+                    type: string
+                    description: Name of the group
+                    example: Basic Layout
+                  imageName:
+                    type: string
+                    description: name of the image
+                    example: FileUpload.jpg
+                  isLinkEnabled:
+                    type: boolean
+                    description: This hides or shows external link.
+                    example: true
+                  status:
+                    type: boolean
+                    description: It is used to set the publish status of the component.
+                    example: true
+            Advanced Data:
+              type: array
+              example: []
+            Basic Fields:
+              type: array
+              example: []
+            Advanced Layout:
+              type: array
+              example: []
+            BC Government:
+              type: array
+              example: []
+            Advanced Fields:
+              type: array
+              example: []
+        FormListForms:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/model/Form'
+              - type: object
+                properties:
+                  versions:
+                    type: array
+                    description: List of form versions.
+                    items:
+                      $ref: '#/components/schemas/model/Version'
+                  snake:
+                    type: string
+                    example: Ministry Survey.
+        FormCreateForm:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/model/Form'
+              - type: object
+                properties:
+                  versions:
+                    type: array
+                    description: List of form versions.
+                    items:
+                      $ref: '#/components/schemas/model/Version'
+                  draft:
+                    type: object
+                    description: Form draft.
+                    example: {
+                      'id': '374bfefe-9115-4993-b4ef-871ecee1e58e',
+                      'formId': 'baf428d5-acae-424a-a6ca-a02e68052107',
+                      'createdBy': 'AIDOWU@idir',
+                      'schema': {
+                        'display': 'forms',
+                        'type': 'form',
+                        'components': [
+                          {
+                            'label': 'Text Field',
+                            'labelPosition': 'top',
+                            'placeholder': '',
+                            'description': '',
+                            'tooltip': '',
+                            'inputMask': '',
+                            'allowMultipleMasks': false,
+                            'hideLabel': false,
+                            'showWordCount': false,
+                            'showCharCount': false,
+                            'spellcheck': true,
+                            'disabled': false,
+                            'multiple': false,
+                            'case': '',
+                            'validate':
+                            {
+                              'isUseForCopy': false,
+                              'required': false,
+                              'customMessage': '',
+                              'minLength': '',
+                              'maxLength': '',
+                              'custom': '',
+                              'customPrivate': false,
+                              'strictDateValidation': false,
+                              'multiple': false,
+                              'unique': false,
+                              'pattern': ''
+                            },
+                            'key': 'simpletextfield',
+                            'conditional': { 'show': null, 'when': null, 'eq': '', 'json': '' },
+                            'customConditional': '',
+                            'addons': [],
+                            'type': 'simpletextfield',
+                            'input': true,
+                            'prefix': '',
+                            'customClass': '',
+                            'suffix': '',
+                            'protected': false,
+                            'unique': false,
+                            'persistent': true,
+                            'hidden': false,
+                            'clearOnHide': true,
+                            'refreshOn': '',
+                            'redrawOn': '',
+                            'tableView': false,
+                            'modalEdit': false,
+                            'dataGridLabel': false,
+                            'errorLabel': '',
+                            'tabindex': '',
+                            'autofocus': false,
+                            'dbIndex': false,
+                            'customDefaultValue': '',
+                            'calculateValue': '',
+                            'calculateServer': false,
+                            'widget': { 'type': 'input' },
+                            'attributes': {},
+                            'validateOn': 'change',
+                            'overlay': { 'style': '', 'left': '', 'top': '', 'width': '', 'height': '' },
+                            'allowCalculateOverride': false,
+                            'encrypted': false,
+                            'properties': {},
+                            'mask': false,
+                            'inputType': 'text',
+                            'inputFormat': 'plain',
+                            'displayMask': '',
+                            'truncateMultipleSpaces': false,
+                            'id': 'elfbvm',
+                            'defaultValue': null
+                          }
+                        ]
+                      }
+                    }
+        FormReadForm:
+          allOf:
+            - $ref: '#/components/schemas/model/Form'
+            - type: object
+              properties:
+                versions:
+                  type: array
+                  description: List of form versions.
+                  items:
+                    $ref: '#/components/schemas/model/Version'
+                snake:
+                  type: string
+                  example: Ministry Survey.
+        FormReadFormOptions:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the form.
+            name:
+              type: string
+              example: Ministry Survey
+              description: Name of the form.
+            description:
+              type: string
+              example: ''
+              description: A summary of the form.
+            idpHints:
+              type: array
+              description: Form access options. Options are "public", "bceid-basic", and "bceid-business".
+              example: ['public']
+            snake:
+              type: string
+              example: Ministry Survey.
+        FormUpdateForm:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/model/Form'
+              - type: object
+                properties:
+                  versions:
+                    type: array
+                    description: List of form versions.
+                    items:
+                      $ref: '#/components/schemas/model/Version'
+                  snake:
+                    type: string
+                    example: Ministry Survey.
+                  identityProviders:
+                    type: array
+                    description: List of identity providers that can be used to login to the form.
+                    example:
+                      - code: idir
+                        display: IDIR
+                        active: true
+                        idp: idir
+                        createdBy: migration-002
+                        createdAt: '2023-03-29T14:07:46.684Z'
+                        updatedBy:
+                        updatedAt: '2023-03-29T14:07:46.684Z'
+        FormListFormSubmissions:
+          type: array
+          items:
+            type: object
+            properties:
+              confirmationId:
+                type: string
+                description: Submission confirmation ID.
+                example: 9100A7D1
+              formId:
+                type: string
+                description: ID of the form
+                format: uuid
+                example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
+              formSubmissionStatusCode:
+                type: string
+                description: Code for the submission status.
+                example: ASSIGNED
+              submissionId:
+                type: string
+                format: uuid
+                description: ID of the Submission.
+                example: 9100a7d1-7017-4c07-bf10-9e19ea41777c
+              deleted:
+                type: boolean
+                description: Toggle that determines if the form is deleted.
+                example: true
+              formVersionId:
+                type: string
+                description: ID of form version
+                format: uuid
+                example: be1aac0a-8149-4987-bef8-470d538304a8
+              createdBy:
+                type: string
+                example: example@idir
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-18T04:47:56.622Z
+              lateEntry:
+                type: boolean
+                description: Toggle that determines if the submission was submitted after the submission deadline.
+                example: true
+        FormReadVersion:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: ID of form version.
+                example: be1aac0a-8149-4987-bef8-470d538304a8
+              formId:
+                type: string
+                description: ID of the form
+                format: uuid
+                example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
+              versions:
+                type: number
+                description: Form version number.
+                example: 2
+              schema:
+                type: object
+                description: Form schema created by Form Designer
+                example:
+                  type: form
+                  display: form
+                  components:
+                    - id: e9hj4ro
+                      key: firstName
+                      case: ''
+                      mask: false
+                      type: simpletextfield
+                      input: true
+                      label: First Name
+                      addons: []
+                      hidden: false
+                      prefix: ''
+                      suffix: ''
+                      unique: false
+                      widget:
+                        type: input
+                      dbIndex: false
+                      overlay:
+                        top: ''
+                        left: ''
+                        style: ''
+                        width: ''
+                        height: ''
+                      tooltip: ''
+                      disabled: false
+                      multiple: false
+                      redrawOn: ''
+                      tabindex: ''
+                      validate:
+                        custom: ''
+                        unique: false
+                        pattern: ''
+                        multiple: false
+                        required: false
+                        maxLength: ''
+                        minLength: ''
+                        isUseForCopy: false
+                        customMessage: ''
+                        customPrivate: false
+                        strictDateValidation: false
+                      autofocus: false
+                      encrypted: false
+                      hideLabel: false
+                      inputMask: ''
+                      inputType: text
+                      modalEdit: false
+                      protected: false
+                      refreshOn: ''
+                      tableView: false
+                      attributes: {}
+                      errorLabel: ''
+                      persistent: true
+                      properties: {}
+                      spellcheck: true
+                      validateOn: change
+                      clearOnHide: true
+                      conditional:
+                        eq: ''
+                        json: ''
+                        show:
+                        when:
+                      customClass: ''
+                      description: ''
+                      displayMask: ''
+                      inputFormat: plain
+                      placeholder: ''
+                      defaultValue: ''
+                      dataGridLabel: false
+                      labelPosition: top
+                      showCharCount: false
+                      showWordCount: false
+                      calculateValue: ''
+                      calculateServer: false
+                      customConditional: ''
+                      allowMultipleMasks: false
+                      customDefaultValue: ''
+                      allowCalculateOverride: false
+                      truncateMultipleSpaces: false
+              updatedBy:
+                type: string
+                example: JOHND@idir
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-06-18T14:34:57.866Z
+              createdBy:
+                type: string
+                example: JOHND@idir
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-16T22:25:58.207Z
+        FormPublishVersion:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the form
+              example: 306040aa-c045-46d9-8a5a-78bd6fc7c644
+            name:
+              type: string
+              description: Name or title of the form.
+              example: Fisheries
+            description:
+              type: string
+              description: A short description of the form.
+              example: ''
+            active:
+              type: boolean
+              description: Toggle that determines if the form is deleted.
+              example: true
+            labels:
+              type: string
+              example: []
+            createdBy:
+              type: string
+              example: JOHND@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-04-21T20:11:26.360Z
+            updatedBy:
+              type: string
+              example: JOHND@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-06-12T06:59:19.718Z
+            showSubmissionConfirmation:
+              type: boolean
+              description: toggle to set if submission confirmation should shown when the form
+                submission is submitted
+              example: true
+            enableStatusUpdates:
+              type: boolean
+              example: true
+              description: Enables or disables form reviewers from updating this form status (i.e.
+                Submitted, Assigned, Completed)
+              default: true
+            enableSubmitterDraft:
+              type: boolean
+              description: Setting this to true will allow submitters to be able to save submissions
+                as drafts
+              example: false
+              default: false
+            schedule:
+              type: object
+              example:
+                allowLateSubmissions: false
+                expire: false
+                message: ''
+            reminder_enabled:
+              type: boolean
+              example: true
+              description: A form submission reminder will be sent to users if set to true.
+              default: false
+            enableCopyExistingSubmission:
+              type: boolean
+              description: If enabled, users can copy or duplicate submissions
+              example: false
+              default: false
+            allowSubmitterToUploadFile:
+              type: boolean
+              description: If enabled, Submitters can upload when submitting submissions
+              example: false
+              default: false
+            identityProviders:
+              type: string
+              description: List of identity providers that can be used to acess the form
+              example:
+                - idir
+                - Bceid
+            versions:
+              type: array
+              description: List of form versions
+        FormCreateFormSubmission:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of submission.
+                format: uuid
+                example: 095f15a1-7d85-4919-8f40-5a0a3477cd7f
+              formVersionId:
+                type: string
+                description: ID of form version.
+                format: uuid
+                example: e766899b-a4f9-438b-8382-17af8f10bff5
+              confirmationId:
+                type: string
+                description: Submission confirmation ID
+                example: 095F15A1
+              deleted:
+                type: boolean
+                description: If set to true, the submission will be regarded as deleted
+                example: true
+              draft:
+                type: boolean
+                description: If set to true, the submission will be regarded as a draft
+                example: true
+              submission:
+                type: object
+                description: submission details
+                example:
+                  data:
+                    submit: true
+                    firstName: Testd
+                    lateEntry: false
+                    middleName: Ghust
+                  state: submitted
+                  _vnote: ''
+                  metadata:
+                    offset: -420
+                    onLine: true
+                    origin: http://localhost:8082
+                    pathName: '/app/form/submit'
+                    referrer: ''
+                    timezone: America/Los_Angeles
+                    userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+                      like Gecko) Chrome/114.0.0.0 Safari/537.36
+                    browserName: Netscape
+              updatedBy:
+                type: string
+                example: null
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-06-18T22:09:07.611Z
+              createdBy:
+                type: string
+                example: JOHND@idir
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-18T22:09:07.611Z
+        FormListsDraft:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the form draft.
+                format: uuid
+                example: 793a3311-f8d2-4073-8460-1f418e953a35
+              formId:
+                type: string
+                description: ID of the form.
+                format: uuid
+                example: f572d35e-f60c-4fa2-823d-f2ca77d96683
+              formVersionId:
+                type: string
+                description: ID of the form version.
+                format: uuid
+                example: f572d35e-f60c-4fa2-823d-f2ca77d96683
+              createdBy:
+                type: string
+                example: JOHND@idir
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-18T22:09:07.611Z
+              updatedBy:
+                type: string
+                example: null
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-06-18T22:09:07.611Z
+        FormCreateDraft:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of form draft.
+              example: 1926789f-2b95-4905-b78f-b6c6a7d86ecc
+            formId:
+              type: string
+              description: ID of the form.
+              format: uuid
+              example:
+            formVersionId:
+              type: string
+              format: uuid
+              description: ID of Form version.
+              example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
+            schema:
+              type: object
+              description:
+              example:
+                type: form
+                display: form
+                components:
+                  - id: ero668s
+                    key: name
+                    case: ''
+                    mask: false
+                    type: simpletextfield
+                    input: true
+                    label: Name
+                    addons: []
+                    hidden: false
+                    prefix: ''
+                    suffix: ''
+                    unique: false
+                    widget:
+                      type: input
+                    dbIndex: false
+                    overlay:
+                      top: ''
+                      left: ''
+                      style: ''
+                      width: ''
+                      height: ''
+                    tooltip: ''
+                    disabled: false
+                    multiple: false
+                    redrawOn: ''
+                    tabindex: ''
+                    validate:
+                      custom: ''
+                      unique: false
+                      pattern: ''
+                      multiple: false
+                      required: false
+                      maxLength: ''
+                      minLength: ''
+                      isUseForCopy: false
+                      customMessage: ''
+                      customPrivate: false
+                      strictDateValidation: false
+                    autofocus: false
+                    encrypted: false
+                    hideLabel: false
+                    inputMask: ''
+                    inputType: text
+                    modalEdit: false
+                    protected: false
+                    refreshOn: ''
+                    tableView: false
+                    attributes: {}
+                    errorLabel: ''
+                    persistent: true
+                    properties: {}
+                    spellcheck: true
+                    validateOn: change
+                    clearOnHide: true
+                    conditional:
+                      eq: ''
+                      json: ''
+                      show:
+                      when:
+                    customClass: ''
+                    description: ''
+                    displayMask: ''
+                    inputFormat: plain
+                    placeholder: ''
+                    defaultValue: ''
+                    dataGridLabel: false
+                    labelPosition: top
+                    showCharCount: false
+                    showWordCount: false
+                    calculateValue: ''
+                    calculateServer: false
+                    customConditional: ''
+                    allowMultipleMasks: false
+                    customDefaultValue: ''
+                    allowCalculateOverride: false
+                    truncateMultipleSpaces: false
+            createdBy:
+              type: string
+              description: The username of the user that created this form
+              example: 'ADOGE@idir'
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: 'ADOGE@idir'
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+        FormReadDraft:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of form draft.
+              example: 1926789f-2b95-4905-b78f-b6c6a7d86ecc
+            formId:
+              type: string
+              description: ID of the form.
+              format: uuid
+              example:
+            formVersionId:
+              type: string
+              format: uuid
+              description: ID of Form version.
+              example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
+            schema:
+              type: object
+              description:
+              example:
+                type: form
+                display: form
+                components:
+                  - id: ero668s
+                    key: name
+                    case: ''
+                    mask: false
+                    type: simpletextfield
+                    input: true
+                    label: Name
+                    addons: []
+                    hidden: false
+                    prefix: ''
+                    suffix: ''
+                    unique: false
+                    widget:
+                      type: input
+                    dbIndex: false
+                    overlay:
+                      top: ''
+                      left: ''
+                      style: ''
+                      width: ''
+                      height: ''
+                    tooltip: ''
+                    disabled: false
+                    multiple: false
+                    redrawOn: ''
+                    tabindex: ''
+                    validate:
+                      custom: ''
+                      unique: false
+                      pattern: ''
+                      multiple: false
+                      required: false
+                      maxLength: ''
+                      minLength: ''
+                      isUseForCopy: false
+                      customMessage: ''
+                      customPrivate: false
+                      strictDateValidation: false
+                    autofocus: false
+                    encrypted: false
+                    hideLabel: false
+                    inputMask: ''
+                    inputType: text
+                    modalEdit: false
+                    protected: false
+                    refreshOn: ''
+                    tableView: false
+                    attributes: {}
+                    errorLabel: ''
+                    persistent: true
+                    properties: {}
+                    spellcheck: true
+                    validateOn: change
+                    clearOnHide: true
+                    conditional:
+                      eq: ''
+                      json: ''
+                      show:
+                      when:
+                    customClass: ''
+                    description: ''
+                    displayMask: ''
+                    inputFormat: plain
+                    placeholder: ''
+                    defaultValue: ''
+                    dataGridLabel: false
+                    labelPosition: top
+                    showCharCount: false
+                    showWordCount: false
+                    calculateValue: ''
+                    calculateServer: false
+                    customConditional: ''
+                    allowMultipleMasks: false
+                    customDefaultValue: ''
+                    allowCalculateOverride: false
+                    truncateMultipleSpaces: false
+            createdBy:
+              type: string
+              description: The username of the user that created this form
+              example: 'ADOGE@idir'
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: 'ADOGE@idir'
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+        FormUpdateDraft:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of form draft.
+              example: 1926789f-2b95-4905-b78f-b6c6a7d86ecc
+            formId:
+              type: string
+              description: ID of the form.
+              format: uuid
+              example:
+            formVersionId:
+              type: string
+              format: uuid
+              description: ID of Form version.
+              example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: 'ADOGE@idir'
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+            schema:
+              type: object
+              description: Form schema created by Form Designer
+              example:
+                display: form
+                type: form
+                components:
+                  - id: ero668s
+                    key: name
+                    case: ''
+                    mask: false
+                    type: simpletextfield
+                    input: true
+                    label: Name
+                    addons: []
+                    hidden: false
+                    prefix: ''
+                    suffix: ''
+                    unique: false
+                    widget:
+                      type: input
+                    dbIndex: false
+                    overlay:
+                      top: ''
+                      left: ''
+                      style: ''
+                      width: ''
+                      height: ''
+                    tooltip: ''
+                    disabled: false
+                    multiple: false
+                    redrawOn: ''
+                    tabindex: ''
+                    validate:
+                      custom: ''
+                      unique: false
+                      pattern: ''
+                      multiple: false
+                      required: false
+                      maxLength: ''
+                      minLength: ''
+                      isUseForCopy: false
+                      customMessage: ''
+                      customPrivate: false
+                      strictDateValidation: false
+                    autofocus: false
+                    encrypted: false
+                    hideLabel: false
+                    inputMask: ''
+                    inputType: text
+                    modalEdit: false
+                    protected: false
+                    refreshOn: ''
+                    tableView: false
+                    attributes: {}
+                    errorLabel: ''
+                    persistent: true
+                    properties: {}
+                    spellcheck: true
+                    validateOn: change
+                    clearOnHide: true
+                    conditional:
+                      eq: ''
+                      json: ''
+                      show:
+                      when:
+                    customClass: ''
+                    description: ''
+                    displayMask: ''
+                    inputFormat: plain
+                    placeholder: ''
+                    defaultValue: ''
+                    dataGridLabel: false
+                    labelPosition: top
+                    showCharCount: false
+                    showWordCount: false
+                    calculateValue: ''
+                    calculateServer: false
+                    customConditional: ''
+                    allowMultipleMasks: false
+                    customDefaultValue: ''
+                    allowCalculateOverride: false
+                    truncateMultipleSpaces: false
+                  - label: Number
+                    labelPosition: top
+                    placeholder: ''
+                    description: ''
+                    tooltip: ''
+                    hideLabel: false
+                    disabled: false
+                    multiple: false
+                    delimiter: false
+                    requireDecimal: false
+                    validate:
+                      isUseForCopy: false
+                      required: false
+                      customMessage: ''
+                      min: ''
+                      max: ''
+                      custom: ''
+                      customPrivate: false
+                      strictDateValidation: false
+                      multiple: false
+                      unique: false
+                      step: any
+                      integer: ''
+                    key: simplenumber
+                    conditional:
+                      show:
+                      when:
+                      eq: ''
+                      json: ''
+                    customConditional: ''
+                    addons: []
+                    type: simplenumber
+                    input: true
+                    prefix: ''
+                    customClass: ''
+                    suffix: ''
+                    protected: false
+                    unique: false
+                    persistent: true
+                    hidden: false
+                    clearOnHide: true
+                    refreshOn: ''
+                    redrawOn: ''
+                    tableView: false
+                    modalEdit: false
+                    dataGridLabel: false
+                    errorLabel: ''
+                    tabindex: ''
+                    autofocus: false
+                    dbIndex: false
+                    customDefaultValue: ''
+                    calculateValue: ''
+                    calculateServer: false
+                    widget:
+                      type: input
+                    attributes: {}
+                    validateOn: change
+                    overlay:
+                      style: ''
+                      left: ''
+                      top: ''
+                      width: ''
+                      height: ''
+                    allowCalculateOverride: false
+                    encrypted: false
+                    showCharCount: false
+                    showWordCount: false
+                    properties: {}
+                    allowMultipleMasks: false
+                    id: ec68s1c
+                    defaultValue:
+                  - id: exxka6t
+                    key: submit
+                    size: md
+                    type: button
+                    block: false
+                    input: true
+                    label: Submit
+                    theme: primary
+                    action: submit
+                    addons: []
+                    hidden: false
+                    prefix: ''
+                    suffix: ''
+                    unique: false
+                    widget:
+                      type: input
+                    dbIndex: false
+                    overlay:
+                      top: ''
+                      left: ''
+                      style: ''
+                      width: ''
+                      height: ''
+                    tooltip: ''
+                    disabled: false
+                    leftIcon: ''
+                    multiple: false
+                    redrawOn: ''
+                    tabindex: ''
+                    validate:
+                      custom: ''
+                      unique: false
+                      multiple: false
+                      required: false
+                      customPrivate: false
+                      strictDateValidation: false
+                    autofocus: false
+                    encrypted: false
+                    hideLabel: false
+                    modalEdit: false
+                    protected: false
+                    refreshOn: ''
+                    rightIcon: ''
+                    tableView: false
+                    attributes: {}
+                    errorLabel: ''
+                    persistent: false
+                    properties: {}
+                    validateOn: change
+                    clearOnHide: true
+                    conditional:
+                      eq: ''
+                      show:
+                      when:
+                    customClass: ''
+                    description: ''
+                    placeholder: ''
+                    defaultValue:
+                    dataGridLabel: true
+                    labelPosition: top
+                    showCharCount: false
+                    showWordCount: false
+                    calculateValue: ''
+                    calculateServer: false
+                    disableOnInvalid: true
+                    allowMultipleMasks: false
+                    customDefaultValue: ''
+                    allowCalculateOverride: false
+        FormPublishDraft:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of form draft.
+              example: 1926789f-2b95-4905-b78f-b6c6a7d86ecc
+            formId:
+              type: string
+              description: ID of the form.
+              format: uuid
+              example:
+            formVersionId:
+              type: string
+              format: uuid
+              description: ID of Form version.
+              example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
+            schema:
+              type: object
+              description: Form schema created by Form Designer.
+              example:
+                display: form
+                type: form
+                components:
+                  - id: ero668s
+                    key: name
+                    case: ''
+                    mask: false
+                    type: simpletextfield
+                    input: true
+                    label: Name
+                    addons: []
+                    hidden: false
+                    prefix: ''
+                    suffix: ''
+                    unique: false
+                    widget:
+                      type: input
+                    dbIndex: false
+                    overlay:
+                      top: ''
+                      left: ''
+                      style: ''
+                      width: ''
+                      height: ''
+                    tooltip: ''
+                    disabled: false
+                    multiple: false
+                    redrawOn: ''
+                    tabindex: ''
+                    validate:
+                      custom: ''
+                      unique: false
+                      pattern: ''
+                      multiple: false
+                      required: false
+                      maxLength: ''
+                      minLength: ''
+                      isUseForCopy: false
+                      customMessage: ''
+                      customPrivate: false
+                      strictDateValidation: false
+                    autofocus: false
+                    encrypted: false
+                    hideLabel: false
+                    inputMask: ''
+                    inputType: text
+                    modalEdit: false
+                    protected: false
+                    refreshOn: ''
+                    tableView: false
+                    attributes: {}
+                    errorLabel: ''
+                    persistent: true
+                    properties: {}
+                    spellcheck: true
+                    validateOn: change
+                    clearOnHide: true
+                    conditional:
+                      eq: ''
+                      json: ''
+                      show:
+                      when:
+                    customClass: ''
+                    description: ''
+                    displayMask: ''
+                    inputFormat: plain
+                    placeholder: ''
+                    defaultValue: ''
+                    dataGridLabel: false
+                    labelPosition: top
+                    showCharCount: false
+                    showWordCount: false
+                    calculateValue: ''
+                    calculateServer: false
+                    customConditional: ''
+                    allowMultipleMasks: false
+                    customDefaultValue: ''
+                    allowCalculateOverride: false
+                    truncateMultipleSpaces: false
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+            version:
+              type: number
+              description: version of the form draft  to be published.
+              example: 2
+            publish:
+              type: boolean
+              description: If set to true will publish the form draft version
+              example: true
+        FormGetStatusCodes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Status code ID.
+                format: uuid
+                example: 793a3311-f8d2-4073-8460-1f418e953a35
+              formId:
+                type: string
+                description: ID of the form
+                format: uuid
+                example: f572d35e-f60c-4fa2-823d-f2ca77d96683
+              code:
+                type: string
+                descript: Submission Status Code
+                example: SUBMITTED
+              createdBy:
+                type: string
+                example: BHUD@idir
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-06-16T21:55:13.138Z
+              updatedBy:
+                type: string
+                example: null
+              updatedAt:
+                type: string
+                format: date-time
+                example: '2023-06-16T21:55:13.055Z'
+              statusCode:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: 'SUBMITTED'
+                  display:
+                    type: string
+                    example: 'Submitted'
+                  nextCodes:
+                    type: array
+                    example:
+                      - ASSIGNED
+                      - COMPLETED
+                      - REVISING
+                  createdBy:
+                    type: string
+                    example: 'migration-012'
+                  createdAt:
+                    type: string
+                    example: 2023-03-29T14:07:46.684Z
+                  updatedBy:
+                    type: string
+                    example: migration-024
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: 2023-03-29T14:07:46.684Z
+        FormReadAPIkey:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the API key generated.
+            formId:
+              type: string
+              example: 306040aa-c045-46d9-8a5a-78bd6fc7c724
+              description: ID of the form
+            createdBy:
+              type: string
+              example: ADOGE@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: ADOGE@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+            secret:
+              type: string
+              format: uuid
+              description: The API secret generated.
+              example: cb55d586-39d8-4fbb-9f80-0244cb4cb5cf
+        FormCreateOrReplaceApiKey:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the API key generated.
+            formId:
+              type: string
+              example: 306040aa-c045-46d9-8a5a-78bd6fc7c724
+              description: ID of the form
+            createdBy:
+              type: string
+              example: ADOGE@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              example: ADOGE@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-05-28T01:48:04.363Z
+            secret:
+              type: string
+              format: uuid
+              description: The API secret generated.
+              example: cb55d586-39d8-4fbb-9f80-0244cb4cb5cf
+        FormProactiveHelpList:
           type: object
           properties:
             Basic Layout:
@@ -931,305 +1713,137 @@ definition:
                   Advanced Fields:
                     type: array
                     example: []
-        FormListForms:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-                description: ID of the form
-              name:
-                type: string
-                example: Ministry Survey
-                description: Name of the form.
-              description:
-                type: string
-                example: This is ministry survey form.
-                description: A summary of the form
-              active:
-                type: boolean
-                example: true
-                description: This is used to determine if the form is deleted. A value of false means the form is deleted
-              label:
-                type: string
-                example: ''
-              createdBy:
-                type: string
-                example: ADOGE@idir
-              createdAt:
-                type: string
-                format: date-time
-                example: 2023-06-04T02:46:50.983Z
-              updatedBy:
-                type: string
-                example: ADOGE@idir
-              updatedAt:
-                type: string
-                format: date-time
-                example: 2023-05-28T01:48:04.363Z
-              showSubmissionConfirmation:
-                type: boolean
-                example: true
-                description: Submission confirmation will be sent to the designated authority email(s) if set to true..
-              submissionReceivedEmails:
-                type: array
-                example: []
-              enableStatusUpdates:
-                type: boolean
-                example: true
-                description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
-              enableSubmitterDraft:
-                type: boolean
-                example: true
-                description: Users can save or edit this form draft if set to true.
-              schedule:
-                type: object
-                example: {}
-              reminder_enabled:
-                type: boolean
-                example: true
-                description: A form submission reminder will be sent to users if set to true
-              enableCopyExistingSubmission:
-                type: boolean
-                example: true
-                description: Users can copy existing submission if set to true.
-              allowSubmitterToUploadFile:
-                type: boolean
-                example: true
-                description: Users can upload files with their submissions if set to true.
-              identityProviders:
-                type: array
-                example: ['idir', 'Bceid']
-                description: List of identity providers that can be used to acess the form.
-              versions:
-                type: array
-                example:
-                  [
-                    {
-                      id: '33707cbd-7e69-4c66-bd2e-88596896a670',
-                      formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
-                      version: 2,
-                      published: true,
-                      createdBy: 'AIDOWU@idir',
-                      createdAt: '2023-05-18T20:11:41.329Z',
-                      updatedBy: null,
-                      updatedAt: '2023-05-18T20:11:41.241Z'
-                    }
-                  ]
-                description: List of form versions.
-              snake:
-                type: string
-                example: Ministry Survey
-        FormCreateForm:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-                description: ID of the form.
-                example: baf428d5-acae-424a-a6ca-a02e68052107
-              name:
-                type: string
-                description: Name or title of the form
-                example: Ministry Survey Form
-              description:
-                type: string
-                description: short description of the form
-                example: This is the ministry survey form
-              active:
-                type: boolean
-                example: true
-                description: This is used to determine if the form is deleted. A value of false means the form is deleted
-              labels:
-                type: string
-              createdBy:
-                type: string
-                example: Example@idir
-              createdAt:
-                type: string
-                format: date-time
-                example: 2023-06-16T16:32:36.173Z
-              updatedBy:
-                type: string
-                example: null
-              updatedAt:
-                type: string
-                format: date-time
-                example: 2023-06-16T16:32:36.158Z
-              showSubmissionConfirmation:
-                type: boolean
-                example: true
-                description: Submission confirmation will be sent to the designated authority email(s) if set to true..
-              submissionReceivedEmails:
-                type: array
-                example: []
-              enableStatusUpdates:
-                type: boolean
-                example: true
-                description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
-              enableSubmitterDraft:
-                type: boolean
-                example: true
-                description: Users can save or edit this form draft if set to true.
-              schedule:
-                type: object
-                example: {}
-              reminder_enabled:
-                type: boolean
-                example: true
-                description: A form submission reminder will be sent to users if set to true.
-              enableCopyExistingSubmission:
-                type: boolean
-                example: true
-                description: Users can copy existing submission if set to true.
-              allowSubmitterToUploadFile:
-                type: boolean
-                example: true
-                description: Users can upload files with their submissions if set to true.
-              identityProviders:
-                type: array
-                example: ['idir', 'Bceid']
-                description: List of identity providers that can be used to access the form.
-              versions:
-                type: array
-                description: List of form versions
-                example: []
-              draft:
-                type: object
-                description: Form draft.
-                example:
-                  {
-                    'id': '374bfefe-9115-4993-b4ef-871ecee1e58e',
-                    'formId': 'baf428d5-acae-424a-a6ca-a02e68052107',
-                    'createdBy': 'AIDOWU@idir',
-                    'schema':
-                      {
-                        'display': 'form',
-                        'type': 'form',
-                        'components':
-                          [
-                            {
-                              'label': 'Text Field',
-                              'labelPosition': 'top',
-                              'placeholder': '',
-                              'description': '',
-                              'tooltip': '',
-                              'inputMask': '',
-                              'allowMultipleMasks': false,
-                              'hideLabel': false,
-                              'showWordCount': false,
-                              'showCharCount': false,
-                              'spellcheck': true,
-                              'disabled': false,
-                              'multiple': false,
-                              'case': '',
-                              'validate':
-                                {
-                                  'isUseForCopy': false,
-                                  'required': false,
-                                  'customMessage': '',
-                                  'minLength': '',
-                                  'maxLength': '',
-                                  'custom': '',
-                                  'customPrivate': false,
-                                  'strictDateValidation': false,
-                                  'multiple': false,
-                                  'unique': false,
-                                  'pattern': ''
-                                },
-                              'key': 'simpletextfield',
-                              'conditional': { 'show': null, 'when': null, 'eq': '', 'json': '' },
-                              'customConditional': '',
-                              'addons': [],
-                              'type': 'simpletextfield',
-                              'input': true,
-                              'prefix': '',
-                              'customClass': '',
-                              'suffix': '',
-                              'protected': false,
-                              'unique': false,
-                              'persistent': true,
-                              'hidden': false,
-                              'clearOnHide': true,
-                              'refreshOn': '',
-                              'redrawOn': '',
-                              'tableView': false,
-                              'modalEdit': false,
-                              'dataGridLabel': false,
-                              'errorLabel': '',
-                              'tabindex': '',
-                              'autofocus': false,
-                              'dbIndex': false,
-                              'customDefaultValue': '',
-                              'calculateValue': '',
-                              'calculateServer': false,
-                              'widget': { 'type': 'input' },
-                              'attributes': {},
-                              'validateOn': 'change',
-                              'overlay': { 'style': '', 'left': '', 'top': '', 'width': '', 'height': '' },
-                              'allowCalculateOverride': false,
-                              'encrypted': false,
-                              'properties': {},
-                              'mask': false,
-                              'inputType': 'text',
-                              'inputFormat': 'plain',
-                              'displayMask': '',
-                              'truncateMultipleSpaces': false,
-                              'id': 'elfbvm',
-                              'defaultValue': null
-                            }
-                          ]
-                      }
-                  }
-        FormReadForm:
+        RBACGetCurrentUser:
           type: object
           properties:
             id:
               type: string
               format: uuid
-              description: ID of the form.
-            name:
+              description: Current User ID.
+              example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+            usernameIdp:
               type: string
-              example: Ministry Survey
-              description: Name of the form.
-            description:
+              description: User IDP username.
+              example: GEORGEB@idir
+            keycloakId:
               type: string
-              example: The ministry fr=orm survey
-              description: A summary of the form.
-            active:
+              description: keycloak ID.
+              example: ea94678c-5f00-42b2-9f56-bd401091fb7c
+            idpUserId:
+              type: string
+              description: IDP ID of the user.
+              example: 085F22D7201D4C1B88BB26970264E1F3
+            username:
+              type: string
+              description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id)).
+              example: JHOND
+            fullName:
+              type: string
+              description: User registered fullname.
+              example: John Duger
+            lastName:
+              type: string
+              description: User registered lastname.
+              example: Duger
+            firstName:
+              type: string
+              description: User registered lastname.
+              example: John
+            email:
+              type: string
+              description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID).
+              email: john.duger@gov.bc.ca
+            idp:
+              type: string
+              description: Identity provider
+              example: idir
+            public:
               type: boolean
-              example: true
-              description: This is used to determine if the form is deleted. A value of false means the form is deleted.
-            labels:
+              description: Determines if the user is a public user.
+              example: false
+            forms:
+              type: array
+              description: List of forms created by the user.
+              example:
+                - formId: eadb042d-2425-494e-bbc8-0fda92a743ce
+                  formName: bbb
+                  formDescription: ''
+                  labels:
+                  idps: []
+                  active: true
+                  formVersionId:
+                  version:
+                  published:
+                  versionUpdatedAt:
+                  roles:
+                    - form_designer
+                    - form_submitter
+                  permissions:
+                    - design_create
+                    - design_delete
+        RBACGetCurrentUserSubmissions:
+          type: object
+          properties:
+            formSubmissionId:
               type: string
-              example: ''
-            createdBy:
+              description: Form submission ID.
+              format: uuid
+              example: 095f15a1-7d85-4919-8f40-5a0a3477cd7f
+            userId:
               type: string
-              example: ADOGE@idir
+              format: uuid
+              description: ID of the User.
+              example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
+            permissions:
+              type: array
+              description: Assigned permission to user on the form.
+              example:
+                - submission_create
+                - submission_delete
+            formId:
+              type: string
+              description: ID of the form.
+              format: uuid
+              example: baf428d5-acae-424a-a6ca-a02e68052107
+            version:
+              type: number
+              description: Form version number.
+              example: 2
+            id:
+              type: string
+              example: 095f15a1-7d85-4919-8f40-5a0a3477cd7f
+            confirmationId:
+              type: string
+              description: Submission confirmation ID.
+              example: 9100A7D1
             createdAt:
               type: string
               format: date-time
-              example: 2023-06-04T02:46:50.983Z
-            updatedBy:
-              type: string
-              example: ADOGE@idir
+              example: 2023-06-18T22:09:07.611Z
             updatedAt:
               type: string
               format: date-time
-              example: 2023-05-28T01:48:04.363Z
-            showSubmissionConfirmation:
+              example: 2023-06-19T04:32:22.895Z
+            draft:
               type: boolean
-              description: toggle to set if submission confirmation should shown when the form.
-                submission is submitted
+              description: This will be true if the submission is a draft.
               example: true
-            submissionReceivedEmails:
-              type: array
-              description: List of emails to send notifications to when submission is received.
-              example: []
+            deleted:
+              type: boolean
+              description: If set to true, the submission will be regarded as deleted.
+              example: true
+            name:
+              type: string
+              description: Name of the form
+              example: multiple_submission_file_download
+            description:
+              type: string
+              description: Details about the form.
+              example: Test Form
+            active:
+              type: boolean
+              example: true,
+              description: This is used to determine if the form is deleted. A value of false means the form is deleted
             enableStatusUpdates:
               type: boolean
               example: true
@@ -1241,7 +1855,1903 @@ definition:
               description: Setting this to true will allow submitters to be able to save submissions
                 as drafts
               example: false
-              default: false
+            submission:
+              type: object
+              description: submission detail
+              example:
+                id: 5a22797d-9b5f-46da-8b90-0732379057a1
+                formVersionId: 07a92761-ffb9-4e99-acc3-1253b391bb78
+                confirmationId: 5A22797D
+                draft: false
+                deleted: false
+                submission:
+                  data:
+                    submit: true
+                    lateEntry: false
+                    simpletextfield: test
+                  state: submitted
+                  _vnote: ''
+                  metadata:
+                    offset: -420
+                    onLine: true
+                    origin: http://localhost:8082
+                    pathName: '/app/form/submit'
+                    referrer: ''
+                    timezone: America/Los_Angeles
+                    userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+                      like Gecko) Chrome/114.0.0.0 Safari/537.36
+                    browserName: Netscape
+                createdBy: AIDOWU@idir
+                createdAt: '2023-06-20T18:44:07.115Z'
+                updatedBy:
+                updatedAt: '2023-06-20T18:44:07.110Z'
+            submissionStatus:
+              type: array
+              description: List of submission status
+              example:
+                - id: 2b7ff2e2-9453-4b98-91e4-2add98580324
+                  submissionId: 5a22797d-9b5f-46da-8b90-0732379057a1
+                  code: SUBMITTED
+                  assignedToUserId:
+                  actionDate:
+                  createdBy: JOHND@idir
+                  createdAt: 2023-06-20T18:44:07.162Z
+                  updatedBy:
+                  updatedAt: 2023-06-20T18:44:07.110Z
+        RBACGetIdentityProviders:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Identity provider code.
+                example: bceid-basic
+              display:
+                type: string
+                description: IDP display text.
+                example: Basic BCeID
+              active:
+                type: boolean
+                description: If the idp is active.
+                example: true
+              idp:
+                type: string
+                description: The identity provider.
+                example: bceid-basic
+              createdBy:
+                type: string
+                example: migration-022
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-03-29T14:07:46.684Z
+              updatedBy:
+                type: string
+                example: null
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-03-29T14:07:46.684Z
+        RBACGetFormUsers:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                description: ID of the User.
+                format: uuid
+                example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+              idpUserId:
+                type: string
+                description: IDP ID of the user.
+                example: 085F22D7201D4C1B88BB26970264E1F3
+              username:
+                type: string
+                description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id)).
+                example: JOHND
+              fullName:
+                type: string
+                description: User registered fullname.
+                example: John Dare
+              lastName:
+                type: string
+                description: User registered lastname.
+                example: Dare
+              email:
+                type: string
+                description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID).
+                example: john.dare@gov.bc.ca
+              firstName:
+                type: string
+                description: User registered firstname.
+                example: John
+              formId:
+                type: string
+                description: ID of the form.
+                format: uuid
+                example: eadb042d-2425-494e-bbc8-0fda92a743ce
+              formName:
+                type: string
+                description: Name or title of the form.
+                example: bbb
+              labels:
+                type: string
+              identityProviders:
+                type: array
+                description: List of identity providers that can be used to login to the form.
+                example: []
+              idps:
+                type: array
+                description: List of idps.
+              active:
+                type: boolean
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted
+                example: true
+              formVersionId:
+                type: string
+                description: Form version ID
+                format: uuid
+                example: null
+              version:
+                type: number
+                description: Form draft version to be published
+                example: 2
+              roles:
+                type: array
+                description: Assigned roles to user on the form.
+                example:
+                  - form_designer
+                  - form_submitter
+                  - owner
+                  - submission_reviewer",
+                  - team_manager
+              permissions:
+                type: array
+                description: Assigned permission to user on the form.
+                example:
+                  - design_create,
+                  - design_delete,
+                  - design_read,
+                  - design_update
+              published:
+                type: string
+                description: Publish status of the form.
+                example: null
+              versionUpdatedAt:
+                type: string
+                format: date-time
+                example: null
+              formDescription:
+                type: string
+                description: Form description
+                example: ''
+        RBACFormSubmission:
+          type: array
+          items:
+            type: object
+            properties:
+              formSubmissionId:
+                type: string
+                description: Form submission ID
+                format: uuid
+                example: 2d37713c-ae32-4c49-a73a-43ed9c7d1140
+              userId:
+                type: string
+                format: uuid
+                description: ID of the User
+              permissions:
+                type: array
+                description: Assigned permission to user on the form.
+                example:
+                  - submission_create
+                  - submission_delete
+                  - submission_read
+                  - submission_update
+              formId:
+                type: string
+                description: Form ID
+                format: uuid
+                example: d0ec4197-3616-4dd9-8a6e-c91d124dded9
+              version:
+                type: number
+                description: Form version number.
+                example: 2
+              id:
+                type: string
+                format: uuid
+                example: 2d37713c-ae32-4c49-a73a-43ed9c7d1140
+              confirmationId:
+                type: string
+                description: Submission confirmation ID.
+                example: 2D37713C
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-04-05T22:03:40.537Z
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-04-05T22:03:40.472Z
+              draft:
+                type: boolean
+                description: This will be true if the submission is a draft.
+                example: true
+              deleted:
+                type: boolean
+                description: If set to true, the submission will be regarded as deleted.
+                example: true
+              name:
+                type: string
+                description: Name of the form
+                example: FisheriesD
+              description:
+                type: string
+                description: Details about the form
+                example: ''
+              active:
+                type: boolean
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted.
+                example: true
+              enableStatusUpdates:
+                type: boolean
+                example: true
+                description: Enables or disables form reviewers from updating this form status (i.e.
+                  Submitted, Assigned, Completed)
+                default: true
+              enableSubmitterDraft:
+                type: boolean
+                description: Setting this to true will allow submitters to be able to save submissions
+                  as drafts
+                example: false
+              users:
+                $ref: '#/components/schemas/User'
+        RBACsetSubmissionUserPermissions:
+          type: array
+          items:
+            type: object
+            properties:
+              formSubmissionId:
+                type: string
+                description: Form submission ID
+                format: uuid
+                example: 2d37713c-ae32-4c49-a73a-43ed9c7d1140
+              userId:
+                type: string
+                format: uuid
+                description: ID of the User
+              permissions:
+                type: array
+                description: Assigned permission to user on the form.
+                example:
+                  - submission_create
+                  - submission_delete
+                  - submission_read
+                  - submission_update
+              formId:
+                type: string
+                description: Form ID
+                format: uuid
+                example: d0ec4197-3616-4dd9-8a6e-c91d124dded9
+              version:
+                type: number
+                description: Form version number.
+                example: 2
+              id:
+                type: string
+                format: uuid
+                example: 2d37713c-ae32-4c49-a73a-43ed9c7d1140
+              confirmationId:
+                type: string
+                description: Submission confirmation ID.
+                example: 2D37713C
+              createdAt:
+                type: string
+                format: date-time
+                example: 2023-04-05T22:03:40.537Z
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-04-05T22:03:40.472Z
+              draft:
+                type: boolean
+                description: This will be true if the submission is a draft.
+                example: true
+              deleted:
+                type: boolean
+                description: If set to true, the submission will be regarded as deleted.
+                example: true
+              name:
+                type: string
+                description: Name of the form
+                example: FisheriesD
+              description:
+                type: string
+                description: Details about the form
+                example: ''
+              active:
+                type: boolean
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted.
+                example: true
+              enableStatusUpdates:
+                type: boolean
+                example: true
+                description: Enables or disables form reviewers from updating this form status (i.e.
+                  Submitted, Assigned, Completed)
+                default: true
+              enableSubmitterDraft:
+                type: boolean
+                description: Setting this to true will allow submitters to be able to save submissions
+                  as drafts
+                example: false
+              user:
+                $ref: '#/components/schemas/model/User'
+        RBACGetUsersForms:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                description: ID of the User.
+                format: uuid
+                example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+              idpUserId:
+                type: string
+                description: IDP ID of the user.
+                example: 085F22D7201D4C1B88BB26970264E1F3
+              username:
+                type: string
+                description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id)).
+                example: JOHND
+              fullName:
+                type: string
+                description: User registered fullname.
+                example: John Dare
+              lastName:
+                type: string
+                description: User registered lastname.
+                example: Dare
+              email:
+                type: string
+                description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID).
+                example: john.dare@gov.bc.ca
+              firstName:
+                type: string
+                description: User registered firstname.
+                example: John
+              formId:
+                type: string
+                description: ID of the form.
+                format: uuid
+                example: eadb042d-2425-494e-bbc8-0fda92a743ce
+              formName:
+                type: string
+                description: Name or title of the form.
+                example: bbb
+              labels:
+                type: string
+              identityProviders:
+                type: array
+                description: List of identity providers that can be used to login to the form.
+                example: []
+              idps:
+                type: array
+                description: List of idps.
+              active:
+                type: boolean
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted
+                example: true
+              formVersionId:
+                type: string
+                description: Form version ID
+                format: uuid
+                example: null
+              version:
+                type: number
+                description: Form draft version to be published
+                example: 2
+              roles:
+                type: array
+                description: Assigned roles to user on the form.
+                example:
+                  - form_designer
+                  - form_submitter
+                  - owner
+                  - submission_reviewer",
+                  - team_manager
+              permissions:
+                type: array
+                description: Assigned permission to user on the form.
+                example:
+                  - design_create,
+                  - design_delete,
+                  - design_read,
+                  - design_update
+              published:
+                type: string
+                description: Publish status of the form.
+                example: null
+              versionUpdatedAt:
+                type: string
+                format: date-time
+                example: null
+              formDescription:
+                type: string
+                description: Form description
+                example: ''
+        RBACSetUsersForms:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                description: ID of the User.
+                format: uuid
+                example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+              idpUserId:
+                type: string
+                description: IDP ID of the user.
+                example: 085F22D7201D4C1B88BB26970264E1F3
+              username:
+                type: string
+                description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id)).
+                example: JOHND
+              fullName:
+                type: string
+                description: User registered fullname.
+                example: John Dare
+              lastName:
+                type: string
+                description: User registered lastname.
+                example: Dare
+              email:
+                type: string
+                description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID).
+                example: john.dare@gov.bc.ca
+              firstName:
+                type: string
+                description: User registered firstname.
+                example: John
+              formId:
+                type: string
+                description: ID of the form.
+                format: uuid
+                example: eadb042d-2425-494e-bbc8-0fda92a743ce
+              formName:
+                type: string
+                description: Name or title of the form.
+                example: bbb
+              labels:
+                type: string
+              identityProviders:
+                type: array
+                description: List of identity providers that can be used to login to the form.
+                example: []
+              idps:
+                type: array
+                description: List of idps.
+              active:
+                type: boolean
+                description: This is used to determine if the form is deleted. A value of false means the form is deleted
+                example: true
+              formVersionId:
+                type: string
+                description: Form version ID
+                format: uuid
+                example: null
+              version:
+                type: number
+                description: Form draft version to be published
+                example: 2
+              roles:
+                type: array
+                description: Assigned roles to user on the form.
+                example:
+                  - form_designer
+                  - form_submitter
+                  - owner
+                  - submission_reviewer",
+                  - team_manager
+              permissions:
+                type: array
+                description: Assigned permission to user on the form.
+                example:
+                  - design_create,
+                  - design_delete,
+                  - design_read,
+                  - design_update
+              published:
+                type: string
+                description: Publish status of the form.
+                example: null
+              versionUpdatedAt:
+                type: string
+                format: date-time
+                example: null
+              formDescription:
+                type: string
+                description: Form description
+                example: ''
+        RolesListRole:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Role code.
+              example: form_designer
+            display:
+              type: string
+              description: Display text
+              example: Form Designer
+            active:
+              type: boolean
+              example: true
+              description: This is used to determine if the role is deleted. A value of false means the role is deleted
+            description:
+              type: string
+              example: Designs the form
+            createdBy:
+              type: string
+              example: migration-002
+            createdAt:
+              type: string
+              example: 2023-03-29T14:07:46.684Z
+            updatedBy:
+              type: string
+              example: ''
+            updatedAt:
+              type: string
+              example: 2023-03-29T14:07:46.684Z
+            permissions:
+              $ref: '#/components/schemas/model/Permission'
+        RolesGetRole:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Role code.
+                example: form_designer
+              display:
+                type: string
+                design: Display text
+                example: Form Designer
+              active:
+                type: boolean
+                example: true
+                description: This is used to determine if the role is deleted. A value of false means the role is deleted
+              description:
+                type: string
+                example: Designs the form
+              createdBy:
+                type: string
+                example: migration-002
+              createdAt:
+                type: string
+                example: 2023-03-29T14:07:46.684Z
+              updatedBy:
+                type: string
+                example: ''
+              updatedAt:
+                type: string
+                example: 2023-03-29T14:07:46.684Z
+              permissions:
+                $ref: '#/components/schemas/model/Permission'
+        UserReadUserPreferences:
+          type: object
+          properties:
+            forms:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: ID of the user.
+                  format: uuid
+                  example: 2a4770b7-6f0e-4629-a359-bf820295f14a
+                formId:
+                  type: string
+                  descritpion: ID of the form.
+                  format: uuid
+                  example: 306040aa-c045-46d9-8a5a-78bd6fc7c644
+                preferences:
+                  type: object
+                  properties:
+                    columns:
+                      type: array
+                      description: List of columns/fields to extract from submission data.
+                      example:
+                        - firstName
+                        - middleName
+                createdBy:
+                  type: string
+                  example: JOHND@idir
+                createdAt:
+                  type: string
+                  example: 2023-04-21T20:12:27.184Z
+                updatedBy:
+                  type: string
+                  example: JOHND@idir
+                updatedAt:
+                  type: string
+                  example: 2023-04-21T20:13:07.861Z
+        UsersListUsers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: ID of the User. This Id is from the User table in database.
+                example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
+              keycloakId:
+                type: string
+                example: ea94678c-5f00-42b2-9f56-bd401091fb8a
+                description: Id from the keycloak
+              idpUserId:
+                type: string
+                example: 084F23D7201D4C1B88BB26971264E1F2
+                description: IDP id of the user. This is SSO team generated Id
+              firstName:
+                type: string
+                example: George,
+                description: User registered firstname.
+              username:
+                type: string
+                example: AODOWI
+                description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id))
+              fullName:
+                type: string
+                example: George Banner,
+                description: User registered fullname.
+              lastName:
+                type: string
+                example: Banner,
+                description: User registered lastname.
+              email:
+                type: string
+                example: test@gov.bc.ca,
+                description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID)
+              idpCode:
+                type: string
+                example: idir
+                description: code for the identity provider e.g. (idir)
+              createdBy:
+                type: string
+                description: The username of the user that created this form
+                example: ADOGE@idir
+              createdAt:
+                type: string
+                format: date-time
+                description: The timestamp the form was created
+                example: 2023-06-04T02:46:50.983Z
+              updatedBy:
+                type: string
+                description: The username of the latest user that updated the form,
+                example: ADOGE@idir
+              updatedAt:
+                type: string
+                format: date-time
+                description: The timestamp the form was last updated
+                example: 2023-05-28T
+        UsersReadUserFormPreferences:
+          type: object
+          properties:
+            formId:
+              type: string
+              description: ID of the form.
+              format: uuid
+              example: c6455376-382c-439d-a811-0381a012d696
+            userId:
+              type: string
+              format: uuid
+              description: ID of the User. This Id is from the User table in database.
+              example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
+            preferences:
+              type: object
+              properties:
+                columns:
+                  type: array
+                  description: preference columns
+                  example:
+                    - fishermansName
+                    - email
+            createdBy:
+              type: string
+              description: The username of the user that created this form
+              example: ADOGE@idir
+            createdAt:
+              type: string
+              format: date-time
+              description: The timestamp the form was created
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              description: The username of the latest user that updated the form,
+              example: ADOGE@idir
+            updatedAt:
+              type: string
+              format: date-time
+              description: The timestamp the form was last updated
+              example: 2023-05-28T
+        UsersUpdateUserFormPreferences:
+          type: object
+          properties:
+            formId:
+              type: string
+              description: ID of the form.
+              format: uuid
+              example: c6455376-382c-439d-a811-0381a012d696
+            userId:
+              type: string
+              format: uuid
+              description: ID of the User. This Id is from the User table in database.
+              example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
+            preferences:
+              type: object
+              properties:
+                columns:
+                  type: array
+                  description: preference columns
+                  example:
+                    - fishermansName
+                    - email
+            createdBy:
+              type: string
+              description: The username of the user that created this form
+              example: ADOGE@idir
+            createdAt:
+              type: string
+              format: date-time
+              description: The timestamp the form was created
+              example: 2023-06-04T02:46:50.983Z
+            updatedBy:
+              type: string
+              description: The username of the latest user that updated the form,
+              example: ADOGE@idir
+            updatedAt:
+              type: string
+              format: date-time
+              description: The timestamp the form was last updated
+              example: 2023-05-28T
+        PermissionsexPermissions:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Permission code.
+                example: form_api_create
+              display:
+                type: string
+                design: Display text
+                example: API Key Create
+              active:
+                type: boolean
+                example: true
+                description: This is used to determine if the permission is deleted. A value of false means the permission is deleted
+              description:
+                type: string
+                example: Can create an api key for a form
+              createdBy:
+                type: string
+                example: migration-019
+              createdAt:
+                type: string
+                example: 2023-03-29T14:07:46.684Z
+              updatedBy:
+                type: string
+                example: ''
+              updatedAt:
+                type: string
+                example: 2023-03-29T14:07:46.684Z
+              roles:
+                type: array
+                description: Role name that this permission is attached to.
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: Role code.
+                      example: owner
+                    display:
+                      type: string
+                      design: Display text
+                      example: Owner
+                    active:
+                      type: boolean
+                      example: true
+                      description: This is used to determine if the role is deleted. A value of false means the role is deleted
+                    description:
+                      type: string
+                      example: Owns the form
+                    createdBy:
+                      type: string
+                      example: migration-002
+                    createdAt:
+                      type: string
+                      example: 2023-03-29T14:07:46.684Z
+                    updatedBy:
+                      type: string
+                      example: ''
+                    updatedAt:
+                      type: string
+                      example: 2023-03-29T14:07:46.684Z
+        SubmissionsAddStatus:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Submssion status ID
+                format: uuid
+                example: 09491992-dcd9-4b44-b2b8-e816fdea41a1
+              submissionId:
+                type: string
+                description: submission ID
+                format: uuid
+                example: effa02d3-f266-4d6c-b99e-a7622e3b0ba6
+              code:
+                type: string
+                description: Form submission status code
+                example: ASSIGNED
+              assignedToUserId:
+                type: string
+                describe: user ID that the form submission has been assigned
+                example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+              actionDate:
+                type: string
+                example: null
+              createdBy:
+                type: string
+                example: JOHND@idir
+              createdAt:
+                type: string
+                format: date-time
+              updatedBy:
+                type: string
+                example: null
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-06-23T00:53:30.586Z
+              user:
+                $ref: '#/components/schemas/model/User'
+        SubmissionsNote:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: Note table ID
+                example: 67cb6740-2db7-44b1-a763-c5f65ca8db1b
+              submissionId:
+                type: string
+                format: uuid
+                description: ID  of the submission
+                example: 70531344-c77f-47bb-83d6-74c22223abe0
+              submissionStatusId:
+                type: string
+                description: ID  of the submission status
+                example: null
+              note:
+                type: string
+                description: Submission Note (This is note that comes status update)
+                example: "Email to ayobamii.idowu@gov.bc.ca: nffg"
+              userId:
+                type: string
+                description: ID of the User
+                format: uuid
+                example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+              createdBy:
+                type: string
+                description: The user that initially added the note to the submission
+                example: "AIDOWU@idir"
+              createdAt:
+                type: string
+                description: Date the note was initially added to the submission
+                example: 2023-06-15T19:44:36.320Z
+              updatedBy:
+                type: string
+                description: The user that last updated the submission note
+                example: null
+              updatedAt:
+                type: string
+                description: Date the submission note was last updated
+                example: 2023-06-15T19:44:36.320Z
+        SubmissionsGetStatus:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Submssion status ID
+                format: uuid
+                example: 09491992-dcd9-4b44-b2b8-e816fdea41a1
+              submissionId:
+                type: string
+                description: submission ID
+                format: uuid
+                example: effa02d3-f266-4d6c-b99e-a7622e3b0ba6
+              code:
+                type: string
+                description: Form submission status code
+                example: ASSIGNED
+              assignedToUserId:
+                type: string
+                describe: user ID that the form submission has been assigned
+                example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+              actionDate:
+                type: string
+                example: null
+              createdBy:
+                type: string
+                example: JOHND@idir
+              createdAt:
+                type: string
+                format: date-time
+              updatedBy:
+                type: string
+                example: null
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2023-06-23T00:53:30.586Z
+              user:
+                $ref: '#/components/schemas/model/User'
+        SubmissionListEdits:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: submission changes/edit ID
+                example: 169
+              updatedByUsername:
+                type: string
+                description: username of the user that made the changed or editted the submission
+                example: AIDOWU@idir
+              actionTimestamp:
+                type: string
+                description: the date ans time the changes/edit was made
+                example: 2023-06-23T01:35:04.779Z
+              action:
+                type: string
+                description: The actual changes or edit that was made
+                example: "U"
+
+    requestBodies:
+      AdminReqProactiveHelpObject:
+        type: object
+        properties:
+          componentName:
+            type: string
+            description: Name of the Form.io component.
+            example: File Upload
+          description:
+            type: string
+            description: Full details about the Form.io component.
+            example: With the CHEFS form builder, you have access to the 'File Upload' component, which enables you to attach files or documents to the form while submitting it. The maximum file size that can be uploaded using this component is 25MB, and all the files submitted through the form are securely stored in a designated Object storage space.
+          externalLink:
+            type: string
+            description: Link to the external documentation for the Form.io component.
+            example: https://help.form.io/userguide/form-building/layout-components#panel
+          groupName:
+            type: string
+            description: Name of the group.
+            example: Basic Layout
+          image:
+            type: string
+            format: binary
+            description: Binary image of the Form.io component.
+            example: ''
+          imageName:
+            type: string
+            description: Name of the image.
+            example: FileUpload.jpg
+          isLinkEnabled:
+            type: boolean
+            description: This hides or shows external link
+            example: true
+          status:
+            type: boolean
+            description: This determines the publish status of the component.
+            example: true
+      FormReqCreateForm:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of the form.
+            example: test
+          description:
+            type: string
+            description: Short details about the form.
+            example: ''
+          schema:
+            type: object
+            description: Form schema
+            example:
+              display: form
+              type: form
+              components:
+                - label: Text Field
+                  labelPosition: top
+                  placeholder: ''
+                  description: ''
+                  tooltip: ''
+                  inputMask: ''
+                  allowMultipleMasks: false
+                  hideLabel: false
+                  showWordCount: false
+                  showCharCount: false
+                  spellcheck: true
+                  disabled: false
+                  multiple: false
+                  case: ''
+                  validate:
+                    isUseForCopy: false
+                    required: false
+                    customMessage: ''
+                    minLength: ''
+                    maxLength: ''
+                    custom: ''
+                    customPrivate: false
+                    strictDateValidation: false
+                    multiple: false
+                    unique: false
+                    pattern: ''
+                  key: simpletextfield
+                  conditional:
+                    show:
+                    when:
+                    eq: ''
+                    json: ''
+                  customConditional: ''
+                  addons: []
+                  type: simpletextfield
+                  input: true
+                  prefix: ''
+                  customClass: ''
+                  suffix: ''
+                  protected: false
+                  unique: false
+                  persistent: true
+                  hidden: false
+                  clearOnHide: true
+                  refreshOn: ''
+                  redrawOn: ''
+                  tableView: false
+                  modalEdit: false
+                  dataGridLabel: false
+                  errorLabel: ''
+                  tabindex: ''
+                  autofocus: false
+                  dbIndex: false
+                  customDefaultValue: ''
+                  calculateValue: ''
+                  calculateServer: false
+                  widget:
+                    type: input
+                  attributes: {}
+                  validateOn: change
+                  overlay:
+                    style: ''
+                    left: ''
+                    top: ''
+                    width: ''
+                    height: ''
+                  allowCalculateOverride: false
+                  encrypted: false
+                  properties: {}
+                  mask: false
+                  inputType: text
+                  inputFormat: plain
+                  displayMask: ''
+                  truncateMultipleSpaces: false
+          identityProviders:
+            type: string
+            description: List of identity providers that can be used to acess the form
+            example:
+              - idir
+              - Bceid
+          enableSubmitterDraft:
+            type: boolean
+            description: Setting this to true will allow submitters to be able to save submissions
+              as drafts
+            example: false
+          enableCopyExistingSubmission:
+            type: boolean
+            description: If enabled, users can copy or duplicate submissions
+            example: false
+          enableStatusUpdates:
+            type: boolean
+            example: true
+            description: Enables or disables form reviewers from updating this form status (i.e.
+              Submitted, Assigned, Completed)
+            default: true
+          showSubmissionConfirmation:
+            type: boolean
+            description: toggle to set if submission confirmation should shown when the form
+              submission is submitted
+            example: true
+          allowSubmitterToUploadFile:
+            type: boolean
+            description: If enabled, Submitters can upload when submitting submissions
+            example: false
+            default: false
+          submissionReceivedEmails:
+            type: array
+            description: List of emails to send notifications to when submission is received
+            example: []
+          reminder_enabled:
+            type: boolean
+            example: true
+            description: A form submission reminder will be sent to users if set to true.
+            default: false
+      FormReqUpdateForm:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of the form.
+            example: test
+          description:
+            type: string
+            description: Short details about the form.
+            example: ''
+          identityProviders:
+            type: string
+            description: List of identity providers that can be used to acess this form
+            example:
+              - idir
+              - Bceid
+          enableSubmitterDraft:
+            type: boolean
+            description: Setting this to true will allow submitters to be able to save submissions
+              as drafts
+            example: false
+            default: false
+          enableCopyExistingSubmission:
+            type: boolean
+            description: If enabled, users can copy or duplicate submissions
+            example: false
+            default: false
+          enableStatusUpdates:
+            type: boolean
+            example: true
+            description: Enables or disables form reviewers from updating this form status (i.e.
+              Submitted, Assigned, Completed)
+            default: true
+          showSubmissionConfirmation:
+            type: boolean
+            description: toggle to set if submission confirmation should shown when the form
+              submission is submitted
+            example: true
+          allowSubmitterToUploadFile:
+            type: boolean
+            description: If enabled, Submitters can upload when submitting submissions
+            example: false
+            default: false
+          submissionReceivedEmails:
+            type: array
+            description: List of emails to send notifications to when submission is received
+            example: []
+          reminder_enabled:
+            type: boolean
+            example: true
+            description: A form submission reminder will be sent to users if set to true.
+            default: false
+      FormReqSubmissionExport:
+        type: object
+        properties:
+          format:
+            type: string
+            description: Form submission export format/type. It can either be "csv" or "json"
+            example: csv
+          template:
+            type: string
+            description: 'Chosen CSV format for the submission data exported. Use one of these templates 1) multiRowEmptySpacesCSVExport 2) multiRowBackFilledCSVExport 3) singleRowCSVExport 4) unFormattedCSVExport to export submission to CSV Note: use this parameter only if export format/type is csv'
+            example: multiRowEmptySpacesCSVExport
+            default: multiRowEmptySpacesCSVExport
+          version:
+            type: number
+            description: 'The version number of the form for the submission data exported. Note: use this parameter only if export format/type is csv'
+            example: 2
+          type:
+            type: string
+            example: submissions
+            description: Default value is submissions and should not be changed.
+            default: submissions
+          preference:
+            type: object
+            description: Form submissions export preferences
+            example: { minDate: '2023-05-19T07:00:00Z', maxDate: '2023-06-19T06:59:59Z' }
+      FormReqSubmissionExportWithFields:
+        type: object
+        properties:
+          format:
+            type: string
+            description: Form submission export format/type. It can either be "csv" or "json"
+            example: csv
+          template:
+            type: string
+            description: 'Chosen CSV format for the submission data exported. Use one of these templates 1) multiRowEmptySpacesCSVExport 2) multiRowBackFilledCSVExport 3) singleRowCSVExport 4) unFormattedCSVExport to export submission to CSV Note: use this parameter only if export format/type is csv'
+            example: multiRowEmptySpacesCSVExport
+            default: multiRowEmptySpacesCSVExport
+          version:
+            type: number
+            description: 'The version number of the form for the submission data exported. Note: use this parameter only if export format/type is csv'
+            example: 2
+          type:
+            type: string
+            example: submissions
+            description: Default value is submissions and should be changed.
+            default: submissions
+          preference:
+            type: object
+            description: Form submissions export preferences.
+            example: { minDate: '2023-05-19T07:00:00Z', maxDate: '2023-06-19T06:59:59Z' }
+          fields:
+            type: array
+            description: List of form submission fields to be exported to CSV.
+            example: []
+          emailExport:
+            type: boolean
+            description: This parameter should be set to true if the form submissions are large (e.g. above 500) or the form is big
+            example: false
+      FormReqCreatSubmission:
+        type: object
+        properties:
+          draft:
+            type: boolean
+            description: This will be set to true if the submission is a draft.
+            example: true
+          submission:
+            type: object
+            properties:
+              data:
+                type: object
+                descritpion: submission data (submission entries)
+                example:
+                  firstName: Testd
+                  lateEntry: false
+                  middleName: Ghust
+                  submit: true
+              metadata:
+                type: object
+                description: submission metadata
+                example:
+                  timezone: America/Los_Angeles
+                  offset: -420
+                  origin: http://localhost:8082
+                  referrer: ''
+                  browserName: Netscape
+                  userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+                    like Gecko) Chrome/114.0.0.0 Safari/537.36
+                  pathName: '/app/form/submit'
+                  onLine: true
+              state:
+                type: string
+                description: Status state of the submission
+                example: submitted
+      FormReqCreateDraft:
+        type: object
+        properties:
+          schema:
+            type: object
+            description: Form schema created by Form Designer.
+            example:
+              display: form
+              type: form
+              components:
+                - id: ero668s
+                  key: name
+                  case: ''
+                  mask: false
+                  type: simpletextfield
+                  input: true
+                  label: Name
+                  addons: []
+                  hidden: false
+                  prefix: ''
+                  suffix: ''
+                  unique: false
+                  widget:
+                    type: input
+                  dbIndex: false
+                  overlay:
+                    top: ''
+                    left: ''
+                    style: ''
+                    width: ''
+                    height: ''
+                  tooltip: ''
+                  disabled: false
+                  multiple: false
+                  redrawOn: ''
+                  tabindex: ''
+                  validate:
+                    custom: ''
+                    unique: false
+                    pattern: ''
+                    multiple: false
+                    required: false
+                    maxLength: ''
+                    minLength: ''
+                    isUseForCopy: false
+                    customMessage: ''
+                    customPrivate: false
+                    strictDateValidation: false
+                  autofocus: false
+                  encrypted: false
+                  hideLabel: false
+                  inputMask: ''
+                  inputType: text
+                  modalEdit: false
+                  protected: false
+                  refreshOn: ''
+                  tableView: false
+                  attributes: {}
+                  errorLabel: ''
+                  persistent: true
+                  properties: {}
+                  spellcheck: true
+                  validateOn: change
+                  clearOnHide: true
+                  conditional:
+                    eq: ''
+                    json: ''
+                    show:
+                    when:
+                  customClass: ''
+                  description: ''
+                  displayMask: ''
+                  inputFormat: plain
+                  placeholder: ''
+                  defaultValue: ''
+                  dataGridLabel: false
+                  labelPosition: top
+                  showCharCount: false
+                  showWordCount: false
+                  calculateValue: ''
+                  calculateServer: false
+                  customConditional: ''
+                  allowMultipleMasks: false
+                  customDefaultValue: ''
+                  allowCalculateOverride: false
+                  truncateMultipleSpaces: false
+          formVersionId:
+            type: string
+            description: Form version Id
+            format: uuid
+            example: 8d3ec5ad-fbb9-41ab-a118-189f563c93e1
+      FormReqUpdateDraft:
+        type: object
+        properties:
+          schema:
+            type: object
+            description: Form schema created by Form Designer.
+            example:
+              display: form
+              type: form
+              components:
+                - id: ero668s
+                  key: name
+                  case: ''
+                  mask: false
+                  type: simpletextfield
+                  input: true
+                  label: Name
+                  addons: []
+                  hidden: false
+                  prefix: ''
+                  suffix: ''
+                  unique: false
+                  widget:
+                    type: input
+                  dbIndex: false
+                  overlay:
+                    top: ''
+                    left: ''
+                    style: ''
+                    width: ''
+                    height: ''
+                  tooltip: ''
+                  disabled: false
+                  multiple: false
+                  redrawOn: ''
+                  tabindex: ''
+                  validate:
+                    custom: ''
+                    unique: false
+                    pattern: ''
+                    multiple: false
+                    required: false
+                    maxLength: ''
+                    minLength: ''
+                    isUseForCopy: false
+                    customMessage: ''
+                    customPrivate: false
+                    strictDateValidation: false
+                  autofocus: false
+                  encrypted: false
+                  hideLabel: false
+                  inputMask: ''
+                  inputType: text
+                  modalEdit: false
+                  protected: false
+                  refreshOn: ''
+                  tableView: false
+                  attributes: {}
+                  errorLabel: ''
+                  persistent: true
+                  properties: {}
+                  spellcheck: true
+                  validateOn: change
+                  clearOnHide: true
+                  conditional:
+                    eq: ''
+                    json: ''
+                    show:
+                    when:
+                  customClass: ''
+                  description: ''
+                  displayMask: ''
+                  inputFormat: plain
+                  placeholder: ''
+                  defaultValue: ''
+                  dataGridLabel: false
+                  labelPosition: top
+                  showCharCount: false
+                  showWordCount: false
+                  calculateValue: ''
+                  calculateServer: false
+                  customConditional: ''
+                  allowMultipleMasks: false
+                  customDefaultValue: ''
+                  allowCalculateOverride: false
+                  truncateMultipleSpaces: false
+          formVersionId:
+            type: string
+            description: Form version Id
+            format: uuid
+            example: 8d3ec5ad-fbb9-41ab-a118-189f563c93e1
+      FormReqPublishDraft:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+            description: ID of form draft.
+            example: 1926789f-2b95-4905-b78f-b6c6a7d86ecc
+          formId:
+            type: string
+            description: ID of the form.
+            format: uuid
+            example:
+          formVersionId:
+            type: string
+            format: uuid
+            description: ID of Form version.
+            example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
+          schema:
+            type: object
+            description: Form schema created by Form Designer.
+            example:
+              display: form
+              type: form
+              components:
+                - id: ero668s
+                  key: name
+                  case: ''
+                  mask: false
+                  type: simpletextfield
+                  input: true
+                  label: Name
+                  addons: []
+                  hidden: false
+                  prefix: ''
+                  suffix: ''
+                  unique: false
+                  widget:
+                    type: input
+                  dbIndex: false
+                  overlay:
+                    top: ''
+                    left: ''
+                    style: ''
+                    width: ''
+                    height: ''
+                  tooltip: ''
+                  disabled: false
+                  multiple: false
+                  redrawOn: ''
+                  tabindex: ''
+                  validate:
+                    custom: ''
+                    unique: false
+                    pattern: ''
+                    multiple: false
+                    required: false
+                    maxLength: ''
+                    minLength: ''
+                    isUseForCopy: false
+                    customMessage: ''
+                    customPrivate: false
+                    strictDateValidation: false
+                  autofocus: false
+                  encrypted: false
+                  hideLabel: false
+                  inputMask: ''
+                  inputType: text
+                  modalEdit: false
+                  protected: false
+                  refreshOn: ''
+                  tableView: false
+                  attributes: {}
+                  errorLabel: ''
+                  persistent: true
+                  properties: {}
+                  spellcheck: true
+                  validateOn: change
+                  clearOnHide: true
+                  conditional:
+                    eq: ''
+                    json: ''
+                    show:
+                    when:
+                  customClass: ''
+                  description: ''
+                  displayMask: ''
+                  inputFormat: plain
+                  placeholder: ''
+                  defaultValue: ''
+                  dataGridLabel: false
+                  labelPosition: top
+                  showCharCount: false
+                  showWordCount: false
+                  calculateValue: ''
+                  calculateServer: false
+                  customConditional: ''
+                  allowMultipleMasks: false
+                  customDefaultValue: ''
+                  allowCalculateOverride: false
+                  truncateMultipleSpaces: false
+          updatedBy:
+            type: string
+            example: 'ADOGE@idir'
+          updatedAt:
+            type: string
+            format: date-time
+            example: 2023-05-28T01:48:04.363Z
+          version:
+            type: number
+            description: version of the form draft  to be published.
+            example: 2
+          publish:
+            type: boolean
+            description: If set to true will publish the form draft version
+            example: true
+      RolesReqCreateRole:
+        type: array
+        items:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Role code.
+              example: form_designer
+            display:
+              type: string
+              description: Display text.
+              example: Form Designer
+            description:
+              type: string
+              example: Designs the form
+            active:
+              type: boolean
+              example: true
+            createdBy:
+              type: string
+              example: bsmith@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2020-06-04T18:49:20.672Z
+            updatedBy:
+              type: string
+              example: jsmith@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2020-06-04T18:49:20.672Z
+            permissions:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    description: permission code
+                    example: design_update
+                  display:
+                    type: string
+                    description: Display text.
+                    example: Design Update
+                  description:
+                    type: string
+                    example: Can edit/update the form design
+                  active:
+                    type: boolean
+                    example: true
+                  createdBy:
+                    type: string
+                    example: bsmith@idir
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2020-06-04T18:49:20.672Z
+                  updatedBy:
+                    type: string
+                    example: jsmith@idir
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: 2020-06-04T18:49:20.672Z
+      RolesReqUpdateRole:
+        type: array
+        items:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Role code.
+              example: form_designer
+            display:
+              type: string
+              description: Display text.
+              example: Form Designer
+            description:
+              type: string
+              example: Designs the form
+            active:
+              type: boolean
+              example: true
+            createdBy:
+              type: string
+              example: bsmith@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2020-06-04T18:49:20.672Z
+            updatedBy:
+              type: string
+              example: jsmith@idir
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2020-06-04T18:49:20.672Z
+            permissions:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    description: permission code
+                    example: design_update
+                  display:
+                    type: string
+                    description: Display text.
+                    example: Design Update
+                  description:
+                    type: string
+                    example: Can edit/update the form design
+                  active:
+                    type: boolean
+                    example: true
+                  createdBy:
+                    type: string
+                    example: bsmith@idir
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2020-06-04T18:49:20.672Z
+                  updatedBy:
+                    type: string
+                    example: jsmith@idir
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: 2020-06-04T18:49:20.672Z
+      PermissionsReqObjPermission:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Permission code.
+            example: form_api_create
+          display:
+            type: string
+            design: Display text
+            example: API Key Create
+          active:
+            type: boolean
+            example: true
+            description: This is used to determine if the permission is deleted. A value of false means the permission is deleted
+          description:
+            type: string
+            example: Can create an api key for a form
+          createdBy:
+            type: string
+            example: migration-019
+          createdAt:
+            type: string
+            example: 2023-03-29T14:07:46.684Z
+          updatedBy:
+            type: string
+            example: ''
+          updatedAt:
+            type: string
+            example: 2023-03-29T14:07:46.684Z
+          roles:
+            type: array
+            description: Role name that this permission is attached to.
+            items:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: Role code.
+                  example: owner
+                display:
+                  type: string
+                  design: Display text
+                  example: Owner
+                active:
+                  type: boolean
+                  example: true
+                  description: This is used to determine if the role is deleted. A value of false means the role is deleted
+                description:
+                  type: string
+                  example: Owns the form
+                createdBy:
+                  type: string
+                  example: migration-002
+                createdAt:
+                  type: string
+                  example: 2023-03-29T14:07:46.684Z
+                updatedBy:
+                  type: string
+                  example: ''
+                updatedAt:
+                  type: string
+                  example: 2023-03-29T14:07:46.684Z
+    schemas:
+      model:
+        Submission:
+          type: object
+          properties:
+        User:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the user
+              example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+            keycloakId:
+              type: string
+              description: keycloak ID
+              format: uuid
+              example: ea94678c-5f00-42b2-9f56-bd401091fb7c
+            firstName:
+              type: string
+              description: Registered first name on IDP
+              example: Ayobadeji
+            fullName:
+              type: string
+              description: Registered full name on IDP
+              example: Ayobadeji Idowa"
+            lastName:
+              type: string
+              description: Registered last name on IDP
+              example: Idowu
+            username:
+              type: string
+              description: Registered username on IDP
+              example: AIDOWU
+            email:
+              type: string
+              format: email
+              description: Registered email on IDP
+              example: ayobamii.idowu@gov.bc.ca"
+            createdBy:
+              type: string
+              example: public
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-03-29T14:08:34.202Z
+            updatedBy:
+              type: string
+              example: null
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-06-22T21:20:14.123Z
+            idpCode:
+              type: string
+              description: IDP code
+              example: idir
+            idpUserId:
+              type: string
+              description: IDP User ID
+              example: 085F22D7201D4C1B88BB26970264E1F3
+        Form:
+          type: object
+          description: Form Details.
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the form.
+              example: baf428d5-acae-424a-a6ca-a02e68052107
+            name:
+              type: string
+              description: Name or title of the form
+              example: Ministry Survey Form
+            description:
+              type: string
+              description: short description of the form
+              example: This is the ministry survey form
+            active:
+              type: boolean
+              example: true
+              description: This is used to determine if the form is deleted. A value of false means the form is deleted
+            labels:
+              type: string
+            createdBy:
+              type: string
+              example: Example@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-16T16:32:36.173Z
+            updatedBy:
+              type: string
+              example: null
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-06-16T16:32:36.158Z
+            showSubmissionConfirmation:
+              type: boolean
+              example: true
+              description: Submission confirmation will be sent to the designated authority email(s) if set to true..
+            submissionReceivedEmails:
+              type: array
+              example: []
+            enableStatusUpdates:
+              type: boolean
+              example: true
+              description: Users can update this form status (i.e. Submitted, Assigned, Completed) if set to true.
+            enableSubmitterDraft:
+              type: boolean
+              example: true
+              description: Users can save or edit this form draft if set to true.
             schedule:
               type: object
               example: {}
@@ -1251,35 +3761,99 @@ definition:
               description: A form submission reminder will be sent to users if set to true.
             enableCopyExistingSubmission:
               type: boolean
-              description: If enabled, users can copy or duplicate submissions.
-              example: false
+              example: true
+              description: Users can copy existing submission if set to true.
             allowSubmitterToUploadFile:
               type: boolean
-              description: If enabled, Submitters can upload when submitting submissions.
-              example: false
+              example: true
+              description: Users can upload files with their submissions if set to true.
             identityProviders:
               type: array
               example: ['idir', 'Bceid']
-              description: List of identity providers that can be used to login to the form
-            versions:
-              type: array
-              example:
-                [
-                  {
-                    id: '33707cbd-7e69-4c66-bd2e-88596896a670',
-                    formId: '306040aa-c045-46d9-8a5a-78bd6fc7c644',
-                    version: 2,
-                    published: true,
-                    createdBy: 'AIDOWU@idir',
-                    createdAt: '2023-05-18T20:11:41.329Z',
-                    updatedBy: null,
-                    updatedAt: '2023-05-18T20:11:41.241Z'
-                  }
-                ]
-              description: List of form versions.
-            snake:
+              description: List of identity providers that can be used to access the form.
+        Version:
+          type: object
+          description: Version Details.
+          properties:
+            id:
               type: string
-              example: Ministry Survey.
+              description: ID of the version.
+              example: 9e7b7aec-3903-4bf1-b15b-4b81e7b835f5
+            formId:
+              type: string
+              description: ID of the form.
+              example: 350a2c63-ca95-410f-ab33-61926fd963a0
+            version:
+              type: number
+              description: version number
+              example: 1
+            published:
+              type: boolean
+              description: Published status of the form version
+              example: true
+            createdBy:
+              type: string
+              example: AIDOWU@idir
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-06-21T14:21:23.667Z
+            updatedBy:
+              type: string
+              example: null
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2023-06-21T14:21:23.641Z
+        Timestamp:
+          createdBy:
+            type: string
+            example: AIDOWU@idir
+          createdAt:
+            type: string
+            format: date-time
+            example: 2023-06-21T14:21:23.667Z
+          updatedBy:
+            type: string
+            example: null
+          updatedAt:
+            type: string
+            format: date-time
+            example: 2023-06-21T14:21:23.641Z
+        Permission:
+          description: List of permissions attached to this role.
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Permission code.
+                example: design_create
+              display:
+                type: string
+                description: Display text.
+                example: Design Create
+              active:
+                type: boolean
+                example: true
+                description: This is used to determine if the permission is deleted. A value of false means the permission is deleted.
+              description:
+                type: string
+                example: Can create a form design
+              createdBy:
+                type: string
+                example: migration-002
+              createdAt:
+                type: string
+                format: uuid
+                example: 2023-03-29T14:07:46.684Z
+              updatedBy:
+                type: string
+                example: ''
+              updatedAt:
+                type: string
+                example: 2023-03-29T14:07:46.684Z
       AssignedSubmissionStatus:
         type: object
         properties:
@@ -1495,6 +4069,21 @@ definition:
                 example: Unauthorized
               type:
                 example: https://httpstatuses.com/401
+      SubmissionIdNotFoundError:
+        allOf:
+          - $ref: '#/components/schemas/Problem'
+          - type: object
+            properties:
+              detail:
+                example: Submission Id not found on request.
+              status:
+                example: 401
+              error:
+                example: {}
+              title:
+                example: Unauthorized
+              type:
+                example: https://httpstatuses.com/401
       NoRequiredFormPermissionError:
         allOf:
           - $ref: '#/components/schemas/Problem'
@@ -1532,21 +4121,6 @@ definition:
             properties:
               detail:
                 example: You can not update an owner's roles.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      SubmissionIdNotFoundError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Submission Id (s) not found on request.
               status:
                 example: 401
               error:

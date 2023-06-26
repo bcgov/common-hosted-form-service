@@ -36,7 +36,7 @@ routes.use(currentUser);
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/AdminsFormGetEx'
+ *              $ref: '#/components/responses/responseBody/AdminsFormGetEx'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -74,7 +74,7 @@ routes.get('/forms', async (req, res, next) => {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/AdminReadFormEx'
+ *              $ref: '#/components/responses/responseBody/AdminReadFormEx'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -142,7 +142,7 @@ routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/AdminReadAPIKeyDetails'
+ *              $ref: '#/components/responses/responseBody/AdminReadAPIKeyDetails'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -178,7 +178,7 @@ routes.get('/forms/:formId/apiKey', async (req, res, next) => {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/AdminRestoreForm'
+ *              $ref: '#/components/responses/responseBody/AdminRestoreForm'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -218,7 +218,7 @@ routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/AdminGetFormUserRoles'
+ *              $ref: '#/components/responses/responseBody/AdminGetFormUserRoles'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '401':
@@ -294,7 +294,7 @@ routes.get('/forms/:formId/formUsers', async (req, res, next) => {
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/response/AdminSetFormUserRoles'
+ *            $ref: '#/components/responses/responseBody/AdminSetFormUserRoles'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  *    '401':
@@ -334,7 +334,7 @@ routes.put('/forms/:formId/addUser', async (req, res, next) => {
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/response/AdminGetUsers'
+ *            $ref: '#/components/responses/responseBody/AdminGetUsers'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  */
@@ -368,7 +368,7 @@ routes.get('/users', async (req, res, next) => {
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/response/AdminReadUser'
+ *              $ref: '#/components/responses/responseBody/AdminReadUser'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  *    '404':
@@ -398,14 +398,14 @@ routes.get('/users/:userId', async (req, res, next) => {
  *    content:
  *      application/json:
  *        schema:
- *          $ref: '#/components/schemas/request/AdminReqProactiveHelpObject'
+ *          $ref: '#/components/requestBodies/AdminReqProactiveHelpObject'
  *   responses:
  *    '200':
  *      description: Success
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/response/AdminGetProactiveHelpObject'
+ *            $ref: '#/components/responses/responseBody/AdminGetProactiveHelpObject'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  *    '422':
@@ -447,7 +447,7 @@ routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/response/AdminProactiveHelpPublishStatus'
+ *            $ref: '#/components/responses/responseBody/AdminProactiveHelpPublishStatus'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  *    '422':
@@ -513,7 +513,7 @@ routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, re
  *      content:
  *        application/json:
  *          schema:
- *           $ref: '#/components/schemas/response/AdminProactiveHelpList'
+ *           $ref: '#/components/responses/responseBody/AdminProactiveHelpList'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  */

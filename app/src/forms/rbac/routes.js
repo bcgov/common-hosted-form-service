@@ -15,57 +15,18 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - RBAC
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will get list of users and roles for a form
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
  *      - openId: []
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Sucess
  *        content:
  *          application/json:
- *            examples:
- *              RBACCurrentEx:
- *                $ref: '#/components/examples/RBACCurrentEx'
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                  format: uuid
- *                  description: Database generated form Id
- *                usernameIdp:
- *                  type: string
- *                  description: User IDP username
- *                keycloakId:
- *                  type: string
- *                  description: Id from the keycloak
- *                idpUserId:
- *                  type: string
- *                  description: IDP id of the user. This is SSO team generated Id
- *                username:
- *                  type: string
- *                  description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id))
- *                fullName:
- *                  type: string
- *                  description: User registered fullname.
- *                lastName:
- *                  type: string
- *                  description: User registered lastname.
- *                email:
- *                  type: string
- *                  description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID)
- *                idp:
- *                  type: string
- *                  description: Identity provider
- *                public:
- *                  type: boolean
- *                  description: Determines if the user is a public user
- *                forms:
- *                  type: array
- *                  description: List of forms created by the user
- *                  example: []
+ *              $ref: '#/components/responses/responseBody/RBACGetCurrentUser'
  */
 routes.get('/current', keycloak.protect(), async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);
@@ -77,95 +38,18 @@ routes.get('/current', keycloak.protect(), async (req, res, next) => {
  *  get:
  *    tags:
  *      - RBAC
- *    description: Get User details and activities in CHEFS
+ *    description: ⁠This endpoint will fetch all the submissions in chefs for the current user. This list also includes each submission's user permissions, roles, and submission status.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
  *      - openId: []
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              RBACCurrentEx:
- *                $ref: '#/components/examples/RBACCurrentEx'
- *            schema:
- *              type: object
- *              properties:
- *                formSubmissionId:
- *                  type: string
- *                  description: Form submission ID
- *                  format: uuid
- *                  example: 095f15a1-7d85-4919-8f40-5a0a3477cd7f
- *                userId:
- *                  type: string
- *                  format: uuid
- *                  description: ID of the User
- *                  required: true
- *                  example: 7cc11a0f-a7c9-4cbe-bd92-a2a22781ad9f
- *                permissions:
- *                  type: array
- *                  description: assigned permission to user on the form
- *                  example: ["submission_create"]
- *                formId:
- *                  type: string
- *                  description: Form ID
- *                  format: uuid
- *                version:
- *                  type: number
- *                  description: Form version
- *                  example: 2
- *                "id": "095f15a1-7d85-4919-8f40-5a0a3477cd7f"
- *                confirmationId:
- *                  type: string
- *                  description: Submission confirmation ID
- *                  example: 9100A7D1
- *                createdAt:
- *                  type: string
- *                  format: date-time
- *                  example: 2023-06-18T22:09:07.611Z
- *                updatedAt:
- *                  type: string
- *                  format: date-time
- *                  example: 2023-06-19T04:32:22.895Z
- *                draft:
- *                  type: boolean
- *                  description: This will be true if the submission is a draft
- *                  default: true
- *                  example: true
- *                deleted:
- *                  type: boolean
- *                  description: If set to true, the submission will be regarded as deleted
- *                  example: true
- *                name:
- *                  type: string
- *                  description: Name of the form
- *                  example: multiple_submission_file_download
- *                description:
- *                  type: string
- *                  description: Details about the form
- *                  example: Test Form
- *                active:
- *                  type: boolean
- *                  example: true,
- *                  description: This is used to determine if the form is deleted. A value of false means the form is deleted
- *                enableStatusUpdates:
- *                  type: boolean
- *                  example: true
- *                  description: Enables or disables form reviewers from updating this form status (i.e. Submitted, Assigned, Completed)
- *                enableSubmitterDraft:
- *                  type: boolean
- *                  example: true
- *                  description: Enables or disables form submitters from saving or editing this form draft
- *                submission:
- *                  type: object
- *                  description: submission detail
- *                  example: {}
- *                submissionStatus:
- *                  type: array
- *                  description: List of submission status
- *                  example: []
+ *           schema:
+ *               $ref: '#/components/responses/responseBody/RBACGetCurrentUserSubmissions'
  */
 routes.get('/current/submissions', keycloak.protect(), async (req, res, next) => {
   await controller.getCurrentUserSubmissions(req, res, next);
@@ -177,51 +61,18 @@ routes.get('/current/submissions', keycloak.protect(), async (req, res, next) =>
  *  get:
  *    tags:
  *      - RBAC
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will get list of a list of identity providers.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
  *      - openId: []
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Sucess
  *        content:
  *          application/json:
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  code:
- *                    type: string
- *                    description: identity provider code
- *                    example: bceid-basic
- *                  display:
- *                    type: string
- *                    description: idp display text
- *                    example: Basic BCeID,
- *                  active:
- *                    type: boolean
- *                    description: If the idp is active
- *                    example: true
- *                  idp:
- *                    type: string
- *                    description: The identity provider
- *                    example: bceid-basic
- *                  createdBy:
- *                    type: string
- *                    example: migration-022
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                    example: 2023-03-29T14:07:46.684Z
- *                  updatedBy:
- *                    type: string
- *                    example: null
- *                  updatedAt:
- *                    type: string
- *                    format: date-time
- *                    example: 2023-03-29T14:07:46.684Z
+ *              $ref: '#/components/responses/responseBody/RBACGetIdentityProviders'
  */
 routes.get('/idps', async (req, res, next) => {
   await controller.getIdentityProviders(req, res, next);
@@ -233,87 +84,114 @@ routes.get('/idps', async (req, res, next) => {
  *  get:
  *    tags:
  *      - RBAC
- *    description: Get all user forms
+ *    description: This endpoint will fetch a list of users and roles for a form.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
  *      - openId: []
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/requestBodies/FormReqCreateDraft'
+ *    parameters:
+ *      - in: query
+ *        name: formSubmissionId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the form submission.
+ *        required: true
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *      - in: query
+ *        name: userId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the user.
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *      - in: query
+ *        name: idpUserId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: User ID of the IDP.
+ *        example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
+ *      - in: query
+ *        name: username
+ *        schema:
+ *          type: string
+ *        description: IDP registered user username.
+ *        example: ajudge
+ *      - in: query
+ *        name: fullName
+ *        schema:
+ *          type: string
+ *        description: IDP registered user fullName.
+ *        example: Ash Judge
+ *      - in: query
+ *        name: firstName
+ *        schema:
+ *          type: string
+ *        description: IDP registered user firstName.
+ *        example: Ash
+ *      - in: query
+ *        name: lastName
+ *        schema:
+ *          type: string
+ *        description: IDP registered user lastName.
+ *        example: Judge
+ *      - in: query
+ *        name: email
+ *        schema:
+ *          type: string
+ *          format: email
+ *        description: IDP registered user email.
+ *        example: ashjudge@gov.bc.ca
+ *      - in: query
+ *        name: formName
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: Name of the form
+ *        example: BC Forms
+ *      - in: query
+ *        name: active
+ *        schema:
+ *          type: boolean
+ *        description: Active form. The form has yet to be soft deleted.
+ *        example: true
+ *      - in: query
+ *        name: idps
+ *        schema:
+ *          type: string
+ *        description: List of IDPs for form access.
+ *        example: idir
+ *      - in: query
+ *        name: roles
+ *        schema:
+ *          type: string
+ *        description: Role code assigned to the current user on the form.
+ *        example: form_designer
+ *      - in: query
+ *        name: permissions
+ *        schema:
+ *          type: string
+ *        description: Permission code assigned to the current user on the form
+ *        example: design_create
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Success
  *        content:
  *          application/json:
  *            examples:
  *              RBACUsersEx:
  *                $ref: '#/components/examples/RBACUsersEx'
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  userId:
- *                    type: string
- *                    description: ID of the User
- *                    format: uuid
- *                  idpUserId:
- *                    type: string
- *                    description: IDP id of the user. This is SSO team generated Id
- *                  username:
- *                    type: string
- *                    description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id))
- *                  fullName:
- *                    type: string
- *                    description: User registered fullname.
- *                  lastName:
- *                    type: string
- *                    description: User registered lastname.
- *                  email:
- *                    type: string
- *                    description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID)
- *                  firstName:
- *                    type: string
- *                    description: User registered firstname
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                  formName:
- *                    type: string
- *                    description: Name or title of the form
- *                  labels:
- *                    type: string
- *                  identityProviders:
- *                    type: array
- *                    description: List of identity providers that can be used to login to the form
- *                  idps:
- *                    type: array
- *                    description: List of idps
- *                  active:
- *                    type: boolean
- *                    description: This is used to determine if the form is deleted. A value of false means the form is deleted
- *                  formVersionId:
- *                    type: string
- *                    description: Form version ID
- *                    format: uuid
- *                  version:
- *                    type: number
- *                    description: Form draft version to be published
- *                  roles:
- *                    type: array
- *                    description: assigned roles to user on the form
- *                  permissions:
- *                    type: array
- *                    description: assigned permission to user on the form
- *                  published:
- *                    type: string
- *                    description: publish status of the form
- *                  versionUpdatedAt:
- *                    type: string
- *                    format: date-time
- *                    description: date the form version was last updated
- *                  formDescription:
- *                    type: string
- *                    description: Form description
+ *              $ref: '#/components/responses/responseBody/RBACGetFormUsers'
+ *      '401':
+ *        $ref: '#/components/responses/FormIdNotFound'
  */
 routes.get('/forms', hasFormPermissions(P.TEAM_READ), async (req, res, next) => {
   await controller.getFormUsers(req, res, next);
@@ -332,7 +210,7 @@ routes.put('/forms', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) =
  *  get:
  *    tags:
  *      - RBAC
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will fetch a list of users and the user permissions on each form submission.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -346,74 +224,22 @@ routes.put('/forms', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) =
  *        description: Form submission ID.
  *        required: true
  *        example: 2d37713c-ae32-4c49-a73a-43ed9c7d1140
+ *      - in: query
+ *        name: userId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the user.
+ *        example: 7dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              RBACFormSubmissionEx:
- *                $ref: '#/components/examples/RBACFormSubmissionEx'
- *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  formSubmissionId:
- *                    type: string
- *                    description: Form submission ID
- *                    format: uuid
- *                  userId:
- *                    type: string
- *                    format: uuid
- *                    description: ID of the User
- *                    required: true
- *                  permissions:
- *                    type: array
- *                    description: assigned permission to user on the form
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                  version:
- *                    type: number
- *                    description: Form version
- *                  id:
- *                    type: string
- *                  confirmationId:
- *                    type: string
- *                    description: Submission confirmation ID
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                  updatedAt:
- *                    type: string
- *                    format: date-time
- *                  draft:
- *                    type: boolean
- *                    description: This will be true if the submission is a draft
- *                    default: true
- *                  deleted:
- *                    type: boolean
- *                    description: If set to true, the submission will be regarded as deleted
- *                  name:
- *                    type: string
- *                    description: Name of the form
- *                  description:
- *                    type: string
- *                    description: Details about the form
- *                  active:
- *                    type: boolean
- *                    description: This is used to determine if the form is deleted. A value of false means the form is deleted
- *                  enableStatusUpdates:
- *                    type: boolean
- *                    description: Enables or disables form reviewers from updating this form status (i.e. Submitted, Assigned, Completed)
- *                  enableSubmitterDraft:
- *                    type: boolean
- *                    description: Enables or disables form submitters from saving or editing this form draft
- *                  users:
- *                    type: object
- *                    description: user details
+ *           schema:
+ *              $ref: '#/components/responses/responseBody/RBACFormSubmission'
+ *      '401':
+ *        $ref: '#/components/responses/SubmissionIdNotFound'
  */
 routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.getSubmissionUsers(req, res, next);
@@ -425,13 +251,13 @@ routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (r
  *  put:
  *    tags:
  *      - RBAC
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will add users as team members to draft submission
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
  *      - openId: []
  *    parameters:
- *      - in: path
+ *      - in: query
  *        name: formSubmissionId
  *        schema:
  *          type: string
@@ -439,7 +265,7 @@ routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (r
  *        description: Form submission ID.
  *        required: true
  *        example: 2d37713c-ae32-4c49-a73a-43ed9c7d1140
- *      - in: path
+ *      - in: query
  *        name: userId
  *        schema:
  *          type: string
@@ -447,7 +273,7 @@ routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (r
  *        description: User ID
  *        required: true
  *        example: c6455376-382c-439d-a811-0381a012d696
- *      - in: path
+ *      - in: query
  *        name: selectedUserEmail
  *        schema:
  *          type: string
@@ -471,69 +297,8 @@ routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (r
  *        description: Returns User details and all user activities in CHEFS
  *        content:
  *          application/json:
- *            examples:
- *              RBACFormSubmissionEx:
- *                $ref: '#/components/examples/RBACFormSubmissionEx'
- *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  formSubmissionId:
- *                    type: string
- *                    description: Form submission ID
- *                    format: uuid
- *                  userId:
- *                    type: string
- *                    format: uuid
- *                    description: ID of the User
- *                    required: true
- *                  permissions:
- *                    type: array
- *                    description: assigned permission to user on the form
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                  version:
- *                    type: number
- *                    description: Form version
- *                  id:
- *                    type: string
- *                  confirmationId:
- *                    type: string
- *                    description: Submission confirmation ID
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                  updatedAt:
- *                    type: string
- *                    format: date-time
- *                  draft:
- *                    type: boolean
- *                    description: This will be true if the submission is a draft
- *                    default: true
- *                  deleted:
- *                    type: boolean
- *                    description: If set to true, the submission will be regarded as deleted
- *                  name:
- *                    type: string
- *                    description: Name of the form
- *                  description:
- *                    type: string
- *                    description: Details about the form
- *                  active:
- *                    type: boolean
- *                    description: This is used to determine if the form is deleted. A value of false means the form is deleted
- *                  enableStatusUpdates:
- *                    type: boolean
- *                    description: Enables or disables form reviewers from updating this form status (i.e. Submitted, Assigned, Completed)
- *                  enableSubmitterDraft:
- *                    type: boolean
- *                    description: Enables or disables form submitters from saving or editing this form draft
- *                  users:
- *                    type: object
- *                    description: user details
+ *           schema:
+ *              $ref: '#/components/responses/responseBody/RBACsetSubmissionUserPermissions'
  */
 routes.put('/submissions', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
   await controller.setSubmissionUserPermissions(req, res, next);
@@ -545,87 +310,103 @@ routes.put('/submissions', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async 
  *  get:
  *    tags:
  *      - RBAC
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will fetch list of forms for a user and the user's roles for each form.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
  *      - openId: []
+ *    parameters:
+ *      - in: query
+ *        name: formId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the form.
+ *        required: true
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *      - in: query
+ *        name: userId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the user.
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *      - in: query
+ *        name: idpUserId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: User ID of the IDP.
+ *        example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
+ *      - in: query
+ *        name: username
+ *        schema:
+ *          type: string
+ *        description: IDP registered user username.
+ *        example: ajudge
+ *      - in: query
+ *        name: fullName
+ *        schema:
+ *          type: string
+ *        description: IDP registered user fullName.
+ *        example: Ash Judge
+ *      - in: query
+ *        name: firstName
+ *        schema:
+ *          type: string
+ *        description: IDP registered user firstName.
+ *        example: Ash
+ *      - in: query
+ *        name: lastName
+ *        schema:
+ *          type: string
+ *        description: IDP registered user lastName.
+ *        example: Judge
+ *      - in: query
+ *        name: email
+ *        schema:
+ *          type: string
+ *          format: email
+ *        description: IDP registered user email.
+ *        example: ashjudge@gov.bc.ca
+ *      - in: query
+ *        name: formName
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: Name of the form
+ *        example: BC Forms
+ *      - in: query
+ *        name: active
+ *        schema:
+ *          type: boolean
+ *        description: Active form. The form has yet to be soft deleted.
+ *        example: true
+ *      - in: query
+ *        name: idps
+ *        schema:
+ *          type: string
+ *        description: List of IDPs for form access.
+ *        example: idir
+ *      - in: query
+ *        name: roles
+ *        schema:
+ *          type: string
+ *        description: Role code assigned to the current user on the form.
+ *        example: form_designer
+ *      - in: query
+ *        name: permissions
+ *        schema:
+ *          type: string
+ *        description: Permission code assigned to the current user on the form
+ *        example: design_create
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              RBACUsersEx:
- *                $ref: '#/components/examples/RBACUsersEx'
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  userId:
- *                    type: string
- *                    description: ID of the User
- *                    format: uuid
- *                  idpUserId:
- *                    type: string
- *                    description: IDP id of the user. This is SSO team generated Id
- *                  username:
- *                    type: string
- *                    description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id))
- *                  fullName:
- *                    type: string
- *                    description: User registered fullname.
- *                  lastName:
- *                    type: string
- *                    description: User registered lastname.
- *                  email:
- *                    type: string
- *                    description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID)
- *                  firstName:
- *                    type: string
- *                    description: User registered firstname
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                  formName:
- *                    type: string
- *                    description: Name or title of the form
- *                  labels:
- *                    type: string
- *                  identityProviders:
- *                    type: array
- *                    description: List of identity providers that can be used to login to the form
- *                  idps:
- *                    type: array
- *                    description: List of idps
- *                  active:
- *                    type: boolean
- *                    description: This is used to determine if the form is deleted. A value of false means the form is deleted
- *                  formVersionId:
- *                    type: string
- *                    description: Form version ID
- *                    format: uuid
- *                  version:
- *                    type: number
- *                    description: Form draft version to be published
- *                  roles:
- *                    type: array
- *                    description: assigned roles to user on the form
- *                  permissions:
- *                    type: array
- *                    description: assigned permission to user on the form
- *                  published:
- *                    type: string
- *                    description: publish status of the form
- *                  versionUpdatedAt:
- *                    type: string
- *                    format: date-time
- *                    description: date the form version was last updated
- *                  formDescription:
- *                    type: string
- *                    description: Form description
+ *              $ref: '#/components/responses/responseBody/RBACGetUsersForms'
  */
 routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.getUserForms(req, res, next);
@@ -634,10 +415,10 @@ routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}
 /**
  * @openapi
  * rbac/users:
- *  get:
+ *  put:
  *    tags:
  *      - RBAC
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will set form roles for a user
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -661,6 +442,7 @@ routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}
  *        example: c6455376-382c-439d-a811-0381a012d696
  *    requestBody:
  *      required: true
+ *      description: OK
  *      content:
  *        application/json:
  *          schema:
@@ -684,80 +466,11 @@ routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}
  *                  example: 2a4770b7-6f0e-4629-a359-bf820295f23a
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              RBACUsersEx:
- *                $ref: '#/components/examples/RBACUsersEx'
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  userId:
- *                    type: string
- *                    description: ID of the User
- *                    format: uuid
- *                  idpUserId:
- *                    type: string
- *                    description: IDP id of the user. This is SSO team generated Id
- *                  username:
- *                    type: string
- *                    description: User login username(can be either IDIR username, Basic BCeID (User Id), or Business BCeID (User Id))
- *                  fullName:
- *                    type: string
- *                    description: User registered fullname.
- *                  lastName:
- *                    type: string
- *                    description: User registered lastname.
- *                  email:
- *                    type: string
- *                    description: User registered email on IDP login details (IDIR, Basic BCeID, or Business BCeID)
- *                  firstName:
- *                    type: string
- *                    description: User registered firstname
- *                  formId:
- *                    type: string
- *                    description: Form ID
- *                    format: uuid
- *                  formName:
- *                    type: string
- *                    description: Name or title of the form
- *                  labels:
- *                    type: string
- *                  identityProviders:
- *                    type: array
- *                    description: List of identity providers that can be used to login to the form
- *                  idps:
- *                    type: array
- *                    description: List of idps
- *                  active:
- *                    type: boolean
- *                    description: This is used to determine if the form is deleted. A value of false means the form is deleted
- *                  formVersionId:
- *                    type: string
- *                    description: Form version ID
- *                    format: uuid
- *                  version:
- *                    type: number
- *                    description: Form draft version to be published
- *                  roles:
- *                    type: array
- *                    description: assigned roles to user on the form
- *                  permissions:
- *                    type: array
- *                    description: assigned permission to user on the form
- *                  published:
- *                    type: string
- *                    description: publish status of the form
- *                  versionUpdatedAt:
- *                    type: string
- *                    format: date-time
- *                    description: date the form version was last updated
- *                  formDescription:
- *                    type: string
- *                    description: Form description
+ *              $ref: '#/components/responses/responseBody/RBACSetUsersForms'
  */
 routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), hasRolePermissions(false), async (req, res, next) => {
   await controller.setUserForms(req, res, next);
@@ -769,7 +482,7 @@ routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R
  *  delete:
  *    tags:
  *      - RBAC
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will remove multiple users from a form.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []

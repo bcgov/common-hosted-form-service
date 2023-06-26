@@ -15,7 +15,7 @@ routes.use(currentUser);
  *  post:
  *    tags:
  *      - Files
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will store the uploaded file or files in the CHEFS object storage facility.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -29,16 +29,15 @@ routes.use(currentUser);
  *            properties:
  *              name:
  *                type: string
- *                description: The desired file name
+ *                description: The desired file name.
  *                example: hiring_approval_request_form_schema.json
  *              files:
  *                type: string
  *                format: binary
- *                description: Form ID
- *                example: e37705ee-1c01-44eb-ae8a-e7d96002ae67
+ *                description: The actual files to upload.
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Returns the file or files uploaded details.
  *        content:
  *          application/json:
  *            schema:
@@ -46,17 +45,18 @@ routes.use(currentUser);
  *              items:
  *                type: object
  *                properties:
- *                  createdAt:
- *                    type: string
- *                    format: date-time
- *                    example: 2020-06-04T18:49:20.672Z
- *                  createdBy:
- *                    type: string
- *                    example: "jsmith@idir"
  *                  id:
  *                    type: string
  *                    format: uuid
- *                    example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+ *                    example: 551ddc09-27cc-483c-8439-a277d4bfbfbb
+ *                    description: ID of the file
+ *                  createdBy:
+ *                    type: string
+ *                    example: "jsmith@idir"
+ *                  createdAt:
+ *                    type: string
+ *                    format: uuid
+ *                    example: 2023-06-21T14:22:19.979Z
  *                  originalName:
  *                    type: string
  *                    description: Original name of the file
@@ -76,7 +76,7 @@ routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload,
  *  get:
  *    tags:
  *      - Files
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will fetch a file from the CHEFS object storage facility.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -92,7 +92,7 @@ routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload,
  *        example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
  *    responses:
  *      '200':
- *        description: Returns User details and all user activities in CHEFS
+ *        description: Returns file binary data.
  *        content:
  *          application/octet-stream:
  *            schema:
@@ -109,7 +109,7 @@ routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), asy
  *  delete:
  *    tags:
  *      - Files
- *    description: Get User details and activities in CHEFS
+ *    description: This endpoint will delete a file from the CHEFS object storage facility.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []

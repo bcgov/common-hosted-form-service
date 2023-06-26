@@ -13,7 +13,7 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - Submissions
- *    description: Get Form Submission details for the submission ID
+ *    description: This endpoint will fetch submission details for the submission ID.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -37,7 +37,20 @@ routes.use(currentUser);
  *                $ref: '#/components/examples/SubmissionEx'
  *            schema:
  *              type: object
- *              description: form submission details for the formSubmissionId in the request parameter
+ *              description: Form submission details for the formSubmissionId in the request parameter
+ *              properties:
+ *               form:
+ *                type: object
+ *                description: Form Details.
+ *                example: {}
+ *              submission:
+ *                type: object
+ *                description: Submission Details.
+ *                example: {}
+ *              version:
+ *                type: object
+ *                description: Version Details.
+ *                example: {}
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '404':
@@ -53,7 +66,7 @@ routes.get('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_READ), as
  *  put:
  *    tags:
  *      - Submissions
- *    description: update Form Submission details for the submission ID
+ *    description: This endpoint will update the Form Submission details for the submission ID
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -72,16 +85,7 @@ routes.get('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_READ), as
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              draft:
- *                type: boolean
- *                description: draft status of the form submission
- *                required: true
- *              submission:
- *                type: object
- *                description: User form submission entry.
- *                required: true
+ *             $ref: '#/components/requestBodies/FormReqCreatSubmission'
  *    responses:
  *      '200':
  *        description: Success
@@ -92,7 +96,20 @@ routes.get('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_READ), as
  *                $ref: '#/components/examples/SubmissionEx'
  *            schema:
  *              type: object
- *              description: form submission details for the formSubmissionId in the request parameter
+ *              description: Form submission details for the formSubmissionId in the request parameter
+ *              properties:
+ *                form:
+ *                  type: object
+ *                  description: Form Details.
+ *                  example: {}
+ *                submission:
+ *                  type: object
+ *                  description: Submission Details.
+ *                  example: {}
+ *                version:
+ *                  type: object
+ *                  description: Version Details.
+ *                  example: {}
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '404':
@@ -108,7 +125,7 @@ routes.put('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_UPDATE), 
  *  delete:
  *    tags:
  *      - Submissions
- *    description: delete Form Submission details for the submission ID
+ *    description: This endpoint will delete form submission details for the submission ID
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -132,7 +149,9 @@ routes.put('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_UPDATE), 
  *                $ref: '#/components/examples/DeletedSubmissionEx'
  *            schema:
  *              type: object
- *              description: form submission details for the formSubmissionId in the request parameter
+ *              description: Form submission details for the formSubmissionId in the request parameter
+ *              properties:
+ *                $ref: '#/components/schemas/model/Submission'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '404':
@@ -142,6 +161,55 @@ routes.delete('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_DELETE
   await controller.delete(req, res, next);
 });
 
+/**
+ * @openapi
+ * /submissions/{formSubmissionId}/{formId}/submissions/restore:
+ *  put:
+ *    tags:
+ *      - Submissions
+ *    description: This endpoint will multi-restore the deleted form submissions for all the submission IDs in the list.
+ *    security:
+ *      - bearerAuth: []
+ *      - basicAuth: []
+ *      - openId: []
+ *    parameters:
+ *      - in: path
+ *        name: formSubmissionId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the form submission.
+ *        required: true
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              submissionIds:
+ *                description: List of submission IDs to restore.
+ *                type: array
+ *                example:
+ *                - 57f77c27-d8d1-434a-a2d3-5c08a6f7f09b
+ *                - a2794923-5a4f-4945-be9c-9655dc2f09c8
+ *    responses:
+ *      '200':
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            examples:
+ *              RestoreMultiSubmissionEx:
+ *                $ref: '#/components/examples/RestoreMultiSubmissionEx'
+ *            schema:
+ *              type: object
+ *              description: form submission details for the formSubmissionId in the request parameter
+ *      '403':
+ *        $ref: '#/components/responses/Forbidden'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
 routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.restoreMutipleSubmissions(req, res, next);
 });
@@ -152,7 +220,7 @@ routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermis
  *  put:
  *    tags:
  *      - Submissions
- *    description: restore deleted Form Submission details for the submission ID
+ *    description: This endpoint will restore deleted form submission details for the submission ID
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -184,8 +252,8 @@ routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermis
  *        content:
  *          application/json:
  *            examples:
- *              DeletedSubmissionEx:
- *                $ref: '#/components/examples/DeletedSubmissionEx'
+ *              SubmissionEx:
+ *                $ref: '#/components/examples/SubmissionEx'
  *            schema:
  *              type: object
  *              description: form submission details for the formSubmissionId in the request parameter
@@ -201,10 +269,10 @@ routes.put('/:formSubmissionId/restore', hasSubmissionPermissions(P.SUBMISSION_D
 /**
  * @openapi
  * /submissions/{formSubmissionId}/options:
- *  put:
+ *  get:
  *    tags:
  *      - Submissions
- *    description: restore deleted Form Submission details for the submission ID
+ *    description: This endpoint fetch pre-flight details for a form submission.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -223,9 +291,6 @@ routes.put('/:formSubmissionId/restore', hasSubmissionPermissions(P.SUBMISSION_D
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              DeletedSubmissionEx:
- *                $ref: '#/components/examples/DeletedSubmissionEx'
  *            schema:
  *              type: object
  *              properties:
@@ -293,7 +358,7 @@ routes.get('/:formSubmissionId/options', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Submissions
- *    description: get form submission notes
+ *    description: This endpoint will get form submission notes
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -313,49 +378,7 @@ routes.get('/:formSubmissionId/options', async (req, res, next) => {
  *        content:
  *          application/json:
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    format: uuid
- *                    description: Database generated Note Id
- *                    example: 67cb6740-2db7-44b1-a763-c5f65ca8db1b
- *                  submissionId:
- *                    type: string
- *                    format: uuid
- *                    description: ID  of the submission
- *                    example: 70531344-c77f-47bb-83d6-74c22223abe0
- *                  submissionStatusId:
- *                    type: string
- *                    description: ID  of the submission status
- *                    example: null
- *                  note:
- *                    type: string
- *                    description: Submission Note (This is note that comes status update)
- *                    example: "Email to ayobamii.idowu@gov.bc.ca: nffg"
- *                  userId:
- *                    type: string
- *                    description: ID of the User
- *                    format: uuid
- *                    example: 2a4770b7-6f0e-4629-a359-bf820295f23a
- *                  createdBy:
- *                    type: string
- *                    description: The user that initially added the note to the submission
- *                    example: "AIDOWU@idir"
- *                  createdAt:
- *                    type: string
- *                    description: Date the note was initially added to the submission
- *                    example: 2023-06-15T19:44:36.320Z
- *                  updatedBy:
- *                    type: string
- *                    description: The user that last updated the submission note
- *                    example: null
- *                  updatedAt:
- *                    type: string
- *                    description: Date the submission note was last updated
- *                    example: 2023-06-15T19:44:36.320Z
+ *              $ref: '#/components/responses/responseBody/SubmissionsNote'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  *    '422':
@@ -371,7 +394,7 @@ routes.get('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_REA
  *  post:
  *    tags:
  *      - Submissions
- *    description: add notes to form submission
+ *    description: This endpoint will add notes to form submission
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -409,49 +432,7 @@ routes.get('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_REA
  *        content:
  *          application/json:
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    format: uuid
- *                    description: Database generated Note Id
- *                    example: 67cb6740-2db7-44b1-a763-c5f65ca8db1b
- *                  submissionId:
- *                    type: string
- *                    format: uuid
- *                    description: ID  of the submission
- *                    example: 70531344-c77f-47bb-83d6-74c22223abe0
- *                  submissionStatusId:
- *                    type: string
- *                    description: ID  of the submission status
- *                    example: null
- *                  note:
- *                    type: string
- *                    description: Submission Note (This is note that comes status update)
- *                    example: "Email to ayobamii.idowu@gov.bc.ca: nffg"
- *                  userId:
- *                    type: string
- *                    description: ID of the User
- *                    format: uuid
- *                    example: 2a4770b7-6f0e-4629-a359-bf820295f23a
- *                  createdBy:
- *                    type: string
- *                    description: The user that initially added the note to the submission
- *                    example: "AIDOWU@idir"
- *                  createdAt:
- *                    type: string
- *                    description: Date the note was initially added to the submission
- *                    example: 2023-06-15T19:44:36.320Z
- *                  updatedBy:
- *                    type: string
- *                    description: The user that last updated the submission note
- *                    example: null
- *                  updatedAt:
- *                    type: string
- *                    description: Date the submission note was last updated
- *                    example: 2023-06-15T19:44:36.320Z
+ *              $ref: '#/components/responses/responseBody/SubmissionsNote'
  *    '403':
  *      $ref: '#/components/responses/Forbidden'
  *    '422':
@@ -467,7 +448,7 @@ routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UP
  *  get:
  *    tags:
  *      - Submissions
- *    description: Get form submission status
+ *    description: This endpoint will list of status history for a submission.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -486,47 +467,8 @@ routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UP
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              SubmissionStatusEx:
- *                $ref: '#/components/examples/SubmissionStatusEx'
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    description: Database generated form submission status ID
- *                    format: uuid
- *                  submissionId:
- *                    type: string
- *                    description: Database generated form submission status ID
- *                    format: uuid
- *                  code:
- *                    type: string
- *                    description: Form submission status
- *                  assignedToUserId:
- *                    type: string
- *                    describe: user ID that the form submission has been assigned
- *                  actionDate:
- *                    type: string
- *                  createdBy:
- *                    type: string
- *                    description: The username of the user that initially submitted the form submission
- *                  createdAt:
- *                    type: string
- *                    format: timestamp
- *                    description: The timestamp the form submission was initially submitted
- *                  updatedBy:
- *                    type: string
- *                    description: The username of the latest user that updated the form submission
- *                  updatedAt:
- *                    type: string
- *                    format: timestamp
- *                    description: The timestamp the form submission was last updated
- *                  user:
- *                    type: object
- *                    description: Details of the user that the form submission was assigned
+ *              $ref: '#/components/responses/responseBody/SubmissionsGetStatus'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '404':
@@ -542,7 +484,7 @@ routes.get('/:formSubmissionId/status', apiAccess, hasSubmissionPermissions(P.SU
  *  post:
  *    tags:
  *      - Submissions
- *    description: update form submission status
+ *    description: This endpoint add a new status to a submission, and optionally provides email notification depending on the status being assigned.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -570,47 +512,8 @@ routes.get('/:formSubmissionId/status', apiAccess, hasSubmissionPermissions(P.SU
  *        description: Success
  *        content:
  *          application/json:
- *            examples:
- *              SubmissionStatusEx:
- *                $ref: '#/components/examples/SubmissionStatusEx'
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                    description: Database generated form submission status ID
- *                    format: uuid
- *                  submissionId:
- *                    type: string
- *                    description: Database generated form submission status ID
- *                    format: uuid
- *                  code:
- *                    type: string
- *                    description: Form submission status
- *                  assignedToUserId:
- *                    type: string
- *                    describe: user ID that the form submission has been assigned
- *                  actionDate:
- *                    type: string
- *                  createdBy:
- *                    type: string
- *                    description: The username of the user that initially submitted the form submission
- *                  createdAt:
- *                    type: string
- *                    format: timestamp
- *                    description: The timestamp the form submission was initially submitted
- *                  updatedBy:
- *                    type: string
- *                    description: The username of the latest user that updated the form submission
- *                  updatedAt:
- *                    type: string
- *                    format: timestamp
- *                    description: The timestamp the form submission was last updated
- *                  user:
- *                    type: object
- *                    description: Details of the user that the form submission was assigned
+ *              $ref: '#/components/responses/responseBody/SubmissionsAddStatus'
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '404':
@@ -622,7 +525,7 @@ routes.post('/:formSubmissionId/status', hasSubmissionPermissions(P.SUBMISSION_U
 
 /**
  * @openapi
- * /submissions/{formSubmissionId}/status:
+ * /submissions/{formSubmissionId}/email:
  *  post:
  *    tags:
  *      - Submissions
@@ -643,12 +546,6 @@ routes.post('/:formSubmissionId/status', hasSubmissionPermissions(P.SUBMISSION_U
  *    responses:
  *      '200':
  *        description: Success
- *        content:
- *          application/json:
- *            examples:
- *              SubmissionStatusEx:
- *                $ref: '#/components/examples/SubmissionStatusEx'
- *            schema:
  *      '403':
  *        $ref: '#/components/responses/Forbidden'
  *      '404':
@@ -658,6 +555,38 @@ routes.post('/:formSubmissionId/email', hasSubmissionPermissions(P.SUBMISSION_RE
   await controller.email(req, res, next);
 });
 
+/**
+ * @openapi
+ * /submissions/{formSubmissionId}/edits:
+ *  post:
+ *    tags:
+ *      - Submissions
+ *    description: This endpoint will fetch an audit list of edits or changes made to the specified submission.
+ *    security:
+ *      - bearerAuth: []
+ *      - basicAuth: []
+ *      - openId: []
+ *    parameters:
+ *      - in: path
+ *        name: to
+ *        schema:
+ *          type: string
+ *          format: email
+ *        description: email to send the receipt to.
+ *        required: true
+ *        example: receipt@gov.bc.ca
+ *    responses:
+ *      '200':
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/responses/responseBody/SubmissionListEdits'
+ *      '403':
+ *        $ref: '#/components/responses/Forbidden'
+ *      '404':
+ *        $ref: '#/components/responses/ResourceNotFoundError'
+ */
 routes.get('/:formSubmissionId/edits', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.listEdits(req, res, next);
 });
@@ -666,6 +595,76 @@ routes.post('/:formSubmissionId/template/render', hasSubmissionPermissions(P.SUB
   await controller.templateUploadAndRender(req, res, next);
 });
 
+/**
+ * @openapi
+ * /submissions/{formSubmissionId}/{formId}/submissions:
+ *  delete:
+ *    tags:
+ *      - Submissions
+ *    description: This endpoint will soft delete form submission details for the submission IDs in the list.
+ *    security:
+ *      - bearerAuth: []
+ *      - basicAuth: []
+ *      - openId: []
+ *    parameters:
+ *      - in: path
+ *        name: formSubmissionId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the form submission.
+ *        required: true
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *      - in: path
+ *        name: formId
+ *        schema:
+ *          type: string
+ *          format: uuid
+ *        description: ID of the form.
+ *        required: true
+ *        example: d0ec4197-3616-4dd9-8a6e-c91d124dded9
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              submissionIds:
+ *                description: List of submission IDs to delete.
+ *                type: array
+ *                example:
+ *                - 57f77c27-d8d1-434a-a2d3-5c08a6f7f09b
+ *                - a2794923-5a4f-4945-be9c-9655dc2f09c8
+ *    responses:
+ *      '200':
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            examples:
+ *              DeleteMultiSubmissionEx:
+ *                $ref: '#/components/examples/DeleteMultiSubmissionEx'
+ *            schema:
+ *              type: object
+ *              description: Form submission details for the formSubmissionId in the request parameter
+ *              properties:
+ *                form:
+ *                  type: object
+ *                  description: Form Details.
+ *                  example: {}
+ *                submission:
+ *                  type: object
+ *                  description: Submission Details.
+ *                  example: {}
+ *                version:
+ *                  type: object
+ *                  description: Version Details.
+ *                  example: {}
+ *      '403':
+ *        $ref: '#/components/responses/Forbidden'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
 routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.deleteMutipleSubmissions(req, res, next);
 });
