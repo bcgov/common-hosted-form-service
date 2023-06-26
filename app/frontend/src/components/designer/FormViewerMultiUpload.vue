@@ -139,6 +139,7 @@
 <script>
 import { mapActions } from 'vuex';
 import { Formio } from 'vue-formio';
+// import { nextTick } from 'process';
 export default {
   name: 'FormViewerDownloadButton',
   components: {},
@@ -331,28 +332,38 @@ export default {
         return;
       }
     },
-    isMemoryExcessed(heapLimit, heapUsed) {
-      //Check if Used Heap size is beyond 70% of Limit
-      return heapLimit >= heapUsed * 0.7;
-    },
-    checkMemoryUsage() {
-      if (window.performance && window.performance.memory) {
-        const memory = window.performance.memory;
-        if (
-          this.isMemoryExcessed(memory.jsHeapSizeLimit, memory.usedJSHeapSize)
-        ) {
-          //having memory leakage so let's add some more time to clear garbage.
-          this.delay(500);
+    async getMemoryInfo() {
+      return new Promise((resolve) => {
+        if (window.performance && window.performance.memory) {
+          resolve(
+            (
+              (window.performance.memory.usedJSHeapSize * 100) /
+              window.performance.memory.jsHeapSizeLimit
+            ).toFixed(0)
+          );
         }
-      } /*else {
-        console.log(
-          'Memory usage information is not available in this browser.'
-        );
-      }*/
+        resolve(undefined);
+      });
+    },
+    async checkMemoryUsage() {
+      let time = 1000;
+      const memoryUsage = await this.getMemoryInfo();
+      if (memoryUsage != undefined) {
+        if (memoryUsage <= 50) {
+          time = 50;
+        } else if (memoryUsage > 50 || memoryUsage < 70) {
+          time = 1000;
+        } else if (memoryUsage > 70 || memoryUsage < 80) {
+          time = 2000;
+        } else if (memoryUsage > 80) {
+          time = 3000;
+        }
+      }
+      return time;
     },
     async validate(element, errors) {
       await this.delay(500);
-      this.checkMemoryUsage();
+      //this.checkMemoryUsage();
       this.formIOValidation(element).then((response) => {
         if (response.error) {
           errors[this.index] = {
@@ -371,11 +382,14 @@ export default {
     async validationDispatcher(errors) {
       /* we need this timer allow to the gargabe colector to have time
        to clean the memory before starting  a new form validation */
-      await this.delay(500);
-      this.checkMemoryUsage();
+
       this.vForm.clearServerErrors();
       this.vForm.resetValue();
       this.vForm.clear();
+      const response = await this.checkMemoryUsage();
+
+      await this.delay(response);
+      // if (!response) {
       const check = {
         shouldContinueValidation: this.index < this.Json.length,
       };
