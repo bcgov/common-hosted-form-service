@@ -65,6 +65,12 @@ routes.use(currentUser);
  *                    type: integer
  *                    description: File size
  *                    example: 27462
+ *      '401':
+ *        $ref: '#/components/schemas/respError/InvalidAuthError'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
+ *      '500':
+ *        $ref: '#/components/schemas/respError/FileUploadMiddlewareError'
  */
 routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload, async (req, res, next) => {
   await controller.create(req, res, next);
@@ -79,7 +85,6 @@ routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload,
  *    description: This endpoint will fetch a file from the CHEFS object storage facility.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -112,7 +117,6 @@ routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), asy
  *    description: This endpoint will delete a file from the CHEFS object storage facility.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path

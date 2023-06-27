@@ -4269,6 +4269,21 @@ definition:
                   example: Unauthorized
                 type:
                   example: https://httpstatuses.com/401
+        FileUploadMiddlewareError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: File Upload middleware has not been configured.
+                status:
+                  example: 500
+                error:
+                  example: {}
+                title:
+                  example: Middleware not configured
+                type:
+                  example: https://httpstatuses.com/500
         UpdateOwnerError:
           allOf:
             - $ref: '#/components/schemas/Problem'

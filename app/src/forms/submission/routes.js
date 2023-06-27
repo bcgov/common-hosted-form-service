@@ -555,6 +555,7 @@ routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UP
  *              oneOf:
  *                - $ref: '#/components/schemas/respError/SubmissionIdNotFoundError'
  *                - $ref: '#/components/schemas/respError/SubmissionAccessError'
+ *                - $ref: '#/components/schemas/respError/InvalidAuthError'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
  */
