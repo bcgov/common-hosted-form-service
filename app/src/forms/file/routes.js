@@ -69,8 +69,6 @@ routes.use(currentUser);
  *        $ref: '#/components/schemas/respError/InvalidAuthError'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
- *      '500':
- *        $ref: '#/components/schemas/respError/FileUploadMiddlewareError'
  */
 routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload, async (req, res, next) => {
   await controller.create(req, res, next);
@@ -103,6 +101,8 @@ routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload,
  *            schema:
  *              type: string
  *              format: binary
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
@@ -130,6 +130,8 @@ routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), asy
  *    responses:
  *      '200':
  *        description: Sucess
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.delete('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
   await controller.delete(req, res, next);

@@ -17,8 +17,6 @@ routes.use(currentUser);
  *      - Permissions
  *    description: This endpoint will fetch list of permissions and roles they are attached to.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    responses:
  *      '200':
@@ -29,6 +27,8 @@ routes.use(currentUser);
  *              $ref: '#/components/responses/responseBody/PermissionsexPermissions'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/', async (req, res, next) => {
   await controller.list(req, res, next);
@@ -42,8 +42,6 @@ routes.get('/', async (req, res, next) => {
  *      - Permissions
  *    description: This endpoint will create a new permission
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    requestBody:
  *      required: true
@@ -60,6 +58,8 @@ routes.get('/', async (req, res, next) => {
  *              $ref: '#/components/responses/responseBody/PermissionsexPermissions'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.post('/', async (req, res, next) => {
   await controller.create(req, res, next);
@@ -73,8 +73,6 @@ routes.post('/', async (req, res, next) => {
  *      - Permissions
  *    description: This endpoint will fetch the permission using the permission code in the parameter.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -93,6 +91,8 @@ routes.post('/', async (req, res, next) => {
  *              $ref: '#/components/responses/responseBody/PermissionsexPermissions'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/:code', async (req, res, next) => {
   await controller.read(req, res, next);
@@ -106,8 +106,6 @@ routes.get('/:code', async (req, res, next) => {
  *      - Permissions
  *    description: This endpoint will update the permission.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -132,6 +130,8 @@ routes.get('/:code', async (req, res, next) => {
  *              $ref: '#/components/responses/responseBody/PermissionsexPermissions'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.put('/:code', async (req, res, next) => {
   await controller.update(req, res, next);

@@ -17,7 +17,6 @@ routes.use(currentUser);
  *    description: This endpoint will fetch list of roles and permissions.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    responses:
  *      '200':
@@ -28,6 +27,8 @@ routes.use(currentUser);
  *              $ref: '#/components/responses/responseBody/RolesListRole'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/', keycloak.protect(), async (req, res, next) => {
   await controller.list(req, res, next);
@@ -42,7 +43,6 @@ routes.get('/', keycloak.protect(), async (req, res, next) => {
  *    description: This endpoint will fetch list of roles and permissions.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    requestBody:
  *      required: true
@@ -59,6 +59,8 @@ routes.get('/', keycloak.protect(), async (req, res, next) => {
  *              $ref: '#/components/responses/responseBody/RolesGetRole'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.post('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.create(req, res, next);
@@ -72,8 +74,6 @@ routes.post('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:adm
  *      - Roles
  *    description: This endpoint will fetch specified role code.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -92,6 +92,8 @@ routes.post('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:adm
  *              $ref: '#/components/responses/responseBody/RolesGetRole'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/:code', keycloak.protect(), async (req, res, next) => {
   await controller.read(req, res, next);
@@ -105,8 +107,6 @@ routes.get('/:code', keycloak.protect(), async (req, res, next) => {
  *      - Roles
  *    description: This endpoint will fetch list of roles and permissions.
  *    security:
- *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -131,6 +131,8 @@ routes.get('/:code', keycloak.protect(), async (req, res, next) => {
  *              $ref: '#/components/responses/responseBody/RolesGetRole'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.put('/:code', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.update(req, res, next);
