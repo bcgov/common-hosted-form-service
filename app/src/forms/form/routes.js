@@ -30,7 +30,7 @@ routes.use(currentUser);
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormListForms'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.listForms(req, res, next);
@@ -61,7 +61,7 @@ routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admi
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormCreateForm'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.post('/', async (req, res, next) => {
   await controller.createForm(req, res, next);
@@ -95,9 +95,9 @@ routes.post('/', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormReadForm'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.get('/:formId', apiAccess, hasFormPermissions(P.FORM_READ), async (req, res, next) => {
   await controller.readForm(req, res, next);
@@ -137,9 +137,9 @@ routes.get('/:formId', apiAccess, hasFormPermissions(P.FORM_READ), async (req, r
  *            schema:
  *              type: string
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.export(req, res, next);
@@ -179,9 +179,9 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
  *            schema:
  *              type: string
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.exportWithFields(req, res, next);
@@ -215,9 +215,9 @@ routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, h
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormReadFormOptions'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.get('/:formId/options', async (req, res, next) => {
   await controller.readFormOptions(req, res, next);
@@ -264,9 +264,9 @@ routes.get('/:formId/version', apiAccess, hasFormPermissions(P.FORM_READ), async
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormUpdateForm'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.put('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
   await controller.updateForm(req, res, next);
@@ -296,9 +296,9 @@ routes.put('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE
  *      '200':
  *        description: Success
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DELETE]), async (req, res, next) => {
   await controller.deleteForm(req, res, next);
@@ -360,9 +360,9 @@ routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DEL
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormListFormSubmissions'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.listFormSubmissions(req, res, next);
@@ -408,11 +408,11 @@ routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormReadVersion'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  *      '422':
- *        $ref: '#/components/responses/UnprocessableEntityDB'
+ *        $ref: '#/components/responses/Error/UnprocessableEntityDB'
  */
 routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readVersion(req, res, next);
@@ -460,7 +460,7 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
  *      '401':
  *        $ref: '#/components/responses/NoFormAccess'
  *      '422':
- *        $ref: '#/components/responses/UnprocessableEntityDB'
+ *        $ref: '#/components/responses/Error/UnprocessableEntityDB'
  */
 routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readVersionFields(req, res, next);
@@ -512,9 +512,9 @@ routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissi
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormPublishVersion'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.post('/:formId/versions/:formVersionId/publish', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
   await controller.publishVersion(req, res, next);
@@ -575,9 +575,9 @@ routes.post('/:formId/versions/:formVersionId/publish', apiAccess, hasFormPermis
  *                    description: Version Details.
  *                    example: {}
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '404':
- *        $ref: '#/components/responses/NotFound'
+ *        $ref: '#/components/responses/Error/NotFound'
  */
 routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.listSubmissions(req, res, next);
@@ -625,11 +625,11 @@ routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPer
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormCreateFormSubmission'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  *      '422':
- *        $ref: '#/components/responses/UnprocessableEntityDB'
+ *        $ref: '#/components/responses/Error/UnprocessableEntityDB'
  */
 routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
   await controller.createSubmission(req, res, next);
@@ -688,9 +688,9 @@ routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, h
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormListsDraft'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
   await controller.listDrafts(req, res, next);
@@ -730,9 +730,9 @@ routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESI
  *            schema:
  *               $ref: '#/components/responses/responseBody/FormCreateDraft'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.post('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
   await controller.createDraft(req, res, next);
@@ -774,9 +774,9 @@ routes.post('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DES
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormReadDraft'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
   await controller.readDraft(req, res, next);
@@ -824,9 +824,9 @@ routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormUpdateDraft'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.put('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_UPDATE]), async (req, res, next) => {
   await controller.updateDraft(req, res, next);
@@ -864,9 +864,9 @@ routes.put('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  *      '200':
  *        description: Success
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.delete('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_DELETE]), async (req, res, next) => {
   await controller.deleteDraft(req, res, next);
@@ -914,9 +914,9 @@ routes.delete('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissio
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormPublishDraft'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.post('/:formId/drafts/:formVersionDraftId/publish', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
   await controller.publishDraft(req, res, next);
@@ -950,9 +950,9 @@ routes.post('/:formId/drafts/:formVersionDraftId/publish', apiAccess, hasFormPer
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormGetStatusCodes'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.get('/:formId/statusCodes', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.getStatusCodes(req, res, next);
@@ -986,9 +986,9 @@ routes.get('/:formId/statusCodes', apiAccess, hasFormPermissions([P.FORM_READ]),
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormReadAPIkey'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.get('/:formId/apiKey', hasFormPermissions(P.FORM_API_READ), async (req, res, next) => {
   await controller.readApiKey(req, res, next);
@@ -1022,9 +1022,9 @@ routes.get('/:formId/apiKey', hasFormPermissions(P.FORM_API_READ), async (req, r
  *            schema:
  *              $ref: '#/components/responses/responseBody/FormCreateOrReplaceApiKey'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req, res, next) => {
   await controller.createOrReplaceApiKey(req, res, next);
@@ -1054,9 +1054,9 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
  *      '200':
  *        description: Success
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  *      '401':
- *        $ref: '#/components/responses/NoFormAccess'
+ *        $ref: '#/components/responses/Error/NoFormAccess'
  */
 routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (req, res, next) => {
   await controller.deleteApiKey(req, res, next);
@@ -1081,7 +1081,7 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
  *          schema:
  *            $ref: '#/components/responses/responseBody/FormProactiveHelpList'
  *    '403':
- *      $ref: '#/components/responses/Forbidden'
+ *      $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
@@ -1125,9 +1125,9 @@ routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess,
  *                type: string
  *                format: binary
  *    '403':
- *      $ref: '#/components/responses/Forbidden'
+ *      $ref: '#/components/responses/Error/Forbidden'
  *    '422':
- *      $ref: '#/components/responses/UnprocessableEntityDB'
+ *      $ref: '#/components/responses/Error/UnprocessableEntityDB'
  */
 routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
   await controller.getFCProactiveHelpImageUrl(req, res, next);

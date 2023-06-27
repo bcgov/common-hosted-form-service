@@ -36,9 +36,9 @@ routes.use(currentUser);
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminsFormGetEx'
  *      '403':
- *        $ref: '#/components/responses/AccessDenied'
+ *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/forms', async (req, res, next) => {
   await controller.listForms(req, res, next);
@@ -70,9 +70,9 @@ routes.get('/forms', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminReadFormEx'
  *      '403':
- *        $ref: '#/components/responses/AccessDenied'
+ *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/forms/:formId', async (req, res, next) => {
   await controller.readForm(req, res, next);
@@ -100,9 +100,9 @@ routes.get('/forms/:formId', async (req, res, next) => {
  *      '200':
  *        description: Success
  *      '403':
- *        $ref: '#/components/responses/AccessDenied'
+ *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
   await controller.deleteApiKey(req, res, next);
@@ -134,9 +134,9 @@ routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminReadAPIKeyDetails'
  *      '403':
- *        $ref: '#/components/responses/AccessDenied'
+ *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/forms/:formId/apiKey', async (req, res, next) => {
   await controller.readApiDetails(req, res, next);
@@ -168,9 +168,9 @@ routes.get('/forms/:formId/apiKey', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminRestoreForm'
  *      '403':
- *        $ref: '#/components/responses/AccessDenied'
+ *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.put('/forms/:formId/restore', async (req, res, next) => {
   await controller.restoreForm(req, res, next);
@@ -206,9 +206,9 @@ routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminGetFormUserRoles'
  *      '403':
- *        $ref: '#/components/responses/AccessDenied'
+ *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *        $ref: '#/components/responses/Error/UnExpected'
  * */
 routes.get('/forms/:formId/formUsers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
@@ -220,7 +220,7 @@ routes.get('/forms/:formId/formUsers', async (req, res, next) => {
  *  put:
  *   tags:
  *    - Admin
- *   description: This endpoint will fetch all the users added as team members to this form and their roles/permissions.
+ *   description: This endpoint will add users and roles/permissions to the form.
  *   security:
  *    - openId: []
  *   parameters:
@@ -279,19 +279,19 @@ routes.get('/forms/:formId/formUsers', async (req, res, next) => {
  *        application/json:
  *          schema:
  *            $ref: '#/components/responses/responseBody/AdminSetFormUserRoles'
- *      '403':
- *        $ref: '#/components/responses/AccessDenied'
- *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *    '403':
+ *      $ref: '#/components/responses/Error/AccessDenied'
+ *    '5XX':
+ *      $ref: '#/components/responses/Error/UnExpected'
  *    '422':
  *      description: 'Unprocessable Entity'
  *      content:
  *        application/json:
  *          schema:
  *            oneOf:
- *              - $ref: '#/components/schemas/UnprocessableEntityDBError'
- *              - $ref: '#/components/schemas/RoleRequiredValidationError'
- *              - $ref: '#/components/schemas/UserAndFormIdequiredError'
+ *              - $ref: '#/components/schemas/respError/UnprocessableEntityDBError'
+ *              - $ref: '#/components/schemas/respError/RoleRequiredValidationError'
+ *              - $ref: '#/components/schemas/respError/UserAndFormIdequiredError'
  */
 routes.put('/forms/:formId/addUser', async (req, res, next) => {
   await controller.setFormUserRoles(req, res, next);
@@ -317,10 +317,10 @@ routes.put('/forms/:formId/addUser', async (req, res, next) => {
  *        application/json:
  *          schema:
  *            $ref: '#/components/responses/responseBody/AdminGetUsers'
- *      '403':
- *        $ref: '#/components/responses/AccessDenied'
- *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *    '403':
+ *      $ref: '#/components/responses/Error/AccessDenied'
+ *    '5XX':
+ *      $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/users', async (req, res, next) => {
   await controller.getUsers(req, res, next);
@@ -352,11 +352,11 @@ routes.get('/users', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/AdminReadUser'
  *      '403':
- *        $ref: '#/components/responses/AccessDenied'
+ *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
- *        $ref: '#/components/responses/UnExpected'
+ *        $ref: '#/components/responses/Error/UnExpected'
  *      '404':
- *        $ref: '#/components/responses/ResourceNotFound'
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 
 routes.get('/users/:userId', async (req, res, next) => {
@@ -390,11 +390,11 @@ routes.get('/users/:userId', async (req, res, next) => {
  *          schema:
  *            $ref: '#/components/responses/responseBody/AdminGetProactiveHelpObject'
  *    '403':
- *      $ref: '#/components/responses/AccessDenied'
+ *      $ref: '#/components/responses/Error/AccessDenied'
  *    '5XX':
- *      $ref: '#/components/responses/UnExpected'
+ *      $ref: '#/components/responses/Error/UnExpected'
  *    '422':
- *      $ref: '#/components/responses/UnprocessableEntityDB'
+ *      $ref: '#/components/responses/Error/UnprocessableEntityDB'
  */
 routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
   await controller.createFormComponentsProactiveHelp(req, res, next);
@@ -432,11 +432,11 @@ routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
  *          schema:
  *            $ref: '#/components/responses/responseBody/AdminProactiveHelpPublishStatus'
  *    '403':
- *      $ref: '#/components/responses/AccessDenied'
+ *      $ref: '#/components/responses/Error/AccessDenied'
  *    '5XX':
- *      $ref: '#/components/responses/UnExpected'
+ *      $ref: '#/components/responses/Error/UnExpected'
  *    '422':
- *      $ref: '#/components/responses/UnprocessableEntityDB'
+ *      $ref: '#/components/responses/Error/UnprocessableEntityDB'
  */
 routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (req, res, next) => {
   await controller.updateFormComponentsProactiveHelp(req, res, next);
@@ -471,11 +471,11 @@ routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (r
  *                type: string
  *                format: binary
  *    '403':
- *      $ref: '#/components/responses/AccessDenied'
+ *      $ref: '#/components/responses/Error/AccessDenied'
  *    '5XX':
- *      $ref: '#/components/responses/UnExpected'
+ *      $ref: '#/components/responses/Error/UnExpected'
  *    '422':
- *      $ref: '#/components/responses/UnprocessableEntityDB'
+ *      $ref: '#/components/responses/Error/UnprocessableEntityDB'
  */
 routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
   await controller.getFCProactiveHelpImageUrl(req, res, next);
@@ -498,9 +498,9 @@ routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, re
  *          schema:
  *           $ref: '#/components/responses/responseBody/AdminProactiveHelpList'
  *    '403':
- *      $ref: '#/components/responses/AccessDenied'
+ *      $ref: '#/components/responses/Error/AccessDenied'
  *    '5XX':
- *      $ref: '#/components/responses/UnExpected'
+ *      $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);

@@ -13,62 +13,73 @@ definition:
   tags: []
   components:
     responses:
-      NotFound:
-        description: Not Found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NotFoundError'
-      ResourceNotFound:
-        description: Resource Not Found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ResourceNotFoundError'
-      Forbidden:
-        description: Forbidden
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ForbiddenError'
-      NoFormAccess:
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NoFormAccessError'
-      FormIdNotFound:
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FormIdNotFoundError'
-      SubmissionIdNotFound:
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubmissionIdNotFoundError'
-      UnprocessableEntityDB:
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UnprocessableEntityDBError'
-      UnExpected:
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UnExpectedError'
-      AccessDenied:
-        description: Acess Denied
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccessDeniedError'
-
-
+      Error:
+        NotFound:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/NotFoundError'
+        ResourceNotFound:
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/ResourceNotFoundError'
+        Forbidden:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/ForbiddenError'
+        NoFormAccess:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/NoFormAccessError'
+        FormIdNotFound:
+          description: Form Id Not Found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/FormIdNotFoundError'
+        SubmissionIdNotFound:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/SubmissionIdNotFoundError'
+        UnprocessableEntityDB:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/UnprocessableEntityDBError'
+        UnExpected:
+          description: UnExpected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/UnExpectedError'
+        UserNotFound:
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/UserNotFoundError'
+        AccessDenied:
+          description: Acess Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/AccessDeniedError'
+        UpdateRolePermission:
+          description: Update Role Permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/respError/UpdateRolePermissionError'
       responseBody:
         AdminsFormGetEx:
           type: array
@@ -3651,6 +3662,59 @@ definition:
                 updatedAt:
                   type: string
                   example: 2023-03-29T14:07:46.684Z
+      StatusReqAssignedSubmissionStatus:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Form submission status
+            example: ASSIGNED
+          submissionUserEmail:
+            type: string
+            description: Email of the user that submitted the form submission
+            example: test@gov.bc.ca
+          revisionNotificationEmailContent:
+            type: string
+            description: Notification email content to be sent to the user that the form submission was assigned
+            example: This form submission has been assigned to you
+          assignedToUserId:
+            type: string
+            description: User Id of the user that the form submission has been assigned
+            example: 2a4770b7-6f0e-4629-a359-bf820295f23a
+          assignmentNotificationEmail:
+            type: string
+            description: email of the user that the form submission has been assigned. Status chnage notification will be sent to this email
+            email: test@gov.bc.ca
+      StatusReqCompletedSubmissionStatus:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Form submission status
+            example: COMPLETED
+          submissionUserEmail:
+            type: string
+            description: Email of the user that submitted the form submission
+            example: ayobamii.idowu@gov.bc.ca
+          revisionNotificationEmailContent:
+            type: string
+            description: Notification email content to be sent to the user that the form submission was assigned
+            example: This form submission status has been changed to completed
+      StatusReqRevisedSubmissionStatus:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Form submission status
+            example: REVISING
+          submissionUserEmail:
+            type: string
+            description: Email of the user that submitted the form submission
+            example: ayobamii.idowu@gov.bc.ca
+          revisionNotificationEmailContent:
+            type: string
+            description: Notification email content to be sent to the user that the form submission was assigned
+            example: This form submission status has been changed to revised
     schemas:
       model:
         Submission:
@@ -3866,472 +3930,450 @@ definition:
               updatedAt:
                 type: string
                 example: 2023-03-29T14:07:46.684Z
-      AssignedSubmissionStatus:
-        type: object
-        properties:
-          code:
-            type: string
-            description: Form submission status
-            example: ASSIGNED
-          submissionUserEmail:
-            type: string
-            description: Email of the user that submitted the form submission
-            example: test@gov.bc.ca
-          revisionNotificationEmailContent:
-            type: string
-            description: Notification email content to be sent to the user that the form submission was assigned
-            example: This form submission has been assigned to you
-          assignedToUserId:
-            type: string
-            description: User Id of the user that the form submission has been assigned
-            example: 2a4770b7-6f0e-4629-a359-bf820295f23a
-          assignmentNotificationEmail:
-            type: string
-            description: email of the user that the form submission has been assigned. Status chnage notification will be sent to this email
-            email: test@gov.bc.ca
-      CompletedSubmissionStatus:
-        type: object
-        properties:
-          code:
-            type: string
-            description: Form submission status
-            example: COMPLETED
-          submissionUserEmail:
-            type: string
-            description: Email of the user that submitted the form submission
-            example: ayobamii.idowu@gov.bc.ca
-          revisionNotificationEmailContent:
-            type: string
-            description: Notification email content to be sent to the user that the form submission was assigned
-            example: This form submission status has been changed to completed
-      RevisedSubmissionStatus:
-        type: object
-        properties:
-          code:
-            type: string
-            description: Form submission status
-            example: REVISING
-          submissionUserEmail:
-            type: string
-            description: Email of the user that submitted the form submission
-            example: ayobamii.idowu@gov.bc.ca
-          revisionNotificationEmailContent:
-            type: string
-            description: Notification email content to be sent to the user that the form submission was assigned
-            example: This form submission status has been changed to revised
-      Error:
-        type: object
-        properties:
-          code:
-            type: string
-          message:
-            type: string
-        required:
-          - code
-          - message
-      ResourceNotFoundError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Sorry... we still haven't found what you're looking for :(
-              status:
-                example: 404
-              title:
-                example: Not Found
-              type:
-                example: https://httpstatuses.com/404
-      UnprocessableEntityDBError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Sorry... the database does not like the data you provided :(
-              status:
-                example: 422
-              error:
-                example: {}
-              title:
-                example: Unprocessable Entity
-              type:
-                example: https://httpstatuses.com/422
-      RoleRequiredValidationError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Validation Error
-              error:
-                example:
-                  {
-                    'role': [{ 'message': "must have required property 'role'", 'keyword': 'required', 'params': { 'missingProperty': 'role' } }],
-                    'owner': [{ 'message': 'must NOT have additional properties', 'keyword': 'additionalProperties', 'params': { 'additionalProperty': 'owner' } }]
-                  }
-              status:
-                example: 422
-              title:
-                example: Validation Error
-              type:
-                example: https://httpstatuses.com/422
-      PropertyRequiredValidationError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Validation Error
-              error:
-                example: { 'propertyName': [{ 'message': "must have required property 'propertyName'", 'keyword': 'required', 'params': { 'missingProperty': 'propertyName' } }] }
-              status:
-                example: 422
-              title:
-                example: Validation Error
-              type:
-                example: https://httpstatuses.com/422
-      NotFoundError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: The specified resource was not found
-              error:
-                example: {}
-              status:
-                example: 404
-              title:
-                example: Not Found
-              type:
-                example: https://httpstatuses.com/404
-      ForbiddenError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Authorization token is invalid.
-              error:
-                example: {}
-              status:
-                example: 403
-              title:
-                example: Forbidden
-              type:
-                example: https://httpstatuses.com/403
-      UserAndFormIdequiredError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Must supply userId and formId
-              status:
-                example: 422
-              error:
-                example: {}
-              title:
-                example: Unprocessable Entity
-              type:
-                example: https://httpstatuses.com/422
-      NoFormAccessError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Current user has no access to form.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      UserNotFoundError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Current user not found on request.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      FormIdNotFoundError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Form Id not found on request.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      SubmissionIdNotFoundError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Submission Id not found on request.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      NoRequiredFormPermissionError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Current user does not have required permission(s) on form.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      UpdateRolePermissionError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: You do not have permission to update this role.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      UpdateOwnerRolePermissionError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: You can not update an owner's roles.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      SubmissionAccessError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: You do not have access to this submission.
-              error:
-                example: {}
-              status:
-                example: 401
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      AccessDeniedError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Access Denied (Lack required role to perform this action).
-              error:
-                example: {}
-              status:
-                example: 403
-              title:
-                example: Access Denied
-              type:
-                example: https://httpstatuses.com/403
-      InvalidSubmissionIdError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Invalid submissionId(s) in the submissionIds list.
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-      RequiredSubmissionPermissionError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Current user does not have required permission(s) for some submissions in the submissionIds list.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      InvalidAuthError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Invalid authorization credentials.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      SubmissionDeletePermissionError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Current user does not have required permission(s) for to delete submissions.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      UpdateOwnerError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: You can not update an owner's roles.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      RemoveFormDesignerRoleError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: You can't remove a form designer role.
-              status:
-                example:
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      UpdateOwnerRoleError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: You can't update an owner's roles.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      AddOwnerRoleError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: You can't add an owner role.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      UserIdNotFoundError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: User Id not found on request.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      RemoveTeamManagerRoleError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: You can't remove your own team manager role.
-              status:
-                example: 401
-              error:
-                example: {}
-              title:
-                example: Unauthorized
-              type:
-                example: https://httpstatuses.com/401
-      UnExpectedError:
-        allOf:
-          - $ref: '#/components/schemas/Problem'
-          - type: object
-            properties:
-              detail:
-                example: Unexpected Error.
-              status:
-                example: 5XX
-              error:
-                example: {}
-              title:
-                example: Unexpected
-              type:
-                example: https://httpstatuses.com/401
+      respError:
+        Error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+          required:
+            - code
+            - message
+        ResourceNotFoundError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Sorry... we still haven't found what you're looking for :(
+                status:
+                  example: 404
+                title:
+                  example: Not Found
+                type:
+                  example: https://httpstatuses.com/404
+        UnprocessableEntityDBError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Sorry... the database does not like the data you provided :(
+                status:
+                  example: 422
+                error:
+                  example: {}
+                title:
+                  example: Unprocessable Entity
+                type:
+                  example: https://httpstatuses.com/422
+        RoleRequiredValidationError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Validation Error
+                error:
+                  example:
+                    {
+                      'role': [{ 'message': "must have required property 'role'", 'keyword': 'required', 'params': { 'missingProperty': 'role' } }],
+                      'owner': [{ 'message': 'must NOT have additional properties', 'keyword': 'additionalProperties', 'params': { 'additionalProperty': 'owner' } }]
+                    }
+                status:
+                  example: 422
+                title:
+                  example: Validation Error
+                type:
+                  example: https://httpstatuses.com/422
+        PropertyRequiredValidationError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Validation Error
+                error:
+                  example: { 'propertyName': [{ 'message': "must have required property 'propertyName'", 'keyword': 'required', 'params': { 'missingProperty': 'propertyName' } }] }
+                status:
+                  example: 422
+                title:
+                  example: Validation Error
+                type:
+                  example: https://httpstatuses.com/422
+        NotFoundError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: The specified resource was not found
+                error:
+                  example: {}
+                status:
+                  example: 404
+                title:
+                  example: Not Found
+                type:
+                  example: https://httpstatuses.com/404
+        ForbiddenError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Authorization token is invalid.
+                error:
+                  example: {}
+                status:
+                  example: 403
+                title:
+                  example: Forbidden
+                type:
+                  example: https://httpstatuses.com/403
+        UserAndFormIdequiredError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Must supply userId and formId
+                status:
+                  example: 422
+                error:
+                  example: {}
+                title:
+                  example: Unprocessable Entity
+                type:
+                  example: https://httpstatuses.com/422
+        NoFormAccessError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Current user has no access to form.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        UserNotFoundError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Current user not found on request.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        FormIdNotFoundError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Form Id not found on request.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        SubmissionIdNotFoundError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Submission Id(s) not found on request.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        NoRequiredFormPermissionError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Current user does not have required permission(s) on form.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        UpdateRolePermissionError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: You do not have permission to update this role.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        UpdateOwnerRolePermissionError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: You can not update an owner's roles.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        SubmissionAccessError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: You do not have access to this submission.
+                error:
+                  example: {}
+                status:
+                  example: 401
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        AccessDeniedError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Access Denied (Lack required role to perform this action).
+                error:
+                  example: {}
+                status:
+                  example: 403
+                title:
+                  example: Access Denied
+                type:
+                  example: https://httpstatuses.com/403
+        InvalidSubmissionIdError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Invalid submission Id.
+                error:
+                  example: {}
+                title:
+                  example: Invalid submissionId.
+        RequiredSubmissionPermissionError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Current user does not have required permission(s) for some submissions in the submissionIds list.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        InvalidSubmissionIdsError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Invalid submissionId(s) in the submissionIds list.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Invalid Submission
+                type:
+                  example: https://httpstatuses.com/401
+        InvalidFormIdError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Not a valid form id.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Invalid Form Id
+                type:
+                  example: https://httpstatuses.com/401
+        InvalidAuthError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Invalid authorization credentials.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        SubmissnDelOrRestorePermissnError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Current user does not have required permission(s) for to delete/restore submissions.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        UpdateOwnerError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: You can not update an owner's roles.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        RemoveFormDesignerRoleError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: You can't remove a form designer role.
+                status:
+                  example:
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        UpdateOwnerRoleError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: You can't update an owner's roles.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        AddOwnerRoleError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: You can't add an owner role.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        UserIdNotFoundError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: User Id not found on request.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        RemoveTeamManagerRoleError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: You can't remove your own team manager role.
+                status:
+                  example: 401
+                error:
+                  example: {}
+                title:
+                  example: Unauthorized
+                type:
+                  example: https://httpstatuses.com/401
+        UnExpectedError:
+          allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              properties:
+                detail:
+                  example: Unexpected Error.
+                status:
+                  example: 5XX
+                error:
+                  example: {}
+                title:
+                  example: Unexpected
+                type:
+                  example: https://httpstatuses.com/401
       Problem:
         required:
           - type

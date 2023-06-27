@@ -31,7 +31,7 @@ routes.use(currentUser);
  *            schema:
  *              $ref: '#/components/responses/responseBody/UserReadUserPreferences'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/preferences', async (req, res, next) => {
   await controller.readUserPreferences(req, res, next);
@@ -59,7 +59,7 @@ routes.put('/preferences', async (req, res, next) => {
  *      '200':
  *        description: Success
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.delete('/preferences', async (req, res, next) => {
   await controller.deleteUserPreferences(req, res, next);
@@ -88,7 +88,7 @@ routes.delete('/preferences', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/UsersListUsers'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/', async (req, res, next) => {
   await controller.list(req, res, next);
@@ -142,7 +142,7 @@ routes.get('/', async (req, res, next) => {
  *                  descriprion: IDP code
  *                  example: idir
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/:userId', async (req, res, next) => {
   await controller.read(req, res, next);
@@ -180,7 +180,7 @@ routes.get('/:userId', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/UsersReadUserFormPreferences'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/preferences/forms/:formId', async (req, res, next) => {
   await controller.readUserFormPreferences(req, res, next);
@@ -224,7 +224,7 @@ routes.get('/preferences/forms/:formId', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/UsersUpdateUserFormPreferences'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.put('/preferences/forms/:formId', async (req, res, next) => {
   await controller.updateUserFormPreferences(req, res, next);
@@ -254,7 +254,7 @@ routes.put('/preferences/forms/:formId', async (req, res, next) => {
  *      '200':
  *        description: Success
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.delete('/preferences/forms/:formId', async (req, res, next) => {
   await controller.deleteUserFormPreferences(req, res, next);

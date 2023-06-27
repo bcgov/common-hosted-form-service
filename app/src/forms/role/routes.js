@@ -27,7 +27,7 @@ routes.use(currentUser);
  *           schema:
  *              $ref: '#/components/responses/responseBody/RolesListRole'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/', keycloak.protect(), async (req, res, next) => {
   await controller.list(req, res, next);
@@ -58,7 +58,7 @@ routes.get('/', keycloak.protect(), async (req, res, next) => {
  *           schema:
  *              $ref: '#/components/responses/responseBody/RolesGetRole'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.post('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.create(req, res, next);
@@ -91,7 +91,7 @@ routes.post('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:adm
  *            schema:
  *              $ref: '#/components/responses/responseBody/RolesGetRole'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/:code', keycloak.protect(), async (req, res, next) => {
   await controller.read(req, res, next);
@@ -130,7 +130,7 @@ routes.get('/:code', keycloak.protect(), async (req, res, next) => {
  *           schema:
  *              $ref: '#/components/responses/responseBody/RolesGetRole'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.put('/:code', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.update(req, res, next);

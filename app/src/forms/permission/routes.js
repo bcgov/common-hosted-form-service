@@ -28,7 +28,7 @@ routes.use(currentUser);
  *           schema:
  *              $ref: '#/components/responses/responseBody/PermissionsexPermissions'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/', async (req, res, next) => {
   await controller.list(req, res, next);
@@ -59,7 +59,7 @@ routes.get('/', async (req, res, next) => {
  *           schema:
  *              $ref: '#/components/responses/responseBody/PermissionsexPermissions'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.post('/', async (req, res, next) => {
   await controller.create(req, res, next);
@@ -92,7 +92,7 @@ routes.post('/', async (req, res, next) => {
  *           schema:
  *              $ref: '#/components/responses/responseBody/PermissionsexPermissions'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.get('/:code', async (req, res, next) => {
   await controller.read(req, res, next);
@@ -131,7 +131,7 @@ routes.get('/:code', async (req, res, next) => {
  *           schema:
  *              $ref: '#/components/responses/responseBody/PermissionsexPermissions'
  *      '403':
- *        $ref: '#/components/responses/Forbidden'
+ *        $ref: '#/components/responses/Error/Forbidden'
  */
 routes.put('/:code', async (req, res, next) => {
   await controller.update(req, res, next);
