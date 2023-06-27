@@ -2,13 +2,13 @@
 
 This application is deployed on Openshift. This readme will outline how to setup and configure an Openshift project to get the application to a deployable state. This document assumes a working knowledge of Kubernetes/Openshift container orchestration concepts (i.e. buildconfigs, deployconfigs, imagestreams, secrets, configmaps, routes, networkpolicies, etc) and Red Hat SSO authentication.
 
-Our CI/CD pipelines are orchestrated by [GitHub Actions][../.github/workflows].
+Our CI/CD pipelines are orchestrated by [GitHub Actions](../.github/workflows).
 
 ## Table of Contents
 
 - [Openshift Deployment Prerequisites](#openshift-deployment-prerequisites)
 - [Environment Setup - ConfigMaps and Secrets](#environment-setup---configmaps-and-secrets)
-- [Build Config & Deployment](#build-config--deployment)
+- [Deployment](#deployment)
 - [Templates](#templates)
 - [Pull Request Cleanup](#pull-request-cleanup)
 - [Appendix - Supporting Deployments](#appendix---supporting-deployments)
@@ -197,7 +197,7 @@ There will be instances where this application will need supporting modification
 
 ### Metabase
 
-- [Overview & Templates](https://github.com/bcgov/nr-get-token/wiki/Metabase)
+- [Overview & Templates](https://github.com/bcgov/common-service-showcase/wiki/Metabase)
 
 ### Redash
 
@@ -211,7 +211,7 @@ Refer to the `patroni.dc.yaml` and `patroni.secret.yaml` files found below for a
 
 #### Database Backup
 
-- [Documentation & Templates](https://github.com/bcgov/nr-get-token/wiki/Database-Backup)
+- [Documentation & Templates](https://github.com/bcgov/common-service-showcase/wiki/Database-Backup)
 
 After backups are made a verification job should be run to restore the backup into a temporary database and check that tables are created and data is written. This is not a full verification to ensure all data integrity, but it is an automatable first step.
 
