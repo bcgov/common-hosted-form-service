@@ -81,7 +81,7 @@ describe('currentUser', () => {
     expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token, { formId: 2 });
   });
 
-  it('user the query param if both if that is whats provided', async () => {
+  it('uses the query param if both if that is whats provided', async () => {
     const testReq = {
       query: {
         formId: 99,
@@ -334,9 +334,7 @@ describe('hasFormPermissions', () => {
     const mw = hasFormPermissions(['abc']);
     const nxt = jest.fn();
     const req = {
-      apiUser: {
-        formId: '123',
-      },
+      apiUser: 1,
     };
 
     mw(req, testRes, nxt);
@@ -349,6 +347,18 @@ describe('hasSubmissionPermissions', () => {
   it('returns a middleware function', () => {
     const mw = hasSubmissionPermissions(['abc']);
     expect(mw).toBeInstanceOf(Function);
+  });
+
+  it('moves on if a valid API key user has already been set', async () => {
+    const mw = hasSubmissionPermissions(['abc']);
+    const nxt = jest.fn();
+    const req = {
+      apiUser: 1,
+    };
+
+    mw(req, testRes, nxt);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
   });
 
   it('401s if the request has no formId', async () => {

@@ -1,14 +1,14 @@
 {
   "auth": {
     "clientId": "chefs-load-test",
-    "host": "https://dev.oidc.gov.bc.ca",
-    "realm": "cp1qly2d",
+    "host": "https://dev.loginproxy.gov.bc.ca",
+    "realm": "chefs",
     "password": "",
     "username": "chefs-load-test"
   },
   "api": {
     "apiPath": "api/v1",
-    "basePath" : "/app",
+    "basePath": "/app",
     "host": "https://chefs-dev.apps.silver.devops.gov.bc.ca"
   },
   "submissions": {

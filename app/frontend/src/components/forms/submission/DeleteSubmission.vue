@@ -13,7 +13,14 @@
           <v-icon>delete</v-icon>
         </v-btn>
       </template>
-      <span>Delete This {{ isDraft ? 'Draft' : 'Submission' }}</span>
+      <span
+        >{{ $t('trans.deleteSubmission.deleteThis') }}
+        {{
+          isDraft
+            ? $t('trans.deleteSubmission.drafts')
+            : $t('trans.deleteSubmission.submission')
+        }}</span
+      >
     </v-tooltip>
 
     <BaseDialog
@@ -22,13 +29,19 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>Confirm Deletion</template>
+      <template #title>{{
+        $t('trans.deleteSubmission.confirmDeletion')
+      }}</template>
       <template #text>
-        Are you sure you wish to delete this
-        {{ isDraft ? 'draft' : 'form submission' }}?
+        {{ $t('trans.deleteSubmission.deleteWarning') }}
+        {{
+          isDraft
+            ? "$t('trans.deleteSubmission.drafts')"
+            : "$t('trans.deleteSubmission.formSubmission')"
+        }}?
       </template>
       <template #button-text-continue>
-        <span>Delete</span>
+        <span>{{ $t('trans.deleteSubmission.delete') }}</span>
       </template>
     </BaseDialog>
   </span>

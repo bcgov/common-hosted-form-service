@@ -26,6 +26,7 @@ import { mapActions } from 'vuex';
 import Vue from 'vue';
 import VueClipboard from 'vue-clipboard2';
 import { NotificationTypes } from '@/utils/constants';
+import i18n from '@/internationalization';
 
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
@@ -46,11 +47,11 @@ export default {
     },
     snackBarText: {
       type: String,
-      default: 'Link copied to clipboard',
+      default: i18n.t('trans.baseCopyToClipboard.linkToClipboard'),
     },
     tooltipText: {
       type: String,
-      default: 'Copy to Clipboard',
+      default: i18n.t('trans.baseCopyToClipboard.copyToClipboard'),
     },
   },
   data() {
@@ -72,7 +73,7 @@ export default {
     },
     clipboardErrorHandler() {
       this.addNotification({
-        message: 'Error attempting to copy to clipboard.',
+        message: this.$t('trans.baseCopyToClipboard.errCopyToClipboard'),
       });
     },
   },

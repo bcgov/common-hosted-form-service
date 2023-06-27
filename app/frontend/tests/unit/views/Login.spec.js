@@ -1,9 +1,10 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import Login from '@/views/Login.vue';
 
 const localVue = createLocalVue();
+
 localVue.use(Vuex);
 
 describe('Login.vue', () => {
@@ -29,6 +30,7 @@ describe('Login.vue', () => {
       localVue,
       store,
       stubs: ['router-link'],
+      i18n
     });
     await localVue.nextTick();
 

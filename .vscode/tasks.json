@@ -1,0 +1,44 @@
+{
+  "tasks": [
+    {
+      "dependsOn": ["Unit Tests - API", "Unit Tests - Frontend"],
+      "group": {
+        "isDefault": true,
+        "kind": "test"
+      },
+      "label": "All Tests",
+      "type": "shell"
+    },
+    {
+      "args": ["run", "all:reinstall"],
+      "command": "npm",
+      "label": "All - Reinstall",
+      "options": {
+        "cwd": "${workspaceFolder}/app"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": ["run", "test"],
+      "command": "npm",
+      "group": "test",
+      "label": "Unit Tests - API",
+      "options": {
+        "cwd": "${workspaceFolder}/app"
+      },
+      "type": "shell"
+    },
+    {
+      "args": ["run", "test"],
+      "command": "npm",
+      "group": "test",
+      "label": "Unit Tests - Frontend",
+      "options": {
+        "cwd": "${workspaceFolder}/app/frontend"
+      },
+      "type": "shell"
+    }
+  ],
+  "version": "2.0.0"
+}

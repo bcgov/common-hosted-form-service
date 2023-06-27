@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import getRouter from '@/router';
 import BaseAuthButton from '@/components/base/BaseAuthButton.vue';
 
@@ -21,11 +21,12 @@ describe('BaseAuthButton.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => false,
-        keycloakReady: () => true,
+        keycloakReady: () => true
       },
+
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store });
+    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
 
     expect(wrapper.text()).toEqual('');
   });
@@ -39,7 +40,7 @@ describe('BaseAuthButton.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store });
+    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
     wrapper.vm.$route.meta.hasLogin = true;
 
     expect(wrapper.text()).toMatch('Login');
@@ -54,7 +55,7 @@ describe('BaseAuthButton.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store });
+    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
 
     expect(wrapper.text()).toMatch('Logout');
   });
@@ -68,7 +69,7 @@ describe('BaseAuthButton.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store });
+    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
 
     expect(wrapper.text()).toBeFalsy();
   });
@@ -86,7 +87,7 @@ describe('BaseAuthButton.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store });
+    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
     wrapper.vm.login();
 
     expect(wrapper.text()).toMatch('Login');
@@ -107,7 +108,7 @@ describe('BaseAuthButton.vue', () => {
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store });
+    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
     wrapper.vm.logout();
 
     expect(wrapper.text()).toMatch('Logout');

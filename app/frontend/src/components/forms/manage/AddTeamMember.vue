@@ -44,10 +44,10 @@
             >
               <!-- no data -->
               <template #no-data>
-                <div class="px-2">
-                  Can't find someone? They may not have logged into CHEFS.<br />
-                  Kindly send them a link to CHEFS and ask them to log in.
-                </div>
+                <div
+                  class="px-2"
+                  v-html="$t('trans.addTeamMember.cantFindChefsUsers')"
+                ></div>
               </template>
               <!-- selected user -->
               <template #selection="data">
@@ -131,9 +131,9 @@
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="red--text"
-              >You must select at least one role to add this user.</span
-            >
+            <span class="red--text">{{
+              $t('trans.addTeamMember.mustSelectAUser')
+            }}</span>
           </v-col>
         </v-row>
       </v-sheet>
@@ -153,7 +153,7 @@
             <v-icon>person_add</v-icon>
           </v-btn>
         </template>
-        <span>Add a New Member</span>
+        <span>{{ $t('trans.addTeamMember.addNewMember') }}</span>
       </v-tooltip>
     </span>
   </span>
@@ -228,8 +228,8 @@ export default {
     },
     autocompleteLabel() {
       return this.selectedIdp == IdentityProviders.IDIR
-        ? 'Enter a name, e-mail, or username'
-        : 'Enter an exact e-mail or username';
+        ? this.$t('trans.addTeamMember.enterUsername')
+        : this.$t('trans.addTeamMember.enterExactUsername');
     },
   },
   watch: {
@@ -261,11 +261,11 @@ export default {
         ) {
           if (input.length < 6)
             throw new Error(
-              'Search input for BCeID username/email must be greater than 6 characters.'
+              this.$t('trans.addTeamMember.BCeIDInputSearchMaxLen')
             );
           if (input.includes('@')) {
             if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error('Email searches for BCeID must be exact.');
+              throw new Error(this.$t('trans.addTeamMember.BCeIDMustBeExact'));
             else params.email = input;
           } else {
             params.username = input;
@@ -277,7 +277,10 @@ export default {
         this.items = response.data;
       } catch (error) {
         this.items = [];
-        console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
+        /* eslint-disable no-console */
+        console.error(
+          this.$t('trans.addTeamMember.errorGettingUsers', { error: error })
+        ); // eslint-disable-line no-console
       } finally {
         this.isLoading = false;
       }

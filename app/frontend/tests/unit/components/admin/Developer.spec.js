@@ -1,10 +1,12 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
 import { rbacService } from '@/services';
 import Developer from '@/components/admin/Developer.vue';
 
 const localVue = createLocalVue();
+
 localVue.use(Vuex);
 
 describe('Developer.vue', () => {
@@ -40,6 +42,7 @@ describe('Developer.vue', () => {
       localVue,
       store,
       stubs: ['BaseSecure'],
+      i18n
     });
     await localVue.nextTick();
 
@@ -56,6 +59,7 @@ describe('Developer.vue', () => {
       localVue,
       store,
       stubs: ['BaseSecure'],
+      i18n
     });
     await localVue.nextTick();
 
