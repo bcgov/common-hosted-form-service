@@ -45,7 +45,6 @@ routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admi
  *    description: This endpoint will create new form.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    requestBody:
  *      required: true
@@ -230,7 +229,6 @@ routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, h
  *    description: This endpoint will fetch form options.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path

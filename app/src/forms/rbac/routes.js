@@ -26,7 +26,12 @@ routes.use(currentUser);
  *          application/json:
  *            schema:
  *              $ref: '#/components/responses/responseBody/RBACGetCurrentUser'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
+
 routes.get('/current', keycloak.protect(), async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);
 });
@@ -48,6 +53,10 @@ routes.get('/current', keycloak.protect(), async (req, res, next) => {
  *          application/json:
  *           schema:
  *               $ref: '#/components/responses/responseBody/RBACGetCurrentUserSubmissions'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/current/submissions', keycloak.protect(), async (req, res, next) => {
   await controller.getCurrentUserSubmissions(req, res, next);
@@ -70,6 +79,10 @@ routes.get('/current/submissions', keycloak.protect(), async (req, res, next) =>
  *          application/json:
  *            schema:
  *              $ref: '#/components/responses/responseBody/RBACGetIdentityProviders'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/idps', async (req, res, next) => {
   await controller.getIdentityProviders(req, res, next);
@@ -187,7 +200,19 @@ routes.get('/idps', async (req, res, next) => {
  *            schema:
  *              $ref: '#/components/responses/responseBody/RBACGetFormUsers'
  *      '401':
- *        $ref: '#/components/responses/Error/FormIdNotFound'
+ *        description: Unauthorized
+ *        content:
+ *          application/json:
+ *            schema:
+ *              oneOf:
+ *                - $ref: '#/components/schemas/respError/NoFormAccessError'
+ *                - $ref: '#/components/schemas/respError/UserNotFoundError'
+ *                - $ref: '#/components/schemas/respError/FormIdNotFoundError'
+ *                - $ref: '#/components/schemas/respError/NoRequiredFormPermissionError'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/forms', hasFormPermissions(P.TEAM_READ), async (req, res, next) => {
   await controller.getFormUsers(req, res, next);
@@ -234,7 +259,19 @@ routes.put('/forms', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) =
  *           schema:
  *              $ref: '#/components/responses/responseBody/RBACFormSubmission'
  *      '401':
- *        $ref: '#/components/responses/Error/SubmissionIdNotFound'
+ *        description: Unauthorized
+ *        content:
+ *          application/json:
+ *            schema:
+ *              oneOf:
+ *                - $ref: '#/components/schemas/respError/SubmissionIdNotFoundError'
+ *                - $ref: '#/components/schemas/respError/SubmissionAccessError'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.getSubmissionUsers(req, res, next);
@@ -293,6 +330,20 @@ routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (r
  *          application/json:
  *           schema:
  *              $ref: '#/components/responses/responseBody/RBACsetSubmissionUserPermissions'
+ *      '401':
+ *        description: Unauthorized
+ *        content:
+ *          application/json:
+ *            schema:
+ *              oneOf:
+ *                - $ref: '#/components/schemas/respError/SubmissionIdNotFoundError'
+ *                - $ref: '#/components/schemas/respError/SubmissionAccessError'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.put('/submissions', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
   await controller.setSubmissionUserPermissions(req, res, next);
@@ -400,6 +451,10 @@ routes.put('/submissions', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async 
  *          application/json:
  *            schema:
  *              $ref: '#/components/responses/responseBody/RBACGetUsersForms'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.getUserForms(req, res, next);
@@ -463,6 +518,20 @@ routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}
  *          application/json:
  *            schema:
  *              $ref: '#/components/responses/responseBody/RBACSetUsersForms'
+ *      '401':
+ *        description: Unauthorized
+ *        content:
+ *          application/json:
+ *            schema:
+ *              oneOf:
+ *                - $ref: '#/components/schemas/respError/NoFormAccessError'
+ *                - $ref: '#/components/schemas/respError/UserNotFoundError'
+ *                - $ref: '#/components/schemas/respError/FormIdNotFoundError'
+ *                - $ref: '#/components/schemas/respError/NoRequiredFormPermissionError'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), hasRolePermissions(false), async (req, res, next) => {
   await controller.setUserForms(req, res, next);
@@ -498,10 +567,19 @@ routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R
  *      '200':
  *        description: Sucess
  *      '401':
- *        description: test
- *        schema:
- *          oneOf:
- *            - $ref: '#/components/responses/Error/UserNotFound'
+ *        description: Unauthorized
+ *        content:
+ *          application/json:
+ *            schema:
+ *              oneOf:
+ *                - $ref: '#/components/schemas/respError/NoFormAccessError'
+ *                - $ref: '#/components/schemas/respError/UserNotFoundError'
+ *                - $ref: '#/components/schemas/respError/FormIdNotFoundError'
+ *                - $ref: '#/components/schemas/respError/NoRequiredFormPermissionError'
+ *      '403':
+ *        $ref: '#/components/responses/Error/AccessDenied'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.delete('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), hasRolePermissions(true), async (req, res, next) => {
   await controller.removeMultiUsers(req, res, next);
