@@ -32,6 +32,8 @@ routes.use(currentUser);
  *              $ref: '#/components/responses/responseBody/UserReadUserPreferences'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/preferences', async (req, res, next) => {
   await controller.readUserPreferences(req, res, next);
@@ -60,6 +62,8 @@ routes.put('/preferences', async (req, res, next) => {
  *        description: Success
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.delete('/preferences', async (req, res, next) => {
   await controller.deleteUserPreferences(req, res, next);
@@ -78,7 +82,6 @@ routes.delete('/preferences', async (req, res, next) => {
  *    description: This endpoint will fetch the list of all users
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    responses:
  *      '200':
@@ -89,6 +92,8 @@ routes.delete('/preferences', async (req, res, next) => {
  *              $ref: '#/components/responses/responseBody/UsersListUsers'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/', async (req, res, next) => {
   await controller.list(req, res, next);
@@ -103,7 +108,6 @@ routes.get('/', async (req, res, next) => {
  *    description: This endpoint will return user IDP User ID, IDP code, and Keycloak ID.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -143,6 +147,10 @@ routes.get('/', async (req, res, next) => {
  *                  example: idir
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/:userId', async (req, res, next) => {
   await controller.read(req, res, next);
@@ -161,7 +169,6 @@ routes.get('/:userId', async (req, res, next) => {
  *    description: This endpoint will fetch current user preferences for a form
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -181,6 +188,8 @@ routes.get('/:userId', async (req, res, next) => {
  *              $ref: '#/components/responses/responseBody/UsersReadUserFormPreferences'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.get('/preferences/forms/:formId', async (req, res, next) => {
   await controller.readUserFormPreferences(req, res, next);
@@ -195,7 +204,6 @@ routes.get('/preferences/forms/:formId', async (req, res, next) => {
  *    description: This endpoint will update current user preferences for a form.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -225,6 +233,8 @@ routes.get('/preferences/forms/:formId', async (req, res, next) => {
  *              $ref: '#/components/responses/responseBody/UsersUpdateUserFormPreferences'
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.put('/preferences/forms/:formId', async (req, res, next) => {
   await controller.updateUserFormPreferences(req, res, next);
@@ -239,7 +249,6 @@ routes.put('/preferences/forms/:formId', async (req, res, next) => {
  *    description: This endpoint will delete current user preferences for a form.
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
  *      - openId: []
  *    parameters:
  *      - in: path
@@ -255,6 +264,8 @@ routes.put('/preferences/forms/:formId', async (req, res, next) => {
  *        description: Success
  *      '403':
  *        $ref: '#/components/responses/Error/Forbidden'
+ *      '5XX':
+ *        $ref: '#/components/responses/Error/UnExpected'
  */
 routes.delete('/preferences/forms/:formId', async (req, res, next) => {
   await controller.deleteUserFormPreferences(req, res, next);
