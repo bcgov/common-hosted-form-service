@@ -1,5 +1,4 @@
 const { Model } = require('objection');
-const { getSortBy } = require('../../utils');
 
 class UserSubmissions extends Model {
   static get tableName() {
@@ -61,16 +60,8 @@ class UserSubmissions extends Model {
           query.where('deleted', !value);
         }
       },
-      filterSearch(query, value) {
-        if (value) {
-          query.where('confirmationId', 'ilike', `%${value}%`);
-        }
-      },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
-      },
-      userOrder(query, sortBy, sortDesc) {
-        query.orderBy(getSortBy(sortBy[0]), sortDesc[0] === 'true' ? 'DESC' : 'ASC');
       },
     };
   }

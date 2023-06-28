@@ -85,5 +85,4 @@ module.exports = Object.freeze({
     json: 'json',
     default: 'csv',
   },
-  PAGE_SIZE: 10,
 });

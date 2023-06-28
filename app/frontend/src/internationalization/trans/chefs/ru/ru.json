@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "Вы уверены, что хотите отправить форму?",
     "submit": "Представлять на рассмотрение",
     "wantToSaveDraft": "Вы хотите сохранить черновик?",
-    "version": "Версия: {версия}",
+    "version": "Версия: {version}",
     "formScheduleExpireMessage": "Отправка формы недоступна, так как запланированный период подачи истек.",
     "getUsersSubmissionsErrMsg": "Произошла ошибка при получении отправки для этой формы",
     "getUsersSubmissionsConsoleErrMsg": "Ошибка загрузки данных отправки формы {submissionId}: {error}",
