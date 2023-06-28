@@ -28,6 +28,10 @@
     "close": "關閉",
     "copyURLToClipboard": "將 URL 複製到剪貼板"
   },
+  "preview": {
+    "preview": "預覽",
+    "previewToolTip": "這顯示了提交者將看到的表單版本設計和行為的預覽。您無法從此頁面提交表格。"
+  },
   "manageFormActions": {
     "viewSubmissions": "查看提交",
     "teamManagement": "團隊管理",

@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Gérer le formulaire"
   },
+  "preview": {
+    "preview": "Aperçu",
+    "previewToolTip": "Cela montre un aperçu de la conception et du comportement de la version du formulaire tels que vos expéditeurs le verront. Vous ne pouvez pas soumettre le formulaire à partir de cette page."
+  },
   "shareForm": {
     "shareForm": "Formulaire de partage",
     "shareLink": "Lien de partage",

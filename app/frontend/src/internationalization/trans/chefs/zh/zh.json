@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "管理表格"
   },
+  "preview": {
+    "preview": "预览",
+    "previewToolTip": "这显示了提交者将看到的表单版本设计和行为的预览。您无法从此页面提交表格。"
+  },
   "shareForm": {
     "shareForm": "分享表格",
     "shareLink": "分享链接",

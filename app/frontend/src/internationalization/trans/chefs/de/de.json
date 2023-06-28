@@ -15,6 +15,10 @@
     "action": "Aktionen",
     "loadingText": "Laden, bitte warten"
   },
+  "preview": {
+    "preview": "Vorschau",
+    "previewToolTip": "Dies zeigt eine Vorschau des Designs und Verhaltens der Formularversion, wie es Ihren Einsendern angezeigt wird. Sie können das Formular nicht von dieser Seite aus senden."
+  },
   "manageLayout": {
     "manageForm": "Formular verwalten"
   },

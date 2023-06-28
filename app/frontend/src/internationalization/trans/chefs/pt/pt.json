@@ -15,6 +15,10 @@
     "action": "Ações",
     "loadingText": "Carregando, por favor espere"
   },
+  "preview": {
+    "preview": "Visualização",
+    "previewToolTip": "Isso mostra uma visualização do design e do comportamento da versão do formulário, conforme seus remetentes o verão. Você não pode enviar o formulário desta página."
+  },
   "manageLayout": {
     "manageForm": "Gerenciar formulário"
   },

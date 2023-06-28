@@ -585,6 +585,10 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Learn more"
   },
+  "preview": {
+    "preview": "Preview",
+    "previewToolTip": "This shows a preview of the form version design and behaviour as your submitters will see it. You cannot submit the form from this page."
+  },
   "generalLayout": {
     "loadingText": "Loading... Please wait",
     "preview": "PREVIEW",

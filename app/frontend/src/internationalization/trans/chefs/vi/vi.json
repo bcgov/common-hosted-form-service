@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Quản lý biểu mẫu"
   },
+  "preview": {
+    "preview": "Xem trước",
+    "previewToolTip": "Điều này hiển thị bản xem trước của thiết kế và hành vi của phiên bản biểu mẫu khi người gửi của bạn sẽ nhìn thấy nó. Bạn không thể gửi biểu mẫu từ trang này."
+  },
   "shareForm": {
     "shareForm": "chia sẻ biểu mẫu",
     "shareLink": "Chia sẻ đường link",

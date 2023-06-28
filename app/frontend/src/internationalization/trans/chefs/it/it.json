@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Gestisci modulo"
   },
+  "preview": {
+    "preview": "Anteprima",
+    "previewToolTip": "Questo mostra un'anteprima del design e del comportamento della versione del modulo come lo vedranno i tuoi mittenti. Non puoi inviare il modulo da questa pagina."
+  },
   "shareForm": {
     "shareForm": "Modulo di condivisione",
     "shareLink": "Condividi il link",

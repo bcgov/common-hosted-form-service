@@ -1,7 +1,7 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
     <h1>
-      PREVIEW
+      {{ $t('trans.preview.preview') }}
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-icon color="primary" class="mt-n1 ml-1" v-bind="attrs" v-on="on">
@@ -9,8 +9,7 @@
           </v-icon>
         </template>
         <span>
-          This shows a preview of the form version design and behaviour as your
-          submitters will see it. You cannot submit the form from this page.
+          {{ $t('trans.preview.previewToolTip') }}
         </span>
       </v-tooltip>
     </h1>

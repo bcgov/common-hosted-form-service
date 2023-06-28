@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Administrar formulario"
   },
+  "preview": {
+    "preview": "Avance",
+    "previewToolTip": "Esto muestra una vista previa del diseño y el comportamiento de la versión del formulario tal como lo verán los remitentes. No puede enviar el formulario desde esta página."
+  },
   "shareForm": {
     "shareForm": "Compartir formulario",
     "shareLink": "Compartir enlace",
