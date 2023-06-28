@@ -43,7 +43,7 @@ Create, edit and publish forms.
 - [Security Reporting](SECURITY.md)
 - [Product Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Product-Roadmap)
 
-## Helps, Problems, and Feature Requests
+## Help, Problems, and Feature Requests
 
 Visit the [CHEFS Wiki](https://github.com/bcgov/common-hosted-form-service/wiki/) for help on using CHEFS.
 
