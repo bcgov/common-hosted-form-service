@@ -213,6 +213,7 @@ export default {
           addTags: ['iframe'],
           ALLOWED_TAGS: ['iframe'],
         },
+
         noDefaultSubmitButton: false,
         builder: {
           basic: false,
@@ -270,6 +271,7 @@ export default {
               // select: true,
               // radio: true,
               // button: true,
+              recaptcha: true,
               email: false,
               url: false,
               phoneNumber: false,
@@ -284,6 +286,7 @@ export default {
               // Prevent duplicate appearance of orgbook component
               orgbook: false,
               bcaddress: false,
+              recap: true,
             },
           },
           data: {
