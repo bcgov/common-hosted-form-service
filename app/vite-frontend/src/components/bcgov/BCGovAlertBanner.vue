@@ -1,69 +1,65 @@
-<script setup>
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { i18n } from '~/internationalization';
 
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const notificationStore = useNotificationStore();
-
-const properties = defineProps({
-  id: {
-    type: Number,
-    default: 0,
+export default {
+  props: {
+    id: {
+      type: Number,
+      default: 0,
+    },
+    title: {
+      type: String,
+      default: null,
+    },
+    text: {
+      type: String,
+      default: i18n.t('trans.bcGovAlertBanner.defaultErrMsg'),
+    },
+    type: {
+      type: String,
+      default: i18n.t('trans.bcGovAlertBanner.error'),
+    },
   },
-  title: {
-    type: String,
-    default: '',
+  computed: {
+    notificationType() {
+      switch (this.type) {
+        case NotificationTypes.ERROR.type:
+          return NotificationTypes.ERROR;
+        case NotificationTypes.INFO.type:
+          return NotificationTypes.INFO;
+        case NotificationTypes.SUCCESS.type:
+          return NotificationTypes.SUCCESS;
+        case NotificationTypes.WARNING.type:
+          return NotificationTypes.WARNING;
+        default:
+          return NotificationTypes.ERROR;
+      }
+    },
+    TEXT() {
+      return this.text
+        ? this.text.replace(/(<([^>]+)>)/gi, '')
+        : i18n.t('trans.bcGovAlertBanner.defaultErrMsg');
+    },
   },
-  text: {
-    type: String,
-    default: '',
+  methods: {
+    onClose() {
+      const notificationStore = useNotificationStore();
+      notificationStore.deleteNotification({ id: this.id });
+    },
   },
-  type: {
-    type: String,
-    default: '',
-  },
-});
-
-const notificationType = computed(() => {
-  switch (TYPE.value) {
-    case NotificationTypes.ERROR.type:
-      return NotificationTypes.ERROR;
-    case NotificationTypes.INFO.type:
-      return NotificationTypes.INFO;
-    case NotificationTypes.SUCCESS.type:
-      return NotificationTypes.SUCCESS;
-    case NotificationTypes.WARNING.type:
-      return NotificationTypes.WARNING;
-    default:
-      return NotificationTypes.ERROR;
-  }
-});
-
-const TYPE = computed(() =>
-  properties.type ? properties.type : t('trans.bcGovAlertBanner.error')
-);
-const TEXT = computed(() =>
-  properties.text
-    ? properties.text.replace(/(<([^>]+)>)/gi, '')
-    : t('trans.bcGovAlertBanner.defaultErrMsg')
-);
-
-const onClose = () => {
-  notificationStore.deleteNotification({ id: properties.id });
 };
 </script>
 
 <template>
   <div class="ma-5">
     <v-alert
-      :id="properties.id"
+      :id="id"
       :color="notificationType.color"
       :icon="notificationType.icon"
-      :title="properties.title"
+      :title="title"
       :text="TEXT"
       closable
       @click="onClose"

@@ -1,35 +1,40 @@
-<script setup>
-import { onMounted, ref } from 'vue';
-
+<script>
+import { mapActions } from 'pinia';
 import FormViewer from '~/components/designer/FormViewer.vue';
 import { useFormStore } from '~/store/form';
 
-const properties = defineProps({
-  submissionId: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    FormViewer,
   },
-  formId: {
-    type: String,
-    required: true,
+  props: {
+    submissionId: {
+      type: String,
+      required: true,
+    },
+    formId: {
+      type: String,
+      required: true,
+    },
+    readOnly: { type: Boolean, default: true },
+    saved: {
+      type: Boolean,
+      default: false,
+    },
   },
-  readOnly: { type: Boolean, default: true },
-  saved: {
-    type: Boolean,
-    default: false,
+  data() {
+    return {
+      loading: true,
+    };
   },
-});
-
-const loading = ref(true);
-
-const formStore = useFormStore();
-
-onMounted(async () => {
-  await formStore.fetchSubmission({
-    submissionId: properties.submissionId,
-  });
-  loading.value = false;
-});
+  async mounted() {
+    await this.fetchSubmission({ submissionId: this.submissionId });
+    this.loading = false;
+  },
+  methods: {
+    ...mapActions(useFormStore, ['fetchSubmission']),
+  },
+};
 </script>
 
 <template>

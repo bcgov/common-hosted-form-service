@@ -18,13 +18,9 @@ describe('BasePrintButton.vue', () => {
   });
 
   it('renders nothing if authenticated, user', async () => {
-    const wrapper = mount(BasePrintButton, {
-      global: {
-        plugins: [],
-      },
-    });
+    const wrapper = mount(BasePrintButton);
 
-    await wrapper.find('[data-test="print-btn"]').trigger('click');
+    wrapper.vm.printSubmission();
 
     expect(wrapper.html()).toContain('print');
     expect(printSpy).toHaveBeenCalledTimes(1);

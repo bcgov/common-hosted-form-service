@@ -1,23 +1,31 @@
-<script setup>
-import { storeToRefs } from 'pinia';
+<script>
+import { mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 import { Regex } from '~/utils/constants';
 
-const formStore = useFormStore();
-
-const { form } = storeToRefs(formStore);
-
-const emailArrayRules = [
-  (v) =>
-    !form.value.sendSubReceivedEmail ||
-    v.length > 0 ||
-    'Please enter at least 1 email address',
-  (v) =>
-    !form.value.sendSubReceivedEmail ||
-    v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
-    'Please enter all valid email addresses',
-];
+export default {
+  components: {
+    BasePanel,
+  },
+  data() {
+    return {
+      emailArrayRules: [
+        (v) =>
+          !this.form.sendSubReceivedEmail ||
+          v.length > 0 ||
+          'Please enter at least 1 email address',
+        (v) =>
+          !this.form.sendSubReceivedEmail ||
+          v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
+          'Please enter all valid email addresses',
+      ],
+    };
+  },
+  computed: {
+    ...mapWritableState(useFormStore, ['form']),
+  },
+};
 </script>
 
 <template>

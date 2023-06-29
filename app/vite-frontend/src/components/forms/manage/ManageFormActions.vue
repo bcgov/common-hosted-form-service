@@ -1,45 +1,53 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import ShareForm from '~/components/forms/manage/ShareForm.vue';
-import getRouter from '~/router';
 import { useFormStore } from '~/store/form';
 
 import { FormPermissions } from '~/utils/constants';
 
-const showDeleteDialog = ref(false);
-
-const router = getRouter();
-
-const formStore = useFormStore();
-const { form, permissions } = storeToRefs(formStore);
-
-const canDeleteForm = computed(() =>
-  permissions.value.includes(FormPermissions.FORM_DELETE)
-);
-const canManageTeam = computed(() =>
-  permissions.value.includes(FormPermissions.TEAM_UPDATE)
-);
-const canViewSubmissions = computed(() => {
-  const perms = [
-    FormPermissions.SUBMISSION_READ,
-    FormPermissions.SUBMISSION_UPDATE,
-  ];
-  return permissions.value.some((p) => perms.includes(p));
-});
-const isPublished = computed(
-  () =>
-    form?.value?.versions?.length &&
-    form.value.versions.some((v) => v.published)
-);
-
-function deleteForm() {
-  showDeleteDialog.value = false;
-  formStore.deleteCurrentForm();
-  router.push({ name: 'UserForms' });
-}
+export default {
+  components: {
+    BaseDialog,
+    ShareForm,
+  },
+  data() {
+    return {
+      showDeleteDialog: false,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['form', 'permissions']),
+    canDeleteForm() {
+      return this.permissions.includes(FormPermissions.FORM_DELETE);
+    },
+    canManageTeam() {
+      return this.permissions.includes(FormPermissions.TEAM_UPDATE);
+    },
+    canViewSubmissions() {
+      const perms = [
+        FormPermissions.SUBMISSION_READ,
+        FormPermissions.SUBMISSION_UPDATE,
+      ];
+      return this.permissions.some((p) => perms.includes(p));
+    },
+    isPublished() {
+      return (
+        this.form?.versions?.length &&
+        this.form.versions.some((v) => v.published)
+      );
+    },
+  },
+  methods: {
+    ...mapActions(useFormStore, ['deleteCurrentForm']),
+    deleteForm() {
+      this.showDeleteDialog = false;
+      this.deleteCurrentForm();
+      this.$router.push({ name: 'UserForms' });
+    },
+  },
+};
 </script>
 
 <template>

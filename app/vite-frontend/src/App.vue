@@ -1,8 +1,17 @@
-<script setup>
+<script>
 import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
 import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
 import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
+
+export default {
+  components: {
+    BaseNotificationContainer,
+    BCGovHeader,
+    BCGovNavBar,
+    BCGovFooter,
+  },
+};
 </script>
 
 <template>

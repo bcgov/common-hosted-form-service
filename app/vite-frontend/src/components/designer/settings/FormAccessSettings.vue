@@ -1,45 +1,56 @@
-<script setup>
-import { computed, ref } from 'vue';
+<script>
 import BasePanel from '~/components/base/BasePanel.vue';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import { IdentityMode, IdentityProviders } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
-import { storeToRefs } from 'pinia';
+import { mapWritableState } from 'pinia';
 
-const formStore = useFormStore();
-
-const { form } = storeToRefs(formStore);
-
-const ID_MODE = computed(() => IdentityMode);
-const ID_PROVIDERS = computed(() => IdentityProviders);
-
-const formAccess = ref(null);
-
-const loginRequiredRules = [
-  (v) => {
-    return (
-      v !== 'login' ||
-      form.value.idps.length === 1 ||
-      'Please select 1 log-in type'
-    );
+export default {
+  components: {
+    BasePanel,
+    BaseInfoCard,
   },
-];
-function userTypeChanged() {
-  // if they checked enable drafts then went back to public, uncheck it
-  if (form.value.userType === ID_MODE.value.PUBLIC) {
-    form.value = {
-      ...form.value,
-      enableSubmitterDraft: false,
-      enableCopyExistingSubmission: false,
+  data() {
+    return {
+      loginRequiredRules: [
+        (v) => {
+          return (
+            v !== 'login' ||
+            this.form.idps.length === 1 ||
+            'Please select 1 log-in type'
+          );
+        },
+      ],
     };
-  }
-  if (form.value.userType !== 'team') {
-    form.value = {
-      ...form.value,
-      reminder_enabled: false,
-    };
-  }
-}
+  },
+  computed: {
+    ...mapWritableState(useFormStore, ['form']),
+    ID_MODE() {
+      return IdentityMode;
+    },
+    ID_PROVIDERS() {
+      return IdentityProviders;
+    },
+  },
+  methods: {
+    userTypeChanged() {
+      // if they checked enable drafts then went back to public, uncheck it
+      if (this.form.userType === this.ID_MODE.PUBLIC) {
+        this.form = {
+          ...this.form,
+          enableSubmitterDraft: false,
+          enableCopyExistingSubmission: false,
+        };
+      }
+      if (this.form.userType !== 'team') {
+        this.form = {
+          ...this.form,
+          reminder_enabled: false,
+        };
+      }
+    },
+  },
+};
 </script>
 
 <template>
@@ -51,7 +62,7 @@ function userTypeChanged() {
       class="my-0"
       :mandatory="false"
       :rules="loginRequiredRules"
-      @update:modelValue="userTypeChanged"
+      @update:model-value="userTypeChanged"
     >
       <v-radio
         class="mb-4"

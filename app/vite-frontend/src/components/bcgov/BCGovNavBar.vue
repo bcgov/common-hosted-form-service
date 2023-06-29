@@ -1,17 +1,25 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+<script>
+import { mapState } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { IdentityProviders } from '~/utils/constants';
 
-const authStore = useAuthStore();
-
-const { authenticated, isAdmin } = storeToRefs(authStore);
-const hideNavBar = computed(() => useRoute()?.meta?.formSubmitMode);
-const hasPrivileges = computed(
-  () => authStore?.tokenParsed?.identity_provider === IdentityProviders.IDIR
-);
+export default {
+  data() {
+    return {
+      items: ['french', 'english'],
+    };
+  },
+  computed: {
+    ...mapState(useAuthStore, ['authenticated', 'isAdmin', 'identityProvider']),
+    hideNavBar() {
+      // hide nav bar if user is on form submitter page
+      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
+    },
+    hasPrivileges() {
+      return this.identityProvider === IdentityProviders.IDIR;
+    },
+  },
+};
 </script>
 
 <template>

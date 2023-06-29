@@ -1,25 +1,35 @@
-<script setup>
-import { storeToRefs } from 'pinia';
+<script>
+import { mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 
-const formStore = useFormStore();
-
-const { form } = storeToRefs(formStore);
-
-const nameRules = [
-  (v) => !!v || 'Form Title is required',
-  (v) => (v && v.length <= 255) || 'Form Title must be 255 characters or less',
-];
-const descriptionRules = [
-  (v) => {
-    if (v) {
-      return (
-        v.length <= 255 || 'Form Description must be 255 characters or less'
-      );
-    } else return true;
+export default {
+  components: {
+    BasePanel,
   },
-];
+  data() {
+    return {
+      nameRules: [
+        (v) => !!v || 'Form Title is required',
+        (v) =>
+          (v && v.length <= 255) || 'Form Title must be 255 characters or less',
+      ],
+      descriptionRules: [
+        (v) => {
+          if (v) {
+            return (
+              v.length <= 255 ||
+              'Form Description must be 255 characters or less'
+            );
+          } else return true;
+        },
+      ],
+    };
+  },
+  computed: {
+    ...mapWritableState(useFormStore, ['form']),
+  },
+};
 </script>
 
 <template>

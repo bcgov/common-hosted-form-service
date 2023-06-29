@@ -1,50 +1,57 @@
-<script setup>
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions } from 'pinia';
+import { i18n } from '~/internationalization';
 import formService from '~/services/formService.js';
 import { useNotificationStore } from '~/store/notification';
 
-const properties = defineProps({
-  submissionId: {
-    type: String,
-    required: true,
+export default {
+  props: {
+    submissionId: {
+      type: String,
+      required: true,
+    },
   },
-});
-
-const { t } = useI18n({ useScope: 'global' });
-const notificationStore = useNotificationStore();
-
-const dialog = ref(false);
-const loading = ref(true);
-const history = ref([]);
-
-const headers = computed(() => [
-  {
-    title: t('trans.auditHistory.userName'),
-    key: 'updatedByUsername',
+  data() {
+    return {
+      dialog: false,
+      loading: true,
+      history: [],
+    };
   },
-  { title: t('trans.auditHistory.date'), key: 'actionTimestamp' },
-]);
-
-async function loadHistory() {
-  loading.value = true;
-  dialog.value = true;
-  try {
-    const response = await formService.listSubmissionEdits(
-      properties.submissionId
-    );
-    history.value = response.data;
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.auditHistory.errorMsg'),
-      consoleError:
-        t('trans.auditHistory.consoleErrMsg') +
-        `${properties.submissionId}: ${error}`,
-    });
-  } finally {
-    loading.value = false;
-  }
-}
+  computed: {
+    headers() {
+      return [
+        {
+          title: i18n.t('trans.auditHistory.userName'),
+          key: 'updatedByUsername',
+        },
+        { title: i18n.t('trans.auditHistory.date'), key: 'actionTimestamp' },
+      ];
+    },
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async loadHistory() {
+      this.loading = true;
+      this.dialog = true;
+      try {
+        const response = await formService.listSubmissionEdits(
+          this.submissionId
+        );
+        this.history = response.data;
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.auditHistory.errorMsg'),
+          consoleError:
+            i18n.t('trans.auditHistory.consoleErrMsg') +
+            `${this.submissionId}: ${error}`,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+};
 </script>
 
 <template>

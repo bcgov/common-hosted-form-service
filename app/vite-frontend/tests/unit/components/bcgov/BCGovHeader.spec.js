@@ -8,7 +8,8 @@ import getRouter from '~/router';
 import { useAuthStore } from '~/store/auth';
 
 describe('BCGovHeader.vue', () => {
-  setActivePinia(createPinia());
+  const pinia = createPinia();
+  setActivePinia(pinia);
   const authStore = useAuthStore();
   const router = createRouter({
     history: createWebHistory(),
@@ -21,7 +22,7 @@ describe('BCGovHeader.vue', () => {
     authStore.ready = true;
     const wrapper = mount(BCGovHeader, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
       },
       stubs: {
         BaseAuthButton: true,

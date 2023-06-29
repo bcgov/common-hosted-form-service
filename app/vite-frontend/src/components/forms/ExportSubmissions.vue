@@ -1,245 +1,243 @@
-<script setup>
+<script>
 import moment from 'moment';
-import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { mapActions, mapState } from 'pinia';
 
+import { i18n } from '~/internationalization';
 import formService from '~/services/formService.js';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes, ExportLargeData } from '~/utils/constants';
 
-const properties = defineProps({
-  formId: {
-    type: String,
-    required: true,
+export default {
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
   },
-});
-
-const { t } = useI18n({ useScope: 'global' });
-
-const allDataFields = ref(true);
-const csvFormats = ref('multiRowEmptySpacesCSVExport');
-const dateRange = ref(false);
-const dialog = ref(false);
-const endDate = ref(moment(Date()).format('YYYY-MM-DD'));
-const exportFormat = ref('json');
-const inputFilter = ref('');
-const selected = ref([]);
-const showFieldsOptions = ref(false);
-const startDate = ref(moment(Date()).format('YYYY-MM-DD'));
-const versions = ref([]);
-const versionRequired = ref(false);
-const versionSelected = ref(0);
-
-const authStore = useAuthStore();
-const formStore = useFormStore();
-const notificationStore = useNotificationStore();
-
-const { email } = storeToRefs(authStore);
-const { form, formFields, submissionList } = storeToRefs(formStore);
-
-const startDateRules = [
-  (v) => !!v || 'This field is required.',
-  (v) =>
-    (v &&
-      new RegExp(
-        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-      ).test(v)) ||
-    'Date must be in correct format. ie. yyyy-mm-dd',
-  (v) =>
-    moment(v).isAfter(moment(Date()).format('YYYY-MM-DD'), 'day') ||
-    'Start date should be greater than today.',
-];
-const endDateRules = [
-  (v) => !!v || 'This field is required.',
-  (v) =>
-    (v &&
-      new RegExp(
-        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-      ).test(v)) ||
-    'Date must be in correct format. ie. yyyy-mm-dd',
-  (v) =>
-    moment(v).isAfter(startDate.value, 'day') ||
-    'End date should be greater than start date.',
-];
-const headers = computed(() => [
-  {
-    title: t('trans.exportSubmissions.selectAllFields'),
-    align: ' start',
-    sortable: true,
-    key: 'name',
+  data() {
+    return {
+      csvFormats: 'multiRowEmptySpacesCSVExport',
+      dateRange: false,
+      dialog: false,
+      endDate: moment(Date()).format('YYYY-MM-DD'),
+      endDateRules: [
+        (v) => !!v || 'This field is required.',
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          'Date must be in correct format. ie. yyyy-mm-dd',
+        (v) =>
+          moment(v).isAfter(this.startDate, 'day') ||
+          'End date should be greater than start date.',
+      ],
+      exportFormat: 'json',
+      inputFilter: '',
+      selected: [],
+      showFieldsOptions: false,
+      startDate: moment(Date()).format('YYYY-MM-DD'),
+      startDateRules: [
+        (v) => !!v || 'This field is required.',
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          'Date must be in correct format. ie. yyyy-mm-dd',
+        (v) =>
+          moment(v).isBefore(moment(Date()).format('YYYY-MM-DD'), 'day') ||
+          'Start date should be less than today.',
+      ],
+      versions: [],
+      versionRequired: false,
+      versionSelected: 0,
+    };
   },
-]);
-const fileName = computed(
-  () => `${form.value.snake}_submissions.${exportFormat.value}`
-);
-const FILTER_HEADERS = computed(() =>
-  versionSelected.value !== ''
-    ? formFields.value.map((f) => ({ name: f, value: f }))
-    : []
-);
+  computed: {
+    ...mapState(useFormStore, ['form', 'formFields', 'submissionList']),
+    ...mapState(useAuthStore, ['email']),
+    headers() {
+      return [
+        {
+          title: i18n.t('trans.exportSubmissions.selectAllFields'),
+          align: ' start',
+          sortable: true,
+          key: 'name',
+        },
+      ];
+    },
+    fileName() {
+      return `${this.form.snake}_submissions.${this.exportFormat}`;
+    },
+    FILTER_HEADERS() {
+      return this.versionSelected !== ''
+        ? this.formFields.map((f) => ({ name: f, value: f }))
+        : [];
+    },
+  },
+  watch: {
+    startDate() {
+      this.endDate = moment(Date()).format('YYYY-MM-DD');
+    },
+    async exportFormat(value) {
+      if (value === 'json') {
+        this.selected = [];
+        this.versionRequired = false;
+      }
+      await this.updateVersions();
+    },
+    dateRange(value) {
+      if (!value) {
+        this.endDate = moment(Date()).format('YYYY-MM-DD');
+        this.startDate = moment(Date()).format('YYYY-MM-DD');
+      }
+    },
+  },
+  mounted() {
+    this.fetchForm(this.formId);
+  },
+  methods: {
+    ...mapActions(useFormStore, ['fetchForm', 'fetchFormCSVExportFields']),
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async changeVersions(value) {
+      this.versionRequired = false;
+      value !== ''
+        ? (this.showFieldsOptions = true)
+        : (this.showFieldsOptions = false);
+      await this.refreshFormFields(value);
+    },
 
-async function changeVersions(value) {
-  versionRequired.value = false;
-  value !== ''
-    ? (showFieldsOptions.value = true)
-    : (showFieldsOptions.value = false);
-  await refreshFormFields(value);
-}
+    async refreshFormFields(version) {
+      this.selected = [];
+      if (version !== '') {
+        await this.fetchFormCSVExportFields({
+          formId: this.formId,
+          type: 'submissions',
+          draft: false,
+          deleted: false,
+          version: version,
+        });
+        this.selected = this.FILTER_HEADERS;
+      }
+    },
 
-async function refreshFormFields(version) {
-  selected.value = [];
-  if (version !== '') {
-    await formStore.fetchFormCSVExportFields({
-      formId: properties.formId,
-      type: 'submissions',
-      draft: false,
-      deleted: false,
-      version: version,
-    });
-    (allDataFields.value = true), selected.value.push(...FILTER_HEADERS.value);
-  }
-}
+    async callExport() {
+      if (this.exportFormat === 'csv' && this.versionSelected === '') {
+        this.versionRequired = true;
+      } else {
+        this.exportData();
+      }
+    },
 
-async function callExport() {
-  if (exportFormat.value === 'csv' && versionSelected.value === '') {
-    versionRequired.value = true;
-  } else {
-    exportData();
-  }
-}
+    async exportData() {
+      let fieldToExport =
+        this.selected.length > 0
+          ? this.selected.map((field) => {
+              return field.value;
+            })
+          : [''];
+      // Something is changing the selected values to include undefined fields
+      fieldToExport = fieldToExport.filter((el) => el !== undefined);
+      try {
+        // UTC start of selected start date...
+        const from =
+          this.dateRange && this.startDate
+            ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format()
+            : undefined;
+        // UTC end of selected end date...
+        const to =
+          this.dateRange && this.endDate
+            ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
+                .utc()
+                .format()
+            : undefined;
 
-async function exportData() {
-  let fieldToExport =
-    selected.value.length > 0
-      ? selected.value.map((field) => field.value)
-      : [''];
-  try {
-    // UTC start of selected start date...
-    const from =
-      dateRange.value && startDate.value
-        ? moment(startDate.value, 'YYYY-MM-DD hh:mm:ss').utc().format()
-        : undefined;
-    // UTC end of selected end date...
-    const to =
-      dateRange.value && endDate.value
-        ? moment(`${endDate.value} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
-            .utc()
-            .format()
-        : undefined;
+        let emailExport = false;
+        if (
+          (this.submissionList.length > ExportLargeData.MAX_RECORDS ||
+            this.formFields.length > ExportLargeData.MAX_FIELDS) &&
+          this.exportFormat !== 'json'
+        ) {
+          this.dialog = false;
+          emailExport = true;
+          this.addNotification({
+            ...NotificationTypes.SUCCESS,
+            title: i18n.t('trans.exportSubmissions.exportInProgress'),
+            text: i18n.t('trans.exportSubmissions.emailSentMsg', {
+              email: this.email,
+            }),
+            timeout: 20,
+          });
+        }
+        const response = await formService.exportSubmissions(
+          this.form.id,
+          this.exportFormat,
+          this.csvFormats,
+          this.exportFormat === 'csv' ? this.versionSelected : undefined,
+          {
+            minDate: from,
+            maxDate: to,
+            // deleted: true,
+            // drafts: true
+          },
+          fieldToExport,
+          emailExport
+        );
 
-    let emailExport = false;
-    if (
-      (submissionList.value.length > ExportLargeData.MAX_RECORDS ||
-        formFields.value.length > ExportLargeData.MAX_FIELDS) &&
-      exportFormat.value !== 'json'
-    ) {
-      dialog.value = false;
-      emailExport = true;
-      notificationStore.addNotification({
-        ...NotificationTypes.SUCCESS,
-        title: t('trans.exportSubmissions.exportInProgress'),
-        text: t('trans.exportSubmissions.emailSentMsg', {
-          email: email.value,
-        }),
-        timeout: 20,
-      });
-    }
-    const response = await formService.exportSubmissions(
-      form.value.id,
-      exportFormat.value,
-      csvFormats.value,
-      exportFormat.value === 'csv' ? versionSelected.value : undefined,
-      {
-        minDate: from,
-        maxDate: to,
-        // deleted: true,
-        // drafts: true
-      },
-      fieldToExport,
-      emailExport
-    );
+        if (response && response.data && !emailExport) {
+          const blob = new Blob([response.data], {
+            type: response.headers['content-type'],
+          });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = this.fileName;
+          a.style.display = 'none';
+          a.classList.add('hiddenDownloadTextElement');
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          this.dialog = false;
+        } else if (response && !response.data && !emailExport) {
+          throw new Error(i18n.t('trans.exportSubmissions.noResponseDataErr'));
+        }
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.exportSubmissions.apiCallErrorMsg'),
+          consoleError:
+            i18n.t('trans.exportSubmissions.apiCallConsErrorMsg') +
+            `${this.form.id}: ${error}`,
+        });
+      }
+    },
 
-    if (response && response.data && !emailExport) {
-      const blob = new Blob([response.data], {
-        type: response.headers['content-type'],
-      });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName.value;
-      a.style.display = 'none';
-      a.classList.add('hiddenDownloadTextElement');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      dialog.value = false;
-    } else if (response && !response.data && !emailExport) {
-      throw new Error(t('trans.exportSubmissions.noResponseDataErr'));
-    }
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.exportSubmissions.apiCallErrorMsg'),
-      consoleError:
-        t('trans.exportSubmissions.apiCallConsErrorMsg') +
-        `${form.value.id}: ${error}`,
-    });
-  }
-}
-
-async function updateVersions() {
-  versions.value = [];
-  if (form.value && Array.isArray(form.value.versions)) {
-    let vers = form.value.versions;
-    const isFormNotPublished = vers.every((version) => !version.published);
-    if (isFormNotPublished) {
-      vers.sort((a, b) =>
-        a.version < b.version ? -1 : a.version > b.version ? 1 : 0
-      );
-      showFieldsOptions.value = false;
-      versions.value.push('');
-    } else {
-      showFieldsOptions.value = true;
-      vers.sort((a, b) => b.published - a.published);
-    }
-    versions.value.push(
-      ...form.value.versions.map((version) => version.version)
-    );
-    versionSelected.value = versions.value[0];
-    await refreshFormFields(versionSelected.value);
-  }
-}
-
-watch(startDate, () => {
-  endDate.value = moment(Date()).format('YYYY-MM-DD');
-});
-
-watch(selected, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    allDataFields.value = selected.value.length === FILTER_HEADERS.value.length;
-  }
-});
-
-watch(exportFormat, (value) => {
-  if (value === 'json') {
-    selected.value = [];
-    versionRequired.value = false;
-  }
-  updateVersions();
-});
-
-watch(dateRange, (value) => {
-  if (!value) {
-    endDate.value = moment(Date()).format('YYYY-MM-DD');
-    startDate.value = moment(Date()).format('YYYY-MM-DD');
-  }
-});
-
-onMounted(() => {
-  formStore.fetchForm(properties.formId);
-});
+    async updateVersions() {
+      this.versions = [];
+      if (this.form && Array.isArray(this.form.versions)) {
+        let vers = this.form.versions;
+        const isFormNotPublished = vers.every((version) => !version.published);
+        if (isFormNotPublished) {
+          vers.sort((a, b) =>
+            a.version < b.version ? -1 : a.version > b.version ? 1 : 0
+          );
+          this.showFieldsOptions = false;
+          this.versions.push('');
+        } else {
+          this.showFieldsOptions = true;
+          vers.sort((a, b) => b.published - a.published);
+        }
+        this.versions.push(
+          ...this.form.versions.map((version) => version.version)
+        );
+        this.versionSelected = this.versions[0];
+        await this.refreshFormFields(this.versionSelected);
+      }
+    },
+  },
+};
 </script>
 
 <template>
@@ -360,7 +358,7 @@ onMounted(() => {
                           hide-default-footer
                           disable-sort
                           :items="FILTER_HEADERS"
-                          item-key="name"
+                          item-value="name"
                           height="300px"
                           mobile
                           disable-pagination
@@ -526,15 +524,15 @@ onMounted(() => {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
+.submissions-table :deep(tbody tr:nth-of-type(odd)) {
   background-color: #f5f5f5;
 }
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em !important;

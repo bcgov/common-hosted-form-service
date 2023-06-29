@@ -1,11 +1,10 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import AddTeamMember from '~/components/forms/manage/AddTeamMember.vue';
+import { i18n } from '~/internationalization';
 import { rbacService, roleService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
@@ -16,338 +15,352 @@ import {
   IdentityProviders,
 } from '~/utils/constants';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const properties = defineProps({
-  formId: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    BaseDialog,
+    BaseFilter,
+    AddTeamMember,
   },
-});
-
-const formStore = useFormStore();
-const notificationStore = useNotificationStore();
-
-const { permissions } = storeToRefs(formStore);
-
-const filterData = ref([]);
-const filterIgnore = ref([
-  {
-    key: 'actions',
-  },
-]);
-const formUsers = ref([]);
-const isAddingUsers = ref(false);
-const itemsToDelete = ref([]);
-const loading = ref(true);
-const roleList = ref([]);
-const selectedUsers = ref([]);
-const showColumnsDialog = ref(false);
-const showDeleteDialog = ref(false);
-const tableData = ref([]);
-const totalItems = ref(0);
-const updating = ref(false);
-
-const canManageTeam = computed(() => {
-  return permissions.value.includes(FormPermissions.TEAM_UPDATE);
-});
-const roleOrder = computed(() => Object.values(FormRoleCodes));
-const DeleteMessage = computed(() =>
-  itemsToDelete.value.length > 1
-    ? t('trans.teamManagement.delSelectedMembersWarning"')
-    : t('trans.teamManagement.delSelectedMemberWarning')
-);
-const DEFAULT_HEADERS = computed(() => {
-  const headers = [
-    { title: t('trans.teamManagement.fullName'), key: 'fullName' },
-    { title: t('trans.teamManagement.username'), key: 'username' },
-    {
-      title: t('trans.teamManagement.identityProvider'),
-      key: 'identityProvider',
+  props: {
+    formId: {
+      type: String,
+      required: true,
     },
-  ];
-  return headers
-    .concat(
-      roleList.value
-        .filter(
-          (role) =>
-            formStore.userType === IdentityMode.TEAM ||
-            role.code !== FormRoleCodes.FORM_SUBMITTER
-        )
-        .map((role) => ({
-          filterable: false,
-          title: role.display,
-          key: role.code,
-          description: role.description,
-        }))
-        .sort((a, b) =>
-          roleOrder.value.indexOf(a.value) > roleOrder.value.indexOf(b.value)
-            ? 1
-            : -1
-        )
-    )
-    .concat({ title: '', key: 'actions', width: '1rem', sortable: false });
-});
-const HEADERS = computed(() => {
-  let headers = DEFAULT_HEADERS.value;
-  if (filterData.value.length > 0)
-    headers = headers.filter(
-      (h) =>
-        filterData.value.some((fd) => fd.key === h.key) ||
-        filterIgnore.value.some((ign) => ign.key === h.key)
-    );
-  return headers;
-});
-const PRESELECTED_DATA = computed(() => {
-  return DEFAULT_HEADERS.value.filter(
-    (h) => !filterIgnore.value.some((fd) => fd.value === h.value)
-  );
-});
-
-onMounted(() => {
-  loadItems();
-});
-
-async function loadItems() {
-  loading.value = true;
-
-  Promise.all([
-    await formStore.fetchForm(properties.formId),
-    await formStore.getFormPermissionsForUser(properties.formId),
-    await getRolesList(),
-    await getFormUsers(),
-  ]);
-
-  loading.value = false;
-}
-
-async function getRolesList() {
-  try {
-    const response = await roleService.list();
-    roleList.value = response.data;
-  } catch (error) {
-    notificationStore.addNotification({
-      text: error.message,
-      consoleError: `Error getting list of roles: ${error}`,
-    });
-    roleList.value = [];
-  }
-}
-
-async function getFormUsers() {
-  try {
-    if (!canManageTeam.value) {
-      throw new Error('Insufficient permissions to manage team');
-    }
-    const formUsersResponse = await rbacService.getFormUsers({
-      formId: properties.formId,
-      roles: '*',
-    });
-    formUsers.value = formUsersResponse?.data?.map((user) => {
-      user.idp = user.user_idpCode;
-      return user;
-    });
-  } catch (error) {
-    notificationStore.addNotification({
-      text: error.message,
-      consoleError: `Error getting form users: ${error}`,
-    });
-    formUsers.value = [];
-  } finally {
-    createTableData(); // Force refresh table based on latest API response
-  }
-}
-
-function createTableData() {
-  tableData.value = formUsers.value.map((user) => {
-    const row = {
-      id: user.userId,
-      formId: properties.formId,
-      fullName: user.fullName,
-      userId: user.userId,
-      username: user.username,
-      identityProvider: user.idp,
+  },
+  data() {
+    return {
+      filterData: [],
+      filterIgnore: [
+        {
+          key: 'actions',
+        },
+      ],
+      formUsers: [],
+      isAddingUsers: false,
+      itemsToDelete: [],
+      loading: true,
+      roleList: [],
+      selectedUsers: [],
+      showColumnsDialog: false,
+      showDeleteDialog: false,
+      tableData: [],
+      totalItems: 0,
+      updating: false,
     };
-    roleList.value
-      .map((role) => role.code)
-      .forEach((role) => (row[role] = user.roles.includes(role)));
-    return row;
-  });
-  totalItems.value = tableData.value.length;
-}
+  },
+  computed: {
+    ...mapState(useFormStore, ['form', 'permissions']),
+    canManageTeam() {
+      return this.permissions.includes(FormPermissions.TEAM_UPDATE);
+    },
+    roleOrder() {
+      return Object.values(FormRoleCodes);
+    },
+    DeleteMessage() {
+      return this.itemsToDelete.length > 1
+        ? i18n.t('trans.teamManagement.delSelectedMembersWarning"')
+        : i18n.t('trans.teamManagement.delSelectedMemberWarning');
+    },
+    DEFAULT_HEADERS() {
+      const headers = [
+        { title: i18n.t('trans.teamManagement.fullName'), key: 'fullName' },
+        { title: i18n.t('trans.teamManagement.username'), key: 'username' },
+        {
+          title: i18n.t('trans.teamManagement.identityProvider'),
+          key: 'identityProvider',
+        },
+      ];
+      return headers
+        .concat(
+          this.roleList
+            .filter(
+              (role) =>
+                this.form.userType === IdentityMode.TEAM ||
+                role.code !== FormRoleCodes.FORM_SUBMITTER
+            )
+            .map((role) => ({
+              filterable: false,
+              title: role.display,
+              key: role.code,
+              description: role.description,
+            }))
+            .sort((a, b) =>
+              this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
+                ? 1
+                : -1
+            )
+        )
+        .concat({ title: '', key: 'actions', width: '1rem', sortable: false });
+    },
+    HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+      if (this.filterData.length > 0)
+        headers = headers.filter(
+          (h) =>
+            this.filterData.some((fd) => fd.key === h.key) ||
+            this.filterIgnore.some((ign) => ign.key === h.key)
+        );
+      return headers;
+    },
+    PRESELECTED_DATA() {
+      return this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
+    },
+  },
+  mounted() {
+    this.loadItems();
+  },
+  methods: {
+    ...mapActions(useFormStore, ['fetchForm', 'getFormPermissionsForUser']),
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async loadItems() {
+      this.loading = true;
 
-function disableRole(header, user, userType) {
-  if (header === FormRoleCodes.FORM_SUBMITTER && userType !== IdentityMode.TEAM)
-    return true;
-  if (
-    user.identityProvider === IdentityProviders.BCEIDBUSINESS &&
-    (header === FormRoleCodes.OWNER || header === FormRoleCodes.FORM_DESIGNER)
-  )
-    return true;
-  if (
-    user.identityProvider === IdentityProviders.BCEIDBASIC &&
-    (header === FormRoleCodes.OWNER ||
-      header === FormRoleCodes.FORM_DESIGNER ||
-      header === FormRoleCodes.TEAM_MANAGER ||
-      header === FormRoleCodes.SUBMISSION_REVIEWER)
-  )
-    return true;
-  return false;
-}
+      Promise.all([
+        await this.fetchForm(this.formId),
+        await this.getFormPermissionsForUser(this.formId),
+        await this.getRolesList(),
+        await this.getFormUsers(),
+      ]);
 
-async function toggleRole(user) {
-  const u = {
-    formId: user.raw.formId,
-    ...user.columns,
-    userId: user.raw.id,
-  };
-  await setUserForms(user.raw.id, u);
-  selectedUsers.value = [];
-}
+      this.loading = false;
+    },
 
-/**
- * @function setUserForms
- * Sets `userId`'s roles for the form
- * @param {String} userId The userId to be updated
- */
-async function setUserForms(userId, user) {
-  try {
-    updating.value = true;
-    const userRoles = generateFormRoleUsers(user);
-    await rbacService.setUserForms(userRoles, {
-      formId: properties.formId,
-      userId: userId,
-    });
-  } catch (error) {
-    notificationStore.addNotification({
-      text:
-        error &&
-        error.response &&
-        error.response.data &&
-        error.response.data.detail
-          ? error.response.data.detail
-          : 'An error occurred while attempting to update roles for a user',
-      consoleError: `Error setting user roles for form ${properties.formId}: ${error}`,
-    });
-  } finally {
-    await formStore.getFormPermissionsForUser(properties.formId);
-    await getFormUsers();
-    updating.value = false;
-  }
-}
+    async getRolesList() {
+      try {
+        const response = await roleService.list();
+        this.roleList = response.data;
+      } catch (error) {
+        this.addNotification({
+          text: error.message,
+          consoleError: `Error getting list of roles: ${error}`,
+        });
+        this.roleList = [];
+      }
+    },
 
-function generateFormRoleUsers(user) {
-  return Object.keys(user)
-    .filter((role) => roleOrder.value.includes(role) && user[role])
-    .map((role) => ({
-      formId: user.formId,
-      role: role,
-      userId: user.userId,
-    }));
-}
+    async getFormUsers() {
+      try {
+        if (!this.canManageTeam) {
+          throw new Error('Insufficient permissions to manage team');
+        }
+        const formUsersResponse = await rbacService.getFormUsers({
+          formId: this.formId,
+          roles: '*',
+        });
+        this.formUsers = formUsersResponse?.data?.map((user) => {
+          user.idp = user.user_idpCode;
+          return user;
+        });
+      } catch (error) {
+        this.addNotification({
+          text: error.message,
+          consoleError: `Error getting form users: ${error}`,
+        });
+        this.formUsers = [];
+      } finally {
+        this.createTableData(); // Force refresh table based on latest API response
+      }
+    },
 
-function addingUsers(adding) {
-  isAddingUsers.value = adding;
-}
-
-function addNewUsers(users, roles) {
-  if (Array.isArray(users) && users.length) {
-    users.forEach((user) => {
-      // if user isnt already in the table
-      if (!tableData.value.some((obj) => obj.userId === user.id)) {
-        const u = {
-          formId: properties.formId,
-          userId: user.id,
-          form_submitter:
-            Array.isArray(roles) && roles.length
-              ? roles.includes(FormRoleCodes.FORM_SUBMITTER)
-              : false,
-          form_designer:
-            Array.isArray(roles) && roles.length
-              ? roles.includes(FormRoleCodes.FORM_DESIGNER)
-              : false,
-          submission_reviewer:
-            Array.isArray(roles) && roles.length
-              ? roles.includes(FormRoleCodes.SUBMISSION_REVIEWER)
-              : false,
-          team_manager:
-            Array.isArray(roles) && roles.length
-              ? roles.includes(FormRoleCodes.TEAM_MANAGER)
-              : false,
-          owner:
-            Array.isArray(roles) && roles.length
-              ? roles.includes(FormRoleCodes.OWNER)
-              : false,
+    createTableData() {
+      this.tableData = this.formUsers.map((user) => {
+        const row = {
+          id: user.userId,
+          formId: this.formId,
           fullName: user.fullName,
+          userId: user.userId,
           username: user.username,
+          identityProvider: user.idp,
         };
+        this.roleList
+          .map((role) => role.code)
+          .forEach((role) => (row[role] = user.roles.includes(role)));
+        return row;
+      });
+      this.totalItems = this.tableData.length;
+    },
 
-        // create new object for table row
-        tableData.value.push(u);
+    disableRole(header, user, userType) {
+      if (
+        header === FormRoleCodes.FORM_SUBMITTER &&
+        userType !== IdentityMode.TEAM
+      )
+        return true;
+      if (
+        user.identityProvider === IdentityProviders.BCEIDBUSINESS &&
+        (header === FormRoleCodes.OWNER ||
+          header === FormRoleCodes.FORM_DESIGNER)
+      )
+        return true;
+      if (
+        user.identityProvider === IdentityProviders.BCEIDBASIC &&
+        (header === FormRoleCodes.OWNER ||
+          header === FormRoleCodes.FORM_DESIGNER ||
+          header === FormRoleCodes.TEAM_MANAGER ||
+          header === FormRoleCodes.SUBMISSION_REVIEWER)
+      )
+        return true;
+      return false;
+    },
 
-        if (Array.isArray(roles) && roles.length) setUserForms(user.id, u);
-      } else {
-        notificationStore.addNotification({
+    async toggleRole(user) {
+      const u = {
+        formId: user.raw.formId,
+        ...user.columns,
+        userId: user.raw.id,
+      };
+      await this.setUserForms(user.raw.id, u);
+      this.selectedUsers = [];
+    },
+
+    /**
+     * @ setUserForms
+     * Sets `userId`'s roles for the form
+     * @param {String} userId The userId to be updated
+     */
+    async setUserForms(userId, user) {
+      try {
+        this.updating = true;
+        const userRoles = this.generateFormRoleUsers(user);
+        await rbacService.setUserForms(userRoles, {
+          formId: this.formId,
+          userId: userId,
+        });
+      } catch (error) {
+        this.addNotification({
           text:
-            `${user.username}@${user.idpCode}` +
-            t('trans.teamManagement.idpMessage'),
+            error &&
+            error.response &&
+            error.response.data &&
+            error.response.data.detail
+              ? error.response.data.detail
+              : 'An error occurred while attempting to update roles for a user',
+          consoleError: `Error setting user roles for form ${this.formId}: ${error}`,
+        });
+      } finally {
+        await this.getFormPermissionsForUser(this.formId);
+        await this.getFormUsers();
+        this.updating = false;
+      }
+    },
+
+    generateFormRoleUsers(user) {
+      return Object.keys(user)
+        .filter((role) => this.roleOrder.includes(role) && user[role])
+        .map((role) => ({
+          formId: user.formId,
+          role: role,
+          userId: user.userId,
+        }));
+    },
+
+    addingUsers(adding) {
+      this.isAddingUsers = adding;
+    },
+
+    addNewUsers(users, roles) {
+      if (Array.isArray(users) && users.length) {
+        users.forEach((user) => {
+          // if user isnt already in the table
+          if (!this.tableData.some((obj) => obj.userId === user.id)) {
+            const u = {
+              formId: this.formId,
+              userId: user.id,
+              form_submitter:
+                Array.isArray(roles) && roles.length
+                  ? roles.includes(FormRoleCodes.FORM_SUBMITTER)
+                  : false,
+              form_designer:
+                Array.isArray(roles) && roles.length
+                  ? roles.includes(FormRoleCodes.FORM_DESIGNER)
+                  : false,
+              submission_reviewer:
+                Array.isArray(roles) && roles.length
+                  ? roles.includes(FormRoleCodes.SUBMISSION_REVIEWER)
+                  : false,
+              team_manager:
+                Array.isArray(roles) && roles.length
+                  ? roles.includes(FormRoleCodes.TEAM_MANAGER)
+                  : false,
+              owner:
+                Array.isArray(roles) && roles.length
+                  ? roles.includes(FormRoleCodes.OWNER)
+                  : false,
+              fullName: user.fullName,
+              username: user.username,
+            };
+
+            // create new object for table row
+            this.tableData.push(u);
+
+            if (Array.isArray(roles) && roles.length)
+              this.setUserForms(user.id, u);
+          } else {
+            this.addNotification({
+              text:
+                `${user.username}@${user.idpCode}` +
+                i18n.t('trans.teamManagement.idpMessage'),
+            });
+          }
         });
       }
-    });
-  }
-}
+    },
 
-function onRemoveClick(item = null) {
-  if (tableData.value.length === 1) {
-    userError();
-    return;
-  }
-  if (item) {
-    itemsToDelete.value = Array.isArray(item) ? item : [item];
-  }
-  showDeleteDialog.value = true;
-}
+    onRemoveClick(item = null) {
+      if (this.tableData.length === 1) {
+        this.userError();
+        return;
+      }
+      if (item) {
+        this.itemsToDelete = Array.isArray(item) ? item : [item];
+      }
+      this.showDeleteDialog = true;
+    },
 
-function userError() {
-  notificationStore.addNotification({
-    text: t('trans.teamManagement.formOwnerRemovalWarning'),
-    consoleError: t('trans.teamManagement.formOwnerRemovalWarning'),
-  });
-}
+    userError() {
+      this.addNotification({
+        text: i18n.t('trans.teamManagement.formOwnerRemovalWarning'),
+        consoleError: i18n.t('trans.teamManagement.formOwnerRemovalWarning'),
+      });
+    },
 
-async function removeUser() {
-  showDeleteDialog.value = false;
-  try {
-    updating.value = true;
-    let ids = itemsToDelete.value.map((item) => item.id);
-    await rbacService.removeMultiUsers(ids, {
-      formId: properties.formId,
-    });
-    await formStore.getFormPermissionsForUser(properties.formId);
-    await getFormUsers();
-  } catch (error) {
-    notificationStore.addNotification({
-      text:
-        error &&
-        error.response &&
-        error.response.data &&
-        error.response.data.detail
-          ? error.response.data.detail
-          : t('trans.teamManagement.removeUsersErrMsg'),
-      consoleError: t('trans.teamManagement.removeUserConsoleErrMsg', {
-        formId: properties.formId,
-        error: error,
-      }),
-    });
-  } finally {
-    itemsToDelete.value = [];
-    updating.value = false;
-  }
-}
+    async removeUser() {
+      this.showDeleteDialog = false;
+      try {
+        this.updating = true;
+        let ids = this.itemsToDelete.map((item) => item.id);
+        await rbacService.removeMultiUsers(ids, {
+          formId: this.formId,
+        });
+        await this.getFormPermissionsForUser(this.formId);
+        await this.getFormUsers();
+      } catch (error) {
+        this.addNotification({
+          text:
+            error &&
+            error.response &&
+            error.response.data &&
+            error.response.data.detail
+              ? error.response.data.detail
+              : i18n.t('trans.teamManagement.removeUsersErrMsg'),
+          consoleError: i18n.t('trans.teamManagement.removeUserConsoleErrMsg', {
+            formId: this.formId,
+            error: error,
+          }),
+        });
+      } finally {
+        this.itemsToDelete = [];
+        this.updating = false;
+      }
+    },
+  },
+};
 </script>
 
 <template>
-  <v-container-fluid>
+  <v-container fluid>
     <v-container fluid class="d-flex">
       <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
       <div style="z-index: 1">
@@ -585,5 +598,5 @@ async function removeUser() {
         }}</template>
       </BaseFilter>
     </v-dialog>
-  </v-container-fluid>
+  </v-container>
 </template>

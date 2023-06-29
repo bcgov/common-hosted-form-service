@@ -1,20 +1,27 @@
-<script setup>
-import { ref, watch } from 'vue';
-const props = defineProps({
-  showDialog: { type: Boolean, required: true },
-  component: { type: Object, default: () => {} },
-  fcProactiveHelpImageUrl: undefined,
-});
-const emit = defineEmits(['close-dialog']);
-const dialog = ref(props.showDialog);
-
-watch(props.showDialog, (newValue) => {
-  dialog.value = newValue;
-});
-
-function onCloseDialog() {
-  emit('close-dialog');
-}
+<script>
+export default {
+  props: {
+    showDialog: { type: Boolean, required: true },
+    component: { type: Object, default: () => {} },
+    fcProactiveHelpImageUrl: undefined,
+  },
+  emits: ['close-dialog'],
+  data() {
+    return {
+      dialog: this.showDialog,
+    };
+  },
+  watch: {
+    showDialog(value) {
+      this.dialog = value;
+    },
+  },
+  methods: {
+    onCloseDialog() {
+      this.$emit('close-dialog');
+    },
+  },
+};
 </script>
 
 <template>
@@ -83,9 +90,7 @@ function onCloseDialog() {
               >
                 <div class="mr-1 cursor">
                   Learn more
-                  <font-awesome-icon
-                    icon="fa-solid fa-square-arrow-up-right"
-                  /></div
+                  <v-icon icon="mdi:mdi-arrow-top-right-bold-box" /></div
               ></a>
             </v-col>
           </v-row>

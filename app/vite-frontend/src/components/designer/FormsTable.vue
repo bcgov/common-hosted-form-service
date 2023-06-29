@@ -1,57 +1,69 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
+
+import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { IdentityProviders } from '~/utils/constants';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
-const { t } = useI18n({ useScope: 'global' });
-const formStore = useFormStore();
-
-const headers = ref([
-  {
-    title: t('trans.formsTable.formTitle'),
-    align: 'start',
-    key: 'name',
-    width: '1%',
+export default {
+  components: {
+    BaseDialog,
   },
-  {
-    title: t('trans.formsTable.action'),
-    align: 'end',
-    key: 'actions',
-    filterable: false,
-    sortable: false,
-    width: '1%',
+  data() {
+    return {
+      headers: [
+        {
+          title: i18n.t('trans.formsTable.formTitle'),
+          align: 'start',
+          key: 'name',
+          width: '1%',
+        },
+        {
+          title: i18n.t('trans.formsTable.action'),
+          align: 'end',
+          key: 'actions',
+          filterable: false,
+          sortable: false,
+          width: '1%',
+        },
+      ],
+      formId: null,
+      showDescriptionDialog: false,
+      loading: true,
+      formDescription: null,
+      search: null,
+    };
   },
-]);
-const formId = ref(null);
-const showDescriptionDialog = ref(false);
-const loading = ref(true);
-const formDescription = ref(null);
-const search = ref(null);
-const { formList } = storeToRefs(formStore);
-
-const authStore = useAuthStore();
-const { user } = authStore;
-
-const canCreateForm = computed(() => user.idp === IdentityProviders.IDIR);
-const filteredFormList = computed(() =>
-  formList.value.filter((f) => checkFormManage(f) || checkSubmissionView(f))
-);
-
-onMounted(async () => {
-  await formStore.getFormsForCurrentUser();
-  loading.value = false;
-});
-
-function onDescriptionClick(fId, fDescription) {
-  formId.value = fId;
-  formDescription.value = fDescription;
-  showDescriptionDialog.value = true;
-}
+  computed: {
+    ...mapState(useFormStore, ['formList']),
+    ...mapState(useAuthStore, ['user']),
+    canCreateForm() {
+      return this.user.idp === IdentityProviders.IDIR;
+    },
+    filteredFormList() {
+      return this.formList.filter(
+        (f) => checkFormManage(f) || checkSubmissionView(f)
+      );
+    },
+  },
+  async mounted() {
+    await this.getFormsForCurrentUser();
+    this.loading = false;
+  },
+  methods: {
+    ...mapActions(useFormStore, ['getFormsForCurrentUser']),
+    checkFormManage: checkFormManage,
+    checkSubmissionView: checkSubmissionView,
+    onDescriptionClick(fId, fDescription) {
+      this.formId = fId;
+      this.formDescription = fDescription;
+      this.showDescriptionDialog = true;
+    },
+  },
+};
 </script>
 
 <template>

@@ -11,7 +11,8 @@ import getRouter from '~/router';
 import { useAuthStore } from '~/store/auth';
 
 describe('BCGovNavBar.vue', () => {
-  setActivePinia(createPinia());
+  const pinia = createPinia();
+  setActivePinia(pinia);
   const router = createRouter({
     history: createWebHistory(),
     routes: getRouter().getRoutes(),
@@ -34,7 +35,7 @@ describe('BCGovNavBar.vue', () => {
 
     const wrapper = mount(VApp, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
       },
       slots: {
         default: h(BCGovNavBar),
@@ -76,7 +77,7 @@ describe('BCGovNavBar.vue', () => {
 
     const wrapper = mount(VApp, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
       },
       slots: {
         default: h(BCGovNavBar),

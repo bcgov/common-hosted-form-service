@@ -1,7 +1,6 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
+import { i18n } from '~/internationalization';
 
 import StatusTable from '~/components/forms/submission/StatusTable.vue';
 import { formService, rbacService } from '~/services';
@@ -10,253 +9,278 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions } from '~/utils/constants';
 
-const properties = defineProps({
-  formId: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    StatusTable,
   },
-  submissionId: {
-    type: String,
-    required: true,
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
+    submissionId: {
+      type: String,
+      required: true,
+    },
   },
-});
-
-const emits = defineEmits(['draft-enabled', 'note-updated']);
-
-const { t } = useI18n({ useScope: 'global' });
-
-const assignee = ref(null);
-const addComment = ref(false);
-const currentStatus = ref({});
-const formReviewers = ref([]);
-const historyDialog = ref(false);
-const items = ref([]);
-const loading = ref(true);
-const note = ref('');
-const emailComment = ref('');
-const submissionUserEmail = ref('');
-const statusHistory = ref({});
-const statusFields = ref(false);
-const statusPanelForm = ref(null);
-const statusToSet = ref('');
-const valid = ref(false);
-const showSendConfirmEmail = ref(false);
-
-const authStore = useAuthStore();
-const formStore = useFormStore();
-const notificationStore = useNotificationStore();
-
-const { identityProviderIdentity } = storeToRefs(authStore);
-const { form, formSubmission, submissionUsers } = storeToRefs(formStore);
-
-const showAssignee = computed(() => ['ASSIGNED'].includes(statusToSet.value));
-const showCompleted = computed(() => ['COMPLETED'].includes(statusToSet.value));
-const showRevising = computed(() => ['REVISING'].includes(statusToSet.value));
-const statusAction = computed(() => {
-  const obj = Object.freeze({
-    ASSIGNED: 'ASSIGN',
-    COMPLETED: 'COMPLETE',
-    REVISING: 'REVISE',
-    DEFAULT: 'UPDATE',
-  });
-
-  let action = obj[statusToSet.value] ? obj[statusToSet.value] : obj['DEFAULT'];
-
-  let actionStatus = '';
-  switch (action) {
-    case 'ASSIGN':
-      actionStatus = t('trans.statusPanel.assign');
-      break;
-    case 'COMPLETE':
-      actionStatus = t('trans.statusPanel.complete');
-      break;
-    case 'REVISE':
-      actionStatus = t('trans.statusPanel.revise');
-      break;
-    case 'UPDATE':
-      actionStatus = t('trans.statusPanel.update');
-      break;
-    default:
-    // code block
-  }
-  return actionStatus;
-});
-
-async function onStatusChange(status) {
-  statusFields.value = true;
-  addComment.value = false;
-  if (status === 'REVISING' || status === 'COMPLETED') {
-    try {
-      await formStore.fetchSubmissionUsers(properties.submissionId);
-
-      const submitterData = submissionUsers.value.data.find((data) => {
-        const username = data.user.idpCode
-          ? `${data.user.username}@${data.user.idpCode}`
-          : data.user.username;
-        return username === formSubmission.value.createdBy;
+  emits: ['draft-enabled', 'note-updated'],
+  data() {
+    return {
+      assignee: null,
+      addComment: false,
+      currentStatus: {},
+      formReviewers: [],
+      historyDialog: false,
+      items: [],
+      loading: true,
+      note: '',
+      emailComment: '',
+      submissionUserEmail: '',
+      statusHistory: {},
+      statusFields: false,
+      statusPanelForm: null,
+      statusToSet: '',
+      valid: false,
+      showSendConfirmEmail: false,
+    };
+  },
+  computed: {
+    ...mapState(useAuthStore, ['identityProviderIdentity']),
+    ...mapState(useFormStore, ['form', 'formSubmission', 'submissionUsers']),
+    // State Machine
+    showActionDate() {
+      return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
+    },
+    showAssignee() {
+      return ['ASSIGNED'].includes(this.statusToSet);
+    },
+    showCompleted() {
+      return ['COMPLETED'].includes(this.statusToSet);
+    },
+    showRevising() {
+      return ['REVISING'].includes(this.statusToSet);
+    },
+    statusAction() {
+      const obj = Object.freeze({
+        ASSIGNED: 'ASSIGN',
+        COMPLETED: 'COMPLETE',
+        REVISING: 'REVISE',
+        DEFAULT: 'UPDATE',
       });
 
-      if (submitterData) {
-        submissionUserEmail.value = submitterData.user
-          ? submitterData.user.email
-          : undefined;
-        showSendConfirmEmail.value = status === 'COMPLETED';
+      let action = obj[this.statusToSet]
+        ? obj[this.statusToSet]
+        : obj['DEFAULT'];
+
+      let actionStatus = '';
+      switch (action) {
+        case 'ASSIGN':
+          actionStatus = i18n.t('trans.statusPanel.assign');
+          break;
+        case 'COMPLETE':
+          actionStatus = i18n.t('trans.statusPanel.complete');
+          break;
+        case 'REVISE':
+          actionStatus = i18n.t('trans.statusPanel.revise');
+          break;
+        case 'UPDATE':
+          actionStatus = i18n.t('trans.statusPanel.update');
+          break;
+        default:
+        // code block
       }
-    } catch (error) {
-      notificationStore.addNotification({
-        text: t('trans.statusPanel.fetchSubmissionUsersErr'),
-        consoleError:
-          t('trans.statusPanel.fetchSubmissionUsersConsErr') +
-          `${properties.submissionId}: ${error}`,
-      });
-    }
-  }
-}
+      return actionStatus;
+    },
+  },
+  created() {
+    this.getStatus();
+  },
+  methods: {
+    ...mapActions(useFormStore, ['fetchSubmissionUsers']),
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async onStatusChange(status) {
+      this.statusFields = true;
+      this.addComment = false;
+      if (status === 'REVISING' || status === 'COMPLETED') {
+        try {
+          await this.fetchSubmissionUsers(this.submissionId);
 
-function assignToCurrentUser() {
-  assignee.value = formReviewers.value.find(
-    (f) => f.idpUserId === identityProviderIdentity.value
-  );
-}
+          const submitterData = this.submissionUsers.data.find((data) => {
+            const username = data.user.idpCode
+              ? `${data.user.username}@${data.user.idpCode}`
+              : data.user.username;
+            return username === this.formSubmission.createdBy;
+          });
 
-function autoCompleteFilter(item, queryText) {
-  return (
-    item.fullName.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) ||
-    item.username.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
-  );
-}
-
-async function getStatus() {
-  loading.value = true;
-  try {
-    // Prepopulate the form reviewers (people with submission read on this form)
-    const rbacUsrs = await rbacService.getFormUsers({
-      formId: properties.formId,
-      permissions: FormPermissions.SUBMISSION_READ,
-    });
-    formReviewers.value = rbacUsrs.data.sort((a, b) =>
-      a.fullName.localeCompare(b.fullName)
-    );
-
-    // Get submission status
-    const statuses = await formService.getSubmissionStatuses(
-      properties.submissionId
-    );
-
-    emits('draft-enabled', statuses.data[0].code);
-
-    statusHistory.value = statuses.data;
-    if (!statusHistory.value.length || !statusHistory.value[0]) {
-      throw new Error(t('trans.statusPanel.noStatusesFound'));
-    } else {
-      // Statuses are returned in date precedence, the 0th item in the array is the current status
-      currentStatus.value = statusHistory.value[0];
-
-      // Get the codes that this form is associated with
-      const scRes = await formService.getStatusCodes(properties.formId);
-      const statusCodes = scRes.data;
-      if (!statusCodes.length) {
-        throw new Error(t('trans.statusPanel.statusCodesErr'));
-      }
-      // For the CURRENT status, add the code details (display name, next codes etc)
-      currentStatus.value.statusCodeDetail = statusCodes.find(
-        (sc) => sc.code === currentStatus.value.code
-      ).statusCode;
-      items.value = currentStatus.value.statusCodeDetail.nextCodes;
-    }
-    if (!form.value.enableSubmitterDraft) {
-      items.value = items.value.filter((item) => item !== 'REVISING');
-    }
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.statusPanel.notifyErrorCode'),
-      consoleError:
-        t('trans.statusPanel.notifyConsoleErrorCode') + `${error.message}`,
-    });
-  } finally {
-    loading.value = false;
-  }
-}
-
-function resetForm() {
-  addComment.value = false;
-  emailComment.value = '';
-  statusFields.value = false;
-  statusPanelForm.value.resetValidation();
-  submissionUserEmail.value = '';
-  statusToSet.value = null;
-  note.value = '';
-}
-
-async function updateStatus() {
-  try {
-    if (statusPanelForm.value.validate()) {
-      if (!statusToSet.value) {
-        throw new Error(t('trans.statusPanel.status'));
-      }
-
-      const statusBody = {
-        code: statusToSet.value,
-        submissionUserEmail: submissionUserEmail.value,
-        revisionNotificationEmailContent: emailComment.value,
-      };
-      if (showAssignee.value) {
-        if (assignee.value) {
-          statusBody.assignedToUserId = assignee.value.userId;
-          statusBody.assignmentNotificationEmail = assignee.value.email;
+          if (submitterData) {
+            this.submissionUserEmail = submitterData.user
+              ? submitterData.user.email
+              : undefined;
+            this.showSendConfirmEmail = status === 'COMPLETED';
+          }
+        } catch (error) {
+          this.addNotification({
+            text: i18n.t('trans.statusPanel.fetchSubmissionUsersErr'),
+            consoleError:
+              i18n.t('trans.statusPanel.fetchSubmissionUsersConsErr') +
+              `${this.submissionId}: ${error}`,
+          });
         }
       }
-      const statusResponse = await formService.updateSubmissionStatus(
-        properties.submissionId,
-        statusBody
+    },
+
+    assignToCurrentUser() {
+      this.assignee = this.formReviewers.find(
+        (f) => f.idpUserId === this.identityProviderIdentity
       );
-      if (!statusResponse.data) {
-        throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
-      }
+    },
 
-      if (emailComment.value) {
-        let formattedComment;
-        if (statusToSet.value === 'ASSIGNED') {
-          formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
-        } else if (
-          statusToSet.value === 'REVISING' ||
-          statusToSet.value === 'COMPLETED'
-        ) {
-          formattedComment = `Email to ${submissionUserEmail.value}: ${emailComment.value}`;
-        }
+    autoCompleteFilter(item, queryText) {
+      return (
+        item.fullName
+          .toLocaleLowerCase()
+          .includes(queryText.toLocaleLowerCase()) ||
+        item.username
+          .toLocaleLowerCase()
+          .includes(queryText.toLocaleLowerCase())
+      );
+    },
 
-        const submissionStatusId = statusResponse.data[0].submissionStatusId;
-        const user = await rbacService.getCurrentUser();
-        const noteBody = {
-          submissionId: properties.submissionId,
-          submissionStatusId: submissionStatusId,
-          note: formattedComment,
-          userId: user.data.id,
-        };
-        const response = await formService.addNote(
-          properties.submissionId,
-          noteBody
+    async getStatus() {
+      this.loading = true;
+      try {
+        // Prepopulate the form reviewers (people with submission read on this form)
+        const rbacUsrs = await rbacService.getFormUsers({
+          formId: this.formId,
+          permissions: FormPermissions.SUBMISSION_READ,
+        });
+        this.formReviewers = rbacUsrs.data.sort((a, b) =>
+          a.fullName.localeCompare(b.fullName)
         );
-        if (!response.data) {
-          throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
-        }
-        // Update the parent if the note was updated
-        emits('note-updated');
-      }
-      resetForm();
-      getStatus();
-    }
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.statusPanel.addNoteErrMsg'),
-      consoleError: t('trans.statusPanel.addNoteConsoleErrMsg', {
-        error: error,
-      }),
-    });
-  }
-}
 
-getStatus();
+        // Get submission status
+        const statuses = await formService.getSubmissionStatuses(
+          this.submissionId
+        );
+
+        this.$emit('draft-enabled', statuses.data[0].code);
+
+        this.statusHistory = statuses.data;
+        if (!this.statusHistory.length || !this.statusHistory[0]) {
+          throw new Error(i18n.t('trans.statusPanel.noStatusesFound'));
+        } else {
+          // Statuses are returned in date precedence, the 0th item in the array is the current status
+          this.currentStatus = this.statusHistory[0];
+
+          // Get the codes that this form is associated with
+          const scRes = await formService.getStatusCodes(this.formId);
+          const statusCodes = scRes.data;
+          if (!statusCodes.length) {
+            throw new Error(i18n.t('trans.statusPanel.statusCodesErr'));
+          }
+          // For the CURRENT status, add the code details (display name, next codes etc)
+          this.currentStatus.statusCodeDetail = statusCodes.find(
+            (sc) => sc.code === this.currentStatus.code
+          ).statusCode;
+          this.items = this.currentStatus.statusCodeDetail.nextCodes;
+        }
+        if (!this.form.enableSubmitterDraft) {
+          this.items = this.items.filter((item) => item !== 'REVISING');
+        }
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.statusPanel.notifyErrorCode'),
+          consoleError:
+            i18n.t('trans.statusPanel.notifyConsoleErrorCode') +
+            `${error.message}`,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    resetForm() {
+      this.addComment = false;
+      this.emailComment = '';
+      this.statusFields = false;
+      this.statusPanelForm.resetValidation();
+      this.submissionUserEmail = '';
+      this.statusToSet = null;
+      this.note = '';
+    },
+
+    async updateStatus() {
+      try {
+        if (this.statusPanelForm.validate()) {
+          if (!this.statusToSet) {
+            throw new Error(i18n.t('trans.statusPanel.status'));
+          }
+
+          const statusBody = {
+            code: this.statusToSet,
+            submissionUserEmail: this.submissionUserEmail,
+            revisionNotificationEmailContent: this.emailComment,
+          };
+          if (this.showAssignee) {
+            if (this.assignee) {
+              statusBody.assignedToUserId = this.assignee.userId;
+              statusBody.assignmentNotificationEmail = this.assignee.email;
+            }
+          }
+          const statusResponse = await formService.updateSubmissionStatus(
+            this.submissionId,
+            statusBody
+          );
+          if (!statusResponse.data) {
+            throw new Error(
+              i18n.t('trans.statusPanel.updtSubmissionsStatusErr')
+            );
+          }
+
+          if (this.emailComment) {
+            let formattedComment;
+            if (this.statusToSet === 'ASSIGNED') {
+              formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
+            } else if (
+              this.statusToSet === 'REVISING' ||
+              this.statusToSet === 'COMPLETED'
+            ) {
+              formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
+            }
+
+            const submissionStatusId =
+              statusResponse.data[0].submissionStatusId;
+            const user = await rbacService.getCurrentUser();
+            const noteBody = {
+              submissionId: this.submissionId,
+              submissionStatusId: submissionStatusId,
+              note: formattedComment,
+              userId: user.data.id,
+            };
+            const response = await formService.addNote(
+              this.submissionId,
+              noteBody
+            );
+            if (!response.data) {
+              throw new Error(i18n.t('trans.statusPanel.addNoteNoReponserErr'));
+            }
+            // Update the parent if the note was updated
+            this.$emit('note-updated');
+          }
+          this.resetForm();
+          this.getStatus();
+        }
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.statusPanel.addNoteErrMsg'),
+          consoleError: i18n.t('trans.statusPanel.addNoteConsoleErrMsg', {
+            error: error,
+          }),
+        });
+      }
+    },
+  },
+};
 </script>
 
 <template>

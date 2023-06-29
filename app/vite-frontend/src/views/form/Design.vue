@@ -1,37 +1,64 @@
-<script setup>
-import { computed } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
+import { nextTick } from 'vue';
+import BaseSecure from '~/components/base/BaseSecure.vue';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
+import { useFormStore } from '~/store/form';
 import { IdentityProviders } from '~/utils/constants';
 
-defineProps({
-  d: {
-    type: String,
-    default: null,
+export default {
+  components: {
+    BaseSecure,
+    FormDesigner,
   },
-  f: {
-    type: String,
-    default: null,
+  beforeRouteLeave(_to, _from, next) {
+    this.form.isDirty
+      ? next(
+          window.confirm(
+            'Do you really want to leave this page? Changes you made will not be saved.'
+          )
+        )
+      : next();
   },
-  sv: Boolean,
-  v: {
-    type: String,
-    default: null,
+  props: {
+    d: {
+      type: String,
+      default: null,
+    },
+    f: {
+      type: String,
+      default: null,
+    },
+    sv: Boolean,
+    v: {
+      type: String,
+      default: null,
+    },
+    svs: {
+      type: String,
+      default: null,
+    },
+    nv: {
+      type: Boolean,
+      default: false,
+    },
   },
-  svs: {
-    type: String,
-    default: null,
+  computed: {
+    ...mapState(useFormStore, ['form']),
+    IDP: () => IdentityProviders,
   },
-  nv: {
-    type: Boolean,
-    default: false,
+  mounted() {
+    nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
   },
-});
-
-const IDP = computed(() => IdentityProviders);
-
-/* onMounted(() => {
-  this.$refs.formDesigner.onFormLoad();
-}); */
+  beforeMount() {
+    this.listFCProactiveHelp();
+  },
+  methods: {
+    ...mapActions(useFormStore, ['listFCProactiveHelp', 'deleteCurrentForm']),
+  },
+};
 </script>
 
 <template>

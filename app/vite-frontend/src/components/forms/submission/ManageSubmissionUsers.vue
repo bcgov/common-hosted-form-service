@@ -1,6 +1,5 @@
-<script setup>
-import { computed, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { i18n } from '~/internationalization';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { rbacService, userService } from '~/services';
@@ -11,195 +10,213 @@ import {
   NotificationTypes,
   Regex,
 } from '~/utils/constants';
+import { mapActions } from 'pinia';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const properties = defineProps({
-  isDraft: {
-    type: Boolean,
-    required: true,
+export default {
+  components: {
+    BaseDialog,
   },
-  submissionId: {
-    type: String,
-    required: true,
+  props: {
+    isDraft: {
+      type: Boolean,
+      required: true,
+    },
+    submissionId: {
+      type: String,
+      required: true,
+    },
   },
-});
+  data() {
+    return {
+      dialog: false,
+      isLoadingTable: true,
+      showDeleteDialog: false,
+      userTableList: [],
+      userToDelete: {},
 
-const dialog = ref(false);
-const isLoadingTable = ref(true);
-const showDeleteDialog = ref(false);
-const userTableList = ref([]);
-const userToDelete = ref({});
-
-const findUsers = ref(null);
-const isLoadingDropdown = ref(false);
-const selectedIdp = ref(IdentityProviders.IDIR);
-const userSearchResults = ref([]);
-const userSearchSelection = ref(null);
-
-const notificationStore = useNotificationStore();
-
-const ID_PROVIDERS = computed(() => IdentityProviders);
-const autocompleteLabel = computed(() =>
-  selectedIdp.value == IdentityProviders.IDIR
-    ? t('trans.manageSubmissionUsers.requiredFiled')
-    : t('trans.manageSubmissionUsers.exactEmailOrUsername')
-);
-
-// show users in dropdown that have a text match on multiple properties
-function addUser() {
-  if (userSearchSelection.value) {
-    const id = userSearchSelection.value.id;
-    if (userTableList.value.some((u) => u.id === id)) {
-      notificationStore.addNotification({
-        ...NotificationTypes.WARNING,
-        text: t('trans.manageSubmissionUsers.remove', {
-          username: userSearchSelection.value.username,
-        }),
-      });
-    } else {
-      modifyPermissions(id, [
-        FormPermissions.SUBMISSION_UPDATE,
-        FormPermissions.SUBMISSION_READ,
-      ]);
-    }
-  }
-  // reset search field
-  userSearchSelection.value = null;
-}
-
-function filterObject(item, queryText) {
-  return Object.values(item)
-    .filter((v) => v)
-    .some((v) => v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()));
-}
-
-async function getSubmissionUsers() {
-  isLoadingTable.value = true;
-  try {
-    const response = await rbacService.getSubmissionUsers({
-      formSubmissionId: properties.submissionId,
-    });
-    if (response.data) {
-      userTableList.value = transformResponseToTable(response.data);
-    }
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.manageSubmissionUsers.getSubmissionUsersErr'),
-      consoleError: t(
-        'trans.manageSubmissionUsers.getSubmissionUsersConsoleErr',
-        { submissionId: properties.submissionId, error: error }
-      ),
-    });
-  } finally {
-    isLoadingTable.value = false;
-  }
-}
-
-async function modifyPermissions(userId, permissions) {
-  isLoadingTable.value = true;
-  try {
-    const selectedEmail = permissions.length
-      ? userSearchSelection.value.email
-      : userToDelete.value.email;
-    // Add the selected user with read/update permissions on this submission
-    const response = await rbacService.setSubmissionUserPermissions(
-      { permissions: permissions },
-      {
-        formSubmissionId: properties.submissionId,
-        userId: userId,
-        selectedUserEmail: selectedEmail,
+      findUsers: null,
+      isLoadingDropdown: false,
+      selectedIdp: IdentityProviders.IDIR,
+      userSearchResults: [],
+      userSearchSelection: null,
+    };
+  },
+  computed: {
+    ID_PROVIDERS() {
+      return IdentityProviders;
+    },
+    autocompleteLabel() {
+      return this.selectedIdp == IdentityProviders.IDIR
+        ? i18n.t('trans.manageSubmissionUsers.requiredFiled')
+        : i18n.t('trans.manageSubmissionUsers.exactEmailOrUsername');
+    },
+  },
+  watch: {
+    selectedIdp(newIdp, oldIdp) {
+      if (newIdp !== oldIdp) {
+        this.userSearchResults = [];
       }
-    );
-    if (response.data) {
-      userTableList.value = transformResponseToTable(response.data);
-      notificationStore.addNotification({
-        ...NotificationTypes.SUCCESS,
-        text: permissions.length
-          ? t('trans.manageSubmissionUsers.sentInviteEmailTo') +
-            `${selectedEmail}`
-          : t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
-            `${selectedEmail}`,
-      });
-    }
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.manageSubmissionUsers.updateUserErrMsg'),
-      consoleError: t('trans.manageSubmissionUsers.updateUserErrMsg', {
-        submissionId: properties.submissionId,
-        userId: userId,
-        error: error,
-      }),
-    });
-  } finally {
-    isLoadingTable.value = false;
-  }
-}
+    },
 
-function removeUser(userRow) {
-  userToDelete.value = userRow;
-  showDeleteDialog.value = true;
-}
-
-function transformResponseToTable(responseData) {
-  return responseData
-    .map((su) => {
-      return {
-        email: su.user.email,
-        fullName: su.user.fullName,
-        id: su.userId,
-        isOwner: su.permissions.includes(FormPermissions.SUBMISSION_CREATE),
-        username: su.user.username,
-      };
-    })
-    .sort((a, b) => b.isOwner - a.isOwner);
-}
-
-watch(selectedIdp, (newIdp, oldIdp) => {
-  if (newIdp !== oldIdp) {
-    userSearchResults.value = [];
-  }
-});
-
-watch(findUsers, async (input) => {
-  if (!input) return;
-  isLoadingDropdown.value = true;
-  try {
-    // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
-    let params = {};
-    params.idpCode = selectedIdp.value;
-    if (
-      selectedIdp.value == IdentityProviders.BCEIDBASIC ||
-      selectedIdp.value == IdentityProviders.BCEIDBUSINESS
-    ) {
-      if (input.length < 6)
-        throw new Error(t('trans.manageSubmissionUsers.searchInputLength'));
-      if (input.includes('@')) {
-        if (!new RegExp(Regex.EMAIL).test(input))
-          throw new Error(t('trans.manageSubmissionUsers.exactBCEIDSearch'));
-        else params.email = input;
-      } else {
-        params.username = input;
+    async findUsers(input) {
+      if (!input) return;
+      this.isLoadingDropdown = true;
+      try {
+        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
+        let params = {};
+        params.idpCode = this.selectedIdp;
+        if (
+          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
+          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
+        ) {
+          if (input.length < 6)
+            throw new Error(
+              i18n.t('trans.manageSubmissionUsers.searchInputLength')
+            );
+          if (input.includes('@')) {
+            if (!new RegExp(Regex.EMAIL).test(input))
+              throw new Error(
+                i18n.t('trans.manageSubmissionUsers.exactBCEIDSearch')
+              );
+            else params.email = input;
+          } else {
+            params.username = input;
+          }
+        } else {
+          params.search = input;
+        }
+        const response = await userService.getUsers(params);
+        this.userSearchResults = response.data;
+      } catch (error) {
+        // this.userSearchResults = [];
+        /* eslint-disable no-console */
+        console.error(
+          i18n.t('trans.manageSubmissionUsers.getUsersErrMsg', {
+            error: error,
+          })
+        ); // eslint-disable-line no-console
+      } finally {
+        this.isLoadingDropdown = false;
       }
-    } else {
-      params.search = input;
-    }
-    const response = await userService.getUsers(params);
-    userSearchResults.value = response.data;
-  } catch (error) {
-    // userSearchResults.value = [];
-    /* eslint-disable no-console */
-    console.error(
-      t('trans.manageSubmissionUsers.getUsersErrMsg', {
-        error: error,
-      })
-    ); // eslint-disable-line no-console
-  } finally {
-    isLoadingDropdown.value = false;
-  }
-});
+    },
+  },
+  created() {
+    this.getSubmissionUsers();
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    // show users in dropdown that have a text match on multiple properties
+    addUser() {
+      if (this.userSearchSelection) {
+        const id = this.userSearchSelection.id;
+        if (this.userTableList.some((u) => u.id === id)) {
+          this.addNotification({
+            ...NotificationTypes.WARNING,
+            text: i18n.t('trans.manageSubmissionUsers.remove', {
+              username: this.userSearchSelection.username,
+            }),
+          });
+        } else {
+          this.modifyPermissions(id, [
+            FormPermissions.SUBMISSION_UPDATE,
+            FormPermissions.SUBMISSION_READ,
+          ]);
+        }
+      }
+      // reset search field
+      this.userSearchSelection = null;
+    },
 
-getSubmissionUsers();
+    filterObject(item, queryText) {
+      return Object.values(item)
+        .filter((v) => v)
+        .some((v) =>
+          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+        );
+    },
+
+    async getSubmissionUsers() {
+      this.isLoadingTable = true;
+      try {
+        const response = await rbacService.getSubmissionUsers({
+          formSubmissionId: this.submissionId,
+        });
+        if (response.data) {
+          this.userTableList = this.transformResponseToTable(response.data);
+        }
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.manageSubmissionUsers.getSubmissionUsersErr'),
+          consoleError: i18n.t(
+            'trans.manageSubmissionUsers.getSubmissionUsersConsoleErr',
+            { submissionId: this.submissionId, error: error }
+          ),
+        });
+      } finally {
+        this.isLoadingTable = false;
+      }
+    },
+
+    async modifyPermissions(userId, permissions) {
+      this.isLoadingTable = true;
+      try {
+        const selectedEmail = permissions.length
+          ? this.userSearchSelection.email
+          : this.userToDelete.email;
+        // Add the selected user with read/update permissions on this submission
+        const response = await rbacService.setSubmissionUserPermissions(
+          { permissions: permissions },
+          {
+            formSubmissionId: this.submissionId,
+            userId: userId,
+            selectedUserEmail: selectedEmail,
+          }
+        );
+        if (response.data) {
+          this.userTableList = this.transformResponseToTable(response.data);
+          this.addNotification({
+            ...NotificationTypes.SUCCESS,
+            text: permissions.length
+              ? i18n.t('trans.manageSubmissionUsers.sentInviteEmailTo') +
+                `${selectedEmail}`
+              : i18n.t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
+                `${selectedEmail}`,
+          });
+        }
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.manageSubmissionUsers.updateUserErrMsg'),
+          consoleError: i18n.t('trans.manageSubmissionUsers.updateUserErrMsg', {
+            submissionId: this.submissionId,
+            userId: userId,
+            error: error,
+          }),
+        });
+      } finally {
+        this.isLoadingTable = false;
+      }
+    },
+
+    removeUser(userRow) {
+      this.userToDelete = userRow;
+      this.showDeleteDialog = true;
+    },
+
+    transformResponseToTable(responseData) {
+      return responseData
+        .map((su) => {
+          return {
+            email: su.user.email,
+            fullName: su.user.fullName,
+            id: su.userId,
+            isOwner: su.permissions.includes(FormPermissions.SUBMISSION_CREATE),
+            username: su.user.username,
+          };
+        })
+        .sort((a, b) => b.isOwner - a.isOwner);
+    },
+  },
+};
 </script>
 
 <template>

@@ -1,16 +1,19 @@
-<script setup>
-import { storeToRefs } from 'pinia';
+<script>
+import { mapActions, mapState } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 
-defineProps({
-  msg: {
-    type: String,
-    default: 'Error: Something went wrong... :(',
+export default {
+  props: {
+    msg: {
+      default: 'Error: Something went wrong... :(',
+      type: String,
+    },
   },
-});
-
-const authStore = useAuthStore();
-const { authenticated, ready } = storeToRefs(authStore);
+  computed: {
+    ...mapState(useAuthStore, ['authenticated', 'ready']),
+  },
+  methods: mapActions(useAuthStore, ['logout']),
+};
 </script>
 
 <template>

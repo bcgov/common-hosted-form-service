@@ -1,13 +1,18 @@
-<script setup>
+<script>
 import UserSubmission from '~/components/forms/submission/UserSubmission.vue';
 
-defineProps({
-  s: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    UserSubmission,
   },
-  sv: Boolean,
-});
+  props: {
+    s: {
+      type: String,
+      required: true,
+    },
+    sv: Boolean,
+  },
+};
 </script>
 
 <template>

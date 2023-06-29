@@ -1,37 +1,42 @@
-<script setup>
+<script>
+import { mapActions } from 'pinia';
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
-import { ref } from 'vue';
 
 import { useAdminStore } from '~/store/admin';
 import { FormRoleCodes } from '~/utils/constants';
 
-const properties = defineProps({
-  formId: {
-    type: String,
-    required: true,
+export default {
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
   },
-});
-
-const adminStore = useAdminStore();
-
-const addUserForm = ref(null);
-const userGuid = ref('');
-const valid = ref(false);
-const userGuidRules = [
-  (v) => !!v || 'User ID required',
-  (v) =>
-    (uuidValidate(v) && uuidVersion(v) === 4) || 'Enter a valid User ID GUID',
-];
-
-async function addOwner() {
-  if (addUserForm.value.validate()) {
-    await adminStore.addFormUser({
-      userId: userGuid.value,
-      formId: properties.formId,
-      roles: [FormRoleCodes.OWNER],
-    });
-  }
-}
+  data() {
+    return {
+      userGuid: '',
+      valid: false,
+      userGuidRules: [
+        (v) => !!v || 'User ID required',
+        (v) =>
+          (uuidValidate(v) && uuidVersion(v) === 4) ||
+          'Enter a valid User ID GUID',
+      ],
+    };
+  },
+  methods: {
+    ...mapActions(useAdminStore, ['addFormUser', 'readRoles']),
+    async addOwner() {
+      if (this.$refs.addUserForm.validate()) {
+        await this.addFormUser({
+          userId: this.userGuid,
+          formId: this.formId,
+          roles: [FormRoleCodes.OWNER],
+        });
+      }
+    },
+  },
+};
 </script>
 
 <template>

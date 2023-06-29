@@ -1,31 +1,29 @@
-<script setup>
-import { computed, onMounted } from 'vue';
-
+<script>
 import { useAppStore } from '~/store/app';
 import { useAdminStore } from '~/store/admin';
-import { storeToRefs } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 
-const appStore = useAppStore();
-const adminStore = useAdminStore();
-
-const properties = defineProps({
-  userId: {
-    type: String,
-    required: true,
+export default {
+  props: {
+    userId: {
+      type: String,
+      required: true,
+    },
   },
-});
-
-const { config } = storeToRefs(appStore);
-const { user } = storeToRefs(adminStore);
-
-const userUrl = computed(
-  () =>
-    `${config.value.keycloak.serverUrl}/admin/${config.value.keycloak.realm}/console/#/realms/${config.value.keycloak.realm}/users/${user.value.keycloakId}`
-);
-
-onMounted(async () => {
-  await adminStore.readUser(properties.userId);
-});
+  computed: {
+    ...mapState(useAppStore, ['config']),
+    ...mapState(useAdminStore, ['user']),
+    userUrl() {
+      return `${this.config.keycloak.serverUrl}/admin/${this.config.keycloak.realm}/console/#/realms/${this.config.keycloak.realm}/users/${this.user.keycloakId}`;
+    },
+  },
+  async mounted() {
+    await this.readUser(this.userId);
+  },
+  methods: {
+    ...mapActions(useAdminStore, ['readUser']),
+  },
+};
 </script>
 
 <template>

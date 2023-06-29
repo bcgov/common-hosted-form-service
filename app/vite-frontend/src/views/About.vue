@@ -1,12 +1,22 @@
-<script setup>
-import { storeToRefs } from 'pinia';
+<script>
+import { mapState } from 'pinia';
 import BaseImagePopout from '../components/base/BaseImagePopout.vue';
 import { useAuthStore } from '~/store/auth';
 
-const authStore = useAuthStore();
-const { authenticated } = storeToRefs(authStore);
-const howToVideoUrl = import.meta.env.VITE_HOWTOURL;
-const chefsTourVideoUrl = import.meta.env.VITE_CHEFSTOURURL;
+export default {
+  components: {
+    BaseImagePopout,
+  },
+  computed: {
+    ...mapState(useAuthStore, ['authenticated']),
+    howToVideoUrl() {
+      return import.meta.env.VITE_HOWTOURL;
+    },
+    chefsTourVideoUrl() {
+      return import.meta.env.VITE_CHEFSTOURURL;
+    },
+  },
+};
 </script>
 
 <template>

@@ -1,44 +1,50 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
+
 import { useAuthStore } from '~/store/auth';
 import { IdentityProviders } from '~/utils/constants';
 
-const props = defineProps({
-  idpHint: {
-    type: Array,
-    default: () => [
-      IdentityProviders.IDIR,
-      IdentityProviders.BCEIDBUSINESS,
-      IdentityProviders.BCEIDBASIC,
+export default {
+  props: {
+    idpHint: {
+      type: Array,
+      default: () => [
+        IdentityProviders.IDIR,
+        IdentityProviders.BCEIDBUSINESS,
+        IdentityProviders.BCEIDBASIC,
+      ],
+    },
+  },
+  computed: {
+    ...mapState(useAuthStore, ['authenticated', 'createLoginUrl', 'ready']),
+    buttons: () => [
+      {
+        label: 'IDIR',
+        type: IdentityProviders.IDIR,
+      },
+      {
+        label: 'Basic BCeID',
+        type: IdentityProviders.BCEIDBASIC,
+      },
+      {
+        label: 'Business BCeID',
+        type: IdentityProviders.BCEIDBUSINESS,
+      },
     ],
+    IDPS() {
+      return IdentityProviders;
+    },
   },
-});
-
-const authStore = useAuthStore();
-
-if (props.idpHint && props.idpHint.length === 1)
-  authStore.login(props.idpHint[0]);
-
-const { authenticated, ready } = storeToRefs(authStore);
-
-const buttons = computed(() => [
-  {
-    label: 'IDIR',
-    type: IdentityProviders.IDIR,
+  created() {
+    // If component gets idpHint, invoke login flow via vuex
+    if (this.idpHint && this.idpHint.length === 1) this.login(this.idpHint[0]);
   },
-  {
-    label: 'Basic BCeID',
-    type: IdentityProviders.BCEIDBASIC,
+  methods: {
+    ...mapActions(useAuthStore, ['login']),
+    buttonEnabled(type) {
+      return this.idpHint ? this.idpHint.includes(type) : false;
+    },
   },
-  {
-    label: 'Business BCeID',
-    type: IdentityProviders.BCEIDBUSINESS,
-  },
-]);
-
-const buttonEnabled = (type) => {
-  return props.idpHint ? props.idpHint.includes(type) : false;
 };
 </script>
 
@@ -48,12 +54,7 @@ const buttonEnabled = (type) => {
       <h1 class="my-6">Authenticate with:</h1>
       <v-row v-for="button in buttons" :key="button.type" justify="center">
         <v-col v-if="buttonEnabled(button.type)" sm="3">
-          <v-btn
-            block
-            color="primary"
-            size="large"
-            @click="authStore.login(button.type)"
-          >
+          <v-btn block color="primary" size="large" @click="login(button.type)">
             <span>{{ button.label }}</span>
           </v-btn>
         </v-col>

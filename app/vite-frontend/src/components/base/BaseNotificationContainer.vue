@@ -1,11 +1,14 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-
-import BaseNotificationBar from '~/components/base/BaseNotificationBar.vue';
+<script>
+import { mapState } from 'pinia';
+import BaseNotificationBar from '~/components/base//BaseNotificationBar.vue';
 import { useNotificationStore } from '~/store/notification';
 
-const notificationStore = useNotificationStore();
-const { notifications } = storeToRefs(notificationStore);
+export default {
+  components: {
+    BaseNotificationBar,
+  },
+  computed: mapState(useNotificationStore, ['notifications']),
+};
 </script>
 
 <template>

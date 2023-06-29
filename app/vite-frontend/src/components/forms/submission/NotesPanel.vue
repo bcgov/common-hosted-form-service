@@ -1,70 +1,72 @@
-<script setup>
-import { onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions } from 'pinia';
 
+import { i18n } from '~/internationalization';
 import { formService, rbacService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const properties = defineProps({
-  submissionId: {
-    type: String,
-    required: true,
+export default {
+  props: {
+    submissionId: {
+      type: String,
+      required: true,
+    },
   },
-});
-
-const notificationStore = useNotificationStore();
-
-const loading = ref(true);
-const newNote = ref('');
-const notes = ref([]);
-const showNoteField = ref(false);
-
-async function addNote() {
-  try {
-    const user = await rbacService.getCurrentUser();
-    const body = {
-      note: newNote.value,
-      userId: user.data.id,
+  data() {
+    return {
+      loading: true,
+      newNote: '',
+      notes: [],
+      showNoteField: false,
     };
-    const response = await formService.addNote(properties.submissionId, body);
-    if (!response.data) {
-      throw new Error(t('trans.notesPanel.noResponseErr'));
-    }
-    showNoteField.value = false;
-    newNote.value = '';
-    getNotes();
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.notesPanel.errorMesg'),
-      consoleError: t('trans.notesPanel.consoleErrMsg') + `${error}`,
-    });
-  }
-}
+  },
+  mounted() {
+    this.getNotes();
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async addNote() {
+      try {
+        const user = await rbacService.getCurrentUser();
+        const body = {
+          note: this.newNote,
+          userId: user.data.id,
+        };
+        const response = await formService.addNote(this.submissionId, body);
+        if (!response.data) {
+          throw new Error(i18n.t('trans.notesPanel.noResponseErr'));
+        }
+        this.showNoteField = false;
+        this.newNote = '';
+        this.getNotes();
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.notesPanel.errorMesg'),
+          consoleError: i18n.t('trans.notesPanel.consoleErrMsg') + `${error}`,
+        });
+      }
+    },
 
-async function getNotes() {
-  loading.value = true;
-  try {
-    const response = await formService.getSubmissionNotes(
-      properties.submissionId
-    );
-    notes.value = response.data;
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.notesPanel.errorMesg'),
-      consoleError:
-        t('trans.notesPanel.fetchConsoleErrMsg') +
-        `${properties.submissionId}: ${error}`,
-    });
-  } finally {
-    loading.value = false;
-  }
-}
-
-onMounted(() => {
-  getNotes();
-});
+    async getNotes() {
+      this.loading = true;
+      try {
+        const response = await formService.getSubmissionNotes(
+          this.submissionId
+        );
+        this.notes = response.data;
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.notesPanel.errorMesg'),
+          consoleError:
+            i18n.t('trans.notesPanel.fetchConsoleErrMsg') +
+            `${this.submissionId}: ${error}`,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+};
 </script>
 
 <template>

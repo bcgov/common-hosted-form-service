@@ -1,7 +1,6 @@
-<script setup>
+<script>
 import moment from 'moment';
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 import { ScheduleType } from '~/utils/constants';
@@ -10,224 +9,229 @@ import {
   isDateValidForMailNotification,
 } from '~/utils/transformUtils';
 
-const formStore = useFormStore();
+export default {
+  components: {
+    BasePanel,
+  },
+  data() {
+    return {
+      enableReminderDraw: true,
+      githubLinkScheduleAndReminderFeature:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
+      scheduleOpenDate: [
+        (v) => !!v || 'This field is required.',
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          'Date must be in correct format. ie. yyyy-mm-dd',
+      ],
+      scheduleCloseDate: [
+        (v) => !!v || 'This field is required.',
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          'Date must be in correct format. ie. yyyy-mm-dd',
+        (v) =>
+          moment(v).isAfter(this.form.schedule.openSubmissionDateTime, 'day') ||
+          'Close Submission date should be greater then open submission date.',
+      ],
+      roundNumber: [
+        (v) => !!v || 'This field is required.',
+        (v) =>
+          (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
+          'Value must be a number. ie. 1,2,3,5,99',
+      ],
+      repeatTerm: [
+        (v) => !!v || 'This field is required.',
+        (v) =>
+          (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
+          'Value must be an number. ie. 1,2,3,5,99',
+      ],
+      scheduleTypedRules: [(v) => !!v || 'Please select at least 1 option'],
+      repeatIntervalType: [
+        (v) => !!v || 'This field is required.',
+        (v) =>
+          this.AVAILABLE_PERIOD_OPTIONS.value.includes(v) ||
+          'This should be a valid interval.',
+      ],
+      closeMessage: [(v) => !!v || 'This field is required.'],
+      repeatUntilDate: [
+        (v) => !!v || 'This field is required.',
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          'Date must be in correct format. ie. yyyy-mm-dd',
+        (v) =>
+          moment(v).isAfter(this.form.schedule.openSubmissionDateTime, 'day') ||
+          'Repeat until date should be greater then open submission date.',
+      ],
+    };
+  },
+  computed: {
+    ...mapWritableState(useFormStore, ['form']),
 
-const { form } = storeToRefs(formStore);
-
-const enableReminderDraw = ref(true);
-const githubLinkScheduleAndReminderFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification'
-);
-
-const scheduleOpenDate = [
-  (v) => !!v || 'This field is required.',
-  (v) =>
-    (v &&
-      new RegExp(
-        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-      ).test(v)) ||
-    'Date must be in correct format. ie. yyyy-mm-dd',
-];
-
-const scheduleCloseDate = [
-  (v) => !!v || 'This field is required.',
-  (v) =>
-    (v &&
-      new RegExp(
-        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-      ).test(v)) ||
-    'Date must be in correct format. ie. yyyy-mm-dd',
-  (v) =>
-    moment(v).isAfter(form.value.schedule.openSubmissionDateTime, 'day') ||
-    'Close Submission date should be greater then open submission date.',
-];
-
-const roundNumber = [
-  (v) => !!v || 'This field is required.',
-  (v) =>
-    (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
-    'Value must be a number. ie. 1,2,3,5,99',
-];
-
-const repeatTerm = [
-  (v) => !!v || 'This field is required.',
-  (v) =>
-    (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
-    'Value must be an number. ie. 1,2,3,5,99',
-];
-
-const scheduleTypedRules = [(v) => !!v || 'Please select at least 1 option'];
-
-const repeatIntervalType = [
-  (v) => !!v || 'This field is required.',
-  (v) =>
-    AVAILABLE_PERIOD_OPTIONS.value.includes(v) ||
-    'This should be a valid interval.',
-];
-
-const closeMessage = [(v) => !!v || 'This field is required.'];
-const repeatUntilDate = [
-  (v) => !!v || 'This field is required.',
-  (v) =>
-    (v &&
-      new RegExp(
-        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-      ).test(v)) ||
-    'Date must be in correct format. ie. yyyy-mm-dd',
-  (v) =>
-    moment(v).isAfter(form.value.schedule.openSubmissionDateTime, 'day') ||
-    'Repeat until date should be greater then open submission date.',
-];
-
-const AVAILABLE_DATES = computed(() => {
-  const getDates = getAvailableDates(
-    form.value.schedule.keepOpenForTerm,
-    form.value.schedule.keepOpenForInterval,
-    form.value.schedule.openSubmissionDateTime,
-    form.value.schedule.repeatSubmission.everyTerm,
-    form.value.schedule.repeatSubmission.everyIntervalType,
-    form.value.schedule.allowLateSubmissions.forNext.term,
-    form.value.schedule.allowLateSubmissions.forNext.intervalType,
-    form.value.schedule.repeatSubmission.repeatUntil,
-    form.value.schedule.scheduleType,
-    form.value.schedule.closeSubmissionDateTime
-  );
-  return getDates;
-});
-
-const AVAILABLE_PERIOD_OPTIONS = computed(() => {
-  let arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
-  let diffInDays = 0;
-  if (
-    form.value.schedule.openSubmissionDateTime &&
-    form.value.schedule.keepOpenForInterval &&
-    form.value.schedule.keepOpenForTerm
-  ) {
-    diffInDays = moment
-      .duration({
-        [form.value.schedule.keepOpenForInterval]:
-          form.value.schedule.keepOpenForTerm,
-      })
-      .asDays(); // moment.duration(this.schedule.keepOpenForTerm, this.schedule.keepOpenForInterval).days();
-
-    if (
-      form.value.schedule.allowLateSubmissions.enabled &&
-      form.value.schedule.allowLateSubmissions.forNext.term &&
-      form.value.schedule.allowLateSubmissions.forNext.intervalType
-    ) {
-      let durationoflatesubInDays = 0;
+    AVAILABLE_DATES() {
+      const getDates = getAvailableDates(
+        this.form.schedule.keepOpenForTerm,
+        this.form.schedule.keepOpenForInterval,
+        this.form.schedule.openSubmissionDateTime,
+        this.form.schedule.repeatSubmission.everyTerm,
+        this.form.schedule.repeatSubmission.everyIntervalType,
+        this.form.schedule.allowLateSubmissions.forNext.term,
+        this.form.schedule.allowLateSubmissions.forNext.intervalType,
+        this.form.schedule.repeatSubmission.repeatUntil,
+        this.form.schedule.scheduleType,
+        this.form.schedule.closeSubmissionDateTime
+      );
+      return getDates;
+    },
+    AVAILABLE_PERIOD_OPTIONS() {
+      let arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
+      let diffInDays = 0;
       if (
-        form.value.schedule.allowLateSubmissions.forNext.intervalType === 'days'
+        this.form.schedule.openSubmissionDateTime &&
+        this.form.schedule.keepOpenForInterval &&
+        this.form.schedule.keepOpenForTerm
       ) {
-        durationoflatesubInDays =
-          form.value.schedule.allowLateSubmissions.forNext.term;
-      } else {
-        durationoflatesubInDays = moment
+        diffInDays = moment
           .duration({
-            [form.value.schedule.allowLateSubmissions.forNext.intervalType]:
-              form.value.schedule.allowLateSubmissions.forNext.term,
+            [this.form.schedule.keepOpenForInterval]:
+              this.form.schedule.keepOpenForTerm,
           })
-          .asDays();
+          .asDays(); // moment.duration(this.schedule.keepOpenForTerm, this.schedule.keepOpenForInterval).days();
+
+        if (
+          this.form.schedule.allowLateSubmissions.enabled &&
+          this.form.schedule.allowLateSubmissions.forNext.term &&
+          this.form.schedule.allowLateSubmissions.forNext.intervalType
+        ) {
+          let durationoflatesubInDays = 0;
+          if (
+            this.form.schedule.allowLateSubmissions.forNext.intervalType ===
+            'days'
+          ) {
+            durationoflatesubInDays =
+              this.form.schedule.allowLateSubmissions.forNext.term;
+          } else {
+            durationoflatesubInDays = moment
+              .duration({
+                [this.form.schedule.allowLateSubmissions.forNext.intervalType]:
+                  this.form.schedule.allowLateSubmissions.forNext.term,
+              })
+              .asDays();
+          }
+
+          diffInDays = Number(diffInDays) + Number(durationoflatesubInDays);
+        }
       }
 
-      diffInDays = Number(diffInDays) + Number(durationoflatesubInDays);
-    }
-  }
+      switch (true) {
+        case diffInDays > 7 && diffInDays <= 30:
+          arrayOfOption = ['months', 'quarters', 'years'];
+          break;
 
-  switch (true) {
-    case diffInDays > 7 && diffInDays <= 30:
-      arrayOfOption = ['months', 'quarters', 'years'];
-      break;
+        case diffInDays > 30 && diffInDays <= 91:
+          arrayOfOption = ['quarters', 'years'];
+          break;
 
-    case diffInDays > 30 && diffInDays <= 91:
-      arrayOfOption = ['quarters', 'years'];
-      break;
+        case diffInDays > 91:
+          arrayOfOption = ['years'];
+          break;
 
-    case diffInDays > 91:
-      arrayOfOption = ['years'];
-      break;
+        default:
+          arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
+          break;
+      }
+      return arrayOfOption;
+    },
 
-    default:
-      arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
-      break;
-  }
-  return arrayOfOption;
-});
+    SCHEDULE_TYPE() {
+      return ScheduleType;
+    },
+  },
+  methods: {
+    openDateTypeChanged() {
+      if (
+        isDateValidForMailNotification(
+          this.form.schedule.openSubmissionDateTime
+        )
+      ) {
+        this.enableReminderDraw = false;
+        this.form.reminder_enabled = false;
+      } else {
+        this.enableReminderDraw = true;
+      }
+    },
 
-const SCHEDULE_TYPE = computed(() => ScheduleType);
+    repeatSubmissionChanged() {
+      if (!this.form.schedule.repeatSubmission.enabled) {
+        this.form.schedule.repeatSubmission.everyTerm = null;
+        this.form.schedule.repeatSubmission.everyIntervalType = null;
+        this.form.schedule.repeatSubmission.repeatUntil = null;
+      }
+    },
 
-function openDateTypeChanged() {
-  if (
-    isDateValidForMailNotification(form.value.schedule.openSubmissionDateTime)
-  ) {
-    enableReminderDraw.value = false;
-    form.value.reminder_enabled = false;
-  } else {
-    enableReminderDraw.value = true;
-  }
-}
-
-function repeatSubmissionChanged() {
-  if (!form.value.schedule.repeatSubmission.enabled) {
-    form.value.schedule.repeatSubmission.everyTerm = null;
-    form.value.schedule.repeatSubmission.everyIntervalType = null;
-    form.value.schedule.repeatSubmission.repeatUntil = null;
-  }
-}
-
-function scheduleTypeChanged() {
-  if (form.value.schedule.scheduleType === ScheduleType.MANUAL) {
-    form.value.schedule.keepOpenForTerm = null;
-    form.value.schedule.keepOpenForInterval = null;
-    form.value.schedule.closingMessageEnabled = null;
-    form.value.schedule.closingMessage = null;
-    form.value.schedule.closeSubmissionDateTime = null;
-    (form.value.schedule.repeatSubmission = {
-      enabled: null,
-      repeatUntil: null,
-      everyTerm: null,
-      everyIntervalType: null,
-    }),
-      (form.value.schedule.allowLateSubmissions = {
-        enabled: null,
-        forNext: {
-          term: null,
-          intervalType: null,
-        },
-      });
-  }
-  if (form.value.schedule.scheduleType === ScheduleType.CLOSINGDATE) {
-    form.value.schedule.keepOpenForTerm = null;
-    form.value.schedule.keepOpenForInterval = null;
-    form.value.schedule.closingMessageEnabled = null;
-    form.value.schedule.closingMessage = null;
-    (form.value.schedule.repeatSubmission = {
-      enabled: null,
-      repeatUntil: null,
-      everyTerm: null,
-      everyIntervalType: null,
-    }),
-      (form.value.schedule.allowLateSubmissions = {
-        enabled: null,
-        forNext: {
-          term: null,
-          intervalType: null,
-        },
-      });
-  }
-  if (form.value.schedule.scheduleType === ScheduleType.PERIOD) {
-    form.value.schedule.closeSubmissionDateTime = null;
-    form.value.schedule.closingMessageEnabled = null;
-    form.value.schedule.closingMessage = null;
-    form.value.schedule.allowLateSubmissions = {
-      enabled: null,
-      forNext: {
-        term: null,
-        intervalType: null,
-      },
-    };
-  }
-}
+    scheduleTypeChanged() {
+      if (this.form.schedule.scheduleType === ScheduleType.MANUAL) {
+        this.form.schedule.keepOpenForTerm = null;
+        this.form.schedule.keepOpenForInterval = null;
+        this.form.schedule.closingMessageEnabled = null;
+        this.form.schedule.closingMessage = null;
+        this.form.schedule.closeSubmissionDateTime = null;
+        (this.form.schedule.repeatSubmission = {
+          enabled: null,
+          repeatUntil: null,
+          everyTerm: null,
+          everyIntervalType: null,
+        }),
+          (this.form.schedule.allowLateSubmissions = {
+            enabled: null,
+            forNext: {
+              term: null,
+              intervalType: null,
+            },
+          });
+      }
+      if (this.form.schedule.scheduleType === ScheduleType.CLOSINGDATE) {
+        this.form.schedule.keepOpenForTerm = null;
+        this.form.schedule.keepOpenForInterval = null;
+        this.form.schedule.closingMessageEnabled = null;
+        this.form.schedule.closingMessage = null;
+        (this.form.schedule.repeatSubmission = {
+          enabled: null,
+          repeatUntil: null,
+          everyTerm: null,
+          everyIntervalType: null,
+        }),
+          (this.form.schedule.allowLateSubmissions = {
+            enabled: null,
+            forNext: {
+              term: null,
+              intervalType: null,
+            },
+          });
+      }
+      if (this.form.schedule.scheduleType === ScheduleType.PERIOD) {
+        this.form.schedule.closeSubmissionDateTime = null;
+        this.form.schedule.closingMessageEnabled = null;
+        this.form.schedule.closingMessage = null;
+        this.form.schedule.allowLateSubmissions = {
+          enabled: null,
+          forNext: {
+            term: null,
+            intervalType: null,
+          },
+        };
+      }
+    },
+  },
+};
 </script>
 
 <template>

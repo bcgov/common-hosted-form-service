@@ -76,6 +76,7 @@ export const useFormStore = defineStore('form', {
     },
     formList: [],
     imageList: new Map(),
+    multiLanguage: '',
     permissions: [],
     roles: [],
     submissionList: [],
@@ -221,6 +222,9 @@ export const useFormStore = defineStore('form', {
           }),
         });
       }
+    },
+    resetForm() {
+      this.form = genInitialForm();
     },
     async getFormPermissionsForUser(formId) {
       try {

@@ -1,17 +1,23 @@
-<script setup>
-import { computed } from 'vue';
+<script>
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import TeamManagement from '~/components/forms/manage/TeamManagement.vue';
 import { IdentityProviders } from '~/utils/constants';
 
-defineProps({
-  f: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    BaseSecure,
+    TeamManagement,
   },
-});
-
-const IDP = computed(() => IdentityProviders);
+  props: {
+    f: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    IDP: () => IdentityProviders,
+  },
+};
 </script>
 
 <template>

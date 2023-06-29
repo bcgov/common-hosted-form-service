@@ -1,5 +1,11 @@
-<script setup>
+<script>
 import AdminPage from '~/components/admin/AdminPage.vue';
+
+export default {
+  components: {
+    AdminPage,
+  },
+};
 </script>
 
 <template>

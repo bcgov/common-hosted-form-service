@@ -1,39 +1,45 @@
-<script setup>
-import { ref } from 'vue';
-
+<script>
+import { mapActions } from 'pinia';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 
-const properties = defineProps({
-  disabled: {
-    type: Boolean,
-    default: false,
+export default {
+  components: {
+    BaseDialog,
   },
-  isDraft: {
-    type: Boolean,
-    default: false,
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
+    submissionId: {
+      type: String,
+      required: true,
+    },
+    iconSize: {
+      type: String,
+      default: () => 'small',
+    },
   },
-  submissionId: {
-    type: String,
-    required: true,
+  emits: ['deleted'],
+  data() {
+    return {
+      showDeleteDialog: false,
+    };
   },
-  iconSize: {
-    type: String,
-    default: () => 'small',
+  methods: {
+    ...mapActions(useFormStore, ['deleteSubmission']),
+    async deleteSubmission() {
+      await this.deleteSubmission(this.submissionId);
+      this.showDeleteDialog = false;
+      this.$emit('deleted');
+    },
   },
-});
-
-const emits = defineEmits(['deleted']);
-
-const formStore = useFormStore();
-
-const showDeleteDialog = ref(false);
-
-async function deleteSubmission() {
-  await formStore.deleteSubmission(properties.submissionId);
-  showDeleteDialog.value = false;
-  emits('deleted');
-}
+};
 </script>
 
 <template>

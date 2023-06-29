@@ -1,5 +1,5 @@
-<script setup>
-import { computed, onMounted, ref } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import AuditHistory from '~/components/forms/submission/AuditHistory.vue';
 import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
@@ -7,59 +7,73 @@ import FormViewer from '~/components/designer/FormViewer.vue';
 import NotesPanel from '~/components/forms/submission/NotesPanel.vue';
 import StatusPanel from '~/components/forms/submission/StatusPanel.vue';
 import PrintOptions from '~/components/forms/PrintOptions.vue';
-import getRouter from '~/router';
+
 import { useFormStore } from '~/store/form';
 import { NotificationTypes } from '~/utils/constants';
-import { storeToRefs } from 'pinia';
 
-const properties = defineProps({
-  submissionId: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    AuditHistory,
+    DeleteSubmission,
+    FormViewer,
+    NotesPanel,
+    StatusPanel,
+    PrintOptions,
   },
-});
-
-const isDraft = ref(true);
-const loading = ref(true);
-const notesPanel = ref(null);
-const reRenderSubmission = ref(0);
-const submissionReadOnly = ref(true);
-
-const formStore = useFormStore();
-const router = getRouter();
-
-const { form, formSubmission } = storeToRefs(formStore);
-
-const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
-
-function onDelete() {
-  router.push({
-    name: 'FormSubmissions',
-    query: {
-      f: form.value.id,
+  props: {
+    submissionId: {
+      type: String,
+      required: true,
     },
-  });
-}
+  },
+  data() {
+    return {
+      isDraft: true,
+      loading: true,
+      notesPanel: null,
+      reRenderSubmission: 0,
+      submissionReadOnly: true,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['form', 'formSubmission']),
+    NOTIFICATIONS_TYPES() {
+      return NotificationTypes;
+    },
+  },
+  async mounted() {
+    await this.fetchSubmission({ submissionId: this.submissionId });
+    // get current user's permissions on associated form
+    await this.getFormPermissionsForUser(this.form.id);
+    this.loading = false;
+  },
+  methods: {
+    ...mapActions(useFormStore, [
+      'fetchSubmission',
+      'getFormPermissionsForUser',
+    ]),
+    onDelete() {
+      this.$router.push({
+        name: 'FormSubmissions',
+        query: {
+          f: this.form.id,
+        },
+      });
+    },
+    refreshNotes() {
+      this.notesPanel.getNotes();
+    },
 
-function refreshNotes() {
-  notesPanel.value.getNotes();
-}
+    setDraft(status) {
+      this.isDraft = status === 'REVISING';
+    },
 
-function setDraft(status) {
-  isDraft.value = status === 'REVISING';
-}
-
-function toggleSubmissionEdit(editing) {
-  submissionReadOnly.value = !editing;
-  reRenderSubmission.value += 1;
-}
-
-onMounted(async () => {
-  await formStore.fetchSubmission({ submissionId: properties.submissionId });
-  // get current user's permissions on associated form
-  await formStore.getFormPermissionsForUser(form.value.id);
-  loading.value = false;
-});
+    toggleSubmissionEdit(editing) {
+      this.submissionReadOnly = !editing;
+      this.reRenderSubmission += 1;
+    },
+  },
+};
 </script>
 
 <template>

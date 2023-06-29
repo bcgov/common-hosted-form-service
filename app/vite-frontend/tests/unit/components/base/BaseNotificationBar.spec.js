@@ -44,10 +44,25 @@ describe('BaseNotificationBar.vue', () => {
     const store = useNotificationStore();
     const deleteNotificationSpy = vi.spyOn(store, 'deleteNotification');
 
-    await wrapper.find('button').trigger('click');
+    wrapper.vm.alertClosed();
     expect(deleteNotificationSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.text()).toEqual('');
   });
 
-  // can't create a test to grab the timeout with the composition api
+  it('clears timeout before destroy', async () => {
+    const wrapper = mount(BaseNotificationBar, {
+      props: {
+        notification: {
+          id: 1,
+          ...notificationProperties,
+        },
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    wrapper.unmount();
+
+    expect(wrapper.vm.timeout).not.toBeNull();
+  });
 });

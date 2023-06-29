@@ -1,15 +1,20 @@
 // @vitest-environment happy-dom
+import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import { h } from 'vue';
-
 import { VApp } from 'vuetify/components';
+
+import getRouter from '~/router';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
 
 describe('BCGovFooter.vue', () => {
+  const router = getRouter();
   it('renders', () => {
     const wrapper = mount(VApp, {
-      global: {},
+      global: {
+        plugins: [createTestingPinia(), router],
+      },
       slots: {
         default: h(BCGovFooter),
       },

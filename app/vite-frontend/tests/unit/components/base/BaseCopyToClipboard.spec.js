@@ -47,7 +47,26 @@ describe('BaseCopyToClipboard.vue', () => {
       store,
     });
 
-    await wrapper.find('button').trigger('click');
+    wrapper.vm.onCopy();
+    expect(wrapper.emitted().copied).toBeTruthy();
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('clipboardErrorHandler behaves correctly', async () => {
+    const wrapper = mount(BaseCopyToClipboard, {
+      props: {
+        snackBarText: 'test',
+        tooltipText: 'test',
+        textToCopy: 'test',
+        buttonText: 'test',
+      },
+      global: {
+        plugins: [[Clipboard, { autoSetContainer: true, appendToBody: true }]],
+      },
+      store,
+    });
+
+    wrapper.vm.onError();
     expect(addNotificationSpy).toHaveBeenCalledTimes(1);
   });
 });

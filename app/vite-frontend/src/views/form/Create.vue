@@ -1,28 +1,62 @@
-<script setup>
-import { computed, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import BasePanel from '~/components/base/BasePanel.vue';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { i18n } from '~/internationalization';
+import { useFormStore } from '~/store/form';
+import { IdentityMode, IdentityProviders } from '~/utils/constants';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const IDP = computed(() => IdentityProviders);
-
-const step = ref(1);
-const settingsForm = ref(null);
-const settingsFormValid = ref(false);
-const disclaimerCheckbox = ref(false);
-const disclaimerRules = [(v) => !!v || t('trans.create.confirmPageNav')];
-
-onMounted(() => {
-  if (settingsForm?.value) {
-    settingsForm.value.validate();
-  }
-});
+export default {
+  components: {
+    BaseSecure,
+    BasePanel,
+    FormDesigner,
+    FormSettings,
+    FormDisclaimer,
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.isDirty
+      ? next(window.confirm(i18n.t('trans.create.agreementErrMsg')))
+      : next();
+  },
+  data() {
+    return {
+      step: 1,
+      settingsFormValid: false,
+      disclaimerCheckbox: false,
+      disclaimerRules: [(v) => !!v || i18n.t('trans.create.confirmPageNav')],
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['form']),
+    IDP: () => IdentityProviders,
+  },
+  watch: {
+    form() {
+      if (this.form.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
+        this.$refs.settingsForm.validate();
+    },
+  },
+  created() {
+    this.resetForm();
+  },
+  mounted() {
+    this.listFCProactiveHelp();
+    this.$nextTick(() => {
+      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
+    });
+  },
+  methods: {
+    ...mapActions(useFormStore, ['listFCProactiveHelp', 'resetForm']),
+    reRenderFormDesigner() {
+      this.step = 2;
+      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
+    },
+  },
+};
 </script>
 
 <template>

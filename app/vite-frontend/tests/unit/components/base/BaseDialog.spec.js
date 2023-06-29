@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { describe, it } from 'vitest';
+import { nextTick } from 'vue';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 
@@ -20,6 +21,8 @@ describe('BaseDialog.vue', () => {
         },
       },
     });
+    await wrapper.vm.closeDialog();
+    await nextTick();
 
     expect(wrapper.text()).toContain('trans.baseDialog.ok');
   });

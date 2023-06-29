@@ -1,12 +1,17 @@
-<script setup>
+<script>
 import AdministerForm from '~/components/admin/AdministerForm.vue';
 
-defineProps({
-  f: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    AdministerForm,
   },
-});
+  props: {
+    f: {
+      type: String,
+      required: true,
+    },
+  },
+};
 </script>
 
 <template>
