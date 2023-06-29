@@ -122,7 +122,20 @@
     "validInterval": "این باید یک فاصله زمانی معتبر باشد.",
     "fieldRequiredAndInterval": "این فیلد الزامی است و باید یک بازه باشد.",
     "dateGrtOpenSubmissnDate": "تکرار تا تاریخ باید بیشتر از تاریخ ارسال باز باشد",
-    "public": "عمومی (ناشناس)"
+    "public": "عمومی (ناشناس)",
+    "allowEventSubscription": "اجازه اشتراک رویداد",
+    "eventSubscription": "اشتراک رویداد",
+    "validEndpointRequired": "لطفاً یک نقطه پایان معتبر که با شروع آن شروع می شود وارد کنید https://",
+    "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f یک نمونه توکن حامل معتبر وارد کنید"
+  },
+  "subscribeEvent": {
+    "eventType": "نوع رویدادe",
+    "endpointUrl": "نشانی وب نقطه پایانی",
+    "eventSubmission": "ارسال",
+    "eventAssignment": "وظیفه",
+    "eventStatusChange": "تغییر وضعیت",
+    "endpointToken": "نشانه نقطه پایانی",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
   },
   "apiKey": {
     "disclaimer": "سلب مسئولیت",

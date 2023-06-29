@@ -122,7 +122,20 @@
     "validInterval": "这应该是一个有效的间隔。",
     "fieldRequiredAndInterval": "此字段是必需的并且应该是一个间隔。",
     "dateGrtOpenSubmissnDate": "重复直到日期应该大于开放提交日期",
-    "public": "公开（匿名）"
+    "public": "公开（匿名）",
+    "allowEventSubscription": "允许事件订阅",
+    "eventSubscription": "E活动订阅",
+    "validEndpointRequired": "请输入以以下开头的有效端点 https://",
+    "validBearerTokenRequired": "输入有效的不记名令牌示例: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "事件类型",
+    "endpointUrl": "端点网址",
+    "eventSubmission": "提交",
+    "eventAssignment": "任务",
+    "eventStatusChange": "状态改变",
+    "endpointToken": "端点令牌",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
   },
   "apiKey": {
     "disclaimer": "免责声明",

@@ -122,7 +122,20 @@
     "validInterval": "يجب أن يكون هذا الفاصل الزمني صالحًا.",
     "fieldRequiredAndInterval": "هذا الحقل مطلوب ويجب أن يكون فترة.",
     "dateGrtOpenSubmissnDate": "يجب أن يكون التكرار حتى تاريخ أكبر من تاريخ التقديم المفتوح",
-    "public": "عام (مجهول)"
+    "public": "عام (مجهول)",
+    "allowEventSubscription": "السماح بالاشتراك في الحدث",
+    "eventSubscription": "اشتراك الحدث",
+    "validEndpointRequired": "الرجاء إدخال نقطة نهاية https://",
+    "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f أدخل مثال رمز حامل صالح"
+  },
+  "subscribeEvent": {
+    "eventType": "نوع الحدث",
+    "endpointUrl": "عنوان URL لنقطة النهاية",
+    "eventSubmission": "استسلام",
+    "eventAssignment": "تكليف",
+    "eventStatusChange": "تغيير الوضع",
+    "endpointToken": "رمز نقطة النهاية",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
   },
   "apiKey": {
     "disclaimer": "تنصل",

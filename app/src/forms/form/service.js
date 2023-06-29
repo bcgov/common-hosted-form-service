@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const { getPagingData, validateScheduleObject } = require('../common/utils');
 const { SubscriptionEvent } = require('../common/constants');
 const axios = require('axios');
+const log = require('../../components/log')(module.filename);
 
 const {
   FileStorage,
@@ -19,7 +20,6 @@ const {
   FormSubmissionUser,
   IdentityProvider,
   SubmissionMetadata,
-  SubscriptionData,
   FormComponentsProactiveHelp,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
@@ -73,6 +73,7 @@ const service = {
       obj.createdBy = currentUser.usernameIdp;
       obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
       obj.schedule = data.schedule;
+      obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
 
@@ -144,6 +145,7 @@ const service = {
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: data.allowSubmitterToUploadFile,
         schedule: data.schedule,
+        subscribe: data.subscribe,
         reminder_enabled: data.reminder_enabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
       };
@@ -347,8 +349,7 @@ const service = {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
-
-      const { identityProviders } = await service.readForm(formVersion.formId);
+      const { identityProviders, subscribe } = await service.readForm(formVersion.formId);
 
       trx = await FormSubmission.startTransaction();
 
@@ -403,23 +404,8 @@ const service = {
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
 
-      // Check if there are endpoints subscribed for form submission event
-      const subscriptionData = await SubscriptionData.query().where('formId', formVersion.formId).where('subscribeEvent', SubscriptionEvent.FORM_SUBMITTED).first();
-      if (subscriptionData) {
-        const axiosOptions = { timeout: 10000 };
-        const axiosInstance = axios.create(axiosOptions);
-
-        axiosInstance.interceptors.request.use(
-          (cfg) => {
-            cfg.headers.Authorization = `Bearer ${subscriptionData.endPointToken}`;
-            return Promise.resolve(cfg);
-          },
-          (error) => {
-            return Promise.reject(error);
-          }
-        );
-
-        axiosInstance.post(subscriptionData.endPointUrl, data);
+      if (subscribe && subscribe.enabled && subscribe.eventSubmission) {
+        service.postSubscriptionEvent(subscribe, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
       }
 
       // does this submission contain any file uploads?
@@ -672,6 +658,35 @@ const service = {
     let item = result.length > 0 ? result[0] : null;
     let imageUrl = item !== null ? 'data:' + item.imageType + ';' + 'base64' + ',' + item.image : '';
     return { url: imageUrl };
+  },
+
+  postSubscriptionEvent: async (subscribe, formVersion, submissionId, subscriptionEvent) => {
+    try {
+      // Check if there are endpoints subscribed for form submission event
+      if (subscribe && subscribe.endpointUrl) {
+        const axiosOptions = { timeout: 10000 };
+        const axiosInstance = axios.create(axiosOptions);
+        const jsonData = { formVersion: formVersion.id, submissionId: submissionId, susbscriptionEvent: subscriptionEvent };
+
+        axiosInstance.interceptors.request.use(
+          (cfg) => {
+            cfg.headers = { 'x-api-key': `${subscribe.endpointToken}` };
+            return Promise.resolve(cfg);
+          },
+          (error) => {
+            return Promise.reject(error);
+          }
+        );
+
+        axiosInstance.post(subscribe.endpointUrl, jsonData);
+
+        throw new Problem(401, jsonData);
+      }
+    } catch (err) {
+      log.error(err.message, err, {
+        function: 'postSubscriptionEvent',
+      });
+    }
   },
 
   /**

@@ -122,7 +122,20 @@
     "validInterval": "ਇਹ ਇੱਕ ਵੈਧ ਅੰਤਰਾਲ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "fieldRequiredAndInterval": "ਇਹ ਖੇਤਰ ਲੋੜੀਂਦਾ ਹੈ ਅਤੇ ਇੱਕ ਅੰਤਰਾਲ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "dateGrtOpenSubmissnDate": "ਓਪਨ ਸਪੁਰਦਗੀ ਮਿਤੀ ਤੋਂ ਵੱਧ ਹੋਣ ਤੱਕ ਦੁਹਰਾਓ",
-    "public": "ਜਨਤਕ (ਅਗਿਆਤ)"
+    "public": "ਜਨਤਕ (ਅਗਿਆਤ)",
+    "allowEventSubscription": "د پیښې ګډون ته اجازه ورکړئ",
+    "eventSubscription": "د پیښې ګډون",
+    "validEndpointRequired": "مهرباني وکړئ یو معتبر پای ټکی دننه کړئ چې پیل کیږي https://",
+    "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f د اعتبار وړ وړونکي نښه مثال داخل کړئ"
+  },
+  "subscribeEvent": {
+    "eventType": "د پیښې ډول",
+    "endpointUrl": "د پای ټکی URL",
+    "eventSubmission": "سپارل",
+    "eventAssignment": "دنده",
+    "eventStatusChange": "د وضعیت بدلون",
+    "endpointToken": "د پای ټکی نښه",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
   },
   "apiKey": {
     "disclaimer": "ਬੇਦਾਅਵਾ",

@@ -122,7 +122,20 @@
     "validInterval": "Questo dovrebbe essere un intervallo valido.",
     "fieldRequiredAndInterval": "Questo campo è obbligatorio e dovrebbe essere un intervallo.",
     "dateGrtOpenSubmissnDate": "Ripeti fino a quando la data dovrebbe essere maggiore della data di invio aperta",
-    "public": "Pubblico (anonimo)"
+    "public": "Pubblico (anonimo)",
+    "allowEventSubscription": "Consenti l'iscrizione agli eventi",
+    "eventSubscription": "Abbonamento all'evento",
+    "validEndpointRequired": "Inserisci un endpoint valido che inizi con https://",
+    "validBearerTokenRequired": "Inserisci un esempio di token al portatore valido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Tipo di evento",
+    "endpointUrl": "URL dell'endpoint",
+    "eventSubmission": "Sottomissione",
+    "eventAssignment": "Incarico",
+    "eventStatusChange": "Cambio di stato",
+    "endpointToken": "Token dell'endpoint",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",

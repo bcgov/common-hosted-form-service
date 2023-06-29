@@ -263,6 +263,40 @@
               </v-tooltip>
             </template>
           </v-checkbox>
+          <v-checkbox
+            class="my-0"
+            v-model="subscribe.enabled"
+            :disabled="idirUser === false || !isFormPublished"
+          >
+            <template #label>
+              <span
+                style="max-width: 80%"
+                v-html="$t('trans.formSettings.allowEventSubscription')"
+              />
+              <v-tooltip bottom close-delay="2500">
+                <template v-slot:activator="{ on, attrs }">
+                  <font-awesome-icon
+                    icon="fa-solid fa-flask"
+                    color="primary"
+                    class="ml-3"
+                    v-bind="attrs"
+                    v-on="on"
+                  />
+                </template>
+                <span
+                  >{{ $t('trans.formSettings.experimental') }}
+                  <a
+                    :href="githubLinkCopyFromExistingFeature"
+                    class="preview_info_link_field_white"
+                    :target="'_blank'"
+                  >
+                    {{ $t('trans.formSettings.learnMore') }}
+                    <font-awesome-icon
+                      icon="fa-solid fa-square-arrow-up-right" /></a
+                ></span>
+              </v-tooltip>
+            </template>
+          </v-checkbox>
         </BasePanel>
       </v-col>
 
@@ -899,12 +933,73 @@
           </BasePanel>
         </v-col>
       </v-expand-transition>
+      <v-expand-transition>
+        <v-col cols="12" md="6" v-if="subscribe.enabled">
+          <BasePanel class="fill-height">
+            <template #title>{{
+              $t('trans.formSettings.eventSubscription')
+            }}</template>
+            <v-row class="m-0">
+              <v-col cols="6" md="4" class="pl-0 pr-0 pb-0">
+                <v-checkbox
+                  class="my-0 pt-0"
+                  v-model="subscribe.eventSubmission"
+                >
+                  <template #label>
+                    {{ $t('trans.subscribeEvent.eventSubmission') }}
+                  </template>
+                </v-checkbox>
+                <v-checkbox
+                  class="my-0 pt-0"
+                  v-model="subscribe.eventAssignment"
+                >
+                  <template #label>
+                    {{ $t('trans.subscribeEvent.eventAssignment') }}
+                  </template>
+                </v-checkbox>
+                <v-checkbox
+                  class="my-0 pt-0"
+                  v-model="subscribe.eventStatusChange"
+                >
+                  <template #label>
+                    {{ $t('trans.subscribeEvent.eventStatusChange') }}
+                  </template>
+                </v-checkbox>
+              </v-col>
+              <v-col cols="6" md="6" class="pl-0 pr-0 pb-0">
+                <v-text-field
+                  :label="$t('trans.subscribeEvent.endpointUrl')"
+                  :placeholder="$t('trans.subscribeEvent.urlPlaceholder')"
+                  dense
+                  flat
+                  solid
+                  outlined
+                  v-model="subscribe.endpointUrl"
+                  class="m-0 p-0"
+                  :rules="endpointUrlRules"
+                ></v-text-field>
+                <v-text-field
+                  :label="$t('trans.subscribeEvent.endpointToken')"
+                  dense
+                  flat
+                  solid
+                  outlined
+                  v-model="subscribe.endpointToken"
+                  class="m-0 p-0"
+                  :rules="endpointTokenRules"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </BasePanel>
+        </v-col>
+      </v-expand-transition>
     </v-row>
   </v-container>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import {
   IdentityMode,
@@ -973,6 +1068,27 @@ export default {
           !this.sendSubRecieviedEmail ||
           v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
           this.$t('trans.formSettings.validEmailRequired'),
+      ],
+      endpointUrlRules: [
+        (v) => !!v || this.$t('trans.formSettings.validEndpointRequired'),
+        (v) =>
+          (v &&
+            new RegExp(
+              /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
+            ).test(v)) ||
+          this.$t('trans.formSettings.validEndpointRequired'),
+      ],
+      endpointTokenRules: [
+        (v) => !!v || this.$t('trans.formSettings.validBearerTokenRequired'),
+        (v) =>
+          (v &&
+            new RegExp(/^[\d|a-f]{8}-([\d|a-f]{4}-){3}[\d|a-f]{12}/g).test(
+              v
+            )) ||
+          this.$t('trans.formSettings.validBearerTokenRequired'),
+      ],
+      eventTypeRequired: [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
       ],
       scheduleOpenDate: [
         (v) => !!v || this.$t('trans.formSettings.validEmailRequired'),
@@ -1055,10 +1171,15 @@ export default {
       'form.showSubmissionConfirmation',
       'form.submissionReceivedEmails',
       'form.userType',
+      'form.subscribe',
       'form.schedule',
       'form.reminder_enabled',
       'form.versions',
     ]),
+    ...mapGetters('auth', ['identityProvider']),
+    idirUser() {
+      return this.identityProvider === IdentityProviders.IDIR;
+    },
     ID_MODE() {
       return IdentityMode;
     },
@@ -1224,6 +1345,9 @@ export default {
   watch: {},
   methods: {
     ...mapActions('form', ['fetchForm']),
+    showHideKey() {
+      this.showSecret = !this.showSecret;
+    },
     userTypeChanged() {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {

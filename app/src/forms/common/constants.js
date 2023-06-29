@@ -53,7 +53,9 @@ module.exports = Object.freeze({
     REVISING: 'REVISING',
   },
   SubscriptionEvent: {
-    FORM_SUBMITTED: 'form_submission',
+    FORM_SUBMITTED: 'eventSubmission',
+    FORM_STATUS_CHANGE: 'eventStatusChange',
+    FORM_ASSIGNMENT: 'eventAssignment',
   },
   StorageTypes: {
     UPLOADS: 'uploads',

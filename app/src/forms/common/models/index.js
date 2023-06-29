@@ -25,7 +25,6 @@ module.exports = {
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
   PublicFormAccess: require('./views/publicFormAccess'),
   SubmissionData: require('./views/submissionData'),
-  SubscriptionData: require('./views/subscriptionData'),
   SubmissionMetadata: require('./views/submissionMetadata'),
   UserFormAccess: require('./views/userFormAccess'),
   UserSubmissions: require('./views/userSubmissions'),

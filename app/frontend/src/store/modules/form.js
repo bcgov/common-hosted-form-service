@@ -34,6 +34,15 @@ const genInitialSchedule = () => ({
   },
 });
 
+const genInitialSubscribe = () => ({
+  enabled: null,
+  eventSubmission: null,
+  eventAssignment: null,
+  eventStatusChange: null,
+  endpointUrl: null,
+  endpointToken: null,
+});
+
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -49,6 +58,7 @@ const genInitialForm = () => ({
   submissionReceivedEmails: [],
   reminder_enabled: false,
   schedule: genInitialSchedule(),
+  subscribe: genInitialSubscribe(),
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
@@ -382,6 +392,10 @@ export default {
           ...genInitialSchedule(),
           ...data.schedule,
         };
+        data.subscribe = {
+          ...genInitialSubscribe(),
+          ...data.subscribe,
+        };
 
         commit('SET_FORM', data);
       } catch (error) {
@@ -470,8 +484,9 @@ export default {
             : [];
 
         const schedule = state.form.schedule.enabled ? state.form.schedule : {};
-
-        // const reminder = state.form.schedule.enabled ?  : false ;
+        const subscribe = state.form.subscribe.enabled
+          ? state.form.subscribe
+          : {};
 
         await formService.updateForm(state.form.id, {
           name: state.form.name,
@@ -485,6 +500,7 @@ export default {
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
+          subscribe: subscribe,
           allowSubmitterToUploadFile: state.form.allowSubmitterToUploadFile,
           reminder_enabled: state.form.reminder_enabled
             ? state.form.reminder_enabled

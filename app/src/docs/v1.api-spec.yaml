@@ -2931,6 +2931,34 @@ components:
                   type: string
                   description: Contains closing date of form schedule system when type of ScheduleType set to closingDate.
                   example: '2022-12-22'
+            subscribe:
+              type: Object
+              description: Contains subscription related data
+              properties:
+                enabled:
+                  type: boolean
+                  description: Used to indicate if subscribe feature enabled or not
+                  example: true
+                endpointUrl:
+                  type: string
+                  description: The Endpoint URL
+                  example: https://example.gov.bc.ca/api/
+                endpointToken:
+                  type: string
+                  description: The Endpoint Token
+                  example: 89abddfb-2cff-4fda-83e6-13221f0c3d4f
+                eventSubmission:
+                  type: boolean
+                  description: Used to indicate if the submission event occured
+                  example: true
+                eventStatusChange:
+                  type: boolean
+                  description: Used to indicate if the form status change event occured
+                  example: true
+                eventAssignment:
+                  type: boolean
+                  description: Used to indicate if the form assignment event occured
+                  example: true
             enableCopyExistingSubmission:
               type: boolean
               example: false
