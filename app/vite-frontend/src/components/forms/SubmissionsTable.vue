@@ -1,431 +1,445 @@
-<script setup>
-import { computed, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import moment from 'moment';
+import { mapActions, mapState } from 'pinia';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import BaseFilter from '~/components/base/BaseFilter.vue';
+import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { FormManagePermissions } from '~/utils/constants';
-import moment from 'moment';
-import { storeToRefs } from 'pinia';
 
-const authStore = useAuthStore();
-const formStore = useFormStore();
-
-const { t } = useI18n({ useScope: 'global' });
-
-const properties = defineProps({
-  formId: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    BaseDialog,
+    BaseFilter,
   },
-});
-
-const { form, formFields, permissions, submissionList, userFormPreferences } =
-  storeToRefs(formStore);
-
-const { user } = storeToRefs(authStore);
-
-const currentUserOnly = ref(false);
-const deleteItem = ref({});
-const deletedOnly = ref(false);
-const filterData = ref([]);
-const filterIgnore = ref([
-  {
-    key: 'confirmationId',
-  },
-  {
-    key: 'actions',
-  },
-  {
-    key: 'event',
-  },
-]);
-const loading = ref(true);
-const restoreItem = ref({});
-const search = ref('');
-const showColumnsDialog = ref(false);
-const showRestoreDialog = ref(false);
-const submissionTable = ref([]);
-const showDeleteDialog = ref(false);
-const selectedSubmissions = ref([]);
-const singleSubmissionDelete = ref(false);
-const singleSubmissionRestore = ref(false);
-const switchSubmissionView = ref(false);
-
-const multiDeleteMessage = computed(() =>
-  t('trans.submissionsTable.multiDelWarning')
-);
-const singleDeleteMessage = computed(() =>
-  t('trans.submissionsTable.singleDelWarning')
-);
-const multiRestoreMessage = computed(() =>
-  t('trans.submissionsTable.multiRestoreWarning')
-);
-const singleRestoreMessage = computed(() =>
-  t('trans.submissionsTable.singleRestoreWarning')
-);
-
-const checkFormManage = computed(() =>
-  permissions.value.some((p) => FormManagePermissions.includes(p))
-);
-const DEFAULT_HEADERS = computed(() => {
-  let headers = [
-    {
-      title: t('trans.submissionsTable.confirmationID'),
-      align: 'start',
-      key: 'confirmationId',
+  props: {
+    formId: {
+      type: String,
+      required: true,
     },
-  ];
-
-  if (userFormPreferences.value?.preferences?.columns) {
-    if (userFormPreferences.value.preferences.columns.includes('date')) {
-      headers = [
-        ...headers,
+  },
+  data() {
+    return {
+      currentUserOnly: false,
+      deleteItem: {},
+      deletedOnly: false,
+      filterData: [],
+      filterIgnore: [
         {
-          title: t('trans.submissionsTable.submissionDate'),
+          key: 'confirmationId',
+        },
+        {
+          key: 'actions',
+        },
+        {
+          key: 'event',
+        },
+      ],
+      loading: true,
+      restoreItem: {},
+      search: '',
+      showColumnsDialog: false,
+      showRestoreDialog: false,
+      submissionTable: [],
+      showDeleteDialog: false,
+      selectedSubmissions: [],
+      singleSubmissionDelete: false,
+      singleSubmissionRestore: false,
+      switchSubmissionView: false,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, [
+      'form',
+      'formFields',
+      'permissions',
+      'submissionList',
+      'userFormPreferences',
+    ]),
+    ...mapState(useAuthStore, ['user']),
+    multiDeleteMessage() {
+      return i18n.t('trans.submissionsTable.multiDelWarning');
+    },
+    singleDeleteMessage() {
+      return i18n.t('trans.submissionsTable.singleDelWarning');
+    },
+    multiRestoreMessage() {
+      return i18n.t('trans.submissionsTable.multiRestoreWarning');
+    },
+    singleRestoreMessage() {
+      return i18n.t('trans.submissionsTable.singleRestoreWarning');
+    },
+    checkFormManage() {
+      return this.permissions.some((p) => FormManagePermissions.includes(p));
+    },
+    DEFAULT_HEADERS() {
+      let headers = [
+        {
+          title: i18n.t('trans.submissionsTable.confirmationID'),
+          align: 'start',
+          key: 'confirmationId',
+        },
+      ];
+
+      if (this.userFormPreferences?.preferences?.columns) {
+        if (this.userFormPreferences.preferences.columns.includes('date')) {
+          headers = [
+            ...headers,
+            {
+              title: i18n.t('trans.submissionsTable.submissionDate'),
+              align: 'start',
+              key: 'date',
+            },
+          ];
+        }
+
+        if (
+          this.userFormPreferences.preferences.columns.includes('submitter')
+        ) {
+          headers = [
+            ...headers,
+            {
+              title: i18n.t('trans.submissionsTable.submitter'),
+              align: 'start',
+              key: 'submitter',
+            },
+          ];
+        }
+
+        if (this.userFormPreferences.preferences.columns.includes('status')) {
+          headers = [
+            ...headers,
+            {
+              title: i18n.t('trans.submissionsTable.status'),
+              align: 'start',
+              key: 'status',
+            },
+          ];
+        }
+      } else {
+        headers = [
+          ...headers,
+          {
+            title: i18n.t('trans.submissionsTable.submissionDate'),
+            align: 'start',
+            key: 'date',
+          },
+          {
+            title: i18n.t('trans.submissionsTable.submitter'),
+            align: 'start',
+            key: 'submitter',
+          },
+          {
+            title: i18n.t('trans.submissionsTable.status'),
+            align: 'start',
+            key: 'status',
+          },
+        ];
+      }
+
+      if (this.form && this.form.schedule && this.form.schedule.enabled) {
+        //push new header for late submission if Form is setup for scheduling
+        headers = [
+          ...headers,
+          {
+            title: i18n.t('trans.submissionsTable.lateSubmission'),
+            align: 'start',
+            key: 'lateEntry',
+          },
+        ];
+      }
+
+      // Add any custom columns if the user has them
+      const maxHeaderLength = 25;
+      this.userColumns.forEach((col) => {
+        headers.push({
+          title:
+            col.length > maxHeaderLength
+              ? `${col.substring(0, maxHeaderLength)}...`
+              : col,
+          align: 'end',
+          key: col,
+        });
+      });
+
+      // Actions column at the end
+      headers.push({
+        title: i18n.t('trans.submissionsTable.view'),
+        align: 'end',
+        key: 'actions',
+        filterable: false,
+        sortable: false,
+        width: '40px',
+      });
+
+      // Actions column at the end
+      headers.push({
+        title: i18n.t('trans.submissionsTable.event'),
+        align: 'end',
+        key: 'event',
+        filterable: false,
+        sortable: false,
+        width: '40px',
+      });
+
+      return headers.filter((x) => x.key !== 'updatedAt' || this.deletedOnly);
+    },
+    HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+      if (this.filterData.length > 0)
+        headers = headers.filter(
+          (h) =>
+            this.filterData.some((fd) => fd.key === h.key) ||
+            this.filterIgnore.some((ign) => ign.key === h.key)
+        );
+      return headers;
+    },
+    FILTER_HEADERS() {
+      let filteredHeader = this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      ).concat(
+        this.formFields.map((ff) => {
+          return { title: ff, key: ff, align: 'end' };
+        })
+      );
+
+      filteredHeader = [
+        {
+          title: i18n.t('trans.submissionsTable.submissionDate'),
           align: 'start',
           key: 'date',
         },
-      ];
-    }
-
-    if (userFormPreferences.value.preferences.columns.includes('submitter')) {
-      headers = [
-        ...headers,
         {
-          title: t('trans.submissionsTable.submitter'),
+          title: i18n.t('trans.submissionsTable.submitter'),
           align: 'start',
           key: 'submitter',
         },
-      ];
-    }
-
-    if (userFormPreferences.value.preferences.columns.includes('status')) {
-      headers = [
-        ...headers,
         {
-          title: t('trans.submissionsTable.status'),
+          title: i18n.t('trans.submissionsTable.status'),
           align: 'start',
           key: 'status',
         },
+        ...filteredHeader,
       ];
-    }
-  } else {
-    headers = [
-      ...headers,
-      {
-        title: t('trans.submissionsTable.submissionDate'),
-        align: 'start',
-        key: 'date',
-      },
-      {
-        title: t('trans.submissionsTable.submitter'),
-        align: 'start',
-        key: 'submitter',
-      },
-      {
-        title: t('trans.submissionsTable.status'),
-        align: 'start',
-        key: 'status',
-      },
-    ];
-  }
 
-  if (form.value && form.value.schedule && form.value.schedule.enabled) {
-    //push new header for late submission if Form is setup for scheduling
-    headers = [
-      ...headers,
-      {
-        title: t('trans.submissionsTable.lateSubmission'),
-        align: 'start',
-        key: 'lateEntry',
-      },
-    ];
-  }
-
-  // Add any custom columns if the user has them
-  const maxHeaderLength = 25;
-  userColumns.value.forEach((col) => {
-    headers.push({
-      title:
-        col.length > maxHeaderLength
-          ? `${col.substring(0, maxHeaderLength)}...`
-          : col,
-      align: 'end',
-      key: col,
-    });
-  });
-
-  // Actions column at the end
-  headers.push({
-    title: t('trans.submissionsTable.view'),
-    align: 'end',
-    key: 'actions',
-    filterable: false,
-    sortable: false,
-    width: '40px',
-  });
-
-  // Actions column at the end
-  headers.push({
-    title: t('trans.submissionsTable.event'),
-    align: 'end',
-    key: 'event',
-    filterable: false,
-    sortable: false,
-    width: '40px',
-  });
-
-  return headers.filter((x) => x.key !== 'updatedAt' || deletedOnly.value);
-});
-
-const HEADERS = computed(() => {
-  let headers = DEFAULT_HEADERS.value;
-  if (filterData.value.length > 0)
-    headers = headers.filter(
-      (h) =>
-        filterData.value.some((fd) => fd.key === h.key) ||
-        filterIgnore.value.some((ign) => ign.key === h.key)
-    );
-  return headers;
-});
-
-const FILTER_HEADERS = computed(() => {
-  let filteredHeader = DEFAULT_HEADERS.value
-    .filter((h) => !filterIgnore.value.some((fd) => fd.key === h.key))
-    .concat(
-      formFields.value.map((ff) => {
-        return { title: ff, key: ff, align: 'end' };
-      })
-    );
-
-  filteredHeader = [
-    {
-      title: t('trans.submissionsTable.submissionDate'),
-      align: 'start',
-      key: 'date',
+      return filteredHeader.filter(function (item, index, inputArray) {
+        return (
+          inputArray.findIndex((arrayItem) => arrayItem.key === item.key) ==
+          index
+        );
+      });
     },
-    {
-      title: t('trans.submissionsTable.submitter'),
-      align: 'start',
-      key: 'submitter',
+    PRESELECTED_DATA() {
+      let preselectedData = [];
+      if (this.userFormPreferences?.preferences?.columns) {
+        preselectedData = this.userFormPreferences.preferences.columns.map(
+          (column) => {
+            return {
+              title: column,
+              align: 'end',
+              key: column,
+            };
+          }
+        );
+      } else {
+        preselectedData = this.DEFAULT_HEADERS.filter(
+          (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+        );
+      }
+      return preselectedData;
     },
-    {
-      title: t('trans.submissionsTable.status'),
-      align: 'start',
-      key: 'status',
+    userColumns() {
+      if (
+        this.userFormPreferences &&
+        this.userFormPreferences.preferences &&
+        this.userFormPreferences.preferences.columns
+      ) {
+        // Compare saved user prefs against the current form versions component names and remove any discrepancies
+        return this.userFormPreferences.preferences.columns.filter(
+          (x) => this.formFields.indexOf(x) !== -1
+        );
+      } else {
+        return [];
+      }
     },
-    ...filteredHeader,
-  ];
-
-  return filteredHeader.filter(function (item, index, inputArray) {
-    return (
-      inputArray.findIndex((arrayItem) => arrayItem.key === item.key) == index
-    );
-  });
-});
-
-const PRESELECTED_DATA = computed(() => {
-  let preselectedData = [];
-  if (userFormPreferences.value?.preferences?.columns) {
-    preselectedData = userFormPreferences.value.preferences.columns.map(
-      (column) => {
-        return {
-          title: column,
-          align: 'end',
-          key: column,
+  },
+  mounted() {
+    this.refreshSubmissions();
+  },
+  methods: {
+    ...mapActions(useFormStore, [
+      'deleteMultiSubmissions',
+      'deleteSubmission',
+      'fetchForm',
+      'fetchFormFields',
+      'fetchSubmissions',
+      'getFormPermissionsForUser',
+      'getFormPreferencesForCurrentUser',
+      'getFormRolesForUser',
+      'restoreSubmission',
+      'restoreMultiSubmissions',
+      'updateFormPreferencesForCurrentUser',
+    ]),
+    async delSub() {
+      this.singleSubmissionDelete
+        ? this.deleteSingleSubs()
+        : this.deleteMultiSubs();
+    },
+    async restoreSub() {
+      this.singleSubmissionRestore
+        ? this.restoreSingleSub()
+        : this.restoreMultipleSubs();
+    },
+    async deleteSingleSubs() {
+      this.showDeleteDialog = false;
+      await this.deleteSubmission(this.deleteItem.submissionId);
+      this.refreshSubmissions();
+    },
+    async deleteMultiSubs() {
+      let submissionsIdsToDelete = this.selectedSubmissions.map(
+        (submission) => submission.submissionId
+      );
+      this.showDeleteDialog = false;
+      await this.deleteMultiSubmissions({
+        submissionIds: submissionsIdsToDelete,
+        formId: this.formId,
+      });
+      this.refreshSubmissions();
+    },
+    async populateSubmissionsTable() {
+      try {
+        this.loading = true;
+        // Get user prefs for this form
+        await this.getFormPreferencesForCurrentUser(this.formId);
+        // Get the submissions for this form
+        let criteria = {
+          formId: this.formId,
+          createdAt: Object.values({
+            minDate:
+              this.userFormPreferences &&
+              this.userFormPreferences.preferences &&
+              this.userFormPreferences.preferences.filter
+                ? moment(
+                    this.userFormPreferences.preferences.filter[0],
+                    'YYYY-MM-DD hh:mm:ss'
+                  )
+                    .utc()
+                    .format()
+                : moment()
+                    .subtract(50, 'years')
+                    .utc()
+                    .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+            maxDate:
+              this.userFormPreferences &&
+              this.userFormPreferences.preferences &&
+              this.userFormPreferences.preferences.filter
+                ? moment(
+                    this.userFormPreferences.preferences.filter[1],
+                    'YYYY-MM-DD hh:mm:ss'
+                  )
+                    .utc()
+                    .format()
+                : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
+          }),
+          deletedOnly: this.deletedOnly,
+          createdBy: this.currentUserOnly
+            ? `${this.user.username}@${this.user.idp}`
+            : '',
         };
+        await this.fetchSubmissions(criteria);
+        // Build up the list of forms for the table
+        if (this.submissionList) {
+          const tableRows = this.submissionList
+            // Filtering out all submissions that has no status. (User has not submitted)
+            .filter((s) => s.formSubmissionStatusCode)
+            .map((s) => {
+              const fields = {
+                confirmationId: s.confirmationId,
+                date: s.createdAt,
+                formId: s.formId,
+                status: s.formSubmissionStatusCode,
+                submissionId: s.submissionId,
+                submitter: s.createdBy,
+                versionId: s.formVersionId,
+                deleted: s.deleted,
+                lateEntry: s.lateEntry,
+              };
+              // Add any custom columns
+              this.userColumns.forEach((col) => {
+                fields[col] = s[col];
+              });
+              return fields;
+            });
+          this.submissionTable = tableRows;
+        }
+      } catch (error) {
+        // Handled in state fetchSubmissions
+      } finally {
+        this.loading = false;
       }
-    );
-  } else {
-    preselectedData = DEFAULT_HEADERS.value.filter(
-      (h) => !filterIgnore.value.some((fd) => fd.key === h.key)
-    );
-  }
-  return preselectedData;
-});
+    },
+    async refreshSubmissions() {
+      this.loading = true;
+      Promise.all([
+        await this.getFormRolesForUser(this.formId),
+        await this.getFormPermissionsForUser(this.formId),
+        await this.fetchForm(this.formId).then(async () => {
+          if (this.form.versions?.length > 0) {
+            await this.fetchFormFields({
+              formId: this.formId,
+              formVersionId: this.form.versions[0].id,
+            });
+          }
+        }),
+      ]).finally(async () => {
+        await this.populateSubmissionsTable();
+        this.selectedSubmissions = [];
+      });
+    },
+    async restoreSingleSub() {
+      await this.restoreSubmission({
+        submissionId: this.restoreItem.submissionId,
+        deleted: false,
+      });
+      this.restorshowRestoreDialogtem = false;
+      this.refreshSubmissions();
+    },
+    async restoreMultipleSubs() {
+      let submissionsIdsToRestore = this.selectedSubmissions.map(
+        (submission) => submission.submissionId
+      );
+      this.restorshowRestoreDialogtem = false;
+      await this.restoreMultiSubmissions({
+        submissionIds: submissionsIdsToRestore,
+        formId: this.formId,
+      });
+      this.refreshSubmissions();
+      this.selectedSubmissions = [];
+    },
+    async updateFilter(data) {
+      this.filterData = data;
+      let preferences = {
+        columns: [],
+      };
+      data.forEach((d) => {
+        if (
+          this.formFields.includes(d) ||
+          ['date', 'submitter', 'status', 'lateEntry'].includes(d)
+        )
+          preferences.columns.push(d);
+      });
 
-const userColumns = computed(() => {
-  if (
-    userFormPreferences.value &&
-    userFormPreferences.value.preferences &&
-    userFormPreferences.value.preferences.columns
-  ) {
-    // Compare saved user prefs against the current form versions component names and remove any discrepancies
-    return userFormPreferences.value.preferences.columns.filter(
-      (x) => formFields.value.indexOf(x) !== -1
-    );
-  } else {
-    return [];
-  }
-});
-
-async function delSub() {
-  singleSubmissionDelete.value ? deleteSingleSubs() : deleteMultiSubs();
-}
-
-async function restoreSub() {
-  singleSubmissionRestore.value ? restoreSingleSub() : restoreMultipleSubs();
-}
-
-async function deleteSingleSubs() {
-  showDeleteDialog.value = false;
-  await formStore.deleteSubmission(deleteItem.value.submissionId);
-  refreshSubmissions();
-}
-
-async function deleteMultiSubs() {
-  let submissionsIdsToDelete = selectedSubmissions.value.map(
-    (submission) => submission.submissionId
-  );
-  showDeleteDialog.value = false;
-  await formStore.deleteMultiSubmissions({
-    submissionIds: submissionsIdsToDelete,
-    formId: properties.formId,
-  });
-  refreshSubmissions();
-}
-
-async function populateSubmissionsTable() {
-  try {
-    loading.value = true;
-    // Get user prefs for this form
-    await formStore.getFormPreferencesForCurrentUser(properties.formId);
-    // Get the submissions for this form
-    let criteria = {
-      formId: properties.formId,
-      createdAt: Object.values({
-        minDate:
-          userFormPreferences.value &&
-          userFormPreferences.value.preferences &&
-          userFormPreferences.value.preferences.filter
-            ? moment(
-                userFormPreferences.value.preferences.filter[0],
-                'YYYY-MM-DD hh:mm:ss'
-              )
-                .utc()
-                .format()
-            : moment()
-                .subtract(50, 'years')
-                .utc()
-                .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
-        maxDate:
-          userFormPreferences.value &&
-          userFormPreferences.value.preferences &&
-          userFormPreferences.value.preferences.filter
-            ? moment(
-                userFormPreferences.value.preferences.filter[1],
-                'YYYY-MM-DD hh:mm:ss'
-              )
-                .utc()
-                .format()
-            : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
-      }),
-      deletedOnly: deletedOnly.value,
-      createdBy: currentUserOnly.value
-        ? `${user.value.username}@${user.value.idp}`
-        : '',
-    };
-    await formStore.fetchSubmissions(criteria);
-    // Build up the list of forms for the table
-    if (submissionList.value) {
-      const tableRows = submissionList.value
-        // Filtering out all submissions that has no status. (User has not submitted)
-        .filter((s) => s.formSubmissionStatusCode)
-        .map((s) => {
-          const fields = {
-            confirmationId: s.confirmationId,
-            date: s.createdAt,
-            formId: s.formId,
-            status: s.formSubmissionStatusCode,
-            submissionId: s.submissionId,
-            submitter: s.createdBy,
-            versionId: s.formVersionId,
-            deleted: s.deleted,
-            lateEntry: s.lateEntry,
-          };
-          // Add any custom columns
-          userColumns.value.forEach((col) => {
-            fields[col] = s[col];
-          });
-          return fields;
-        });
-      submissionTable.value = tableRows;
-    }
-  } catch (error) {
-    // Handled in state fetchSubmissions
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function refreshSubmissions() {
-  loading.value = true;
-  Promise.all([
-    await formStore.getFormRolesForUser(properties.formId),
-    await formStore.getFormPermissionsForUser(properties.formId),
-    await formStore.fetchForm(properties.formId).then(async () => {
-      if (form.value.versions?.length > 0) {
-        await formStore.fetchFormFields({
-          formId: properties.formId,
-          formVersionId: form.value.versions[0].id,
-        });
-      }
-    }),
-  ]).finally(async () => {
-    await populateSubmissionsTable();
-    selectedSubmissions.value = [];
-  });
-}
-
-async function restoreSingleSub() {
-  await formStore.restoreSubmission({
-    submissionId: restoreItem.value.submissionId,
-    deleted: false,
-  });
-  showRestoreDialog.value = false;
-  refreshSubmissions();
-}
-
-async function restoreMultipleSubs() {
-  let submissionsIdsToRestore = selectedSubmissions.value.map(
-    (submission) => submission.submissionId
-  );
-  showRestoreDialog.value = false;
-  await formStore.restoreMultiSubmissions({
-    submissionIds: submissionsIdsToRestore,
-    formId: properties.formId,
-  });
-  refreshSubmissions();
-  selectedSubmissions.value = [];
-}
-
-async function updateFilter(data) {
-  filterData.value = data;
-  let preferences = {
-    columns: [],
-  };
-  data.forEach((d) => {
-    if (
-      formFields.value.includes(d) ||
-      ['date', 'submitter', 'status', 'lateEntry'].includes(d)
-    )
-      preferences.columns.push(d);
-  });
-
-  await formStore.updateFormPreferencesForCurrentUser({
-    formId: form.value.id,
-    preferences: preferences,
-  });
-  showColumnsDialog.value = false;
-  await populateSubmissionsTable();
-}
-
-onMounted(() => {
-  refreshSubmissions();
-});
+      await this.updateFormPreferencesForCurrentUser({
+        formId: this.form.id,
+        preferences: preferences,
+      });
+      this.showColumnsDialog = false;
+      await this.populateSubmissionsTable();
+    },
+  },
+};
 </script>
 
 <template>

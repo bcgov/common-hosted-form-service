@@ -1,260 +1,268 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
+import { i18n } from '~/internationalization';
 import { useAppStore } from '~/store/app';
 import { useNotificationStore } from '~/store/notification';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const appStore = useAppStore();
-const notificationStore = useNotificationStore();
-
-const { config } = storeToRefs(appStore);
-
-const properties = defineProps({
-  formElement: undefined,
-  form: {
-    type: Object,
-    default: () => {},
+export default {
+  components: {
+    BaseInfoCard,
   },
-  formSchema: {
-    type: Object,
-    default: () => {},
-  },
-  formFields: {
-    type: Array,
-    default: () => [],
-  },
-  block: Boolean,
-  response: {
-    type: Object,
-    default: () => {
-      return {
-        message: '',
-        error: false,
-        upload_state: 0,
-        response: [],
-        file_name: '',
-      };
+  props: {
+    formElement: undefined,
+    form: {
+      type: Object,
+      default: () => {},
+    },
+    formSchema: {
+      type: Object,
+      default: () => {},
+    },
+    formFields: {
+      type: Array,
+      default: () => [],
+    },
+    block: Boolean,
+    response: {
+      type: Object,
+      default: () => {
+        return {
+          message: '',
+          error: false,
+          upload_state: 0,
+          response: [],
+          file_name: '',
+        };
+      },
+    },
+    jsonCsv: {
+      type: Object,
+      default: () => {
+        return {
+          data: [],
+          file_name: '',
+        };
+      },
     },
   },
-  jsonCsv: {
-    type: Object,
-    default: () => {
-      return {
-        data: [],
-        file_name: '',
-      };
-    },
-  },
-});
-
-const emits = defineEmits([
-  'reset-message',
-  'save-bulk-data',
-  'set-error',
-  'toggleBlock',
-]);
-
-const file = ref(undefined);
-const Json = ref([]);
-const percent = ref(0);
-const max = ref(100);
-const upload_state = ref(0);
-const index = ref(0);
-const globalError = ref([]);
-const progress = ref(false);
-
-function download(filename, data) {
-  if (window.confirm(t('trans.formViewerMultiUpload.confirmDownload'))) {
-    const blob = new Blob([JSON.stringify(data)], {
-      type: 'application/json',
-    });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  }
-}
-
-function addFile(e, type) {
-  if (properties.block) {
-    return;
-  }
-
-  if (file.value != undefined) {
-    notificationStore.addNotification({
-      text: t('trans.formViewerMultiUpload.uploadMultipleFileErr'),
-      consoleError: t('trans.formViewerMultiUpload.uploadMultipleFileErr'),
-    });
-    return;
-  }
-  try {
-    let files = type == 0 ? e.dataTransfer.files : e.target.files;
-
-    if (!files || files == undefined) return;
-
-    if (files.length > 1) {
-      notificationStore.addNotification({
-        text: t('trans.formViewerMultiUpload.dragMultipleFileErr'),
-        consoleError: t('trans.formViewerMultiUpload.dragMultipleFileErr'),
-      });
-      return;
-    }
-
-    if (files[0]['type'] != 'application/json') {
-      notificationStore.addNotification({
-        text: t('trans.formViewerMultiUpload.fileFormatErr'),
-        consoleError: t('trans.formViewerMultiUpload.fileFormatErr'),
-      });
-      return;
-    }
-    if (files[0].size > config.value.uploads.fileMaxSizeBytes) {
-      notificationStore.addNotification({
-        text: t('trans.formViewerMultiUpload.fileSizeErr'),
-        consoleError: t('trans.formViewerMultiUpload.fileSizeErr'),
-      });
-      return;
-    }
-    file.value = files[0];
-    parseFile();
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.formViewerMultiUpload.dragMultipleFileErr'),
-      consoleError:
-        t('trans.formViewerMultiUpload.dragMultipleFileErr') + `${error}`,
-    });
-    return;
-  }
-}
-
-function parseFile() {
-  try {
-    let reader = new FileReader();
-    reader.onload = (e) => {
-      Json.value = JSON.parse(e.target.result);
+  emits: ['reset-message', 'save-bulk-data', 'set-error', 'toggleBlock'],
+  data() {
+    return {
+      file: undefined,
+      Json: [],
+      percent: 0,
+      max: 100,
+      upload_state: 0,
+      index: 0,
+      globalError: [],
+      progress: false,
     };
-    reader.onloadend = preValidateSubmission;
-    reader.readAsText(file.value);
-  } catch (e) {
-    resetUpload();
-    notificationStore.addNotification({
-      text: t('trans.formViewerMultiUpload.parseJsonErr'),
-      consoleError: e,
-    });
-  }
-}
+  },
+  computed: {
+    ...mapState(useAppStore, ['config']),
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    download(filename, data) {
+      if (
+        window.confirm(i18n.t('trans.formViewerMultiUpload.confirmDownload'))
+      ) {
+        const blob = new Blob([JSON.stringify(data)], {
+          type: 'application/json',
+        });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+    },
 
-function preValidateSubmission() {
-  try {
-    if (!Array.isArray(Json.value)) {
-      resetUpload();
-      notificationStore.addNotification({
-        text: t('trans.formViewerMultiUpload.jsonObjNotArray'),
-        consoleError: t('trans.formViewerMultiUpload.jsonObjNotArrayConsEr'),
-      });
-      return;
-    }
-    if (Json.value.length == 0) {
-      resetUpload();
-      notificationStore.addNotification({
-        text: t('trans.formViewerMultiUpload.jsonArrayEmpty'),
-        consoleError: t('trans.formViewerMultiUpload.fileIsEmpty'),
-      });
-      return;
-    }
-    globalError.value = [];
-    index.value = 0;
-    max.value = 100;
-    progress.value = true;
-    emits('toggleBlock', true);
-    validate(Json.value[index.value], []);
-  } catch (error) {
-    resetUpload();
-    emits('set-error', {
-      error: true,
-      text: t('trans.formViewerMultiUpload.errorWhileValidate'),
-    });
-    notificationStore.addNotification({
-      text: t('trans.formViewerMultiUpload.errorWhileValidate'),
-      consoleError: error,
-    });
-    return;
-  }
-}
+    addFile(e, type) {
+      if (this.block) {
+        return;
+      }
 
-function validate(element, errors) {
-  const timer = setTimeout(
-    function () {
+      if (this.file != undefined) {
+        this.addNotification({
+          text: i18n.t('trans.formViewerMultiUpload.uploadMultipleFileErr'),
+          consoleError: i18n.t(
+            'trans.formViewerMultiUpload.uploadMultipleFileErr'
+          ),
+        });
+        return;
+      }
       try {
-        let newForm = properties.formElement;
-        newForm.data = element;
-        newForm.submission.data = element;
-        newForm.triggerChange();
-        let validationResult = newForm.checkValidity();
-        if (!validationResult) {
-          errors.push({
-            submission: index.value,
-            errors: validationResult.errors,
+        let files = type == 0 ? e.dataTransfer.files : e.target.files;
+
+        if (!files || files == undefined) return;
+
+        if (files.length > 1) {
+          this.addNotification({
+            text: i18n.t('trans.formViewerMultiUpload.dragMultipleFileErr'),
+            consoleError: i18n.t(
+              'trans.formViewerMultiUpload.dragMultipleFileErr'
+            ),
           });
+          return;
         }
+
+        if (files[0]['type'] != 'application/json') {
+          this.addNotification({
+            text: i18n.t('trans.formViewerMultiUpload.fileFormatErr'),
+            consoleError: i18n.t('trans.formViewerMultiUpload.fileFormatErr'),
+          });
+          return;
+        }
+        if (files[0].size > this.config.uploads.fileMaxSizeBytes) {
+          this.addNotification({
+            text: i18n.t('trans.formViewerMultiUpload.fileSizeErr'),
+            consoleError: i18n.t('trans.formViewerMultiUpload.fileSizeErr'),
+          });
+          return;
+        }
+        this.file = files[0];
+        this.parseFile();
       } catch (error) {
-        errors.push({
-          submission: index.value,
-          text: t('trans.formViewerMultiUpload.errWhileCheckValidity'),
+        this.addNotification({
+          text: i18n.t('trans.formViewerMultiUpload.dragMultipleFileErr'),
+          consoleError:
+            i18n.t('trans.formViewerMultiUpload.dragMultipleFileErr') +
+            `${error}`,
+        });
+        return;
+      }
+    },
+
+    parseFile() {
+      try {
+        let reader = new FileReader();
+        reader.onload = (e) => {
+          this.Json = JSON.parse(e.target.result);
+        };
+        reader.onloadend = this.preValidateSubmission;
+        reader.readAsText(this.file);
+      } catch (e) {
+        this.resetUpload();
+        this.addNotification({
+          text: i18n.t('trans.formViewerMultiUpload.parseJsonErr'),
+          consoleError: e,
         });
       }
-      index.value++;
-      percent.value = percentage(index.value);
-      clearTimeout(timer);
-      if (index.value < Json.value.length) {
-        validate(Json.value[index.value], errors);
-      } else {
-        endValidation(errors);
+    },
+
+    preValidateSubmission() {
+      try {
+        if (!Array.isArray(this.Json)) {
+          this.resetUpload();
+          this.addNotification({
+            text: i18n.t('trans.formViewerMultiUpload.jsonObjNotArray'),
+            consoleError: i18n.t(
+              'trans.formViewerMultiUpload.jsonObjNotArrayConsEr'
+            ),
+          });
+          return;
+        }
+        if (this.Json.length == 0) {
+          this.resetUpload();
+          this.addNotification({
+            text: i18n.t('trans.formViewerMultiUpload.jsonArrayEmpty'),
+            consoleError: i18n.t('trans.formViewerMultiUpload.fileIsEmpty'),
+          });
+          return;
+        }
+        this.globalError = [];
+        this.index = 0;
+        this.max = 100;
+        this.progress = true;
+        this.$emit('toggleBlock', true);
+        this.validate(this.Json[this.index], []);
+      } catch (error) {
+        this.resetUpload();
+        this.$emit('set-error', {
+          error: true,
+          text: i18n.t('trans.formViewerMultiUpload.errorWhileValidate'),
+        });
+        this.addNotification({
+          text: i18n.t('trans.formViewerMultiUpload.errorWhileValidate'),
+          consoleError: error,
+        });
+        return;
       }
-    }.bind(this),
-    12
-  );
-}
+    },
 
-function percentage(i) {
-  let number_of_submission = Json.value.length;
-  if (number_of_submission > 0) {
-    return Math.ceil((i * max.value) / number_of_submission);
-  }
-  return 0;
-}
+    validate(element, errors) {
+      const timer = setTimeout(
+        function () {
+          try {
+            let newForm = this.formElement;
+            newForm.data = element;
+            newForm.submission.data = element;
+            newForm.triggerChange();
+            let validationResult = newForm.checkValidity();
+            if (!validationResult) {
+              errors.push({
+                submission: this.index,
+                errors: validationResult.errors,
+              });
+            }
+          } catch (error) {
+            errors.push({
+              submission: this.index,
+              text: i18n.t('trans.formViewerMultiUpload.errWhileCheckValidity'),
+            });
+          }
+          this.index++;
+          this.percent = this.percentage(this.index);
+          clearTimeout(timer);
+          if (this.index < this.Json.length) {
+            this.validate(this.Json[this.index], errors);
+          } else {
+            this.endValidation(errors);
+          }
+        }.bind(this),
+        12
+      );
+    },
 
-function endValidation(errors) {
-  progress.value = false;
-  globalError.value = errors;
-  if (globalError.value.length == 0) {
-    emits('save-bulk-data', Json.value);
-  } else {
-    emits('toggleBlock', false);
-    emits('set-error', {
-      text: t('trans.formViewerMultiUpload.errAfterValidate'),
-      error: true,
-      upload_state: 10,
-      response: globalError.value,
-    });
-  }
-}
+    percentage(i) {
+      let number_of_submission = this.Json.length;
+      if (number_of_submission > 0) {
+        return Math.ceil((i * this.max) / number_of_submission);
+      }
+      return 0;
+    },
 
-function resetUpload() {
-  globalError.value = [];
-  file.value = undefined;
-  Json.value = [];
-  percent.value = 0;
-  upload_state.value = 0;
-  index.value = 0;
-  globalError.value = [];
-  progress.value = false;
-  emits('reset-message');
-}
+    endValidation(errors) {
+      this.progress = false;
+      this.globalError = errors;
+      if (this.globalError.length == 0) {
+        this.$emit('save-bulk-data', this.Json);
+      } else {
+        this.$emit('toggleBlock', false);
+        this.$emit('set-error', {
+          text: i18n.t('trans.formViewerMultiUpload.errAfterValidate'),
+          error: true,
+          upload_state: 10,
+          response: this.globalError,
+        });
+      }
+    },
+
+    resetUpload() {
+      this.globalError = [];
+      this.file = undefined;
+      this.Json = [];
+      this.percent = 0;
+      this.upload_state = 0;
+      this.index = 0;
+      this.globalError = [];
+      this.progress = false;
+      this.$emit('reset-message');
+    },
+  },
+};
 </script>
 
 <template>

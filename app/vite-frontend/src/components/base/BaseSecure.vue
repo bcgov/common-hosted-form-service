@@ -1,33 +1,39 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
 import { useAuthStore } from '~/store/auth';
-defineProps({
-  admin: {
-    type: Boolean,
-    required: false,
+
+export default {
+  props: {
+    admin: {
+      type: Boolean,
+      required: false,
+    },
+    idp: {
+      type: Array,
+      default: undefined,
+    },
   },
-  idp: {
-    type: Array,
-    default: undefined,
+  computed: {
+    ...mapState(useAuthStore, [
+      'authenticated',
+      'identityProvider',
+      'isAdmin',
+      'isUser',
+      'ready',
+    ]),
+    mailToLink() {
+      return `mailto:${
+        import.meta.env.VITE_CONTACT
+      }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
+        location
+      )}.`;
+    },
+    contactInfo() {
+      return import.meta.env.VITE_CONTACT;
+    },
   },
-});
-
-const authStore = useAuthStore();
-
-const { authenticated, identityProvider, isAdmin, isUser, ready } =
-  storeToRefs(authStore);
-
-const mailToLink = computed(
-  () =>
-    `mailto:${
-      import.meta.env.VITE_CONTACT
-    }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
-      location
-    )}`
-);
-
-const contactInfo = computed(() => import.meta.env.VITE_CONTACT);
+  methods: mapActions(useAuthStore, ['login']),
+};
 </script>
 
 <template>
@@ -75,7 +81,7 @@ const contactInfo = computed(() => import.meta.env.VITE_CONTACT);
       color="primary"
       class="login-btn"
       size="large"
-      @click="authStore.login"
+      @click="login"
     >
       <span>{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>

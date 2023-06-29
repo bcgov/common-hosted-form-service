@@ -1,50 +1,49 @@
-<script setup>
-defineProps({
-  modelValue: {
-    default: false,
-    type: Boolean,
+<script>
+export default {
+  props: {
+    modelValue: {
+      default: false,
+      type: Boolean,
+    },
+    type: {
+      default: null,
+      type: String,
+    },
+    showCloseButton: {
+      default: false,
+      type: Boolean,
+    },
+    width: {
+      default: '500',
+      type: String,
+    },
+    enableCustomButton: {
+      default: false,
+      type: Boolean,
+    },
   },
-  type: {
-    default: null,
-    type: String,
+  emits: [
+    'update:modelValue',
+    'close-dialog',
+    'continue-dialog',
+    'delete-dialog',
+    'custom-dialog',
+  ],
+  methods: {
+    closeDialog() {
+      this.$emit('close-dialog');
+    },
+    continueDialog() {
+      this.$emit('continue-dialog');
+    },
+    deleteDialog() {
+      this.$emit('delete-dialog');
+    },
+    customDialog() {
+      this.$emit('custom-dialog');
+    },
   },
-  showCloseButton: {
-    default: false,
-    type: Boolean,
-  },
-  width: {
-    default: '500',
-    type: String,
-  },
-  enableCustomButton: {
-    default: false,
-    type: Boolean,
-  },
-});
-
-const emit = defineEmits([
-  'update:modelValue',
-  'close-dialog',
-  'continue-dialog',
-  'delete-dialog',
-  'custom-dialog',
-]);
-
-function closeDialog() {
-  emit('close-dialog');
-}
-
-function continueDialog() {
-  emit('continue-dialog');
-}
-
-function deleteDialog() {
-  emit('delete-dialog');
-}
-
-function customDialog() {
-  emit('custom-dialog');
-}
+};
 </script>
 
 <template>

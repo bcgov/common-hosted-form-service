@@ -1,51 +1,52 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
+<script>
+import { mapState } from 'pinia';
 
 import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
-const properties = defineProps({
-  submission: {
-    type: Object,
-    required: true,
+export default {
+  components: {
+    DeleteSubmission,
   },
-  formId: {
-    type: String,
-    required: true,
+  props: {
+    submission: {
+      type: Object,
+      required: true,
+    },
+    formId: {
+      type: String,
+      required: true,
+    },
   },
-});
-
-const emits = defineEmits(['draft-deleted']);
-
-const formStore = useFormStore();
-
-const { form } = storeToRefs(formStore);
-
-const isCopyFromExistingSubmissionEnabled = computed(
-  () => form.value && form.value.enableCopyExistingSubmission
-);
-
-const hasDeletePermission = computed(() =>
-  properties.submission.value.permissions.includes(
-    FormPermissions.SUBMISSION_CREATE
-  )
-);
-const hasEditPermission = computed(() =>
-  properties.submission.value.permissions.includes(
-    FormPermissions.SUBMISSION_UPDATE
-  )
-);
-const hasViewPermission = computed(() =>
-  properties.submission.value.permissions.includes(
-    FormPermissions.SUBMISSION_READ
-  )
-);
-
-function draftDeleted() {
-  emits('draft-deleted');
-}
+  emits: ['draft-deleted'],
+  computed: {
+    ...mapState(useFormStore, ['form']),
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
+    },
+    hasDeletePermission() {
+      return this.submission?.permissions?.includes(
+        FormPermissions.SUBMISSION_CREATE
+      );
+    },
+    hasEditPermission() {
+      return this.submission?.permissions?.includes(
+        FormPermissions.SUBMISSION_UPDATE
+      );
+    },
+    hasViewPermission() {
+      return this.submission?.permissions?.includes(
+        FormPermissions.SUBMISSION_READ
+      );
+    },
+  },
+  methods: {
+    draftDeleted() {
+      this.$emit('draft-deleted');
+    },
+  },
+};
 </script>
 
 <template>
@@ -54,7 +55,7 @@ function draftDeleted() {
       :to="{
         name: 'UserFormView',
         query: {
-          s: properties.submission.value.submissionId,
+          s: submission.submissionId,
         },
       }"
     >
@@ -76,7 +77,7 @@ function draftDeleted() {
 
     <span
       v-if="
-        submission.value.status === 'SUBMITTED' &&
+        submission.status === 'SUBMITTED' &&
         isCopyFromExistingSubmissionEnabled === true
       "
     >
@@ -84,7 +85,7 @@ function draftDeleted() {
         :to="{
           name: 'UserFormDuplicate',
           query: {
-            s: submission.value.submissionId,
+            s: submission.submissionId,
             f: formId,
           },
         }"
@@ -107,16 +108,13 @@ function draftDeleted() {
     </span>
 
     <span
-      v-if="
-        submission.value.status === 'DRAFT' ||
-        submission.value.status === 'REVISING'
-      "
+      v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
     >
       <router-link
         :to="{
           name: 'UserFormDraftEdit',
           query: {
-            s: submission.value.submissionId,
+            s: submission.submissionId,
           },
         }"
       >
@@ -139,7 +137,7 @@ function draftDeleted() {
         v-if="submission.status !== 'REVISING'"
         :disabled="!hasDeletePermission"
         is-draft
-        :submission-id="submission.value.submissionId"
+        :submission-id="submission.submissionId"
         icon-size="x-small"
         @deleted="draftDeleted"
       />

@@ -1,6 +1,5 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
 import VueJsonPretty from 'vue-json-pretty';
 
 import AddOwner from '~/components/admin/AddOwner.vue';
@@ -8,47 +7,65 @@ import AdminVersions from '~/components/admin/AdminVersions.vue';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useAdminStore } from '~/store/admin';
 
-const adminStore = useAdminStore();
-
-const properties = defineProps({
-  formId: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    AddOwner,
+    AdminVersions,
+    BaseDialog,
+    VueJsonPretty,
   },
-});
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      formDetails: {},
+      loading: true,
+      restoreInProgress: false,
+      showDeleteDialog: false,
+      showRestoreDialog: false,
+    };
+  },
+  computed: {
+    ...mapState(useAdminStore, ['form', 'roles', 'apikey']),
+  },
+  async mounted() {
+    await Promise.all([
+      await this.readForm(this.formId),
+      await this.readApiDetails(this.formId),
+      await this.readRoles(this.formId),
+    ]);
 
-const formDetails = ref({});
-const loading = ref(true);
-const restoreInProgress = ref(false);
-const showDeleteDialog = ref(false);
-const showRestoreDialog = ref(false);
+    this.formDetails = { ...this.form };
+    delete this.formDetails.versions;
 
-const { form, roles, apiKey } = storeToRefs(adminStore);
+    this.loading = false;
+  },
+  methods: {
+    ...mapActions(useAdminStore, [
+      'deleteApiKey',
+      'readForm',
+      'readApiDetails',
+      'readRoles',
+      'restoreForm',
+    ]),
 
-async function deleteKey() {
-  await adminStore.deleteApiKey(form.value.id);
-  showDeleteDialog.value = false;
-}
+    async deleteKey() {
+      await this.deleteApiKey(this.form.id);
+      this.showDeleteDialog = false;
+    },
 
-async function restore() {
-  restoreInProgress.value = true;
-  await adminStore.restoreForm(form.value.id);
-  restoreInProgress.value = false;
-  showRestoreDialog.value = false;
-}
-
-onMounted(async () => {
-  await Promise.all([
-    await adminStore.readForm(properties.formId),
-    await adminStore.readApiDetails(properties.formId),
-    await adminStore.readRoles(properties.formId),
-  ]);
-
-  formDetails.value = { ...form.value };
-  delete formDetails.value.versions;
-
-  loading.value = false;
-});
+    async restore() {
+      this.restoreInProgress = true;
+      await this.restoreForm(this.form.id);
+      this.restoreInProgress = false;
+      this.showRestoreDialog = false;
+    },
+  },
+};
 </script>
 
 <template>

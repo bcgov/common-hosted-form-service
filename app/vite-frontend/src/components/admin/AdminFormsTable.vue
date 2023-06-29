@@ -1,58 +1,64 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
+import { i18n } from '~/internationalization';
 
 import { useAdminStore } from '~/store/admin';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const activeOnly = ref(false);
-const loading = ref(true);
-const search = ref('');
-
-const adminStore = useAdminStore();
-
-const { formList } = storeToRefs(adminStore);
-
-const headers = computed(() => [
-  {
-    title: t('trans.adminFormsTable.formTitle'),
-    align: 'start',
-    key: 'name',
+export default {
+  data() {
+    return {
+      activeOnly: false,
+      loading: true,
+      search: '',
+    };
   },
-  {
-    title: t('trans.adminFormsTable.created'),
-    align: 'start',
-    key: 'createdAt',
+  computed: {
+    ...mapState(useAdminStore, ['formList']),
+    calcHeaders() {
+      return this.headers.filter(
+        (x) => x.key !== 'updatedAt' || this.activeOnly
+      );
+    },
+    headers() {
+      return [
+        {
+          title: i18n.t('trans.adminFormsTable.formTitle'),
+          align: 'start',
+          key: 'name',
+        },
+        {
+          title: i18n.t('trans.adminFormsTable.created'),
+          align: 'start',
+          key: 'createdAt',
+        },
+        {
+          title: i18n.t('trans.adminFormsTable.deleted'),
+          align: 'start',
+          key: 'updatedAt',
+        },
+        {
+          title: i18n.t('trans.adminFormsTable.actions'),
+          align: 'end',
+          key: 'actions',
+          filterable: false,
+          sortable: false,
+        },
+      ];
+    },
   },
-  {
-    title: t('trans.adminFormsTable.deleted'),
-    align: 'start',
-    key: 'updatedAt',
+  async mounted() {
+    await this.getForms();
+    this.loading = false;
   },
-  {
-    title: t('trans.adminFormsTable.actions'),
-    align: 'end',
-    key: 'actions',
-    filterable: false,
-    sortable: false,
+  methods: {
+    ...mapActions(useAdminStore, ['getForms']),
+    async refreshForms() {
+      this.loading = true;
+      await this.getForms(!this.activeOnly);
+      this.loading = false;
+    },
   },
-]);
-const calcHeaders = computed(() =>
-  headers.value.filter((x) => x.key !== 'updatedAt' || activeOnly.value)
-);
-
-async function refreshForms() {
-  loading.value = true;
-  await adminStore.getForms(!activeOnly.value);
-  loading.value = false;
-}
-
-onMounted(async () => {
-  await adminStore.getForms();
-  loading.value = false;
-});
+};
 </script>
 
 <template>

@@ -1,7 +1,11 @@
-<script setup>
-function printSubmission() {
-  window.print();
-}
+<script>
+export default {
+  methods: {
+    printSubmission() {
+      window.print();
+    },
+  },
+};
 </script>
 
 <template>

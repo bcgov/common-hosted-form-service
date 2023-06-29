@@ -1,34 +1,41 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+<script>
+import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 import { IdentityMode } from '~/utils/constants';
 
-const formStore = useFormStore();
-
-const { form } = storeToRefs(formStore);
-
-const githubLinkBulkUpload = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload'
-);
-const githubLinkCopyFromExistingFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission'
-);
-const githubLinkScheduleAndReminderFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification'
-);
-
-const ID_MODE = computed(() => IdentityMode);
-
-function allowSubmitterToUploadFileChanged() {
-  if (
-    form.value.allowSubmitterToUploadFile &&
-    !form.value.enableSubmitterDraft
-  ) {
-    form.value.enableSubmitterDraft = true;
-  }
-}
+export default {
+  components: {
+    BasePanel,
+  },
+  data() {
+    return {
+      githubLinkBulkUpload:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload',
+      githubLinkCopyFromExistingFeature:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
+      githubLinkScheduleAndReminderFeature:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
+    };
+  },
+  computed: {
+    ...mapWritableState(useFormStore, ['form']),
+    ...mapState(useFormStore, ['isFormPublished']),
+    ID_MODE() {
+      return IdentityMode;
+    },
+  },
+  methods: {
+    allowSubmitterToUploadFileChanged() {
+      if (
+        this.form.allowSubmitterToUploadFile &&
+        !this.form.enableSubmitterDraft
+      ) {
+        this.form.enableSubmitterDraft = true;
+      }
+    },
+  },
+};
 </script>
 
 <template>
@@ -86,7 +93,7 @@ function allowSubmitterToUploadFileChanged() {
     </v-checkbox>
 
     <v-checkbox
-      v-if="!formStore.isFormPublished"
+      v-if="!isFormPublished"
       v-model="form.schedule.enabled"
       disabled
       class="my-0"
@@ -97,7 +104,7 @@ function allowSubmitterToUploadFileChanged() {
     </v-checkbox>
 
     <v-checkbox
-      v-if="formStore.isFormPublished"
+      v-if="isFormPublished"
       v-model="form.schedule.enabled"
       class="my-0"
     >

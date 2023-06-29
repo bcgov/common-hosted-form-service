@@ -1,14 +1,25 @@
-<script setup>
-import { storeToRefs } from 'pinia';
+<script>
+import { mapState, mapWritableState } from 'pinia';
 import FormAccessSettings from '~/components/designer/settings/FormAccessSettings.vue';
 import FormGeneralSettings from '~/components/designer/settings/FormGeneralSettings.vue';
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
 import FormSubmissionSettings from '~/components/designer/settings/FormSubmissionSettings.vue';
 import { useFormStore } from '~/store/form';
-const formStore = useFormStore();
 
-const { form } = storeToRefs(formStore);
+export default {
+  components: {
+    FormAccessSettings,
+    FormGeneralSettings,
+    FormFunctionalitySettings,
+    FormScheduleSettings,
+    FormSubmissionSettings,
+  },
+  computed: {
+    ...mapWritableState(useFormStore, ['form']),
+    ...mapState(useFormStore, ['isFormPublished']),
+  },
+};
 </script>
 
 <template>
@@ -26,11 +37,7 @@ const { form } = storeToRefs(formStore);
       <v-col cols="12" md="6">
         <FormSubmissionSettings />
       </v-col>
-      <v-col
-        v-if="form.schedule.enabled && formStore.isFormPublished"
-        cols="12"
-        md="6"
-      >
+      <v-col v-if="form.schedule.enabled && isFormPublished" cols="12" md="6">
         <FormScheduleSettings />
       </v-col>
     </v-row>

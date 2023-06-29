@@ -1,116 +1,127 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import ProactiveHelpDialog from '~/components/forms/infolinks/ProactiveHelpDialog.vue';
 import ProactiveHelpPreviewDialog from '~/components/forms/infolinks/ProactiveHelpPreviewDialog.vue';
+import { i18n } from '~/internationalization';
 import { useAdminStore } from '~/store/admin';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const properties = defineProps({
-  layoutList: {
-    type: Array,
-    required: true,
+export default {
+  components: {
+    ProactiveHelpDialog,
+    ProactiveHelpPreviewDialog,
   },
-  componentsList: {
-    type: Array,
-    default: () => [],
+  props: {
+    layoutList: {
+      type: Array,
+      required: true,
+    },
+    componentsList: {
+      type: Array,
+      default: () => [],
+    },
+    groupName: {
+      type: String,
+      required: true,
+    },
   },
-  groupName: {
-    type: String,
-    required: true,
+  data() {
+    return {
+      component: {},
+      componentName: '',
+      loading: false,
+      publish: [],
+      showDialog: false,
+      showPreviewDialog: false,
+    };
   },
-});
-
-const adminStore = useAdminStore();
-
-const component = ref({});
-const componentName = ref('');
-const loading = ref(false);
-const publish = ref([]);
-const showDialog = ref(false);
-const showPreviewDialog = ref(false);
-
-const { fcProactiveHelpImageUrl } = storeToRefs(adminStore);
-
-const headers = computed(() => [
-  {
-    title: t('trans.generalLayout.formTitle'),
-    align: 'start',
-    key: 'componentName',
-    width: '1%',
+  computed: {
+    ...mapState(useAdminStore, ['fcProactiveHelpImageUrl']),
+    headers() {
+      return [
+        {
+          title: i18n.t('trans.generalLayout.formTitle'),
+          align: 'start',
+          key: 'componentName',
+          width: '1%',
+        },
+        {
+          title: i18n.t('trans.generalLayout.actions'),
+          align: 'end',
+          key: 'actions',
+          filterable: false,
+          sortable: false,
+          width: '1%',
+        },
+      ];
+    },
   },
-  {
-    title: t('trans.generalLayout.actions'),
-    align: 'end',
-    key: 'actions',
-    filterable: false,
-    sortable: false,
-    width: '1%',
+  methods: {
+    ...mapActions(useAdminStore, [
+      'getFCProactiveHelpImageUrl',
+      'updateFCProactiveHelpStatus',
+    ]),
+    //used to open form component help information dialog
+    onDialog() {
+      this.showDialog = !this.showDialog;
+    },
+
+    //used to open form component help information preview dialog
+    onPreviewDialog() {
+      this.showPreviewDialog = !this.showPreviewDialog;
+    },
+
+    canDisabled(compName) {
+      return (
+        this.componentsList.filter(
+          (component) => component.componentName === compName
+        ).length == 0
+      );
+    },
+
+    isComponentPublish(compName, index) {
+      for (let component of this.componentsList) {
+        if (component.componentName === compName) {
+          this.publish[index] = component.status;
+        }
+      }
+    },
+
+    onOpenDialog(compName) {
+      this.getComponent(compName);
+      this.onDialog();
+    },
+
+    async onOpenPreviewDialog(compName) {
+      const item = this.componentsList.find(
+        (item) => item.componentName === compName
+      );
+      await this.getFCProactiveHelpImageUrl(item.id);
+      this.getComponent(item.componentName);
+      this.onPreviewDialog();
+    },
+
+    getComponent(compName) {
+      if (compName) {
+        this.componentName = compName;
+        this.component = this.componentsList.find((obj) => {
+          return obj.componentName === this.componentName;
+        });
+      }
+    },
+
+    onSwitchChange(compName, index) {
+      for (const comp of this.componentsList) {
+        if (comp.componentName === compName) {
+          this.updateFCProactiveHelpStatus({
+            componentId: comp.id,
+            publishStatus: this.publish[index],
+          });
+        }
+      }
+    },
   },
-]);
-
-//used to open form component help information dialog
-function onDialog() {
-  showDialog.value = !showDialog.value;
-}
-
-//used to open form component help information preview dialog
-function onPreviewDialog() {
-  showPreviewDialog.value = !showPreviewDialog.value;
-}
-
-function canDisabled(compName) {
-  return (
-    properties.componentsList.filter(
-      (component) => component.componentName === compName
-    ).length == 0
-  );
-}
-
-function isComponentPublish(compName, index) {
-  for (let component of properties.componentsList) {
-    if (component.componentName === compName) {
-      publish.value[index] = component.status;
-    }
-  }
-}
-
-function onOpenDialog(compName) {
-  getComponent(compName);
-  onDialog();
-}
-
-async function onOpenPreviewDialog(compName) {
-  const item = properties.componentsList.find(
-    (item) => item.componentName === compName
-  );
-  await adminStore.getFCProactiveHelpImageUrl(item.id);
-  getComponent(item.componentName);
-  onPreviewDialog();
-}
-
-function getComponent(compName) {
-  if (compName) {
-    componentName.value = compName;
-    component.value = properties.componentsList.find((obj) => {
-      return obj.componentName === componentName.value;
-    });
-  }
-}
-
-function onSwitchChange(compName, index) {
-  for (const comp of properties.componentsList) {
-    if (comp.componentName === compName) {
-      adminStore.updateFCProactiveHelpStatus({
-        componentId: comp.id,
-        publishStatus: publish.value[index],
-      });
-    }
-  }
-}
+};
 </script>
 
 <template>

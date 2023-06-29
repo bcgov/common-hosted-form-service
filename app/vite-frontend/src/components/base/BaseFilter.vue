@@ -1,65 +1,66 @@
-<script setup>
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { i18n } from '~/internationalization';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const properties = defineProps({
-  inputHeaders: {
-    type: Array,
-    default: () => [
-      {
-        title: t('trans.baseFilter.columnName'),
-        align: 'start',
-        sortable: true,
-        key: 'title',
-      },
-    ],
+export default {
+  props: {
+    inputHeaders: {
+      type: Array,
+      default: () => [
+        {
+          title: i18n.t('trans.baseFilter.columnName'),
+          align: 'start',
+          sortable: true,
+          key: 'title',
+        },
+      ],
+    },
+    // The data you will be filtering with
+    inputData: {
+      type: Array,
+      default: () => [
+        { title: i18n.t('trans.baseFilter.exampleText'), key: 'exampleText1' },
+        { title: i18n.t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
+      ],
+    },
+    // The default selected data
+    preselectedData: {
+      type: Array,
+      default: () => [],
+    },
+    inputItemKey: {
+      type: String,
+      default: 'key',
+    },
+    inputFilterLabel: {
+      type: String,
+      default: '',
+    },
+    inputFilterPlaceholder: {
+      type: String,
+      default: i18n.t('trans.baseFilter.exampleText2'),
+    },
+    inputSaveButtonText: {
+      type: String,
+      default: i18n.t('trans.baseFilter.filter'),
+    },
   },
-  // The data you will be filtering with
-  inputData: {
-    type: Array,
-    default: () => [
-      { title: t('trans.baseFilter.exampleText'), key: 'exampleText1' },
-      { title: t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
-    ],
+  emits: ['saving-filter-data', 'cancel-filter-data'],
+  data() {
+    return {
+      selectedData: this.preselectedData,
+      inputFilter: '',
+    };
   },
-  // The default selected data
-  preselectedData: {
-    type: Array,
-    default: () => [],
+  methods: {
+    savingFilterData() {
+      this.inputFilter = '';
+      this.$emit('saving-filter-data', this.selectedData);
+    },
+    cancelFilterData() {
+      this.$emit('cancel-filter-data');
+    },
   },
-  inputItemKey: {
-    type: String,
-    default: 'key',
-  },
-  inputFilterLabel: {
-    type: String,
-    default: '',
-  },
-  inputFilterPlaceholder: {
-    type: String,
-    default: t('trans.baseFilter.exampleText2'),
-  },
-  inputSaveButtonText: {
-    type: String,
-    default: t('trans.baseFilter.filter'),
-  },
-});
-
-const emits = defineEmits(['saving-filter-data', 'cancel-filter-data']);
-
-const selectedData = ref(properties.preselectedData);
-const inputFilter = ref('');
-
-function savingFilterData() {
-  inputFilter.value = '';
-  emits('saving-filter-data', selectedData.value);
-}
-
-function cancelFilterData() {
-  emits('cancel-filter-data');
-}
+};
 </script>
 
 <template>

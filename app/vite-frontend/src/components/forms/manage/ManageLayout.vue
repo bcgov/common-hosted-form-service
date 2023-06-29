@@ -1,6 +1,5 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+<script>
+import { mapState } from 'pinia';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
@@ -9,30 +8,39 @@ import { FormPermissions } from '~/utils/constants';
 
 const formStore = useFormStore();
 
-const { form, permissions } = storeToRefs(formStore);
-
-const props = defineProps({
-  f: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    ManageForm,
+    ManageFormActions,
   },
-});
+  props: {
+    f: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      loading: true,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['form', 'permissions']),
+  },
+  async mounted() {
+    this.loading = true;
 
-const loading = ref(true);
+    await Promise.all([
+      formStore.fetchForm(this.f),
+      formStore.getFormPermissionsForUser(this.f),
+    ]);
 
-onMounted(async () => {
-  loading.value = true;
+    if (this.permissions.includes(FormPermissions.DESIGN_READ))
+      await formStore.fetchDrafts(this.f);
 
-  await Promise.all([
-    formStore.fetchForm(props.f),
-    formStore.getFormPermissionsForUser(props.f),
-  ]);
-
-  if (permissions.value.includes(FormPermissions.DESIGN_READ))
-    await formStore.fetchDrafts(props.f);
-
-  loading.value = false;
-});
+    this.loading = false;
+  },
+};
 </script>
 
 <template>

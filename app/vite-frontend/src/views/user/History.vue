@@ -1,5 +1,11 @@
-<script setup>
+<script>
 import BaseSecure from '~/components/base/BaseSecure.vue';
+
+export default {
+  components: {
+    BaseSecure,
+  },
+};
 </script>
 
 <template>

@@ -1,58 +1,61 @@
-<script setup>
-import { computed, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions } from 'pinia';
+import { i18n } from '~/internationalization';
 
 import { formService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const properties = defineProps({
-  submissionId: {
-    required: true,
-    type: String,
-  },
-});
-
-const notificationStore = useNotificationStore();
-
-const statuses = ref([]);
-const loading = ref(true);
-
-const headers = computed(() => {
-  return [
-    { title: t('trans.statusTable.status'), key: 'code' },
-    {
-      title: t('trans.statusTable.dateStatusChanged'),
-      align: 'start',
-      key: 'createdAt',
+export default {
+  props: {
+    submissionId: {
+      required: true,
+      type: String,
     },
-    { title: t('trans.statusTable.assignee'), key: 'user' },
-    { title: t('trans.statusTable.updatedBy'), key: 'createdBy' },
-  ];
-});
-
-async function getData() {
-  loading.value = true;
-  try {
-    const response = await formService.getSubmissionStatuses(
-      properties.submissionId
-    );
-    statuses.value = response.data;
-  } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.statusTable.getSubmissionStatusErr'),
-      consoleError:
-        t('trans.statusTable.getSubmissionStatusConsErr') + `${error}`,
-    });
-  } finally {
-    loading.value = false;
-  }
-}
-
-onMounted(() => {
-  getData();
-});
+  },
+  data() {
+    return {
+      loading: true,
+      statuses: [],
+    };
+  },
+  computed: {
+    headers() {
+      return [
+        { title: i18n.t('trans.statusTable.status'), key: 'code' },
+        {
+          title: i18n.t('trans.statusTable.dateStatusChanged'),
+          align: 'start',
+          key: 'createdAt',
+        },
+        { title: i18n.t('trans.statusTable.assignee'), key: 'user' },
+        { title: i18n.t('trans.statusTable.updatedBy'), key: 'createdBy' },
+      ];
+    },
+  },
+  async mounted() {
+    await this.getData();
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async getData() {
+      this.loading = true;
+      try {
+        const response = await formService.getSubmissionStatuses(
+          this.submissionId
+        );
+        this.statuses = response.data;
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.statusTable.getSubmissionStatusErr'),
+          consoleError:
+            i18n.t('trans.statusTable.getSubmissionStatusConsErr') + `${error}`,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+};
 </script>
 
 <template>

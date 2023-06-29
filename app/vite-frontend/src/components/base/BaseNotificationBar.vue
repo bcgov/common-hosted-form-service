@@ -1,37 +1,35 @@
-<script setup>
+<script>
 import { useNotificationStore } from '~/store/notification';
-
-const notificationStore = useNotificationStore();
-
-const props = defineProps({
-  notification: {
-    type: Object,
-    default: () => {},
+export default {
+  props: {
+    notification: {
+      type: Object,
+      default: () => {},
+    },
   },
-});
-
-const timeout = setTimeout(
-  () => notificationStore.deleteNotification(props.notification),
-  props.notification.timeout ? props.notification.timeout * 1000 : 10000
-);
-
-notificationStore.$onAction(({ name, _store, args, after, onError }) => {
-  after(() => {
-    if (name === 'deleteNotification') {
-      if (props.notification.id === args[0].id) {
-        clearTimeout(timeout);
-      }
-    }
-  });
-
-  onError((error) => {
-    console.error(error); // eslint-disable-line no-console
-  });
-});
-
-function alertClosed() {
-  notificationStore.deleteNotification(props.notification);
-}
+  data() {
+    return {
+      timeout: null,
+    };
+  },
+  mounted() {
+    const notificationStore = useNotificationStore();
+    this.timeout = setTimeout(
+      () => notificationStore.deleteNotification(this.notification),
+      this.notification.timeout ? this.notification.timeout * 1000 : 10000
+    );
+  },
+  beforeUnmount() {
+    // Prevent memory leak if component destroyed before timeout up
+    clearTimeout(this.timeout);
+  },
+  methods: {
+    alertClosed() {
+      const notificationStore = useNotificationStore();
+      notificationStore.deleteNotification(this.notification);
+    },
+  },
+};
 </script>
 
 <template>

@@ -1,8 +1,12 @@
-<script setup>
-import { ref } from 'vue';
-import getRouter from '~/router';
-const router = getRouter();
-const formSubmitMode = ref(router?.currentRoute?.value?.meta?.formSubmitMode);
+<script>
+export default {
+  computed: {
+    formSubmitMode() {
+      // don't include footer when printing form submitting pages
+      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
+    },
+  },
+};
 </script>
 
 <template>

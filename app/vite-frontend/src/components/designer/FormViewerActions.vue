@@ -1,65 +1,68 @@
-<script setup>
-import { computed } from 'vue';
-
+<script>
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import PrintOptions from '~/components/forms/PrintOptions.vue';
 import { FormPermissions } from '~/utils/constants';
 
-const properties = defineProps({
-  block: {
-    type: Boolean,
-    default: false,
+export default {
+  components: {
+    ManageSubmissionUsers,
+    PrintOptions,
   },
-  isSingleSubmission: {
-    type: Boolean,
-    default: false,
+  props: {
+    block: {
+      type: Boolean,
+      default: false,
+    },
+    isSingleSubmission: {
+      type: Boolean,
+      default: false,
+    },
+    allowSubmitterToUploadFile: {
+      type: Boolean,
+      default: false,
+    },
+    draftEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    formId: {
+      type: String,
+      default: undefined,
+    },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
+    permissions: {
+      type: Array,
+      default: () => [],
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
+    },
+    submissionId: {
+      type: String,
+      default: undefined,
+    },
+    submission: {
+      type: Object,
+      default: undefined,
+    },
   },
-  allowSubmitterToUploadFile: {
-    type: Boolean,
-    default: false,
+  emits: ['save-draft', 'switchView', 'showdoYouWantToSaveTheDraftModal'],
+  computed: {
+    canSaveDraft() {
+      return !this.readOnly;
+    },
+    showEditToggle() {
+      return (
+        this.readOnly &&
+        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
+      );
+    },
   },
-  draftEnabled: {
-    type: Boolean,
-    default: false,
-  },
-  formId: {
-    type: String,
-    default: undefined,
-  },
-  isDraft: {
-    type: Boolean,
-    default: false,
-  },
-  permissions: {
-    type: Array,
-    default: () => [],
-  },
-  readOnly: {
-    type: Boolean,
-    default: false,
-  },
-  submissionId: {
-    type: String,
-    default: undefined,
-  },
-  submission: {
-    type: Object,
-    default: undefined,
-  },
-});
-
-const emits = defineEmits([
-  'save-draft',
-  'toggleSubmissionView',
-  'showdoYouWantToSaveTheDraftModal',
-]);
-
-const canSaveDraft = computed(() => !properties.readOnly);
-const showEditToggle = computed(
-  () =>
-    properties.readOnly &&
-    properties.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
-);
+};
 </script>
 
 <template>
@@ -69,7 +72,7 @@ const showEditToggle = computed(
         <v-btn
           color="primary"
           variant="outlined"
-          @click="emits('showdoYouWantToSaveTheDraftModal')"
+          @click="$emit('showdoYouWantToSaveTheDraftModal')"
         >
           <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }}</span>
         </v-btn>
@@ -85,7 +88,7 @@ const showEditToggle = computed(
               icon
               v-bind="props"
               size="small"
-              @click="emits('toggleSubmissionView')"
+              @click="$emit('switchView')"
             >
               <v-icon icon="mdi:mdi-repeat"></v-icon>
             </v-btn>

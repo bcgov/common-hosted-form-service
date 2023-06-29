@@ -1,64 +1,80 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
-const loading = ref(false);
-const showConfirmationDialog = ref(false);
-const showDeleteDialog = ref(false);
-const showSecret = ref(false);
+export default {
+  components: {
+    BaseCopyToClipboard,
+    BaseDialog,
+  },
+  data() {
+    return {
+      loading: false,
+      showConfirmationDialog: false,
+      showDeleteDialog: false,
+      showSecret: false,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['apiKey', 'form', 'permissions']),
+    canDeleteKey() {
+      return (
+        this.permissions.includes(FormPermissions.FORM_API_DELETE) &&
+        this.apiKey
+      );
+    },
+    canGenerateKey() {
+      return this.permissions.includes(FormPermissions.FORM_API_CREATE);
+    },
+    canReadSecret() {
+      return (
+        this.permissions.includes(FormPermissions.FORM_API_READ) && this.apiKey
+      );
+    },
+    secret() {
+      return this.apiKey?.secret ? this.apiKey.secret : undefined;
+    },
+  },
+  created() {
+    if (this.canGenerateKey) {
+      this.readKey();
+    }
+  },
+  methods: {
+    ...mapActions(useFormStore, [
+      'deleteApiKey',
+      'generateApiKey',
+      'readApiKey',
+    ]),
+    async createKey() {
+      this.loading = true;
+      await this.generateApiKey(this.form.id);
+      this.showSecret = false;
+      this.loading = false;
+      this.showConfirmationDialog = false;
+    },
 
-const formStore = useFormStore();
+    async deleteKey() {
+      this.loading = true;
+      await this.deleteApiKey(this.form.id);
+      this.loading = false;
+      this.showDeleteDialog = false;
+    },
 
-const { apiKey, form, permissions } = storeToRefs(formStore);
-
-const canDeleteKey = computed(
-  () =>
-    permissions.value.includes(FormPermissions.FORM_API_DELETE) && apiKey.value
-);
-const canGenerateKey = computed(() =>
-  permissions.value.includes(FormPermissions.FORM_API_CREATE)
-);
-const canReadSecret = computed(
-  () =>
-    permissions.value.includes(FormPermissions.FORM_API_READ) && apiKey.value
-);
-const secret = computed(() =>
-  apiKey?.value?.secret ? apiKey.value.secret : undefined
-);
-
-async function createKey() {
-  loading.value = true;
-  await formStore.generateApiKey(form.value.id);
-  showSecret.value = false;
-  loading.value = false;
-  showConfirmationDialog.value = false;
-}
-
-async function deleteKey() {
-  loading.value = true;
-  await formStore.deleteApiKey(form.value.id);
-  loading.value = false;
-  showDeleteDialog.value = false;
-}
-
-async function readKey() {
-  loading.value = true;
-  await formStore.readApiKey(form.value.id);
-  loading.value = false;
-}
-
-function showHideKey() {
-  showSecret.value = !showSecret.value;
-}
-
-if (canGenerateKey.value) {
-  readKey();
-}
+    async readKey() {
+      this.loading = true;
+      await this.readApiKey(this.form.id);
+      this.loading = false;
+    },
+    showHideKey() {
+      this.showSecret = !this.showSecret;
+    },
+  },
+};
 </script>
 
 <template>

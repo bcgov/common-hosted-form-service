@@ -1,13 +1,35 @@
-<script setup>
-import { ref } from 'vue';
+<script>
+import { mapState } from 'pinia';
 import AdminFormsTable from '~/components/admin/AdminFormsTable.vue';
 import AdminUsersTable from '~/components/admin/AdminUsersTable.vue';
 import Dashboard from '~/components/admin/Dashboard.vue';
 import Developer from '~/components/admin/Developer.vue';
 import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
 
-const tab = ref(null);
+import { useAppStore } from '~/store/app';
+
+export default {
+  components: {
+    AdminFormsTable,
+    AdminUsersTable,
+    Dashboard,
+    Developer,
+    FormComponentsProactiveHelp,
+  },
+  data() {
+    return {
+      tab: null,
+    };
+  },
+  computed: {
+    ...mapState(useAppStore, ['config']),
+    adminDashboardUrl() {
+      return this.config.adminDashboardUrl;
+    },
+  },
+};
 </script>
+
 <template>
   <v-tabs v-model="tab">
     <v-tab value="forms">{{ $t('trans.adminPage.forms') }}</v-tab>

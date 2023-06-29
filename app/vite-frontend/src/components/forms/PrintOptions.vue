@@ -8,7 +8,7 @@ import { NotificationTypes } from '~/utils/constants';
 const properties = defineProps({
   submissionId: {
     type: String,
-    required: true,
+    default: '',
   },
   submission: {
     type: Object,

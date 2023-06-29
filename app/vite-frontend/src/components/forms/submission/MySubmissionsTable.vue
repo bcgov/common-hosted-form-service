@@ -1,184 +1,185 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
 
+import { i18n } from '~/internationalization';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import MySubmissionsActions from '~/components/forms/submission/MySubmissionsActions.vue';
 import { useFormStore } from '~/store/form';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const properties = defineProps({
-  formId: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    BaseFilter,
+    MySubmissionsActions,
   },
-});
-
-const formStore = useFormStore();
-
-const filterData = ref([]);
-const filterIgnore = ref([
-  {
-    key: 'confirmationId',
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
   },
-  {
-    key: 'actions',
+  data() {
+    return {
+      filterData: [],
+      filterIgnore: [
+        {
+          key: 'confirmationId',
+        },
+        {
+          key: 'actions',
+        },
+      ],
+      loading: true,
+      search: '',
+      showColumnsDialog: false,
+      submissionsTable: [],
+    };
   },
-]);
-const loading = ref(true);
-const search = ref('');
-const showColumnsDialog = ref(false);
-const submissionsTable = ref([]);
-
-const { form, submissionList } = storeToRefs(formStore);
-
-const DEFAULT_HEADERS = computed(() => {
-  let hdrs = [
-    {
-      title: t('trans.mySubmissionsTable.confirmationId'),
-      align: 'start',
-      key: 'confirmationId',
-      sortable: true,
+  computed: {
+    ...mapState(useFormStore, ['form', 'submissionList']),
+    DEFAULT_HEADERS() {
+      let hdrs = [
+        {
+          title: i18n.t('trans.mySubmissionsTable.confirmationId'),
+          align: 'start',
+          key: 'confirmationId',
+          sortable: true,
+        },
+        {
+          title: i18n.t('trans.mySubmissionsTable.createdBy'),
+          key: 'createdBy',
+          sortable: true,
+        },
+        {
+          title: i18n.t('trans.mySubmissionsTable.statusUpdatedBy'),
+          key: 'username',
+          sortable: true,
+        },
+        {
+          title: i18n.t('trans.mySubmissionsTable.status'),
+          key: 'status',
+          sortable: true,
+        },
+        {
+          title: i18n.t('trans.mySubmissionsTable.submissionDate'),
+          key: 'submittedDate',
+          sortable: true,
+        },
+        {
+          title: i18n.t('trans.mySubmissionsTable.actions'),
+          align: 'end',
+          key: 'actions',
+          filterable: false,
+          sortable: false,
+          width: '140px',
+        },
+      ];
+      if (this.showDraftLastEdited || !this.formId) {
+        hdrs.splice(hdrs.length - 1, 0, {
+          title: i18n.t('trans.mySubmissionsTable.draftUpdatedBy'),
+          align: 'start',
+          key: 'updatedBy',
+          sortable: true,
+        });
+        hdrs.splice(hdrs.length - 1, 0, {
+          title: i18n.t('trans.mySubmissionsTable.draftLastEdited'),
+          align: 'start',
+          key: 'lastEdited',
+          sortable: true,
+        });
+      }
+      return hdrs;
     },
-    {
-      title: t('trans.mySubmissionsTable.createdBy'),
-      key: 'createdBy',
-      sortable: true,
+    HEADERS() {
+      let hdrs = this.DEFAULT_HEADERS;
+      if (this.filterData.length > 0)
+        hdrs = hdrs.filter(
+          (h) =>
+            this.filterData.some((fd) => fd.key === h.key) ||
+            this.filterIgnore.some((ign) => ign.key === h.key)
+        );
+      return hdrs;
     },
-    {
-      title: t('trans.mySubmissionsTable.statusUpdatedBy'),
-      key: 'username',
-      sortable: true,
+    PRESELECTED_DATA() {
+      return this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      );
     },
-    {
-      title: t('trans.mySubmissionsTable.status'),
-      key: 'status',
-      sortable: true,
+    showDraftLastEdited() {
+      return this.form && this.form.enableSubmitterDraft;
     },
-    {
-      title: t('trans.mySubmissionsTable.submissionDate'),
-      key: 'submittedDate',
-      sortable: true,
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
     },
-    {
-      title: t('trans.mySubmissionsTable.actions'),
-      align: 'end',
-      key: 'actions',
-      filterable: false,
-      sortable: false,
-      width: '140px',
+  },
+  async mounted() {
+    await this.fetchForm(this.formId);
+    await this.populateSubmissionsTable();
+  },
+  methods: {
+    ...mapActions(useFormStore, ['fetchForm', 'fetchSubmissions']),
+    // Status columns in the table
+    getCurrentStatus(record) {
+      // Current status is most recent status (top in array, query returns in
+      // status created desc)
+      const status =
+        record.submissionStatus && record.submissionStatus[0]
+          ? record.submissionStatus[0].code
+          : 'N/A';
+      if (record.draft && status !== 'REVISING') {
+        return 'DRAFT';
+      } else {
+        return status;
+      }
     },
-  ];
-  if (showDraftLastEdited.value || !properties.formId) {
-    hdrs.splice(hdrs.length - 1, 0, {
-      title: t('trans.mySubmissionsTable.draftUpdatedBy'),
-      align: 'start',
-      key: 'updatedBy',
-      sortable: true,
-    });
-    hdrs.splice(hdrs.length - 1, 0, {
-      title: t('trans.mySubmissionsTable.draftLastEdited'),
-      align: 'start',
-      key: 'lastEdited',
-      sortable: true,
-    });
-  }
-  return hdrs;
-});
 
-const HEADERS = computed(() => {
-  let hdrs = DEFAULT_HEADERS.value;
-  if (filterData.value.length > 0)
-    hdrs = hdrs.filter(
-      (h) =>
-        filterData.value.some((fd) => fd.key === h.key) ||
-        filterIgnore.value.some((ign) => ign.key === h.key)
-    );
-  return hdrs;
-});
+    getStatusDate(record, statusCode) {
+      // Get the created date of the most recent occurence of a specified status
+      if (record.submissionStatus) {
+        const submittedStatus = record.submissionStatus.find(
+          (stat) => stat.code === statusCode
+        );
+        if (submittedStatus) return submittedStatus.createdAt;
+      }
+      return '';
+    },
 
-const PRESELECTED_DATA = computed(() =>
-  DEFAULT_HEADERS.value.filter(
-    (h) => !filterIgnore.value.some((fd) => fd.key === h.key)
-  )
-);
+    async populateSubmissionsTable() {
+      this.loading = true;
+      // Get the submissions for this form
+      await this.fetchSubmissions({
+        formId: this.formId,
+        userView: true,
+      });
+      // Build up the list of forms for the table
+      if (this.submissionList) {
+        const tableRows = this.submissionList.map((s) => {
+          return {
+            confirmationId: s.confirmationId,
+            name: s.name,
+            permissions: s.permissions,
+            status: this.getCurrentStatus(s),
+            submissionId: s.formSubmissionId,
+            submittedDate: this.getStatusDate(s, 'SUBMITTED'),
+            createdBy: s.submission.createdBy,
+            updatedBy: s.draft ? s.submission.updatedBy : undefined,
+            lastEdited: s.draft ? s.submission.updatedAt : undefined,
+            username:
+              s.submissionStatus && s.submissionStatus.length > 0
+                ? s.submissionStatus[0].createdBy
+                : '',
+          };
+        });
+        this.submissionsTable = tableRows;
+      }
+      this.loading = false;
+    },
 
-const showDraftLastEdited = computed(
-  () => form.value && form.value.enableSubmitterDraft
-);
-
-const isCopyFromExistingSubmissionEnabled = computed(
-  () => form.value && form.value.enableCopyExistingSubmission
-);
-
-// Status columns in the table
-function getCurrentStatus(record) {
-  // Current status is most recent status (top in array, query returns in
-  // status created desc)
-  const status =
-    record.submissionStatus && record.submissionStatus[0]
-      ? record.submissionStatus[0].code
-      : 'N/A';
-  if (record.draft && status !== 'REVISING') {
-    return 'DRAFT';
-  } else {
-    return status;
-  }
-}
-
-function getStatusDate(record, statusCode) {
-  // Get the created date of the most recent occurence of a specified status
-  if (record.submissionStatus) {
-    const submittedStatus = record.submissionStatus.find(
-      (stat) => stat.code === statusCode
-    );
-    if (submittedStatus) return submittedStatus.createdAt;
-  }
-  return '';
-}
-
-async function populateSubmissionsTable() {
-  loading.value = true;
-  // Get the submissions for this form
-  await formStore.fetchSubmissions({
-    formId: properties.formId,
-    userView: true,
-  });
-  // Build up the list of forms for the table
-  if (submissionList.value) {
-    const tableRows = submissionList.value.map((s) => {
-      return {
-        confirmationId: s.confirmationId,
-        name: s.name,
-        permissions: s.permissions,
-        status: getCurrentStatus(s),
-        submissionId: s.formSubmissionId,
-        submittedDate: getStatusDate(s, 'SUBMITTED'),
-        createdBy: s.submission.createdBy,
-        updatedBy: s.draft ? s.submission.updatedBy : undefined,
-        lastEdited: s.draft ? s.submission.updatedAt : undefined,
-        username:
-          s.submissionStatus && s.submissionStatus.length > 0
-            ? s.submissionStatus[0].createdBy
-            : '',
-      };
-    });
-    submissionsTable.value = tableRows;
-  }
-  loading.value = false;
-}
-
-async function updateFilter(data) {
-  filterData.value = data;
-  showColumnsDialog.value = false;
-}
-
-onMounted(async () => {
-  await formStore.fetchForm(properties.formId);
-  await populateSubmissionsTable();
-});
+    async updateFilter(data) {
+      this.filterData = data;
+      this.showColumnsDialog = false;
+    },
+  },
+};
 </script>
 
 <template>
@@ -275,7 +276,7 @@ onMounted(async () => {
       </template>
       <template #item.actions="{ item }">
         <MySubmissionsActions
-          :submission="item"
+          :submission="item.raw"
           :form-id="formId"
           :is-copy-from-existing-submission-enabled="
             isCopyFromExistingSubmissionEnabled

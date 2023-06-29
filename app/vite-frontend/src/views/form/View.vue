@@ -1,16 +1,24 @@
-<script setup>
-import { computed } from 'vue';
+<script>
+import BaseSecure from '~/components/base/BaseSecure.vue';
 import FormSubmission from '~/components/forms/FormSubmission.vue';
 import { IdentityProviders } from '~/utils/constants';
 
-defineProps({
-  s: {
-    type: String,
-    required: true,
+export default {
+  name: 'FormView',
+  components: {
+    BaseSecure,
+    FormSubmission,
   },
-});
-
-const IDP = computed(() => IdentityProviders);
+  props: {
+    s: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    IDP: () => IdentityProviders,
+  },
+};
 </script>
 
 <template>

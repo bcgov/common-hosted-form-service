@@ -1,6 +1,3 @@
-// @vitest-environment happy-dom
-// happy-dom is required to access window.location
-
 import { mount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -11,12 +8,12 @@ import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useAuthStore } from '~/store/auth';
 
 describe('BaseSecure.vue', () => {
-  const pinia = createPinia();
   const router = createRouter({
     history: createWebHistory(),
     routes: getRouter().getRoutes(),
   });
 
+  const pinia = createPinia();
   setActivePinia(pinia);
   const authStore = useAuthStore();
 

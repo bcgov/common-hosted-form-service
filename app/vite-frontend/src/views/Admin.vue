@@ -1,9 +1,18 @@
-<script setup>
-import { computed } from 'vue';
+<script>
+import { mapState } from 'pinia';
 import BaseSecure from '~/components/base/BaseSecure.vue';
+import { useAuthStore } from '~/store/auth';
 import { IdentityProviders } from '~/utils/constants';
 
-const IDP = computed(() => IdentityProviders);
+export default {
+  components: {
+    BaseSecure,
+  },
+  computed: {
+    ...mapState(useAuthStore, ['isAdmin']),
+    IDP: () => IdentityProviders,
+  },
+};
 </script>
 
 <template>

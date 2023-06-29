@@ -1,131 +1,141 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref, watch } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import GeneralLayout from '~/components/forms/infolinks/GeneralLayout.vue';
 import { useAdminStore } from '~/store/admin';
 
-const adminStore = useAdminStore();
-
-const layout = ref({
-  'Basic Layout': [
-    'Text/Images',
-    'Columns - 2',
-    'Columns - 3',
-    'Columns - 4',
-    'Tabs',
-    'Panel',
-  ],
-  'Basic Fields': [
-    'Text Field',
-    'Multi-line Text',
-    'Select List',
-    'Checkbox',
-    'Checkbox Group',
-    'Radio Group',
-    'Number',
-    'Phone Number',
-    'Email',
-    'Date / Time',
-    'Day',
-  ],
-  'Advanced Layout': [
-    'HTML Element',
-    'Content',
-    'Columns',
-    'Field Set',
-    'Panel',
-    'Table',
-    'Tabs',
-    'Well',
-  ],
-  'Advanced Fields': [
-    'Text Field',
-    'Email',
-    'Text Area',
-    'Url',
-    'Number',
-    'Phone Number',
-    'Tags',
-    'Address',
-    'Password',
-    'Date / Time',
-    'Checkbox',
-    'Day',
-    'Time',
-    'Select Boxes',
-    'Select',
-    'Currency',
-    'Radio',
-    'Survey',
-    'Signature',
-  ],
-  'Advanced Data': [
-    'Hidden',
-    'Container',
-    'Data Map',
-    'Data Grid',
-    'Edit Grid',
-    'Tree',
-  ],
-  'BC Government': ['File Upload', 'Business Name Search', 'BC Address'],
-});
-const isPanelOpened = ref(new Map());
-const groupComponentsList = ref([]);
-
-const { fcProactiveHelp, fcProactiveHelpGroupList } = storeToRefs(adminStore);
-
-const groupList = computed(() => extractGroups());
-
-function onExpansionPanelClick(groupName) {
-  if (
-    isPanelOpened.value.get(groupName) === undefined ||
-    !isPanelOpened.value.get(groupName)
-  ) {
-    isPanelOpened.value.set(groupName, true);
-    groupComponentsList.value = extractGroupComponents(groupName);
-  } else {
-    isPanelOpened.value.set(groupName, false);
-  }
-
-  for (let key of isPanelOpened.value.keys()) {
-    if (key !== groupName) {
-      isPanelOpened.value.set(key, false);
-    }
-  }
-}
-
-//extract form builder layout groups.
-function extractGroups() {
-  let allgroups = [];
-  for (let [title] of Object.entries(layout.value)) {
-    if (title) {
-      allgroups.push(title);
-    }
-  }
-  return allgroups;
-}
-
-//extract all components in the select group in form builder
-function extractGroupComponents(groupName) {
-  let groupComponents = [];
-  for (let [title, components] of Object.entries(layout.value)) {
-    if (title && title === groupName && components) {
-      for (let componentName of components) {
-        groupComponents.push({ componentName: componentName });
+export default {
+  components: {
+    GeneralLayout,
+  },
+  data() {
+    return {
+      layout: {
+        'Basic Layout': [
+          'Text/Images',
+          'Columns - 2',
+          'Columns - 3',
+          'Columns - 4',
+          'Tabs',
+          'Panel',
+        ],
+        'Basic Fields': [
+          'Text Field',
+          'Multi-line Text',
+          'Select List',
+          'Checkbox',
+          'Checkbox Group',
+          'Radio Group',
+          'Number',
+          'Phone Number',
+          'Email',
+          'Date / Time',
+          'Day',
+        ],
+        'Advanced Layout': [
+          'HTML Element',
+          'Content',
+          'Columns',
+          'Field Set',
+          'Panel',
+          'Table',
+          'Tabs',
+          'Well',
+        ],
+        'Advanced Fields': [
+          'Text Field',
+          'Email',
+          'Text Area',
+          'Url',
+          'Number',
+          'Phone Number',
+          'Tags',
+          'Address',
+          'Password',
+          'Date / Time',
+          'Checkbox',
+          'Day',
+          'Time',
+          'Select Boxes',
+          'Select',
+          'Currency',
+          'Radio',
+          'Survey',
+          'Signature',
+        ],
+        'Advanced Data': [
+          'Hidden',
+          'Container',
+          'Data Map',
+          'Data Grid',
+          'Edit Grid',
+          'Tree',
+        ],
+        'BC Government': ['File Upload', 'Business Name Search', 'BC Address'],
+      },
+      isPanelOpened: new Map(),
+      groupComponentsList: [],
+    };
+  },
+  computed: {
+    ...mapState(useAdminStore, ['fcProactiveHelp', 'fcProactiveHelpGroupList']),
+    groupList() {
+      return this.extractGroups();
+    },
+  },
+  watch: {
+    fcProactiveHelp() {
+      this.listFCProactiveHelp();
+    },
+  },
+  mounted() {
+    this.listFCProactiveHelp();
+  },
+  methods: {
+    ...mapActions(useAdminStore, ['listFCProactiveHelp']),
+    onExpansionPanelClick(groupName) {
+      if (
+        this.isPanelOpened.get(groupName) === undefined ||
+        !this.isPanelOpened.get(groupName)
+      ) {
+        this.isPanelOpened.set(groupName, true);
+        this.groupComponentsList = this.extractGroupComponents(groupName);
+      } else {
+        this.isPanelOpened.set(groupName, false);
       }
-    }
-  }
-  return groupComponents;
-}
 
-watch(fcProactiveHelp, () => {
-  adminStore.listFCProactiveHelp();
-});
+      for (let key of this.isPanelOpened.keys()) {
+        if (key !== groupName) {
+          this.isPanelOpened.set(key, false);
+        }
+      }
+    },
 
-onMounted(() => {
-  adminStore.listFCProactiveHelp();
-});
+    //extract form builder layout groups.
+    extractGroups() {
+      let allgroups = [];
+      for (let [title] of Object.entries(this.layout)) {
+        if (title) {
+          allgroups.push(title);
+        }
+      }
+      return allgroups;
+    },
+
+    //extract all components in the select group in form builder
+    extractGroupComponents(groupName) {
+      let groupComponents = [];
+      for (let [title, components] of Object.entries(this.layout)) {
+        if (title && title === groupName && components) {
+          for (let componentName of components) {
+            groupComponents.push({ componentName: componentName });
+          }
+        }
+      }
+      return groupComponents;
+    },
+  },
+};
 </script>
 
 <template>

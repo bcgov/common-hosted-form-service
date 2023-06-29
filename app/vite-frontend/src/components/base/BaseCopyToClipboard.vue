@@ -1,62 +1,50 @@
-<script setup>
-import { computed } from 'vue';
+<script>
 import { i18n } from '~/internationalization';
-
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
-const { t } = i18n;
-
-const notificationStore = useNotificationStore();
-
-const properties = defineProps({
-  buttonText: {
-    type: String,
-    default: '',
+export default {
+  props: {
+    buttonText: {
+      type: String,
+      default: '',
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    textToCopy: {
+      required: true,
+      type: String,
+    },
+    snackBarText: {
+      type: String,
+      default: i18n.t('trans.baseCopyToClipboard.linkToClipboard'),
+    },
+    tooltipText: {
+      type: String,
+      default: i18n.t('trans.baseCopyToClipboard.copyToClipboard'),
+    },
   },
-  disabled: {
-    type: Boolean,
-    default: false,
+  emits: ['copied'],
+  methods: {
+    onCopy() {
+      this.$emit('copied');
+      const notificationStore = useNotificationStore();
+      notificationStore.addNotification({
+        text: this.snackBarText,
+        ...NotificationTypes.INFO,
+      });
+    },
+    onError(e) {
+      const notificationStore = useNotificationStore();
+      notificationStore.addNotification({
+        text: i18n.t('trans.baseCopyToClipboard.errCopyToClipboard'),
+        consoleError: e,
+      });
+    },
   },
-  textToCopy: {
-    required: true,
-    type: String,
-  },
-  snackBarText: {
-    type: String,
-    default: '',
-  },
-  tooltipText: {
-    type: String,
-    default: '',
-  },
-});
-
-const SNACKBAR_TEXT = computed(() =>
-  properties.snackBarText.value
-    ? properties.snackBarText.value
-    : t('trans.baseCopyToClipboard.linkToClipboard')
-);
-
-const TOOLTIP_TEXT = computed(() =>
-  properties.tooltipText.value
-    ? properties.tooltipText.value
-    : t('trans.baseCopyToClipboard.copyToClipboard')
-);
-
-function onCopy() {
-  notificationStore.addNotification({
-    text: SNACKBAR_TEXT.value,
-    ...NotificationTypes.INFO,
-  });
-}
-
-function onError(e) {
-  notificationStore.addNotification({
-    text: t('trans.baseCopyToClipboard.errCopyToClipboard'),
-    consoleError: e,
-  });
-}
+};
 </script>
 
 <template>
@@ -77,7 +65,7 @@ function onError(e) {
           <span v-if="buttonText">{{ buttonText }}</span>
         </v-btn>
       </template>
-      <span>{{ TOOLTIP_TEXT }}</span>
+      <span>{{ tooltipText }}</span>
     </v-tooltip>
   </span>
 </template>

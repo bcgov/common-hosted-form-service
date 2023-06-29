@@ -1,20 +1,24 @@
-<script setup>
-import { storeToRefs } from 'pinia';
+<script>
+import { mapState } from 'pinia';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
 import RequestReceipt from '~/components/forms/RequestReceipt.vue';
 import { useAuthStore } from '~/store/auth';
 
-defineProps({
-  s: {
-    type: String,
-    required: true,
+export default {
+  name: 'FormView',
+  components: {
+    FormViewer,
+    RequestReceipt,
   },
-});
-
-const authStore = useAuthStore();
-
-const { email } = storeToRefs(authStore);
+  props: {
+    s: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: mapState(useAuthStore, ['email']),
+};
 </script>
 
 <template>

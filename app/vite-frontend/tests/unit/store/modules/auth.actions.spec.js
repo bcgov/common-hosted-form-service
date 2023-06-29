@@ -1,3 +1,5 @@
+// @vitest-environment happy-dom
+// happy-dom is required to access window.location
 import { setActivePinia, createPinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import getRouter from '~/router';

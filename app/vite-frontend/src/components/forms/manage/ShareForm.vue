@@ -1,38 +1,50 @@
-<script setup>
+<script>
 import QrcodeVue from 'qrcode.vue';
-import { computed, ref } from 'vue';
 
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import { NotificationTypes } from '~/utils/constants';
 
-const properties = defineProps({
-  formId: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    BaseCopyToClipboard,
+    QrcodeVue,
   },
-  warning: {
-    type: Boolean,
-    default: false,
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
+    warning: {
+      type: Boolean,
+      default: false,
+    },
   },
-});
-
-const dialog = ref(false);
-const qrLevel = ref('M');
-const qrSize = ref(900);
-
-const formLink = computed(() => {
-  return `${window.location.origin}${import.meta.env.BASE_URL}/form/submit?f=${
-    properties.formId
-  }`;
-});
-const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
-
-function downloadQr() {
-  let link = document.createElement('a');
-  link.download = 'qrcode.png';
-  link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
-  link.click();
-}
+  data() {
+    return {
+      dialog: false,
+      qrLevel: 'M',
+      qrSize: 900,
+    };
+  },
+  computed: {
+    formLink() {
+      return `${window.location.origin}${
+        import.meta.env.BASE_URL
+      }/form/submit?f=${this.formId}`;
+    },
+    NOTIFICATIONS_TYPES() {
+      return NotificationTypes;
+    },
+  },
+  methods: {
+    downloadQr() {
+      let link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
+      link.click();
+    },
+  },
+};
 </script>
 
 <template>

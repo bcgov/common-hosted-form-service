@@ -1,216 +1,236 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, inject, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
-import getRouter from '~/router';
+import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { formService } from '~/services';
 import { FormPermissions } from '~/utils/constants';
 
-const { t } = useI18n({ useScope: 'global' });
-
-const fd = inject('fd');
-const draftId = inject('draftId');
-const formId = inject('formId');
-
-const formStore = useFormStore();
-const notificationStore = useNotificationStore();
-
-const headers = ref([
-  { title: t('trans.manageVersions.version'), align: 'start', key: 'version' },
-  { title: t('trans.manageVersions.status'), align: 'start', key: 'status' },
-  {
-    title: t('trans.manageVersions.dateCreated'),
-    align: 'start',
-    key: 'createdAt',
+export default {
+  components: {
+    BaseDialog,
   },
-  {
-    title: t('trans.manageVersions.createdBy'),
-    align: 'start',
-    key: 'createdBy',
-  },
-  {
-    title: t('trans.manageVersions.actions'),
-    align: 'end',
-    key: 'action',
-    filterable: false,
-    sortable: false,
-    width: 200,
-  },
-]);
-const formSchema = ref({
-  display: 'form',
-  type: 'form',
-  components: [],
-});
-const publishOpts = ref({
-  publishing: true,
-  version: '',
-  id: '',
-});
-const showHasDraftsDialog = ref(false);
-const showPublishDialog = ref(false);
-const showDeleteDraftDialog = ref(false);
-const rerenderTable = ref(0);
-
-const { drafts, form, permissions } = storeToRefs(formStore);
-
-const hasDraft = computed(() => drafts?.value?.length > 0);
-const hasVersions = computed(() => form?.versions?.length);
-const versionList = computed(() => {
-  if (hasDraft.value) {
-    // reformat draft object and then join with versions array
-    const reDraft = drafts.value.map((obj, idx) => {
-      obj.published = false;
-      obj.version = form.value.versions.length + drafts.value.length - idx;
-      obj.isDraft = true;
-      delete obj.formVersionId;
-      delete obj.schema;
-
-      return obj;
-    });
-    const merged = reDraft.concat(form.value.versions);
-    return form.value ? merged : [];
-  } else {
-    return form.value ? form.value.versions : [];
-  }
-});
-const canPublish = computed(() =>
-  permissions.value.includes(FormPermissions.FORM_UPDATE)
-);
-
-function createVersion(formId, versionId) {
-  if (hasDraft.value) {
-    showHasDraftsDialog.value = true;
-  } else {
-    getRouter().push({
-      name: 'FormDesigner',
-      query: { f: formId, v: versionId, newVersion: true },
-    });
-  }
-}
-
-function cancelPublish() {
-  showPublishDialog.value = false;
-  document.documentElement.style.overflow = 'auto';
-  if (draftId.value) {
-    getRouter()
-      .replace({
-        name: 'FormDesigner',
-        query: {
-          f: formId.value,
-          d: draftId.value,
-          saved: true,
+  inject: ['fd', 'draftId', 'formId'],
+  data() {
+    return {
+      headers: [
+        {
+          title: i18n.t('trans.manageVersions.version'),
+          align: 'start',
+          key: 'version',
         },
-      })
-      .catch(() => {});
-  }
+        {
+          title: i18n.t('trans.manageVersions.status'),
+          align: 'start',
+          key: 'status',
+        },
+        {
+          title: i18n.t('trans.manageVersions.dateCreated'),
+          align: 'start',
+          key: 'createdAt',
+        },
+        {
+          title: i18n.t('trans.manageVersions.createdBy'),
+          align: 'start',
+          key: 'createdBy',
+        },
+        {
+          title: i18n.t('trans.manageVersions.actions'),
+          align: 'end',
+          key: 'action',
+          filterable: false,
+          sortable: false,
+          width: 200,
+        },
+      ],
+      formSchema: {
+        display: 'form',
+        type: 'form',
+        components: [],
+      },
+      publishOpts: {
+        publishing: true,
+        version: '',
+        id: '',
+      },
+      showHasDraftsDialog: false,
+      showPublishDialog: false,
+      showDeleteDraftDialog: false,
+      rerenderTable: 0,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['drafts', 'form', 'permissions']),
+    hasDraft() {
+      return this.drafts?.length > 0;
+    },
+    hasVersions() {
+      return this.form?.versions?.length;
+    },
+    versionList() {
+      if (this.hasDraft) {
+        // reformat draft object and then join with versions array
+        const reDraft = this.drafts.map((obj, idx) => {
+          obj.published = false;
+          obj.version = this.form.versions.length + this.drafts.length - idx;
+          obj.isDraft = true;
+          delete obj.formVersionId;
+          delete obj.schema;
 
-  rerenderTable.value += 1;
-}
-
-function togglePublish(value, id, version, isDraft) {
-  publishOpts.value = {
-    publishing: value,
-    version: version,
-    id: id,
-    isDraft: isDraft,
-  };
-  showPublishDialog.value = true;
-}
-
-function turnOnPublish() {
-  if (versionList.value) {
-    for (const item of versionList.value) {
-      if (item.id === draftId) {
-        publishOpts.value = {
-          publishing: true,
-          version: item.version,
-          id: item.id,
-          isDraft: item.isDraft,
-        };
-        document.documentElement.style.overflow = 'hidden';
-        showPublishDialog.value = true;
+          return obj;
+        });
+        const merged = reDraft.concat(this.form.versions);
+        return this.form ? merged : [];
+      } else {
+        return this.form ? this.form.versions : [];
       }
+    },
+    canPublish() {
+      return this.permissions.includes(FormPermissions.FORM_UPDATE);
+    },
+  },
+  created() {
+    if (this.fd) {
+      this.turnOnPublish();
     }
-  }
-}
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    ...mapActions(useFormStore, [
+      'deleteDraft',
+      'fetchDrafts',
+      'fetchForm',
+      'publishDraft',
+      'toggleVersionPublish',
+    ]),
+    createVersion(formId, versionId) {
+      if (this.hasDraft) {
+        this.showHasDraftsDialog = true;
+      } else {
+        this.$router.push({
+          name: 'FormDesigner',
+          query: { f: formId, v: versionId, newVersion: true },
+        });
+      }
+    },
 
-async function updatePublish() {
-  showPublishDialog.value = false;
-  document.documentElement.style.overflow = 'auto';
-  // if publishing a draft version
-  if (publishOpts.value.isDraft) {
-    await formStore.publishDraft({
-      formId: form.value.id,
-      draftId: publishOpts.value.id,
-    });
-    // Refresh draft in form version list
-    formStore.fetchDrafts(form.value.id);
-  }
-  // else, we toggle status of a version
-  else {
-    await formStore.toggleVersionPublish({
-      formId: form.value.id,
-      versionId: publishOpts.value.id,
-      publish: publishOpts.value.publishing,
-    });
-  }
-  // Refresh form version list
-  formStore.fetchForm(form.value.id);
-}
+    cancelPublish() {
+      this.showPublishDialog = false;
+      document.documentElement.style.overflow = 'auto';
+      if (this.draftId) {
+        this.$router
+          .replace({
+            name: 'FormDesigner',
+            query: {
+              f: this.formId,
+              d: this.draftId,
+              saved: true,
+            },
+          })
+          .catch(() => {});
+      }
 
-async function deleteCurrentDraft() {
-  showDeleteDraftDialog.value = false;
-  await formStore.deleteDraft({
-    formId: form.value.id,
-    draftId: drafts.value[0].id,
-  });
-  formStore.fetchDrafts(form.value.id);
-}
+      this.rerenderTable += 1;
+    },
+    togglePublish(value, id, version, isDraft) {
+      this.publishOpts = {
+        publishing: value,
+        version: version,
+        id: id,
+        isDraft: isDraft,
+      };
+      this.showPublishDialog = true;
+    },
 
-async function onExportClick(id, isDraft) {
-  await getFormSchema(id, isDraft);
-  let snek = form.value.snake;
-  if (!form.value.snake) {
-    snek = form.value.name
-      .replace(/\s+/g, '_')
-      .replace(/[^-_0-9a-z]/gi, '')
-      .toLowerCase();
-  }
+    turnOnPublish() {
+      if (this.versionList) {
+        for (const item of this.versionList) {
+          if (item.id === this.draftId) {
+            this.publishOpts = {
+              publishing: true,
+              version: item.version,
+              id: item.id,
+              isDraft: item.isDraft,
+            };
+            document.documentElement.style.overflow = 'hidden';
+            this.showPublishDialog = true;
+          }
+        }
+      }
+    },
 
-  const a = document.createElement('a');
-  a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-    JSON.stringify(formSchema.value)
-  )}`;
-  a.download = `${snek}_schema.json`;
-  a.style.display = 'none';
-  a.classList.add('hiddenDownloadTextElement');
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
+    async updatePublish() {
+      this.showPublishDialog = false;
+      document.documentElement.style.overflow = 'auto';
+      // if publishing a draft version
+      if (this.publishOpts.isDraft) {
+        await this.publishDraft({
+          formId: this.form.id,
+          draftId: this.publishOpts.id,
+        });
+        // Refresh draft in form version list
+        this.fetchDrafts(this.form.id);
+      }
+      // else, we toggle status of a version
+      else {
+        await this.toggleVersionPublish({
+          formId: this.form.id,
+          versionId: this.publishOpts.id,
+          publish: this.publishOpts.publishing,
+        });
+      }
+      // Refresh form version list
+      this.fetchForm(this.form.id);
+    },
 
-async function getFormSchema(id, isDraft = false) {
-  try {
-    let res = !isDraft
-      ? await formService.readVersion(form.value.id, id)
-      : await formService.readDraft(form.value.id, id);
-    formSchema.value = { ...formSchema.value, ...res.data.schema };
-  } catch (error) {
-    notificationStore.addNotification({
-      text: 'An error occurred while loading the form design.',
-      consoleError: `Error loading form ${form.value.id} schema (version / draft: ${id}): ${error}`,
-    });
-  }
-}
+    async deleteCurrentDraft() {
+      this.showDeleteDraftDialog = false;
+      await this.deleteDraft({
+        formId: this.form.id,
+        draftId: this.drafts[0].id,
+      });
+      this.fetchDrafts(this.form.id);
+    },
 
-if (fd) {
-  turnOnPublish();
-}
+    async onExportClick(id, isDraft) {
+      await this.getFormSchema(id, isDraft);
+      let snek = this.form.snake;
+      if (!this.form.snake) {
+        snek = this.form.name
+          .replace(/\s+/g, '_')
+          .replace(/[^-_0-9a-z]/gi, '')
+          .toLowerCase();
+      }
+
+      const a = document.createElement('a');
+      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(this.formSchema)
+      )}`;
+      a.download = `${snek}_schema.json`;
+      a.style.display = 'none';
+      a.classList.add('hiddenDownloadTextElement');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    },
+
+    async getFormSchema(id, isDraft = false) {
+      try {
+        let res = !isDraft
+          ? await formService.readVersion(this.form.id, id)
+          : await formService.readDraft(this.form.id, id);
+        this.formSchema = { ...this.formSchema, ...res.data.schema };
+      } catch (error) {
+        this.addNotification({
+          text: 'An error occurred while loading the form design.',
+          consoleError: `Error loading form ${this.form.id} schema (version / draft: ${id}): ${error}`,
+        });
+      }
+    },
+  },
+};
 </script>
 
 <template>

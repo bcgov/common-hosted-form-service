@@ -1,122 +1,130 @@
-<script setup>
-import { computed, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { i18n } from '~/internationalization';
 
 import userService from '~/services/userService';
 import { FormRoleCodes, IdentityProviders, Regex } from '~/utils/constants';
 
-const addingUsers = ref(false);
-const isLoading = ref(false);
-const model = ref(null);
-const searchUsers = ref(null);
-const selectedIdp = ref(IdentityProviders.IDIR);
-const selectedRoles = ref([]);
-const showError = ref(false);
-const entries = ref([]);
-
-const { t } = useI18n({ useScope: 'global' });
-
-defineProps({
-  disabled: {
-    type: Boolean,
-    default: false,
+export default {
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
-});
-
-const emits = defineEmits(['new-users', 'adding-users']);
-
-const ID_PROVIDERS = computed(() => IdentityProviders);
-const FORM_ROLES = computed(() => {
-  if (selectedIdp.value === IdentityProviders.BCEIDBASIC)
-    return Object.values(FormRoleCodes).filter(
-      (frc) => frc === FormRoleCodes.FORM_SUBMITTER
-    );
-  else if (selectedIdp.value === IdentityProviders.BCEIDBUSINESS)
-    return Object.values(FormRoleCodes)
-      .filter(
-        (frc) =>
-          frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER
-      )
-      .sort();
-  return Object.values(FormRoleCodes).sort();
-});
-const autocompleteLabel = computed(() =>
-  selectedIdp.value == IdentityProviders.IDIR
-    ? t('trans.addTeamMember.enterUsername')
-    : t('trans.addTeamMember.enterExactUsername')
-);
-
-watch(selectedIdp, (newIdp, oldIdp) => {
-  if (newIdp !== oldIdp) {
-    entries.value = [];
-    showError.value = false;
-  }
-});
-
-watch(selectedRoles, (newRoles, oldRoles) => {
-  if (newRoles !== oldRoles) {
-    entries.value = [];
-    showError.value = false;
-  }
-});
-
-watch(addingUsers, () => {
-  emits('adding-users', addingUsers.value);
-});
-
-watch(searchUsers, async (input) => {
-  if (!input) return;
-  isLoading.value = true;
-  try {
-    let params = {};
-    params.idpCode = selectedIdp.value;
-    if (
-      selectedIdp.value == IdentityProviders.BCEIDBASIC ||
-      selectedIdp.value == IdentityProviders.BCEIDBUSINESS
-    ) {
-      if (input.length < 6)
-        throw new Error(
-          'Search input for BCeID username/email must be greater than 6 characters.'
+  emits: ['new-users', 'adding-users'],
+  data() {
+    return {
+      addingUsers: false,
+      isLoading: false,
+      model: null,
+      searchUsers: null,
+      selectedIdp: IdentityProviders.IDIR,
+      selectedRoles: [],
+      showError: false,
+      entries: [],
+    };
+  },
+  computed: {
+    ID_PROVIDERS() {
+      return IdentityProviders;
+    },
+    FORM_ROLES() {
+      if (this.selectedIdp === IdentityProviders.BCEIDBASIC)
+        return Object.values(FormRoleCodes).filter(
+          (frc) => frc === FormRoleCodes.FORM_SUBMITTER
         );
-      if (input.includes('@')) {
-        if (!new RegExp(Regex.EMAIL).test(input))
-          throw new Error('Email searches for BCeID must be exact.');
-        else params.email = input;
-      } else {
-        params.username = input;
+      else if (this.selectedIdp === IdentityProviders.BCEIDBUSINESS)
+        return Object.values(FormRoleCodes)
+          .filter(
+            (frc) =>
+              frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER
+          )
+          .sort();
+      return Object.values(FormRoleCodes).sort();
+    },
+    autocompleteLabel() {
+      return this.selectedIdp == IdentityProviders.IDIR
+        ? i18n.t('trans.addTeamMember.enterUsername')
+        : i18n.t('trans.addTeamMember.enterExactUsername');
+    },
+  },
+  watch: {
+    selectedIdp(newIdp, oldIdp) {
+      if (newIdp !== oldIdp) {
+        this.entries = [];
+        this.showError = false;
       }
-    } else {
-      params.search = input;
-    }
-    const response = await userService.getUsers(params);
-    entries.value = response.data;
-  } catch (error) {
-    entries.value = [];
-    console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
-  } finally {
-    isLoading.value = false;
-  }
-});
+    },
 
-// show users in dropdown that have a text match on multiple properties
-function filterObject(item, queryText) {
-  return Object.values(item)
-    .filter((v) => v)
-    .some((v) => v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()));
-}
+    selectedRoles(newRoles, oldRoles) {
+      if (newRoles !== oldRoles) {
+        this.entries = [];
+        this.showError = false;
+      }
+    },
 
-function save() {
-  if (selectedRoles.value.length === 0) {
-    showError.value = true;
-    return;
-  }
-  showError.value = false;
-  // emit user (object) to the parent component
-  emits('new-users', [model.value], selectedRoles.value);
-  // reset search field
-  model.value = null;
-  addingUsers.value = false;
-}
+    addingUsers() {
+      this.$emit('adding-users', this.addingUsers);
+    },
+
+    async searchUsers(input) {
+      if (!input) return;
+      this.isLoading = true;
+      try {
+        let params = {};
+        params.idpCode = this.selectedIdp;
+        if (
+          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
+          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
+        ) {
+          if (input.length < 6)
+            throw new Error(
+              'Search input for BCeID username/email must be greater than 6 characters.'
+            );
+          if (input.includes('@')) {
+            if (!new RegExp(Regex.EMAIL).test(input))
+              throw new Error('Email searches for BCeID must be exact.');
+            else params.email = input;
+          } else {
+            params.username = input;
+          }
+        } else {
+          params.search = input;
+        }
+        const response = await userService.getUsers(params);
+        this.entries = response.data;
+      } catch (error) {
+        this.entries = [];
+        console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
+      } finally {
+        this.isLoading = false;
+      }
+    },
+  },
+  methods: {
+    // show users in dropdown that have a text match on multiple properties
+    filterObject(item, queryText) {
+      return Object.values(item)
+        .filter((v) => v)
+        .some((v) =>
+          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+        );
+    },
+
+    save() {
+      if (this.selectedRoles.length === 0) {
+        this.showError = true;
+        return;
+      }
+      this.showError = false;
+      // emit user (object) to the parent component
+      this.$emit('new-users', [this.model], this.selectedRoles);
+      // reset search field
+      this.model = null;
+      this.addingUsers = false;
+    },
+  },
+};
 </script>
 
 <template>

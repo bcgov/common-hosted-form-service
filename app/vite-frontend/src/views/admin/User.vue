@@ -1,12 +1,17 @@
-<script setup>
+<script>
 import AdministerUser from '~/components/admin/AdministerUser.vue';
 
-defineProps({
-  u: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    AdministerUser,
   },
-});
+  props: {
+    u: {
+      type: String,
+      required: true,
+    },
+  },
+};
 </script>
 
 <template>

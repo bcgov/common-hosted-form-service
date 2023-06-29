@@ -1,6 +1,5 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
@@ -9,84 +8,96 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 
-const formStore = useFormStore();
-const notificationStore = useNotificationStore();
+export default {
+  components: {
+    ApiKey,
+    FormSettings,
+    ManageVersions,
+  },
+  data() {
+    return {
+      apiKeyPanel: 1,
+      formSettingsDisabled: true,
+      settingsForm: null,
+      settingsFormValid: false,
+      settingsPanel: 1,
+      versionsPanel: 0,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['drafts', 'form', 'permissions']),
+    canEditForm() {
+      return this.permissions.includes(FormPermissions.FORM_UPDATE);
+    },
+    combinedVersionAndDraftCount() {
+      return (
+        (this.form?.versions ? this.form.versions.length : 0) +
+        (this.drafts && Array.isArray(this.drafts) ? this.drafts.length : 0)
+      );
+    },
+    currentVersion() {
+      let cv = 'N/A';
+      if (this.form?.versions && this.form.versions.length) {
+        const vers = this.form.versions.find((v) => v.published);
+        if (vers) {
+          cv = vers.version;
+        }
+      }
+      return cv;
+    },
+    versionState() {
+      if (this.form?.versions && this.form.versions.some((v) => v.published)) {
+        return `Published (ver ${this.currentVersion})`;
+      } else {
+        return 'Unpublished';
+      }
+    },
+    canManageAPI() {
+      return this.permissions.some((p) =>
+        [
+          FormPermissions.FORM_API_CREATE,
+          FormPermissions.FORM_API_READ,
+          FormPermissions.FORM_API_UPDATE,
+          FormPermissions.FORM_API_DELETE,
+        ].includes(p)
+      );
+    },
+  },
+  methods: {
+    ...mapActions(useFormStore, ['fetchForm', 'updateForm']),
+    ...mapActions(useNotificationStore, ['addNotification']),
+    cancelSettingsEdit() {
+      this.formSettingsDisabled = true;
+      this.fetchForm(this.form.id);
+    },
 
-const apiKeyPanel = ref(1);
-const formSettingsDisabled = ref(true);
-const settingsForm = ref(null);
-const settingsFormValid = ref(false);
-const settingsPanel = ref(1);
-const versionsPanel = ref(0);
+    enableSettingsEdit() {
+      this.settingsPanel = 0;
+      this.formSettingsDisabled = false;
+    },
 
-const { drafts, form, permissions } = storeToRefs(formStore);
+    async updateSettings() {
+      try {
+        const { valid } = await this.settingsForm.validate();
 
-const canEditForm = computed(() =>
-  permissions.value.includes(FormPermissions.FORM_UPDATE)
-);
-const combinedVersionAndDraftCount = computed(
-  () =>
-    (form?.value?.versions ? form.value.versions.length : 0) +
-    (drafts?.value ? drafts.value.length : 0)
-);
-const currentVersion = computed(() => {
-  let cv = 'N/A';
-  if (form?.value?.versions && form.value.versions.length) {
-    const vers = form.value.versions.find((v) => v.published);
-    if (vers) {
-      cv = vers.version;
-    }
-  }
-  return cv;
-});
-const versionState = computed(() => {
-  if (form?.value?.versions && form.value.versions.some((v) => v.published)) {
-    return `Published (ver ${currentVersion.value})`;
-  } else {
-    return 'Unpublished';
-  }
-});
-const canManageAPI = computed(() =>
-  permissions.value.some((p) =>
-    [
-      FormPermissions.FORM_API_CREATE,
-      FormPermissions.FORM_API_READ,
-      FormPermissions.FORM_API_UPDATE,
-      FormPermissions.FORM_API_DELETE,
-    ].includes(p)
-  )
-);
-
-function cancelSettingsEdit() {
-  formSettingsDisabled.value = true;
-  formStore.fetchForm(form.value.id);
-}
-
-function enableSettingsEdit() {
-  settingsPanel.value = 0;
-  formSettingsDisabled.value = false;
-}
-
-async function updateSettings() {
-  try {
-    const { valid } = await settingsForm.value.validate();
-
-    if (valid) {
-      await formStore.updateForm();
-      formSettingsDisabled.value = true;
-      notificationStore.addNotification({
-        text: 'Your form settings have been updated successfully.',
-        ...NotificationTypes.SUCCESS,
-      });
-      formStore.fetchForm(form.value.id);
-    }
-  } catch (error) {
-    notificationStore.addNotification({
-      text: 'An error occurred while attempting to update the settings for this form.',
-      consoleError: `Error updating settings for ${form.value.id}: ${error}`,
-    });
-  }
-}
+        if (valid) {
+          await this.updateForm();
+          this.formSettingsDisabled = true;
+          this.addNotification({
+            text: 'Your form settings have been updated successfully.',
+            ...NotificationTypes.SUCCESS,
+          });
+          this.fetchForm(this.form.id);
+        }
+      } catch (error) {
+        this.addNotification({
+          text: 'An error occurred while attempting to update the settings for this form.',
+          consoleError: `Error updating settings for ${this.form.id}: ${error}`,
+        });
+      }
+    },
+  },
+};
 </script>
 
 <template>

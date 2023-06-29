@@ -1,110 +1,113 @@
-<script setup>
-import { ref, watch } from 'vue';
-
+<script>
+import { mapActions } from 'pinia';
 import { useAdminStore } from '~/store/admin';
 
-const props = defineProps({
-  showDialog: { type: Boolean, required: true },
-  component: { type: Object, default: () => {} },
-  componentName: { type: String, require: true, default: '' },
-  groupName: { type: String, required: true },
-});
-
-const emits = defineEmits(['close-dialog']);
-
-const adminStore = useAdminStore();
-
-const componentName_ = ref(
-  props?.component?.componentName
-    ? props.component.componentName
-    : props.componentName
-);
-const description = ref(
-  props?.component?.description ? props.component.description : ''
-);
-const moreHelpInfoLink = ref(
-  props?.component?.externalLink ? props.component.externalLink : ''
-);
-const isLinkEnabled = ref(
-  props?.component?.isLinkEnabled ? props.component.isLinkEnabled : ''
-);
-const dialog = ref(props.showDialog);
-const image = ref('');
-const imageSizeError = ref(false);
-const componentId = ref(props?.component?.id ? props.component.id : undefined);
-const imageName = ref(
-  props?.component?.imageName ? props.component.imageName : ''
-);
-const imagePlaceholder = ref(
-  props?.component?.imageName ? props.component.imageName : undefined
-);
-const linkError = ref(false);
-
-watch(props.showDialog, (newValue) => {
-  dialog.value = newValue;
-});
-watch(props.componentName, (newValue) => {
-  componentName_.value = newValue;
-});
-function onCloseDialog() {
-  resetDialog();
-  emits('close-dialog');
-}
-function validateLinkUrl() {
-  let error = false;
-  linkError.value = false;
-  if (isLinkEnabled.value && moreHelpInfoLink.value === '') {
-    error = true;
-    linkError.value = true;
-  }
-  return error;
-}
-async function selectImage(img) {
-  imageSizeError.value = false;
-  if (img.size > 500000) {
-    imageSizeError.value = true;
-  } else {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      image.value = e.target.result;
-      imageName.value = img.name;
+export default {
+  props: {
+    showDialog: { type: Boolean, required: true },
+    component: { type: Object, default: () => {} },
+    componentName: { type: String, require: true, default: '' },
+    groupName: { type: String, required: true },
+  },
+  emits: ['close-dialog'],
+  data() {
+    return {
+      componentName_: this?.component?.componentName
+        ? this.component.componentName
+        : this.componentName,
+      description: this?.component?.description
+        ? this.component.description
+        : '',
+      moreHelpInfoLink: this?.component?.externalLink
+        ? this.component.externalLink
+        : '',
+      isLinkEnabled: this?.component?.isLinkEnabled
+        ? this.component.isLinkEnabled
+        : '',
+      dialog: this.showDialog,
+      image: '',
+      imageSizeError: false,
+      componentId: this?.component?.id ? this.component.id : undefined,
+      imageName: this?.component?.imageName ? this.component.imageName : '',
+      imagePlaceholder: this?.component?.imageName
+        ? this.component.imageName
+        : undefined,
+      linkError: false,
     };
-    if (img) {
-      await reader.readAsDataURL(img);
-    }
-  }
-}
-function submit() {
-  if (!validateLinkUrl()) {
-    imageName.value = image.value !== '' ? imageName.value : '';
-    moreHelpInfoLink.value = !isLinkEnabled.value ? '' : moreHelpInfoLink.value;
-    adminStore.addFCProactiveHelp({
-      componentId: componentId.value,
-      componentName: componentName_.value,
-      image: image.value,
-      externalLink: moreHelpInfoLink.value,
-      groupName: props.groupName,
-      description: description.value,
-      status:
-        props.component && props.component.status
-          ? props.component.status
-          : false,
-      isLinkEnabled: isLinkEnabled.value,
-      imageName: imageName.value,
-    });
-    onCloseDialog();
-  }
-}
-function resetDialog() {
-  componentName_.value = '';
-  moreHelpInfoLink.value = '';
-  isLinkEnabled.value = false;
-  image.value = '';
-  imageName.value = '';
-  imagePlaceholder.value = undefined;
-  linkError.value = false;
-  description.value = '';
-}
+  },
+  watch: {
+    showDialog(value) {
+      this.dialog = value;
+    },
+    componentName_(value) {
+      this.componentName_ = value;
+    },
+  },
+  methods: {
+    ...mapActions(useAdminStore, ['addFCProactiveHelp']),
+    onCloseDialog() {
+      this.resetDialog();
+      this.$emit('close-dialog');
+    },
+    validateLinkUrl() {
+      let error = false;
+      this.linkError = false;
+      if (this.isLinkEnabled && this.moreHelpInfoLink === '') {
+        error = true;
+        this.linkError = true;
+      }
+      return error;
+    },
+    async selectImage(img) {
+      this.imageSizeError = false;
+      if (img.size > 500000) {
+        this.imageSizeError = true;
+      } else {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          this.image = e.target.result;
+          this.imageName = img.name;
+        };
+        if (img) {
+          await reader.readAsDataURL(img);
+        }
+      }
+    },
+    submit() {
+      if (!this.validateLinkUrl()) {
+        this.imageName = this.image !== '' ? this.imageName : '';
+        this.moreHelpInfoLink = !this.isLinkEnabled
+          ? ''
+          : this.moreHelpInfoLink;
+        this.addFCProactiveHelp({
+          componentId: this.componentId,
+          componentName: this.componentName_,
+          image: this.image,
+          externalLink: this.moreHelpInfoLink,
+          groupName: this.groupName,
+          description: this.description,
+          status:
+            this.component && this.component.status
+              ? this.component.status
+              : false,
+          isLinkEnabled: this.isLinkEnabled,
+          imageName: this.imageName,
+        });
+        this.onCloseDialog();
+      }
+    },
+    resetDialog() {
+      this.componentName_ = '';
+      this.moreHelpInfoLink = '';
+      this.isLinkEnabled = false;
+      this.image = '';
+      this.imageName = '';
+      this.imagePlaceholder = undefined;
+      this.linkError = false;
+      this.description = '';
+    },
+  },
+};
 </script>
 
 <template>

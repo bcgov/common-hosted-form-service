@@ -1,71 +1,79 @@
-<script setup>
-import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+<script>
+import { mapActions, mapState } from 'pinia';
 
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
 import { IdentityProviders } from '~/utils/constants';
 
-const properties = defineProps({
-  id: {
-    type: String,
-    required: true,
+export default {
+  components: {
+    BaseSecure,
   },
-});
-
-const formStore = useFormStore();
-
-const { downloadedFile } = storeToRefs(formStore);
-
-const showDownloadLink = ref(false);
-
-const IDP = computed(() => IdentityProviders);
-
-onMounted(() => {
-  getFile(properties.id);
-});
-
-function getDisposition(disposition) {
-  if (disposition && disposition.indexOf('attachment') !== -1) {
-    let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-    let matches = filenameRegex.exec(disposition);
-    if (matches != null && matches[1]) {
-      disposition = matches[1].replace(/['"]/g, '');
-    }
-  }
-  return disposition;
-}
-
-async function getFile(fileId) {
-  showDownloadLink.value = false;
-  await formStore.downloadFile(fileId);
-  if (
-    downloadedFile.value &&
-    downloadedFile.value.data &&
-    downloadedFile.value.headers
-  ) {
-    showDownloadLink.value = true;
-    const data = downloadedFile.value.headers['content-type'].includes(
-      'application/json'
-    )
-      ? JSON.stringify(downloadedFile.value.data)
-      : downloadedFile.value.data;
-    const blob = new Blob([data], {
-      type: downloadedFile.value.headers['content-type'],
-    });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = getDisposition(
-      downloadedFile.value.headers['content-disposition']
-    );
-    a.style.display = 'none';
-    a.classList.add('hiddenDownloadTextElement');
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-}
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      showDownloadLink: false,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['downloadedFile']),
+    IDP: () => IdentityProviders,
+  },
+  mounted() {
+    this.getFile(this.id);
+  },
+  methods: {
+    ...mapActions(useFormStore, ['downloadFile']),
+    ...mapActions(useNotificationStore, ['addNotification']),
+    // disposition retrieval from https://stackoverflow.com/a/40940790
+    getDisposition(disposition) {
+      if (disposition && disposition.indexOf('attachment') !== -1) {
+        let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        let matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+          disposition = matches[1].replace(/['"]/g, '');
+        }
+      }
+      return disposition;
+    },
+    async getFile(fileId) {
+      this.showDownloadLink = false;
+      await this.downloadFile(fileId);
+      if (
+        this.downloadedFile &&
+        this.downloadedFile.data &&
+        this.downloadedFile.headers
+      ) {
+        this.showDownloadLink = true;
+        const data = this.downloadedFile.headers['content-type'].includes(
+          'application/json'
+        )
+          ? JSON.stringify(this.downloadedFile.data)
+          : this.downloadedFile.data;
+        const blob = new Blob([data], {
+          type: this.downloadedFile.headers['content-type'],
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = this.getDisposition(
+          this.downloadedFile.headers['content-disposition']
+        );
+        a.style.display = 'none';
+        a.classList.add('hiddenDownloadTextElement');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    },
+  },
+};
 </script>
 
 <template>

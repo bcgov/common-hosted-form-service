@@ -1,22 +1,25 @@
-<script setup>
-import { ref } from 'vue';
-
-defineProps({
-  alt: {
-    type: String,
-    default: '',
+<script>
+export default {
+  props: {
+    alt: {
+      type: String,
+      default: '',
+    },
+    src: {
+      type: String,
+      required: true,
+    },
+    width: {
+      type: String,
+      default: '600px',
+    },
   },
-  src: {
-    type: String,
-    required: true,
+  data() {
+    return {
+      dialog: false,
+    };
   },
-  width: {
-    type: String,
-    default: '600px',
-  },
-});
-
-const dialog = ref(false);
+};
 </script>
 
 <template>
