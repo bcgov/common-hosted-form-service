@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const { getPagingData, validateScheduleObject } = require('../common/utils');
+const { validateScheduleObject } = require('../common/utils');
 const { SubscriptionEvent } = require('../common/constants');
 const axios = require('axios');
 const log = require('../../components/log')(module.filename);
@@ -247,24 +247,13 @@ const service = {
       .modify('filterDeleted', params.deleted)
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
-      .modify('filterVersion', params.version);
-    if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
-      query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
-    }
-    if (params.search && typeof params.search === 'string' && params.search.length > 2) {
-      query.modify('filterSearch', params.search);
-    }
-    // add "order by" after we count total items, cause overwise we get error:
-    // "must appear in the GROUP BY clause or be used in an aggregate function"
-    const count = await query.clone().count().first();
-    if (params.sortBy && params.sortBy.length > 0) {
-      query.modify('userOrder', params.sortBy, params.sortDesc);
-    } else {
-      query.modify('orderDefault');
-    }
+      .modify('filterVersion', params.version)
+      .modify('orderDefault');
+
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
-    let fields = [];
+
     if (params.fields && params.fields.length) {
+      let fields = [];
       if (Array.isArray(params.fields)) {
         fields = params.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
       } else {
@@ -281,7 +270,7 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
-    return getPagingData(query, params, parseInt(count['count'], 10));
+    return query;
   },
 
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
