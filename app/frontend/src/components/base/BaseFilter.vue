@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :class="{ 'dir-rtl': isRTL }">
     <v-card-title class="text-h5 pb-0 titleWrapper">
       <slot name="filter-title"></slot>
     </v-card-title>
@@ -40,6 +40,7 @@
       <v-btn
         @click="cancelFilterData"
         class="mt-3 ml-3 primary--text"
+        :class="isRTL ? 'mr-3' : 'ml-3'"
         outlined
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
@@ -49,6 +50,8 @@
 
 <script>
 import i18n from '@/internationalization';
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'BaseFilter',
   props: {
@@ -99,6 +102,9 @@ export default {
       default: i18n.t('trans.baseFilter.filter'),
     },
   },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
+  },
   data() {
     return {
       selectedData: this.preselectedData,
@@ -137,6 +143,11 @@ export default {
   font-variant: normal !important;
   font-family: BCSans !important;
   color: #000000 !important;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 
 .hr {

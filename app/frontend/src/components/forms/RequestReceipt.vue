@@ -1,6 +1,12 @@
 <template>
-  <div>
-    <v-btn color="primary" text small @click="displayDialog">
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-btn
+      color="primary"
+      text
+      small
+      @click="displayDialog"
+      :class="{ 'dir-rtl': isRTL }"
+    >
       <v-icon class="mr-1">email</v-icon>
       <span>{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
@@ -10,6 +16,7 @@
       type="CONTINUE"
       @close-dialog="showDialog = false"
       @continue-dialog="requestReceipt()"
+      :class="{ 'dir-rtl': isRTL }"
     >
       <template #icon>
         <v-icon large color="primary" class="d-none d-sm-flex"> email </v-icon>
@@ -30,18 +37,21 @@
             :rules="emailRules"
             v-model="to"
             data-test="text-form-to"
+            :class="{ 'dir-rtl': isRTL }"
           />
         </v-form>
       </template>
       <template v-slot:button-text-continue>
-        <span>{{ $t('trans.requestReceipt.send') }}</span>
+        <span :class="{ 'dir-rtl': isRTL }">{{
+          $t('trans.requestReceipt.send')
+        }}</span>
       </template>
     </BaseDialog>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import { NotificationTypes } from '@/utils/constants';
 import { formService } from '@/services';
@@ -87,6 +97,9 @@ export default {
       this.valid = false;
     },
   },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
+  },
   mounted() {
     this.resetDialog();
   },
@@ -106,3 +119,9 @@ export default {
   },
 };
 </script>
+<style lang="css" scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
+</style>

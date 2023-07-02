@@ -1,4 +1,5 @@
 import orgbook from './OrgBook/Component';
+import recap from './ReCaptcha/Component';
 import simplebtnreset from './SimpleButtonReset/Component';
 import simplebtnsubmit from './SimpleButtonSubmit/Component';
 import simplecheckbox from './SimpleCheckbox/Component';
@@ -91,5 +92,7 @@ export default {
   simplesurveyadvanced,
   simplesignatureadvanced,
   simplebuttonadvanced,
-  bcaddress
+  bcaddress,
+  recap
 };
+

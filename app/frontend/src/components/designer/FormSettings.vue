@@ -1,5 +1,5 @@
 <template>
-  <v-container class="px-0">
+  <v-container class="px-0" :class="{ 'dir-rtl': isRTL }">
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
@@ -904,7 +904,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import {
   IdentityMode,
@@ -1059,6 +1059,7 @@ export default {
       'form.reminder_enabled',
       'form.versions',
     ]),
+    ...mapGetters('form', ['isRTL']),
     ID_MODE() {
       return IdentityMode;
     },
@@ -1318,3 +1319,8 @@ export default {
   },
 };
 </script>
+<style lang="css" scoped>
+.dir-rtl {
+  direction: rtl !important;
+}
+</style>

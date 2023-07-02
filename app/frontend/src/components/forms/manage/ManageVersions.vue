@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <BaseInfoCard class="my-4">
       <h4 class="primary--text">
         <v-icon class="mr-1" color="primary">info</v-icon
@@ -265,7 +265,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['drafts', 'form', 'permissions']),
+    ...mapGetters('form', ['drafts', 'form', 'permissions', 'isRTL']),
     headers() {
       return [
         {
@@ -480,6 +480,10 @@ export default {
 /* Todo, this is duplicated in a few tables, extract to style */
 .submissions-table {
   clear: both;
+}
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 @media (max-width: 1263px) {
   .submissions-table >>> th {

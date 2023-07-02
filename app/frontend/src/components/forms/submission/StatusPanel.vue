@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
       <p>
         <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
@@ -15,6 +15,7 @@
           <v-col cols="12">
             <label>{{ $t('trans.statusPanel.assignOrUpdateStatus') }}</label>
             <v-select
+              :class="{ 'dir-rtl': isRTL }"
               dense
               outlined
               :items="items"
@@ -48,6 +49,7 @@
                   v-model="assignee"
                   clearable
                   dense
+                  :class="{ 'dir-rtl': isRTL }"
                   :filter="autoCompleteFilter"
                   :items="formReviewers"
                   :loading="loading"
@@ -102,6 +104,7 @@
               <div v-show="statusFields" v-if="showRevising">
                 <v-text-field
                   v-model="submissionUserEmail"
+                  :class="{ 'dir-rtl': isRTL }"
                   :label="$t('trans.statusPanel.recipientEmail')"
                   outlined
                   dense
@@ -116,6 +119,7 @@
                 <div v-if="addComment">
                   <label>{{ $t('trans.statusPanel.emailComment') }}</label>
                   <v-textarea
+                    :class="{ 'dir-rtl': isRTL }"
                     v-model="emailComment"
                     :rules="[
                       (v) =>
@@ -145,9 +149,11 @@
               </template>
 
               <v-card v-if="historyDialog">
-                <v-card-title class="text-h5 pb-0">{{
-                  $t('trans.statusPanel.statusHistory')
-                }}</v-card-title>
+                <v-card-title
+                  class="text-h5 pb-0"
+                  :class="{ 'dir-rtl': isRTL }"
+                  >{{ $t('trans.statusPanel.statusHistory') }}</v-card-title
+                >
 
                 <v-card-text>
                   <hr />
@@ -156,6 +162,7 @@
 
                 <v-card-actions class="justify-center">
                   <v-btn
+                    :class="{ 'dir-rtl': isRTL }"
                     @click="historyDialog = false"
                     class="mb-5 close-dlg"
                     color="primary"
@@ -228,7 +235,12 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['identityProviderIdentity']),
-    ...mapGetters('form', ['form', 'formSubmission', 'submissionUsers']),
+    ...mapGetters('form', [
+      'form',
+      'formSubmission',
+      'submissionUsers',
+      'isRTL',
+    ]),
     // State Machine
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
@@ -467,5 +479,10 @@ export default {
 .v-btn__content {
   width: 100%;
   white-space: normal;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 </style>

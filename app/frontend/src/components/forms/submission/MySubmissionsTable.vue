@@ -1,13 +1,18 @@
 <template>
   <div>
-    <v-skeleton-loader :loading="loading" type="heading">
+    <v-skeleton-loader
+      :loading="loading"
+      type="heading"
+      :class="{ 'dir-rtl': isRTL }"
+    >
       <v-row class="mt-6" no-gutters>
         <!-- page title -->
-        <v-col cols="12" sm="6" order="2" order-sm="1">
+        <v-col>
           <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
+          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
         </v-col>
         <!-- buttons -->
-        <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+        <v-col :class="isRTL ? 'text-left' : 'text-right'">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -47,10 +52,6 @@
             }}</span>
           </v-tooltip>
         </v-col>
-        <!-- form name -->
-        <v-col cols="12" order="3">
-          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
-        </v-col>
       </v-row>
     </v-skeleton-loader>
 
@@ -60,6 +61,7 @@
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
+            :class="{ 'dir-rtl': isRTL }"
             v-model="search"
             append-icon="mdi-magnify"
             :label="$t('trans.mySubmissionsTable.search')"
@@ -72,6 +74,7 @@
     </v-row>
     <!-- table header -->
     <v-data-table
+      :class="{ 'dir-rtl': isRTL }"
       class="submissions-table"
       :headers="HEADERS"
       item-key="title"
@@ -161,7 +164,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'submissionList', 'permissions']),
+    ...mapGetters('form', ['form', 'submissionList', 'permissions', 'isRTL']),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
       let headers = [
@@ -343,5 +346,9 @@ export default {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;
+}
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 </style>

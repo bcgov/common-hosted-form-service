@@ -36,8 +36,8 @@
         {{ $t('trans.deleteSubmission.deleteWarning') }}
         {{
           isDraft
-            ? "$t('trans.deleteSubmission.drafts')"
-            : "$t('trans.deleteSubmission.formSubmission')"
+            ? $t('trans.deleteSubmission.drafts')
+            : $t('trans.deleteSubmission.formSubmission')
         }}?
       </template>
       <template #button-text-continue>

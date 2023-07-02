@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
       <v-icon class="mr-1" color="primary">info</v-icon
       ><span v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
@@ -36,6 +36,7 @@
         </v-col>
         <v-col cols="12" sm="5" xl="3">
           <v-text-field
+            :class="{ 'dir-rtl': isRTL }"
             dense
             flat
             hide-details
@@ -150,7 +151,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['apiKey', 'form', 'permissions']),
+    ...mapGetters('form', ['apiKey', 'form', 'permissions', 'isRTL']),
     canDeleteKey() {
       return (
         this.permissions.includes(FormPermissions.FORM_API_DELETE) &&
@@ -200,3 +201,9 @@ export default {
   },
 };
 </script>
+<style lang="css" scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
+</style>

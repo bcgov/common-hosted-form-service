@@ -4,6 +4,20 @@ const EditFormUtils = {
   sortAndFilterComponents(components) {
     return _.filter(_.sortBy(components, 'weight'), (item) => !item.ignore);
   },
+  getContextButtons(context) {
+    const values = [];
+
+    context.utils.eachComponent(context.instance.options.editForm.components, (component) => {
+      if (component.type === 'button') {
+        values.push({
+          label: `${component.key} (${component.label})`,
+          value: component.key,
+        });
+      }
+    });
+
+    return values;
+  },
   unifyComponents(objValue, srcValue) {
     if (objValue.key && srcValue.key) {
       if (objValue.skipMerge || srcValue.skipMerge) {

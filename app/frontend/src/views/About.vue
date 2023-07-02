@@ -1,5 +1,5 @@
 <template>
-  <div class="about-layout">
+  <div class="about-layout" :class="{ 'dir-rtl': isRTL }">
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
@@ -114,6 +114,7 @@ export default {
   name: 'About',
   computed: {
     ...mapGetters('auth', ['authenticated']),
+    ...mapGetters('form', ['isRTL']),
     howToVideoUrl() {
       return process.env.VUE_APP_HOWTOURL;
     },
@@ -141,6 +142,10 @@ export default {
     max-height: 422px !important;
     height: 422px;
     margin: 0 auto;
+  }
+  .dir-rtl {
+    direction: rtl !important;
+    text-align: right;
   }
   .main-video {
     margin-top: 40px;

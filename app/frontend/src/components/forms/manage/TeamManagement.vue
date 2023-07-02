@@ -1,50 +1,60 @@
 <template>
   <div>
     <v-container fluid class="d-flex">
-      <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
-      <div style="z-index: 1">
-        <span>
-          <AddTeamMember
-            :disabled="!canManageTeam"
-            @adding-users="addingUsers"
-            @new-users="addNewUsers"
-          />
-        </span>
-        <span v-if="!isAddingUsers">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                @click="showColumnsDialog = true"
-                class="mx-1"
-                color="primary"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>view_column</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ $t('trans.teamManagement.selectColumns') }}</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  :disabled="!formId"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon>settings</v-icon>
-                </v-btn>
-              </router-link>
-            </template>
-            <span>{{ $t('trans.teamManagement.manageForm') }}</span>
-          </v-tooltip>
-        </span>
-      </div>
+      <v-row>
+        <v-col cols="10">
+          <h1 class="mr-auto">
+            {{ $t('trans.teamManagement.teamManagement') }}
+          </h1>
+        </v-col>
+        <v-col cols="2">
+          <div>
+            <span>
+              <AddTeamMember
+                :disabled="!canManageTeam"
+                @adding-users="addingUsers"
+                @new-users="addNewUsers"
+              />
+            </span>
+            <span v-if="!isAddingUsers">
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    @click="showColumnsDialog = true"
+                    class="mx-1"
+                    color="primary"
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon>view_column</v-icon>
+                  </v-btn>
+                </template>
+                <span>{{ $t('trans.teamManagement.selectColumns') }}</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <router-link
+                    :to="{ name: 'FormManage', query: { f: formId } }"
+                  >
+                    <v-btn
+                      class="mx-1"
+                      color="primary"
+                      :disabled="!formId"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon>settings</v-icon>
+                    </v-btn>
+                  </router-link>
+                </template>
+                <span>{{ $t('trans.teamManagement.manageForm') }}</span>
+              </v-tooltip>
+            </span>
+          </div>
+        </v-col>
+      </v-row>
     </v-container>
 
     <v-row no-gutters>

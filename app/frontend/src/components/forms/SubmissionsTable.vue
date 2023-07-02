@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
+      <v-col cols="10">
         <h1>Submissions</h1>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="2">
         <span v-if="checkFormManage">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -353,6 +353,7 @@ export default {
       'userFormPreferences',
       'roles',
       'deletedSubmissions',
+      'isRTL',
     ]),
     ...mapGetters('auth', ['user']),
 
@@ -778,6 +779,10 @@ export default {
   .submissions-table >>> th {
     vertical-align: top;
   }
+}
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 /* Want to use scss but the world hates me */
 .submissions-table >>> tbody tr:nth-of-type(odd) {
