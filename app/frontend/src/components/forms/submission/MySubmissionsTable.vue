@@ -112,12 +112,8 @@
         "
         inputItemKey="value"
         :inputSaveButtonText="$t('trans.mySubmissionsTable.save')"
-        :inputData="
-          DEFAULT_HEADERS.filter(
-            (h) => !filterIgnore.some((fd) => fd.value === h.value)
-          )
-        "
-        :preselectedData="PRESELECTED_DATA"
+        :inputData="FILTER_HEADERS"
+        :preselectedData="PRESELECTEDDATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -219,21 +215,23 @@ export default {
       }
       return headers;
     },
-    HEADERS() {
-      let headers = this.DEFAULT_HEADERS;
-      if (this.filterData.length > 0)
-        headers = headers.filter(
-          (h) =>
-            this.filterData.some((fd) => fd.value === h.value) ||
-            this.filterIgnore.some((ign) => ign.value === h.value)
-        );
-      return headers;
-    },
-    PRESELECTED_DATA() {
+
+    FILTER_HEADERS() {
       return this.DEFAULT_HEADERS.filter(
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       );
     },
+    HEADERS() {
+      return this.filterData.length === 0
+        ? this.DEFAULT_HEADERS
+        : this.filterData;
+    },
+    PRESELECTEDDATA() {
+      return this.filterData.length === 0
+        ? this.DEFAULT_HEADERS
+        : this.filterData;
+    },
+
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
     },
@@ -299,7 +297,6 @@ export default {
       }
       this.loading = false;
     },
-
     async updateFilter(data) {
       this.filterData = data;
       this.showColumnsDialog = false;
