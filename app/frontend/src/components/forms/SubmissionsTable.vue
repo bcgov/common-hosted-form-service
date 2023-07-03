@@ -736,8 +736,7 @@ export default {
         columns: [],
       };
       data.forEach((d) => {
-        if (this.formFields.includes(d.value))
-          preferences.columns.push(d.value);
+        preferences.columns.push(d.value);
       });
 
       await this.updateFormPreferencesForCurrentUser({

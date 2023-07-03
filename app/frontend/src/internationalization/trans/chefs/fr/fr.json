@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "Êtes-vous sûr de vouloir soumettre votre formulaire ?",
     "submit": "Soumettre",
     "wantToSaveDraft": "Voulez-vous enregistrer le brouillon ?",
-    "version": "Version : { version }",
+    "version": "Version: {version}",
     "formScheduleExpireMessage": "La soumission du formulaire n'est pas disponible car la période de soumission prévue a expiré.",
     "getUsersSubmissionsErrMsg": "Une erreur s'est produite lors de la récupération de la soumission pour ce formulaire",
     "getUsersSubmissionsConsoleErrMsg": "Erreur lors du chargement des données d'envoi du formulaire {submissionId} : {error}",
@@ -687,7 +687,8 @@
     "errSubmittingForm": "Une erreur s'est produite lors de la soumission de ce formulaire",
     "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileNname}. Erreur : {error}",
     "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
-    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}"
+    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}",
+    "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher"
   },
   "bCGovFooter": {
     "home": "Maison",

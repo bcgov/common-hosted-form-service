@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "Ви впевнені, що бажаєте надіслати свою форму?",
     "submit": "Надіслати",
     "wantToSaveDraft": "Ви хочете зберегти чернетку?",
-    "version": "Версія: { версія }",
+    "version": "Версія: {version}",
     "formScheduleExpireMessage": "Подання форми недоступне, оскільки запланований період подання минув.",
     "getUsersSubmissionsErrMsg": "Під час отримання подання для цієї форми сталася помилка",
     "getUsersSubmissionsConsoleErrMsg": "Помилка завантаження даних подання форми {submissionId}: {error}",
@@ -687,7 +687,8 @@
     "errSubmittingForm": "Під час надсилання цієї форми сталася помилка",
     "errorSavingFile": "Помилка збереження файлів. Ім'я файлу: {fileNname}. Помилка: {error}",
     "submittingDraftErrMsg": "Під час збереження чернетки сталася помилка",
-    "submittingDraftConsErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}"
+    "submittingDraftConsErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}",
+    "formDraftAccessErrMsg": "Запитане подання вже подано, переспрямовує на сторінку перегляду"
   },
   "bCGovFooter": {
     "home": "додому",

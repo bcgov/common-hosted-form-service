@@ -687,7 +687,8 @@
     "errSubmittingForm": "حدث خطأ أثناء إرسال هذا النموذج",
     "errorSavingFile": "خطأ في حفظ الملفات. اسم الملف: {fileNname}. خطأ: {error}",
     "submittingDraftErrMsg": "حدث خطأ أثناء حفظ المسودة",
-    "submittingDraftConsErrMsg": "خطأ في حفظ المسودة. معرف التقديم: {submitId}. خطأ: {error}"
+    "submittingDraftConsErrMsg": "خطأ في حفظ المسودة. معرف التقديم: {submitId}. خطأ: {error}",
+    "formDraftAccessErrMsg": "تم إرسال طلب التقديم بالفعل ، مع إعادة التوجيه إلى صفحة العرض"
   },
   "bCGovFooter": {
     "home": "بيت",
