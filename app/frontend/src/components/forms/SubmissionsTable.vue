@@ -90,6 +90,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
           />
         </div>
       </v-col>

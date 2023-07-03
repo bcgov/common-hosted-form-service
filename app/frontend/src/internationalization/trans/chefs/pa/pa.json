@@ -774,8 +774,17 @@
     "copyToClipboard": "ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰੋ",
     "errCopyToClipboard": "ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਵਿੱਚ ਤਰੁੱਟੀ।"
   },
-  "root": {
-    "admin": "ਐਡਮਿਨ"
+  "admin": {
+    "root": {
+      "admin": "ਐਡਮਿਨ"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "ਮੇਰੇ ਫਾਰਮ",
+      "history": "ਇਤਿਹਾਸ",
+      "user": "ਉਪਭੋਗਤਾ"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "ਤੁਹਾਡਾ ਫਾਰਮ ਸਫਲਤਾਪੂਰਵਕ ਜਮ੍ਹਾਂ ਹੋ ਗਿਆ ਹੈ",

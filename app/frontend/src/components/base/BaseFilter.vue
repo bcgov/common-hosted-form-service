@@ -18,6 +18,7 @@
           filled
           dense
           class="mt-3"
+          :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
         >
         </v-text-field>
       </div>

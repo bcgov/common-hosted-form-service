@@ -774,8 +774,17 @@
     "copyToClipboard": "Copiar al portapapeles",
     "errCopyToClipboard": "Error al intentar copiar al portapapeles."
   },
-  "root": {
-    "admin": "Administración"
+  "admin": {
+    "root": {
+      "admin": "Administración"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MIS FORMULARIOS",
+      "history": "HISTORIA",
+      "user": "Usuaria"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Su formulario ha sido enviado exitosamente",

@@ -774,8 +774,17 @@
     "copyToClipboard": "Copia negli appunti",
     "errCopyToClipboard": "Errore nel tentativo di copiare negli appunti."
   },
-  "root": {
-    "admin": "Amministratore"
+  "admin": {
+    "root": {
+      "admin": "Amministratore"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "LE MIE FORME",
+      "history": "STORIA",
+      "user": "Utente"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Il tuo modulo è stato inviato con successo",

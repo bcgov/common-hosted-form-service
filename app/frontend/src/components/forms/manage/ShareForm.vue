@@ -43,6 +43,7 @@
             label="URL"
             data-test="text-shareUrl"
             :value="formLink"
+            :class="{ 'dir-rtl': isRTL }"
           >
             <template #prepend>
               <v-icon>link</v-icon>

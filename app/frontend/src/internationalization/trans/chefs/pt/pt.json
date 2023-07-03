@@ -774,8 +774,17 @@
     "copyToClipboard": "Copiar para área de transferência",
     "errCopyToClipboard": "Erro ao tentar copiar para a área de transferência."
   },
-  "root": {
-    "admin": "Administrador"
+  "admin": {
+    "root": {
+      "admin": "Administrador"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MEUS FORMULÁRIOS",
+      "history": "HISTÓRIA",
+      "user": "Do utilizador"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Seu formulário foi submetido com sucesso",

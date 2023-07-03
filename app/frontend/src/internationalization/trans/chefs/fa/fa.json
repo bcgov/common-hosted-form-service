@@ -774,8 +774,17 @@
     "copyToClipboard": "کپی به کلیپ بورد",
     "errCopyToClipboard": "خطا در تلاش برای کپی کردن در کلیپ بورد."
   },
-  "root": {
-    "admin": "مدیر"
+  "admin": {
+    "root": {
+      "admin": "مدیر"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "فرم های من",
+      "history": "تاریخ",
+      "user": "کاربر"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "فرم شما با موفقیت ارسال شد",

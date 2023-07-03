@@ -1,61 +1,55 @@
 <template>
-  <div>
-    <v-container fluid class="d-flex">
-      <v-row>
-        <v-col cols="10">
-          <h1 class="mr-auto">
-            {{ $t('trans.teamManagement.teamManagement') }}
-          </h1>
-        </v-col>
-        <v-col cols="2">
-          <div>
-            <span>
-              <AddTeamMember
-                :disabled="!canManageTeam"
-                @adding-users="addingUsers"
-                @new-users="addNewUsers"
-              />
-            </span>
-            <span v-if="!isAddingUsers">
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    @click="showColumnsDialog = true"
-                    class="mx-1"
-                    color="primary"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <v-icon>view_column</v-icon>
-                  </v-btn>
-                </template>
-                <span>{{ $t('trans.teamManagement.selectColumns') }}</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
-                  <router-link
-                    :to="{ name: 'FormManage', query: { f: formId } }"
-                  >
-                    <v-btn
-                      class="mx-1"
-                      color="primary"
-                      :disabled="!formId"
-                      icon
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      <v-icon>settings</v-icon>
-                    </v-btn>
-                  </router-link>
-                </template>
-                <span>{{ $t('trans.teamManagement.manageForm') }}</span>
-              </v-tooltip>
-            </span>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <div class="container">
+      <div>
+        <h1 class="mr-auto">
+          {{ $t('trans.teamManagement.teamManagement') }}
+        </h1>
+      </div>
+      <div style="z-index: 50">
+        <span>
+          <AddTeamMember
+            :disabled="!canManageTeam"
+            @adding-users="addingUsers"
+            @new-users="addNewUsers"
+          />
+        </span>
+        <span v-if="!isAddingUsers">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="showColumnsDialog = true"
+                class="mx-1"
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>view_column</v-icon>
+              </v-btn>
+            </template>
+            <span>{{ $t('trans.teamManagement.selectColumns') }}</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  :disabled="!formId"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>settings</v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span>{{ $t('trans.teamManagement.manageForm') }}</span>
+          </v-tooltip>
+        </span>
+      </div>
+    </div>
 
     <v-row no-gutters>
       <v-spacer />
@@ -69,6 +63,7 @@
           hide-details
           :label="$t('trans.teamManagement.search')"
           single-line
+          :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
         />
       </v-col>
     </v-row>
@@ -213,7 +208,7 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.userType']),
-    ...mapGetters('form', ['permissions']),
+    ...mapGetters('form', ['permissions', 'isRTL']),
     ...mapGetters('auth', ['user']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
@@ -599,6 +594,16 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex; /* displays flex-items (children) inline by default */
+  flex-direction: row; /* new */
+  justify-content: space-between;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
 .role-col {
   width: 12%;
 }

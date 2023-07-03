@@ -774,8 +774,15 @@
     "copyToClipboard": "نسخ إلى الحافظة",
     "errCopyToClipboard": "خطأ في محاولة النسخ إلى الحافظة."
   },
-  "root": {
-    "admin": "مسؤل"
+  "admin": {
+    "root": "مسؤل"
+  },
+  "user": {
+    "root": {
+      "myForms": "نماذجي",
+      "history": "تاريخ",
+      "user": "مستخدم"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "تم تسليم إستمارتك بنجاح",

@@ -55,8 +55,7 @@
             :clearable="true"
             :label="$t('trans.printOptions.uploadTemplateFile')"
             persistent-hint
-            :prepend-icon="isRTL ? 'null' : 'attachment'"
-            :append-icon="isRTL ? 'attachment' : 'null'"
+            append-icon="attachment"
             required
             mandatory
             show-size

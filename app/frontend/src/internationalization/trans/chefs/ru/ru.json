@@ -774,8 +774,17 @@
     "copyToClipboard": "Скопировать в буфер обмена",
     "errCopyToClipboard": "Ошибка при попытке скопировать в буфер обмена."
   },
-  "root": {
-    "admin": "Админ"
+  "admin": {
+    "root": {
+      "admin": "Админ"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "МОИ ФОРМЫ",
+      "history": "ИСТОРИЯ",
+      "user": "Пользователь"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Ваша форма успешно отправлена",

@@ -774,8 +774,17 @@
     "copyToClipboard": "클립 보드에 복사",
     "errCopyToClipboard": "클립보드에 복사하는 동안 오류가 발생했습니다."
   },
-  "root": {
-    "admin": "관리자"
+  "admin": {
+    "root": {
+      "admin": "관리자"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "내 양식",
+      "history": "역사",
+      "user": "사용자"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "귀하의 양식이 성공적으로 제출되었습니다",

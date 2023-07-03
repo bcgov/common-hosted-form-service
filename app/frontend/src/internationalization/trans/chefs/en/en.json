@@ -582,6 +582,13 @@
     "save": "Save",
     "description": "Description"
   },
+  "user": {
+    "root": {
+      "myForms": "MY FORMS",
+      "history": "HISTORY",
+      "user": "User"
+    }
+  },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Learn more"
   },
@@ -773,8 +780,10 @@
     "copyToClipboard": "Copy to Clipboard",
     "errCopyToClipboard": "Error attempting to copy to clipboard."
   },
-  "root": {
-    "admin": "Admin"
+  "admin": {
+    "root": {
+      "admin": "Admin"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Your form has been submitted successfully",

@@ -27,7 +27,9 @@
       <v-stepper-items>
         <v-stepper-content step="1" class="pa-1" :class="{ 'dir-rtl': isRTL }">
           <v-form ref="settingsForm" v-model="settingsFormValid">
-            <h1>{{ $t('trans.create.formSettings') }}</h1>
+            <h1 :class="{ 'dir-rtl': isRTL }">
+              {{ $t('trans.create.formSettings') }}
+            </h1>
             <FormSettings />
 
             <BasePanel class="my-6" :class="{ 'dir-rtl': isRTL }">
@@ -131,5 +133,6 @@ export default {
 }
 .dir-rtl {
   direction: rtl !important;
+  text-align: right;
 }
 </style>

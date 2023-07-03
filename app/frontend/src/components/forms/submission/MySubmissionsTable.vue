@@ -61,13 +61,13 @@
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
-            :class="{ 'dir-rtl': isRTL }"
             v-model="search"
             append-icon="mdi-magnify"
             :label="$t('trans.mySubmissionsTable.search')"
             single-line
             hide-details
             class="pb-5"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
           />
         </div>
       </v-col>

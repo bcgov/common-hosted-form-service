@@ -36,7 +36,6 @@
         </v-col>
         <v-col cols="12" sm="5" xl="3">
           <v-text-field
-            :class="{ 'dir-rtl': isRTL }"
             dense
             flat
             hide-details
@@ -48,6 +47,7 @@
               showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
             "
             :value="secret"
+            :class="{ 'dir-rtl': isRTL }"
           />
         </v-col>
         <v-col cols="12" sm="3">

@@ -104,10 +104,10 @@
               <div v-show="statusFields" v-if="showRevising">
                 <v-text-field
                   v-model="submissionUserEmail"
-                  :class="{ 'dir-rtl': isRTL }"
                   :label="$t('trans.statusPanel.recipientEmail')"
                   outlined
                   dense
+                  :class="{ 'dir-rtl': isRTL }"
                 />
               </div>
 

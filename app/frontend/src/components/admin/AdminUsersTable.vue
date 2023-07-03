@@ -12,6 +12,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
           />
         </div>
       </v-col>
@@ -58,6 +59,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['userList']),
+    ...mapGetters('form', ['isRTL']),
     headers() {
       return [
         {

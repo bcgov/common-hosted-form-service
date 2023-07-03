@@ -774,8 +774,17 @@
     "copyToClipboard": "Copier dans le presse-papier",
     "errCopyToClipboard": "Erreur lors de la tentative de copie dans le presse-papiers."
   },
-  "root": {
-    "admin": "Administrateur"
+  "admin": {
+    "root": {
+      "admin": "Administrateur"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MES FORMULAIRES",
+      "history": "HISTOIRE",
+      "user": "Utilisateur"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Votre formulaire a été soumis avec succès",

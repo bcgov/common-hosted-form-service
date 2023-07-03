@@ -774,8 +774,17 @@
     "copyToClipboard": "复制到剪贴板",
     "errCopyToClipboard": "尝试复制到剪贴板时出错。"
   },
-  "root": {
-    "admin": "行政"
+  "admin": {
+    "root": {
+      "admin": "行政"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "我的表格",
+      "history": "历史",
+      "user": "用户"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "您的表单已成功提交",

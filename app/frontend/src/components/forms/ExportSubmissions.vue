@@ -92,6 +92,7 @@
                       dense
                       class="mt-3 submissions-table"
                       single-line
+                      :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
                     >
                     </v-text-field>
                     <span
@@ -180,6 +181,7 @@
                         v-on="on"
                         dense
                         outlined
+                        :class="{ 'dir-rtl': isRTL }"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -211,6 +213,7 @@
                         v-on="on"
                         dense
                         outlined
+                        :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
                       ></v-text-field>
                     </template>
                     <v-date-picker
