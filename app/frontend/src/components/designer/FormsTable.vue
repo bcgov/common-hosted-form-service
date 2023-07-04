@@ -1,5 +1,5 @@
 <template>
-  <div class="forms-table">
+  <div class="forms-table" :class="{ 'dir-rtl': isRTL }">
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
@@ -8,7 +8,7 @@
       <!-- buttons -->
       <v-col
         v-if="user.idp === ID_PROVIDERS.IDIR"
-        class="text-right"
+        :class="isRTL ? 'text-left' : 'text-right'"
         cols="12"
         sm="6"
         order="1"
@@ -22,16 +22,16 @@
               </v-btn>
             </router-link>
           </template>
-          <span>{{ $t('trans.formsTable.createNewForm') }}</span>
+          <span>{{ $t('trans.formsTable.createNewForm') }} </span>
         </v-tooltip>
       </v-col>
     </v-row>
 
     <v-row no-gutters>
       <v-spacer />
-      <v-col cols="12" sm="4">
+      <v-col cols="12">
         <!-- search input -->
-        <div class="submissions-search">
+        <div class="submissions-search" :class="{ 'dir-rtl': isRTL }">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -39,6 +39,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
           />
         </div>
       </v-col>
@@ -150,7 +151,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['formList']),
+    ...mapGetters('form', ['formList', 'isRTL']),
     ...mapGetters('auth', ['user']),
     headers() {
       return [
@@ -199,6 +200,10 @@ export default {
 </script>
 
 <style scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
 .submissions-search {
   width: 100%;
 }

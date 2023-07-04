@@ -15,6 +15,10 @@
     "action": "Aktionen",
     "loadingText": "Laden, bitte warten"
   },
+  "preview": {
+    "preview": "Vorschau",
+    "previewToolTip": "Dies zeigt eine Vorschau des Designs und Verhaltens der Formularversion, wie es Ihren Einsendern angezeigt wird. Sie können das Formular nicht von dieser Seite aus senden."
+  },
   "manageLayout": {
     "manageForm": "Formular verwalten"
   },
@@ -770,8 +774,17 @@
     "copyToClipboard": "In die Zwischenablage kopieren",
     "errCopyToClipboard": "Fehler beim Versuch, in die Zwischenablage zu kopieren."
   },
-  "root": {
-    "admin": "Administrator"
+  "admin": {
+    "root": {
+      "admin": "Administrator"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "Benutzer",
+      "history": "GESCHICHTE",
+      "user": "Benutzer"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Ihr Formular wurde erfolgreich übermittelt",

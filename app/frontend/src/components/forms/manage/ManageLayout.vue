@@ -1,19 +1,17 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-row class="mt-6" no-gutters>
-      <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
+      <v-col cols="10">
+        <!-- page title -->
         <h1>{{ $t('trans.manageLayout.manageForm') }}</h1>
+        <!-- form name -->
+        <h3>{{ this.form.name }}</h3>
       </v-col>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="2">
         <v-skeleton-loader :loading="loading" type="actions">
           <ManageFormActions />
         </v-skeleton-loader>
-      </v-col>
-      <!-- form name -->
-      <v-col cols="12" order="3">
-        <h3>{{ this.form.name }}</h3>
       </v-col>
     </v-row>
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
@@ -44,7 +42,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
+    ...mapGetters('form', ['form', 'permissions', 'isRTL']),
     IDP: () => IdentityProviders,
   },
   methods: {
@@ -68,3 +66,9 @@ export default {
   },
 };
 </script>
+<style lang="css" scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
+</style>

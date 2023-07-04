@@ -1,9 +1,27 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
 import i18n from '@/internationalization';
 import ProactiveHelpDialog from '@/components/infolinks/ProactiveHelpDialog.vue';
+import Vuex from 'vuex';
 
-const $t = () => {};
+const localVue = createLocalVue();
+localVue.use(Vuex);
+
 describe('ProactiveHelpDialog.vue', () => {
+
+  const mockisRTLGetter = jest.fn();
+  let store;
+  beforeEach(() => {
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            isRTL: mockisRTLGetter,
+          },
+        },
+      },
+    });
+  });
 
   it('selectImage()', async () => {
     const event = {
@@ -18,7 +36,8 @@ describe('ProactiveHelpDialog.vue', () => {
       },
     };
 
-    const wrapper = shallowMount(ProactiveHelpDialog, {i18n});
+
+    const wrapper = shallowMount(ProactiveHelpDialog, {localVue, i18n, store});
 
     const fileReaderSpy = jest.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementation(() => null);
     const persistSpy = jest.spyOn(ProactiveHelpDialog.methods, 'uploadFCProactiveHelpImage');
@@ -36,7 +55,9 @@ describe('ProactiveHelpDialog.vue', () => {
           link: 'url',
         };
       },
-      i18n
+      localVue,
+      i18n,
+      store
     });
 
     wrapper.vm.resetDialog();

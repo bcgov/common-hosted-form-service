@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Gestisci modulo"
   },
+  "preview": {
+    "preview": "Anteprima",
+    "previewToolTip": "Questo mostra un'anteprima del design e del comportamento della versione del modulo come lo vedranno i tuoi mittenti. Non puoi inviare il modulo da questa pagina."
+  },
   "shareForm": {
     "shareForm": "Modulo di condivisione",
     "shareLink": "Condividi il link",
@@ -770,8 +774,17 @@
     "copyToClipboard": "Copia negli appunti",
     "errCopyToClipboard": "Errore nel tentativo di copiare negli appunti."
   },
-  "root": {
-    "admin": "Amministratore"
+  "admin": {
+    "root": {
+      "admin": "Amministratore"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "LE MIE FORME",
+      "history": "STORIA",
+      "user": "Utente"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Il tuo modulo è stato inviato con successo",

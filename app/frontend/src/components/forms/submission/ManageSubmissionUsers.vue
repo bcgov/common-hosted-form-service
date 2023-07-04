@@ -15,10 +15,12 @@
       <span>{{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
-      <v-card>
+      <v-card :class="{ 'dir-rtl': isRTL }">
         <v-card-title class="text-h5 pb-0">
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
-          <v-radio-group v-model="selectedIdp" row>
+        </v-card-title>
+        <v-card-subtitle class="mt-1">
+          <v-radio-group v-model="yselectedIdp" row>
             <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
             <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
             <v-radio
@@ -26,15 +28,14 @@
               :value="ID_PROVIDERS.BCEIDBUSINESS"
             />
           </v-radio-group>
-        </v-card-title>
-
+        </v-card-subtitle>
         <v-card-text>
-          <hr />
-
+          <hr class="mt-1" />
           <v-row v-if="isDraft">
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
+                  :class="{ 'dir-rtl': isRTL }"
                   autocomplete="autocomplete_off"
                   v-model="userSearchSelection"
                   clearable
@@ -50,6 +51,7 @@
                   <!-- no data -->
                   <template #no-data>
                     <div
+                      :class="{ 'dir-rtl': isRTL }"
                       class="px-2"
                       v-html="
                         $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
@@ -59,6 +61,7 @@
                   <!-- selected user -->
                   <template #selection="data">
                     <span
+                      :class="{ 'dir-rtl': isRTL }"
                       v-bind="data.attrs"
                       :input-value="data.selected"
                       close
@@ -70,10 +73,13 @@
                   <!-- users found in dropdown -->
                   <template #item="data">
                     <template v-if="typeof data.item !== 'object'">
-                      <v-list-item-content v-text="data.item" />
+                      <v-list-item-content
+                        v-text="data.item"
+                        :class="{ 'dir-rtl': isRTL }"
+                      />
                     </template>
                     <template v-else>
-                      <v-list-item-content>
+                      <v-list-item-content :class="{ 'dir-rtl': isRTL }">
                         <v-list-item-title>
                           {{ data.item.fullName }}
                         </v-list-item-title>
@@ -96,15 +102,17 @@
                 :loading="isLoadingDropdown"
                 @click="addUser"
               >
-                <span>{{ $t('trans.manageSubmissionUsers.add') }}</span>
+                <span :class="{ 'dir-rtl': isRTL }">{{
+                  $t('trans.manageSubmissionUsers.add')
+                }}</span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else>
+          <div v-else :class="{ 'dir-rtl': isRTL }">
             {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
-          <p class="mt-5">
+          <p class="mt-5" :class="{ 'dir-rtl': isRTL }">
             <strong
               >{{
                 $t('trans.manageSubmissionUsers.submissionTeamMembers')
@@ -113,7 +121,7 @@
           </p>
 
           <v-skeleton-loader :loading="isLoadingTable" type="table-row">
-            <v-simple-table dense>
+            <v-simple-table dense :class="{ 'dir-rtl': isRTL }">
               <template>
                 <thead>
                   <tr>
@@ -155,12 +163,15 @@
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span> {{ $t('trans.manageSubmissionUsers.close') }}</span>
+            <span :class="{ 'dir-rtl': isRTL }">
+              {{ $t('trans.manageSubmissionUsers.close') }}</span
+            >
           </v-btn>
         </v-card-actions>
       </v-card>
 
       <BaseDialog
+        :class="{ 'dir-rtl': isRTL }"
         v-model="showDeleteDialog"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"
@@ -169,14 +180,22 @@
           showDeleteDialog = false;
         "
       >
-        <template #title>Remove {{ userToDelete.username }}</template>
+        <template #title
+          ><span :class="{ 'dir-rtl': isRTL }"
+            >Remove {{ userToDelete.username }}</span
+          ></template
+        >
         <template #text>
-          {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
-          <strong>{{ userToDelete.username }}</strong
-          >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
+          <span :class="{ 'dir-rtl': isRTL }">
+            {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
+            <strong>{{ userToDelete.username }}</strong
+            >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
+          </span>
         </template>
         <template #button-text-continue>
-          <span>{{ $t('trans.manageSubmissionUsers.remove') }}</span>
+          <span :class="{ 'dir-rtl': isRTL }">{{
+            $t('trans.manageSubmissionUsers.remove')
+          }}</span>
         </template>
       </BaseDialog>
     </v-dialog>
@@ -222,8 +241,9 @@ export default {
       userSearchSelection: null,
     };
   },
+
   computed: {
-    ...mapGetters('form', ['form']),
+    ...mapGetters('form', ['form', 'isRTL']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
@@ -394,3 +414,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
+</style>
