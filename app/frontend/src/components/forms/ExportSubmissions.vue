@@ -213,7 +213,7 @@
                         v-on="on"
                         dense
                         outlined
-                        :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+                        :class="{ 'dir-rtl': isRTL }"
                       ></v-text-field>
                     </template>
                     <v-date-picker
