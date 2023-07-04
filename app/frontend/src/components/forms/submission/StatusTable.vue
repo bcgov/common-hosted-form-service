@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container :class="{ 'dir-rtl': isRTL }">
     <v-data-table
       disable-pagination
       :hide-default-footer="true"
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { formService } from '@/services';
 
 export default {
@@ -37,6 +37,7 @@ export default {
     statuses: [],
     loading: true,
   }),
+
   computed: {
     headers() {
       return [
@@ -50,6 +51,7 @@ export default {
         { text: this.$t('trans.statusTable.updatedBy'), value: 'createdBy' },
       ];
     },
+    ...mapGetters('form', ['isRTL']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -79,6 +81,10 @@ export default {
 </script>
 
 <style scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
 .status-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;
 }

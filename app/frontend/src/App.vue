@@ -3,7 +3,6 @@
     <BaseNotificationContainer />
     <BCGovHeader />
     <BCGovNavBar />
-
     <v-main>
       <transition name="component-fade" mode="out-in">
         <router-view />

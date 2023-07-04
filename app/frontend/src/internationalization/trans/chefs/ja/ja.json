@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "フォームの管理"
   },
+  "preview": {
+    "preview": "プレビュー",
+    "previewToolTip": "これは、送信者に表示されるフォーム バージョンのデザインと動作のプレビューを示します。このページからフォームを送信することはできません。"
+  },
   "shareForm": {
     "shareForm": "共有フォーム",
     "shareLink": "共有リンク",
@@ -770,8 +774,17 @@
     "copyToClipboard": "クリップボードにコピー",
     "errCopyToClipboard": "クリップボードにコピーしようとしたときにエラーが発生しました。"
   },
-  "root": {
-    "admin": "管理者"
+  "admin": {
+    "root": {
+      "admin": "管理者"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "私のフォーム",
+      "history": "歴史",
+      "user": "ユーザー"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "フォームは正常に送信されました",
