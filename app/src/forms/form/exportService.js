@@ -202,6 +202,7 @@ const service = {
       .modify('filterVersion', version)
       .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
       .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
+      .modify('filterStatus', params.status)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
       .modify('orderDefault')

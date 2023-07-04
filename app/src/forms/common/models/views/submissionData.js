@@ -30,6 +30,11 @@ class SubmissionData extends Model {
           query.where('updatedAt', '<=', maxDate);
         }
       },
+      filterStatus(query, value) {
+        if (value) {
+          query.where('status', value);
+        }
+      },
       filterDeleted(query, value) {
         if (!value) {
           query.where('deleted', false);
