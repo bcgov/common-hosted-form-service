@@ -61,6 +61,16 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['config']),
+    txt_colour() {
+      if (!this.error) return 'success-text';
+      else return 'fail-text';
+    },
+    fileSize() {
+      if (this.file.size < 1024) return this.file.size.toFixed(2) + ' bytes';
+      if (this.file.size < 1024 * 1024)
+        return (this.file.size / 1024).toFixed(2) + ' KB';
+      return (this.file.size / (1024 * 1024)).toFixed(2) + ' MB';
+    },
   },
   methods: {
     ...mapActions(useNotificationStore, ['addNotification']),
@@ -134,6 +144,16 @@ export default {
         return;
       }
     },
+    handleFile() {
+      if (this.file == undefined) {
+        this.$refs.file.$refs.input.click();
+      }
+    },
+    removeFile(file) {
+      this.files = this.files.filter((f) => {
+        return f != file;
+      });
+    },
 
     parseFile() {
       try {
@@ -159,7 +179,7 @@ export default {
           this.addNotification({
             text: i18n.t('trans.formViewerMultiUpload.jsonObjNotArray'),
             consoleError: i18n.t(
-              'trans.formViewerMultiUpload.jsonObjNotArrayConsEr'
+              'trans.formViewerMultiUpload.jsonObjNotArrayConsErr'
             ),
           });
           return;
