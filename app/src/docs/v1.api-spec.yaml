@@ -363,6 +363,13 @@ paths:
             - draft,
             - deleted,
             - updatedAt
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: Submission status to be filtered based on
+          example: COMPLETED
+          required: false
       responses:
         '200':
           description: Export file created for download
