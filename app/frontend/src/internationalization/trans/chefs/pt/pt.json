@@ -15,6 +15,10 @@
     "action": "Ações",
     "loadingText": "Carregando, por favor espere"
   },
+  "preview": {
+    "preview": "Visualização",
+    "previewToolTip": "Isso mostra uma visualização do design e do comportamento da versão do formulário, conforme seus remetentes o verão. Você não pode enviar o formulário desta página."
+  },
   "manageLayout": {
     "manageForm": "Gerenciar formulário"
   },
@@ -770,8 +774,17 @@
     "copyToClipboard": "Copiar para área de transferência",
     "errCopyToClipboard": "Erro ao tentar copiar para a área de transferência."
   },
-  "root": {
-    "admin": "Administrador"
+  "admin": {
+    "root": {
+      "admin": "Administrador"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MEUS FORMULÁRIOS",
+      "history": "HISTÓRIA",
+      "user": "Do utilizador"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Seu formulário foi submetido com sucesso",

@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Quản lý biểu mẫu"
   },
+  "preview": {
+    "preview": "Xem trước",
+    "previewToolTip": "Điều này hiển thị bản xem trước của thiết kế và hành vi của phiên bản biểu mẫu khi người gửi của bạn sẽ nhìn thấy nó. Bạn không thể gửi biểu mẫu từ trang này."
+  },
   "shareForm": {
     "shareForm": "chia sẻ biểu mẫu",
     "shareLink": "Chia sẻ đường link",
@@ -770,8 +774,17 @@
     "copyToClipboard": "Sao chép vào clipboard",
     "errCopyToClipboard": "Lỗi khi cố sao chép vào khay nhớ tạm."
   },
-  "root": {
-    "admin": "Quản trị viên"
+  "admin": {
+    "root": {
+      "admin": "Quản trị viên"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MẪU CỦA TÔI",
+      "history": "LỊCH SỬ",
+      "user": "Người dùng"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Biểu mẫu của bạn đã được gửi thành công",

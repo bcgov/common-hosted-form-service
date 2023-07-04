@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-expansion-panels
       v-model="settingsPanel"
       flat
@@ -138,7 +138,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions']),
+    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions', 'isRTL']),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
@@ -215,5 +215,10 @@ export default {
 <style>
 .v-expansion-panel:not(.v-expansion-panel--active) {
   margin-bottom: 20px;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right !important;
 }
 </style>

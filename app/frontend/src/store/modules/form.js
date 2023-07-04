@@ -87,6 +87,7 @@ export default {
       headers: null,
     },
     multiLanguage: '',
+    isRTL: false,
   },
   getters: {
     getField, // vuex-map-fields
@@ -108,6 +109,7 @@ export default {
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
     downloadedFile: (state) => state.downloadedFile,
     multiLanguage: (state) => state.multiLanguage,
+    isRTL: (state) => state.isRTL,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -125,6 +127,9 @@ export default {
     },
     SET_FORM(state, form) {
       state.form = form;
+    },
+    SET_IS_RTl(state, isRTL) {
+      state.isRTL = isRTL;
     },
     SET_FORM_FIELDS(state, formFields) {
       state.formFields = formFields;
@@ -882,6 +887,15 @@ export default {
     },
     async setMultiLanguage({ commit }, multiLanguage) {
       commit('SET_MULTI_LANGUAGE', multiLanguage);
+      if (
+        multiLanguage === 'ar' ||
+        multiLanguage === 'fa' ||
+        multiLanguage === 'pa'
+      ) {
+        commit('SET_IS_RTl', true);
+      } else {
+        commit('SET_IS_RTl', false);
+      }
     },
     async downloadFile({ commit, dispatch }, fileId) {
       try {

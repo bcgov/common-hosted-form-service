@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <span v-if="addingUsers" style="margin-right: 656px" elevation="1">
       <v-sheet
         elevation="1"
@@ -41,6 +41,7 @@
               :loading="isLoading"
               return-object
               :search-input.sync="searchUsers"
+              :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
             >
               <!-- no data -->
               <template #no-data>
@@ -110,16 +111,16 @@
             <!-- buttons -->
             <v-btn
               color="primary"
-              class="ml-2"
+              class="isRTL ? mr-3 : ml-2"
               :disabled="!model"
               :loading="isLoading"
               @click="save"
             >
-              <span>Add</span>
+              <span>Adds</span>
             </v-btn>
             <v-btn
               outlined
-              class="ml-2"
+              class="isRTL ? mr-2 : ml-2"
               @click="
                 addingUsers = false;
                 showError = false;
@@ -208,7 +209,7 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.idps']),
-    ...mapGetters('auth', ['identityProvider']),
+    ...mapGetters('auth', ['identityProvider', 'isRTL']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
@@ -294,5 +295,10 @@ export default {
 .v-radio >>> i.v-icon {
   color: white !important;
   font-weight: bold;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 </style>

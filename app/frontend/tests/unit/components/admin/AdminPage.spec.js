@@ -1,10 +1,29 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import AdminPage from '@/components/admin/AdminPage.vue';
 import i18n from '@/internationalization';
+import Vuex from 'vuex';
 
 const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('AdminPage.vue', () => {
+
+  const mockisRTLGetter = jest.fn();
+  let store;
+  beforeEach(() => {
+
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            isRTL: mockisRTLGetter,
+          },
+        },
+      },
+    });
+  });
+
   it('renders', () => {
     const wrapper = shallowMount(AdminPage, {
       localVue,
@@ -19,6 +38,7 @@ describe('AdminPage.vue', () => {
         'Metrics',
       ],
       i18n,
+      store
     });
 
     expect(wrapper.text()).toContain('Forms');
@@ -39,6 +59,7 @@ describe('AdminPage.vue', () => {
         'Metrics',
       ],
       i18n,
+      store
     });
 
     expect(wrapper.text()).not.toContain('Metrics');
@@ -58,6 +79,7 @@ describe('AdminPage.vue', () => {
         'Metrics',
       ],
       i18n,
+      store
     });
 
     expect(wrapper.text()).toContain('Metrics');
