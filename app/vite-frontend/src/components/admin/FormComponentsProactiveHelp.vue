@@ -1,7 +1,7 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 
-import GeneralLayout from '~/components/forms/infolinks/GeneralLayout.vue';
+import GeneralLayout from '~/components/infolinks/GeneralLayout.vue';
 import { useAdminStore } from '~/store/admin';
 
 export default {

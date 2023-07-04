@@ -5,7 +5,7 @@ import { mapActions, mapState } from 'pinia';
 
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import FloatButton from '~/components/designer/FloatButton.vue';
-import ProactiveHelpPreviewDialog from '~/components/forms/infolinks/ProactiveHelpPreviewDialog.vue';
+import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import { i18n } from '~/internationalization';
 import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';

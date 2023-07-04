@@ -2,7 +2,7 @@
 import { mapActions, mapState } from 'pinia';
 
 import { i18n } from '~/internationalization';
-import { adminService } from '~/services';
+import adminService from '~/services/adminService';
 import { useAdminStore } from '~/store/admin';
 import { useNotificationStore } from '~/store/notification';
 

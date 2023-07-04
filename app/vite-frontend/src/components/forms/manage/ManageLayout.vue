@@ -6,8 +6,6 @@ import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
-const formStore = useFormStore();
-
 export default {
   components: {
     ManageForm,
@@ -29,6 +27,8 @@ export default {
   },
   async mounted() {
     this.loading = true;
+
+    const formStore = useFormStore();
 
     await Promise.all([
       formStore.fetchForm(this.f),

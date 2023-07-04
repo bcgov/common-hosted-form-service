@@ -39,12 +39,7 @@ export default {
                 {{ component && component.componentName }}
               </div>
               <div class="align-self-center cursor">
-                <font-awesome-icon
-                  icon="fa-solid fa-xmark"
-                  :size="'1x'"
-                  inverse
-                  @click="onCloseDialog"
-                />
+                <v-icon icon="mdi:mdi-close" @click="onCloseDialog" />
               </div>
             </v-col>
           </v-row>

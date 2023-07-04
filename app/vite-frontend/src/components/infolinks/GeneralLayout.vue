@@ -1,8 +1,8 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 
-import ProactiveHelpDialog from '~/components/forms/infolinks/ProactiveHelpDialog.vue';
-import ProactiveHelpPreviewDialog from '~/components/forms/infolinks/ProactiveHelpPreviewDialog.vue';
+import ProactiveHelpDialog from '~/components/infolinks/ProactiveHelpDialog.vue';
+import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import { i18n } from '~/internationalization';
 import { useAdminStore } from '~/store/admin';
 

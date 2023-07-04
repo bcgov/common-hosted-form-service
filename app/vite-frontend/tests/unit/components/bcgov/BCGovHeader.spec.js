@@ -23,10 +23,10 @@ describe('BCGovHeader.vue', () => {
     const wrapper = mount(BCGovHeader, {
       global: {
         plugins: [router, pinia],
-      },
-      stubs: {
-        BaseAuthButton: true,
-        BaseInternationalization: true,
+        stubs: {
+          BaseAuthButton: true,
+          BaseInternationalization: true,
+        },
       },
     });
 

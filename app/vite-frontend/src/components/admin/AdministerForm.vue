@@ -30,13 +30,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAdminStore, ['form', 'roles', 'apikey']),
+    ...mapState(useAdminStore, ['form', 'roles', 'apiKey']),
   },
   async mounted() {
     await Promise.all([
-      await this.readForm(this.formId),
-      await this.readApiDetails(this.formId),
-      await this.readRoles(this.formId),
+      this.readForm(this.formId),
+      this.readApiDetails(this.formId),
+      this.readRoles(this.formId),
     ]);
 
     this.formDetails = { ...this.form };
