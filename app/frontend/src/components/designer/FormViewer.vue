@@ -239,6 +239,7 @@ export default {
         upload_state: Number,
         response: [],
         file_name: String,
+        typeError: Number,
       },
       block: false,
       doYouWantToSaveTheDraft: false,
@@ -485,6 +486,7 @@ export default {
       this.sbdMessage.upload_state = 0;
       this.sbdMessage.response = [];
       this.sbdMessage.file_name = undefined;
+      this.sbdMessage.typeError = -1;
       this.block = false;
     },
     async saveBulkData(submissions) {
@@ -597,6 +599,171 @@ export default {
           'error_report_' + this.form.name + '_' + Date.now();
       }
     },
+    buildValidationFromComponent(obj) {
+      if (obj?.component?.validate) {
+        let validatorIdentity = '';
+        Object.keys(obj.component.validate).forEach((validity) => {
+          switch (validity) {
+            case 'maxSelectedCount':
+              if (obj.component.validate.maxSelectedCount) {
+                validatorIdentity +=
+                  '|maxSelectedCount:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'minSelectedCount':
+              if (obj.component.validate.minSelectedCount) {
+                validatorIdentity +=
+                  '|minSelectedCount:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'multiple':
+              if (obj.component.validate.multiple) {
+                validatorIdentity +=
+                  '|multiple:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'onlyAvailableItems':
+              if (obj.component.validate.onlyAvailableItems) {
+                validatorIdentity +=
+                  '|onlyAvailableItems:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'required':
+              if (obj.component.validate.required) {
+                validatorIdentity +=
+                  '|required:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'strictDateValidation':
+              if (obj.component.validate.strictDateValidation) {
+                validatorIdentity +=
+                  '|strictDateValidation:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'unique':
+              if (obj.component.validate.unique) {
+                validatorIdentity +=
+                  '|unique:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'custom':
+              if (obj.component.validate.custom.length) {
+                validatorIdentity +=
+                  '|custom:' + obj.component.validate[validity].trim();
+              }
+              break;
+
+            case 'customMessage':
+              if (obj.component.validate.customMessage) {
+                validatorIdentity +=
+                  '|customMessage:' + obj.component.validate[validity].trim();
+              }
+              break;
+
+            case 'customPrivate':
+              if (obj.component.validate.customPrivate) {
+                validatorIdentity +=
+                  '|customPrivate:' + obj.component.validate[validity].trim();
+              }
+              break;
+
+            case 'json':
+              if (obj.component.validate.json) {
+                validatorIdentity +=
+                  '|json:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'pattern':
+              if (obj.component.validate.pattern) {
+                validatorIdentity +=
+                  '|pattern:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'maxWords':
+              if (obj.component.validate.maxWords) {
+                validatorIdentity +=
+                  '|maxWords:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'minWords':
+              if (obj.component.validate.minWords) {
+                validatorIdentity +=
+                  '|minWords:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'maxLength':
+              if (obj.component.validate.maxLength) {
+                validatorIdentity +=
+                  '|maxLength:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'minLength':
+              if (obj.component.validate.minLength) {
+                validatorIdentity +=
+                  '|minLength:' + obj.component.validate[validity];
+              }
+              break;
+
+            default:
+              validatorIdentity +=
+                '|' + validity + ':' + obj.component.validate[validity];
+              break;
+          }
+        });
+        return validatorIdentity.replace(/^\|/, '');
+      } else if (obj?.messages[0]?.context?.validator) {
+        return obj.messages[0].context.validator;
+      } else {
+        return 'Unknown';
+      }
+    },
+
+    async frontendFormatResponse(response) {
+      let newResponse = [];
+
+      for (const item of response) {
+        if (item != null && item != undefined) {
+          for (const obj of item.errors) {
+            let error = {};
+
+            if (obj.component != undefined) {
+              error = {
+                submission: item.submission,
+                key: obj.component.key,
+                label: obj.component.label,
+                validator: this.buildValidationFromComponent(obj),
+                error_message: obj.message,
+              };
+            } else {
+              error = {
+                submission: item.submission,
+                key: null,
+                label: null,
+                validator: null,
+                error_message: obj.message,
+              };
+            }
+
+            newResponse.push(error);
+          }
+        }
+      }
+
+      return newResponse;
+    },
+
     async formatResponse(response) {
       let newResponse = [];
       await response.forEach((item, index) => {
@@ -626,8 +793,43 @@ export default {
       });
       return newResponse;
     },
-    setError(data) {
-      this.sbdMessage = data;
+    async setError(error) {
+      this.sbdMessage = error;
+
+      try {
+        if (error.response.data != undefined) {
+          this.sbdMessage.message =
+            error.response.data.title == undefined
+              ? 'An error occurred submitting this form'
+              : error.response.data.title;
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response =
+            error.response.data.reports == undefined
+              ? [{ error_message: 'An error occurred submitting this form' }]
+              : await this.frontendFormatResponse(error.response.data.reports);
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+        } else {
+          this.sbdMessage.message = 'An error occurred submitting this form';
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = [
+            { error_message: 'An error occurred submitting this form' },
+          ];
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+        }
+      } catch (error_2) {
+        this.sbdMessage.message = 'An error occurred submitting this form';
+        this.sbdMessage.error = true;
+        this.sbdMessage.upload_state = 10;
+        this.sbdMessage.response = [
+          { error_message: 'An error occurred submitting this form' },
+        ];
+        this.sbdMessage.file_name =
+          'error_report_' + this.form.name + '_' + Date.now();
+      }
     },
     // Custom Event triggered from buttons with Action type "Event"
     async saveDraft() {

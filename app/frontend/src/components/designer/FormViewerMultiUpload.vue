@@ -58,13 +58,20 @@
             height="15"
           >
             <template v-slot:default="{ value }">
-              <strong>{{ value }}%</strong>
+              <strong>{{ value }}% </strong>
             </template>
           </v-progress-linear>
           <v-row class="fileinfo">
             <v-col cols="12" md="12">
-              <label class="label-left">{{ file.name }}</label>
-              <label class="label-right">{{ fileSize }}</label>
+              <label class="label-left" v-bind:title="file.name">{{
+                fileName
+              }}</label>
+              <label class="label-right"
+                >{{ fileSize }}
+                <p v-if="index > 0 && Json.length > 0">
+                  {{ index + '/' + Json.length }}
+                </p>
+              </label>
             </v-col>
           </v-row>
         </div>
@@ -126,10 +133,13 @@
         </v-row>
       </div>
     </v-row>
+    <v-row id="validateForm" class="displayNone"></v-row>
   </div>
 </template>
 <script>
 import { mapActions } from 'vuex';
+import { Formio } from 'vue-formio';
+// import { nextTick } from 'process';
 export default {
   name: 'FormViewerDownloadButton',
   components: {},
@@ -145,6 +155,7 @@ export default {
       upload_state: Number,
       response: [],
       file_name: String,
+      typeError: Number,
     },
     json_csv: {
       data: [],
@@ -178,6 +189,14 @@ export default {
       if (this.file.size < 1024 * 1024)
         return (this.file.size / 1024).toFixed(2) + ' KB';
       return (this.file.size / (1024 * 1024)).toFixed(2) + ' MB';
+    },
+    fileName() {
+      try {
+        const fs = this.file.name.split('_');
+        return fs[0] + '...' + fs[fs.length - 1];
+      } catch (e) {
+        return this.file.name;
+      }
     },
   },
   methods: {
@@ -264,7 +283,7 @@ export default {
         });
       }
     },
-    preValidateSubmission() {
+    async preValidateSubmission() {
       try {
         if (!Array.isArray(this.Json)) {
           this.resetUpload();
@@ -289,7 +308,17 @@ export default {
         this.max = 100;
         this.progress = true;
         this.$emit('toggleBlock', true);
-        this.validate(this.Json[this.index], []);
+        const formHtml = document.getElementById('validateForm');
+        this.vForm = await Formio.createForm(formHtml, this.formSchema, {
+          highlightErrors: true,
+          alwaysDirty: true,
+          hide: {
+            submit: true,
+          },
+        });
+        this.$nextTick(() => {
+          this.validate(this.Json[this.index], []);
+        });
       } catch (error) {
         this.resetUpload();
         this.$emit('set-error', {
@@ -303,44 +332,106 @@ export default {
         return;
       }
     },
-    validate(element, errors) {
-      const timer = setTimeout(
-        function () {
-          try {
-            let newForm = this.formElement;
-            newForm.data = element;
-            newForm.submission.data = element;
-            newForm.triggerChange();
-            let validationResult = newForm.checkValidity();
-            if (!validationResult) {
-              errors.push({
-                submission: this.index,
-                errors: validationResult.errors,
-              });
-            }
-          } catch (error) {
-            errors.push({
-              submission: this.index,
-              message: this.$t(
-                'trans.formViewerMultiUpload.errWhileCheckValidity'
-              ),
-            });
-          }
+    async getMemoryInfo() {
+      return new Promise((resolve) => {
+        if (window.performance && window.performance.memory) {
+          resolve(
+            (
+              (window.performance.memory.usedJSHeapSize * 100) /
+              window.performance.memory.jsHeapSizeLimit
+            ).toFixed(0)
+          );
+        }
+        resolve(undefined);
+      });
+    },
+    async checkMemoryUsage() {
+      let time = 1000;
+      const memoryUsage = await this.getMemoryInfo();
+      if (memoryUsage != undefined) {
+        if (memoryUsage <= 50) {
+          time = 50;
+        } else if (memoryUsage > 50 || memoryUsage < 70) {
+          time = 1000;
+        } else if (memoryUsage > 70 || memoryUsage < 80) {
+          time = 2000;
+        } else if (memoryUsage > 80) {
+          time = 3000;
+        }
+      }
+      return time;
+    },
+    async validate(element, errors) {
+      await this.delay(500);
+      //this.checkMemoryUsage();
+      this.formIOValidation(element).then((response) => {
+        if (response.error) {
+          errors[this.index] = {
+            submission: this.index,
+            errors: response.data,
+          };
+        }
+        delete response.error;
+        delete response.data;
+        this.vForm.setSubmission({
+          data: undefined,
+        });
+        this.validationDispatcher(errors);
+      });
+    },
+    async validationDispatcher(errors) {
+      /* we need this timer allow to the gargabe colector to have time
+       to clean the memory before starting  a new form validation */
+
+      this.vForm.clearServerErrors();
+      this.vForm.resetValue();
+      this.vForm.clear();
+      const response = await this.checkMemoryUsage();
+
+      await this.delay(response);
+      // if (!response) {
+      const check = {
+        shouldContinueValidation: this.index < this.Json.length,
+      };
+      if (check.shouldContinueValidation) {
+        this.$nextTick(() => {
           this.index++;
           this.value = this.percentage(this.index);
-          clearTimeout(timer);
-          if (this.index < this.Json.length) {
-            this.validate(this.Json[this.index], errors);
-          } else {
-            this.endValidation(errors);
-          }
-        }.bind(this),
-        12
-      );
+        });
+        delete check.shouldContinueValidation;
+        this.$nextTick(() => {
+          this.validate(this.Json[this.index], errors);
+        });
+      } else {
+        this.endValidation(errors);
+      }
+    },
+    async formIOValidation(element) {
+      return new Promise((resolve) => {
+        this.vForm.setSubmission({
+          data: element,
+        });
+        this.vForm
+          .submit()
+          .then((submission) => {
+            resolve({ error: false, data: submission });
+          })
+          .catch((error) => {
+            resolve({ error: true, data: error });
+          });
+      });
+    },
+    delay(ms) {
+      return new Promise((resolve) => {
+        const c = setTimeout(() => {
+          clearTimeout(c);
+          resolve();
+        }, ms);
+      });
     },
     percentage(i) {
       let number_of_submission = this.Json.length;
-      if (number_of_submission > 0) {
+      if (number_of_submission > 0 && i > 0) {
         return Math.ceil((i * this.max) / number_of_submission);
       }
       return 0;
@@ -348,6 +439,8 @@ export default {
     endValidation(errors) {
       this.progress = false;
       this.globalError = errors;
+      this.vForm.destroy();
+      this.vForm = null;
       if (this.globalError.length == 0) {
         this.$emit('save-bulk-data', this.Json);
       } else {
@@ -356,7 +449,13 @@ export default {
           message: this.$t('trans.formViewerMultiUpload.errAfterValidate'),
           error: true,
           upload_state: 10,
-          response: this.globalError,
+          response: {
+            data: {
+              title: 'Validation Error',
+              reports: this.globalError,
+            },
+          },
+          typeError: 0,
         });
       }
     },
@@ -378,6 +477,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.displayNone,
+.formio-error-wrapper {
+  display: none !important;
+  height: 1px;
+  width: 1px;
+}
 .loading {
   background-color: #5072a6;
   border-color: #003366;
@@ -434,6 +539,9 @@ export default {
         .label-right {
           text-align: right;
           float: right;
+          p {
+            color: #38598a;
+          }
         }
         .label-left {
           text-align: left;
