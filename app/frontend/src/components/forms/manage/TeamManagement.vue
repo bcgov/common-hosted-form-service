@@ -1,8 +1,12 @@
 <template>
-  <div>
-    <v-container fluid class="d-flex">
-      <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
-      <div style="z-index: 1">
+  <div :class="{ 'dir-rtl': isRTL }">
+    <div class="container">
+      <div>
+        <h1 class="mr-auto">
+          {{ $t('trans.teamManagement.teamManagement') }}
+        </h1>
+      </div>
+      <div style="z-index: 50">
         <span>
           <AddTeamMember
             :disabled="!canManageTeam"
@@ -45,7 +49,7 @@
           </v-tooltip>
         </span>
       </div>
-    </v-container>
+    </div>
 
     <v-row no-gutters>
       <v-spacer />
@@ -59,6 +63,7 @@
           hide-details
           :label="$t('trans.teamManagement.search')"
           single-line
+          :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
         />
       </v-col>
     </v-row>
@@ -203,7 +208,7 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.userType']),
-    ...mapGetters('form', ['permissions']),
+    ...mapGetters('form', ['permissions', 'isRTL']),
     ...mapGetters('auth', ['user']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
@@ -589,6 +594,16 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex; /* displays flex-items (children) inline by default */
+  flex-direction: row; /* new */
+  justify-content: space-between;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
 .role-col {
   width: 12%;
 }

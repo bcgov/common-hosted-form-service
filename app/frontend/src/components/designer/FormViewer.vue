@@ -2,7 +2,7 @@
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <div v-if="isFormScheduleExpired">
       <template>
-        <v-alert text prominent type="error">
+        <v-alert text prominent type="error" :class="{ 'dir-rtl': isRTL }">
           {{
             isLateSubmissionAllowed
               ? $t('trans.formViewer.lateFormSubmissions')
@@ -12,7 +12,11 @@
 
         <div v-if="isLateSubmissionAllowed">
           <v-col cols="3" md="2">
-            <v-btn color="primary" @click="isFormScheduleExpired = false">
+            <v-btn
+              color="primary"
+              @click="isFormScheduleExpired = false"
+              :class="{ 'dir-rtl': isRTL }"
+            >
               <span>{{ $t('trans.formViewer.createLateSubmission') }}</span>
             </v-btn>
           </v-col>
@@ -45,11 +49,12 @@
         <v-alert
           class="mt-2 mb-2"
           :value="saved || saving"
-          :class="
+          :class="[
             saving
               ? NOTIFICATIONS_TYPES.INFO.class
-              : NOTIFICATIONS_TYPES.SUCCESS.class
-          "
+              : NOTIFICATIONS_TYPES.SUCCESS.class,
+            { 'dir-rtl': isRTL },
+          ]"
           :color="
             saving
               ? NOTIFICATIONS_TYPES.INFO.color
@@ -62,14 +67,16 @@
           "
           transition="scale-transition"
         >
-          <div v-if="saving">
+          <div v-if="saving" :class="{ 'dir-rtl': isRTL }">
             <v-progress-linear indeterminate />
             {{ $t('trans.formViewer.saving') }}
           </div>
-          <div v-else>{{ $t('trans.formViewer.draftSaved') }}</div>
+          <div v-else :class="{ 'dir-rtl': isRTL }">
+            {{ $t('trans.formViewer.draftSaved') }}
+          </div>
         </v-alert>
 
-        <slot name="alert" v-bind:form="form" />
+        <slot name="alert" v-bind:form="form" :class="{ 'dir-rtl': isRTL }" />
 
         <BaseDialog
           v-model="showSubmitConfirmDialog"
@@ -77,25 +84,30 @@
           :enableCustomButton="canSaveDraft"
           @close-dialog="showSubmitConfirmDialog = false"
           @continue-dialog="continueSubmit"
+          :class="{ 'dir-rtl': isRTL }"
         >
           <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
-          <template #text>{{
-            $t('trans.formViewer.submitFormWarningMsg')
-          }}</template>
+          <template #text
+            ><span :class="{ 'dir-rtl': isRTL }">{{
+              $t('trans.formViewer.submitFormWarningMsg')
+            }}</span></template
+          >
           <template #button-text-continue>
-            <span>{{ $t('trans.formViewer.submit') }}</span>
+            <span :class="{ 'dir-rtl': isRTL }">{{
+              $t('trans.formViewer.submit')
+            }}</span>
           </template>
         </BaseDialog>
         <v-alert
           v-if="isLoading && !bulkFile && submissionId == undefined"
           class="mt-2 mb-2"
           :value="isLoading"
-          :class="NOTIFICATIONS_TYPES.INFO.class"
+          :class="[NOTIFICATIONS_TYPES.INFO.class, { 'dir-rtl': isRTL }]"
           :color="NOTIFICATIONS_TYPES.INFO.color"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
           transition="scale-transition"
         >
-          <div color="info" icon="$info">
+          <div color="info" icon="$info" :class="{ 'dir-rtl': isRTL }">
             <v-progress-linear
               :indeterminate="true"
               color="blue-grey lighten-4"
@@ -139,6 +151,7 @@
       </div>
     </div>
     <BaseDialog
+      :class="{ 'dir-rtl': isRTL }"
       v-model="doYouWantToSaveTheDraft"
       type="SAVEDDELETE"
       :enableCustomButton="false"
@@ -146,13 +159,25 @@
       @delete-dialog="no"
       @continue-dialog="yes"
     >
-      <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
-      <template #text>{{ $t('trans.formViewer.wantToSaveDraft') }}</template>
+      <template #title
+        ><span :class="{ 'dir-rtl': isRTL }">
+          {{ $t('trans.formViewer.pleaseConfirm') }}</span
+        ></template
+      >
+      <template #text
+        ><span :class="{ 'dir-rtl': isRTL }">
+          {{ $t('trans.formViewer.wantToSaveDraft') }}</span
+        ></template
+      >
       <template #button-text-continue>
-        <span>{{ $t('trans.formViewer.yes') }}</span>
+        <span :class="{ 'dir-rtl': isRTL }">
+          {{ $t('trans.formViewer.yes') }}</span
+        >
       </template>
       <template #button-text-delete>
-        <span>{{ $t('trans.formViewer.no') }}</span>
+        <span :class="{ 'dir-rtl': isRTL }">
+          {{ $t('trans.formViewer.no') }}</span
+        >
       </template>
     </BaseDialog>
   </v-skeleton-loader>
@@ -255,7 +280,7 @@ export default {
       return this.$t('trans.formViewer.formScheduleExpireMessage');
     },
     ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['multiLanguage', 'isRTL']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -953,6 +978,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
 @import '~font-awesome/css/font-awesome.min.css';
 @import '~formiojs/dist/formio.form.min.css';
 

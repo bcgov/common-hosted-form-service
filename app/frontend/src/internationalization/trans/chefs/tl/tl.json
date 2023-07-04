@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Pamahalaan ang Form"
   },
+  "preview": {
+    "preview": "Silipin",
+    "previewToolTip": "Nagpapakita ito ng preview ng disenyo at gawi ng bersyon ng form habang makikita ito ng iyong mga nagsumite. Hindi mo maaaring isumite ang form mula sa pahinang ito."
+  },
   "shareForm": {
     "shareForm": "Ibahagi ang Form",
     "shareLink": "Ibahagi ang Link",
@@ -770,8 +774,17 @@
     "copyToClipboard": "Kopyahin sa clipboard",
     "errCopyToClipboard": "Error sa pagtatangkang kopyahin sa clipboard."
   },
-  "root": {
-    "admin": "Admin"
+  "admin": {
+    "root": {
+      "admin": "Admin"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "ANG AKING MGA FORM",
+      "history": "KASAYSAYAN",
+      "user": "Gumagamit"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Ang iyong form ay matagumpay na naisumite",

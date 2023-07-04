@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <span>
       <ShareForm :formId="form.id" :warning="!isPublished" />
     </span>
@@ -50,6 +50,7 @@
       </v-tooltip>
 
       <BaseDialog
+        :class="{ 'dir-rtl': isRTL }"
         v-model="showDeleteDialog"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"
@@ -86,7 +87,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
+    ...mapGetters('form', ['form', 'permissions', 'isRTL']),
     // Permission checks
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);
@@ -121,3 +122,9 @@ export default {
   },
 };
 </script>
+<style lang="css" scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
+</style>

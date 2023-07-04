@@ -1,10 +1,14 @@
 <template>
-  <v-skeleton-loader :loading="loading" type="list-item-two-line">
+  <v-skeleton-loader
+    :loading="loading"
+    type="list-item-two-line"
+    :class="{ 'dir-rtl': isRTL }"
+  >
     <v-row no-gutters>
-      <v-col cols="12" sm="6">
+      <v-col cols="11" sm="6">
         <h2 class="note-heading">{{ $t('trans.notesPanel.notes') }}</h2>
       </v-col>
-      <v-col cols="12" sm="6" class="text-sm-right">
+      <v-col cols="11" sm="6" :class="isRTL ? 'text-left' : 'text-right'">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -72,7 +76,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-
+import { mapGetters } from 'vuex';
 import { formService, rbacService } from '@/services';
 
 export default {
@@ -91,6 +95,9 @@ export default {
       notes: [],
       showNoteField: false,
     };
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -141,6 +148,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
 .note-heading {
   color: #003366;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div class="text-center" style="z-index: 100">
     <v-menu offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn dark outlined v-bind="attrs" v-on="on" class="ml-3">

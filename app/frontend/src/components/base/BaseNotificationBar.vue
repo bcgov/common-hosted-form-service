@@ -1,6 +1,6 @@
 <template>
   <v-alert
-    :class="'target-notification ' + notification.class"
+    :class="['target-notification ' + notification.class, { 'dir-rtl': isRTL }]"
     :icon="notification.icon"
     prominent
     dismissible
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 export default {
   name: 'BaseNotificationBar',
   props: {
@@ -29,6 +29,9 @@ export default {
     return {
       timeout: null,
     };
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
   },
   methods: {
     ...mapActions('notifications', ['deleteNotification']),
@@ -52,5 +55,10 @@ export default {
 <style scoped>
 .target-notification >>> .v-alert__icon.v-icon:after {
   display: none;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 </style>
