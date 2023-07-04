@@ -15,6 +15,10 @@
     "action": "행위",
     "loadingText": "로딩 중 기다려주세요"
   },
+  "preview": {
+    "preview": "시사",
+    "previewToolTip": "이는 제출자가 볼 수 있는 양식 버전 디자인 및 동작의 미리보기를 보여줍니다. 이 페이지에서는 양식을 제출할 수 없습니다."
+  },
   "manageLayout": {
     "manageForm": "양식 관리"
   },
@@ -770,8 +774,17 @@
     "copyToClipboard": "클립 보드에 복사",
     "errCopyToClipboard": "클립보드에 복사하는 동안 오류가 발생했습니다."
   },
-  "root": {
-    "admin": "관리자"
+  "admin": {
+    "root": {
+      "admin": "관리자"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "내 양식",
+      "history": "역사",
+      "user": "사용자"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "귀하의 양식이 성공적으로 제출되었습니다",

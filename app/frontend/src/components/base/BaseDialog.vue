@@ -7,7 +7,7 @@
     @keydown.esc="closeDialog"
   >
     <v-card>
-      <div class="dialog-body">
+      <div class="dialog-body" :class="{ 'dir-rtl': isRTL }">
         <div v-if="showCloseButton">
           <v-spacer />
           <v-icon color="primary" class="float-right m-3" @click="closeDialog"
@@ -47,7 +47,12 @@
               <span>{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
-          <v-btn class="mb-5" outlined @click="closeDialog">
+          <v-btn
+            :class="{ 'dir-rtl': isRTL }"
+            class="mb-5"
+            outlined
+            @click="closeDialog"
+          >
             <slot name="button-text-cancel">
               <span>{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
@@ -58,6 +63,7 @@
             class="mb-5 mr-5"
             color="primary"
             depressed
+            :class="{ 'dir-rtl': isRTL }"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
@@ -104,6 +110,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'BaseDialog',
   methods: {
@@ -119,6 +127,9 @@ export default {
     customDialog() {
       this.$emit('custom-dialog');
     },
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
   },
   props: {
     value: {
@@ -158,5 +169,9 @@ export default {
 .dialog-text {
   flex: 1 1 auto;
   width: 90%;
+}
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right !important;
 }
 </style>

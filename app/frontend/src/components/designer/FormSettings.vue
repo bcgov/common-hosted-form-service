@@ -1,5 +1,5 @@
 <template>
-  <v-container class="px-0">
+  <v-container class="px-0" :class="{ 'dir-rtl': isRTL }">
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
@@ -13,6 +13,7 @@
             data-test="text-name"
             v-model="name"
             :rules="nameRules"
+            :class="{ 'dir-rtl': isRTL }"
           />
 
           <v-text-field
@@ -24,6 +25,7 @@
             data-test="text-description"
             v-model="description"
             :rules="descriptionRules"
+            :class="{ 'dir-rtl': isRTL }"
           />
         </BasePanel>
       </v-col>
@@ -373,6 +375,7 @@
                       dense
                       outlined
                       :rules="scheduleOpenDate"
+                      :class="{ 'dir-rtl': isRTL }"
                     ></v-text-field>
                   </template>
                   <v-date-picker
@@ -447,6 +450,7 @@
                       dense
                       outlined
                       :rules="scheduleCloseDate"
+                      :class="{ 'dir-rtl': isRTL }"
                     ></v-text-field>
                   </template>
                   <v-date-picker
@@ -475,6 +479,7 @@
                   v-model="schedule.keepOpenForTerm"
                   class="m-0 p-0"
                   :rules="roundNumber"
+                  :class="{ 'dir-rtl': isRTL }"
                 ></v-text-field>
               </v-col>
 
@@ -550,6 +555,7 @@
                     v-model="schedule.allowLateSubmissions.forNext.term"
                     class="m-0 p-0"
                     :rules="roundNumber"
+                    :class="{ 'dir-rtl': isRTL }"
                   >
                   </v-text-field>
                 </v-col>
@@ -599,6 +605,7 @@
                     v-model="schedule.repeatSubmission.everyTerm"
                     class="m-0 p-0"
                     :rules="repeatTerm"
+                    :class="{ 'dir-rtl': isRTL }"
                   ></v-text-field>
                 </v-col>
 
@@ -637,6 +644,7 @@
                         dense
                         outlined
                         :rules="repeatUntilDate"
+                        :class="{ 'dir-rtl': isRTL }"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -904,7 +912,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import {
   IdentityMode,
@@ -1059,6 +1067,7 @@ export default {
       'form.reminder_enabled',
       'form.versions',
     ]),
+    ...mapGetters('form', ['isRTL']),
     ID_MODE() {
       return IdentityMode;
     },
@@ -1318,3 +1327,8 @@ export default {
   },
 };
 </script>
+<style lang="css" scoped>
+.dir-rtl {
+  direction: rtl !important;
+}
+</style>

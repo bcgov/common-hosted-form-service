@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
@@ -19,15 +19,17 @@
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0">{{
+        <v-card-title :class="{ 'dir-rtl': isRTL }" class="text-h5 pb-0">{{
           $t('trans.shareForm.shareLink')
         }}</v-card-title>
         <v-card-text>
           <hr />
-          <p class="mb-5">{{ $t('trans.shareForm.copyQRCode') }}</p>
+          <p class="mb-5" :class="{ 'dir-rtl': isRTL }">
+            {{ $t('trans.shareForm.copyQRCode') }}
+          </p>
           <v-alert
             :value="warning"
-            :class="NOTIFICATIONS_TYPES.WARNING.class"
+            :class="[NOTIFICATIONS_TYPES.WARNING.class, { 'dir-rtl': isRTL }]"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             transition="scale-transition"
           >
@@ -41,6 +43,7 @@
             label="URL"
             data-test="text-shareUrl"
             :value="formLink"
+            :class="{ 'dir-rtl': isRTL }"
           >
             <template #prepend>
               <v-icon>link</v-icon>
@@ -55,6 +58,7 @@
                 <template #activator="{ on, attrs }">
                   <v-btn
                     class="mt-n1"
+                    :class="{ 'dir-rtl': isRTL }"
                     color="primary"
                     :href="formLink"
                     icon
@@ -66,7 +70,9 @@
                     <v-icon class="mr-1">open_in_new</v-icon>
                   </v-btn>
                 </template>
-                <span>{{ $t('trans.shareForm.openThisForm') }}</span>
+                <span :class="{ 'dir-rtl': isRTL }">{{
+                  $t('trans.shareForm.openThisForm')
+                }}</span>
               </v-tooltip>
             </template>
           </v-text-field>
@@ -102,7 +108,12 @@
         </v-card-text>
 
         <v-card-actions class="justify-center">
-          <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
+          <v-btn
+            :class="{ 'dir-rtl': isRTL }"
+            class="mb-5 close-dlg"
+            color="primary"
+            @click="dialog = false"
+          >
             <span>{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
@@ -114,7 +125,7 @@
 <script>
 import QrcodeVue from 'qrcode.vue';
 import { NotificationTypes } from '@/utils/constants';
-
+import { mapGetters } from 'vuex';
 export default {
   components: {
     QrcodeVue,
@@ -144,6 +155,7 @@ export default {
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
+    ...mapGetters('form', ['isRTL']),
   },
   methods: {
     downloadQr() {
@@ -171,6 +183,10 @@ export default {
   }
 }
 
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
 .close-dlg {
   margin-top: 50px;
 }

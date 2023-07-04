@@ -6,7 +6,7 @@
       width="70%"
       @click:outside="onCloseDialog"
     >
-      <v-card>
+      <v-card :class="{ 'dir-rtl': isRTL }">
         <v-container>
           <v-row>
             <v-col>
@@ -58,6 +58,7 @@
                     data-cy="more_help_info_link_text_field"
                     class="text-style"
                     color="#1A5A96"
+                    :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
                   >
                     {{ moreHelpInfoLink }}
                   </v-text-field>
@@ -76,7 +77,13 @@
           </v-row>
 
           <v-row no-gutters>
-            <v-col cols="12" sm="12" md="12" class="mb-2 blackColorWrapper">
+            <v-col
+              cols="12"
+              sm="12"
+              md="12"
+              class="mb-2 blackColorWrapper"
+              :class="{ 'dir-rtl': isRTL }"
+            >
               {{ $t('trans.proactiveHelpDialog.description') }}
             </v-col>
             <v-col cols="12" sm="12" md="12">
@@ -89,6 +96,7 @@
                 data-cy="more_help_info_link_text_area"
                 value="description"
                 class="text-style"
+                :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
               ></v-textarea>
             </v-col>
           </v-row>
@@ -199,6 +207,7 @@ export default {
     componentName: { type: String, require: true, default: '' },
     groupName: { type: String, require: true },
   },
+
   methods: {
     ...mapActions('admin', [
       'addFCProactiveHelp',
@@ -278,6 +287,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['fcHelpInfoImageUpload', 'fcProactiveHelpVersion']),
+    ...mapGetters('form', ['isRTL']),
   },
 };
 </script>
@@ -377,5 +387,10 @@ export default {
   width: 117px !important;
   height: 36px !important;
   text-transform: capitalize !important;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right !important;
 }
 </style>

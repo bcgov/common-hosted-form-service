@@ -1,5 +1,6 @@
 <template>
   <div
+    :class="{ 'dir-rtl': true }"
     :style="[
       {
         display: 'flex',
@@ -206,7 +207,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['multiLanguage', 'isRTL']),
   },
   props: {
     formId: String,
@@ -520,5 +521,10 @@ export default {
   width: 50px;
   text-align: center;
   word-break: break-word;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 </style>

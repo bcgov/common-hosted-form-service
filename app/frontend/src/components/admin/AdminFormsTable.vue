@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-row no-gutters>
       <v-col cols="12" sm="8">
         <v-checkbox
@@ -19,6 +19,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
           />
         </div>
       </v-col>
@@ -85,6 +86,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['formList']),
+    ...mapGetters('form', ['isRTL']),
     calcHeaders() {
       return this.headers.filter(
         (x) => x.value !== 'updatedAt' || this.activeOnly
