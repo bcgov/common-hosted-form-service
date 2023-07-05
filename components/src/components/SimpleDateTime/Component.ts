@@ -36,6 +36,7 @@ export default class Component extends (ParentComponent as any) {
           minDate: null,
           maxDate: null,
         },
+
         timePicker: {
           hourStep: 1,
           minuteStep: 1,
@@ -58,7 +59,7 @@ export default class Component extends (ParentComponent as any) {
       group: 'simple',
       icon: 'calendar',
       weight: 20,
-      documentation: Constants.DEFAULT_HELP_LINK,
+      documentation: '/userguide/form-building/premium-components#button',
       schema: Component.schema(),
     };
   }

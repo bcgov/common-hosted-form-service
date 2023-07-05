@@ -30,7 +30,7 @@ export default class Component extends (ParentComponent as any) {
             group: 'simple',
             icon: 'check-square',
             weight: 4,
-            documentation: Constants.DEFAULT_HELP_LINK,
+            documentation: 'https://help.form.io/userguide/form-building/form-components#check-box',
             schema: Component.schema()
         };
     }

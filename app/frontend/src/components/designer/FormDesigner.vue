@@ -271,7 +271,6 @@ export default {
               // select: true,
               // radio: true,
               // button: true,
-              recaptcha: true,
               email: false,
               url: false,
               phoneNumber: false,
@@ -282,11 +281,11 @@ export default {
               time: false,
               currency: false,
               survey: false,
-              signature: false,
               // Prevent duplicate appearance of orgbook component
               orgbook: false,
               bcaddress: false,
-              recap: true,
+              recaptcha: true,
+              reps: true,
             },
           },
           data: {
