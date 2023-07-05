@@ -1,3 +1,56 @@
+<script>
+import { mapActions, mapState } from 'pinia';
+
+import { i18n } from '~/internationalization';
+
+import { useAdminStore } from '~/store/admin';
+
+export default {
+  data() {
+    return {
+      loading: true,
+      search: '',
+    };
+  },
+  computed: {
+    ...mapState(useAdminStore, ['userList']),
+    headers() {
+      return [
+        {
+          title: i18n.t('trans.adminUsersTable.fullName'),
+          align: 'start',
+          key: 'fullName',
+        },
+        {
+          title: i18n.t('trans.adminUsersTable.userID'),
+          align: 'start',
+          key: 'username',
+        },
+        {
+          title: i18n.t('trans.adminUsersTable.created'),
+          align: 'start',
+          key: 'created',
+        },
+        {
+          title: i18n.t('trans.adminUsersTable.actions'),
+          align: 'end',
+          key: 'actions',
+          filterable: false,
+          sortable: false,
+        },
+      ];
+    },
+  },
+  async mounted() {
+    await this.getUsers();
+    this.loading = false;
+  },
+  methods: {
+    ...mapActions(useAdminStore, ['getUsers']),
+  },
+};
+</script>
+
 <template>
   <div>
     <v-row no-gutters>
@@ -27,13 +80,15 @@
       :loading="loading"
       :loading-text="$t('trans.adminUsersTable.loadingText')"
     >
-      <template #[`item.created`]="{ item }">
-        {{ item.createdAt | formatDate }}
+      <template #item.created="{ item }">
+        {{ $filters.formatDate(item.raw.createdAt) }}
       </template>
-      <template #[`item.actions`]="{ item }">
-        <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">build_circle</v-icon>
+      <template #item.actions="{ item }">
+        <router-link
+          :to="{ name: 'AdministerUser', query: { u: item.raw.id } }"
+        >
+          <v-btn color="primary" variant="text" size="small">
+            <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
             <span class="d-none d-sm-flex">{{
               $t('trans.adminUsersTable.admin')
             }}</span>
@@ -43,58 +98,6 @@
     </v-data-table>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  name: 'FormsTable',
-  data() {
-    return {
-      activeOnly: false,
-      loading: true,
-      search: '',
-    };
-  },
-  computed: {
-    ...mapGetters('admin', ['userList']),
-    headers() {
-      return [
-        {
-          text: this.$t('trans.adminUsersTable.fullName'),
-          align: 'start',
-          value: 'fullName',
-        },
-        {
-          text: this.$t('trans.adminUsersTable.userID'),
-          align: 'start',
-          value: 'username',
-        },
-        {
-          text: this.$t('trans.adminUsersTable.created'),
-          align: 'start',
-          value: 'created',
-        },
-        {
-          text: this.$t('trans.adminUsersTable.actions'),
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ];
-    },
-  },
-  methods: {
-    ...mapActions('admin', ['getUsers']),
-  },
-  async mounted() {
-    await this.getUsers();
-    this.loading = false;
-  },
-};
-</script>
-
 <style scoped>
 /* TODO: Global Style! */
 .submissions-search {
@@ -117,15 +120,15 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
+.submissions-table :deep(tbody tr:nth-of-type(odd)) {
   background-color: #f5f5f5;
 }
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

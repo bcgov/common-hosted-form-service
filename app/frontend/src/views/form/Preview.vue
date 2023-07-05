@@ -1,3 +1,34 @@
+<script>
+import BaseSecure from '~/components/base/BaseSecure.vue';
+import FormViewer from '~/components/designer/FormViewer.vue';
+
+import { IdentityProviders } from '~/utils/constants';
+
+export default {
+  components: {
+    BaseSecure,
+    FormViewer,
+  },
+  props: {
+    d: {
+      type: String,
+      required: true,
+    },
+    f: {
+      type: String,
+      required: true,
+    },
+    v: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    IDP: () => IdentityProviders,
+  },
+};
+</script>
+
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
     <h1>
@@ -17,24 +48,3 @@
     <FormViewer :draft-id="d" :form-id="f" preview :version-id="v" />
   </BaseSecure>
 </template>
-
-<script>
-import FormViewer from '@src/components/designer/FormViewer.vue';
-
-import { IdentityProviders } from '@src/utils/constants';
-
-export default {
-  name: 'FormPreview',
-  components: {
-    FormViewer,
-  },
-  props: {
-    d: String,
-    f: String,
-    v: String,
-  },
-  computed: {
-    IDP: () => IdentityProviders,
-  },
-};
-</script>

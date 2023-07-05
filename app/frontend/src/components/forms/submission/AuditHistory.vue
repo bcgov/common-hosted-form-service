@@ -1,15 +1,70 @@
+<script>
+import { mapActions } from 'pinia';
+import { i18n } from '~/internationalization';
+import formService from '~/services/formService.js';
+import { useNotificationStore } from '~/store/notification';
+
+export default {
+  props: {
+    submissionId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      dialog: false,
+      loading: true,
+      history: [],
+    };
+  },
+  computed: {
+    headers() {
+      return [
+        {
+          title: i18n.t('trans.auditHistory.userName'),
+          key: 'updatedByUsername',
+        },
+        { title: i18n.t('trans.auditHistory.date'), key: 'actionTimestamp' },
+      ];
+    },
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async loadHistory() {
+      this.loading = true;
+      this.dialog = true;
+      try {
+        const response = await formService.listSubmissionEdits(
+          this.submissionId
+        );
+        this.history = response.data;
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.auditHistory.errorMsg'),
+          consoleError:
+            i18n.t('trans.auditHistory.consoleErrMsg') +
+            `${this.submissionId}: ${error}`,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+};
+</script>
+
 <template>
   <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
         <v-btn
           class="mx-1"
-          @click="loadHistory"
           color="primary"
           icon
           size="small"
-          v-bind="attrs"
-          v-on="on"
+          v-bind="props"
+          @click="loadHistory"
         >
           <v-icon icon="mdi:mdi-history"></v-icon>
         </v-btn>
@@ -37,7 +92,7 @@
             class="status-table"
           >
             <template #[`item.actionTimestamp`]="{ item }">
-              {{ item.actionTimestamp | formatDateLong }}
+              {{ $filters.formatDateLong(item.columns.actionTimestamp) }}
             </template>
           </v-data-table>
         </v-card-text>
@@ -51,58 +106,3 @@
     </v-dialog>
   </span>
 </template>
-
-<script>
-import { mapActions } from 'vuex';
-import formService from '@/services/formService.js';
-
-export default {
-  name: 'AuditHistory',
-  props: {
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      dialog: false,
-      loading: true,
-      history: [],
-    };
-  },
-  computed: {
-    headers() {
-      return [
-        {
-          text: this.$t('trans.auditHistory.userName'),
-          value: 'updatedByUsername',
-        },
-        { text: this.$t('trans.auditHistory.date'), value: 'actionTimestamp' },
-      ];
-    },
-  },
-  methods: {
-    ...mapActions('notifications', ['addNotification']),
-    async loadHistory() {
-      this.loading = true;
-      this.dialog = true;
-      try {
-        const response = await formService.listSubmissionEdits(
-          this.submissionId
-        );
-        this.history = response.data;
-      } catch (error) {
-        this.addNotification({
-          message: this.$t('trans.auditHistory.errorMsg'),
-          consoleError:
-            this.$t('trans.auditHistory.consoleErrMsg') +
-            `${this.submissionId}: ${error}`,
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-};
-</script>

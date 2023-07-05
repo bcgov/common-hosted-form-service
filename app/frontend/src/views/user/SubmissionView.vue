@@ -1,12 +1,7 @@
-<template>
-  <FormSubmission :submission-id="s" />
-</template>
-
 <script>
-import FormSubmission from '@src/components/forms/submission/UserSubmission.vue';
+import FormSubmission from '~/components/forms/submission/UserSubmission.vue';
 
 export default {
-  name: 'UserSubmissionView',
   components: {
     FormSubmission,
   },
@@ -18,3 +13,7 @@ export default {
   },
 };
 </script>
+
+<template>
+  <FormSubmission :submission-id="s" />
+</template>

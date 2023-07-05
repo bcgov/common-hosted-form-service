@@ -1,34 +1,10 @@
-<template>
-  <v-container class="text-center">
-    <div v-if="keycloakReady && !authenticated">
-      <h1 class="my-6">Authenticate with:</h1>
-      <v-row v-for="button in buttons" :key="button.type" justify="center">
-        <v-col v-if="buttonEnabled(button.type)" sm="3">
-          <v-btn block color="primary" size="large" @click="login(button.type)">
-            <span>{{ button.label }}</span>
-          </v-btn>
-        </v-col>
-      </v-row>
-    </div>
-    <div v-else>
-      <h1 class="my-6">Already logged in</h1>
-      <router-link :to="{ name: 'About' }">
-        <v-btn color="primary" size="large">
-          <v-icon start>home</v-icon>
-          <span>About</span>
-        </v-btn>
-      </router-link>
-    </div>
-  </v-container>
-</template>
-
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'pinia';
 
-import { IdentityProviders } from '@src/utils/constants';
+import { useAuthStore } from '~/store/auth';
+import { IdentityProviders } from '~/utils/constants';
 
 export default {
-  name: 'Login',
   props: {
     idpHint: {
       type: Array,
@@ -40,7 +16,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('auth', ['authenticated', 'createLoginUrl', 'keycloakReady']),
+    ...mapState(useAuthStore, ['authenticated', 'createLoginUrl', 'ready']),
     buttons: () => [
       {
         label: 'IDIR',
@@ -64,10 +40,34 @@ export default {
     if (this.idpHint && this.idpHint.length === 1) this.login(this.idpHint[0]);
   },
   methods: {
-    ...mapActions('auth', ['login']),
+    ...mapActions(useAuthStore, ['login']),
     buttonEnabled(type) {
       return this.idpHint ? this.idpHint.includes(type) : false;
     },
   },
 };
 </script>
+
+<template>
+  <v-container class="text-center">
+    <div v-if="ready && !authenticated">
+      <h1 class="my-6">Authenticate with:</h1>
+      <v-row v-for="button in buttons" :key="button.type" justify="center">
+        <v-col v-if="buttonEnabled(button.type)" sm="3">
+          <v-btn block color="primary" size="large" @click="login(button.type)">
+            <span>{{ button.label }}</span>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
+    <div v-else>
+      <h1 class="my-6">Already logged in</h1>
+      <router-link :to="{ name: 'About' }">
+        <v-btn class="ma-2" color="primary" size="large">
+          <v-icon start icon="mdi-home"></v-icon>
+          About
+        </v-btn>
+      </router-link>
+    </div>
+  </v-container>
+</template>

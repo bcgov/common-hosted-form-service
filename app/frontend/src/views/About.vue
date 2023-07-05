@@ -1,3 +1,24 @@
+<script>
+import { mapState } from 'pinia';
+import BaseImagePopout from '../components/base/BaseImagePopout.vue';
+import { useAuthStore } from '~/store/auth';
+
+export default {
+  components: {
+    BaseImagePopout,
+  },
+  computed: {
+    ...mapState(useAuthStore, ['authenticated']),
+    howToVideoUrl() {
+      return import.meta.env.VITE_HOWTOURL;
+    },
+    chefsTourVideoUrl() {
+      return import.meta.env.VITE_CHEFSTOURURL;
+    },
+  },
+};
+</script>
+
 <template>
   <div class="about-layout">
     <v-sheet class="help-highlight pa-5 text-center">
@@ -25,7 +46,6 @@
               :src="chefsTourVideoUrl"
               title="Introduction to the Common Hosted Forms Service (CHEFS)"
               frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
             >
             </iframe>
@@ -106,24 +126,6 @@
     </v-sheet>
   </div>
 </template>
-
-<script>
-import { mapGetters } from 'vuex';
-
-export default {
-  name: 'About',
-  computed: {
-    ...mapGetters('auth', ['authenticated']),
-    howToVideoUrl() {
-      return import.meta.env.VITE_HOWTOURL;
-    },
-    chefsTourVideoUrl() {
-      return import.meta.env.VITE_CHEFSTOURURL;
-    },
-  },
-};
-//
-</script>
 
 <style lang="scss" scoped>
 .about-layout {

@@ -1,3 +1,54 @@
+<script>
+import { mapState } from 'pinia';
+
+import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
+import { useFormStore } from '~/store/form';
+import { FormPermissions } from '~/utils/constants';
+
+export default {
+  components: {
+    DeleteSubmission,
+  },
+  props: {
+    submission: {
+      type: Object,
+      required: true,
+    },
+    formId: {
+      type: String,
+      required: true,
+    },
+  },
+  emits: ['draft-deleted'],
+  computed: {
+    ...mapState(useFormStore, ['form']),
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
+    },
+    hasDeletePermission() {
+      return this.submission?.permissions?.includes(
+        FormPermissions.SUBMISSION_CREATE
+      );
+    },
+    hasEditPermission() {
+      return this.submission?.permissions?.includes(
+        FormPermissions.SUBMISSION_UPDATE
+      );
+    },
+    hasViewPermission() {
+      return this.submission?.permissions?.includes(
+        FormPermissions.SUBMISSION_READ
+      );
+    },
+  },
+  methods: {
+    draftDeleted() {
+      this.$emit('draft-deleted');
+    },
+  },
+};
+</script>
+
 <template>
   <span>
     <router-link
@@ -10,8 +61,14 @@
     >
       <v-tooltip location="bottom">
         <template #activator="{ props }">
-          <v-btn color="primary" :disabled="!hasViewPerm()" icon v-bind="props">
-            <v-icon>remove_red_eye</v-icon>
+          <v-btn
+            color="primary"
+            :disabled="!hasViewPermission"
+            icon
+            size="x-small"
+            v-bind="props"
+          >
+            <v-icon icon="mdi:mdi-eye"></v-icon>
           </v-btn>
         </template>
         <span>{{ $t('trans.mySubmissionsActions.viewThisSubmission') }}</span>
@@ -37,11 +94,12 @@
           <template #activator="{ props }">
             <v-btn
               color="primary"
-              :disabled="!hasViewPerm()"
+              :disabled="!hasViewPermission"
               icon
+              size="x-small"
               v-bind="props"
             >
-              <v-icon>app_registration</v-icon>
+              <v-icon icon="mdi:mdi-pencil-box-multiple"></v-icon>
             </v-btn>
           </template>
           <span>{{ $t('trans.mySubmissionsActions.copyThisSubmission') }}</span>
@@ -64,11 +122,12 @@
           <template #activator="{ props }">
             <v-btn
               color="primary"
-              :disabled="!hasEditPerm()"
+              :disabled="!hasEditPermission"
               icon
+              size="x-small"
               v-bind="props"
             >
-              <v-icon>mode_edit</v-icon>
+              <v-icon icon="mdi:mdi-pencil"></v-icon>
             </v-btn>
           </template>
           <span>{{ $t('trans.mySubmissionsActions.editThisDraft') }}</span>
@@ -76,62 +135,12 @@
       </router-link>
       <DeleteSubmission
         v-if="submission.status !== 'REVISING'"
-        :disabled="!hasDeletePerm()"
+        :disabled="!hasDeletePermission"
         is-draft
         :submission-id="submission.submissionId"
+        icon-size="x-small"
         @deleted="draftDeleted"
       />
     </span>
   </span>
 </template>
-
-<script>
-import { mapGetters } from 'vuex';
-import DeleteSubmission from '@src/components/forms/submission/DeleteSubmission.vue';
-import { FormPermissions } from '@src/utils/constants';
-
-export default {
-  name: 'MySubmissionsActions',
-  components: {
-    DeleteSubmission,
-  },
-  props: {
-    submission: {
-      type: Object,
-      required: true,
-    },
-    formId: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['draft-deleted'],
-  computed: {
-    ...mapGetters('form', ['form']),
-    isCopyFromExistingSubmissionEnabled() {
-      return this.form && this.form.enableCopyExistingSubmission;
-    },
-  },
-  methods: {
-    draftDeleted() {
-      this.$emit('draft-deleted');
-    },
-    hasDeletePerm() {
-      // Only the creator of the draft can delete it
-      return this.submission.permissions.includes(
-        FormPermissions.SUBMISSION_CREATE
-      );
-    },
-    hasEditPerm() {
-      return this.submission.permissions.includes(
-        FormPermissions.SUBMISSION_UPDATE
-      );
-    },
-    hasViewPerm() {
-      return this.submission.permissions.includes(
-        FormPermissions.SUBMISSION_READ
-      );
-    },
-  },
-};
-</script>

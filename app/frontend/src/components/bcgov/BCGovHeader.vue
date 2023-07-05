@@ -1,5 +1,42 @@
+<script>
+import BCLogo from '~/assets/images/bc_logo.svg';
+import PrintLogo from '~/assets/images/bc_logo_print.svg';
+import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
+import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
+
+export default {
+  name: 'BCGovHeader',
+  components: {
+    BaseAuthButton,
+    BaseInternationalization,
+  },
+  data() {
+    return {
+      BCLogo: BCLogo,
+      PrintLogo: PrintLogo,
+    };
+  },
+  computed: {
+    appTitle() {
+      return this.$route && this.$route.meta && this.$route.meta.title
+        ? this.$route.meta.title
+        : import.meta.env.VITE_TITLE;
+    },
+    formSubmitMode() {
+      // hide header content on form submitter pages
+      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
+    },
+  },
+};
+</script>
+
 <template>
-  <header :class="{ 'gov-header': true }">
+  <header
+    :class="{
+      'elevation-20': true,
+      'gov-header': true,
+    }"
+  >
     <!-- header for browser print only -->
     <div class="printHeader d-none d-print-block">
       <img
@@ -36,40 +73,14 @@
         {{ appTitle }}
       </h1>
       <v-spacer />
-      <BaseAuthButton />
-      <BaseInternationalization />
+      <BaseAuthButton data-test="base-auth-btn" />
+      <BaseInternationalization data-test="base-internationalization" />
     </v-toolbar>
   </header>
 </template>
 
-<script>
-import BCLogo from '@src/assets/images/bc_logo.svg';
-import PrintLogo from '@src/assets/images/bc_logo_print.svg';
-
-export default {
-  name: 'BCGovHeader',
-  data() {
-    return {
-      BCLogo: BCLogo,
-      PrintLogo: PrintLogo,
-    };
-  },
-  computed: {
-    appTitle() {
-      return this.$route && this.$route.meta && this.$route.meta.title
-        ? this.$route.meta.title
-        : import.meta.env.VITE_TITLE;
-    },
-    formSubmitMode() {
-      // hide header content on form submitter pages
-      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
-    },
-  },
-};
-</script>
-
 <style lang="scss" scoped>
-@import '@src/assets/scss/style.scss';
+@import 'vuetify/settings';
 
 .gov-header {
   .printHeader {

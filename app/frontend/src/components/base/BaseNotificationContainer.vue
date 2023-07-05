@@ -1,3 +1,16 @@
+<script>
+import { mapState } from 'pinia';
+import BaseNotificationBar from '~/components/base//BaseNotificationBar.vue';
+import { useNotificationStore } from '~/store/notification';
+
+export default {
+  components: {
+    BaseNotificationBar,
+  },
+  computed: mapState(useNotificationStore, ['notifications']),
+};
+</script>
+
 <template>
   <div class="notification-container">
     <BaseNotificationBar
@@ -7,14 +20,6 @@
     />
   </div>
 </template>
-
-<script>
-import { mapState } from 'vuex';
-export default {
-  name: 'BaseNotificationContainer',
-  computed: mapState('notifications', ['notifications']),
-};
-</script>
 
 <style scoped>
 .notification-container {

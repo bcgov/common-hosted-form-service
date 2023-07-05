@@ -1,7 +1,55 @@
-# Vue 3 + Vite
+# CHEFS Frontend
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This is the CHEFS frontend. It implements a Vue frontend with Keycloak authentication support.
 
-## Recommended IDE Setup
+## Configuration
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+The CHEFS frontend will require some configuration. The API it invokes will be locked down and require a valid JWT Token to access. We will need to configure the application to authenticate using the same Keycloak realm as the [app](../). Note that the Vue Skeleton frontend is currently designed to expect all associated resources to be relative to the original access path.
+
+## Super Quickstart
+
+Ensure that you have filled in all the appropriate configurations following [../config/custom-environment-variables.json](../config/custom-environment-variables.json) before proceeding. Other environment variables such as the app title and contact information must be configured using the Vue environment files [.env](.env), [.env.development](.env.development), [.env.test](.env.test).
+
+Entries in the JSON file are deployed with the application. Entries in the .env files are per-environment.
+
+### Required .env variables
+
+| Name                      | Description                       | Example                     |
+| ------------------------- | --------------------------------- | --------------------------- |
+| VUE_APP_TITLE             | The application title             | Common Hosted Forms Service |
+| VUE_APP_CONTACT           | Contact information such as email | submit.digital@gov.bc.ca    |
+| VUE_APP_FRONTEND_BASEPATH | The path to the Vue application   | /app                        |
+
+### Project setup
+
+```sh
+npm install
+```
+
+### Compiles and hot-reloads for development
+
+```sh
+npm run serve
+```
+
+### Compiles and minifies for production
+
+```sh
+npm run build
+```
+
+### Run your unit tests
+
+```sh
+npm run test:unit
+```
+
+### Lints and fixes files
+
+```sh
+npm run lint
+```
+
+### Customize configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).

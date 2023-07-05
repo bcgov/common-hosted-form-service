@@ -1,3 +1,20 @@
+<script>
+import { mapState } from 'pinia';
+import BaseSecure from '~/components/base/BaseSecure.vue';
+import { useAuthStore } from '~/store/auth';
+import { IdentityProviders } from '~/utils/constants';
+
+export default {
+  components: {
+    BaseSecure,
+  },
+  computed: {
+    ...mapState(useAuthStore, ['isAdmin']),
+    IDP: () => IdentityProviders,
+  },
+};
+</script>
+
 <template>
   <BaseSecure admin :idp="[IDP.IDIR]">
     <v-container>
@@ -9,26 +26,3 @@
     </v-container>
   </BaseSecure>
 </template>
-
-<script>
-import { mapGetters } from 'vuex';
-
-import admin from '@src/store/modules/admin.js';
-import { IdentityProviders } from '@src/utils/constants';
-
-export default {
-  name: 'Admin',
-  computed: {
-    ...mapGetters('auth', ['isAdmin']),
-    IDP: () => IdentityProviders,
-  },
-  created() {
-    if (this.$store.hasModule('admin')) {
-      this.$store.unregisterModule('admin');
-    }
-    if (this.isAdmin) {
-      this.$store.registerModule('admin', admin);
-    }
-  },
-};
-</script>

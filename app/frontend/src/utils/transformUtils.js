@@ -1,6 +1,6 @@
 import formioUtils from 'formiojs/utils';
 import moment from 'moment';
-import { IdentityMode } from '@src/utils/constants';
+import { IdentityMode } from '~/utils/constants';
 
 //
 // Transformation Functions for converting form objects

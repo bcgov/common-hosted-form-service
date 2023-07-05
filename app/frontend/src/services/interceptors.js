@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useAppConfig } from '@src/main';
+import { useAuthStore } from '~/store/auth';
+import { useAppStore } from '~/store/app';
 
 /**
  * @function appAxios
@@ -8,23 +9,20 @@ import { useAppConfig } from '@src/main';
  * @returns {object} An axios instance
  */
 export function appAxios(timeout = 10000) {
-  const { globalProperties } = useAppConfig();
+  const appStore = useAppStore();
   const axiosOptions = { timeout: timeout };
-  if (globalProperties.$config) {
-    const config = globalProperties.$config;
-    axiosOptions.baseURL = `${config.basePath}/${config.apiPath}`;
+  if (appStore.config) {
+    axiosOptions.baseURL = `${appStore.config.basePath}/${appStore.config.apiPath}`;
   }
 
   const instance = axios.create(axiosOptions);
 
+  const authStore = useAuthStore();
+
   instance.interceptors.request.use(
     (cfg) => {
-      if (
-        globalProperties.$keycloak &&
-        globalProperties.$keycloak.ready &&
-        globalProperties.$keycloak.authenticated
-      ) {
-        cfg.headers.Authorization = `Bearer ${globalProperties.$keycloak.token}`;
+      if (authStore?.ready && authStore?.authenticated) {
+        cfg.headers.Authorization = `Bearer ${authStore.token}`;
       }
       return Promise.resolve(cfg);
     },

@@ -1,198 +1,253 @@
-import { cloneDeep } from 'lodash';
+import { setActivePinia, createPinia } from 'pinia';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { adminService } from '@/services';
-import store from '@/store/modules/admin';
+import { adminService } from '~/services';
+import { useAdminStore } from '~/store/admin';
+import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
 
-jest.mock('@/services');
-jest.mock('@/internationalization', () => ({t: jest.fn(() => {}) }));
+vi.mock('~/services');
 
 describe('admin actions', () => {
-  const mockStore = {
-    commit: jest.fn(),
-    dispatch: jest.fn(),
-    state: cloneDeep(store.state),
-  };
-  const mockConsoleError = jest.spyOn(console, 'error');
+  setActivePinia(createPinia());
+  const mockStore = useAdminStore();
+  const notificationStore = useNotificationStore();
+  const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+  const addFormUserSpy = vi.spyOn(adminService, 'addFormUser');
+  const readRolesSpy = vi.spyOn(adminService, 'readRoles');
+  const mockConsoleError = vi.spyOn(console, 'error');
 
   beforeEach(() => {
-    mockStore.commit.mockReset();
-    mockStore.dispatch.mockReset();
-    mockStore.state = cloneDeep(store.state);
+    mockStore.$reset();
+    notificationStore.$reset();
+    addNotificationSpy.mockReset();
+    addFormUserSpy.mockReset();
+    readRolesSpy.mockReset();
     mockConsoleError.mockReset();
   });
 
   afterAll(() => {
     mockConsoleError.mockRestore();
+    addNotificationSpy.mockRestore();
+    addFormUserSpy.mockRestore();
+    readRolesSpy.mockRestore();
   });
 
   describe('admin forms actions', () => {
     it('adminFormUser should dispatch to notifications/addNotification on an error', async () => {
       adminService.addFormUser.mockRejectedValue('');
-      await store.actions.addFormUser(mockStore, { formId: 'fId', userId: 'usrId', role: 'OWNER' });
-
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      await mockStore.addFormUser({
+        formId: 'fId',
+        userId: 'usrId',
+        role: 'OWNER',
+      });
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'An error occurred while adding the role.',
+        text: 'An error occurred while adding the role.',
+      });
     });
 
     it('adminFormUser should dispatch a success notification when the service call resolves', async () => {
-      adminService.addFormUser.mockResolvedValue({ data: { form: {} } });
-      await store.actions.addFormUser(mockStore, { formId: 'fId', userId: 'usrId', roles: ['OWNER'] });
+      adminService.addFormUser.mockResolvedValue({
+        data: [{ fullName: 'User' }],
+      });
+      adminService.readRoles.mockResolvedValue({ data: ['OWNER'] });
+      await mockStore.addFormUser({
+        formId: 'fId',
+        userId: 'usrId',
+        roles: ['OWNER'],
+      });
 
-      expect(adminService.addFormUser).toHaveBeenCalledWith('usrId', 'fId', ['OWNER']);
-      expect(adminService.addFormUser).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addFormUserSpy).toHaveBeenCalledWith('usrId', 'fId', ['OWNER']);
+      expect(addFormUserSpy).toHaveBeenCalledTimes(1);
+      expect(readRolesSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        text: 'Added the Owner role for this form to User',
+        ...NotificationTypes.SUCCESS,
+      });
     });
 
     it('deleteApiKey should commit to SET_API_KEY', async () => {
+      mockStore.apiKey = 'TEST';
       adminService.deleteApiKey.mockResolvedValue({ data: { form: {} } });
-      await store.actions.deleteApiKey(mockStore, 'fId');
+      await mockStore.deleteApiKey('fId');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_API_KEY', undefined);
+      expect(mockStore.apiKey).toBe(undefined);
     });
 
     it('deleteApiKey should dispatch to notifications/addNotification', async () => {
       adminService.deleteApiKey.mockRejectedValue('');
-      await store.actions.deleteApiKey(mockStore, 'fId');
+      await mockStore.deleteApiKey('fId');
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'The API Key for this form has been deleted.',
+        text: 'An error occurred while trying to delete the API Key.',
+      });
     });
 
     it('readForm should commit to SET_FORM', async () => {
-      adminService.readForm.mockResolvedValue({ data: { form: {} } });
-      await store.actions.readForm(mockStore, 'fId');
-
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_FORM', expect.any(Object));
+      adminService.readForm.mockResolvedValue({
+        data: { form: { id: 'fId' } },
+      });
+      await mockStore.readForm('fId');
+      expect(mockStore.form).toEqual({ form: { id: 'fId' } });
     });
 
     it('readForm should dispatch to notifications/addNotification', async () => {
       adminService.readForm.mockRejectedValue('');
-      await store.actions.readForm(mockStore, 'fId');
+      await mockStore.readForm('fId');
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'An error occurred while fetching forms.',
+        text: 'An error occurred while fetching this form.',
+      });
     });
-    it('readRoles should commit to SET_ROLES', async () => {
-      adminService.readRoles.mockResolvedValue({ data: { form: {} } });
-      await store.actions.readRoles(mockStore, 'fId');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_ROLES', expect.any(Object));
+    it('readRoles should commit to SET_ROLES', async () => {
+      adminService.readRoles.mockResolvedValue({ data: ['OWNER'] });
+      await mockStore.readRoles('fId');
+
+      expect(mockStore.roles).toEqual(['OWNER']);
     });
 
     it('readRoles should dispatch to notifications/addNotification', async () => {
-      adminService.readRoles.mockRejectedValue('');
-      await store.actions.readRoles(mockStore, 'fId');
+      adminService.readRoles.mockRejectedValue();
+      await mockStore.readRoles('fId');
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'Error getting admin roles data: ',
+        text: 'An error occurred while fetching form user roles.',
+      });
     });
 
     it('readApiDetails should commit to SET_API_KEY', async () => {
-      adminService.readApiDetails.mockResolvedValue({ data: { form: {} } });
-      await store.actions.readApiDetails(mockStore, 'fId');
+      mockStore.apiKey = undefined;
+      adminService.readApiDetails.mockResolvedValue({ data: '' });
+      await mockStore.readApiDetails('fId');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_API_KEY', expect.any(Object));
+      expect(mockStore.apiKey).toEqual('');
     });
 
     it('readApiDetails should dispatch to notifications/addNotification', async () => {
       adminService.readApiDetails.mockRejectedValue('');
-      await store.actions.readApiDetails(mockStore, 'fId');
+      await mockStore.readApiDetails('fId');
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'Error getting admin API details from form fId data: ',
+        text: "An error occurred while fetching this form's API details.",
+      });
     });
 
     it('getForms should commit to SET_FORMLIST', async () => {
-      adminService.listForms.mockResolvedValue({ data: [] });
-      await store.actions.getForms(mockStore, true);
+      mockStore.formList = undefined;
+      adminService.listForms.mockResolvedValue({ data: [{ form: { id: 1 } }] });
+      await mockStore.getForms(true);
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_FORMLIST', expect.any(Array));
+      expect(mockStore.formList).toEqual([{ form: { id: 1 } }]);
     });
 
     it('fetchDrafts should dispatch to notifications/addNotification', async () => {
       adminService.listForms.mockRejectedValue('');
-      await store.actions.getForms(mockStore, true);
+      await mockStore.getForms(true);
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'An error occurred while fetching forms.',
+        text: 'An error occurred while fetching forms.',
+      });
     });
 
     it('restoreForm should commit to SET_FORM', async () => {
+      mockStore.form = undefined;
       adminService.restoreForm.mockResolvedValue({ data: { form: {} } });
-      await store.actions.restoreForm(mockStore, 'fId');
+      await mockStore.restoreForm('fId');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_FORM', { form: {} });
+      expect(mockStore.form).toEqual({ form: {} });
     });
 
     it('restoreForm should dispatch to notifications/addNotification', async () => {
       adminService.restoreForm.mockRejectedValue('');
-      await store.actions.restoreForm(mockStore, 'fId');
+      await mockStore.restoreForm('fId');
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'Error restoring form fId data: ',
+        text: 'An error occurred while restoring this form.',
+      });
     });
 
     it('getUsers should commit to SET_USERLIST', async () => {
-      adminService.listUsers.mockResolvedValue([]);
-      await store.actions.getUsers(mockStore);
+      mockStore.userList = undefined;
+      adminService.listUsers.mockResolvedValue({ data: [] });
+      await mockStore.getUsers();
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_USERLIST', expect.any(Object));
+      expect(mockStore.userList).toEqual([]);
     });
 
     it('getUsers should dispatch to notifications/addNotification', async () => {
       adminService.listUsers.mockRejectedValue('');
-      await store.actions.getUsers(mockStore);
+      await mockStore.getUsers();
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'Error getting admin users data: ',
+        text: 'An error occurred while fetching users.',
+      });
     });
 
     it('readUser should commit to SET_USER', async () => {
-      adminService.readUser.mockResolvedValue({});
-      await store.actions.readUser(mockStore);
+      mockStore.user = undefined;
+      adminService.readUser.mockResolvedValue({ data: {} });
+      await mockStore.readUser('userId');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_USER', expect.any(Object));
+      expect(mockStore.user).toEqual(expect.any(Object));
     });
 
     it('readUser should dispatch to notifications/addNotification', async () => {
       adminService.readUser.mockRejectedValue('');
-      await store.actions.readUser(mockStore);
+      await mockStore.readUser('userId');
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'Error getting admin user userId data: ',
+        text: 'An error occurred while fetching this user.',
+      });
     });
 
     it('addFCProactiveHelp should commit to SET_FCPROACTIVEHELP', async () => {
-      adminService.addFCProactiveHelp.mockResolvedValue({});
-      await store.actions.addFCProactiveHelp(mockStore, {});
+      mockStore.fcProactiveHelp = undefined;
+      adminService.addFCProactiveHelp.mockResolvedValue({ data: {} });
+      await mockStore.addFCProactiveHelp({});
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELP', expect.any(Object));
+      expect(mockStore.fcProactiveHelp).toEqual({});
     });
 
     it('addFCProactiveHelp should commit to SET_FCPROACTIVEHELPGROUPLIST', async () => {
-      adminService.listFCProactiveHelp.mockResolvedValue({});
-      await store.actions.listFCProactiveHelp(mockStore, {});
+      mockStore.fcProactiveHelpGroupList = undefined;
+      adminService.listFCProactiveHelp.mockResolvedValue({ data: [] });
+      await mockStore.listFCProactiveHelp();
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
-      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPLIST', expect.any(Object));
+      expect(mockStore.fcProactiveHelpGroupList).toEqual([]);
     });
 
     it('updateFCProactiveHelpStatus should update publish status and commit to SET_FCPROACTIVEHELP', async () => {
       adminService.updateFCProactiveHelpStatus.mockRejectedValue('');
-      await store.actions.updateFCProactiveHelpStatus(mockStore, { componentId: '5b97417a-252c-46c2-b132-85adac5ab3bc', publishStatus: true });
+      await mockStore.updateFCProactiveHelpStatus({
+        componentId: '5b97417a-252c-46c2-b132-85adac5ab3bc',
+        publishStatus: true,
+      });
 
-      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'Error updating publish status: ',
+        text: 'An error occurred while updating publish status',
+      });
     });
   });
 });

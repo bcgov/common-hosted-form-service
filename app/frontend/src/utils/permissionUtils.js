@@ -1,12 +1,9 @@
-import { formService } from '@/services';
-import store from '@/store';
 import {
   FormPermissions,
   FormManagePermissions,
   IdentityMode,
   IdentityProviders,
-} from '@/utils/constants';
-import i18n from '@/internationalization';
+} from '~/utils/constants';
 
 //
 // Utility Functions for determining permissions
@@ -57,106 +54,6 @@ export function checkSubmissionView(userForm) {
     userForm.permissions &&
     userForm.permissions.some((p) => perms.includes(p))
   );
-}
-
-/**
- * @function getErrorMessage
- * Gets the message to display for preflight errors. Expand this to add
- * friendlier messages for other errors.
- * @param {Object} options - The Object containing preflight request details.
- * @param {Error} error - The error that was produced.
- * @returns {string|undefined} - The error message to display, or undefined to
- *    use the default message.
- */
-function getErrorMessage(options, error) {
-  let errorMessage = undefined;
-  if (options.formId) {
-    const status = error?.response?.status;
-    if (status === 404 || status === 422) {
-      errorMessage = i18n.t('trans.permissionUtils.formNotAvailable');
-    }
-  }
-  return errorMessage;
-}
-
-/**
- * @function preFlightAuth
- * Determines whether to enter a route based on user authentication state and idpHint
- * @param {Object} options Object containing either a formId or submissionId attribute
- * @param {Object} next The callback function
- */
-export async function preFlightAuth(options = {}, next) {
-  // Support lambda functions (Consider making them util functions?)
-  const getIdpHint = (values) => {
-    return Array.isArray(values) && values.length ? values[0] : undefined;
-  };
-  const isValidIdp = (value) =>
-    Object.values(IdentityProviders).includes(value);
-
-  // Determine current form or submission idpHint if available
-  let idpHint = undefined;
-  try {
-    if (options.formId) {
-      const { data } = await formService.readFormOptions(options.formId);
-      idpHint = getIdpHint(data.idpHints);
-    } else if (options.submissionId) {
-      const { data } = await formService.getSubmissionOptions(
-        options.submissionId
-      );
-      idpHint = getIdpHint(data.form.idpHints);
-    } else {
-      throw new Error(i18n.t('trans.permissionUtils.missingFormIdAndSubmssId'));
-    }
-  } catch (error) {
-    // Halt user with error page, use alertNavigate for "friendly" messages.
-    const message = getErrorMessage(options, error);
-    if (message) {
-      // Don't display the 'An error has occurred...' popup notification.
-      store.dispatch('auth/alertNavigate', {
-        message: message,
-        type: 'error',
-      });
-    } else {
-      store.dispatch('notifications/addNotification', {
-        message: i18n.t('trans.permissionUtils.loadingFormErrMsg'),
-        consoleError: i18n.t('trans.permissionUtils.loadingForm', {
-          options: options,
-          error: error,
-        }),
-      });
-
-      store.dispatch('auth/errorNavigate');
-    }
-
-    return; // Short circuit this function - no point executing further logic
-  }
-
-  if (store.getters['auth/authenticated']) {
-    const userIdp = store.getters['auth/identityProvider'];
-
-    if (idpHint === IdentityMode.PUBLIC || !idpHint) {
-      next(); // Permit navigation if public or team form
-    } else if (isValidIdp(idpHint) && userIdp === idpHint) {
-      next(); // Permit navigation if idps match
-    } else {
-      const msg = i18n.t('trans.permissionUtils.idpHintMsg', {
-        idpHint: idpHint.toUpperCase(),
-      });
-      store.dispatch('notifications/addNotification', {
-        message: msg,
-        consoleError: '-----',
-      });
-      store.dispatch('auth/errorNavigate', msg); // Halt user with idp mismatch error page
-    }
-  } else {
-    if (idpHint === IdentityMode.PUBLIC) {
-      next(); // Permit navigation if public form
-    } else if (isValidIdp(idpHint)) {
-      store.dispatch('auth/login', idpHint); // Force login flow with specified idpHint
-    } else {
-      store.dispatch('auth/login'); // Force login flow with user choice
-    }
-  }
 }
 
 /**

@@ -1,43 +1,21 @@
-<template>
-  <span>
-    <v-tooltip location="bottom">
-      <template #activator="{ props }">
-        <v-btn
-          v-clipboard:copy="copyText"
-          v-clipboard:success="clipboardSuccessHandler"
-          v-clipboard:error="clipboardErrorHandler"
-          color="primary"
-          :disabled="disabled"
-          icon
-          v-bind="props"
-        >
-          <v-icon class="mr-1">file_copy</v-icon>
-          <span v-if="buttonText">{{ buttonText }}</span>
-        </v-btn>
-      </template>
-      <span>{{ tooltipText }}</span>
-    </v-tooltip>
-  </span>
-</template>
-
 <script>
-import { mapActions } from 'vuex';
-import i18n from '@/internationalization';
-import { NotificationTypes } from '@src/utils/constants';
+import { i18n } from '~/internationalization';
+import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
 
 export default {
-  name: 'BaseCopyToClipboard',
   props: {
     buttonText: {
       type: String,
+      default: '',
     },
     disabled: {
       type: Boolean,
       default: false,
     },
-    copyText: {
-      required: true,
+    textToCopy: {
       type: String,
+      default: undefined,
     },
     snackBarText: {
       type: String,
@@ -49,28 +27,45 @@ export default {
     },
   },
   emits: ['copied'],
-  data() {
-    return {
-      clipSnackbar: {
-        on: false,
-        color: 'info',
-      },
-    };
-  },
   methods: {
-    ...mapActions('notifications', ['addNotification']),
-    clipboardSuccessHandler() {
+    onCopy() {
       this.$emit('copied');
-      this.addNotification({
-        message: this.snackBarText,
+      const notificationStore = useNotificationStore();
+      notificationStore.addNotification({
+        text: this.snackBarText,
         ...NotificationTypes.INFO,
       });
     },
-    clipboardErrorHandler() {
-      this.addNotification({
-        message: this.$t('trans.baseCopyToClipboard.errCopyToClipboard'),
+    onError(e) {
+      const notificationStore = useNotificationStore();
+      notificationStore.addNotification({
+        text: i18n.t('trans.baseCopyToClipboard.errCopyToClipboard'),
+        consoleError: e,
       });
     },
   },
 };
 </script>
+
+<template>
+  <span>
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
+        <v-btn
+          v-clipboard:copy="textToCopy"
+          v-clipboard:success="onCopy"
+          v-clipboard:error="onError"
+          color="primary"
+          :disabled="disabled"
+          icon
+          v-bind="props"
+          size="small"
+        >
+          <v-icon icon="mdi:mdi-content-copy"></v-icon>
+          <span v-if="buttonText">{{ buttonText }}</span>
+        </v-btn>
+      </template>
+      <span>{{ tooltipText }}</span>
+    </v-tooltip>
+  </span>
+</template>

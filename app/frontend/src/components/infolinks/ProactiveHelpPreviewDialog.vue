@@ -1,3 +1,29 @@
+<script>
+export default {
+  props: {
+    showDialog: { type: Boolean, required: true },
+    component: { type: Object, default: () => {} },
+    fcProactiveHelpImageUrl: undefined,
+  },
+  emits: ['close-dialog'],
+  data() {
+    return {
+      dialog: this.showDialog,
+    };
+  },
+  watch: {
+    showDialog(value) {
+      this.dialog = value;
+    },
+  },
+  methods: {
+    onCloseDialog() {
+      this.$emit('close-dialog');
+    },
+  },
+};
+</script>
+
 <template>
   <v-row justify="center" class="mb-5">
     <v-dialog
@@ -13,21 +39,16 @@
                 {{ component && component.componentName }}
               </div>
               <div class="align-self-center cursor">
-                <font-awesome-icon
-                  icon="fa-solid fa-xmark"
-                  :size="'1x'"
-                  inverse
-                  @click="onCloseDialog"
-                />
+                <v-icon icon="mdi:mdi-close" @click="onCloseDialog" />
               </div>
             </v-col>
           </v-row>
-          <v-row class="mt-6" v-if="fcProactiveHelpImageUrl">
+          <v-row v-if="fcProactiveHelpImageUrl" class="mt-6">
             <v-col md="6">
               <div
+                ref="preview_text_field"
                 class="text"
                 data-cy="preview_text_field"
-                ref="preview_text_field"
               >
                 {{ component && component.description }}
               </div>
@@ -39,12 +60,12 @@
               ></v-img>
             </v-col>
           </v-row>
-          <v-row class="mt-6" v-else>
+          <v-row v-else class="mt-6">
             <v-col cols="12">
               <div
+                ref="preview_text_field"
                 class="text"
                 data-cy="preview_text_field"
-                ref="preview_text_field"
               >
                 {{ component && component.description }}
               </div>
@@ -63,10 +84,8 @@
                 }"
               >
                 <div class="mr-1 cursor">
-                  {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
-                  <font-awesome-icon
-                    icon="fa-solid fa-square-arrow-up-right"
-                  /></div
+                  Learn more
+                  <v-icon icon="mdi:mdi-arrow-top-right-bold-box" /></div
               ></a>
             </v-col>
           </v-row>
@@ -75,39 +94,7 @@
     </v-dialog>
   </v-row>
 </template>
-<script>
-import {
-  faXmark,
-  faSquareArrowUpRight,
-} from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faXmark, faSquareArrowUpRight);
 
-export default {
-  name: 'ProactiveHelpPreviewDialog',
-
-  data() {
-    return {
-      dialog: this.showDialog,
-    };
-  },
-  props: {
-    showDialog: { type: Boolean, required: true },
-    component: { type: Object },
-    fcProactiveHelpImageUrl: undefined,
-  },
-  methods: {
-    onCloseDialog() {
-      this.$emit('close-dialog');
-    },
-  },
-  watch: {
-    showDialog() {
-      this.dialog = this.showDialog;
-    },
-  },
-};
-</script>
 <style lang="scss" scoped>
 .cursor {
   cursor: pointer !important;
