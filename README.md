@@ -1,4 +1,3 @@
-
 # Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 ![Tests](https://github.com/bcgov/common-hosted-form-service/workflows/Tests/badge.svg)
@@ -10,6 +9,7 @@ Create, edit and publish forms.
 ## Directory Structure
 
     .github/                   - PR and Issue templates
+    .vscode/                   - Visual Studio Code's Launcher and Tasks
     app/                       - Application Root
     ├── frontend/              - Frontend Root
     │   ├── src/               - Vue.js frontend web application
@@ -29,26 +29,27 @@ Create, edit and publish forms.
     CODE-OF-CONDUCT.md         - Code of Conduct
     COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
     CONTRIBUTING.md            - Contributing Guidelines
-    Jenkinsfile                - Top-level Pipeline
-    Jenkinsfile.cicd           - Pull-Request Pipeline
     LICENSE                    - License
-    vetur.config.js            - Vetur configuration
     SECURITY.md                - Security Policy and Reporting
 
 ## Documentation
 
-* [Application Readme](app/README.md)
-* [Frontend Readme](app/frontend/README.md)
-* [Openshift Readme](openshift/README.md)
-* [Cypress Test Readme](tests/functional/cypress/README.md)
-* [CHEFS Load Test Readme](tests/load/load-test/README.md)
-* [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
-* [Security Reporting](SECURITY.md)
-* [Product Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Product-Roadmap)
+- [Application Readme](app/README.md)
+- [Frontend Readme](app/frontend/README.md)
+- [Openshift Readme](openshift/README.md)
+- [Cypress Test Readme](tests/functional/cypress/README.md)
+- [CHEFS Load Test Readme](tests/load/load-test/README.md)
+- [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
+- [Security Reporting](SECURITY.md)
+- [Product Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Product-Roadmap)
 
-## Getting Help or Reporting an Issue
+## Help, Problems, and Feature Requests
 
-To report bugs/issues/features requests, please file an [issue](https://github.com/bcgov/common-hosted-form-service/issues).
+Visit the [CHEFS Wiki](https://github.com/bcgov/common-hosted-form-service/wiki/) for help on using CHEFS.
+
+To report a problem with CHEFS please create a [GitHub Issue](https://github.com/bcgov/common-hosted-form-service/issues).
+
+Feature requests can be found in the [CHEFS Feedback](https://chefs-fider.apps.silver.devops.gov.bc.ca/) - vote for a feature you want in CHEFS, or add a new feature that hasn't been requested.
 
 ## How to Contribute
 
