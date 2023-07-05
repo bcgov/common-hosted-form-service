@@ -1,5 +1,10 @@
 <template>
-  <UserSubmission :saved="sv" :submission-id="s" :read-only="false" />
+  <UserSubmission
+    :saved="sv"
+    :submissionId="s"
+    :readOnly="false"
+    :draft="true"
+  />
 </template>
 
 <script>

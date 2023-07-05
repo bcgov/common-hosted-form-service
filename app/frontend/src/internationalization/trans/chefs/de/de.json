@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "Sind Sie sicher, dass Sie Ihr Formular absenden möchten?",
     "submit": "Einreichen",
     "wantToSaveDraft": "Möchten Sie den Entwurf speichern?",
-    "version": "Version: {Version}",
+    "version": "Ausführung: {version}",
     "formScheduleExpireMessage": "Die Einreichung des Formulars ist nicht möglich, da die geplante Einreichungsfrist abgelaufen ist.",
     "getUsersSubmissionsErrMsg": "Beim Abrufen der Übermittlung für dieses Formular ist ein Fehler aufgetreten",
     "getUsersSubmissionsConsoleErrMsg": "Fehler beim Laden der Formularübermittlungsdaten {submissionId}: {error}",
@@ -687,7 +687,8 @@
     "errSubmittingForm": "Beim Absenden dieses Formulars ist ein Fehler aufgetreten",
     "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileNname}. Fehler: {error}",
     "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
-    "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}"
+    "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
+    "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet"
   },
   "bCGovFooter": {
     "home": "Heim",

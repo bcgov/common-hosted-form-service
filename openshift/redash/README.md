@@ -143,3 +143,15 @@ Edit `x500 surname` and
 
 1. Set `Friendly Name` to `LastName`
 1. Set `SAML Attribute Name` to `LastName`
+
+## Custom Image
+
+The Redash v10.0.0b50363 image used by the Helm chart contains security vulnerabilities, particularly in the `pysaml2` package. Create a buildconfig with a Dockerfile:
+
+```
+FROM docker.io/redash/redash:10.1.0.b50633
+USER root
+RUN pip install --upgrade pysaml2==6.5.0
+```
+
+Use the new image for the five Redash deployments by replacing `redash/redash:10.0.0.b50363` with `image-registry.openshift-image-registry.svc:5000/a12c97-tools/redash:10.1.0-patched`.

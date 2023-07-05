@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਆਪਣਾ ਫਾਰਮ ਜਮ੍ਹਾਂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
     "submit": "ਜਮ੍ਹਾਂ ਕਰੋ",
     "wantToSaveDraft": "ਕੀ ਤੁਸੀਂ ਡਰਾਫਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
-    "version": "ਸੰਸਕਰਣ: { ਸੰਸਕਰਣ }",
+    "version": "ਸੰਸਕਰਣ: {version}",
     "formScheduleExpireMessage": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ ਕਿਉਂਕਿ ਅਨੁਸੂਚਿਤ ਸਬਮਿਸ਼ਨ ਦੀ ਮਿਆਦ ਖਤਮ ਹੋ ਗਈ ਹੈ।",
     "getUsersSubmissionsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸਪੁਰਦਗੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "getUsersSubmissionsConsoleErrMsg": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਡਾਟਾ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ {submissionId}: {error}",
@@ -687,7 +687,8 @@
     "errSubmittingForm": "ਇਸ ਫਾਰਮ ਨੂੰ ਸਪੁਰਦ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "errorSavingFile": "ਫ਼ਾਈਲਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਦਾ ਨਾਮ: {fileNname}। ਗਲਤੀ: {error}",
     "submittingDraftErrMsg": "ਡਰਾਫਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
-    "submittingDraftConsErrMsg": "ਡਰਾਫਟ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ। SubmissionId: {submissionId}। ਗਲਤੀ: {error}"
+    "submittingDraftConsErrMsg": "ਡਰਾਫਟ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ। SubmissionId: {submissionId}। ਗਲਤੀ: {error}",
+    "formDraftAccessErrMsg": "ਬੇਨਤੀ ਕੀਤੀ ਸਪੁਰਦਗੀ ਪਹਿਲਾਂ ਹੀ ਸਪੁਰਦ ਕੀਤੀ ਗਈ ਹੈ, ਵੇਖੋ ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
   },
   "bCGovFooter": {
     "home": "ਘਰ",

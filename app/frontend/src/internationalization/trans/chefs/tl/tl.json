@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "Sigurado ka bang gusto mong isumite ang iyong form?",
     "submit": "Ipasa",
     "wantToSaveDraft": "Gusto mo bang i-save ang draft?",
-    "version": "Bersyon: { bersyon }",
+    "version": "Bersyon: {version}",
     "formScheduleExpireMessage": "Ang pagsusumite ng form ay hindi magagamit dahil ang nakatakdang panahon ng pagsusumite ay nag-expire na.",
     "getUsersSubmissionsErrMsg": "Nagkaroon ng error sa pagkuha ng pagsusumite para sa form na ito",
     "getUsersSubmissionsConsoleErrMsg": "Error sa paglo-load ng data ng pagsusumite ng form {submissionId}: {error}",
@@ -687,7 +687,8 @@
     "errSubmittingForm": "Nagkaroon ng error sa pagsusumite ng form na ito",
     "errorSavingFile": "Error sa pag-save ng mga file. Filename: {fileNname}. Error: {error}",
     "submittingDraftErrMsg": "Nagkaroon ng error habang nagse-save ng draft",
-    "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}"
+    "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}",
+    "formDraftAccessErrMsg": "Ang hiniling na pagsusumite ay naisumite na, nagre-redirect sa View page"
   },
   "bCGovFooter": {
     "home": "Bahay",
