@@ -18,6 +18,7 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - Users
+ *    summary: Get the preferences for current user
  *    description: This endpoint will fetch list of current user preferences for all the forms
  *    security:
  *      - bearerAuth: []
@@ -52,6 +53,7 @@ routes.put('/preferences', async (req, res, next) => {
  *  delete:
  *    tags:
  *      - Users
+ *    summary: Delete all preferences for current user
  *    description: 'This endpoint will delete all the current user preferences. Note: This endpoint will delete all the preferences for all the form.'
  *    security:
  *      - bearerAuth: []
@@ -79,6 +81,7 @@ routes.delete('/preferences', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Users
+ *    summary: Get a list of users and their roles
  *    description: This endpoint will fetch the list of all users
  *    security:
  *      - bearerAuth: []
@@ -105,6 +108,7 @@ routes.get('/', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Users
+ *    summary: Get a user and their roles
  *    description: This endpoint will return user IDP User ID, IDP code, and Keycloak ID.
  *    security:
  *      - bearerAuth: []
@@ -166,6 +170,7 @@ routes.get('/:userId', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Users
+ *    summary: Get the form preferences for current user
  *    description: This endpoint will fetch current user preferences for a form
  *    security:
  *      - bearerAuth: []
@@ -190,6 +195,8 @@ routes.get('/:userId', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/Forbidden'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/preferences/forms/:formId', async (req, res, next) => {
   await controller.readUserFormPreferences(req, res, next);
@@ -201,6 +208,7 @@ routes.get('/preferences/forms/:formId', async (req, res, next) => {
  *  put:
  *    tags:
  *      - Users
+ *    summary: Update the form preferences for current user
  *    description: This endpoint will update current user preferences for a form.
  *    security:
  *      - bearerAuth: []
@@ -235,6 +243,8 @@ routes.get('/preferences/forms/:formId', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/Forbidden'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.put('/preferences/forms/:formId', async (req, res, next) => {
   await controller.updateUserFormPreferences(req, res, next);
@@ -246,6 +256,7 @@ routes.put('/preferences/forms/:formId', async (req, res, next) => {
  *  delete:
  *    tags:
  *      - Users
+ *    summary: Delete all form preferences for current user
  *    description: This endpoint will delete current user preferences for a form.
  *    security:
  *      - bearerAuth: []
@@ -266,6 +277,8 @@ routes.put('/preferences/forms/:formId', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/Forbidden'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.delete('/preferences/forms/:formId', async (req, res, next) => {
   await controller.deleteUserFormPreferences(req, res, next);

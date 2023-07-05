@@ -69,7 +69,7 @@ definition:
               schema:
                 $ref: '#/components/schemas/respError/UserNotFoundError'
         AccessDenied:
-          description: Acess Denied
+          description: Access Denied
           content:
             application/json:
               schema:
@@ -218,7 +218,7 @@ definition:
                 example: ''
               identityProviders:
                 type: string
-                description: List of identity providers that can be used to acess this form.
+                description: List of identity providers that can be used to access this form.
                 example:
                   - idir
                   - Bceid
@@ -861,7 +861,7 @@ definition:
               default: false
             identityProviders:
               type: string
-              description: List of identity providers that can be used to acess the form
+              description: List of identity providers that can be used to access the form
               example:
                 - idir
                 - Bceid
@@ -2985,7 +2985,7 @@ definition:
                   truncateMultipleSpaces: false
           identityProviders:
             type: string
-            description: List of identity providers that can be used to acess the form
+            description: List of identity providers that can be used to access the form
             example:
               - idir
               - Bceid
@@ -3036,7 +3036,7 @@ definition:
             example: ''
           identityProviders:
             type: string
-            description: List of identity providers that can be used to acess this form
+            description: List of identity providers that can be used to access this form
             example:
               - idir
               - Bceid

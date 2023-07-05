@@ -25,6 +25,7 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - Admin
+ *    summary: List all forms in the system
  *    description: This endpoint will fetch all forms under the admin access.
  *    security:
  *      - openId: []
@@ -50,6 +51,7 @@ routes.get('/forms', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Admin
+ *    summary: Get top level details of a form
  *    description: This endpoint will fetch the form details(and metadata for versions).
  *    security:
  *      - openId: []
@@ -73,6 +75,8 @@ routes.get('/forms', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/forms/:formId', async (req, res, next) => {
   await controller.readForm(req, res, next);
@@ -84,9 +88,11 @@ routes.get('/forms/:formId', async (req, res, next) => {
  *  delete:
  *    tags:
  *      - Admin
+ *    summary: Delete Form API Key
  *    description: This endpoint will delete the form API key.
  *    security:
  *      - openId: []
+ *      - bearerAuth: []
  *    parameters:
  *      - in: path
  *        name: formId
@@ -103,6 +109,8 @@ routes.get('/forms/:formId', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
   await controller.deleteApiKey(req, res, next);
@@ -114,9 +122,11 @@ routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Admin
+ *    summary: Get Form API Key
  *    description: This endpoint will fetch the API key details for this form.
  *    security:
  *      - openId: []
+ *      - bearerAuth: []
  *    parameters:
  *      - in: path
  *        name: formId
@@ -137,6 +147,8 @@ routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/forms/:formId/apiKey', async (req, res, next) => {
   await controller.readApiDetails(req, res, next);
@@ -148,6 +160,7 @@ routes.get('/forms/:formId/apiKey', async (req, res, next) => {
  *  put:
  *    tags:
  *      - Admin
+ *    summary: Un-delete a soft deleted form
  *    description: This endpoint will restore deleted form.
  *    security:
  *      - openId: []
@@ -171,6 +184,8 @@ routes.get('/forms/:formId/apiKey', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.put('/forms/:formId/restore', async (req, res, next) => {
   await controller.restoreForm(req, res, next);
@@ -186,6 +201,7 @@ routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Admin
+ *    summary: Get the list of users for the active forms in the system
  *    description: This endpoint will fetch all the users added as team members to this form and their roles/permissions.
  *    security:
  *      - openId: []
@@ -209,6 +225,8 @@ routes.get('/forms/:formId/versions/:formVersionId', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/AccessDenied'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  * */
 routes.get('/forms/:formId/formUsers', async (req, res, next) => {
   await controller.getFormUserRoles(req, res, next);
@@ -220,6 +238,7 @@ routes.get('/forms/:formId/formUsers', async (req, res, next) => {
  *  put:
  *   tags:
  *    - Admin
+ *   summary: Add user permissions to a form
  *   description: This endpoint will add users and roles/permissions to the form.
  *   security:
  *    - openId: []
@@ -283,6 +302,8 @@ routes.get('/forms/:formId/formUsers', async (req, res, next) => {
  *      $ref: '#/components/responses/Error/AccessDenied'
  *    '5XX':
  *      $ref: '#/components/responses/Error/UnExpected'
+ *    '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  *    '422':
  *      description: 'Unprocessable Entity'
  *      content:
@@ -307,6 +328,7 @@ routes.put('/forms/:formId/addUser', async (req, res, next) => {
  *  get:
  *   tags:
  *    - Admin
+ *   summary: Get the list of users
  *   description: This endpoint will fetch all the users.
  *   security:
  *    - openId: []
@@ -332,6 +354,7 @@ routes.get('/users', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Admin
+ *    summary: Get a user
  *    description: This endpoint will fetch a single user using the userId passed through the endpoint path.
  *    security:
  *      - openId: []
@@ -373,6 +396,7 @@ routes.get('/users/:userId', async (req, res, next) => {
  *  post:
  *   tags:
  *    - Admin
+ *   summary: create or update proactive help details form.io componen
  *   description: This endpoint will create or update proactive help details form.io component
  *   security:
  *    - openId: []
@@ -406,6 +430,7 @@ routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
  *  put:
  *   tags:
  *    - Admin
+ *   summary: update form.io component proactive help publish status
  *   description: This endpoint will update form.io component proactive help publish status.
  *   security:
  *    - openId: []
@@ -437,6 +462,8 @@ routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
  *      $ref: '#/components/responses/Error/UnExpected'
  *    '422':
  *      $ref: '#/components/responses/Error/UnprocessableEntityDB'
+ *    '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (req, res, next) => {
   await controller.updateFormComponentsProactiveHelp(req, res, next);
@@ -448,6 +475,7 @@ routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (r
  *  get:
  *   tags:
  *    - Admin
+ *   summary: Get the image of the form.io component proactive help
  *   description: This endpoint will get the image of the form.io component proactive help.
  *   security:
  *    - openId: []
@@ -476,6 +504,8 @@ routes.put('/formcomponents/proactivehelp/:publishStatus/:componentId', async (r
  *      $ref: '#/components/responses/Error/UnExpected'
  *    '422':
  *      $ref: '#/components/responses/Error/UnprocessableEntityDB'
+ *    '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
   await controller.getFCProactiveHelpImageUrl(req, res, next);
@@ -487,6 +517,7 @@ routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, re
  *  get:
  *   tags:
  *    - Admin
+ *   summary: Get list of all the proactive help details
  *   description: This endpoint will fetch the list of all the proactive help details.
  *   security:
  *    - openId: []

@@ -17,6 +17,7 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - Forms
+ *    summary: List all forms
  *    description: This endpoint will fetch all forms that the user has access.
  *    security:
  *      - openId: []
@@ -42,6 +43,7 @@ routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admi
  *  post:
  *    tags:
  *      - Forms
+ *    summary: Create a new form
  *    description: This endpoint will create new form.
  *    security:
  *      - bearerAuth: []
@@ -74,6 +76,7 @@ routes.post('/', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Forms
+ *    summary: Get details of a form (and metadata for versions)
  *    description: This endpoint will fetch the form with the form ID.
  *    security:
  *      - bearerAuth: []
@@ -120,6 +123,7 @@ routes.get('/:formId', apiAccess, hasFormPermissions(P.FORM_READ), async (req, r
  *  get:
  *    tags:
  *      - Forms
+ *    summary: Export submissions for a form
  *    description: This endpoint will export submissions to either CSV or JSON.
  *    security:
  *      - bearerAuth: []
@@ -173,7 +177,8 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
  *  post:
  *    tags:
  *      - Forms
- *    description: This endpoint will export submissions to either CSV or JSON.
+ *    summary: Export submissions for a form
+ *    description: This endpoint will export submissions to either CSV or JSON. Users can specify the submission fields they want to include or exclude from submission. Use only in frontend (from an interface)
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -226,6 +231,7 @@ routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, h
  *  get:
  *    tags:
  *      - Forms
+ *    summary: Get pre-flight details for a form
  *    description: This endpoint will fetch form options.
  *    security:
  *      - bearerAuth: []
@@ -270,6 +276,7 @@ routes.get('/:formId/version', apiAccess, hasFormPermissions(P.FORM_READ), async
  *  put:
  *    tags:
  *      - Forms
+ *    summary: Get details of a form (and metadata for versions)
  *    description: This endpoint will update this form.
  *    security:
  *      - bearerAuth: []
@@ -323,6 +330,7 @@ routes.put('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE
  *  delete:
  *    tags:
  *      - Forms
+ *    summary: (Soft) Delete a form
  *    description: This endpoint will delete this form.
  *    security:
  *      - bearerAuth: []
@@ -366,6 +374,7 @@ routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DEL
  *  get:
  *    tags:
  *      - Forms
+ *    summary: List submissions for a form
  *    description: This endpoint will get all submissions for this form
  *    security:
  *      - bearerAuth: []
@@ -445,7 +454,8 @@ routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P
  *  get:
  *    tags:
  *      - Version
- *    description: This endpoint will fetch all the submissions for the form.
+ *    summary: Get a single form version
+ *    description: This endpoint will fetch form version details.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -502,6 +512,7 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
  *  get:
  *    tags:
  *      - Version
+ *    summary: Get a list of valid form fields in this form version
  *    description: This endpoint will fetch submission fields for the form ID and form version ID passed in the path parameter.
  *    security:
  *      - bearerAuth: []
@@ -564,7 +575,8 @@ routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissi
  *  post:
  *    tags:
  *      - Version
- *    description: This endpoint will publish form draft
+ *    summary: Publish a version of a form
+ *    description: This endpoint will publish form version
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -626,7 +638,8 @@ routes.post('/:formId/versions/:formVersionId/publish', apiAccess, hasFormPermis
  *  get:
  *    tags:
  *      - Forms
- *    description: This endpoint will update the Form Submission details for the submission ID
+ *    summary: List submissions from a form version
+ *    description: This endpoint will fecth list of submissions for the form version.
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -700,6 +713,7 @@ routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPer
  *  post:
  *    tags:
  *      - Forms
+ *    summary: Create a new form submission
  *    description: This endpoint will create form submission.
  *    security:
  *      - bearerAuth: []
@@ -786,6 +800,7 @@ routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, h
  *  get:
  *    tags:
  *      - Draft
+ *    summary: List drafts for a form
  *    description: This endpoint will fetch list of all form drafts.
  *    security:
  *      - bearerAuth: []
@@ -833,6 +848,7 @@ routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESI
  *  post:
  *    tags:
  *      - Draft
+ *    summary: Create a draft from a form version
  *    description: This endpoint will create form draft from published form version.
  *    security:
  *      - bearerAuth: []
@@ -886,6 +902,7 @@ routes.post('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DES
  *  get:
  *    tags:
  *      - Draft
+ *    summary: Get a form draft
  *    description: This endpoint will fetch form draft.
  *    security:
  *      - bearerAuth: []
@@ -943,6 +960,7 @@ routes.get('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  *  put:
  *    tags:
  *      - Draft
+ *    summary: Update a form draft
  *    description: This endpoint will fetch form draft.
  *    security:
  *      - bearerAuth: []
@@ -1006,6 +1024,7 @@ routes.put('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissions(
  *  delete:
  *    tags:
  *      - Draft
+ *    summary: Delete a form draft
  *    description: This endpoint will delete the form draft.
  *    security:
  *      - bearerAuth: []
@@ -1059,6 +1078,7 @@ routes.delete('/:formId/drafts/:formVersionDraftId', apiAccess, hasFormPermissio
  *  post:
  *    tags:
  *      - Draft
+ *    summary: Publish a form draft
  *    description: This endpoint will publish the form draft.
  *    security:
  *      - bearerAuth: []
@@ -1122,6 +1142,7 @@ routes.post('/:formId/drafts/:formVersionDraftId/publish', apiAccess, hasFormPer
  *  get:
  *    tags:
  *      - Status
+ *    summary: List status codes for a form
  *    description: This endpoint will fetch Form API Key details.
  *    security:
  *      - bearerAuth: []
@@ -1169,6 +1190,7 @@ routes.get('/:formId/statusCodes', apiAccess, hasFormPermissions([P.FORM_READ]),
  *  get:
  *    tags:
  *      - Form API Key
+ *    summary: Get current API Key
  *    description: This endpoint will fetch Form API Key details.
  *    security:
  *      - bearerAuth: []
@@ -1215,6 +1237,7 @@ routes.get('/:formId/apiKey', hasFormPermissions(P.FORM_API_READ), async (req, r
  *  put:
  *    tags:
  *      - Form API Key
+ *    summary: Create/Replace API Key
  *    description: This endpoint will create Form API Key.
  *    security:
  *      - bearerAuth: []
@@ -1261,6 +1284,7 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
  *  delete:
  *    tags:
  *      - Form API Key
+ *    summary: Delete API Key
  *    description: This endpoint will delete the Form API Key
  *    security:
  *      - bearerAuth: []
@@ -1303,6 +1327,7 @@ routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (r
  *  get:
  *   tags:
  *    - Forms
+ *   summary: Get list of all the proactive help details
  *   description: This endpoint will fetch the list of all the proactive help details.
  *   security:
  *    - bearerAuth: []
@@ -1330,6 +1355,7 @@ routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
  *  get:
  *   tags:
  *    - Forms
+ *   summary: Get list of form version fields
  *   description: This endpoint will fetch the list of form version fields.
  *   security:
  *    - bearerAuth: []
@@ -1383,6 +1409,8 @@ routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
  *      $ref: '#/components/responses/Error/AccessDenied'
  *    '5XX':
  *      $ref: '#/components/responses/Error/UnExpected'
+ *    '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readFieldsForCSVExport(req, res, next);
@@ -1394,6 +1422,7 @@ routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess,
  *  get:
  *   tags:
  *    - Forms
+ *   summary: Get the image of the form.io component proactive help
  *   description: This endpoint will get the image of the form.io component proactive help.
  *   security:
  *    - bearerAuth: []
@@ -1422,6 +1451,8 @@ routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess,
  *      $ref: '#/components/responses/Error/AccessDenied'
  *    '5XX':
  *      $ref: '#/components/responses/Error/UnExpected'
+ *    '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
   await controller.getFCProactiveHelpImageUrl(req, res, next);

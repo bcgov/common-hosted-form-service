@@ -14,6 +14,7 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - Roles
+ *    summary: List all roles
  *    description: This endpoint will fetch list of roles and permissions.
  *    security:
  *      - bearerAuth: []
@@ -40,6 +41,7 @@ routes.get('/', keycloak.protect(), async (req, res, next) => {
  *  post:
  *    tags:
  *      - Roles
+ *    summary: Create a new role
  *    description: This endpoint will fetch list of roles and permissions.
  *    security:
  *      - bearerAuth: []
@@ -72,6 +74,7 @@ routes.post('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:adm
  *  get:
  *    tags:
  *      - Roles
+ *    summary: Get a role
  *    description: This endpoint will fetch specified role code.
  *    security:
  *      - openId: []
@@ -105,6 +108,7 @@ routes.get('/:code', keycloak.protect(), async (req, res, next) => {
  *  post:
  *    tags:
  *      - Roles
+ *    summary: Update a role
  *    description: This endpoint will fetch list of roles and permissions.
  *    security:
  *      - openId: []
