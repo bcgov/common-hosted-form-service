@@ -1324,9 +1324,66 @@ routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
 
-/*
-Suggested for clean up
-*/
+/**
+ * @openapi
+ * /forms/{formId}/csvexport/fields:
+ *  get:
+ *   tags:
+ *    - Forms
+ *   description: This endpoint will fetch the list of form version fields.
+ *   security:
+ *    - bearerAuth: []
+ *    - basicAuth: []
+ *    - openId: []
+ *   parameters:
+ *    - in: path
+ *      name: formId
+ *      schema:
+ *        type: string
+ *        format: uuid
+ *        description: ID of the form.
+ *        required: true
+ *        example: c6455376-382c-439d-a811-0381a012d696
+ *    - in: query
+ *      name: draft
+ *      schema:
+ *        type: boolean
+ *        description: draft status of the submission.
+ *        required: true
+ *        example: false
+ *    - in: query
+ *      name: deleted
+ *      schema:
+ *        type: boolean
+ *        description: delete status of the form.
+ *        example: false
+ *        required: true
+ *    - in: query
+ *      name: version
+ *      schema:
+ *        type: number
+ *        description: The form version.
+ *        example: 2
+ *    - in: query
+ *      name: type
+ *      schema:
+ *        type: string
+ *        description: default value is submissions.
+ *        example: submissions
+ *        default: submissions
+ *   responses:
+ *    '200':
+ *      description: Success
+ *      content:
+ *        application/json:
+ *          schema:
+ *    '401':
+ *      $ref: '#/components/responses/Error/NoFormAccess'
+ *    '403':
+ *      $ref: '#/components/responses/Error/AccessDenied'
+ *    '5XX':
+ *      $ref: '#/components/responses/Error/UnExpected'
+ */
 routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readFieldsForCSVExport(req, res, next);
 });
