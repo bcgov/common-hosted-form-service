@@ -1,3 +1,51 @@
+<script>
+export default {
+  props: {
+    modelValue: {
+      default: false,
+      type: Boolean,
+    },
+    type: {
+      default: null,
+      type: String,
+    },
+    showCloseButton: {
+      default: false,
+      type: Boolean,
+    },
+    width: {
+      default: '500',
+      type: String,
+    },
+    enableCustomButton: {
+      default: false,
+      type: Boolean,
+    },
+  },
+  emits: [
+    'update:modelValue',
+    'close-dialog',
+    'continue-dialog',
+    'delete-dialog',
+    'custom-dialog',
+  ],
+  methods: {
+    closeDialog() {
+      this.$emit('close-dialog');
+    },
+    continueDialog() {
+      this.$emit('continue-dialog');
+    },
+    deleteDialog() {
+      this.$emit('delete-dialog');
+    },
+    customDialog() {
+      this.$emit('custom-dialog');
+    },
+  },
+};
+</script>
+
 <template>
   <v-dialog
     :max-width="width"
@@ -7,12 +55,15 @@
     @keydown.esc="closeDialog"
   >
     <v-card>
-      <div class="dialog-body">
+      <div>
         <div v-if="showCloseButton">
           <v-spacer />
-          <v-icon color="primary" class="float-right m-3" @click="closeDialog"
-            >close</v-icon
-          >
+          <v-icon
+            color="primary"
+            class="float-right m-3"
+            icon="mdi-close"
+            @click="closeDialog"
+          ></v-icon>
         </div>
         <v-card-title class primary-title>
           <slot name="title"></slot>
@@ -43,6 +94,7 @@
         </div>
         <div v-else-if="type === 'CONTINUE'">
           <v-btn
+            data-test="continue-btn-continue"
             class="mb-5 mr-5"
             color="primary"
             variant="flat"
@@ -52,7 +104,12 @@
               <span>{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
-          <v-btn class="mb-5" variant="outlined" @click="closeDialog">
+          <v-btn
+            data-test="continue-btn-cancel"
+            class="mb-5"
+            variant="outlined"
+            @click="closeDialog"
+          >
             <slot name="button-text-cancel">
               <span>{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
@@ -107,55 +164,6 @@
     </v-card>
   </v-dialog>
 </template>
-
-<script>
-export default {
-  name: 'BaseDialog',
-  props: {
-    modelValue: {
-      default: false,
-      type: Boolean,
-    },
-    type: {
-      default: null,
-      type: String,
-    },
-    showCloseButton: {
-      default: false,
-      type: Boolean,
-    },
-    width: {
-      default: '500',
-      type: String,
-    },
-    enableCustomButton: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  emits: [
-    'update:modelValue',
-    'close-dialog',
-    'continue-dialog',
-    'delete-dialog',
-    'custom-dialog',
-  ],
-  methods: {
-    closeDialog() {
-      this.$emit('close-dialog');
-    },
-    continueDialog() {
-      this.$emit('continue-dialog');
-    },
-    deleteDialog() {
-      this.$emit('delete-dialog');
-    },
-    customDialog() {
-      this.$emit('custom-dialog');
-    },
-  },
-};
-</script>
 
 <style scoped>
 .v-card__text {

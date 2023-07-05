@@ -1,21 +1,24 @@
 import { shallowMount } from '@vue/test-utils';
-import Vuetify from 'vuetify';
+import { describe, expect, it } from 'vitest';
+import { createRouter, createWebHistory } from 'vue-router';
 
-import App from '@/App.vue';
+import App from '~/App.vue';
+import getRouter from '~/router';
 
 describe('App.vue', () => {
-  let vuetify;
-
-  beforeEach(() => {
-    vuetify = new Vuetify();
+  const router = createRouter({
+    history: createWebHistory(),
+    routes: getRouter().getRoutes(),
   });
 
   it('renders', () => {
     const wrapper = shallowMount(App, {
-      vuetify,
-      stubs: ['BaseNotificationContainer', 'BaseSecure', 'BCGovFooter', 'BCGovHeader', 'BCGovNavBar', 'router-view'],
+      global: {
+        plugins: [router],
+      },
     });
 
+    expect(wrapper.find('v-layout-stub').exists()).toBeTruthy();
     expect(wrapper.text()).toMatch('');
   });
 });

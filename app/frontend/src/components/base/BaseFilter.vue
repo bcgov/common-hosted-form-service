@@ -1,65 +1,16 @@
-<template>
-  <v-card>
-    <v-card-title class="text-h5 pb-0 titleWrapper">
-      <slot name="filter-title"></slot>
-    </v-card-title>
-    <v-card-subtitle class="mt-1 d-flex subTitleWrapper"> </v-card-subtitle>
-    <v-card-text class="mt-0 pt-0">
-      <hr class="hr" />
-
-      <div class="d-flex flex-row align-center" style="gap: 30px">
-        <v-text-field
-          v-model="inputFilter"
-          :label="inputFilterLabel"
-          :placeholder="inputFilterPlaceholder"
-          clearable
-          color="primary"
-          prepend-inner-icon="search"
-          filled
-          dense
-          class="mt-3"
-        >
-        </v-text-field>
-      </div>
-      <v-data-table
-        fixed-header
-        show-select
-        hide-default-footer
-        height="300px"
-        v-model="selectedData"
-        :headers="inputHeaders"
-        :items="inputData"
-        :item-key="inputItemKey"
-        :search="inputFilter"
-        class="grey lighten-5"
-      >
-      </v-data-table>
-      <v-btn @click="savingFilterData" class="primary mt-3">{{
-        inputSaveButtonText
-      }}</v-btn>
-      <v-btn
-        @click="cancelFilterData"
-        class="mt-3 ml-3 primary--text"
-        outlined
-        >{{ $t('trans.baseFilter.cancel') }}</v-btn
-      >
-    </v-card-text>
-  </v-card>
-</template>
-
 <script>
-import i18n from '@/internationalization';
+import { i18n } from '~/internationalization';
+
 export default {
-  name: 'BaseFilter',
   props: {
     inputHeaders: {
       type: Array,
       default: () => [
         {
-          text: i18n.t('trans.baseFilter.columnName'),
+          title: i18n.t('trans.baseFilter.columnName'),
           align: 'start',
           sortable: true,
-          value: 'text',
+          key: 'title',
         },
       ],
     },
@@ -67,14 +18,8 @@ export default {
     inputData: {
       type: Array,
       default: () => [
-        {
-          text: i18n.t('trans.baseFilter.exampleText'),
-          value: 'exampleText1',
-        },
-        {
-          text: i18n.t('trans.baseFilter.exampleText2'),
-          value: 'exampleText2',
-        },
+        { title: i18n.t('trans.baseFilter.exampleText'), key: 'exampleText1' },
+        { title: i18n.t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
       ],
     },
     // The default selected data
@@ -84,7 +29,7 @@ export default {
     },
     inputItemKey: {
       type: String,
-      default: 'value',
+      default: 'key',
     },
     inputFilterLabel: {
       type: String,
@@ -99,6 +44,7 @@ export default {
       default: i18n.t('trans.baseFilter.filter'),
     },
   },
+  emits: ['saving-filter-data', 'cancel-filter-data'],
   data() {
     return {
       selectedData: this.preselectedData,
@@ -116,6 +62,55 @@ export default {
   },
 };
 </script>
+
+<template>
+  <v-card>
+    <v-card-title class="text-h5 pb-0 titleWrapper">
+      <slot name="filter-title"></slot>
+    </v-card-title>
+    <v-card-subtitle class="mt-1 d-flex subTitleWrapper"> </v-card-subtitle>
+    <v-card-text class="mt-0 pt-0">
+      <hr class="hr" />
+
+      <div class="d-flex flex-row align-center" style="gap: 30px">
+        <v-text-field
+          v-model="inputFilter"
+          :label="inputFilterLabel"
+          :placeholder="inputFilterPlaceholder"
+          clearable
+          color="primary"
+          prepend-inner-icon="search"
+          variant="filled"
+          density="compact"
+          class="mt-3"
+        >
+        </v-text-field>
+      </div>
+      <v-data-table
+        v-model="selectedData"
+        fixed-header
+        show-select
+        hide-default-footer
+        height="300px"
+        :headers="inputHeaders"
+        :items="inputData"
+        :item-value="inputItemKey"
+        :search="inputFilter"
+        class="bg-grey-lighten-5"
+      >
+      </v-data-table>
+      <v-btn class="bg-primary mt-3" @click="savingFilterData">{{
+        inputSaveButtonText
+      }}</v-btn>
+      <v-btn
+        class="mt-3 ml-3 text-primary"
+        variant="outlined"
+        @click="cancelFilterData"
+        >{{ $t('trans.baseFilter.cancel') }}</v-btn
+      >
+    </v-card-text>
+  </v-card>
+</template>
 
 <style lang="scss" scoped>
 .subTitleWrapper {

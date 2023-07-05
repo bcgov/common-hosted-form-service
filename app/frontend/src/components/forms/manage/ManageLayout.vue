@@ -1,3 +1,48 @@
+<script>
+import { mapState } from 'pinia';
+
+import ManageForm from '~/components/forms/manage/ManageForm.vue';
+import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
+import { useFormStore } from '~/store/form';
+import { FormPermissions } from '~/utils/constants';
+
+export default {
+  components: {
+    ManageForm,
+    ManageFormActions,
+  },
+  props: {
+    f: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      loading: true,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['form', 'permissions']),
+  },
+  async mounted() {
+    this.loading = true;
+
+    const formStore = useFormStore();
+
+    await Promise.all([
+      formStore.fetchForm(this.f),
+      formStore.getFormPermissionsForUser(this.f),
+    ]);
+
+    if (this.permissions.includes(FormPermissions.DESIGN_READ))
+      await formStore.fetchDrafts(this.f);
+
+    this.loading = false;
+  },
+};
+</script>
+
 <template>
   <div>
     <v-row class="mt-6" no-gutters>
@@ -16,55 +61,12 @@
         <h3>{{ form.name }}</h3>
       </v-col>
     </v-row>
-    <v-skeleton-loader :loading="loading" type="list-item-two-line">
-      <ManageForm />
-    </v-skeleton-loader>
+    <v-row class="mt-6" no-gutters>
+      <v-col cols="12" order="2">
+        <v-skeleton-loader :loading="loading" type="list-item-two-line">
+          <ManageForm />
+        </v-skeleton-loader>
+      </v-col>
+    </v-row>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-import ManageForm from '@src/components/forms/manage/ManageForm.vue';
-import ManageFormActions from '@src/components/forms/manage/ManageFormActions.vue';
-import { FormPermissions, IdentityProviders } from '@src/utils/constants';
-
-export default {
-  name: 'ManageLayout',
-  components: { ManageForm, ManageFormActions },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      loading: true,
-    };
-  },
-  computed: {
-    ...mapGetters('form', ['form', 'permissions']),
-    IDP: () => IdentityProviders,
-  },
-  async mounted() {
-    this.loading = true;
-    await Promise.all([
-      // Get the form for this management page
-      this.fetchForm(this.f),
-      // Get the permissions for this form
-      this.getFormPermissionsForUser(this.f),
-    ]);
-    if (this.permissions.includes(FormPermissions.DESIGN_READ))
-      await this.fetchDrafts(this.f);
-    this.loading = false;
-  },
-  methods: {
-    ...mapActions('form', [
-      'fetchDrafts',
-      'fetchForm',
-      'getFormPermissionsForUser',
-    ]),
-  },
-};
-</script>

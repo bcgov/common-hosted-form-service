@@ -1,85 +1,43 @@
-<template>
-  <BaseSecure :idp="[IDP.IDIR]">
-    <h1 class="my-6 text-center">{{ $t('trans.create.createNewForm') }}</h1>
-    <v-stepper v-model="creatorStep" class="elevation-0">
-      <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
-          {{ $t('trans.create.setUpForm') }}
-        </v-stepper-step>
-        <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
-          {{ $t('trans.create.designForm') }}
-        </v-stepper-step>
-      </v-stepper-header>
-
-      <v-stepper-items>
-        <v-stepper-content step="1" class="pa-1">
-          <v-form ref="settingsForm" v-model="settingsFormValid">
-            <h1>{{ $t('trans.create.formSettings') }}</h1>
-            <FormSettings />
-
-            <BasePanel class="my-6">
-              <template #title>{{ $t('trans.create.disclaimer') }}</template>
-              <FormDisclaimer />
-
-              <v-checkbox
-                :rules="disclaimerRules"
-                required
-                :label="$t('trans.create.disclaimerStmt')"
-              />
-            </BasePanel>
-          </v-form>
-          <v-btn
-            class="py-4"
-            color="primary"
-            :disabled="!settingsFormValid"
-            @click="reRenderFormDesigner"
-          >
-            <span>{{ $t('trans.create.continue') }}</span>
-          </v-btn>
-        </v-stepper-content>
-        <v-stepper-content step="2" class="pa-1">
-          <FormDesigner ref="formDesigner" />
-          <v-btn class="my-4" outlined @click="creatorStep = 1">
-            <span>{{ $t('trans.create.back') }}</span>
-          </v-btn>
-        </v-stepper-content>
-      </v-stepper-items>
-    </v-stepper>
-  </BaseSecure>
-</template>
-
 <script>
-import { mapActions } from 'vuex';
-import { mapFields } from 'vuex-map-fields';
-import FormDesigner from '@/components/designer/FormDesigner.vue';
-import FormSettings from '@/components/designer/FormSettings.vue';
-import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
-import { IdentityMode, IdentityProviders } from '@/utils/constants';
+import { mapActions, mapState } from 'pinia';
+import BaseSecure from '~/components/base/BaseSecure.vue';
+import BasePanel from '~/components/base/BasePanel.vue';
+import FormDesigner from '~/components/designer/FormDesigner.vue';
+import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
+import FormSettings from '~/components/designer/FormSettings.vue';
+import { i18n } from '~/internationalization';
+import { useFormStore } from '~/store/form';
+import { IdentityMode, IdentityProviders } from '~/utils/constants';
 
 export default {
-  name: 'FormCreate',
   components: {
+    BaseSecure,
+    BasePanel,
     FormDesigner,
     FormSettings,
     FormDisclaimer,
   },
-  computed: {
-    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
-    IDP: () => IdentityProviders,
+  beforeRouteLeave(_to, _from, next) {
+    this.isDirty
+      ? next(window.confirm(i18n.t('trans.create.agreementErrMsg')))
+      : next();
   },
   data() {
     return {
-      creatorStep: 1,
+      step: 1,
       settingsFormValid: false,
-      disclaimerRules: [(v) => !!v || this.$t('trans.create.confirmPageNav')],
+      disclaimerCheckbox: false,
+      disclaimerRules: [(v) => !!v || i18n.t('trans.create.confirmPageNav')],
     };
   },
-  methods: {
-    ...mapActions('form', ['listFCProactiveHelp', 'resetForm']),
-    reRenderFormDesigner() {
-      this.creatorStep = 2;
-      this.$refs.formDesigner.onFormLoad();
+  computed: {
+    ...mapState(useFormStore, ['form']),
+    IDP: () => IdentityProviders,
+  },
+  watch: {
+    form() {
+      if (this.form.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
+        this.$refs.settingsForm.validate();
     },
   },
   created() {
@@ -88,28 +46,47 @@ export default {
   mounted() {
     this.listFCProactiveHelp();
     this.$nextTick(() => {
-      this.$refs.formDesigner.onFormLoad();
+      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
     });
   },
-  watch: {
-    idps() {
-      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
-        this.$refs.settingsForm.validate();
+  methods: {
+    ...mapActions(useFormStore, ['listFCProactiveHelp', 'resetForm']),
+    reRenderFormDesigner() {
+      this.step = 2;
+      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
     },
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.isDirty
-      ? next(window.confirm(this.$t('trans.create.agreementErrMsg')))
-      : next();
   },
 };
 </script>
 
-<style lang="scss" scoped>
-/* unset 'overflow: hidden' from all parents of FormDesigner, so FormDesigner's 'sticky' components menu sticks. */
-.v-stepper,
-.v-stepper__items,
-.v-stepper ::v-deep .v-stepper__wrapper {
-  overflow: initial !important;
-}
-</style>
+<template>
+  <BaseSecure :idp="[IDP.IDIR]">
+    <h1 class="my-6 text-center">{{ $t('trans.create.createNewForm') }}</h1>
+    <v-container v-if="step === 1" class="elevation-0">
+      <v-form ref="settingsForm" v-model="settingsFormValid">
+        <FormSettings />
+
+        <BasePanel class="my-6">
+          <template #title>{{ $t('trans.create.disclaimer') }}</template>
+          <FormDisclaimer />
+
+          <v-checkbox
+            v-model="disclaimerCheckbox"
+            :rules="disclaimerRules"
+            required="true"
+            :label="$t('trans.create.disclaimerStmt')"
+          />
+        </BasePanel>
+      </v-form>
+      <v-btn :disabled="!settingsFormValid" color="primary" @click="step = 2">{{
+        $t('trans.create.continue')
+      }}</v-btn>
+    </v-container>
+    <v-container v-if="step === 2">
+      <FormDesigner ref="formDesigner" />
+      <v-btn variant="outlined" @click="step = 1">{{
+        $t('trans.create.back')
+      }}</v-btn>
+    </v-container>
+  </BaseSecure>
+</template>

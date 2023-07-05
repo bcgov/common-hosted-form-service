@@ -1,27 +1,19 @@
-<template>
-  <v-skeleton-loader :loading="loading" type="article">
-    <FormViewer
-      display-title
-      :read-only="readOnly"
-      :saved="saved"
-      :submission-id="submissionId"
-    />
-  </v-skeleton-loader>
-</template>
-
 <script>
-import { mapActions, mapGetters } from 'vuex';
-
-import FormViewer from '@/components/designer/FormViewer.vue';
-import { NotificationTypes } from '@/utils/constants';
+import { mapActions, mapState } from 'pinia';
+import FormViewer from '~/components/designer/FormViewer.vue';
+import { useFormStore } from '~/store/form';
+import { NotificationTypes } from '~/utils/constants';
+import { useNotificationStore } from '../../../store/notification';
 
 export default {
-  name: 'UserSubmission',
   components: {
     FormViewer,
   },
   props: {
-    submissionId: String,
+    submissionId: {
+      type: String,
+      required: true,
+    },
     readOnly: { type: Boolean, default: true },
     saved: {
       type: Boolean,
@@ -37,10 +29,8 @@ export default {
       loading: true,
     };
   },
-  computed: mapGetters('form', ['formSubmission']),
-  methods: {
-    ...mapActions('form', ['fetchSubmission']),
-    ...mapActions('notifications', ['addNotification']),
+  computed: {
+    ...mapState(useFormStore, ['formSubmission']),
   },
   async mounted() {
     await this.fetchSubmission({ submissionId: this.submissionId });
@@ -63,6 +53,22 @@ export default {
     }
     this.loading = false;
   },
-  methods: mapActions('form', ['fetchSubmission']),
+  methods: {
+    ...mapActions(useFormStore, ['fetchSubmission']),
+    ...mapActions(useNotificationStore, ['addNotification']),
+  },
 };
 </script>
+
+<template>
+  <v-skeleton-loader :loading="loading" type="article">
+    <v-container fluid
+      ><FormViewer
+        display-title
+        :read-only="readOnly"
+        :saved="saved"
+        :submission-id="submissionId"
+      />
+    </v-container>
+  </v-skeleton-loader>
+</template>

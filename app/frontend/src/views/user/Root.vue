@@ -1,3 +1,13 @@
+<script>
+import BaseSecure from '~/components/base/BaseSecure.vue';
+
+export default {
+  components: {
+    BaseSecure,
+  },
+};
+</script>
+
 <template>
   <BaseSecure>
     <router-link :to="{ name: 'UserForms' }">
@@ -13,9 +23,3 @@
     <h1 class="text-center">User</h1>
   </BaseSecure>
 </template>
-
-<script>
-export default {
-  name: 'User',
-};
-</script>

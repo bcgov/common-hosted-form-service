@@ -1,3 +1,47 @@
+<script>
+import { mapActions } from 'pinia';
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import { useFormStore } from '~/store/form';
+
+export default {
+  components: {
+    BaseDialog,
+  },
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
+    submissionId: {
+      type: String,
+      required: true,
+    },
+    iconSize: {
+      type: String,
+      default: () => 'small',
+    },
+  },
+  emits: ['deleted'],
+  data() {
+    return {
+      showDeleteDialog: false,
+    };
+  },
+  methods: {
+    ...mapActions(useFormStore, ['deleteSubmission']),
+    async deleteSubmission() {
+      await this.deleteSubmission(this.submissionId);
+      this.showDeleteDialog = false;
+      this.$emit('deleted');
+    },
+  },
+};
+</script>
+
 <template>
   <span>
     <v-tooltip location="bottom">
@@ -6,10 +50,11 @@
           color="red"
           :disabled="disabled"
           icon
+          :size="iconSize"
           v-bind="props"
           @click="showDeleteDialog = true"
         >
-          <v-icon>delete</v-icon>
+          <v-icon icon="mdi:mdi-delete"></v-icon>
         </v-btn>
       </template>
       <span
@@ -26,7 +71,7 @@
       v-model="showDeleteDialog"
       type="CONTINUE"
       @close-dialog="showDeleteDialog = false"
-      @continue-dialog="delSub"
+      @continue-dialog="deleteSubmission"
     >
       <template #title>{{
         $t('trans.deleteSubmission.confirmDeletion')
@@ -35,8 +80,8 @@
         {{ $t('trans.deleteSubmission.deleteWarning') }}
         {{
           isDraft
-            ? "$t('trans.deleteSubmission.drafts')"
-            : "$t('trans.deleteSubmission.formSubmission')"
+            ? $t('trans.deleteSubmission.drafts')
+            : $t('trans.deleteSubmission.formSubmission')
         }}?
       </template>
       <template #button-text-continue>
@@ -45,39 +90,3 @@
     </BaseDialog>
   </span>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    isDraft: {
-      type: Boolean,
-      default: false,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['deleted'],
-  data() {
-    return {
-      showDeleteDialog: false,
-    };
-  },
-  computed: mapGetters('form', ['form']),
-  methods: {
-    ...mapActions('form', ['deleteSubmission']),
-    async delSub() {
-      await this.deleteSubmission(this.submissionId);
-      this.showDeleteDialog = false;
-      this.$emit('deleted');
-    },
-  },
-};
-</script>

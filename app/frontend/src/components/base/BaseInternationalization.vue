@@ -1,43 +1,7 @@
-<template>
-  <div class="text-center">
-    <v-menu offset-y>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn dark outlined v-bind="attrs" v-on="on" class="ml-3">
-          <font-awesome-icon icon="fa-solid fa-globe" class="mr-1" />
-          {{ language }}
-          <font-awesome-icon icon="fa-solid fa-caret-down" class="ml-3" />
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item-group color="primary" v-model="languageIndex">
-          <v-list-item
-            v-for="(item, i) in items"
-            :key="i"
-            @click="languageSelected(item)"
-          >
-            <v-list-item-content>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-menu>
-  </div>
-</template>
-
 <script>
-import { mapActions } from 'vuex';
-import { faCaretDown, faGlobe } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faCaretDown, faGlobe);
+import { useFormStore } from '~/store/form';
 
 export default {
-  name: 'BaseInternationalization',
-  computed: {
-    hasLogin() {
-      return this.$route && this.$route.meta && this.$route.meta.hasLogin;
-    },
-  },
   data: () => {
     return {
       language: 'English',
@@ -65,23 +29,46 @@ export default {
       ],
     };
   },
-
   methods: {
-    ...mapActions('form', ['setMultiLanguage']),
     languageSelected(lang) {
       this.language = lang.title;
       this.$root.$i18n.locale = lang.keyword;
-      this.$vuetify.lang.current =
+      this.$vuetify.locale.current =
         lang.keyword == 'zh'
           ? 'zhHans'
           : lang.keyword == 'zh-TW'
           ? 'zhHant'
           : lang.keyword;
-      this.setMultiLanguage(lang.keyword);
+      useFormStore().$patch({
+        multiLanguage: lang.keyword,
+      });
     },
   },
 };
 </script>
+
+<template>
+  <div class="text-center">
+    <v-menu>
+      <template #activator="{ props }">
+        <v-btn variant="outlined" color="white" v-bind="props" class="ml-3">
+          <v-icon class="mr-1" icon="mdi:mdi-web" />
+          {{ language }}
+          <v-icon class="ml-3" icon="mdi:mdi-menu-down" />
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="loc in items"
+          :key="loc.keyword"
+          @click="languageSelected(loc)"
+        >
+          <v-list-item-title>{{ loc.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .select {

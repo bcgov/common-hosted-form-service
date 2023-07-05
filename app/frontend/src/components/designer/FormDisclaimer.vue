@@ -20,16 +20,14 @@
           target="_blank"
         >
           {{ $t('trans.formDisclaimer.privacyOfficer') }}
-          <v-icon small color="primary">open_in_new</v-icon>
+          <v-icon
+            size="small"
+            color="primary"
+            icon="mdi:mdi-open-in-new"
+          ></v-icon>
         </a>
         {{ $t('trans.formDisclaimer.assement') }}
       </li>
     </ul>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'FormDisclaimer',
-};
-</script>

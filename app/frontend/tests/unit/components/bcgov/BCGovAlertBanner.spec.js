@@ -1,130 +1,171 @@
-import { NotificationTypes } from '@/utils/constants';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import BCGovAlertBanner from '@/components/bcgov/BCGovAlertBanner.vue';
+// @vitest-environment happy-dom
+import { createPinia, setActivePinia } from 'pinia';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
+import { h, nextTick } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
 
-const localVue = createLocalVue();
-
-localVue.use(Vuex);
+import { VApp } from 'vuetify/components';
+import BCGovAlertBanner from '~/components/bcgov/BCGovAlertBanner.vue';
+import getRouter from '~/router';
+import { useAuthStore } from '~/store/auth';
+import { NotificationTypes } from '~/utils/constants';
 
 describe('BCGovAlertBanner.vue', () => {
-  let store;
-
-  beforeEach(() => {
-    store = new Vuex.Store();
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => true,
-        keycloakReady: () => true,
-      },
-      actions: {
-        logout: () => jest.fn(),
-      },
-    });
+  setActivePinia(createPinia());
+  const router = createRouter({
+    history: createWebHistory(),
+    routes: getRouter().getRoutes(),
   });
 
-  it('renders without error', async () => {
-    const wrapper = shallowMount(BCGovAlertBanner, {
-      localVue,
-      store,
-      i18n
-    });
-    await localVue.nextTick();
+  it('renders default error', async () => {
+    const authStore = useAuthStore();
+    authStore.authenticated = true;
+    authStore.ready = true;
 
-    expect(wrapper.html()).toContain(NotificationTypes.ERROR.class);
-    expect(wrapper.html()).toContain(NotificationTypes.ERROR.icon);
-    expect(wrapper.text()).toContain('Error');
+    const wrapper = mount(VApp, {
+      global: {
+        plugins: [router],
+      },
+      slots: {
+        default: h(BCGovAlertBanner),
+      },
+    });
+
+    await nextTick();
+
+    expect(wrapper.html()).toContain(NotificationTypes.ERROR.type);
+    expect(wrapper.html()).toContain('Error');
   });
 
   it('renders with a custom error message', async () => {
     const message = 'This is a custom error message for testing.';
-    const wrapper = shallowMount(BCGovAlertBanner, {
-      localVue,
-      propsData: { message: message },
-      store,
-      i18n
-    });
-    await localVue.nextTick();
+    const authStore = useAuthStore();
+    authStore.authenticated = true;
+    authStore.ready = true;
 
-    expect(wrapper.html()).toContain(NotificationTypes.ERROR.class);
-    expect(wrapper.html()).toContain(NotificationTypes.ERROR.icon);
+    const wrapper = mount(BCGovAlertBanner, {
+      props: {
+        text: message,
+      },
+      global: {
+        plugins: [router],
+      },
+    });
+
+    await nextTick();
+
+    expect(wrapper.html()).toContain(NotificationTypes.ERROR.type);
     expect(wrapper.text()).toMatch(message);
   });
 
   it('renders with an info message', async () => {
     const message = 'This is a custom info message for testing.';
-    const wrapper = shallowMount(BCGovAlertBanner, {
-      localVue,
-      propsData: { message: message, type: 'info' },
-      store,
-      i18n
-    });
-    await localVue.nextTick();
+    const authStore = useAuthStore();
+    authStore.authenticated = true;
+    authStore.ready = true;
 
-    expect(wrapper.html()).toContain(NotificationTypes.INFO.class);
-    expect(wrapper.html()).toContain(NotificationTypes.INFO.icon);
+    const wrapper = mount(BCGovAlertBanner, {
+      props: {
+        text: message,
+        type: 'info',
+      },
+      global: {
+        plugins: [router],
+      },
+    });
+
+    await nextTick();
+
+    expect(wrapper.html()).toContain(NotificationTypes.INFO.type);
     expect(wrapper.text()).toMatch(message);
   });
 
   it('renders with a success message', async () => {
     const message = 'This is a custom success message for testing.';
-    const wrapper = shallowMount(BCGovAlertBanner, {
-      localVue,
-      propsData: { message: message, type: 'success' },
-      store,
-      i18n
-    });
-    await localVue.nextTick();
+    const authStore = useAuthStore();
+    authStore.authenticated = true;
+    authStore.ready = true;
 
-    expect(wrapper.html()).toContain(NotificationTypes.SUCCESS.class);
-    expect(wrapper.html()).toContain(NotificationTypes.SUCCESS.icon);
+    const wrapper = mount(BCGovAlertBanner, {
+      props: {
+        text: message,
+        type: 'info',
+      },
+      global: {
+        plugins: [router],
+      },
+    });
+
+    await nextTick();
+
+    expect(wrapper.html()).toContain(NotificationTypes.SUCCESS.type);
     expect(wrapper.text()).toMatch(message);
   });
 
   it('renders with a warning message', async () => {
     const message = 'This is a custom warning message for testing.';
-    const wrapper = shallowMount(BCGovAlertBanner, {
-      localVue,
-      propsData: { message: message, type: 'warning' },
-      store,
-      i18n
-    });
-    await localVue.nextTick();
+    const authStore = useAuthStore();
+    authStore.authenticated = true;
+    authStore.ready = true;
 
-    expect(wrapper.html()).toContain(NotificationTypes.WARNING.class);
-    expect(wrapper.html()).toContain(NotificationTypes.WARNING.icon);
+    const wrapper = mount(BCGovAlertBanner, {
+      props: {
+        text: message,
+        type: 'info',
+      },
+      global: {
+        plugins: [router],
+      },
+    });
+
+    await nextTick();
+
+    expect(wrapper.html()).toContain(NotificationTypes.WARNING.type);
     expect(wrapper.text()).toMatch(message);
   });
 
   it('renders ok with the default if type is wrong', async () => {
     const message = 'This is a custom warning message for testing.';
-    const wrapper = shallowMount(BCGovAlertBanner, {
-      localVue,
-      propsData: { message: message, type: 'BROKEN' },
-      store,
-      i18n
-    });
-    await localVue.nextTick();
+    const authStore = useAuthStore();
+    authStore.authenticated = true;
+    authStore.ready = true;
 
-    expect(wrapper.html()).toContain(NotificationTypes.ERROR.class);
-    expect(wrapper.html()).toContain(NotificationTypes.ERROR.icon);
+    const wrapper = mount(BCGovAlertBanner, {
+      props: {
+        text: message,
+        type: 'BROKEN',
+      },
+      global: {
+        plugins: [router],
+      },
+    });
+
+    await nextTick();
+
+    expect(wrapper.html()).toContain(NotificationTypes.ERROR.type);
     expect(wrapper.text()).toMatch(message);
   });
 
   it('renders html without escaping it', async () => {
-    const message = 'This is a <a href="a">custom<a/> warning message.';
-    const wrapper = shallowMount(BCGovAlertBanner, {
-      localVue,
-      propsData: { message: message, type: 'BROKEN' },
-      store,
-      i18n
-    });
-    await localVue.nextTick();
+    const message = 'This is a <a href="a">custom<a/> warning message..';
+    const authStore = useAuthStore();
+    authStore.authenticated = true;
+    authStore.ready = true;
 
-    expect(wrapper.html()).toContain(NotificationTypes.ERROR.class);
-    expect(wrapper.html()).toContain(NotificationTypes.ERROR.icon);
+    const wrapper = mount(BCGovAlertBanner, {
+      props: {
+        text: message,
+        type: 'BROKEN',
+      },
+      global: {
+        plugins: [router],
+      },
+    });
+
+    await nextTick();
+
+    expect(wrapper.html()).toContain(NotificationTypes.ERROR.type);
     expect(wrapper.text()).not.toContain('href');
   });
 });

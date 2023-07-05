@@ -1,18 +1,88 @@
+<script>
+import { mapActions, mapState } from 'pinia';
+import VueJsonPretty from 'vue-json-pretty';
+
+import AddOwner from '~/components/admin/AddOwner.vue';
+import AdminVersions from '~/components/admin/AdminVersions.vue';
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import { useAdminStore } from '~/store/admin';
+
+export default {
+  components: {
+    AddOwner,
+    AdminVersions,
+    BaseDialog,
+    VueJsonPretty,
+  },
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      formDetails: {},
+      loading: true,
+      restoreInProgress: false,
+      showDeleteDialog: false,
+      showRestoreDialog: false,
+    };
+  },
+  computed: {
+    ...mapState(useAdminStore, ['form', 'roles', 'apiKey']),
+  },
+  async mounted() {
+    await Promise.all([
+      this.readForm(this.formId),
+      this.readApiDetails(this.formId),
+      this.readRoles(this.formId),
+    ]);
+
+    this.formDetails = { ...this.form };
+    delete this.formDetails.versions;
+
+    this.loading = false;
+  },
+  methods: {
+    ...mapActions(useAdminStore, [
+      'deleteApiKey',
+      'readForm',
+      'readApiDetails',
+      'readRoles',
+      'restoreForm',
+    ]),
+
+    async deleteKey() {
+      await this.deleteApiKey(this.form.id);
+      this.showDeleteDialog = false;
+    },
+
+    async restore() {
+      this.restoreInProgress = true;
+      await this.restoreForm(this.form.id);
+      this.restoreInProgress = false;
+      this.showRestoreDialog = false;
+    },
+  },
+};
+</script>
+
 <template>
   <v-skeleton-loader :loading="loading" type="article">
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 
-    <div v-if="form.active === false" class="red--text mb-6">
+    <div v-if="form.active === false" class="text-red mb-6">
       ({{ $t('trans.administerForm.deleted') }})
       <v-btn
         color="primary"
         class="mt-0"
+        variant="text"
+        size="small"
         @click="showRestoreDialog = true"
-        text
-        small
       >
-        <v-icon class="mr-1">build_circle</v-icon>
+        <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
         <span class="d-none d-sm-flex">{{
           $t('trans.administerForm.restoreForm')
         }}</span>
@@ -52,7 +122,7 @@
 
     <div v-if="form.active" class="mt-12">
       <h4>{{ $t('trans.administerForm.assignANewOwner') }}</h4>
-      <AddOwner :formId="form.id" />
+      <AddOwner :form-id="form.id" />
     </div>
 
     <BaseDialog
@@ -100,70 +170,3 @@
     </BaseDialog>
   </v-skeleton-loader>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import AddOwner from './AddOwner.vue';
-import AdminVersions from './AdminVersions.vue';
-
-import VueJsonPretty from 'vue-json-pretty';
-
-export default {
-  name: 'AdministerForm',
-  components: {
-    AddOwner,
-    AdminVersions,
-    VueJsonPretty,
-  },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      formDetails: {},
-      loading: true,
-      restoreInProgress: false,
-      roleDetails: {},
-      showDeleteDialog: false,
-      showRestoreDialog: false,
-    };
-  },
-  computed: {
-    ...mapGetters('admin', ['form', 'roles', 'apiKey']),
-  },
-  methods: {
-    ...mapActions('admin', [
-      'deleteApiKey',
-      'readApiDetails',
-      'readForm',
-      'readRoles',
-      'restoreForm',
-    ]),
-    async deleteKey() {
-      await this.deleteApiKey(this.form.id);
-      this.showDeleteDialog = false;
-    },
-    async restore() {
-      this.restoreInProgress = true;
-      await this.restoreForm(this.form.id);
-      this.restoreInProgress = false;
-      this.showRestoreDialog = false;
-    },
-  },
-  async mounted() {
-    await Promise.all([
-      this.readForm(this.formId),
-      this.readApiDetails(this.formId),
-      this.readRoles(this.formId),
-    ]);
-
-    this.formDetails = { ...this.form };
-    delete this.formDetails.versions;
-
-    this.loading = false;
-  },
-};
-</script>

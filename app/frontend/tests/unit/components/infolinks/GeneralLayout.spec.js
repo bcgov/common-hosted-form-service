@@ -1,35 +1,44 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
-import GeneralLayout from '@/components/infolinks/GeneralLayout.vue';
-import i18n from '@/internationalization';
+// @vitest-environment happy-dom
+// happy-dom is required to access window.location
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+import { mount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+import { setActivePinia } from 'pinia';
+import { createRouter, createWebHistory } from 'vue-router';
+import { expect, vi } from 'vitest';
+
+import getRouter from '~/router';
+import GeneralLayout from '~/components/infolinks/GeneralLayout.vue';
 
 describe('GeneralLayout.vue', () => {
+  const pinia = createTestingPinia();
+  const router = createRouter({
+    history: createWebHistory(),
+    routes: getRouter().getRoutes(),
+  });
+
+  setActivePinia(pinia);
+
   it('isComponentPublish()', async () => {
-    const wrapper = shallowMount(GeneralLayout, {
-      localVue,
-      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
-      propsData: {
-        componentsList: {
-          type: Array,
-          default: [],
+    const wrapper = mount(GeneralLayout, {
+      props: {
+        componentsList: [
+          { componentName: 'content', status: true },
+          { componentName: 'textfiled', status: false },
+        ],
+        layoutList: [
+          { componentName: 'content' },
+          { componentName: 'textfiled' },
+        ],
+        groupName: '',
+      },
+      global: {
+        plugins: [router, pinia],
+        stubs: {
+          ProactiveHelpDialog: true,
+          ProactiveHelpPreviewDialog: true,
         },
       },
-      data() {
-        return {
-          publish: [false, false],
-        };
-      },
-      i18n
-    });
-    await wrapper.setProps({
-      componentsList: [
-        { componentName: 'content', status: true },
-        { componentName: 'textfiled', status: false },
-      ],
-      layoutList: [{ componentName: 'content' }, { componentName: 'textfiled' }],
     });
     await wrapper.setData({ publish: [false, false], listLength: 2 });
     wrapper.vm.isComponentPublish('content', 0);
@@ -37,24 +46,27 @@ describe('GeneralLayout.vue', () => {
   });
 
   it('onOpenDialog()', async () => {
-    const getComponentSpy = jest.spyOn(GeneralLayout.methods, 'getComponent');
-    const onDialogSpy = jest.spyOn(GeneralLayout.methods, 'onDialog');
-
-    const wrapper = shallowMount(GeneralLayout, {
-      localVue,
-      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
-      propsData: {
-        componentsList: {
-          type: Array,
-          default: [],
+    const getComponentSpy = vi.spyOn(GeneralLayout.methods, 'getComponent');
+    const onDialogSpy = vi.spyOn(GeneralLayout.methods, 'onDialog');
+    const wrapper = mount(GeneralLayout, {
+      props: {
+        componentsList: [
+          { componentName: 'content', status: true },
+          { componentName: 'textfiled', status: false },
+        ],
+        layoutList: [
+          { componentName: 'content' },
+          { componentName: 'textfiled' },
+        ],
+        groupName: '',
+      },
+      global: {
+        plugins: [router, pinia],
+        stubs: {
+          ProactiveHelpDialog: true,
+          ProactiveHelpPreviewDialog: true,
         },
       },
-      data() {
-        return {
-          publish: [false, false],
-        };
-      },
-      i18n
     });
     //wrapper.vm.onOpenDialog('Text Field');
     //expect(getComponentSpy).toHaveBeenCalledTimes(1);
@@ -62,42 +74,50 @@ describe('GeneralLayout.vue', () => {
   });
 
   it('onPreviewDialog()', async () => {
-    const wrapper = shallowMount(GeneralLayout, {
-      localVue,
-      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
-      propsData: {
-        componentsList: {
-          type: Array,
-          default: [],
+    const wrapper = mount(GeneralLayout, {
+      props: {
+        componentsList: [
+          { componentName: 'content', status: true },
+          { componentName: 'textfiled', status: false },
+        ],
+        layoutList: [
+          { componentName: 'content' },
+          { componentName: 'textfiled' },
+        ],
+        groupName: '',
+      },
+      global: {
+        plugins: [router, pinia],
+        stubs: {
+          ProactiveHelpDialog: true,
+          ProactiveHelpPreviewDialog: true,
         },
       },
-      data() {
-        return {
-          showPreviewDialog: false,
-        };
-      },
-      i18n
     });
     //wrapper.vm.onPreviewDialog();
     //expect(wrapper.vm.showPreviewDialog).toBe(true);
   });
 
   it('onDialog()', async () => {
-    const wrapper = shallowMount(GeneralLayout, {
-      localVue,
-      stubs: ['ProactiveHelpDialog','ProactiveHelpPreviewDialog'],
-      propsData: {
-        componentsList: {
-          type: Array,
-          default: [],
+    const wrapper = mount(GeneralLayout, {
+      props: {
+        componentsList: [
+          { componentName: 'content', status: true },
+          { componentName: 'textfiled', status: false },
+        ],
+        layoutList: [
+          { componentName: 'content' },
+          { componentName: 'textfiled' },
+        ],
+        groupName: '',
+      },
+      global: {
+        plugins: [router, pinia],
+        stubs: {
+          ProactiveHelpDialog: true,
+          ProactiveHelpPreviewDialog: true,
         },
       },
-      data() {
-        return {
-          showDialog: false,
-        };
-      },
-      i18n
     });
     //wrapper.vm.onDialog();
     //expect(wrapper.vm.showDialog).toBe(true);

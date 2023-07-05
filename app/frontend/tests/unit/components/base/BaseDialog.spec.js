@@ -1,58 +1,88 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import { describe, it } from 'vitest';
 import { nextTick } from 'vue';
-import Vuetify from 'vuetify';
-import i18n from '@/internationalization';
-import BaseDialog from '@/components/base/BaseDialog.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuetify);
+import BaseDialog from '~/components/base/BaseDialog.vue';
 
 describe('BaseDialog.vue', () => {
   it('renders with ok button', async () => {
-    const wrapper = shallowMount(BaseDialog, {
-      localVue,
-      propsData: { show: true, type: 'OK' },
-      i18n
+    const wrapper = mount(BaseDialog, {
+      props: {
+        modelValue: true,
+        type: 'OK',
+      },
+      global: {
+        stubs: {
+          VDialog: {
+            name: 'VDialog',
+            template: '<div class="v-dialog-stub"><slot /></div>',
+            props: ['modelValue'],
+          },
+        },
+      },
     });
     await wrapper.vm.closeDialog();
     await nextTick();
 
-    expect(wrapper.text()).toMatch('OK');
+    expect(wrapper.text()).toContain('trans.baseDialog.ok');
   });
 
   it('renders with continue button', async () => {
-    const wrapper = shallowMount(BaseDialog, {
-      localVue,
-      propsData: { show: true, type: 'CONTINUE' },
-      i18n
+    const wrapper = mount(BaseDialog, {
+      props: {
+        modelValue: true,
+        type: 'CONTINUE',
+      },
+      global: {
+        stubs: {
+          VDialog: {
+            name: 'VDialog',
+            template: '<div class="v-dialog-stub"><slot /></div>',
+            props: ['modelValue'],
+          },
+        },
+      },
     });
-    await wrapper.vm.continueDialog();
-    await nextTick();
 
-    expect(wrapper.text()).toMatch('Continue');
+    expect(wrapper.text()).toContain('trans.baseDialog.continue');
   });
 
   it('renders with the close button', async () => {
-    const wrapper = shallowMount(BaseDialog, {
-      localVue,
-      propsData: { show: true, showCloseButton: true },
-      i18n
+    const wrapper = mount(BaseDialog, {
+      props: {
+        modelValue: true,
+        showCloseButton: true,
+      },
+      global: {
+        stubs: {
+          VDialog: {
+            name: 'VDialog',
+            template: '<div class="v-dialog-stub"><slot /></div>',
+            props: ['modelValue'],
+          },
+        },
+      },
     });
-    await wrapper.vm.closeDialog();
-    await nextTick();
 
-    expect(wrapper.text()).toMatch('close');
+    expect(wrapper.find('i.mdi-close.v-icon').exists()).toBeTruthy();
   });
 
   it('renders without the close button', async () => {
-    const wrapper = shallowMount(BaseDialog, {
-      localVue,
-      propsData: { show: true },
-      i18n
+    const wrapper = mount(BaseDialog, {
+      props: {
+        modelValue: true,
+      },
+      global: {
+        stubs: {
+          VDialog: {
+            name: 'VDialog',
+            template: '<div class="v-dialog-stub"><slot /></div>',
+            props: ['modelValue'],
+          },
+        },
+      },
     });
-    await wrapper.vm.closeDialog();
-    await nextTick();
 
-    expect(wrapper.text()).not.toMatch('close');
+    expect(wrapper.find('i.mdi-close.v-icon').exists()).toBeFalsy();
   });
 });
