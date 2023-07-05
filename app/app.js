@@ -4,7 +4,6 @@ const express = require('express');
 const path = require('path');
 const Problem = require('api-problem');
 const querystring = require('querystring');
-
 const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;

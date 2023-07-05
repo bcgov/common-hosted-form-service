@@ -4,6 +4,7 @@ const docs = {
   getDocHTML: (version) => `<!DOCTYPE html>
   <html>
     <head>
+
       <title>Common Hosted Form Service - Documentation ${version}</title>
       <!-- Needed for adaptive design -->
       <meta charset="utf-8"/>

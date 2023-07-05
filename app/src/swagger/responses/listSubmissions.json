@@ -1,0 +1,92 @@
+[
+  {
+    "id": "9cddaef5-08c6-4ef5-89fb-491a43748fbb",
+    "formVersionId": "767a431b-24b1-4b8b-92e5-783144f7caf9",
+    "confirmationId": "9CDDAEF5",
+    "draft": false,
+    "deleted": false,
+    "submission": {
+      "data": {
+        "submit": true,
+        "firstName": "Bodmas",
+        "lateEntry": false
+      },
+      "state": "submitted",
+      "_vnote": "",
+      "metadata": {
+        "offset": -420,
+        "onLine": true,
+        "origin": "http://localhost:8082",
+        "pathName": "/app/form/submit",
+        "referrer": "",
+        "timezone": "America/Los_Angeles",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        "browserName": "Netscape"
+      }
+    },
+    "createdBy": "AIDOWU@idir",
+    "createdAt": "2023-06-26T18:36:08.895Z",
+    "updatedBy": null,
+    "updatedAt": "2023-06-26T18:36:08.896Z"
+  },
+  {
+    "id": "737708c5-5bf1-4a89-bd29-f145c10f8228",
+    "formVersionId": "767a431b-24b1-4b8b-92e5-783144f7caf9",
+    "confirmationId": "737708C5",
+    "draft": false,
+    "deleted": false,
+    "submission": {
+      "data": {
+        "submit": true,
+        "firstName": "husk",
+        "lateEntry": false
+      },
+      "state": "submitted",
+      "_vnote": "",
+      "metadata": {
+        "offset": -420,
+        "onLine": true,
+        "origin": "http://localhost:8082",
+        "pathName": "/app/form/submit",
+        "referrer": "",
+        "timezone": "America/Los_Angeles",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        "browserName": "Netscape"
+      }
+    },
+    "createdBy": "AIDOWU@idir",
+    "createdAt": "2023-06-26T18:29:51.252Z",
+    "updatedBy": null,
+    "updatedAt": "2023-06-26T18:29:51.245Z"
+  },
+  {
+    "id": "141beade-0edc-438f-a39d-b7643e237cb6",
+    "formVersionId": "767a431b-24b1-4b8b-92e5-783144f7caf9",
+    "confirmationId": "141BEADE",
+    "draft": false,
+    "deleted": false,
+    "submission": {
+      "data": {
+        "submit": true,
+        "firstName": "Ayobamii",
+        "lateEntry": false
+      },
+      "state": "submitted",
+      "_vnote": "",
+      "metadata": {
+        "offset": -420,
+        "onLine": true,
+        "origin": "http://localhost:8082",
+        "pathName": "/app/form/submit",
+        "referrer": "",
+        "timezone": "America/Los_Angeles",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        "browserName": "Netscape"
+      }
+    },
+    "createdBy": "AIDOWU@idir",
+    "createdAt": "2023-06-21T17:52:15.273Z",
+    "updatedBy": "AIDOWU@idir",
+    "updatedAt": "2023-06-21T18:00:01.517Z"
+  }
+]

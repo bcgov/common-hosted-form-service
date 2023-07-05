@@ -1,0 +1,261 @@
+{
+  "submission": [
+    {
+      "id": "0821a4a2-60eb-46e9-a8c4-87709b12ed2e",
+      "formVersionId": "4518d8ac-fbab-439d-a255-d1b6e326519e",
+      "confirmationId": "0821A4A2",
+      "draft": false,
+      "deleted": true,
+      "submission": {
+        "data": {
+          "submit": true,
+          "firstName": "Dedunmola",
+          "lateEntry": false
+        },
+        "state": "submitted",
+        "_vnote": "",
+        "metadata": {
+          "offset": -420,
+          "onLine": true,
+          "origin": "http://localhost:8082",
+          "pathName": "/app/form/submit",
+          "referrer": "",
+          "timezone": "America/Los_Angeles",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+          "browserName": "Netscape"
+        }
+      },
+      "createdBy": "AIDOWU@idir",
+      "createdAt": "2023-06-24T16:47:58.161Z",
+      "updatedBy": "AIDOWU@idir",
+      "updatedAt": "2023-06-24T16:48:43.442Z"
+    },
+    {
+      "id": "06900eab-4ef4-42de-a8cd-03c67fb0de87",
+      "formVersionId": "4518d8ac-fbab-439d-a255-d1b6e326519e",
+      "confirmationId": "06900EAB",
+      "draft": false,
+      "deleted": true,
+      "submission": {
+        "data": {
+          "submit": true,
+          "firstName": "Olamide",
+          "lateEntry": false
+        },
+        "state": "submitted",
+        "_vnote": "",
+        "metadata": {
+          "offset": -420,
+          "onLine": true,
+          "origin": "http://localhost:8082",
+          "pathName": "/app/form/submit",
+          "referrer": "",
+          "timezone": "America/Los_Angeles",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+          "browserName": "Netscape"
+        }
+      },
+      "createdBy": "AIDOWU@idir",
+      "createdAt": "2023-06-24T16:48:11.813Z",
+      "updatedBy": "AIDOWU@idir",
+      "updatedAt": "2023-06-24T16:48:43.442Z"
+    }
+  ],
+  "version": [
+    {
+      "id": "4518d8ac-fbab-439d-a255-d1b6e326519e",
+      "formId": "99d8d0a3-81f3-47ea-b935-8e64fa7ed721",
+      "version": 1,
+      "schema": {
+        "type": "form",
+        "display": "form",
+        "components": [
+          {
+            "id": "edeir9l",
+            "key": "firstName",
+            "case": "",
+            "mask": false,
+            "type": "simpletextfield",
+            "input": true,
+            "label": "First Name",
+            "addons": [],
+            "hidden": false,
+            "prefix": "",
+            "suffix": "",
+            "unique": false,
+            "widget": {
+              "type": "input"
+            },
+            "dbIndex": false,
+            "overlay": {
+              "top": "",
+              "left": "",
+              "style": "",
+              "width": "",
+              "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate": {
+              "custom": "",
+              "unique": false,
+              "pattern": "",
+              "multiple": false,
+              "required": false,
+              "maxLength": "",
+              "minLength": "",
+              "isUseForCopy": false,
+              "customMessage": "",
+              "customPrivate": false,
+              "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "inputMask": "",
+            "inputType": "text",
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "tableView": false,
+            "attributes": {},
+            "errorLabel": "",
+            "persistent": true,
+            "properties": {},
+            "spellcheck": true,
+            "validateOn": "change",
+            "clearOnHide": true,
+            "conditional": {
+              "eq": "",
+              "json": "",
+              "show": null,
+              "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "displayMask": "",
+            "inputFormat": "plain",
+            "placeholder": "",
+            "defaultValue": "",
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "customConditional": "",
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false,
+            "truncateMultipleSpaces": false
+          },
+          {
+            "id": "egr1j3",
+            "key": "submit",
+            "size": "md",
+            "type": "button",
+            "block": false,
+            "input": true,
+            "label": "Submit",
+            "theme": "primary",
+            "action": "submit",
+            "addons": [],
+            "hidden": false,
+            "prefix": "",
+            "suffix": "",
+            "unique": false,
+            "widget": {
+              "type": "input"
+            },
+            "dbIndex": false,
+            "overlay": {
+              "top": "",
+              "left": "",
+              "style": "",
+              "width": "",
+              "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "leftIcon": "",
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate": {
+              "custom": "",
+              "unique": false,
+              "multiple": false,
+              "required": false,
+              "customPrivate": false,
+              "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "rightIcon": "",
+            "tableView": false,
+            "attributes": {},
+            "errorLabel": "",
+            "persistent": false,
+            "properties": {},
+            "validateOn": "change",
+            "clearOnHide": true,
+            "conditional": {
+              "eq": "",
+              "show": null,
+              "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "placeholder": "",
+            "defaultValue": null,
+            "dataGridLabel": true,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "disableOnInvalid": true,
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false
+          }
+        ]
+      },
+      "createdBy": "AIDOWU@idir",
+      "createdAt": "2023-06-24T16:47:18.910Z",
+      "updatedBy": null,
+      "updatedAt": "2023-06-24T16:47:18.896Z",
+      "published": true
+    }
+  ],
+  "form": [
+    {
+      "id": "99d8d0a3-81f3-47ea-b935-8e64fa7ed721",
+      "name": "Test Submission",
+      "description": "",
+      "active": true,
+      "labels": null,
+      "createdBy": "AIDOWU@idir",
+      "createdAt": "2023-06-24T16:47:12.213Z",
+      "updatedBy": null,
+      "updatedAt": "2023-06-24T16:47:12.199Z",
+      "showSubmissionConfirmation": true,
+      "submissionReceivedEmails": [],
+      "enableStatusUpdates": false,
+      "enableSubmitterDraft": false,
+      "schedule": null,
+      "reminder_enabled": false,
+      "enableCopyExistingSubmission": false,
+      "allowSubmitterToUploadFile": false,
+      "identityProviders": [],
+      "snake": "test_submission"
+    }
+  ]
+}
