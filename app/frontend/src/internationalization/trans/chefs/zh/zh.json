@@ -663,7 +663,7 @@
     "submitFormWarningMsg": "您确定要提交表格吗？",
     "submit": "提交",
     "wantToSaveDraft": "您要保存草稿吗？",
-    "version": "版本：{版本}",
+    "version": "版本：{version}",
     "formScheduleExpireMessage": "由于预定的提交期限已过，无法提交表单。",
     "getUsersSubmissionsErrMsg": "获取此表单的提交时出错",
     "getUsersSubmissionsConsoleErrMsg": "加载表单提交数据 {submissionId} 时出错：{error}",
@@ -687,7 +687,8 @@
     "errSubmittingForm": "提交此表单时出错",
     "errorSavingFile": "保存文件时出错。文件名：{fileNname}。错误：{错误}",
     "submittingDraftErrMsg": "保存草稿时出错",
-    "submittingDraftConsErrMsg": "保存草稿时出错。提交 ID：{submissionId}。错误：{错误}"
+    "submittingDraftConsErrMsg": "保存草稿时出错。提交 ID：{submissionId}。错误：{错误}",
+    "formDraftAccessErrMsg": "请求的提交已经提交，重定向到查看页面"
   },
   "bCGovFooter": {
     "home": "家",
