@@ -28,8 +28,8 @@ module.exports = {
     'eol-last': ['error', 'always'],
     'prettier/prettier': 'error',
     'linebreak-style': ['error', 'unix'],
-    'no-console': import.meta.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    'no-debugger': import.meta.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     semi: ['error', 'always'],
   },
   overrides: [
