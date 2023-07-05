@@ -15,6 +15,7 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - Permissions
+ *    summary: List all permissions
  *    description: This endpoint will fetch list of permissions and roles they are attached to.
  *    security:
  *      - openId: []
@@ -40,6 +41,7 @@ routes.get('/', async (req, res, next) => {
  *  post:
  *    tags:
  *      - Permissions
+ *    summary: Create a new permission
  *    description: This endpoint will create a new permission
  *    security:
  *      - openId: []
@@ -71,6 +73,7 @@ routes.post('/', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Permissions
+ *    summary: Get a permission
  *    description: This endpoint will fetch the permission using the permission code in the parameter.
  *    security:
  *      - openId: []
@@ -93,6 +96,8 @@ routes.post('/', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/Forbidden'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/:code', async (req, res, next) => {
   await controller.read(req, res, next);
@@ -104,6 +109,7 @@ routes.get('/:code', async (req, res, next) => {
  *  put:
  *    tags:
  *      - Permissions
+ *    summary: Update a permission
  *    description: This endpoint will update the permission.
  *    security:
  *      - openId: []
@@ -132,6 +138,8 @@ routes.get('/:code', async (req, res, next) => {
  *        $ref: '#/components/responses/Error/Forbidden'
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.put('/:code', async (req, res, next) => {
   await controller.update(req, res, next);

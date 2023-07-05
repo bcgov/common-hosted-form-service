@@ -7,7 +7,7 @@ const swaggerSpec = require('../../swagger/swaggerui');
 swaggerSpec.tags.push({
   name: 'Admin',
   description:
-    'These API endpoints handle the input data provided by a user that completes the form, for example, writing the form data to the database, or exporting form submissions created during a defined time period.',
+    'These API endpoints are used for elevated permission administrative calls. All calls are secured by a role that operational team members will be granted and allow fetching some details about forms without needing a user->form permission.',
 });
 
 module.exports.mount = (app) => {

@@ -16,6 +16,7 @@ routes.use(currentUser);
  *    tags:
  *      - Files
  *    description: This endpoint will store the uploaded file or files in the CHEFS object storage facility.
+ *    summary: Upload a file
  *    security:
  *      - bearerAuth: []
  *      - basicAuth: []
@@ -81,6 +82,7 @@ routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload,
  *    tags:
  *      - Files
  *    description: This endpoint will fetch a file from the CHEFS object storage facility.
+ *    summary: Get a file
  *    security:
  *      - bearerAuth: []
  *      - openId: []
@@ -103,6 +105,8 @@ routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload,
  *              format: binary
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
@@ -115,6 +119,7 @@ routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), asy
  *    tags:
  *      - Files
  *    description: This endpoint will delete a file from the CHEFS object storage facility.
+ *    summary: Delete a file
  *    security:
  *      - bearerAuth: []
  *      - openId: []
@@ -129,9 +134,11 @@ routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), asy
  *        example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
  *    responses:
  *      '200':
- *        description: Sucess
+ *        description: Success
  *      '5XX':
  *        $ref: '#/components/responses/Error/UnExpected'
+ *      '404':
+ *        $ref: '#/components/responses/Error/ResourceNotFound'
  */
 routes.delete('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
   await controller.delete(req, res, next);

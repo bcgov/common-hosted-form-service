@@ -15,13 +15,14 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - RBAC
+ *    summary: Get forms/roles/permissions for current user
  *    description: This endpoint will get list of users and roles for a form
  *    security:
  *      - bearerAuth: []
  *      - openId: []
  *    responses:
  *      '200':
- *        description: Sucess
+ *        description: Success
  *        content:
  *          application/json:
  *            schema:
@@ -42,6 +43,7 @@ routes.get('/current', keycloak.protect(), async (req, res, next) => {
  *  get:
  *    tags:
  *      - RBAC
+ *    summary: Get submissions/roles/permissions for current user
  *    description: ⁠This endpoint will fetch all the submissions in chefs for the current user. This list also includes each submission's user permissions, roles, and submission status.
  *    security:
  *      - bearerAuth: []
@@ -68,13 +70,14 @@ routes.get('/current/submissions', keycloak.protect(), async (req, res, next) =>
  *  get:
  *    tags:
  *      - RBAC
+ *    summary: Get a list of identity providers
  *    description: This endpoint will get list of a list of identity providers.
  *    security:
  *      - bearerAuth: []
  *      - openId: []
  *    responses:
  *      '200':
- *        description: Sucess
+ *        description: Success
  *        content:
  *          application/json:
  *            schema:
@@ -94,6 +97,7 @@ routes.get('/idps', async (req, res, next) => {
  *  get:
  *    tags:
  *      - RBAC
+ *    summary: Get a list of users and roles for a form
  *    description: This endpoint will fetch a list of users and roles for a form.
  *    security:
  *      - bearerAuth: []
@@ -231,6 +235,7 @@ routes.put('/forms', hasFormPermissions(P.TEAM_UPDATE), async (req, res, next) =
  *  get:
  *    tags:
  *      - RBAC
+ *    summary: Get a list of users and permissions for a submission
  *    description: This endpoint will fetch a list of users and the user permissions on each form submission.
  *    security:
  *      - bearerAuth: []
@@ -283,6 +288,7 @@ routes.get('/submissions', hasSubmissionPermissions(P.SUBMISSION_READ), async (r
  *  put:
  *    tags:
  *      - RBAC
+ *    summary: Set premissions for a user on a submission
  *    description: This endpoint will add users as team members to draft submission
  *    security:
  *      - bearerAuth: []
@@ -355,6 +361,7 @@ routes.put('/submissions', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async 
  *  get:
  *    tags:
  *      - RBAC
+ *    summary: Get a list of forms and roles for a user
  *    description: This endpoint will fetch list of forms for a user and the user's roles for each form.
  *    security:
  *      - bearerAuth: []
@@ -466,6 +473,7 @@ routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}
  *  put:
  *    tags:
  *      - RBAC
+ *    summary: Set form roles for a user
  *    description: This endpoint will set form roles for a user
  *    security:
  *      - bearerAuth: []
@@ -543,6 +551,7 @@ routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R
  *  delete:
  *    tags:
  *      - RBAC
+ *    summary: (Soft) delete multiple form Users
  *    description: This endpoint will remove multiple users from a form.
  *    security:
  *      - bearerAuth: []
@@ -565,7 +574,7 @@ routes.put('/users', hasFormPermissions(P.TEAM_UPDATE), hasFormRoles([R.OWNER, R
  *            example: ["7cc11a0f-a7c9-4cbe-bd92-a3a22781ac8c", "3ddb68cb-b936-49fe-9ba4-48b04859eaf7" ]
  *    responses:
  *      '200':
- *        description: Sucess
+ *        description: Success
  *      '401':
  *        description: Unauthorized
  *        content:

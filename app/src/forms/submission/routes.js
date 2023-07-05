@@ -13,6 +13,7 @@ routes.use(currentUser);
  *  get:
  *    tags:
  *      - Submissions
+ *    summary: Get a form submission
  *    description: This endpoint will fetch submission details for the submission ID.
  *    security:
  *      - bearerAuth: []
@@ -75,6 +76,7 @@ routes.get('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_READ), as
  *  put:
  *    tags:
  *      - Submissions
+ *    summary: Update a form submission
  *    description: This endpoint will update the Form Submission details for the submission ID
  *    security:
  *      - bearerAuth: []
@@ -143,7 +145,8 @@ routes.put('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_UPDATE), 
  *  delete:
  *    tags:
  *      - Submissions
- *    description: This endpoint will delete form submission details for the submission ID
+ *    summary: (Soft) delete a form submission
+ *    description: This endpoint will soft delete form submission.
  *    security:
  *      - bearerAuth: []
  *      - openId: []
@@ -194,6 +197,7 @@ routes.delete('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_DELETE
  *  put:
  *    tags:
  *      - Submissions
+ *    summary: Multi-restore the deleted form submissions.
  *    description: This endpoint will multi-restore the deleted form submissions for all the submission IDs in the list.
  *    security:
  *      - bearerAuth: []
@@ -260,6 +264,7 @@ routes.put('/:formSubmissionId/:formId/submissions/restore', hasSubmissionPermis
  *  put:
  *    tags:
  *      - Submissions
+ *    summary: restore the deleted form submission
  *    description: This endpoint will restore deleted form submission details for the submission ID
  *    security:
  *      - bearerAuth: []
@@ -321,6 +326,7 @@ routes.put('/:formSubmissionId/restore', hasSubmissionPermissions(P.SUBMISSION_D
  *  get:
  *    tags:
  *      - Submissions
+ *    summary: Get pre-flight details for a form submission
  *    description: This endpoint fetch pre-flight details for a form submission.
  *    security:
  *      - bearerAuth: []
@@ -408,6 +414,7 @@ routes.get('/:formSubmissionId/options', async (req, res, next) => {
  *  get:
  *    tags:
  *      - Status
+ *    summary: Get the list of notes for a submission
  *    description: This endpoint will get form submission notes
  *    security:
  *      - bearerAuth: []
@@ -453,6 +460,7 @@ routes.get('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_REA
  *  post:
  *    tags:
  *      - Status
+ *    summary: Add a note to a submission
  *    description: This endpoint will add notes to form submission
  *    security:
  *      - bearerAuth: []
@@ -516,6 +524,7 @@ routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UP
  *  get:
  *    tags:
  *      - Status
+ *    summary: Get the list of status history for a submission
  *    description: This endpoint will list of status history for a submission.
  *    security:
  *      - bearerAuth: []
@@ -563,6 +572,7 @@ routes.get('/:formSubmissionId/status', apiAccess, hasSubmissionPermissions(P.SU
  *  post:
  *    tags:
  *      - Status
+ *    summary: Add a new status to a submission
  *    description: This endpoint add a new status to a submission, and optionally provides email notification depending on the status being assigned.
  *    security:
  *      - bearerAuth: []
@@ -618,6 +628,7 @@ routes.post('/:formSubmissionId/status', hasSubmissionPermissions(P.SUBMISSION_U
  *  post:
  *    tags:
  *      - Submissions
+ *    summary: Email a message with link to a submission
  *    description: This endpoint will send email to the email.
  *    security:
  *      - bearerAuth: []
@@ -656,9 +667,10 @@ routes.post('/:formSubmissionId/email', hasSubmissionPermissions(P.SUBMISSION_RE
 /**
  * @openapi
  * /submissions/{formSubmissionId}/edits:
- *  post:
+ *  get:
  *    tags:
  *      - Submissions
+ *    summary: Get an audit list of edits to a submission
  *    description: This endpoint will fetch an audit list of edits or changes made to the specified submission.
  *    security:
  *      - bearerAuth: []
@@ -708,6 +720,7 @@ routes.post('/:formSubmissionId/template/render', hasSubmissionPermissions(P.SUB
  *  delete:
  *    tags:
  *      - Submissions
+ *    summary: Multiple (soft) delete form submissions.
  *    description: This endpoint will soft delete form submission details for the submission IDs in the list.
  *    security:
  *      - bearerAuth: []
