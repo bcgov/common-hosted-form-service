@@ -425,7 +425,7 @@ export default {
           type: 'submissions',
           draft: false,
           deleted: false,
-          version: version,
+          version: version === 'All' ? undefined : version,
         });
         (this.allDataFields = true), this.selected.push(...this.FILTER_HEADERS);
       }
@@ -477,7 +477,9 @@ export default {
           this.form.id,
           this.exportFormat,
           this.csvFormats,
-          this.exportFormat === 'csv' ? this.versionSelected : undefined,
+          this.exportFormat === 'csv' && this.versionSelected !== 'All'
+            ? this.versionSelected
+            : undefined,
           {
             minDate: from,
             maxDate: to,
@@ -533,7 +535,8 @@ export default {
           versions.sort((a, b) => b.published - a.published);
         }
         this.versions.push(
-          ...this.form.versions.map((version) => version.version)
+          ...this.form.versions.map((version) => version.version),
+          'All'
         );
         this.versionSelected = this.versions[0];
         await this.refreshFormFields(this.versionSelected);
