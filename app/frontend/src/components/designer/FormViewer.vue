@@ -325,18 +325,23 @@ export default {
       }
 
       function deleteFieldData(fieldcomponent, submission) {
-        if (
-          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
-        ) {
-          fieldcomponent.components.map((subComponent) => {
-            // Check if it's a Nested component
+        if (Object.prototype.hasOwnProperty.call(fieldcomponent, 'columns')) {
+          // It's a layout component that has columns.
+          fieldcomponent.columns.map((subComponent) => {
             deleteFieldData(subComponent, submission);
           });
-        } else if (!fieldcomponent?.validate?.isUseForCopy) {
-          _.unset(
-            submission,
-            iterate(submission, '', '', fieldcomponent.key).replace(/^\./, '')
-          );
+        } else if (
+          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
+        ) {
+          // It's a layout component that has subcomponents, such as a panel.
+          fieldcomponent.components.map((subComponent) => {
+            deleteFieldData(subComponent, submission);
+          });
+        } else if (fieldcomponent?.validate?.isUseForCopy === false) {
+          const fieldPath = iterate(submission, '', '', fieldcomponent.key);
+          if (fieldPath) {
+            _.unset(submission, fieldPath.replace(/^\./, ''));
+          }
         }
       }
 
@@ -379,7 +384,8 @@ export default {
         this.addNotification({
           message: this.$t('trans.formViewer.getUsersSubmissionsErrMsg'),
           consoleError: this.$t(
-            'trans.formViewer.getUsersSubmissionsConsoleErrMsg'
+            'trans.formViewer.getUsersSubmissionsConsoleErrMsg',
+            { submissionId: this.submissionId, error: error }
           ),
         });
       } finally {
