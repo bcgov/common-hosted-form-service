@@ -72,22 +72,14 @@ export default {
       <v-expand-transition>
         <BaseInfoCard v-if="form.userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
           <h4 class="text-primary">
-            <v-icon
-              class="mr-1"
-              color="primary"
-              icon="mdi:mdi-information"
-            ></v-icon
-            >{{ $t('trans.formSettings.important') }}!
+            <v-icon class="mr-1" color="primary" icon="mdi:mdi-information" />
+            {{ $t('trans.formSettings.important') }}!
           </h4>
           <p class="mt-2 mb-0">
             {{ $t('trans.formSettings.info') }}
             <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
               govTogetherBC.
-              <v-icon
-                size="small"
-                color="primary"
-                icon="mdi:mdi-open-in-new"
-              ></v-icon>
+              <v-icon size="small" color="primary" icon="mdi:mdi-open-in-new" />
             </a>
           </p>
         </BaseInfoCard>
@@ -128,8 +120,7 @@ export default {
                     class="mr-1"
                     color="primary"
                     icon="mdi:mdi-information"
-                  ></v-icon
-                  >{{ $t('trans.formSettings.important') }}!
+                  />{{ $t('trans.formSettings.important') }}!
                 </h4>
                 <p class="my-2">
                   {{ $t('trans.formSettings.idimNotifyA') }} (<a

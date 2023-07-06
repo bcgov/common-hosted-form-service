@@ -49,7 +49,7 @@ export default {
   },
   mounted() {
     nextTick(() => {
-      this.$refs.formDesigner.onFormLoad();
+      this.onFormLoad();
     });
   },
   beforeMount() {
@@ -57,6 +57,9 @@ export default {
   },
   methods: {
     ...mapActions(useFormStore, ['listFCProactiveHelp', 'deleteCurrentForm']),
+    onFormLoad() {
+      this.$refs.formDesigner.onFormLoad();
+    },
   },
 };
 </script>

@@ -11,12 +11,12 @@ export default {
 <template>
   <BaseSecure>
     <router-link :to="{ name: 'UserForms' }">
-      <v-btn color="primary" class="mr-2">
+      <v-btn color="primary" class="mr-2" data-test="my-forms-btn">
         <span>MY FORMS</span>
       </v-btn>
     </router-link>
     <router-link :to="{ name: 'UserHistory' }">
-      <v-btn color="primary" class="mr-2">
+      <v-btn color="primary" class="mr-2" data-test="history-btn">
         <span>HISTORY</span>
       </v-btn>
     </router-link>

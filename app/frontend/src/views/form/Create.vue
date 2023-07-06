@@ -18,7 +18,7 @@ export default {
     FormDisclaimer,
   },
   beforeRouteLeave(_to, _from, next) {
-    this.isDirty
+    this.form.isDirty
       ? next(window.confirm(i18n.t('trans.create.agreementErrMsg')))
       : next();
   },
@@ -46,13 +46,16 @@ export default {
   mounted() {
     this.listFCProactiveHelp();
     this.$nextTick(() => {
-      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
+      this.onFormLoad();
     });
   },
   methods: {
     ...mapActions(useFormStore, ['listFCProactiveHelp', 'resetForm']),
     reRenderFormDesigner() {
       this.step = 2;
+      this.onFormLoad();
+    },
+    onFormLoad() {
       if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
     },
   },
@@ -78,13 +81,18 @@ export default {
           />
         </BasePanel>
       </v-form>
-      <v-btn :disabled="!settingsFormValid" color="primary" @click="step = 2">{{
-        $t('trans.create.continue')
-      }}</v-btn>
+      <v-btn
+        :disabled="!settingsFormValid"
+        color="primary"
+        data-test="continue-btn"
+        @click="step = 2"
+      >
+        {{ $t('trans.create.continue') }}
+      </v-btn>
     </v-container>
     <v-container v-if="step === 2">
       <FormDesigner ref="formDesigner" />
-      <v-btn variant="outlined" @click="step = 1">{{
+      <v-btn variant="outlined" data-test="back-btn" @click="step = 1">{{
         $t('trans.create.back')
       }}</v-btn>
     </v-container>

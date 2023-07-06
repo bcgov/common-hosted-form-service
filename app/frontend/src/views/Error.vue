@@ -20,14 +20,15 @@ export default {
   <v-container class="text-center">
     <h1 class="my-6">{{ msg }}</h1>
     <div v-if="ready" class="d-print-none">
-      <v-btn
-        v-if="authenticated"
-        color="primary"
-        size="large"
-        @click="authStore.logout"
-      >
-        <span>Logout</span>
+      <v-btn v-if="authenticated" color="primary" size="large" @click="logout">
+        Logout
       </v-btn>
     </div>
   </v-container>
 </template>
+
+<style lang="scss">
+.v-btn > .v-btn__content {
+  font-weight: bold !important;
+}
+</style>

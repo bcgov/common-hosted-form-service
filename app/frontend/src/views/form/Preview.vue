@@ -35,9 +35,12 @@ export default {
       PREVIEW
       <v-tooltip location="bottom">
         <template #activator="{ props }">
-          <v-icon color="primary" class="mt-n1 ml-1" v-bind="props">
-            help_outline
-          </v-icon>
+          <v-icon
+            color="primary"
+            class="mt-n1 ml-1"
+            v-bind="props"
+            icon="mdi:mdi-help-circle-outline"
+          />
         </template>
         <span>
           This shows a preview of the form version design and behaviour as your

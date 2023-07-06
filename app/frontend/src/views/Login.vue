@@ -54,13 +54,19 @@ export default {
       <h1 class="my-6">Authenticate with:</h1>
       <v-row v-for="button in buttons" :key="button.type" justify="center">
         <v-col v-if="buttonEnabled(button.type)" sm="3">
-          <v-btn block color="primary" size="large" @click="login(button.type)">
-            <span>{{ button.label }}</span>
+          <v-btn
+            block
+            color="primary"
+            size="large"
+            :data-test="button.type"
+            @click="login(button.type)"
+          >
+            {{ button.label }}
           </v-btn>
         </v-col>
       </v-row>
     </div>
-    <div v-else>
+    <div v-else-if="ready && authenticated">
       <h1 class="my-6">Already logged in</h1>
       <router-link :to="{ name: 'About' }">
         <v-btn class="ma-2" color="primary" size="large">
@@ -69,5 +75,17 @@ export default {
         </v-btn>
       </router-link>
     </div>
+    <div v-else>
+      <h1 class="my-6">
+        Identity and Access Management not ready, please contact technical
+        support.
+      </h1>
+    </div>
   </v-container>
 </template>
+
+<style lang="scss">
+.v-btn > .v-btn__content {
+  font-weight: bold !important;
+}
+</style>

@@ -25,8 +25,8 @@ export default {
     ...mapState(useFormStore, ['downloadedFile']),
     IDP: () => IdentityProviders,
   },
-  mounted() {
-    this.getFile(this.id);
+  async mounted() {
+    await this.getFile(this.id);
   },
   methods: {
     ...mapActions(useFormStore, ['downloadFile']),
@@ -88,7 +88,7 @@ export default {
       ></v-progress-circular>
       <div v-if="!showDownloadLink">Preparing for download...</div>
       <div v-if="showDownloadLink" class="mt-5 center_vertical_content">
-        <v-icon class="mb-2" size="90">file_download</v-icon><br />
+        <v-icon class="mb-2" size="90" icon="mdi:mdi-file-download" /><br />
         If your file does not automatically download
         <a href="#" @click="getFile(id)">click here to try again</a>
       </div>
