@@ -92,7 +92,7 @@ routes.get('/forms/:formId', async (req, res, next) => {
  *    description: This endpoint will delete the form API key.
  *    security:
  *      - openId: []
- *      - bearerAuth: []
+ *        bearerAuth: []
  *    parameters:
  *      - in: path
  *        name: formId
@@ -126,7 +126,7 @@ routes.delete('/forms/:formId/apiKey', async (req, res, next) => {
  *    description: This endpoint will fetch the API key details for this form.
  *    security:
  *      - openId: []
- *      - bearerAuth: []
+ *        bearerAuth: []
  *    parameters:
  *      - in: path
  *        name: formId
@@ -360,11 +360,11 @@ routes.get('/users', async (req, res, next) => {
  *      - openId: []
  *    parameters:
  *      - in: path
- *        name: formId
+ *        name: userId
  *        schema:
  *          type: string
  *          format: uuid
- *        description: ID of the form.
+ *        description: ID of the user.
  *        required: true
  *        example: c6455376-382c-439d-a811-0381a012d696
  *    responses:
@@ -396,7 +396,7 @@ routes.get('/users/:userId', async (req, res, next) => {
  *  post:
  *   tags:
  *    - Admin
- *   summary: create or update proactive help details form.io componen
+ *   summary: create or update proactive help details form.io component
  *   description: This endpoint will create or update proactive help details form.io component
  *   security:
  *    - openId: []

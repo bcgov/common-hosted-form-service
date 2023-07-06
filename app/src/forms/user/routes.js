@@ -22,8 +22,7 @@ routes.use(currentUser);
  *    description: This endpoint will fetch list of current user preferences for all the forms
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
- *      - openId: []
+ *        openId: []
  *    responses:
  *      '200':
  *        description: Success
@@ -57,8 +56,7 @@ routes.put('/preferences', async (req, res, next) => {
  *    description: 'This endpoint will delete all the current user preferences. Note: This endpoint will delete all the preferences for all the form.'
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
- *      - openId: []
+ *        openId: []
  *    responses:
  *      '200':
  *        description: Success
@@ -85,7 +83,7 @@ routes.delete('/preferences', async (req, res, next) => {
  *    description: This endpoint will fetch the list of all users
  *    security:
  *      - bearerAuth: []
- *      - openId: []
+ *        openId: []
  *    responses:
  *      '200':
  *        description: Success
@@ -112,7 +110,7 @@ routes.get('/', async (req, res, next) => {
  *    description: This endpoint will return user IDP User ID, IDP code, and Keycloak ID.
  *    security:
  *      - bearerAuth: []
- *      - openId: []
+ *        openId: []
  *    parameters:
  *      - in: path
  *        name: userId
@@ -174,7 +172,7 @@ routes.get('/:userId', async (req, res, next) => {
  *    description: This endpoint will fetch current user preferences for a form
  *    security:
  *      - bearerAuth: []
- *      - openId: []
+ *        openId: []
  *    parameters:
  *      - in: path
  *        name: formId
@@ -212,7 +210,7 @@ routes.get('/preferences/forms/:formId', async (req, res, next) => {
  *    description: This endpoint will update current user preferences for a form.
  *    security:
  *      - bearerAuth: []
- *      - openId: []
+ *        openId: []
  *    parameters:
  *      - in: path
  *        name: formId
@@ -260,7 +258,7 @@ routes.put('/preferences/forms/:formId', async (req, res, next) => {
  *    description: This endpoint will delete current user preferences for a form.
  *    security:
  *      - bearerAuth: []
- *      - openId: []
+ *        openId: []
  *    parameters:
  *      - in: path
  *        name: formId

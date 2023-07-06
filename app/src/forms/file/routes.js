@@ -19,8 +19,7 @@ routes.use(currentUser);
  *    summary: Upload a file
  *    security:
  *      - bearerAuth: []
- *      - basicAuth: []
- *      - openId: []
+ *        openId: []
  *    requestBody:
  *      required: true
  *      content:
@@ -85,7 +84,7 @@ routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload,
  *    summary: Get a file
  *    security:
  *      - bearerAuth: []
- *      - openId: []
+ *        openId: []
  *    parameters:
  *      - in: path
  *        name: fileId
@@ -122,7 +121,7 @@ routes.get('/:id', currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), asy
  *    summary: Delete a file
  *    security:
  *      - bearerAuth: []
- *      - openId: []
+ *        openId: []
  *    parameters:
  *      - in: path
  *        name: fileId
