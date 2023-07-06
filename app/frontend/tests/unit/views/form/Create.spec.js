@@ -2,15 +2,17 @@
 // happy-dom is required to access window.confirm
 
 import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { nextTick } from 'vue';
 
 import { useFormStore } from '~/store/form';
 import Create from '~/views/form/Create.vue';
+import { IdentityMode } from '~/utils/constants';
+import { nextTick } from 'vue';
 
 describe('Create.vue', () => {
+  const onFormLoad = vi.fn();
   const mockWindowConfirm = vi.spyOn(window, 'confirm');
   const pinia = createTestingPinia();
   setActivePinia(pinia);
@@ -27,6 +29,9 @@ describe('Create.vue', () => {
   });
 
   it('renders first page', async () => {
+    formStore.form = {
+      userType: IdentityMode.TEAM,
+    };
     const wrapper = mount(Create, {
       global: {
         plugins: [pinia],
@@ -35,23 +40,44 @@ describe('Create.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          FormSettings: true,
+          FormSettings: {
+            name: 'FormSettings',
+            template: '<div class="form-settings-stub"><slot /></div>',
+          },
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
           },
           FormDisclaimer: true,
-          FormDesigner: true,
+          FormDesigner: {
+            name: 'FormDesigner',
+            methods: {
+              onFormLoad,
+            },
+            template: '<div class="form-designer-stub"><slot /></div>',
+          },
+          VForm: {
+            name: 'VForm',
+            template: '<div class="v-form-stub"><slot /></div>',
+          },
         },
       },
     });
 
-    await nextTick();
+    await flushPromises();
 
     expect(wrapper.html()).toMatch('trans.create.createNewForm');
     expect(wrapper.html()).toMatch('form-settings');
     expect(wrapper.html()).toMatch('form-disclaimer');
     expect(wrapper.find('button').text()).toMatch('trans.create.continue');
+
+    formStore.$patch({
+      form: {
+        userType: IdentityMode.LOGIN,
+      },
+    });
+
+    await nextTick();
   });
 
   it('renders second page', async () => {
@@ -68,20 +94,27 @@ describe('Create.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          FormSettings: true,
+          FormSettings: {
+            name: 'FormSettings',
+            template: '<div class="form-settings-stub"><slot /></div>',
+          },
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
           },
           FormDisclaimer: true,
-          FormDesigner: true,
+          FormDesigner: {
+            name: 'FormDesigner',
+            methods: {
+              onFormLoad,
+            },
+            template: '<div class="form-designer-stub"><slot /></div>',
+          },
         },
       },
     });
 
-    vi.spyOn(wrapper.vm, 'onFormLoad').mockImplementation(() => {});
-
-    await nextTick();
+    await flushPromises();
 
     expect(wrapper.html()).toMatch('trans.create.createNewForm');
     expect(wrapper.html()).toMatch('form-designer');
@@ -103,29 +136,38 @@ describe('Create.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          FormSettings: true,
+          FormSettings: {
+            name: 'FormSettings',
+            template: '<div class="form-settings-stub"><slot /></div>',
+          },
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
           },
           FormDisclaimer: true,
-          FormDesigner: true,
+          FormDesigner: {
+            name: 'FormDesigner',
+            methods: {
+              onFormLoad,
+            },
+            template: '<div class="form-designer-stub"><slot /></div>',
+          },
           VForm: true,
         },
       },
     });
 
-    await nextTick();
+    await flushPromises();
 
     const continueBtn = wrapper.find('[data-test="continue-btn"]');
     expect(continueBtn.text()).toMatch('trans.create.continue');
     await continueBtn.trigger('click');
-    await nextTick();
+    await flushPromises();
     const backBtn = wrapper.find('[data-test="back-btn"]');
     expect(wrapper.html()).toMatch('form-designer');
     expect(backBtn.text()).toMatch('trans.create.back');
     await backBtn.trigger('click');
-    await nextTick();
+    await flushPromises();
     expect(wrapper.html()).toMatch('v-form-stub');
     expect(wrapper.html()).toMatch('trans.create.continue');
   });
@@ -145,18 +187,25 @@ describe('Create.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          FormSettings: true,
+          FormSettings: {
+            name: 'FormSettings',
+            template: '<div class="form-settings-stub"><slot /></div>',
+          },
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
           },
           FormDisclaimer: true,
-          FormDesigner: true,
+          FormDesigner: {
+            name: 'FormDesigner',
+            methods: {
+              onFormLoad,
+            },
+            template: '<div class="form-designer-stub"><slot /></div>',
+          },
         },
       },
     });
-
-    vi.spyOn(wrapper.vm, 'onFormLoad').mockImplementation(() => {});
 
     Create.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 

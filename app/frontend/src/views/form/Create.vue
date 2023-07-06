@@ -85,7 +85,7 @@ export default {
         :disabled="!settingsFormValid"
         color="primary"
         data-test="continue-btn"
-        @click="step = 2"
+        @click="reRenderFormDesigner()"
       >
         {{ $t('trans.create.continue') }}
       </v-btn>
