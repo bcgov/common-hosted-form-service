@@ -345,7 +345,6 @@ const service = {
     return FormVersion.query()
       .select('schema')
       .where('formId', formId)
-      .where('version', version)
       .modify('filterVersion', version)
       .modify('orderVersionDescending')
       .first()
