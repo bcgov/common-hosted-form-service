@@ -4388,7 +4388,7 @@ definition:
                 title:
                   example: Unexpected
                 type:
-                  example: https://httpstatuses.com/401
+                  example: https://httpstatuses.com/5xx
 
 
       Problem:
