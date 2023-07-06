@@ -11,6 +11,7 @@ import { useFormStore } from '~/store/form';
 import Design from '~/views/form/Design.vue';
 
 describe('Design.vue', () => {
+  const onFormLoad = vi.fn();
   const mockWindowConfirm = vi.spyOn(window, 'confirm');
   const pinia = createTestingPinia();
   setActivePinia(pinia);
@@ -35,12 +36,16 @@ describe('Design.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          FormDesigner: true,
+          FormDesigner: {
+            name: 'FormDesigner',
+            methods: {
+              onFormLoad,
+            },
+            template: '<div class="form-designer-stub"><slot /></div>',
+          },
         },
       },
     });
-
-    vi.spyOn(wrapper.vm, 'onFormLoad').mockImplementation(() => {});
 
     expect(wrapper.html()).toMatch('base-secure');
   });
@@ -63,12 +68,16 @@ describe('Design.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          FormDesigner: true,
+          FormDesigner: {
+            name: 'FormDesigner',
+            methods: {
+              onFormLoad,
+            },
+            template: '<div class="form-designer-stub"><slot /></div>',
+          },
         },
       },
     });
-
-    vi.spyOn(wrapper.vm, 'onFormLoad').mockImplementation(() => {});
 
     Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 
@@ -82,11 +91,6 @@ describe('Design.vue', () => {
       isDirty: true,
     };
     const wrapper = mount(Design, {
-      data() {
-        return {
-          step: 2,
-        };
-      },
       global: {
         plugins: [pinia],
         stubs: {
@@ -94,12 +98,16 @@ describe('Design.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          FormDesigner: true,
+          FormDesigner: {
+            name: 'FormDesigner',
+            methods: {
+              onFormLoad,
+            },
+            template: '<div class="form-designer-stub"><slot /></div>',
+          },
         },
       },
     });
-
-    vi.spyOn(wrapper.vm, 'onFormLoad').mockImplementation(() => {});
 
     Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 

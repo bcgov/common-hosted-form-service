@@ -1,8 +1,7 @@
 import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { nextTick } from 'vue';
 
 import { useAuthStore } from '~/store/auth';
 import About from '~/views/About.vue';
@@ -17,14 +16,12 @@ describe('About.vue', () => {
     authStore.$reset();
   });
 
-  it('renders', async () => {
+  it('renders', () => {
     const wrapper = mount(About, {
       global: {
         plugins: [pinia],
       },
     });
-
-    await nextTick();
 
     expect(wrapper.text()).toMatch('trans.homePage.title');
     expect(wrapper.text()).toMatch('trans.homePage.subTitle');
@@ -41,29 +38,25 @@ describe('About.vue', () => {
     expect(wrapper.text()).toMatch('trans.homePage.createOnlineTitle');
   });
 
-  it('renders with login button', async () => {
+  it('renders with login button', () => {
     const wrapper = mount(About, {
       global: {
         plugins: [pinia],
       },
     });
-
-    await nextTick();
 
     const createOrLoginBtn = wrapper.find('[data-test="create-or-login-btn"]');
     expect(createOrLoginBtn.exists()).toBeTruthy();
     expect(createOrLoginBtn.text()).toMatch('trans.homePage.loginToStart');
   });
 
-  it('renders with create form button', async () => {
+  it('renders with create form button', () => {
     authStore.authenticated = true;
     const wrapper = mount(About, {
       global: {
         plugins: [pinia],
       },
     });
-
-    await nextTick();
 
     const createOrLoginBtn = wrapper.find('[data-test="create-or-login-btn"]');
     expect(createOrLoginBtn.exists()).toBeTruthy();

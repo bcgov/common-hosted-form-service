@@ -1,165 +1,169 @@
-<script setup>
-import { computed, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+<script>
+import { i18n } from '~/internationalization';
 import { useNotificationStore } from '~/store/notification';
 import { formService, utilsService } from '~/services';
 import { NotificationTypes } from '~/utils/constants';
+import { mapActions } from 'pinia';
 
-const properties = defineProps({
-  submissionId: {
-    type: String,
-    default: '',
+export default {
+  props: {
+    submissionId: {
+      type: String,
+      default: '',
+    },
+    submission: {
+      type: Object,
+      default: undefined,
+    },
   },
-  submission: {
-    type: Object,
-    default: undefined,
+  data() {
+    return {
+      dialog: false,
+      loading: false,
+      templateForm: {
+        files: null,
+        contentFileType: null,
+        outputFileName: '',
+        outputFileType: null,
+      },
+    };
   },
-});
+  computed: {
+    files() {
+      return this.this.templateForm.files;
+    },
+  },
+  watch: {
+    files() {
+      if (this.templateForm.files && this.templateForm.files instanceof File) {
+        const { name, extension } = this.splitFileName(this.files.name);
+        if (!this.templateForm.outputFileName) {
+          this.templateForm.outputFileName = name;
+        }
+        this.templateForm.contentFileType = extension;
+      }
+    },
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async printBrowser() {
+      this.dialog = false;
+      // Setting a timeout to allow the modal to close before opening the windows print
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    },
+    splitFileName(filename = undefined) {
+      let name = undefined;
+      let extension = undefined;
 
-const { t } = useI18n({ useScope: 'global' });
+      if (filename) {
+        const filenameArray = filename.split('.');
+        name = filenameArray.slice(0, -1).join('.');
+        extension = filenameArray.slice(-1).join('.');
+      }
 
-const notificationStore = useNotificationStore();
+      return { name, extension };
+    },
 
-const dialog = ref(false);
-const loading = ref(false);
-const templateForm = ref({
-  files: null,
-  contentFileType: null,
-  outputFileName: '',
-  outputFileType: null,
-});
+    fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.replace(/^.*,/, ''));
+        reader.onerror = (error) => reject(error);
+      });
+    },
 
-const files = computed(() => templateForm.value.files);
+    getDispositionFilename(disposition) {
+      return disposition
+        ? disposition.substring(disposition.indexOf('filename=') + 9)
+        : undefined;
+    },
+    createDownload(blob, filename = undefined) {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    },
 
-watch(files, () => {
-  if (templateForm.value.files && templateForm.value.files instanceof File) {
-    const { name, extension } = splitFileName(files.value.name);
-    if (!templateForm.value.outputFileName) {
-      templateForm.value.outputFileName = name;
-    }
-    templateForm.value.contentFileType = extension;
-  }
-});
+    async generate() {
+      try {
+        this.loading = true;
+        const outputFileType = 'pdf';
+        let content = '';
+        let contentFileType = '';
+        let outputFileName = '';
 
-async function printBrowser() {
-  dialog.value = false;
-  // Setting a timeout to allow the modal to close before opening the windows print
-  setTimeout(() => {
-    window.print();
-  }, 500);
-}
+        content = await this.fileToBase64(this.templateForm.files);
+        contentFileType = this.templateForm.contentFileType;
+        outputFileName = this.templateForm.outputFileName;
 
-function splitFileName(filename = undefined) {
-  let name = undefined;
-  let extension = undefined;
+        const body = this.createBody(
+          content,
+          contentFileType,
+          outputFileName,
+          outputFileType
+        );
 
-  if (filename) {
-    const filenameArray = filename.split('.');
-    name = filenameArray.slice(0, -1).join('.');
-    extension = filenameArray.slice(-1).join('.');
-  }
+        let response = null;
+        // Submit Template to CDOGS API
+        if (this.submissionId?.length > 0) {
+          response = await formService.docGen(this.submissionId, body);
+        } else {
+          const draftData = {
+            template: body,
+            submission: this.submission,
+          };
+          response = await utilsService.draftDocGen(draftData);
+        }
 
-  return { name, extension };
-}
+        // create file to download
+        const filename = this.getDispositionFilename(
+          response.headers['content-disposition']
+        );
 
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result.replace(/^.*,/, ''));
-    reader.onerror = (error) => reject(error);
-  });
-}
+        const blob = new Blob([response.data], {
+          type: 'attachment',
+        });
 
-function getDispositionFilename(disposition) {
-  return disposition
-    ? disposition.substring(disposition.indexOf('filename=') + 9)
-    : undefined;
-}
-
-function createDownload(blob, filename = undefined) {
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = filename;
-  a.click();
-  window.URL.revokeObjectURL(url);
-  a.remove();
-}
-
-async function generate() {
-  try {
-    loading.value = true;
-    const outputFileType = 'pdf';
-    let content = '';
-    let contentFileType = '';
-    let outputFileName = '';
-
-    content = await fileToBase64(templateForm.value.files);
-    contentFileType = templateForm.value.contentFileType;
-    outputFileName = templateForm.value.outputFileName;
-
-    const body = createBody(
-      content,
-      contentFileType,
-      outputFileName,
-      outputFileType
-    );
-
-    let response = null;
-    // Submit Template to CDOGS API
-    if (properties.submissionId?.length > 0) {
-      response = await formService.docGen(properties.submissionId, body);
-    } else {
-      const draftData = {
-        template: body,
-        submission: properties.submission,
+        // Generate Temporary Download Link
+        this.createDownload(blob, filename);
+        this.addNotification({
+          text: i18n.t('trans.printOptions.docGrnSucess'),
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (e) {
+        this.addNotification({
+          text: i18n.t('trans.printOptions.failedDocGenErrMsg'),
+          consoleError: i18n.t('trans.printOptions.failedDocGenErrMsg', {
+            error: e.message,
+          }),
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+    createBody(content, contentFileType, outputFileName, outputFileType) {
+      return {
+        options: {
+          reportName: outputFileName,
+          convertTo: outputFileType,
+          overwrite: true,
+        },
+        template: {
+          content: content,
+          encodingType: 'base64',
+          fileType: contentFileType,
+        },
       };
-      response = await utilsService.draftDocGen(draftData);
-    }
-
-    // create file to download
-    const filename = getDispositionFilename(
-      response.headers['content-disposition']
-    );
-
-    const blob = new Blob([response.data], {
-      type: 'attachment',
-    });
-
-    // Generate Temporary Download Link
-    createDownload(blob, filename);
-    notificationStore.addNotification({
-      text: t('trans.printOptions.docGrnSucess'),
-      ...NotificationTypes.SUCCESS,
-    });
-  } catch (e) {
-    notificationStore.addNotification({
-      text: t('trans.printOptions.failedDocGenErrMsg'),
-      consoleError: t('trans.printOptions.failedDocGenErrMsg', {
-        error: e.message,
-      }),
-    });
-  } finally {
-    loading.value = false;
-  }
-}
-
-function createBody(content, contentFileType, outputFileName, outputFileType) {
-  return {
-    options: {
-      reportName: outputFileName,
-      convertTo: outputFileType,
-      overwrite: true,
     },
-    template: {
-      content: content,
-      encodingType: 'base64',
-      fileType: contentFileType,
-    },
-  };
-}
+  },
+};
 </script>
 
 <template>
@@ -196,8 +200,9 @@ function createBody(content, contentFileType, outputFileName, outputFileType) {
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
               target="blank"
-              >{{ $t('trans.printOptions.print') }}</a
             >
+              {{ $t('trans.printOptions.print') }}
+            </a>
             {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
@@ -209,8 +214,9 @@ function createBody(content, contentFileType, outputFileName, outputFileType) {
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
               target="blank"
-              >{{ $t('trans.printOptions.cDogsTemplate') }}</a
             >
+              {{ $t('trans.printOptions.cDogsTemplate') }}
+            </a>
             {{ $t('trans.printOptions.uploadB') }}
           </p>
           <v-file-input
