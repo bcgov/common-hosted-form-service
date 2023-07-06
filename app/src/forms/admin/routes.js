@@ -29,6 +29,14 @@ routes.use(currentUser);
  *    description: This endpoint will fetch all forms under the admin access.
  *    security:
  *      - openId: []
+ *    parameters:
+ *      - in: query
+ *        name: active
+ *        schema:
+ *          type: boolean
+ *        description: Filter forms by active status.
+ *        required: true
+ *        example: false
  *    responses:
  *      '200':
  *        description: Success
