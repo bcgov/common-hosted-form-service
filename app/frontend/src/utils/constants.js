@@ -70,8 +70,6 @@ export const IdentityMode = Object.freeze({
 export const IdentityProviders = Object.freeze({
   BCEIDBASIC: 'bceid-basic', // Basic BCeID
   BCEIDBUSINESS: 'bceid-business', // Business BCeID
-  BCSC: 'bcsc', // Services Card
-  GITHUB: 'github', // Github
   IDIR: 'idir', // IDIR
 });
 

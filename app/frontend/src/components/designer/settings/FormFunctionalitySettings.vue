@@ -74,7 +74,7 @@ export default {
               class="ml-3"
               v-bind="props"
               icon="mdi:mdi-flask"
-            ></v-icon>
+            />
           </template>
           <span
             >{{ $t('trans.formSettings.experimental') }}

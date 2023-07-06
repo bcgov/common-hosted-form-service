@@ -13,6 +13,7 @@ export default {
   },
 };
 </script>
+
 <template>
   <FormViewer :form-id="f" display-title />
 </template>

@@ -29,7 +29,12 @@ export default {
           </h1>
           <p>{{ $t('trans.homePage.subTitle') }}<br /></p>
 
-          <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
+          <v-btn
+            :to="{ name: 'FormCreate' }"
+            class="mb-5"
+            color="primary"
+            data-test="create-or-login-btn"
+          >
             <span v-if="!authenticated">{{
               $t('trans.homePage.loginToStart')
             }}</span>

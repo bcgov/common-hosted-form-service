@@ -4,7 +4,6 @@ import FormSubmission from '~/components/forms/FormSubmission.vue';
 import { IdentityProviders } from '~/utils/constants';
 
 export default {
-  name: 'FormView',
   components: {
     BaseSecure,
     FormSubmission,

@@ -16,7 +16,7 @@ export default {
 </script>
 
 <template>
-  <BaseSecure admin :idp="[IDP.IDIR]">
+  <BaseSecure :admin="isAdmin" :idp="[IDP.IDIR]">
     <v-container>
       <router-view v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">

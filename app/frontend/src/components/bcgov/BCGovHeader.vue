@@ -5,7 +5,6 @@ import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
 import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
 
 export default {
-  name: 'BCGovHeader',
   components: {
     BaseAuthButton,
     BaseInternationalization,

@@ -70,8 +70,6 @@ describe('Constants', () => {
     expect(constants.IdentityProviders).toEqual({
       BCEIDBASIC: 'bceid-basic',
       BCEIDBUSINESS: 'bceid-business',
-      BCSC: 'bcsc',
-      GITHUB: 'github',
       IDIR: 'idir',
     });
   });

@@ -6,7 +6,6 @@ import RequestReceipt from '~/components/forms/RequestReceipt.vue';
 import { useAuthStore } from '~/store/auth';
 
 export default {
-  name: 'FormView',
   components: {
     FormViewer,
     RequestReceipt,
@@ -17,7 +16,9 @@ export default {
       required: true,
     },
   },
-  computed: mapState(useAuthStore, ['email']),
+  computed: {
+    ...mapState(useAuthStore, ['email']),
+  },
 };
 </script>
 
