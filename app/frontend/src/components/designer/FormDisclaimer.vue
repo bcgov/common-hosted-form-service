@@ -1,9 +1,9 @@
 <template>
-  <div :class="{ 'dir-rtl': isRTL }">
+  <div>
     <h3 class="mb-5" :class="{ 'dir-rtl': isRTL }">
       {{ $t('trans.formDisclaimer.disclaimerAndStatement') }}
     </h3>
-    <ul>
+    <ul :class="isRTL ? 'mr-6' : null">
       <li>
         <span :class="{ 'dir-rtl': isRTL }">
           {{ $t('trans.formDisclaimer.privacyLaw') }}
@@ -19,7 +19,7 @@
           {{ $t('trans.formDisclaimer.consent') }}
         </span>
       </li>
-      <li :class="{ 'dir-rtl': isRTL }">
+      <li>
         {{ $t('trans.formDisclaimer.formIntention') }}
         <a
           href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/resources/privacy-officers"
@@ -46,6 +46,6 @@ export default {
 <style lang="css" scoped>
 .dir-rtl {
   direction: rtl !important;
-  text-align: right;
+  column-gap: 8px;
 }
 </style>
