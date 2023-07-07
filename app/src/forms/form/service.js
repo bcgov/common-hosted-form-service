@@ -655,7 +655,7 @@ const service = {
       if (subscribe && subscribe.endpointUrl) {
         const axiosOptions = { timeout: 10000 };
         const axiosInstance = axios.create(axiosOptions);
-        const jsonData = { formVersion: formVersion.id, submissionId: submissionId, susbscriptionEvent: subscriptionEvent };
+        const jsonData = { formId: formVersion.formId, formVersion: formVersion.id, submissionId: submissionId, susbscriptionEvent: subscriptionEvent };
 
         axiosInstance.interceptors.request.use(
           (cfg) => {
