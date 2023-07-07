@@ -5,7 +5,7 @@
       ><span v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
     </div>
     <h3 class="mt-3">{{ $t('trans.apiKey.disclaimer') }}</h3>
-    <ul>
+    <ul :class="isRTL ? 'mr-6' : null">
       <li>{{ $t('trans.apiKey.infoA') }}</li>
       <li>
         {{ $t('trans.apiKey.infoB') }}
