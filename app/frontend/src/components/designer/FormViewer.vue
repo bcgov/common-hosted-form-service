@@ -365,7 +365,7 @@ export default {
             for (let path of fieldPath) {
               _.unset(submission, path);
             }
-          } else {
+          } else if (fieldPath) {
             _.unset(submission, fieldPath);
           }
         }
