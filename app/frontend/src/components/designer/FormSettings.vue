@@ -1091,7 +1091,7 @@ export default {
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
       ],
       scheduleOpenDate: [
-        (v) => !!v || this.$t('trans.formSettings.validEmailRequired'),
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v &&
             new RegExp(

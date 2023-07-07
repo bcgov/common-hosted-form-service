@@ -310,33 +310,64 @@ export default {
       function iterate(obj, stack, fields, propNeeded) {
         //Get property path from nested object
         for (let property in obj) {
-          if (typeof obj[property] == 'object') {
+          const innerObject = obj[property];
+
+          // When the form contains a Data Grid there will be an array that
+          // needs to be checked, and an array of properties to be unset.
+          if (Array.isArray(innerObject)) {
+            const fieldsArray = [];
+            for (let i = 0; i < innerObject.length; i++) {
+              const next = iterate(
+                innerObject[i],
+                stack + '.' + property + '[' + i + ']',
+                fields,
+                propNeeded
+              );
+
+              if (next) {
+                fieldsArray.push(next);
+              }
+            }
+
+            if (fieldsArray.length > 0) {
+              return fieldsArray;
+            }
+          } else if (typeof innerObject === 'object') {
             return iterate(
-              obj[property],
+              innerObject,
               stack + '.' + property,
               fields,
               propNeeded
             );
           } else if (propNeeded === property) {
             fields = fields + stack + '.' + property;
-            return fields;
+            return fields.replace(/^\./, '');
           }
         }
       }
 
       function deleteFieldData(fieldcomponent, submission) {
-        if (
-          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
-        ) {
-          fieldcomponent.components.map((subComponent) => {
-            // Check if it's a Nested component
+        if (Object.prototype.hasOwnProperty.call(fieldcomponent, 'columns')) {
+          // It's a layout component that has columns.
+          fieldcomponent.columns.map((subComponent) => {
             deleteFieldData(subComponent, submission);
           });
-        } else if (!fieldcomponent?.validate?.isUseForCopy) {
-          _.unset(
-            submission,
-            iterate(submission, '', '', fieldcomponent.key).replace(/^\./, '')
-          );
+        } else if (
+          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
+        ) {
+          // It's a layout component that has subcomponents, such as a panel.
+          fieldcomponent.components.map((subComponent) => {
+            deleteFieldData(subComponent, submission);
+          });
+        } else if (fieldcomponent?.validate?.isUseForCopy === false) {
+          const fieldPath = iterate(submission, '', '', fieldcomponent.key);
+          if (Array.isArray(fieldPath)) {
+            for (let path of fieldPath) {
+              _.unset(submission, path);
+            }
+          } else if (fieldPath) {
+            _.unset(submission, fieldPath);
+          }
         }
       }
 
@@ -379,7 +410,8 @@ export default {
         this.addNotification({
           message: this.$t('trans.formViewer.getUsersSubmissionsErrMsg'),
           consoleError: this.$t(
-            'trans.formViewer.getUsersSubmissionsConsoleErrMsg'
+            'trans.formViewer.getUsersSubmissionsConsoleErrMsg',
+            { submissionId: this.submissionId, error: error }
           ),
         });
       } finally {
