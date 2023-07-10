@@ -22,8 +22,10 @@ export default class Component extends (ParentComponent as any) {
             type: ID,
             key: ID,
             provider: 'custom',
-            providerOptions: {bcGeoAddressURL:process.env.VUE_APP_BC_GEO_ADDRESS_APIURL,
+            providerOptions: {
+
               url:process.env.VUE_APP_CHEFS_GEO_ADDRESS_APIURL},
+
             queryParameters:{"echo": false,
             "brief": true,
             "minScore": 55,
@@ -57,12 +59,13 @@ export default class Component extends (ParentComponent as any) {
     async attach(element) {
         super.attach(element);
         try {
+
             let {
                 providerOptions,
                 queryParameters,
             } = this.component;
-
             if(providerOptions) {
+                console.log('------>>> ', providerOptions)
                 if(!providerOptions.params) {
                     providerOptions["params"]={}
                 }
