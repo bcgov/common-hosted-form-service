@@ -11,7 +11,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
                 class="mx-1"
                 color="primary"
                 icon
@@ -110,7 +110,8 @@
         inputItemKey="value"
         :inputSaveButtonText="$t('trans.mySubmissionsTable.save')"
         :inputData="FILTER_HEADERS"
-        :preselectedData="PRESELECTEDDATA"
+        :preselectedData="preSelectedData"
+        :resetData="FILTER_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -142,6 +143,7 @@ export default {
     return {
       headers: [],
       filterData: [],
+      preSelectedData: [],
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -220,12 +222,7 @@ export default {
     },
     HEADERS() {
       return this.filterData.length === 0
-        ? this.DEFAULT_HEADERS
-        : this.filterData;
-    },
-    PRESELECTEDDATA() {
-      return this.filterData.length === 0
-        ? this.DEFAULT_HEADERS
+        ? this.FILTER_HEADERS
         : this.filterData;
     },
 
@@ -241,6 +238,11 @@ export default {
   },
   methods: {
     ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
+    onShowColumnDialog() {
+      this.preSelectedData =
+        this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
+      this.showColumnsDialog = true;
+    },
 
     // Status columns in the table
     getCurrentStatus(record) {
