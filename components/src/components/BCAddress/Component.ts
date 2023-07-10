@@ -23,7 +23,7 @@ export default class Component extends (ParentComponent as any) {
             key: ID,
             provider: 'custom',
             providerOptions: {
-
+                queryProperty: 'addressString',
               url:process.env.VUE_APP_CHEFS_GEO_ADDRESS_APIURL},
 
             queryParameters:{"echo": false,
@@ -65,7 +65,6 @@ export default class Component extends (ParentComponent as any) {
                 queryParameters,
             } = this.component;
             if(providerOptions) {
-                console.log('------>>> ', providerOptions)
                 if(!providerOptions.params) {
                     providerOptions["params"]={}
                 }
