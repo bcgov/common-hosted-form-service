@@ -210,8 +210,6 @@ const service = {
         if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
         return service._submissionFilterByUnsubmit(submissionData);
       });
-
-    // return submissionData;
   },
 
   _submissionFilterByUnsubmit: (submissionData) => {
