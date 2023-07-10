@@ -4,34 +4,12 @@ export default [
   {
     type: 'textfield',
     input: true,
-    key: 'providerOptions.bcGeoAddressURL',
-    label: 'Url',
-    placeholder: 'Enter Url',
-    weight: 10,
-    tooltip: 'Url to the service which should be used to search addresses for autocomplete.',
-    validate: {
-      required: true,
-    },
-  },
-
-  {
-    type: 'textfield',
-    input: true,
-    key: 'providerOptions.queryProperty',
-    label: 'Query Property',
-    defaultValue: 'addressString',
-    placeholder: 'Enter Query Property',
-    weight: 20,
-    tooltip: 'Which query param should be used to pass as a search string. Default is `query`.',
-  },
-  {
-    type: 'textfield',
-    input: true,
     defaultValue: 'features',
     key: 'providerOptions.responseProperty',
     label: 'Response Property',
     placeholder: 'Enter Response Property',
     weight: 30,
+    disabled:true,
     tooltip: 'The property within the response data, where iterable addresses reside. For example: results.',
   },
   {
@@ -41,6 +19,7 @@ export default [
     key: 'providerOptions.displayValueProperty',
     label: 'Display Value Property',
     placeholder: 'Display Value Property',
+    disabled:true,
     weight: 40,
     tooltip: 'The property of each address in the response to use as the display value.',
   },

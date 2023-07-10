@@ -8,8 +8,7 @@ const service = {
     if (searchAddresses?.features && Array.isArray(searchAddresses.features)) {
       await searchAddresses.features.forEach((element) => {
         if (element?.properties?.fullAddress) {
-          //console.log(element.properties.fullAddress);
-          addresses.features.push(Object.create({ properties: { fullAddress: element.properties.fullAddress } }));
+          addresses.features.push({ properties: { fullAddress: element.properties.fullAddress } });
         }
       });
     }
