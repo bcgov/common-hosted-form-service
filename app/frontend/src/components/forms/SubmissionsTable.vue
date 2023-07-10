@@ -468,8 +468,8 @@ export default {
 
     HEADERS() {
       let headers = [...this.DEFAULT_HEADER];
-      //let stat = headers.length - 4;
-      if (headers.length > 3) {
+
+      if (headers.length > 1) {
         headers.splice(1, 0, ...this.USER_PREFERENCES);
       } else {
         headers = headers.concat(this.USER_PREFERENCES);
@@ -488,8 +488,7 @@ export default {
     },
     PRESELECTED_DATA() {
       let headers = [...this.FILTER_HEADERS];
-
-      if (headers.length > 3) {
+      if (headers.length > 1) {
         headers.splice(1, 0, ...this.USER_PREFERENCES);
       } else {
         headers = headers.concat(this.USER_PREFERENCES);
