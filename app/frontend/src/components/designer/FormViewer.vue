@@ -310,38 +310,16 @@ export default {
       function iterate(obj, stack, fields, propNeeded) {
         //Get property path from nested object
         for (let property in obj) {
-          const innerObject = obj[property];
-
-          // When the form contains a Data Grid there will be an array that
-          // needs to be checked, and an array of properties to be unset.
-          if (Array.isArray(innerObject)) {
-            const fieldsArray = [];
-            for (let i = 0; i < innerObject.length; i++) {
-              const next = iterate(
-                innerObject[i],
-                stack + '.' + property + '[' + i + ']',
-                fields,
-                propNeeded
-              );
-
-              if (next) {
-                fieldsArray.push(next);
-              }
-            }
-
-            if (fieldsArray.length > 0) {
-              return fieldsArray;
-            }
-          } else if (typeof innerObject === 'object') {
+          if (typeof obj[property] == 'object') {
             return iterate(
-              innerObject,
+              obj[property],
               stack + '.' + property,
               fields,
               propNeeded
             );
           } else if (propNeeded === property) {
             fields = fields + stack + '.' + property;
-            return fields.replace(/^\./, '');
+            return fields;
           }
         }
       }
@@ -361,12 +339,8 @@ export default {
           });
         } else if (fieldcomponent?.validate?.isUseForCopy === false) {
           const fieldPath = iterate(submission, '', '', fieldcomponent.key);
-          if (Array.isArray(fieldPath)) {
-            for (let path of fieldPath) {
-              _.unset(submission, path);
-            }
-          } else if (fieldPath) {
-            _.unset(submission, fieldPath);
+          if (fieldPath) {
+            _.unset(submission, fieldPath.replace(/^\./, ''));
           }
         }
       }
