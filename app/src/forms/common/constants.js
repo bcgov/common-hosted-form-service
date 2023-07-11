@@ -56,7 +56,7 @@ module.exports = Object.freeze({
     UPLOADS: 'uploads',
     LOCAL_STORAGE: 'localStorage',
     OBJECT_STORAGE: 'objectStorage',
-    LOCAL_STORES: ['uploads', 'localStorage', 'exports'],
+    LOCAL_STORES: ['uploads', 'localStorage'],
   },
   Restricted: {
     IDP: {
