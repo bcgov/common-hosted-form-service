@@ -303,9 +303,7 @@ export default {
                 ? s.submissionStatus[0].createdBy
                 : '',
           };
-          s.submission &&
-            s.submission.submission &&
-            s.submission.submission.data &&
+          s?.submission?.submission?.data &&
             Object.keys(s.submission.submission.data).forEach((col) => {
               fields[col] = s.submission.submission.data[col];
             });
