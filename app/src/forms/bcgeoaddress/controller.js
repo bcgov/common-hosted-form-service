@@ -10,4 +10,13 @@ module.exports = {
       next(error);
     }
   },
+  advanceSearchBCGeoAddress: async (req, res, next) => {
+    try {
+      const { query } = req;
+      const response = await service.advanceSearchBCGeoAddress(query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
