@@ -160,11 +160,8 @@
         "
         inputItemKey="value"
         :inputSaveButtonText="$t('trans.teamManagement.save')"
-        :inputData="
-          DEFAULT_HEADERS.filter(
-            (h) => !filterIgnore.some((fd) => fd.value === h.value)
-          )
-        "
+        :inputData="FILTER_HEADERS"
+        :resetData="FILTER_HEADERS"
         :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
@@ -245,6 +242,11 @@ export default {
         )
         .concat({ text: '', value: 'actions', width: '1rem', sortable: false });
     },
+    FILTER_HEADERS() {
+      return this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
+    },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
       if (this.filterData.length > 0)
@@ -256,9 +258,9 @@ export default {
       return headers;
     },
     PRESELECTED_DATA() {
-      return this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      );
+      return this.filterData.length === 0
+        ? this.FILTER_HEADERS
+        : this.filterData;
     },
   },
   data() {
