@@ -232,10 +232,20 @@ export default {
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       );
     },
+
     HEADERS() {
-      return this.filterData.length === 0
-        ? this.FILTER_HEADERS
-        : this.filterData;
+      let headers = [...this.DEFAULT_HEADERS];
+
+      if (headers.length > 1) {
+        headers.splice(1, 0, ...this.filterData);
+      } else {
+        headers = headers.concat(this.filterData);
+      }
+      return headers.filter(
+        (item, idx, inputArray) =>
+          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
+          idx
+      );
     },
 
     showStatus() {
