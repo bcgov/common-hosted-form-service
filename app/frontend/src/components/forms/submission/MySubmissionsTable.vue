@@ -109,7 +109,7 @@
         "
         inputItemKey="value"
         :inputSaveButtonText="$t('trans.mySubmissionsTable.save')"
-        :inputData="FILTER_HEADERS"
+        :inputData="SELECT_COLUMNS_HEADERS"
         :preselectedData="preSelectedData"
         :resetData="FILTER_HEADERS"
         @saving-filter-data="updateFilter"
@@ -159,7 +159,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'submissionList', 'permissions']),
+    ...mapGetters('form', [
+      'form',
+      'submissionList',
+      'permissions',
+      'formFields',
+    ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
       let headers = [
@@ -214,6 +219,13 @@ export default {
       }
       return headers;
     },
+    SELECT_COLUMNS_HEADERS() {
+      return [...this.FILTER_HEADERS].concat(
+        this.formFields?.map((ff) => {
+          return { text: ff, value: ff, align: 'end' };
+        })
+      );
+    },
 
     FILTER_HEADERS() {
       return this.DEFAULT_HEADERS.filter(
@@ -237,7 +249,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
+    ...mapActions('form', ['fetchForm', 'fetchSubmissions', 'fetchFormFields']),
     onShowColumnDialog() {
       this.preSelectedData =
         this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
@@ -276,7 +288,7 @@ export default {
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
-          return {
+          const fields = {
             confirmationId: s.confirmationId,
             name: s.name,
             permissions: s.permissions,
@@ -291,6 +303,13 @@ export default {
                 ? s.submissionStatus[0].createdBy
                 : '',
           };
+          s.submission &&
+            s.submission.submission &&
+            s.submission.submission.data &&
+            Object.keys(s.submission.submission.data).forEach((col) => {
+              fields[col] = s.submission.submission.data[col];
+            });
+          return fields;
         });
         this.submissionTable = tableRows;
       }
@@ -303,7 +322,13 @@ export default {
   },
 
   async mounted() {
-    await this.fetchForm(this.formId);
+    await this.fetchForm(this.formId).then(async () => {
+      await this.fetchFormFields({
+        formId: this.formId,
+        formVersionId: this.form.versions[0].id,
+      });
+    });
+
     await this.populateSubmissionsTable();
   },
 };
