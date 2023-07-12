@@ -55,7 +55,7 @@ inputs:
   app_chefs_advance_geo_address_apiurl:
     description: Proxy URL to BC Geo Address API URL for advance search
     required: true
-    default: "https://submit.digital.gov.bc.ca/app/api/v1/bcgeoaddress/advance/address"
+    default: "/app/api/v1/bcgeoaddress/advance/address"
 
 runs:
   using: composite
