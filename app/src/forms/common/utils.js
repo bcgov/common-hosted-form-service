@@ -543,7 +543,7 @@ const submissionHeaders = (obj) => {
       objectMap.add(keyPath);
     } else {
       Object.keys(obj).forEach((key) => {
-        if (_.isString(obj) || _.isNumber(obj) || _.isDate(obj[key])) {
+        if (_.isString(obj[key]) || _.isNumber(obj[key]) || _.isDate(obj[key])) {
           if (key !== 'submit') {
             objectMap.add(keyPath ? keyPath + '.' + key : key);
           }
