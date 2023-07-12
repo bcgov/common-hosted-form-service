@@ -11,8 +11,8 @@ export const AddressComponentMode = {
 
 const ParentComponent = (Components as any).components.address;
 
-const ID = 'bcaddress';
-const DISPLAY = 'BC Address';
+const ID = 'simplebcaddress';
+const DISPLAY = 'Simple BC Address';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {
@@ -24,8 +24,7 @@ export default class Component extends (ParentComponent as any) {
             provider: 'custom',
             providerOptions: {
                 queryProperty: 'addressString',
-
-              url: process.env.VUE_APP_CHEFS_ADVANCE_GEO_ADDRESS_APIURL},
+              url:process.env.VUE_APP_CHEFS_GEO_ADDRESS_APIURL},
 
             queryParameters:{"echo": false,
             "brief": true,
