@@ -21,6 +21,20 @@ class SubmissionData extends Model {
           query.where('createdAt', '<=', maxDate);
         }
       },
+      filterUpdatedAt(query, minDate, maxDate) {
+        if (minDate && maxDate) {
+          query.whereBetween('updatedAt', [minDate, maxDate]);
+        } else if (minDate) {
+          query.where('updatedAt', '>=', minDate);
+        } else if (maxDate) {
+          query.where('updatedAt', '<=', maxDate);
+        }
+      },
+      filterStatus(query, value) {
+        if (value) {
+          query.where('status', value);
+        }
+      },
       filterDeleted(query, value) {
         if (!value) {
           query.where('deleted', false);

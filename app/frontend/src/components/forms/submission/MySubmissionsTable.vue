@@ -11,7 +11,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
                 class="mx-1"
                 color="primary"
                 icon
@@ -109,8 +109,9 @@
         "
         inputItemKey="value"
         :inputSaveButtonText="$t('trans.mySubmissionsTable.save')"
-        :inputData="FILTER_HEADERS"
-        :preselectedData="PRESELECTEDDATA"
+        :inputData="SELECT_COLUMNS_HEADERS"
+        :preselectedData="preSelectedData"
+        :resetData="FILTER_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -142,6 +143,7 @@ export default {
     return {
       headers: [],
       filterData: [],
+      preSelectedData: [],
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -157,7 +159,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'submissionList', 'permissions']),
+    ...mapGetters('form', [
+      'form',
+      'submissionList',
+      'permissions',
+      'formFields',
+    ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
       let headers = [
@@ -212,21 +219,33 @@ export default {
       }
       return headers;
     },
+    SELECT_COLUMNS_HEADERS() {
+      return [...this.FILTER_HEADERS].concat(
+        this.formFields?.map((ff) => {
+          return { text: ff, value: ff, align: 'end' };
+        })
+      );
+    },
 
     FILTER_HEADERS() {
       return this.DEFAULT_HEADERS.filter(
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       );
     },
+
     HEADERS() {
-      return this.filterData.length === 0
-        ? this.DEFAULT_HEADERS
-        : this.filterData;
-    },
-    PRESELECTEDDATA() {
-      return this.filterData.length === 0
-        ? this.DEFAULT_HEADERS
-        : this.filterData;
+      let headers = [...this.DEFAULT_HEADERS];
+
+      if (headers.length > 1) {
+        headers.splice(1, 0, ...this.filterData);
+      } else {
+        headers = headers.concat(this.filterData);
+      }
+      return headers.filter(
+        (item, idx, inputArray) =>
+          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
+          idx
+      );
     },
 
     showStatus() {
@@ -240,7 +259,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
+    ...mapActions('form', ['fetchForm', 'fetchSubmissions', 'fetchFormFields']),
+    onShowColumnDialog() {
+      this.preSelectedData =
+        this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
+      this.showColumnsDialog = true;
+    },
 
     // Status columns in the table
     getCurrentStatus(record) {
@@ -274,7 +298,7 @@ export default {
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
-          return {
+          const fields = {
             confirmationId: s.confirmationId,
             name: s.name,
             permissions: s.permissions,
@@ -289,6 +313,11 @@ export default {
                 ? s.submissionStatus[0].createdBy
                 : '',
           };
+          s?.submission?.submission?.data &&
+            Object.keys(s.submission.submission.data).forEach((col) => {
+              fields[col] = s.submission.submission.data[col];
+            });
+          return fields;
         });
         this.submissionTable = tableRows;
       }
@@ -301,7 +330,13 @@ export default {
   },
 
   async mounted() {
-    await this.fetchForm(this.formId);
+    await this.fetchForm(this.formId).then(async () => {
+      await this.fetchFormFields({
+        formId: this.formId,
+        formVersionId: this.form.versions[0].id,
+      });
+    });
+
     await this.populateSubmissionsTable();
   },
 };
