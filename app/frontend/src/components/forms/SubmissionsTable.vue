@@ -728,6 +728,7 @@ export default {
       this.selectedSubmissions = [];
     },
     async updateFilter(data) {
+      this.showColumnsDialog = false;
       this.filterData = data;
       let preferences = {
         columns: [],
@@ -740,7 +741,7 @@ export default {
         formId: this.form.id,
         preferences: preferences,
       });
-      this.showColumnsDialog = false;
+
       await this.populateSubmissionsTable();
     },
   },
