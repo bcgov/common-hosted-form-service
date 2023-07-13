@@ -391,7 +391,8 @@ export default {
       await this.delay(response);
       // if (!response) {
       const check = {
-        shouldContinueValidation: this.index < this.Json.length,
+        shouldContinueValidation:
+          Number(this.index) < Number(this.Json.length - 1), //Need to compare with JSON length - 1 because we only need to perform validation upto the last instance/object of Json array.
       };
       if (check.shouldContinueValidation) {
         this.$nextTick(() => {
