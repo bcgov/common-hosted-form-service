@@ -51,7 +51,7 @@ inputs:
   app_chefs_geo_address_apiurl:
     description: Proxy URL to BC Geo Address API URL
     required: true
-    default: "./api/v1/bcgeoaddress/address"
+    default: "../api/v1/bcgeoaddress/address"
   app_chefs_advance_geo_address_apiurl:
     description: Proxy URL to BC Geo Address API URL for advance search
     required: true
