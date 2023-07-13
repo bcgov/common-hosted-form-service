@@ -15,7 +15,12 @@ module.exports = {
   update: async (req, res, next) => {
     try {
       const response = await service.update(req.params.formSubmissionId, req.body, req.currentUser, req.headers.referer);
-      res.status(200).json(response);
+      if (!response) {
+        // Return Bad request if we're trying to save draft on already submitted record
+        res.status(400).json({ detail: 'Incorrect Submission status.' });
+      } else {
+        res.status(200).json(response);
+      }
     } catch (error) {
       next(error);
     }
