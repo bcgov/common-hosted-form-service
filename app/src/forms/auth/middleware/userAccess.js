@@ -16,13 +16,17 @@ const getToken = (req) => {
 };
 
 const setUser = async (req, _res, next) => {
-  const token = getToken(req);
-  // we can limit the form list from query string or url params.  Url params override query params
-  // ex. /forms/:formId=ABC/version?formId=123
-  // the ABC in the url will be used... so don't do that.
-  const params = { ...req.query, ...req.params };
-  req.currentUser = await service.login(token, params);
-  next();
+  try {
+    const token = getToken(req);
+    // we can limit the form list from query string or url params.  Url params override query params
+    // ex. /forms/:formId=ABC/version?formId=123
+    // the ABC in the url will be used... so don't do that.
+    const params = { ...req.query, ...req.params };
+    req.currentUser = await service.login(token, params);
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 const currentUser = async (req, res, next) => {
