@@ -46,7 +46,8 @@
     "totalVersions": "Total Versions",
     "status": "Status",
     "update": "Update",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "eventSubscription" : "Event Subscription"
   },
   "formSettings": {
     "formTitle": "Form Title",
@@ -135,7 +136,12 @@
     "eventAssignment": "Assignment",
     "eventStatusChange": "Status Change",
     "endpointToken": "Endpoint Token",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Save",
+    "text": "text",
+    "password": "password",
+    "hideSecret": "Hide Secret",
+    "showSecret": "Show Secret"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -887,7 +893,13 @@
       "listFCPHErrMsg": "An error occurred while fetching form builder components",
       "listFCPHConsErrMsg": "Error getting form builder components: {error}",
       "downloadFileErrMsg": "An error occurred while downloading file",
-      "downloadFileConsErrMsg": "Error downloading file: error"
+      "downloadFileConsErrMsg": "Error downloading file: error",
+      "readSubscriptionSettingsErrMsg": "An error occurred while trying to fetch the subscription settings.",
+      "readSubscriptionSettingsConsErrMsg": "Error getting subscription settings for form {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
+      "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subsciption settings.",
+      "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
+      
     }
   },
   "permissionUtils": {

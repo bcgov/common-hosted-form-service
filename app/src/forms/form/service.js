@@ -21,6 +21,7 @@ const {
   IdentityProvider,
   SubmissionMetadata,
   FormComponentsProactiveHelp,
+  FormSubscription,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -707,6 +708,40 @@ const service = {
       }, Object.create(null));
     }
     return {};
+  },
+    // Get the current subscription settings for a form
+  readFormSubscriptionDetails: (formId) => {
+    return FormSubscription.query().modify('filterFormId', formId).first();
+  },
+  // Update subscription settings for a form
+  createOrUpdateSubscriptionDetails: async (formId, subscriptionData, currentUser) => {
+    let trx;
+    try {
+      const subscriptionDetails = await service.readFormSubscriptionDetails(formId);
+      console.log(subscriptionDetails);
+      trx = await FormSubscription.startTransaction();
+
+      if (subscriptionDetails) {
+        // Update new subscription settings for a form
+        await FormSubscription.query(trx).modify('filterFormId', formId).update({
+          ...subscriptionData,
+          updatedBy: currentUser.usernameIdp,
+        });
+      } else {
+        // Add new subscription settings for the form
+        await FormSubscription.query(trx).insert({
+          id: uuidv4(),
+          ...subscriptionData,
+          createdBy: currentUser.usernameIdp,
+        });
+      }
+
+      await trx.commit();
+      return service.readFormSubscriptionDetails(formId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
 };
 

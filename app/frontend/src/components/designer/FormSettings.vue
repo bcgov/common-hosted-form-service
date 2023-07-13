@@ -933,14 +933,6 @@
           </BasePanel>
         </v-col>
       </v-expand-transition>
-      <v-expand-transition>
-        <v-col cols="12" md="6" v-if="subscribe.enabled">
-          <BasePanel class="fill-height">
-            <template #title>{{
-              $t('trans.formSettings.eventSubscription')
-            }}</template>
-            <v-row class="m-0">
-              <v-col cols="6" md="4" class="pl-0 pr-0 pb-0">
                 <v-checkbox
                   class="my-0 pt-0"
                   v-model="subscribe.eventSubmission"
@@ -983,7 +975,6 @@
                   dense
                   flat
                   solid
-                  outlined
                   v-model="subscribe.endpointToken"
                   class="m-0 p-0"
                   :rules="endpointTokenRules"

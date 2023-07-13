@@ -36,11 +36,11 @@ const genInitialSchedule = () => ({
 
 const genInitialSubscribe = () => ({
   enabled: null,
-  eventSubmission: null,
-  eventAssignment: null,
-  eventStatusChange: null,
-  endpointUrl: null,
-  endpointToken: null,
+});
+const genInitialSubscribeDetails = () => ({
+  subscribeEvent: '',
+  endPointUrl: null,
+  endPointToken: null,
 });
 
 const genInitialForm = () => ({
@@ -97,6 +97,7 @@ export default {
       headers: null,
     },
     multiLanguage: '',
+    subscriptionData: genInitialSubscribeDetails(),
   },
   getters: {
     getField, // vuex-map-fields
@@ -118,6 +119,7 @@ export default {
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
     downloadedFile: (state) => state.downloadedFile,
     multiLanguage: (state) => state.multiLanguage,
+    subscriptionData: (state) => state.subscriptionData,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -181,6 +183,9 @@ export default {
     },
     SET_MULTI_LANGUAGE(state, multiLanguage) {
       state.multiLanguage = multiLanguage;
+    },
+    SET_SUBSCRPTION_DATA(state, subscriptionData) {
+      state.subscriptionData = subscriptionData;
     },
   },
   actions: {
@@ -914,6 +919,68 @@ export default {
             consoleError: i18n.t('trans.store.form.downloadFileConsErrMsg', {
               error: error,
             }),
+          },
+          { root: true }
+        );
+      }
+    },
+    async readFormSubscriptionData({ commit, dispatch }, formId) {
+      try {
+        const { data } = await formService.readFormSubscriptionData(formId);
+        if (data) {
+          commit('SET_SUBSCRPTION_DATA', data);
+        }
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: i18n.t('trans.store.form.readSubscriptionSettingsErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.form.readSubscriptionSettingsConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
+          },
+          { root: true }
+        );
+      }
+    },
+    async updateSubscription(
+      { commit, dispatch },
+      { formId, subscriptionData }
+    ) {
+      try {
+        const { data } = await formService.updateSubscription(
+          formId,
+          subscriptionData
+        );
+        if (data) {
+          commit('SET_SUBSCRPTION_DATA', data);
+        }
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: i18n.t(
+              'trans.store.form.saveSubscriptionSettingsNotifyMsg'
+            ),
+            ...NotificationTypes.SUCCESS,
+          },
+          { root: true }
+        );
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: i18n.t('trans.store.form.saveSubscriptionSettingsErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.form.saveSubscriptionSettingsConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );
