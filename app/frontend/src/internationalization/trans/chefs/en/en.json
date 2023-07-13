@@ -897,7 +897,7 @@
       "readSubscriptionSettingsErrMsg": "An error occurred while trying to fetch the subscription settings.",
       "readSubscriptionSettingsConsErrMsg": "Error getting subscription settings for form {formId}: {error}.",
       "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
-      "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subsciption settings.",
+      "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
       
     }

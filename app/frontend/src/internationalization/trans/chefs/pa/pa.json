@@ -46,7 +46,8 @@
     "totalVersions": "ਕੁੱਲ ਸੰਸਕਰਣ",
     "status": "ਸਥਿਤੀ",
     "update": "ਅੱਪਡੇਟ ਕਰੋ",
-    "cancel": "ਰੱਦ ਕਰੋ"
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "eventSubscription": "د پیښې ګډون"
   },
   "formSettings": {
     "formTitle": "ਫਾਰਮ ਦਾ ਸਿਰਲੇਖ",
@@ -135,7 +136,12 @@
     "eventAssignment": "دنده",
     "eventStatusChange": "د وضعیت بدلون",
     "endpointToken": "د پای ټکی نښه",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "ਸੇਵ ਕਰੋ",
+    "text": "ਟੈਕਸਟ",
+    "password": "ਪਾਸਵਰਡ",
+    "hideSecret": "ਗੁਪਤ ਲੁਕਾਓ",
+    "showSecret": "ਗੁਪਤ ਦਿਖਾਓ"
   },
   "apiKey": {
     "disclaimer": "ਬੇਦਾਅਵਾ",
@@ -892,7 +898,12 @@
       "listFCPHErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਭਾਗਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
       "listFCPHConsErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "downloadFileErrMsg": "ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
-      "downloadFileConsErrMsg": "ਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ਤਰੁੱਟੀ"
+      "downloadFileConsErrMsg": "ਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ਤਰੁੱਟੀ",
+      "readSubscriptionSettingsErrMsg": "ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "readSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}।",
+      "saveSubscriptionSettingsNotifyMsg": "ਇਸ ਫਾਰਮ ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।",
+      "saveSubscriptionSettingsErrMsg": "ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "saveSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
     }
   }
 }

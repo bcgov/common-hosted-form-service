@@ -46,7 +46,8 @@
     "totalVersions": "Versioni totali",
     "status": "Stato",
     "update": "Aggiornamento",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "eventSubscription": "Abbonamento all'evento"
   },
   "formSettings": {
     "formTitle": "Titolo del modulo",
@@ -135,7 +136,12 @@
     "eventAssignment": "Incarico",
     "eventStatusChange": "Cambio di stato",
     "endpointToken": "Token dell'endpoint",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Salva",
+    "text": "testo",
+    "password": "parola d'ordine",
+    "hideSecret": "Nascondi segreto",
+    "showSecret": "Mostra Segreto"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -892,7 +898,12 @@
       "listFCPHErrMsg": "Si è verificato un errore durante il recupero dei componenti del generatore di moduli",
       "listFCPHConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {errore}",
       "downloadFileErrMsg": "Si è verificato un errore durante il download del file",
-      "downloadFileConsErrMsg": "Errore durante il download del file: errore"
+      "downloadFileConsErrMsg": "Errore durante il download del file: errore",
+      "readSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di recuperare le impostazioni dell'abbonamento.",
+      "readSubscriptionSettingsConsErrMsg": "Errore durante il recupero delle impostazioni di sottoscrizione per il modulo {formId}: {errore}.",
+      "saveSubscriptionSettingsNotifyMsg": "Le impostazioni di iscrizione per questo modulo sono state salvate.",
+      "saveSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di salvare le impostazioni dell'abbonamento.",
+      "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
     }
   }
 }

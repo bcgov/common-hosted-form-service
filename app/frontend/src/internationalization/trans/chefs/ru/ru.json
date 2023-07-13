@@ -46,7 +46,8 @@
     "totalVersions": "Всего версий",
     "status": "Положение дел",
     "update": "Обновлять",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "eventSubscription": "Подписка на события"
   },
   "formSettings": {
     "formTitle": "Название формы",
@@ -135,7 +136,12 @@
     "eventAssignment": "Назначение",
     "eventStatusChange": "Изменение статуса",
     "endpointToken": "Токен конечной точки",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Сохранять",
+    "text": "текст",
+    "password": "пароль",
+    "hideSecret": "Скрыть секрет",
+    "showSecret": "Показать секрет"
   },
   "apiKey": {
     "disclaimer": "Отказ от ответственности",
@@ -892,7 +898,12 @@
       "listFCPHErrMsg": "Произошла ошибка при загрузке компонентов конструктора форм.",
       "listFCPHConsErrMsg": "Ошибка при получении компонентов конструктора форм: {error}",
       "downloadFileErrMsg": "Произошла ошибка при загрузке файла",
-      "downloadFileConsErrMsg": "Ошибка загрузки файла: ошибка"
+      "downloadFileConsErrMsg": "Ошибка загрузки файла: ошибка",
+      "readSubscriptionSettingsErrMsg": "Произошла ошибка при попытке получить настройки подписки.",
+      "readSubscriptionSettingsConsErrMsg": "Ошибка получения настроек подписки для формы {formId}: {ошибка}.",
+      "saveSubscriptionSettingsNotifyMsg": "Настройки подписки для этой формы сохранены.",
+      "saveSubscriptionSettingsErrMsg": "Произошла ошибка при попытке сохранить настройки подписки.",
+      "saveSubscriptionSettingsConsErrMsg": "Ошибка сохранения настроек подписки для формы {formId}: {error}"
     }
   }
 }

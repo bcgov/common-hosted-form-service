@@ -46,7 +46,8 @@
     "totalVersions": "Всього версій",
     "status": "Статус",
     "update": "оновлення",
-    "cancel": "Скасувати"
+    "cancel": "Скасувати",
+    "eventSubscription": "Підписка на подію"
   },
   "formSettings": {
     "formTitle": "Назва форми",
@@ -135,7 +136,12 @@
     "eventAssignment": "призначення",
     "eventStatusChange": "Зміна статусу",
     "endpointToken": "Маркер кінцевої точки",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "зберегти",
+    "text": "текст",
+    "password": "пароль",
+    "hideSecret": "Приховати секрет",
+    "showSecret": "Показати секрет"
   },
   "apiKey": {
     "disclaimer": "Відмова від відповідальності",
@@ -892,7 +898,13 @@
       "listFCPHErrMsg": "Під час отримання компонентів конструктора форм сталася помилка",
       "listFCPHConsErrMsg": "Помилка отримання компонентів конструктора форм: {error}",
       "downloadFileErrMsg": "Під час завантаження файлу сталася помилка",
-      "downloadFileConsErrMsg": "Помилка завантаження файлу: помилка"
+      "downloadFileConsErrMsg": "Помилка завантаження файлу: помилка",
+      "readSubscriptionSettingsErrMsg": "Під час спроби отримати налаштування підписки сталася помилка.",
+      "readSubscriptionSettingsConsErrMsg": "Помилка отримання налаштувань підписки для форми {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Налаштування підписки на цю форму збережено.",
+      "saveSubscriptionSettingsErrMsg": "Під час спроби зберегти налаштування підписки сталася помилка.",
+      "saveSubscriptionSettingsConsErrMsg": "Помилка збереження налаштувань підписки для форми {formId}: {error}"
+      
     }
   }
 }

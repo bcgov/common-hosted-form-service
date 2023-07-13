@@ -46,7 +46,8 @@
     "totalVersions": "Versões totais",
     "status": "Status",
     "update": "Atualizar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "eventSubscription": "Assinatura de evento"
   },
   "formSettings": {
     "formTitle": "Título do formulário",
@@ -135,7 +136,12 @@
     "eventAssignment": "Assignment",
     "eventStatusChange": "Mudança de status",
     "endpointToken": "Token de terminal",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Salvar",
+    "text": "texto",
+    "password": "senha",
+    "hideSecret": "Ocultar Segredo",
+    "showSecret": "Mostrar Segredo"
   },
   "apiKey": {
     "disclaimer": "Isenção de responsabilidade",
@@ -892,7 +898,12 @@
       "listFCPHErrMsg": "Ocorreu um erro ao buscar os componentes do construtor de formulários",
       "listFCPHConsErrMsg": "Erro ao obter os componentes do construtor de formulário: {error}",
       "downloadFileErrMsg": "Ocorreu um erro durante o download do arquivo",
-      "downloadFileConsErrMsg": "Erro ao baixar o arquivo: erro"
+      "downloadFileConsErrMsg": "Erro ao baixar o arquivo: erro",
+      "readSubscriptionSettingsErrMsg": "Ocorreu um erro ao tentar buscar as configurações de assinatura.",
+      "readSubscriptionSettingsConsErrMsg": "Erro ao obter configurações de assinatura para o formulário {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "As configurações de inscrição para este formulário foram salvas.",
+      "saveSubscriptionSettingsErrMsg": "Ocorreu um erro ao tentar salvar as configurações de assinatura.",
+      "saveSubscriptionSettingsConsErrMsg": "Erro ao salvar as configurações de assinatura para o formulário {formId}: {error}"
     }
   }
 }

@@ -46,7 +46,8 @@
     "totalVersions": "총 버전",
     "status": "상태",
     "update": "업데이트",
-    "cancel": "취소"
+    "cancel": "취소",
+    "eventSubscription": "イベントのサブスクリプション"
   },
   "formSettings": {
     "formTitle": "양식 제목",
@@ -135,7 +136,12 @@
     "eventAssignment": "割り当て",
     "eventStatusChange": "ステータス変更",
     "endpointToken": "エンドポイントトークン",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "구하다",
+    "text": "텍스트",
+    "password": "비밀번호",
+    "hideSecret": "비밀 숨기기",
+    "showSecret": "비밀 표시"
   },
   "apiKey": {
     "disclaimer": "부인 성명",
@@ -892,7 +898,12 @@
       "listFCPHErrMsg": "양식 작성기 구성 요소를 가져오는 동안 오류가 발생했습니다.",
       "listFCPHConsErrMsg": "양식 작성기 구성요소 가져오기 오류: {error}",
       "downloadFileErrMsg": "파일을 다운로드하는 동안 오류가 발생했습니다",
-      "downloadFileConsErrMsg": "파일 다운로드 오류: 오류"
+      "downloadFileConsErrMsg": "파일 다운로드 오류: 오류",
+      "readSubscriptionSettingsErrMsg": "구독 설정을 가져오는 중에 오류가 발생했습니다.",
+      "readSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정을 가져오는 중에 오류가 발생했습니다: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "이 양식에 대한 구독 설정이 저장되었습니다.",
+      "saveSubscriptionSettingsErrMsg": "구독 설정을 저장하는 동안 오류가 발생했습니다.",
+      "saveSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정 저장 오류: {error}"
     }
   }
 }

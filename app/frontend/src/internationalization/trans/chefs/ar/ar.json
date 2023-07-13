@@ -46,7 +46,8 @@
     "totalVersions": "إجمالي الإصدارات",
     "status": "حالة",
     "update": "تحديث",
-    "cancel": "يلغي"
+    "cancel": "يلغي",
+    "eventSubscription": "اشتراك الحدث"
   },
   "formSettings": {
     "formTitle": "عنوان النموذج",
@@ -135,7 +136,12 @@
     "eventAssignment": "تكليف",
     "eventStatusChange": "تغيير الوضع",
     "endpointToken": "رمز نقطة النهاية",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "يحفظ",
+    "text": "نص",
+    "password": "كلمة المرور",
+    "hideSecret": "إخفاء السر",
+    "showSecret": "إظهار السر"
   },
   "apiKey": {
     "disclaimer": "تنصل",
@@ -892,7 +898,12 @@
       "listFCPHErrMsg": "حدث خطأ أثناء إحضار مكونات أداة إنشاء النماذج",
       "listFCPHConsErrMsg": "خطأ في الحصول على مكونات منشئ النموذج: {error}",
       "downloadFileErrMsg": "حدث خطأ أثناء تنزيل الملف",
-      "downloadFileConsErrMsg": "خطأ في تنزيل الملف: خطأ"
+      "downloadFileConsErrMsg": "خطأ في تنزيل الملف: خطأ",
+      "readSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة جلب إعدادات الاشتراك.",
+      "readSubscriptionSettingsConsErrMsg": "خطأ في الحصول على إعدادات الاشتراك للنموذج {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "تم حفظ إعدادات الاشتراك لهذا النموذج.",
+      "saveSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة حفظ إعدادات الاشتراك.",
+      "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
     }
   }
 }

@@ -46,7 +46,8 @@
     "totalVersions": "总版本",
     "status": "地位",
     "update": "更新",
-    "cancel": "取消"
+    "cancel": "取消",
+    "eventSubscription": "E活动订阅"
   },
   "formSettings": {
     "formTitle": "表格标题",
@@ -135,7 +136,12 @@
     "eventAssignment": "任务",
     "eventStatusChange": "状态改变",
     "endpointToken": "端点令牌",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "节省",
+    "text": "文本",
+    "password": "密码",
+    "hideSecret": "隐藏秘密",
+    "showSecret": "显示秘密"
   },
   "apiKey": {
     "disclaimer": "免责声明",
@@ -892,7 +898,12 @@
       "listFCPHErrMsg": "获取表单构建器组件时出错",
       "listFCPHConsErrMsg": "获取表单构建器组件时出错：{error}",
       "downloadFileErrMsg": "下载文件时出错",
-      "downloadFileConsErrMsg": "下载文件时出错：error"
+      "downloadFileConsErrMsg": "下载文件时出错：error",
+      "readSubscriptionSettingsErrMsg": "尝试获取订阅设置时出错。",
+      "readSubscriptionSettingsConsErrMsg": "获取表单 {formId} 的订阅设置时出错：{error}。",
+      "saveSubscriptionSettingsNotifyMsg": "此表单的订阅设置已保存。",
+      "saveSubscriptionSettingsErrMsg": "尝试保存订阅设置时出错。",
+      "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
     }
   }
 }
