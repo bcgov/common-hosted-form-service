@@ -141,7 +141,8 @@
     "text": "chữ",
     "password": "mật khẩu",
     "hideSecret": "Ẩn bí mật",
-    "showSecret": "Hiển thị bí mật"
+    "showSecret": "Hiển thị bí mật",
+    "key" : "Chìa khóa"
   },
   "apiKey": {
     "disclaimer": "từ chối trách nhiệm",

@@ -141,7 +141,8 @@
     "text": "텍스트",
     "password": "비밀번호",
     "hideSecret": "비밀 숨기기",
-    "showSecret": "비밀 표시"
+    "showSecret": "비밀 표시",
+    "key" : "열쇠"
   },
   "apiKey": {
     "disclaimer": "부인 성명",

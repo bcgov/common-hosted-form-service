@@ -141,7 +141,8 @@
     "text": "testo",
     "password": "parola d'ordine",
     "hideSecret": "Nascondi segreto",
-    "showSecret": "Mostra Segreto"
+    "showSecret": "Mostra Segreto",
+    "key" : "Chiave"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",

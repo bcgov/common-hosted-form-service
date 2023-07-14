@@ -300,9 +300,10 @@ exports.seed = function (knex) {
           id: uuidv4(),
           createdBy: CREATED_BY,
           subscribeEvent: 'client_form_submit_event',
-          endPointUrl: 'http://test.com',
-          endPointToken: 'AbCdEf123456',
+          endpointUrl: 'http://test.com',
+          endpointToken: 'AbCdEf123456',
           formId: ID.forms[0].id,
+          key: 'Authorization'
         },
       ];
       return knex('form_subscription').insert(items);

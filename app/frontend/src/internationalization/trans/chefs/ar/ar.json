@@ -141,7 +141,8 @@
     "text": "نص",
     "password": "كلمة المرور",
     "hideSecret": "إخفاء السر",
-    "showSecret": "إظهار السر"
+    "showSecret": "إظهار السر",
+    "key" : "مفتاح"
   },
   "apiKey": {
     "disclaimer": "تنصل",

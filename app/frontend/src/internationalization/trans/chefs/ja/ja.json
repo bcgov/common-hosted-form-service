@@ -141,7 +141,8 @@
     "text": "文章",
     "password": "パスワード",
     "hideSecret": "秘密を隠す",
-    "showSecret": "シークレットを表示"
+    "showSecret": "シークレットを表示",
+    "key" : "鍵"
   },
   "apiKey": {
     "disclaimer": "免責事項",

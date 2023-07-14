@@ -141,7 +141,8 @@
     "text": "文本",
     "password": "密码",
     "hideSecret": "隐藏秘密",
-    "showSecret": "显示秘密"
+    "showSecret": "显示秘密",
+    "key" : "钥匙"
   },
   "apiKey": {
     "disclaimer": "免责声明",

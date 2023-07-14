@@ -141,7 +141,8 @@
     "text": "texto",
     "password": "senha",
     "hideSecret": "Ocultar Segredo",
-    "showSecret": "Mostrar Segredo"
+    "showSecret": "Mostrar Segredo",
+    "key" : "Chave"
   },
   "apiKey": {
     "disclaimer": "Isenção de responsabilidade",

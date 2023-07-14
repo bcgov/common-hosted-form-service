@@ -141,7 +141,8 @@
     "text": "texte",
     "password": "mot de passe",
     "hideSecret": "Cacher le secret",
-    "showSecret": "Afficher le secret"
+    "showSecret": "Afficher le secret",
+    "key" : "Clé"
   },
   "apiKey": {
     "disclaimer": "Clause de non-responsabilité",

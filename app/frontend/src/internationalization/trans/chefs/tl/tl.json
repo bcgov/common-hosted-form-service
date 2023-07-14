@@ -141,7 +141,8 @@
     "text": "text",
     "password": "password",
     "hideSecret": "Itago ang Lihim",
-    "showSecret": "Ipakita ang Lihim"
+    "showSecret": "Ipakita ang Lihim",
+    "key" : "Susi"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",

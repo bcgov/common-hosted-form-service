@@ -21,13 +21,14 @@ class FormSubscription extends Timestamps(Model) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['formId', 'endPointUrl', 'endPointToken'],
+      required: ['formId', 'endpointUrl', 'endpointToken'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         subscribeEvent: {type: 'string' },
-        endPointUrl: {type: 'string' },
-        endPointToken: {type: 'string' },
+        endpointUrl: {type: 'string' },
+        endpointToken: {type: 'string' },
+        key: {type: 'string' },
         ...stamps,
       },
       additionalProperties: false,

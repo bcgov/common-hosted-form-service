@@ -141,7 +141,8 @@
     "text": "متن",
     "password": "کلمه عبور",
     "hideSecret": "پنهان کردن راز",
-    "showSecret": "نمایش راز"
+    "showSecret": "نمایش راز",
+    "key" : "کلید"
   },
   "apiKey": {
     "disclaimer": "سلب مسئولیت",

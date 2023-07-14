@@ -42,8 +42,8 @@ describe('form getters', () => {
     version: { type: 'form' },
     subscriptionData: { 
       subscribeEvent: 'test',
-      endPointUrl: 'http://localhost.com',
-      endPointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
+      endpointUrl: 'http://localhost.com',
+      endpointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
     }
   };
 

@@ -141,7 +141,8 @@
     "text": "मूलपाठ",
     "password": "पासवर्ड",
     "hideSecret": "गुप्त छुपाएं",
-    "showSecret": "राज दिखाओ"
+    "showSecret": "राज दिखाओ",
+    "key" : "चाबी"
   },
   "apiKey": {
     "disclaimer": "अस्वीकरण",

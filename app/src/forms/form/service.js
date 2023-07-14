@@ -393,9 +393,10 @@ const service = {
 
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
-
-      if (subscribe && subscribe.enabled && subscribe.eventSubmission) {
-        service.postSubscriptionEvent(subscribe, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
+      if (subscribe && subscribe.enabled) {
+        const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
+        const config = Object.assign({},subscribe,subscribeConfig);
+        service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
       }
 
       // does this submission contain any file uploads?
@@ -660,7 +661,7 @@ const service = {
 
         axiosInstance.interceptors.request.use(
           (cfg) => {
-            cfg.headers = { 'x-api-key': `${subscribe.endpointToken}` };
+            cfg.headers = { [subscribe.key]: `${subscribe.endpointToken}` };
             return Promise.resolve(cfg);
           },
           (error) => {

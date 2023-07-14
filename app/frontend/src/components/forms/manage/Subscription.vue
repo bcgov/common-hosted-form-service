@@ -17,7 +17,18 @@
             flat
             solid
             outlined
-            v-model="subscriptionData.endPointUrl"
+            :rules="endpointUrlRules"
+            v-model="subscriptionData.endpointUrl"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" md="8" sm="12" lg="8" xl="8">
+          <v-text-field
+            :label="$t('trans.subscribeEvent.key')"
+            dense
+            flat
+            solid
+            outlined
+            v-model="subscriptionData.key"
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="8" sm="12" xl="8" lg="8">
@@ -27,7 +38,7 @@
             flat
             solid
             outlined
-            v-model="subscriptionData.endPointToken"
+            v-model="subscriptionData.endpointToken"
             :rules="endpointTokenRules"
             :type="
               showSecret

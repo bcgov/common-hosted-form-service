@@ -39,8 +39,9 @@ const genInitialSubscribe = () => ({
 });
 const genInitialSubscribeDetails = () => ({
   subscribeEvent: '',
-  endPointUrl: null,
-  endPointToken: null,
+  endpointUrl: null,
+  endpointToken: null,
+  key: '',
 });
 
 const genInitialForm = () => ({

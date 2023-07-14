@@ -141,7 +141,8 @@
     "text": "ਟੈਕਸਟ",
     "password": "ਪਾਸਵਰਡ",
     "hideSecret": "ਗੁਪਤ ਲੁਕਾਓ",
-    "showSecret": "ਗੁਪਤ ਦਿਖਾਓ"
+    "showSecret": "ਗੁਪਤ ਦਿਖਾਓ",
+    "key" : "ਕੁੰਜੀ"
   },
   "apiKey": {
     "disclaimer": "ਬੇਦਾਅਵਾ",

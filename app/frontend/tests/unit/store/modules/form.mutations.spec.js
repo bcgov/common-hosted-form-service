@@ -133,8 +133,8 @@ describe('form mutations', () => {
   it('SET_SUBSCRIPTION_DATA should update subscriptionData state', () => {
     const obj = {  
       subscribeEvent: 'test',
-      endPointUrl: 'http://localhost.com',
-      endPointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
+      endpointUrl: 'http://localhost.com',
+      endpointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
      };
     store.mutations.SET_SUBSCRIPTION_DATA(state, obj);
 
