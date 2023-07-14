@@ -130,13 +130,13 @@ describe('form mutations', () => {
     expect(state.fcProactiveHelpImageUrl).toEqual(obj);
   });
 
-  it('SET_SUBSCRPTION_DATA should update subscriptionData state', () => {
+  it('SET_SUBSCRIPTION_DATA should update subscriptionData state', () => {
     const obj = {  
       subscribeEvent: 'test',
       endPointUrl: 'http://localhost.com',
       endPointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
      };
-    store.mutations.SET_SUBSCRPTION_DATA(state, obj);
+    store.mutations.SET_SUBSCRIPTION_DATA(state, obj);
 
     expect(state.subscriptionData).toBeTruthy();
     expect(state.subscriptionData).toEqual(expect.objectContaining(obj));

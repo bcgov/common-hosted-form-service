@@ -184,7 +184,7 @@ export default {
     SET_MULTI_LANGUAGE(state, multiLanguage) {
       state.multiLanguage = multiLanguage;
     },
-    SET_SUBSCRPTION_DATA(state, subscriptionData) {
+    SET_SUBSCRIPTION_DATA(state, subscriptionData) {
       state.subscriptionData = subscriptionData;
     },
   },
@@ -928,7 +928,7 @@ export default {
       try {
         const { data } = await formService.readFormSubscriptionData(formId);
         if (data) {
-          commit('SET_SUBSCRPTION_DATA', data);
+          commit('SET_SUBSCRIPTION_DATA', data);
         }
       } catch (error) {
         dispatch(
@@ -957,7 +957,7 @@ export default {
           subscriptionData
         );
         if (data) {
-          commit('SET_SUBSCRPTION_DATA', data);
+          commit('SET_SUBSCRIPTION_DATA', data);
         }
         dispatch(
           'notifications/addNotification',
