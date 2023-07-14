@@ -240,7 +240,7 @@ const service = {
         case 'multiRowBackFilledCSVExport':
           return service._multiRowsCSVExport(form, data, version, false, fields, emailExport, currentUser, referer);
         case 'singleRowCSVExport':
-          return service._singleRowCSVExport(form, data, currentUser, emailExport, referer);
+          return service._singleRowCSVExport(form, data, version, fields, currentUser, emailExport, referer);
         case 'unFormattedCSVExport':
           return service._unFormattedCSVExport(form, data, emailExport, currentUser, referer);
         default:
@@ -253,7 +253,7 @@ const service = {
     }
   },
   _multiRowsCSVExport: async (form, data, version, blankout, fields, emailExport, currentUser, referer) => {
-    let pathToUnwind = await unwindPath(data);
+    const pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, fields);
 
     const opts = {
@@ -263,9 +263,11 @@ const service = {
 
     return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
   },
-  _singleRowCSVExport: async (form, data, currentUser, emailExport, referer) => {
+  _singleRowCSVExport: async (form, data, version, fields, currentUser, emailExport, referer) => {
+    const headers = await service._buildCsvHeaders(form, data, version, fields);
     const opts = {
       transforms: [flatten({ objects: true, arrays: true, separator: '.' })],
+      fields: headers,
     };
 
     return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
