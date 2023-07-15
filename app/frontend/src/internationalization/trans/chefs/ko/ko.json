@@ -745,6 +745,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "사람을 찾을 수 없습니까? CHEFS에 로그인하지 않았을 수 있습니다.<br /> 그들에게 CHEFS에 대한 링크를 보내고 로그인하도록 요청하십시오.",
     "cancel": "취소",
+    "add": "추가하다",
     "mustSelectAUser": "이 사용자를 추가하려면 하나 이상의 역할을 선택해야 합니다.",
     "addNewMember": "새 구성원 추가",
     "enterUsername": "이름, 이메일 또는 사용자 이름을 입력하세요.",

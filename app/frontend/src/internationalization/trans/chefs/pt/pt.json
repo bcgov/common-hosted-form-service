@@ -745,6 +745,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Não consegue encontrar alguém? Eles podem não ter logado no CHEFS.<br /> Por favor, envie-lhes um link para CHEFS e peça-lhes para fazer login.",
     "cancel": "Cancelar",
+    "add": "Adicionar",
     "mustSelectAUser": "Você deve selecionar pelo menos uma função para adicionar este usuário.",
     "addNewMember": "Adicionar um novo membro",
     "enterUsername": "Digite um nome, e-mail ou nome de usuário",
