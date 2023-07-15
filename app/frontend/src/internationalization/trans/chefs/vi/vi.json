@@ -745,6 +745,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Không thể tìm thấy một người nào đó? Họ có thể chưa đăng nhập vào CHEFS.<br /> Vui lòng gửi cho họ một liên kết đến CHEFS và yêu cầu họ đăng nhập.",
     "cancel": "Hủy bỏ",
+    "add": "Thêm vào",
     "mustSelectAUser": "Bạn phải chọn ít nhất một vai trò để thêm người dùng này.",
     "addNewMember": "Thêm một thành viên mới",
     "enterUsername": "Nhập tên, e-mail hoặc tên người dùng",

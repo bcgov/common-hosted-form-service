@@ -57,18 +57,24 @@
       <!-- Status  -->
       <template #[`item.status`]="{ item }">
         <v-switch
+          :class="{ 'dir-rtl': isRTL }"
           data-cy="formPublishedSwitch"
           color="success"
           value
           :input-value="item.published"
-          :label="
-            item.published
-              ? $t('trans.manageVersions.published')
-              : $t('trans.manageVersions.unpublished')
-          "
           :disabled="!canPublish"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
-        />
+        >
+          <template #label>
+            <span :class="isRTL ? 'mr-2' : null">
+              {{
+                item.published
+                  ? $t('trans.manageVersions.published')
+                  : $t('trans.manageVersions.unpublished')
+              }}</span
+            >
+          </template>
+        </v-switch>
       </template>
 
       <!-- Created date  -->
