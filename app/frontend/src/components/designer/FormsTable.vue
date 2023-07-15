@@ -35,7 +35,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            :label="$t('trans.formsTable.createNewForm')"
+            :label="$t('trans.formsTable.search')"
             single-line
             hide-details
             class="pb-5"
