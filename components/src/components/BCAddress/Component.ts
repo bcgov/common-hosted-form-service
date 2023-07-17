@@ -3,6 +3,7 @@
 import {Components} from 'formiojs';
 import { Constants } from '../Common/Constants';
 import editForm from './Component.form';
+import _ from 'lodash';
 
 export const AddressComponentMode = {
   Autocomplete: 'autocomplete',
@@ -49,6 +50,17 @@ export default class Component extends (ParentComponent as any) {
             documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema()
         };
+    }
+
+    mergeSchema(component = {}) {
+
+      let components = component['components'];
+
+      if (components) {
+        return _.omit(component, 'components');
+      }
+
+      return component;
     }
 
     public static editForm = editForm;
