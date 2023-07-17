@@ -346,13 +346,13 @@ paths:
           name: deleted
           schema:
             type: Boolean
-          description: (optional) This optional parameter should be set to true if deleted records (submissions) need to be fetched 
+          description: (optional) This optional parameter should be set to true if only deleted records (submissions) need to be fetched and should be set to false if only non-deleted records (submissions) need to be fetched 
           example: false
         - in: query
           name: drafts
           schema:
             type: Boolean
-          description: (optional) This optional parameter should be set to true if draft records (submissions) need to be fetched
+          description: (optional) This optional parameter should be set to true if only draft records (submissions) need to be fetched and should be set to false if only non-draft records (submissions) need to be fetched 
           example: false
         - in: query
           name: columns

@@ -36,12 +36,16 @@ class SubmissionData extends Model {
         }
       },
       filterDeleted(query, value) {
-        if (!value) {
+        if (value === 'true') {
+          query.where('deleted', true);
+        } else if (value === 'false') {
           query.where('deleted', false);
         }
       },
       filterDrafts(query, value) {
-        if (!value) {
+        if (value === 'true') {
+          query.where('draft', true);
+        } else if (value === 'false') {
           query.where('draft', false);
         }
       },

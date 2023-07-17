@@ -404,6 +404,10 @@ export default {
           this.validate(this.Json[this.index], errors);
         });
       } else {
+        this.$nextTick(() => {
+          this.index++;
+          this.value = this.percentage(this.index);
+        });
         this.endValidation(errors);
       }
     },
