@@ -7,7 +7,7 @@ const service = {
     let searchAddresses = await geoAddressService.addressQuerySearch(query);
 
     if (searchAddresses?.features && Array.isArray(searchAddresses.features)) {
-      await searchAddresses.features.forEach((element) => {
+      searchAddresses.features.forEach((element) => {
         if (element?.properties?.fullAddress) {
           addresses.features.push({ geometry: { coordinates: element.geometry.coordinates }, properties: { fullAddress: element.properties.fullAddress } });
         }
