@@ -284,6 +284,7 @@ export default {
               // Prevent duplicate appearance of orgbook component
               orgbook: false,
               bcaddress: false,
+              simplebcaddress: false,
             },
           },
           data: {
@@ -297,6 +298,7 @@ export default {
               orgbook: true,
               simplefile: this.userType !== this.ID_MODE.PUBLIC,
               bcaddress: true,
+              simplebcaddress: true,
             },
           },
         },
