@@ -3,6 +3,7 @@
 import {Components} from 'formiojs';
 import { Constants } from '../Common/Constants';
 import editForm from './Component.form';
+import _ from 'lodash';
 
 export const AddressComponentMode = {
   Autocomplete: 'autocomplete',
@@ -46,7 +47,8 @@ export default class Component extends (ParentComponent as any) {
             icon: 'address-book',
             weight: 90,
             documentation: Constants.DEFAULT_HELP_LINK,
-            schema: Component.schema()
+            schema: Component.schema(),
+
         };
     }
 
@@ -63,7 +65,9 @@ export default class Component extends (ParentComponent as any) {
             let {
                 providerOptions,
                 queryParameters,
+
             } = this.component;
+
             if(providerOptions) {
                 if(!providerOptions.params) {
                     providerOptions["params"]={}
@@ -77,6 +81,18 @@ export default class Component extends (ParentComponent as any) {
             console.log(`This error is from Custom BC Address component in form.io: Failed to acquire configuration: ${err.message}`);
         }
     }
+
+    mergeSchema(component = {}) {
+
+      let components = component['components'];
+
+      if (components) {
+        return _.omit(component, 'components');
+      }
+
+      return component;
+    }
+
 
 }
 export {};
