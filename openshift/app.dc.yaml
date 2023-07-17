@@ -182,6 +182,11 @@ objects:
                     secretKeyRef:
                       key: chefsgeoaddressapiurl
                       name: "${APP_NAME}-bcgeoaddress-secret"
+                - name: VUE_APP_CHEFS_ADVANCE_GEO_ADDRESS_APIURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: chefsadvancegeoaddressapiurl
+                      name: "${APP_NAME}-bcgeoaddress-secret"
                 - name: VUE_APP_BC_GEO_ADDRESS_APIURL
                   valueFrom:
                     secretKeyRef:
