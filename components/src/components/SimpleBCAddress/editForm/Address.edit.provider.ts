@@ -9,7 +9,6 @@ export default [
     label: 'Response Property',
     placeholder: 'Enter Response Property',
     weight: 30,
-    disabled:true,
     tooltip: 'The property within the response data, where iterable addresses reside. For example: results.',
   },
   {
@@ -19,7 +18,6 @@ export default [
     key: 'providerOptions.displayValueProperty',
     label: 'Display Value Property',
     placeholder: 'Display Value Property',
-    disabled:true,
     weight: 40,
     tooltip: 'The property of each address in the response to use as the display value.',
   },
