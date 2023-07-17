@@ -25,7 +25,7 @@
             data-test="text-description"
             v-model="description"
             :rules="descriptionRules"
-            :class="{ 'dir-rtl': isRTL }"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
           />
         </BasePanel>
       </v-col>
@@ -46,6 +46,7 @@
               :label="$t('trans.formSettings.public')"
               :value="ID_MODE.PUBLIC"
             />
+
             <v-expand-transition>
               <BaseInfoCard v-if="userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
                 <h4 class="primary--text">

@@ -47,7 +47,7 @@
               showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
             "
             :value="secret"
-            :class="{ 'dir-rtl': isRTL }"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
           />
         </v-col>
         <v-col cols="12" sm="3">
