@@ -128,7 +128,7 @@ export default {
     SET_FORM(state, form) {
       state.form = form;
     },
-    SET_IS_RTl(state, isRTL) {
+    SET_IS_RTL(state, isRTL) {
       state.isRTL = isRTL;
     },
     SET_FORM_FIELDS(state, formFields) {
@@ -890,11 +890,11 @@ export default {
       if (
         multiLanguage === 'ar' ||
         multiLanguage === 'fa' ||
-        multiLanguage === 'pa'
+        multiLanguage === 'pu'
       ) {
-        commit('SET_IS_RTl', true);
+        commit('SET_IS_RTL', true);
       } else {
-        commit('SET_IS_RTl', false);
+        commit('SET_IS_RTL', false);
       }
     },
     async downloadFile({ commit, dispatch }, fileId) {

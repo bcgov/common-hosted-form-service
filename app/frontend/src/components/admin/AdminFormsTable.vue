@@ -23,7 +23,7 @@
             single-line
             hide-details
             class="pb-5"
-            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+            :class="{ 'dir-rtl': isRTL, label: isRTL }"
           />
         </div>
       </v-col>

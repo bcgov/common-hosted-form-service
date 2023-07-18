@@ -58,7 +58,7 @@
                     data-cy="more_help_info_link_text_field"
                     class="text-style"
                     color="#1A5A96"
-                    :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+                    :class="{ 'dir-rtl': isRTL, label: isRTL }"
                   >
                     {{ moreHelpInfoLink }}
                   </v-text-field>
@@ -96,7 +96,7 @@
                 data-cy="more_help_info_link_text_area"
                 value="description"
                 class="text-style"
-                :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+                :class="{ 'dir-rtl': isRTL, label: isRTL }"
               ></v-textarea>
             </v-col>
           </v-row>
