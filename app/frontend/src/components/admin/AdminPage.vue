@@ -28,15 +28,16 @@ export default {
   },
   data() {
     return {
+      index: 2,
       adminDashboardUrl: this.$config.adminDashboardUrl,
     };
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
   },
 };
 </script>
-<style lang="css" scoped>
+<style lang="css">
 .dir-rtl {
   direction: rtl !important;
   text-align: right;

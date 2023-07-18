@@ -12,6 +12,7 @@ import it from '@/internationalization/trans/chefs/it';
 import ja from '@/internationalization/trans/chefs/ja';
 import ko from '@/internationalization/trans/chefs/ko';
 import pa from '@/internationalization/trans/chefs/pa';
+import pu from '@/internationalization/trans/chefs/pu';
 import pt from '@/internationalization/trans/chefs/pt';
 import ru from '@/internationalization/trans/chefs/ru';
 import tl from '@/internationalization/trans/chefs/tl';
@@ -34,6 +35,7 @@ const messages = {
   ja: ja,
   ko: ko,
   pa: pa,
+  pu: pu,
   pt: pt,
   ru: ru,
   tl: tl,

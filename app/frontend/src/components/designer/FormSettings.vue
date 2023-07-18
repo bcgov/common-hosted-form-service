@@ -25,7 +25,7 @@
             data-test="text-description"
             v-model="description"
             :rules="descriptionRules"
-            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+            :class="[{ 'dir-rtl': isRTL, label: isRTL }]"
           />
         </BasePanel>
       </v-col>

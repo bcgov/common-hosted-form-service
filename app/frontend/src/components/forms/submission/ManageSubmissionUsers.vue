@@ -35,7 +35,7 @@
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
-                  :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+                  :class="{ 'dir-rtl': isRTL, label: isRTL }"
                   autocomplete="autocomplete_off"
                   v-model="userSearchSelection"
                   clearable
