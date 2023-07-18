@@ -63,7 +63,7 @@
           hide-details
           :label="$t('trans.teamManagement.search')"
           single-line
-          :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+          :class="{ 'dir-rtl': isRTL, label: isRTL }"
         />
       </v-col>
     </v-row>

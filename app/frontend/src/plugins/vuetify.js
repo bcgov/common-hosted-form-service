@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
 import hi from '@/internationalization/trans/vuetify/locale/hi';
 import pa from '@/internationalization/trans/vuetify/locale/pa';
+import pu from '@/internationalization/trans/vuetify/locale/pu';
 import tl from '@/internationalization/trans/vuetify/locale/tl';
 import zhHans from 'vuetify/lib/locale/zh-Hans';
 import zhHant from 'vuetify/lib/locale/zh-Hant';
@@ -46,6 +47,7 @@ export default new Vuetify({
       hi,
       pa,
       tl,
+      pu,
     },
     current: 'en',
   },

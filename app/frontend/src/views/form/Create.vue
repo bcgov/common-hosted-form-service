@@ -133,9 +133,4 @@ export default {
 .v-stepper ::v-deep .v-stepper__wrapper {
   overflow: initial !important;
 }
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-  column-gap: 10px;
-}
 </style>

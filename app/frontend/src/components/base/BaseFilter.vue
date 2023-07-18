@@ -63,7 +63,7 @@
       }}</v-btn>
       <v-btn
         @click="cancelFilterData"
-        class="mt-3 ml-3 primary--text"
+        class="mt-3 primary--text"
         :class="isRTL ? 'mr-3' : 'ml-3'"
         outlined
         >{{ $t('trans.baseFilter.cancel') }}</v-btn

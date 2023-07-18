@@ -161,10 +161,6 @@ export default {
     height: 422px;
     margin: 0 auto;
   }
-  .dir-rtl {
-    direction: rtl !important;
-    text-align: center;
-  }
   .main-video {
     margin-top: 40px;
     margin-bottom: 20px;
