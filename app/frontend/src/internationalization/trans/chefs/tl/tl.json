@@ -745,6 +745,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Hindi mahanap ang isang tao? Maaaring hindi sila naka-log in sa CHEFS.<br /> Mangyaring magpadala sa kanila ng link sa CHEFS at hilingin sa kanila na mag-log in.",
     "cancel": "Kanselahin",
+    "add": "Idagdag",
     "mustSelectAUser": "Dapat kang pumili ng hindi bababa sa isang tungkulin upang idagdag ang user na ito.",
     "addNewMember": "Magdagdag ng Bagong Miyembro",
     "enterUsername": "Maglagay ng pangalan, e-mail, o username",

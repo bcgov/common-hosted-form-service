@@ -116,7 +116,7 @@
               :loading="isLoading"
               @click="save"
             >
-              <span>Adds</span>
+              <span>{{ $t('trans.addTeamMember.add') }}</span>
             </v-btn>
             <v-btn
               outlined
@@ -126,7 +126,7 @@
                 showError = false;
               "
             >
-              <span>Cancel</span>
+              <span>{{ $t('trans.addTeamMember.cancel') }}</span>
             </v-btn>
           </v-col>
         </v-row>
@@ -208,8 +208,8 @@ export default {
     },
   },
   computed: {
-    ...mapFields('form', ['form.idps']),
-    ...mapGetters('auth', ['identityProvider', 'isRTL']),
+    ...mapFields('form', ['form.idps', 'isRTL']),
+    ...mapGetters('auth', ['identityProvider']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },

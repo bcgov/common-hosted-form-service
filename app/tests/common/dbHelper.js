@@ -48,6 +48,8 @@ MockModel.orderBy = jest.fn().mockReturnThis();
 MockModel.patch = jest.fn().mockReturnThis();
 MockModel.patchAndFetchById = jest.fn().mockReturnThis();
 MockModel.query = jest.fn().mockReturnThis();
+MockModel.query.select = jest.fn().mockReturnThis();
+MockModel.query.column = jest.fn().mockReturnThis();
 MockModel.resolve = jest.fn().mockResolvedValue(returnValue);
 MockModel.returning = jest.fn().mockReturnThis();
 (MockModel.skipUndefined = jest.fn(() => {

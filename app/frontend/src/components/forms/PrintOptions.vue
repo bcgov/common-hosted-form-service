@@ -50,17 +50,25 @@
             {{ $t('trans.printOptions.uploadB') }}
           </p>
           <v-file-input
-            :class="{ 'dir-rtl': isRTL }"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+            :style="isRTL ? { gap: '10px' } : null"
             counter
             :clearable="true"
             :label="$t('trans.printOptions.uploadTemplateFile')"
             persistent-hint
-            append-icon="attachment"
+            prepend-icon="attachment"
             required
             mandatory
             show-size
             v-model="templateForm.files"
-          />
+          >
+            <template v-slot:prepend>
+              <span class="label">
+                <v-icon>attachment</v-icon>
+              </span>
+            </template>
+          </v-file-input>
+
           <v-card-actions>
             <v-tooltip top>
               <template #activator="{ on }">

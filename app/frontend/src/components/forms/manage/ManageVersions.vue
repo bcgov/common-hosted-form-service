@@ -2,7 +2,7 @@
   <div :class="{ 'dir-rtl': isRTL }">
     <BaseInfoCard class="my-4">
       <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon
+        <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" color="primary">info</v-icon
         >{{ $t('trans.manageVersions.important') }}
       </h4>
       <p>
@@ -11,7 +11,7 @@
     </BaseInfoCard>
 
     <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary">info</v-icon
+      <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" color="primary">info</v-icon
       >{{ $t('trans.manageVersions.infoB') }}
     </div>
     <v-data-table
@@ -57,18 +57,24 @@
       <!-- Status  -->
       <template #[`item.status`]="{ item }">
         <v-switch
+          :class="{ 'dir-rtl': isRTL }"
           data-cy="formPublishedSwitch"
           color="success"
           value
           :input-value="item.published"
-          :label="
-            item.published
-              ? $t('trans.manageVersions.published')
-              : $t('trans.manageVersions.unpublished')
-          "
           :disabled="!canPublish"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
-        />
+        >
+          <template #label>
+            <span :class="isRTL ? 'mr-2' : null">
+              {{
+                item.published
+                  ? $t('trans.manageVersions.published')
+                  : $t('trans.manageVersions.unpublished')
+              }}</span
+            >
+          </template>
+        </v-switch>
       </template>
 
       <!-- Created date  -->

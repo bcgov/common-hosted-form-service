@@ -745,6 +745,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "找不到人？他們可能沒有登錄 CHEFS。<br />請向他們發送指向 CHEFS 的鏈接並請他們登錄。",
     "cancel": "取消",
+    "add": "添加",
     "mustSelectAUser": "您必須選擇至少一個角色才能添加此用戶。",
     "addNewMember": "添加新成員",
     "enterUsername": "輸入姓名、電子郵件或用戶名",
