@@ -1,5 +1,5 @@
 <template>
-  <v-tabs :class="{ 'dir-rtl': isRTL, slider: isRTL }">
+  <v-tabs :class="{ 'dir-rtl': isRTL }">
     <v-tab>{{ $t('trans.adminPage.forms') }}</v-tab>
     <v-tab>{{ $t('trans.adminPage.users') }}</v-tab>
     <v-tab>{{ $t('trans.adminPage.developer') }}</v-tab>
