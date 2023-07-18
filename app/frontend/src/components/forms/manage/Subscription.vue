@@ -105,12 +105,6 @@ export default {
       ],
       endpointTokenRules: [
         (v) => !!v || this.$t('trans.formSettings.validBearerTokenRequired'),
-        (v) =>
-          (v &&
-            new RegExp(/^[\d|a-f]{8}-([\d|a-f]{4}-){3}[\d|a-f]{12}/g).test(
-              v
-            )) ||
-          this.$t('trans.formSettings.validBearerTokenRequired'),
       ],
     };
   },
