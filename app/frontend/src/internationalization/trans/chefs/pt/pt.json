@@ -843,7 +843,6 @@
       "getCurrUserFormPrefErrMsg": "Ocorreu um erro ao buscar suas preferências para este formulário.",
       "getCurrUserFormPrefConsErrMsg": "Erro ao obter preferências de formulário do usuário usando formID {formId}: {error}",
       "delCurrformNotiMsg": "O formulário {name} foi excluído com sucesso.",
-      "delCurrformErrMsg": "Ocorreu um erro ao tentar excluir ${name}.",
       "delCurrFormConsErMsg": "Erro ao excluir o formulário {id}: {error}",
       "delDraftErrMsg": "Ocorreu um erro ao excluir este rascunho.",
       "delDraftConsErrMsg": "Erro ao excluir {draftId}: {error}",

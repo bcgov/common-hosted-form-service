@@ -843,7 +843,6 @@
       "getCurrUserFormPrefErrMsg": "Une erreur s'est produite lors de la récupération de vos préférences pour ce formulaire.",
       "getCurrUserFormPrefConsErrMsg": "Erreur lors de l'obtention des préférences du formulaire utilisateur à l'aide du formID {formId} : {error}",
       "delCurrformNotiMsg": "Le formulaire {name} a été supprimé avec succès.",
-      "delCurrformErrMsg": "Une erreur s'est produite lors de la tentative de suppression de {name}.",
       "delCurrFormConsErMsg": "Erreur lors de la suppression du formulaire {id} : {error}",
       "delDraftErrMsg": "Une erreur s'est produite lors de la suppression de ce brouillon.",
       "delDraftConsErrMsg": "Erreur lors de la suppression de {draftId} : {error}",
