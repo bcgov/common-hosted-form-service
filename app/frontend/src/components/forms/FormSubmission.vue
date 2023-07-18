@@ -76,7 +76,7 @@
         <v-card outlined class="review-form">
           <div :class="{ 'dir-rtl': isRTL }">
             <v-row no-gutters>
-              <v-col cols="2">
+              <v-col cols="10">
                 <h2 class="review-heading">
                   {{ $t('trans.formSubmission.submission') }}
                 </h2>
@@ -86,7 +86,7 @@
                 v-if="form.enableStatusUpdates"
                 :class="isRTL ? 'text-left' : 'text-right'"
                 class="d-print-none"
-                cols="10"
+                cols="2"
               >
                 <span v-if="submissionReadOnly">
                   <AuditHistory :submissionId="submissionId" />

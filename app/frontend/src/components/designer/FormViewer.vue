@@ -67,11 +67,11 @@
           "
           transition="scale-transition"
         >
-          <div v-if="saving" :class="{ 'dir-rtl': isRTL }">
+          <div v-if="saving" :class="[isRTL ? 'mr-1' : '']">
             <v-progress-linear indeterminate />
-            {{ $t('trans.formViewer.saving') }}
+            {{ $t('trans.formVewer.saving') }}
           </div>
-          <div v-else :class="{ 'dir-rtl': isRTL }">
+          <div v-else :class="[isRTL ? 'mr-1' : '']">
             {{ $t('trans.formViewer.draftSaved') }}
           </div>
         </v-alert>
@@ -145,7 +145,11 @@
           @render="onFormRender"
           :language="multiLanguage"
         />
-        <p v-if="version" class="text-right">
+        <p
+          v-if="version"
+          :class="isRTL ? 'text-left' : 'text-right'"
+          class="mt-9"
+        >
           {{ $t('trans.formViewer.version', { version: version }) }}
         </p>
       </div>
