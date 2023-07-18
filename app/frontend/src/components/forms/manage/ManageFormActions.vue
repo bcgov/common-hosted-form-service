@@ -41,9 +41,9 @@ export default {
   },
   methods: {
     ...mapActions(useFormStore, ['deleteCurrentForm']),
-    deleteForm() {
+    async deleteForm() {
       this.showDeleteDialog = false;
-      this.deleteCurrentForm();
+      await this.deleteCurrentForm();
       this.$router.push({ name: 'UserForms' });
     },
   },

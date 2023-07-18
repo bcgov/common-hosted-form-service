@@ -68,13 +68,16 @@ export default {
     <v-card-title class="text-h5 pb-0 titleWrapper">
       <slot name="filter-title"></slot>
     </v-card-title>
-    <v-card-subtitle class="mt-1 d-flex subTitleWrapper"> </v-card-subtitle>
+    <v-card-subtitle class="mt-1 d-flex subTitleWrapper">
+      <slot name="filter-subtitle"></slot>
+    </v-card-subtitle>
     <v-card-text class="mt-0 pt-0">
       <hr class="hr" />
 
       <div class="d-flex flex-row align-center" style="gap: 30px">
         <v-text-field
           v-model="inputFilter"
+          data-test="filter-search"
           :label="inputFilterLabel"
           :placeholder="inputFilterPlaceholder"
           clearable
@@ -88,6 +91,7 @@ export default {
       </div>
       <v-data-table
         v-model="selectedData"
+        data-test="filter-table"
         fixed-header
         show-select
         hide-default-footer

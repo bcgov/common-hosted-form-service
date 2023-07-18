@@ -108,6 +108,7 @@ a,
 }
 
 .v-btn {
+
   span > span {
     font-weight: bold;
   }
@@ -271,6 +272,7 @@ a,
   }
 
   // buttons
+
   .btn {
     @extend .v-btn;
   }
@@ -409,6 +411,16 @@ a,
   // the drag/drop area needs to line up with vuetify v-application ul styles...
   .formio-component-file .fileSelector {
     margin-left: 24px;
+  }
+}
+
+.formcomponents {
+  .builder-sidebar {
+    .form-builder-panel {
+      .formcomponent.btn-block {
+        width: 100%;
+      }
+    }
   }
 }
 
