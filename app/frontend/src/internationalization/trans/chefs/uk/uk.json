@@ -843,7 +843,6 @@
       "getCurrUserFormPrefErrMsg": "Під час отримання ваших налаштувань для цієї форми сталася помилка.",
       "getCurrUserFormPrefConsErrMsg": "Помилка отримання налаштувань форми користувача за допомогою ідентифікатора форми {formId}: {помилка}",
       "delCurrformNotiMsg": "Форму {name} успішно видалено.",
-      "delCurrformErrMsg": "Під час спроби видалити {name} сталася помилка.",
       "delCurrFormConsErMsg": "Помилка видалення форми {id}: {error}",
       "delDraftErrMsg": "Під час видалення цієї чернетки сталася помилка.",
       "delDraftConsErrMsg": "Помилка видалення {draftId}: {error}",

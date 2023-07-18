@@ -843,7 +843,6 @@
       "getCurrUserFormPrefErrMsg": "Произошла ошибка при получении ваших предпочтений для этой формы.",
       "getCurrUserFormPrefConsErrMsg": "Ошибка при получении настроек пользовательской формы с помощью formID {formId}: {error}",
       "delCurrformNotiMsg": "Форма {name} успешно удалена.",
-      "delCurrformErrMsg": "Произошла ошибка при попытке удалить {name}.",
       "delCurrFormConsErMsg": "Ошибка удаления формы {id}: {error}",
       "delDraftErrMsg": "При удалении этого черновика произошла ошибка.",
       "delDraftConsErrMsg": "Ошибка при удалении {draftId}: {error}",
