@@ -840,7 +840,6 @@
       "getCurrUserFormPrefErrMsg": "حدث خطأ أثناء جلب تفضيلاتك لهذا النموذج.",
       "getCurrUserFormPrefConsErrMsg": "خطأ في الحصول على تفضيلات نموذج المستخدم باستخدام formID {formId}: {error}",
       "delCurrformNotiMsg": "تم حذف النموذج {name} بنجاح.",
-      "delCurrformErrMsg": "حدث خطأ أثناء محاولة حذف {name}.",
       "delCurrFormConsErMsg": "خطأ في حذف النموذج {id}: {error}",
       "delDraftErrMsg": "حدث خطأ أثناء حذف هذه المسودة.",
       "delDraftConsErrMsg": "خطأ في حذف {DraftId}: {error}",
