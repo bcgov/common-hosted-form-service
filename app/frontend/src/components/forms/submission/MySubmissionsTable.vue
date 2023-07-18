@@ -1,13 +1,18 @@
 <template>
-  <div>
-    <v-skeleton-loader :loading="loading" type="heading">
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-skeleton-loader
+      :loading="loading"
+      type="heading"
+      :class="{ 'dir-rtl': isRTL }"
+    >
       <v-row class="mt-6" no-gutters>
         <!-- page title -->
-        <v-col cols="12" sm="6" order="2" order-sm="1">
+        <v-col cols="10">
           <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
+          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
         </v-col>
         <!-- buttons -->
-        <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+        <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="2">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -47,18 +52,16 @@
             }}</span>
           </v-tooltip>
         </v-col>
-        <!-- form name -->
-        <v-col cols="12" order="3">
-          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
-        </v-col>
       </v-row>
     </v-skeleton-loader>
 
     <v-row no-gutters>
-      <v-spacer />
-      <v-col cols="12" sm="4">
+      <v-col cols="12">
         <!-- search input -->
-        <div class="submissions-search">
+        <div
+          class="submissions-search"
+          :class="isRTL ? 'float-left' : 'float-right'"
+        >
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -66,6 +69,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
           />
         </div>
       </v-col>
@@ -164,6 +168,7 @@ export default {
       'submissionList',
       'permissions',
       'formFields',
+      'isRTL',
     ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
@@ -359,6 +364,10 @@ export default {
   }
 }
 
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
 .submissions-table {
   clear: both;
 }

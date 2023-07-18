@@ -2,7 +2,7 @@
   <v-row class="d-print-none" :class="{ 'dir-rtl': isRTL }">
     <v-col v-if="formId">
       <v-btn outlined @click="goToAllSubmissionOrDraft">
-        <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }} </span>
+        <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }} s </span>
       </v-btn>
     </v-col>
     <v-col :class="isRTL ? 'text-left' : 'text-right'">
