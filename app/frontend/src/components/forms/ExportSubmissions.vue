@@ -92,7 +92,7 @@
                       dense
                       class="mt-3 submissions-table"
                       single-line
-                      :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+                      :class="{ 'dir-rtl': isRTL, label: isRTL }"
                     >
                     </v-text-field>
                     <span

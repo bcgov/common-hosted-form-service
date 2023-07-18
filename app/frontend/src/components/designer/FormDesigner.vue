@@ -62,7 +62,7 @@
     </div>
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
       <h4 class="primary--text">
-        <v-icon :class="isRTL ? 'ml-1' : mr - 1" color="primary">info</v-icon
+        <v-icon :class="isRTL ? 'ml-1' : 'mr - 1'" color="primary">info</v-icon
         >{{ $t('trans.formDesigner.important') }}!
       </h4>
       <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>

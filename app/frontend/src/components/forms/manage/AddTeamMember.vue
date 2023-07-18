@@ -41,7 +41,7 @@
               :loading="isLoading"
               return-object
               :search-input.sync="searchUsers"
-              :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : null]"
+              :class="{ 'dir-rtl': isRTL, label: isRTL }"
             >
               <!-- no data -->
               <template #no-data>
