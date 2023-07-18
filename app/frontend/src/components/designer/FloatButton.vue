@@ -160,7 +160,7 @@ export default {
     },
 
     gotoPreview() {
-      let route = this.$router.push({
+      let route = this.$router.resolve({
         name: 'FormPreview',
         query: { f: this.formId, d: this.draftId },
       });
@@ -301,6 +301,8 @@ export default {
         gap: fabItemsGap,
         zIndex: fabZIndex,
         position: 'fixed',
+        right: '-0.5vw',
+        bottom: '4vh',
       },
       fabItemsPosition,
     ]"

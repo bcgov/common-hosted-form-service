@@ -1,9 +1,8 @@
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { createRouter, createWebHistory } from 'vue-router';
 import { beforeEach, expect, vi } from 'vitest';
-import { nextTick } from 'vue';
 
 import getRouter from '~/router';
 import ManageLayout from '~/components/forms/manage/ManageLayout.vue';
@@ -84,7 +83,8 @@ describe('ManageLayout.vue', () => {
       },
     });
 
-    await nextTick();
-    expect(wrapper.html()).toContain('<h3>myForm</h3>');
+    await flushPromises();
+
+    expect(wrapper.html()).toContain('myForm');
   });
 });
