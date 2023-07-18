@@ -57,7 +57,7 @@ export default {
           <v-icon class="ml-3" icon="mdi:mdi-menu-down" />
         </v-btn>
       </template>
-      <v-list>
+      <v-list data-test="loc-list">
         <v-list-item
           v-for="loc in items"
           :key="loc.keyword"

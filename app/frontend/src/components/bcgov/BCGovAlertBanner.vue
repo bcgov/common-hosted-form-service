@@ -39,9 +39,7 @@ export default {
       }
     },
     TEXT() {
-      return this.text
-        ? this.text.replace(/(<([^>]+)>)/gi, '')
-        : i18n.t('trans.bcGovAlertBanner.defaultErrMsg');
+      return this.text.replace(/(<([^>]+)>)/gi, '');
     },
   },
   methods: {

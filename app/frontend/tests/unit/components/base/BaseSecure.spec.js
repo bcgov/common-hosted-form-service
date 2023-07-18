@@ -160,4 +160,29 @@ describe('BaseSecure.vue', () => {
     await loginBtn.trigger('click');
     expect(loginSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('renders a message with 403 if identity provider does not exist', () => {
+    authStore.authenticated = true;
+    authStore.ready = true;
+    authStore.keycloak = {
+      tokenParsed: {
+        resource_access: {
+          chefs: {
+            roles: ['user'],
+          },
+        },
+      },
+    };
+    const wrapper = mount(BaseSecure, {
+      props: {
+        admin: false,
+        idp: ['IDIR'],
+      },
+      global: {
+        plugins: [router, pinia],
+      },
+    });
+
+    expect(wrapper.text()).toMatch('trans.baseSecure.403Forbidden');
+  });
 });
