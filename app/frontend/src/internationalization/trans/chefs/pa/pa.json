@@ -843,7 +843,6 @@
       "getCurrUserFormPrefErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "getCurrUserFormPrefConsErrMsg": "formID {formId} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਫਾਰਮ ਪ੍ਰੀਫਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "delCurrformNotiMsg": "ਫਾਰਮ {name} ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।",
-      "delCurrformErrMsg": "{name} ਨੂੰ ਮਿਟਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "delCurrFormConsErMsg": "ਫਾਰਮ {id} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "delDraftErrMsg": "ਇਸ ਡਰਾਫਟ ਨੂੰ ਮਿਟਾਉਣ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "delDraftConsErrMsg": "{draftId} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",

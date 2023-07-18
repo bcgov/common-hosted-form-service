@@ -843,7 +843,6 @@
       "getCurrUserFormPrefErrMsg": "هنگام واکشی تنظیمات برگزیده شما برای این فرم خطایی روی داد.",
       "getCurrUserFormPrefConsErrMsg": "خطا در دریافت پیشفرض های فرم کاربر با استفاده از formID {formId}: {error}",
       "delCurrformNotiMsg": "فرم {name} با موفقیت حذف شد.",
-      "delCurrformErrMsg": "هنگام تلاش برای حذف {name} خطایی روی داد.",
       "delCurrFormConsErMsg": "خطا در حذف فرم {id}: {error}",
       "delDraftErrMsg": "هنگام حذف این پیش‌نویس خطایی روی داد.",
       "delDraftConsErrMsg": "خطا در حذف {draftId}: {error}",

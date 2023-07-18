@@ -843,7 +843,6 @@
       "getCurrUserFormPrefErrMsg": "اس فارم لئی تہاڈیاں ترجیہاں نوں پراپت کرن دوران اکّ ترٹی اتپنّ ہوئی۔",
       "getCurrUserFormPrefConsErrMsg": "formID {formId} دی ورتوں کردے ہوئے اپبھوگتا فارم پریپھس پراپت کرن وچّ ترٹی: {error}",
       "delCurrformNotiMsg": "فارم {name} نوں سپھلتاپوروک مٹا دتا گیا ہے۔",
-      "delCurrformErrMsg": "{name} نوں مٹاؤن دی کوشش کردے سمیں اکّ ترٹی اتپنّ ہوئی۔",
       "delCurrFormConsErMsg": "فارم {id} نوں مٹاؤن وچّ ترٹی: {error}",
       "delDraftErrMsg": "اس ڈرافٹ نوں مٹاؤن دوران اکّ ترٹی اتپنّ ہوئی۔",
       "delDraftConsErrMsg": "{draftId} نوں مٹاؤن وچّ ترٹی: {error}",

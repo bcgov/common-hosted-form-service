@@ -843,7 +843,6 @@
       "getCurrUserFormPrefErrMsg": "May naganap na error habang kinukuha ang iyong mga kagustuhan para sa form na ito.",
       "getCurrUserFormPrefConsErrMsg": "Error sa pagkuha ng user form prefs gamit ang formID {formId}: {error}",
       "delCurrformNotiMsg": "Ang form na {name} ay matagumpay na natanggal.",
-      "delCurrformErrMsg": "May naganap na error habang sinusubukang tanggalin ang {name}.",
       "delCurrFormConsErMsg": "Error sa pagtanggal ng form {id}: {error}",
       "delDraftErrMsg": "Nagkaroon ng error habang tinatanggal ang draft na ito.",
       "delDraftConsErrMsg": "Error sa pagtanggal ng {draftId}: {error}",
