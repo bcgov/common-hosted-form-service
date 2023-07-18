@@ -51,7 +51,11 @@ inputs:
   app_chefs_geo_address_apiurl:
     description: Proxy URL to BC Geo Address API URL
     required: true
-    default: "https://submit.digital.gov.bc.ca/app/api/v1/bcgeoaddress/address"
+    default: "../api/v1/bcgeoaddress/address"
+  app_chefs_advance_geo_address_apiurl:
+    description: Proxy URL to BC Geo Address API URL for advance search
+    required: true
+    default: "../api/v1/bcgeoaddress/advance/address"
 
 runs:
   using: composite
@@ -67,6 +71,7 @@ runs:
         VUE_APP_CHEFSTOURURL: ${{ inputs.app_chefstoururl }}
         VUE_APP_FRONTEND_BASEPATH: ${{ inputs.route_path }}
         VUE_APP_CHEFS_GEO_ADDRESS_APIURL: ${{ inputs.app_chefs_geo_address_apiurl }}
+        VUE_APP_CHEFS_ADVANCE_GEO_ADDRESS_APIURL: ${{ inputs.app_chefs_advance_geo_address_apiurl }}
         VUE_APP_BC_GEO_ADDRESS_APIURL: ${{ inputs.app_bc_geo_address_apiurl }}
         ENV_PATH: ./app/frontend/.env
       shell: bash
@@ -77,6 +82,7 @@ runs:
         echo VUE_APP_HOWTOURL=$VUE_APP_HOWTOURL >> $ENV_PATH
         echo VUE_APP_CHEFSTOURURL=$VUE_APP_CHEFSTOURURL >> $ENV_PATH
         echo VUE_APP_CHEFS_GEO_ADDRESS_APIURL=$VUE_APP_CHEFS_GEO_ADDRESS_APIURL >> $ENV_PATH
+        echo VUE_APP_CHEFS_ADVANCE_GEO_ADDRESS_APIURL=$VUE_APP_CHEFS_ADVANCE_GEO_ADDRESS_APIURL >> $ENV_PATH
         echo VUE_APP_BC_GEO_ADDRESS_APIURL=$VUE_APP_BC_GEO_ADDRESS_APIURL >> $ENV_PATH
         echo VUE_APP_FRONTEND_BASEPATH=$VUE_APP_FRONTEND_BASEPATH >> $ENV_PATH
 

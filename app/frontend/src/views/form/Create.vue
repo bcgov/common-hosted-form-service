@@ -36,11 +36,13 @@
               <template #title>{{ $t('trans.create.disclaimer') }}</template>
               <FormDisclaimer />
 
-              <v-checkbox
-                :rules="disclaimerRules"
-                required
-                :label="$t('trans.create.disclaimerStmt')"
-              />
+              <v-checkbox :rules="disclaimerRules" required>
+                <template #label>
+                  <span :class="isRTL ? 'mr-2' : null">{{
+                    $t('trans.create.disclaimerStmt')
+                  }}</span>
+                </template>
+              </v-checkbox>
             </BasePanel>
           </v-form>
           <v-btn
@@ -134,5 +136,6 @@ export default {
 .dir-rtl {
   direction: rtl !important;
   text-align: right;
+  column-gap: 10px;
 }
 </style>

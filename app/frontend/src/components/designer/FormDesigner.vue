@@ -62,7 +62,7 @@
     </div>
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
       <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon
+        <v-icon :class="isRTL ? 'ml-1' : mr - 1" color="primary">info</v-icon
         >{{ $t('trans.formDesigner.important') }}!
       </h4>
       <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
@@ -288,6 +288,7 @@ export default {
               // Prevent duplicate appearance of orgbook component
               orgbook: false,
               bcaddress: false,
+              simplebcaddress: false,
             },
           },
           data: {
@@ -301,6 +302,7 @@ export default {
               orgbook: true,
               simplefile: this.userType !== this.ID_MODE.PUBLIC,
               bcaddress: true,
+              simplebcaddress: true,
             },
           },
         },
