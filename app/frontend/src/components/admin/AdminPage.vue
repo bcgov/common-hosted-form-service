@@ -28,12 +28,11 @@ export default {
   },
   data() {
     return {
-      index: 2,
       adminDashboardUrl: this.$config.adminDashboardUrl,
     };
   },
   computed: {
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL']),
   },
 };
 </script>
