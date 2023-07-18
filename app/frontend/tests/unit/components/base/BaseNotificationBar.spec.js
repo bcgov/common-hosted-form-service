@@ -53,6 +53,7 @@ describe('BaseNotificationBar.vue', () => {
       props: {
         notification: {
           id: 1,
+          timeout: 1,
           ...notificationProperties,
         },
       },

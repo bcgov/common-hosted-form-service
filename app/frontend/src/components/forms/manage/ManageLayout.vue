@@ -61,7 +61,7 @@ export default {
         <h3>{{ form.name }}</h3>
       </v-col>
     </v-row>
-    <v-row class="mt-6" no-gutters>
+    <v-row no-gutters>
       <v-col cols="12" order="2">
         <v-skeleton-loader :loading="loading" type="list-item-two-line">
           <ManageForm />
@@ -70,3 +70,9 @@ export default {
     </v-row>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.v-skeleton-loader {
+  display: inline;
+}
+</style>

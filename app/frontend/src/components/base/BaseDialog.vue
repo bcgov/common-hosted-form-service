@@ -126,7 +126,12 @@ export default {
               <span>{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
-          <v-btn class="mb-5" variant="outlined" @click="deleteDialog">
+          <v-btn
+            data-test="saveddelete-btn-cancel"
+            class="mb-5"
+            variant="outlined"
+            @click="deleteDialog"
+          >
             <slot name="button-text-delete">
               <span>{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
@@ -145,6 +150,7 @@ export default {
           </v-btn>
           <v-btn
             v-if="enableCustomButton"
+            data-test="custom-btn-custom"
             class="mb-5 mr-5"
             color="primary"
             variant="flat"

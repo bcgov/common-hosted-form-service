@@ -17,7 +17,7 @@ export default {
       addingUsers: false,
       isLoading: false,
       model: null,
-      searchUsers: null,
+      search: null,
       selectedIdp: IdentityProviders.IDIR,
       selectedRoles: [],
       showError: false,
@@ -49,13 +49,21 @@ export default {
     },
   },
   watch: {
+    search(val) {
+      if (val && val !== this.model) {
+        this.searchUsers(val);
+      }
+
+      if (!val) {
+        this.entries = [];
+      }
+    },
     selectedIdp(newIdp, oldIdp) {
       if (newIdp !== oldIdp) {
         this.entries = [];
         this.showError = false;
       }
     },
-
     selectedRoles(newRoles, oldRoles) {
       if (newRoles !== oldRoles) {
         this.entries = [];
@@ -65,6 +73,29 @@ export default {
 
     addingUsers() {
       this.$emit('adding-users', this.addingUsers);
+    },
+  },
+  methods: {
+    // show users in dropdown that have a text match on multiple properties
+    filterObject(_itemTitle, queryText, item) {
+      return Object.values(item)
+        .filter((v) => v)
+        .some((v) =>
+          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+        );
+    },
+
+    save() {
+      if (this.selectedRoles.length === 0) {
+        this.showError = true;
+        return;
+      }
+      this.showError = false;
+      // emit user (object) to the parent component
+      this.$emit('new-users', [this.model], this.selectedRoles);
+      // reset search field
+      this.model = null;
+      this.addingUsers = false;
     },
 
     async searchUsers(input) {
@@ -99,29 +130,6 @@ export default {
       } finally {
         this.isLoading = false;
       }
-    },
-  },
-  methods: {
-    // show users in dropdown that have a text match on multiple properties
-    filterObject(item, queryText) {
-      return Object.values(item)
-        .filter((v) => v)
-        .some((v) =>
-          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
-        );
-    },
-
-    save() {
-      if (this.selectedRoles.length === 0) {
-        this.showError = true;
-        return;
-      }
-      this.showError = false;
-      // emit user (object) to the parent component
-      this.$emit('new-users', [this.model], this.selectedRoles);
-      // reset search field
-      this.model = null;
-      this.addingUsers = false;
     },
   },
 };
@@ -161,7 +169,7 @@ export default {
           <v-col cols="12">
             <v-autocomplete
               v-model="model"
-              v-model:search="searchUsers"
+              v-model:search="search"
               :items="entries"
               chips
               closable-chips
@@ -187,12 +195,16 @@ export default {
 
               <!-- users found in dropdown -->
               <template #item="{ props, item }">
-                <v-list-item
-                  v-bind="props"
-                  :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
-                  :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
-                >
-                </v-list-item>
+                <template v-if="typeof item !== 'object'">
+                  <v-list-item v-bind="props" :title="item" />
+                </template>
+                <template v-else>
+                  <v-list-item
+                    v-bind="props"
+                    :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
+                    :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
+                  />
+                </template>
               </template>
             </v-autocomplete>
           </v-col>

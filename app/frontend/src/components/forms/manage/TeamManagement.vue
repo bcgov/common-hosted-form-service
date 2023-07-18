@@ -94,18 +94,23 @@ export default {
     },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
-      if (this.filterData.length > 0)
+      if (this.filterData.length > 0) {
         headers = headers.filter(
           (h) =>
-            this.filterData.some((fd) => fd.key === h.key) ||
+            this.filterData.some((fd) => fd === h.key) ||
             this.filterIgnore.some((ign) => ign.key === h.key)
         );
+      }
       return headers;
     },
     PRESELECTED_DATA() {
-      return this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      let headers = this.DEFAULT_HEADERS.filter((h) =>
+        this.filterIgnore.some((fd) => fd.key !== h.key)
       );
+      if (this.filterData.length > 0) {
+        headers = headers.filter((h) => this.filterData.includes(h.key));
+      }
+      return headers;
     },
   },
   mounted() {
@@ -324,7 +329,9 @@ export default {
         return;
       }
       if (item) {
-        this.itemsToDelete = Array.isArray(item) ? item : [item];
+        this.itemsToDelete = Array.isArray(item)
+          ? this.tableData.filter((td) => item.includes(td.id))
+          : [item];
       }
       this.showDeleteDialog = true;
     },
@@ -361,16 +368,22 @@ export default {
           }),
         });
       } finally {
+        this.selectedUsers = [];
         this.itemsToDelete = [];
         this.updating = false;
       }
+    },
+
+    updateFilter(data) {
+      this.filterData = data ? data : [];
+      this.showColumnsDialog = false;
     },
   },
 };
 </script>
 
 <template>
-  <v-container fluid>
+  <div>
     <v-container fluid class="d-flex">
       <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
       <div style="z-index: 1">
@@ -499,7 +512,7 @@ export default {
       </template>
       <template #item.form_designer="{ item }">
         <v-checkbox-btn
-          v-if="!disableRole('form_designer', item, userType)"
+          v-if="!disableRole('form_designer', item, form.userType)"
           key="form_designer"
           v-model="item.columns.form_designer"
           v-ripple
@@ -509,7 +522,7 @@ export default {
       </template>
       <template #item.owner="{ item }">
         <v-checkbox-btn
-          v-if="!disableRole('owner', item, userType)"
+          v-if="!disableRole('owner', item, form.userType)"
           key="owner"
           v-model="item.columns.owner"
           v-ripple
@@ -519,7 +532,7 @@ export default {
       </template>
       <template #item.submission_reviewer="{ item }">
         <v-checkbox-btn
-          v-if="!disableRole('submission_reviewer', item, userType)"
+          v-if="!disableRole('submission_reviewer', item, form.userType)"
           key="submission_reviewer"
           v-model="item.columns.submission_reviewer"
           v-ripple
@@ -529,7 +542,7 @@ export default {
       </template>
       <template #item.form_submitter="{ item }">
         <v-checkbox-btn
-          v-if="!disableRole('form_submitter', item, userType)"
+          v-if="!disableRole('form_submitter', item, form.userType)"
           key="form_submitter"
           v-model="item.columns.form_submitter"
           v-ripple
@@ -539,7 +552,7 @@ export default {
       </template>
       <template #item.team_manager="{ item }">
         <v-checkbox-btn
-          v-if="!disableRole('team_manager', item, userType)"
+          v-if="!disableRole('team_manager', item, form.userType)"
           key="team_manager"
           v-model="item.columns.team_manager"
           v-ripple
@@ -595,8 +608,8 @@ export default {
         input-item-key="key"
         :input-save-button-text="$t('trans.teamManagement.save')"
         :input-data="
-          DEFAULT_HEADERS.filter(
-            (h) => !filterIgnore.some((fd) => fd.value === h.value)
+          DEFAULT_HEADERS.filter((h) =>
+            filterIgnore.some((fd) => fd.key !== h.key)
           )
         "
         :preselected-data="PRESELECTED_DATA"
@@ -608,5 +621,5 @@ export default {
         }}</template>
       </BaseFilter>
     </v-dialog>
-  </v-container>
+  </div>
 </template>

@@ -101,7 +101,7 @@ export default {
 </script>
 
 <template>
-  <v-container fluid>
+  <div>
     <v-expansion-panels v-model="settingsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel v-if="canEditForm" flat>
         <!-- Form Settings -->
@@ -115,10 +115,11 @@ export default {
               </small>
               <v-btn
                 v-if="canEditForm"
-                size="small"
+                size="x-small"
                 variant="text"
                 icon
                 color="primary"
+                style="font-size: 14px"
                 @click.stop="enableSettingsEdit"
               >
                 <v-icon icon="mdi:mdi-pencil"></v-icon>
@@ -182,34 +183,30 @@ export default {
 
     <!-- Form Design -->
     <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
-      <v-expansion-panel>
+      <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <v-row no-gutters>
-            <v-col cols="7" class="d-flex justify-start">
-              <strong>{{ $t('trans.manageForm.formDesignHistory') }}</strong>
-            </v-col>
-            <v-col class="d-flex justify-end">
-              <div>
-                <span>
-                  <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
-                  {{ combinedVersionAndDraftCount }}
-                </span>
-              </div>
-            </v-col>
-            <v-col class="d-flex justify-end">
-              <span class="ml-12 mr-2">
-                <strong>{{ $t('trans.manageForm.status') }}:</strong>
-                {{ versionState }}
+          <div class="header">
+            <strong style="flex: 1">{{
+              $t('trans.manageForm.formDesignHistory')
+            }}</strong>
+            <div>
+              <span>
+                <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
+                {{ combinedVersionAndDraftCount }}
               </span>
-            </v-col>
-          </v-row>
+            </div>
+            <span class="ml-12 mr-2">
+              <strong>{{ $t('trans.manageForm.status') }}:</strong>
+              {{ versionState }}
+            </span>
+          </div>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <ManageVersions />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-  </v-container>
+  </div>
 </template>
 
 <style>

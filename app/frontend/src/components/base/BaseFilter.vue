@@ -99,10 +99,15 @@ export default {
         class="bg-grey-lighten-5"
       >
       </v-data-table>
-      <v-btn class="bg-primary mt-3" @click="savingFilterData">{{
-        inputSaveButtonText
-      }}</v-btn>
       <v-btn
+        data-test="save-btn"
+        class="bg-primary mt-3"
+        @click="savingFilterData"
+      >
+        {{ inputSaveButtonText }}
+      </v-btn>
+      <v-btn
+        data-test="cancel-btn"
         class="mt-3 ml-3 text-primary"
         variant="outlined"
         @click="cancelFilterData"

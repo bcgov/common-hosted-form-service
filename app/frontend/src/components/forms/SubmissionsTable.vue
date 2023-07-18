@@ -265,6 +265,11 @@ export default {
       }
     },
   },
+  watch: {
+    deletedOnly() {
+      this.selectedSubmissions = [];
+    },
+  },
   mounted() {
     this.refreshSubmissions();
   },
@@ -298,12 +303,9 @@ export default {
       this.refreshSubmissions();
     },
     async deleteMultiSubs() {
-      let submissionsIdsToDelete = this.selectedSubmissions.map(
-        (submission) => submission.submissionId
-      );
       this.showDeleteDialog = false;
       await this.deleteMultiSubmissions({
-        submissionIds: submissionsIdsToDelete,
+        submissionIds: this.selectedSubmissions,
         formId: this.formId,
       });
       this.refreshSubmissions();
@@ -395,7 +397,6 @@ export default {
         }),
       ]).finally(async () => {
         await this.populateSubmissionsTable();
-        this.selectedSubmissions = [];
       });
     },
     async restoreSingleSub() {
@@ -403,16 +404,13 @@ export default {
         submissionId: this.restoreItem.submissionId,
         deleted: false,
       });
-      this.restorshowRestoreDialogtem = false;
+      this.showRestoreDialog = false;
       this.refreshSubmissions();
     },
     async restoreMultipleSubs() {
-      let submissionsIdsToRestore = this.selectedSubmissions.map(
-        (submission) => submission.submissionId
-      );
-      this.restorshowRestoreDialogtem = false;
+      this.showRestoreDialog = false;
       await this.restoreMultiSubmissions({
-        submissionIds: submissionsIdsToRestore,
+        submissionIds: this.selectedSubmissions,
         formId: this.formId,
       });
       this.refreshSubmissions();
@@ -540,7 +538,7 @@ export default {
       v-model="selectedSubmissions"
       class="submissions-table"
       :headers="HEADERS"
-      item-key="submissionId"
+      item-value="submissionId"
       :items="submissionTable"
       :search="search"
       :loading="loading"
@@ -548,23 +546,18 @@ export default {
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
     >
-      <template #[`header.event`]>
+      <template #column.event>
         <span v-if="!deletedOnly">
           <v-btn
             color="red"
             :disabled="selectedSubmissions.length === 0"
-            icon
+            icon="mdi:mdi-minus"
+            size="x-small"
             @click="(showDeleteDialog = true), (singleSubmissionDelete = false)"
           >
             <v-tooltip location="bottom">
               <template #activator="{ props }">
-                <v-icon
-                  color="red"
-                  dark
-                  v-bind="props"
-                  icon="mdi:mdi-minus"
-                  size="x-small"
-                ></v-icon>
+                <v-icon color="white" dark v-bind="props" />
               </template>
               <span>{{
                 $t('trans.submissionsTable.delSelectedSubmissions')
@@ -574,7 +567,6 @@ export default {
         </span>
         <span v-if="deletedOnly">
           <v-btn
-            color="red"
             :disabled="selectedSubmissions.length === 0"
             icon
             size="x-small"
@@ -589,7 +581,8 @@ export default {
                   dark
                   v-bind="props"
                   icon="mdi:mdi-delete-restore"
-                ></v-icon>
+                  size="24"
+                />
               </template>
               <span>{{
                 $t('trans.submissionsTable.resSelectedSubmissions')
@@ -656,7 +649,6 @@ export default {
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-btn
-                color="green"
                 icon
                 size="x-small"
                 v-bind="props"
@@ -666,7 +658,7 @@ export default {
                   singleSubmissionRestore = true;
                 "
               >
-                <v-icon icon="mdi:mdi-delete-restore"></v-icon>
+                <v-icon color="green" icon="mdi:mdi-delete-restore" size="24" />
               </v-btn>
             </template>
             <span>{{ $t('trans.submissionsTable.restore') }}</span>

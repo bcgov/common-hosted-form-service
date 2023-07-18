@@ -127,7 +127,7 @@ export default {
       this.userSearchSelection = null;
     },
 
-    filterObject(item, queryText) {
+    filterObject(_itemTitle, queryText, item) {
       return Object.values(item)
         .filter((v) => v)
         .some((v) =>

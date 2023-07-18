@@ -134,6 +134,11 @@ a,
 .nrmc-expand-collapse {
   width: 100%;
   min-height: 50px;
+
+  .v-expansion-panel--active {
+    margin-bottom: 20px;
+  }
+
   .v-expansion-panel--active > .v-expansion-panel-title {
     min-height: 50px;
   }
@@ -150,11 +155,8 @@ a,
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex: 1 auto;
     }
-  }
-
-  .v-expansion-panel-text__wrap {
-    padding-top: 8px;
   }
 }
 
