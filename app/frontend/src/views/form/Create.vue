@@ -11,7 +11,9 @@
           class="pl-1"
           :class="{ 'dir-rtl': isRTL }"
         >
-          {{ $t('trans.create.setUpForm') }}
+          <span :class="{ 'mr-2': isRTL }">
+            {{ $t('trans.create.setUpForm') }}
+          </span>
         </v-stepper-step>
         <v-divider />
         <v-stepper-step
@@ -20,7 +22,9 @@
           class="pr-1"
           :class="{ 'dir-rtl': isRTL }"
         >
-          {{ $t('trans.create.designForm') }}
+          <span :class="{ 'mr-2': isRTL }">
+            {{ $t('trans.create.designForm') }}
+          </span>
         </v-stepper-step>
       </v-stepper-header>
 
