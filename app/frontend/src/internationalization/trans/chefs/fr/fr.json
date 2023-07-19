@@ -53,6 +53,7 @@
     "cancel": "Annuler"
   },
   "formSettings": {
+    "allowMultiDraft": "Autoriser le téléchargement de <strong> plusieurs brouillons</strong>",
     "formTitle": "Titre du formulaire",
     "formDescription": "Description du formulaire",
     "formAccess": "Accès au formulaire",

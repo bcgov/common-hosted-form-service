@@ -473,7 +473,7 @@ export default {
     },
     userError() {
       this.addNotification({
-        message: '',
+        message: this.$t('trans.teamManagement.formOwnerErrMsg'),
         consoleError: this.$t('trans.teamManagement.formOwnerRemovalWarning'),
       });
     },

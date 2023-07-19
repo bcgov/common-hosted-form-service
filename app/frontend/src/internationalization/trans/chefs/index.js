@@ -10,7 +10,6 @@ import ja from '@/internationalization/trans/chefs/langs/ja.json';
 import ko from '@/internationalization/trans/chefs/langs/ko.json';
 import pa from '@/internationalization/trans/chefs/langs/pa.json';
 import pt from '@/internationalization/trans/chefs/langs/pt.json';
-import pu from '@/internationalization/trans/chefs/langs/pu.json';
 import ru from '@/internationalization/trans/chefs/langs/ru.json';
 import tl from '@/internationalization/trans/chefs/langs/tl.json';
 import uk from '@/internationalization/trans/chefs/langs/uk.json';
@@ -31,7 +30,6 @@ export {
   ko,
   pa,
   pt,
-  pu,
   ru,
   tl,
   uk,

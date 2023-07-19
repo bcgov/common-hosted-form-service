@@ -53,6 +53,7 @@
     "cancel": "रद्द करना"
   },
   "formSettings": {
+    "allowMultiDraft": "<strong> एकाधिक ड्राफ्ट</strong> अपलोड की अनुमति दें",
     "formTitle": "प्रपत्र शीर्षक",
     "formDescription": "प्रपत्र विवरण",
     "formAccess": "फॉर्म एक्सेस",
