@@ -15,7 +15,5 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-  return Promise.resolve()
-    .then(() => knex.schema.raw('DROP VIEW IF EXISTS subscription_vw'))
-    .then(() => knex.schema.dropTableIfExists('form_subscription'));
+  return Promise.resolve().then(() => knex.schema.dropTableIfExists('form_subscription'));
 };
