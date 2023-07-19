@@ -99,7 +99,7 @@ export default {
         (v) =>
           (v &&
             new RegExp(
-              /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
+              /^(ht|f)tp(s?):\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
             ).test(v)) ||
           this.$t('trans.formSettings.validEndpointRequired'),
       ],

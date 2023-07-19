@@ -1009,27 +1009,6 @@ export default {
           v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
           this.$t('trans.formSettings.validEmailRequired'),
       ],
-      endpointUrlRules: [
-        (v) => !!v || this.$t('trans.formSettings.validEndpointRequired'),
-        (v) =>
-          (v &&
-            new RegExp(
-              /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
-            ).test(v)) ||
-          this.$t('trans.formSettings.validEndpointRequired'),
-      ],
-      endpointTokenRules: [
-        (v) => !!v || this.$t('trans.formSettings.validBearerTokenRequired'),
-        (v) =>
-          (v &&
-            new RegExp(/^[\d|a-f]{8}-([\d|a-f]{4}-){3}[\d|a-f]{12}/g).test(
-              v
-            )) ||
-          this.$t('trans.formSettings.validBearerTokenRequired'),
-      ],
-      eventTypeRequired: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-      ],
       scheduleOpenDate: [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
@@ -1285,9 +1264,6 @@ export default {
   watch: {},
   methods: {
     ...mapActions('form', ['fetchForm']),
-    showHideKey() {
-      this.showSecret = !this.showSecret;
-    },
     userTypeChanged() {
       // if they checked enable drafts then went back to public, uncheck it
       if (this.userType === this.ID_MODE.PUBLIC) {
