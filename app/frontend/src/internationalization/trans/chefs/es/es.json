@@ -53,6 +53,7 @@
     "cancel": "Cancelar"
   },
   "formSettings": {
+    "allowMultiDraft": "Permitir la carga de <strong> varios borradores</strong>",
     "formTitle": "Título del formulario",
     "formDescription": "Descripción del formulario",
     "formAccess": "Acceso al formulario",

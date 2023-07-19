@@ -18,7 +18,7 @@
           filled
           dense
           class="mt-3"
-          :class="[{ 'dir-rtl': isRTL }, isRTL ? 'label' : 'label']"
+          :class="[{ 'dir-rtl': isRTL, label: isRTL }]"
         >
         </v-text-field>
         <v-tooltip bottom>

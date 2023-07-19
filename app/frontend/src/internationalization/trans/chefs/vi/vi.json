@@ -53,6 +53,7 @@
     "cancel": "Hủy bỏ"
   },
   "formSettings": {
+    "allowMultiDraft": "Cho phép tải lên <strong> nhiều bản nháp</strong>",
     "formTitle": "Tiêu đề mẫu",
     "formDescription": "Mô tả biểu mẫu",
     "formAccess": "Truy cập biểu mẫu",

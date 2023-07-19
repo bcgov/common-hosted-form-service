@@ -53,6 +53,7 @@
     "cancel": "يلغي"
   },
   "formSettings": {
+    "allowMultiDraft": "السماح بتحميل <strong> مسودة متعددة </ strong>",
     "formTitle": "عنوان النموذج",
     "formDescription": "وصف النموذج",
     "formAccess": "الوصول إلى النموذج",
