@@ -1,16 +1,15 @@
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <v-row class="mt-6" no-gutters>
+    <div
+      class="mt-4 d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="8">
+      <div>
         <h1>Submissions</h1>
-      </v-col>
+      </div>
       <!-- buttons -->
-      <v-col cols="12" sm="4">
-        <span
-          :class="isRTL ? 'float-left' : 'float-right'"
-          v-if="checkFormManage"
-        >
+      <div>
+        <span v-if="checkFormManage">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -62,28 +61,29 @@
             <span>{{ $t('trans.submissionsTable.submissionsToFiles') }}</span>
           </v-tooltip>
         </span>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
-    <v-row no-gutters>
-      <v-spacer />
-      <v-col cols="4" sm="4">
+    <div
+      class="d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
+    >
+      <div>
         <v-checkbox
           class="pl-3"
           v-model="deletedOnly"
           :label="$t('trans.submissionsTable.showDeletedSubmissions')"
           @click="refreshSubmissions"
         />
-      </v-col>
-      <v-col cols="4" sm="4">
+      </div>
+      <div>
         <v-checkbox
           class="pl-3"
           v-model="currentUserOnly"
           :label="$t('trans.submissionsTable.showMySubmissions')"
           @click="refreshSubmissions"
         />
-      </v-col>
-      <v-col cols="12" sm="4">
+      </div>
+      <div>
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
@@ -96,8 +96,8 @@
             :class="{ 'dir-rtl': isRTL, label: isRTL }"
           />
         </div>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <!-- table header -->
     <v-data-table
@@ -764,7 +764,6 @@ export default {
 @media (min-width: 600px) {
   .submissions-search {
     max-width: 20em;
-    float: right;
   }
 }
 @media (max-width: 599px) {

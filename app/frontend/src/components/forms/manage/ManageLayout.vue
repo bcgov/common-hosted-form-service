@@ -1,23 +1,21 @@
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <v-row class="mt-6" no-gutters>
-      <v-col cols="12" sm="8">
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
+    >
+      <div cols="12" sm="8">
         <!-- page title -->
         <h1>{{ $t('trans.manageLayout.manageForm') }}</h1>
         <!-- form name -->
         <h3>{{ this.form.name }}</h3>
-      </v-col>
+      </div>
       <!-- buttons -->
-      <v-col cols="12" sm="4">
-        <v-skeleton-loader
-          :loading="loading"
-          type="actions"
-          :class="isRTL ? 'float-left' : 'float-right'"
-        >
+      <div cols="12" sm="4">
+        <v-skeleton-loader :loading="loading" type="actions">
           <ManageFormActions />
         </v-skeleton-loader>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
       <ManageForm />
     </v-skeleton-loader>
