@@ -22,7 +22,7 @@
             }}</span>
           </v-btn>
 
-          <h2 id="video" class="pt-5" :class="{ 'dir-rtl': isRTL }">
+          <h2 id="video" class="pt-5">
             {{ $t('trans.homePage.takeATourOfChefs') }}
           </h2>
           <div class="video-wrapper">
@@ -107,10 +107,10 @@
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h3 :class="{ 'dir-rtl': isRTL }" class="mb-5">
+          <h3 class="mb-5">
             {{ $t('trans.homePage.getStartedToChefs') }}
           </h3>
-          <p :class="{ 'dir-rtl': isRTL }">
+          <p>
             {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">

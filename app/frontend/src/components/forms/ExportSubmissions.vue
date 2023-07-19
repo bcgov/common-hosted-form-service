@@ -39,14 +39,14 @@
             <v-radio-group v-model="exportFormat" hide-details="auto">
               <v-radio :label="$t('trans.exportSubmissions.json')" value="json">
                 <template v-slot:label>
-                  <span class="radioboxLabelStyle">{{
+                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">{{
                     $t('trans.exportSubmissions.json')
                   }}</span>
                 </template>
               </v-radio>
               <v-radio :label="$t('trans.exportSubmissions.csv')" value="csv">
                 <template v-slot:label>
-                  <span class="radioboxLabelStyle">{{
+                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">{{
                     $t('trans.exportSubmissions.csv')
                   }}</span>
                 </template>
@@ -138,7 +138,7 @@
                 :value="false"
               >
                 <template v-slot:label>
-                  <span class="radioboxLabelStyle">{{
+                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">{{
                     $t('trans.exportSubmissions.all')
                   }}</span>
                 </template>
@@ -148,7 +148,7 @@
                 :value="true"
               >
                 <template v-slot:label>
-                  <span class="radioboxLabelStyle">{{
+                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">{{
                     $t('trans.exportSubmissions.SelectdateRange')
                   }}</span>
                 </template>
@@ -245,6 +245,7 @@
               >
                 <template v-slot:label>
                   <span
+                    :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
                     style="display: flex; align-content: flex-start"
                   >
@@ -259,7 +260,7 @@
                 style="display: flex; align-content: flex-start"
               >
                 <template v-slot:label>
-                  <span class="radioboxLabelStyle">
+                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">
                     {{ $t('trans.exportSubmissions.multiRowPerSubmissionB') }}
                   </span>
                 </template>
@@ -271,7 +272,7 @@
                 style="display: flex; align-content: flex-start"
               >
                 <template v-slot:label>
-                  <span class="radioboxLabelStyle"
+                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle"
                     >{{ $t('trans.exportSubmissions.singleRowPerSubmission') }}
                   </span>
                 </template>
@@ -279,6 +280,7 @@
               <v-radio label="D" value="unFormattedCSVExport" class="mt-2">
                 <template v-slot:label>
                   <span
+                    :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
                     style="display: flex; align-content: flex-start"
                   >
@@ -291,7 +293,7 @@
         </v-row>
         <v-row>
           <v-col>
-            <span class="mt-7 fileLabelStyle">
+            <span :class="{ 'mr-1': isRTL }" class="mt-7 fileLabelStyle">
               {{ $t('trans.exportSubmissions.fileNameAndType') }}:
               <strong>{{ fileName }}</strong>
             </span>
