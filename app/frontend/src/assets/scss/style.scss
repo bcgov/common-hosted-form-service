@@ -597,3 +597,16 @@ a,
   right: 0 !important;
   left: auto !important;
 }
+
+.flex-xs-column-reverse {
+  flex-direction: column-reverse;
+}
+
+.flex-xs-column {
+  flex-direction: column;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}

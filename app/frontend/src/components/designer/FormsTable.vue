@@ -200,10 +200,6 @@ export default {
 </script>
 
 <style scoped>
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 .submissions-search {
   width: 100%;
 }

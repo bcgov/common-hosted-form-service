@@ -170,8 +170,4 @@ export default {
   flex: 1 1 auto;
   width: 90%;
 }
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right !important;
-}
 </style>

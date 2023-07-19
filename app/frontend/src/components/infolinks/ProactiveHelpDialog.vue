@@ -388,9 +388,4 @@ export default {
   height: 36px !important;
   text-transform: capitalize !important;
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right !important;
-}
 </style>

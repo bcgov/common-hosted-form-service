@@ -1,6 +1,8 @@
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div class="container">
+    <div
+      class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
+    >
       <div>
         <h1 class="mr-auto">
           {{ $t('trans.teamManagement.teamManagement') }}
@@ -596,29 +598,13 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  display: flex; /* displays flex-items (children) inline by default */
-  flex-direction: row; /* new */
-  justify-content: space-between;
-}
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 .role-col {
   width: 12%;
 }
 .team-table {
   clear: both;
 }
-@media only screen and (max-width: 600px) {
-  .container {
-    display: flex; /* displays flex-items (children) inline by default */
-    flex-direction: column; /* new */
-    justify-content: space-between;
-  }
-}
+
 @media (max-width: 1263px) {
   .team-table >>> th {
     vertical-align: top;

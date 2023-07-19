@@ -5,14 +5,16 @@
       type="heading"
       :class="{ 'dir-rtl': isRTL }"
     >
-      <v-row class="mt-6" no-gutters>
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+      >
         <!-- page title -->
-        <v-col cols="12" sm="9">
+        <div>
           <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
           <h3>{{ formId ? form.name : 'All Forms' }}</h3>
-        </v-col>
+        </div>
         <!-- buttons -->
-        <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="12" sm="3">
+        <div>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -51,8 +53,8 @@
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
     </v-skeleton-loader>
 
     <v-row no-gutters>
@@ -362,11 +364,6 @@ export default {
     padding-left: 16px;
     padding-right: 16px;
   }
-}
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
 }
 .submissions-table {
   clear: both;
