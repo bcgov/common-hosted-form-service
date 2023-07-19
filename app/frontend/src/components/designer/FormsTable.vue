@@ -133,6 +133,7 @@ export default {
     item-value="name"
     :loading="loading"
     :loading-text="$t('trans.formsTable.loadingText')"
+    :search="search"
   >
     <template #item.name="{ item }">
       <router-link

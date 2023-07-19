@@ -18,6 +18,7 @@ export default {
       enableReminderDraw: true,
       githubLinkScheduleAndReminderFeature:
         'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
+      intervalType: [(v) => !!v || this.$t('trans.formSettings.fieldRequired')],
       scheduleOpenDate: [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
@@ -57,7 +58,7 @@ export default {
       repeatIntervalType: [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
-          this.AVAILABLE_PERIOD_OPTIONS.value.includes(v) ||
+          this.AVAILABLE_PERIOD_OPTIONS.includes(v) ||
           this.$t('trans.formSettings.validInterval'),
       ],
       closeMessage: [(v) => !!v || this.$t('trans.formSettings.fieldRequired')],
@@ -586,7 +587,7 @@ export default {
         [SCHEDULE_TYPE.CLOSINGDATE, SCHEDULE_TYPE.PERIOD].includes(
           form.schedule.scheduleType
         ) ||
-        (userType === 'team' &&
+        (form.userType === 'team' &&
           form.schedule.scheduleType !== null &&
           enableReminderDraw &&
           form.schedule.openSubmissionDateTime)
@@ -652,7 +653,7 @@ export default {
       <v-col cols="12" md="12" class="p-0">
         <v-expand-transition
           v-if="
-            userType === 'team' &&
+            form.userType === 'team' &&
             form.schedule.scheduleType !== null &&
             enableReminderDraw &&
             form.schedule.openSubmissionDateTime

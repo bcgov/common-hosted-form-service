@@ -466,6 +466,24 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async fetchSubmissionUsers(formSubmissionId) {
+      try {
+        // Get user list for this submission
+        const response = await rbacService.getSubmissionUsers({
+          formSubmissionId,
+        });
+        this.submissionUsers = response;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fecthSubmissnUsersErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.fecthSubmissnUsersConsErrMsg',
+            { formSubmissionId: formSubmissionId, error: error }
+          ),
+        });
+      }
+    },
     async fetchSubmission({ submissionId }) {
       try {
         // Get this submission

@@ -26,7 +26,6 @@ export default {
   data() {
     return {
       emailRules: [(v) => !!v || 'E-mail is required'],
-      form: null,
       showDialog: false,
       to: '',
     };
@@ -39,7 +38,7 @@ export default {
       this.showDialog = true;
     },
     async requestReceipt() {
-      const { valid } = await this.form.validate();
+      const { valid } = await this.$refs.form.validate();
       if (valid) {
         const notificationStore = useNotificationStore();
         try {

@@ -30,12 +30,12 @@ export default {
   },
   computed: {
     files() {
-      return this.this.templateForm.files;
+      return this.templateForm.files;
     },
   },
   watch: {
     files() {
-      if (this.templateForm.files && this.templateForm.files instanceof File) {
+      if (this.templateForm?.files && this.templateForm.files instanceof File) {
         const { name, extension } = this.splitFileName(this.files.name);
         if (!this.templateForm.outputFileName) {
           this.templateForm.outputFileName = name;

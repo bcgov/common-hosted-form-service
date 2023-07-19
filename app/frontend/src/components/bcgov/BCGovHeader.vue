@@ -81,6 +81,12 @@ export default {
 <style lang="scss" scoped>
 @import 'vuetify/settings';
 
+@media print {
+  .elevation-20 {
+    box-shadow: 0 0 0 0 !important;
+  }
+}
+
 .gov-header {
   .printHeader {
     align-items: center;

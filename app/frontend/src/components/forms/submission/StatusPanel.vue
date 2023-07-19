@@ -38,7 +38,6 @@ export default {
       submissionUserEmail: '',
       statusHistory: {},
       statusFields: false,
-      statusPanelForm: null,
       statusToSet: '',
       valid: false,
       showSendConfirmEmail: false,
@@ -135,12 +134,12 @@ export default {
       );
     },
 
-    autoCompleteFilter(item, queryText) {
+    autoCompleteFilter(_itemTitle, queryText, item) {
       return (
-        item.fullName
+        item.value.fullName
           .toLocaleLowerCase()
           .includes(queryText.toLocaleLowerCase()) ||
-        item.username
+        item.value.username
           .toLocaleLowerCase()
           .includes(queryText.toLocaleLowerCase())
       );
@@ -203,7 +202,7 @@ export default {
       this.addComment = false;
       this.emailComment = '';
       this.statusFields = false;
-      this.statusPanelForm.resetValidation();
+      this.$refs.statusPanelForm.resetValidation();
       this.submissionUserEmail = '';
       this.statusToSet = null;
       this.note = '';
@@ -211,7 +210,7 @@ export default {
 
     async updateStatus() {
       try {
-        if (this.statusPanelForm.validate()) {
+        if (this.$refs.statusPanelForm.validate()) {
           if (!this.statusToSet) {
             throw new Error(i18n.t('trans.statusPanel.status'));
           }
@@ -335,6 +334,7 @@ export default {
                   clearable
                   :custom-filter="autoCompleteFilter"
                   :items="formReviewers"
+                  item-title="fullName"
                   :loading="loading"
                   :no-data-text="$t('trans.statusPanel.noDataText')"
                   variant="outlined"
@@ -344,16 +344,8 @@ export default {
                   ]"
                 >
                   <!-- selected user -->
-                  <template #selection="data">
-                    <span
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      close
-                      @click="data.select"
-                      @click:close="remove(data.item)"
-                    >
-                      {{ data.item.fullName }}
-                    </span>
+                  <template #chip="{ props, item }">
+                    <v-chip v-bind="props" :text="item?.raw?.fullName" />
                   </template>
                   <!-- users found in dropdown -->
                   <template #item="{ props, item }">
