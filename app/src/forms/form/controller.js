@@ -280,8 +280,7 @@ module.exports = {
   },
   createOrUpdateSubscriptionDetails: async (req, res, next) => {
     try {
-      console.log(req.body)
-      const response = await service.createOrUpdateSubscriptionDetails(req.params.formId,req.body, req.currentUser);
+      const response = await service.createOrUpdateSubscriptionDetails(req.params.formId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);

@@ -395,7 +395,7 @@ const service = {
       }
       if (subscribe && subscribe.enabled) {
         const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
-        const config = Object.assign({},subscribe,subscribeConfig);
+        const config = Object.assign({}, subscribe, subscribeConfig);
         service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
       }
 
@@ -710,7 +710,7 @@ const service = {
     }
     return {};
   },
-    // Get the current subscription settings for a form
+  // Get the current subscription settings for a form
   readFormSubscriptionDetails: (formId) => {
     return FormSubscription.query().modify('filterFormId', formId).first();
   },
@@ -719,15 +719,16 @@ const service = {
     let trx;
     try {
       const subscriptionDetails = await service.readFormSubscriptionDetails(formId);
-      console.log(subscriptionDetails);
       trx = await FormSubscription.startTransaction();
 
       if (subscriptionDetails) {
         // Update new subscription settings for a form
-        await FormSubscription.query(trx).modify('filterFormId', formId).update({
-          ...subscriptionData,
-          updatedBy: currentUser.usernameIdp,
-        });
+        await FormSubscription.query(trx)
+          .modify('filterFormId', formId)
+          .update({
+            ...subscriptionData,
+            updatedBy: currentUser.usernameIdp,
+          });
       } else {
         // Add new subscription settings for the form
         await FormSubscription.query(trx).insert({
