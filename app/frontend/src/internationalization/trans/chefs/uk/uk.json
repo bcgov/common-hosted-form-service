@@ -53,6 +53,7 @@
     "cancel": "Скасувати"
   },
   "formSettings": {
+    "allowMultiDraft": "Дозволити завантаження <strong> кількох чернеток</strong>",
     "formTitle": "Назва форми",
     "formDescription": "Опис форми",
     "formAccess": "Доступ до форми",

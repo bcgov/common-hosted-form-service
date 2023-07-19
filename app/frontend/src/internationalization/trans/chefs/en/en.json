@@ -49,6 +49,7 @@
     "cancel": "Cancel"
   },
   "formSettings": {
+    "allowMultiDraft": "Allow <strong> multiple draft</strong> upload",
     "formTitle": "Form Title",
     "formDescription": "Form Description",
     "formAccess": "Form Access",

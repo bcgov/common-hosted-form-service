@@ -53,6 +53,7 @@
     "cancel": "Annulla"
   },
   "formSettings": {
+    "allowMultiDraft": "Consenti il ​​caricamento di <strong> più bozze</strong>",
     "formTitle": "Titolo del modulo",
     "formDescription": "Descrizione del modulo",
     "formAccess": "Accesso al modulo",

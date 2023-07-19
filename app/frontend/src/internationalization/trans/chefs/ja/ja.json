@@ -53,6 +53,7 @@
     "cancel": "キャンセル"
   },
   "formSettings": {
+    "allowMultiDraft": "<strong> 複数の下書き</strong> アップロードを許可する",
     "formTitle": "フォームのタイトル",
     "formDescription": "フォームの説明",
     "formAccess": "フォームアクセス",

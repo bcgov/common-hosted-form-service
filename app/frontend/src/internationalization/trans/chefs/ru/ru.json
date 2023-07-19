@@ -53,6 +53,7 @@
     "cancel": "Отмена"
   },
   "formSettings": {
+    "allowMultiDraft": "Разрешить загрузку <strong>несколько черновиков</strong>",
     "formTitle": "Название формы",
     "formDescription": "Описание формы",
     "formAccess": "Доступ к форме",

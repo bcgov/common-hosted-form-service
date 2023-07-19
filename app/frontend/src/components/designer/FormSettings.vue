@@ -25,7 +25,7 @@
             data-test="text-description"
             v-model="description"
             :rules="descriptionRules"
-            :class="[{ 'dir-rtl': isRTL, label: isRTL }]"
+            :class="{ 'dir-rtl': isRTL }"
           />
         </BasePanel>
       </v-col>
@@ -198,8 +198,8 @@
             :disabled="userType === ID_MODE.PUBLIC"
           >
             <template #label>
-              <span :class="{ 'mr-2': isRTL }">
-                Allow <strong> multiple draft</strong> upload
+              <div :class="{ 'mr-2': isRTL }">
+                <span v-html="$t('trans.formSettings.allowMultiDraft')" />
                 <v-tooltip close-delay="3000" bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
@@ -208,22 +208,23 @@
                       class="ml-3"
                       v-bind="attrs"
                       v-on="on"
+                      :class="{ 'mr-2': isRTL }"
                     />
                   </template>
                   <span
-                    >Experimental
+                    >{{ $t('trans.formSettings.experimental') }}
                     <a
                       :href="githubLinkBulkUpload"
                       class="preview_info_link_field_white"
                       :target="'_blank'"
                     >
-                      Learn more
+                      {{ $t('trans.formSettings.learnMore') }}
                       <font-awesome-icon
                         icon="fa-solid fa-square-arrow-up-right"
                     /></a>
                   </span>
                 </v-tooltip>
-              </span>
+              </div>
             </template>
           </v-checkbox>
 
@@ -241,31 +242,34 @@
             v-model="schedule.enabled"
           >
             <template #label>
-              <span :class="{ 'mr-2': isRTL }">{{
-                $t('trans.formSettings.formSubmissionsSchedule')
-              }}</span>
-              <v-tooltip bottom close-delay="2500">
-                <template v-slot:activator="{ on, attrs }">
-                  <font-awesome-icon
-                    icon="fa-solid fa-flask"
-                    color="primary"
-                    class="ml-3"
-                    v-bind="attrs"
-                    v-on="on"
-                  />
-                </template>
-                <span
-                  >{{ $t('trans.formSettings.experimental') }}
-                  <a
-                    :href="githubLinkScheduleAndReminderFeature"
-                    class="preview_info_link_field_white"
-                    :target="'_blank'"
-                  >
-                    {{ $t('trans.formSettings.learnMore') }}
+              <div :class="{ 'mr-2': isRTL }">
+                <span>{{
+                  $t('trans.formSettings.formSubmissionsSchedule')
+                }}</span>
+                <v-tooltip bottom close-delay="2500">
+                  <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
-                      icon="fa-solid fa-square-arrow-up-right" /></a
-                ></span>
-              </v-tooltip>
+                      icon="fa-solid fa-flask"
+                      color="primary"
+                      class="ml-3"
+                      :class="{ 'mr-2': isRTL }"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <span
+                    >{{ $t('trans.formSettings.experimental') }}
+                    <a
+                      :href="githubLinkScheduleAndReminderFeature"
+                      class="preview_info_link_field_white"
+                      :target="'_blank'"
+                    >
+                      {{ $t('trans.formSettings.learnMore') }}
+                      <font-awesome-icon
+                        icon="fa-solid fa-square-arrow-up-right" /></a
+                  ></span>
+                </v-tooltip>
+              </div>
             </template>
           </v-checkbox>
 
@@ -275,35 +279,37 @@
             :disabled="userType === ID_MODE.PUBLIC"
           >
             <template #label>
-              <span
-                :class="{ 'mr-2': isRTL }"
-                style="max-width: 80%"
-                v-html="
-                  $t('trans.formSettings.submitterCanCopyExistingSubmissn')
-                "
-              />
-              <v-tooltip bottom close-delay="2500">
-                <template v-slot:activator="{ on, attrs }">
-                  <font-awesome-icon
-                    icon="fa-solid fa-flask"
-                    color="primary"
-                    class="ml-3"
-                    v-bind="attrs"
-                    v-on="on"
-                  />
-                </template>
+              <div :class="{ 'mr-2': isRTL }">
                 <span
-                  >{{ $t('trans.formSettings.experimental') }}
-                  <a
-                    :href="githubLinkCopyFromExistingFeature"
-                    class="preview_info_link_field_white"
-                    :target="'_blank'"
-                  >
-                    {{ $t('trans.formSettings.learnMore') }}
+                  style="max-width: 80%"
+                  v-html="
+                    $t('trans.formSettings.submitterCanCopyExistingSubmissn')
+                  "
+                />
+                <v-tooltip bottom close-delay="2500">
+                  <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
-                      icon="fa-solid fa-square-arrow-up-right" /></a
-                ></span>
-              </v-tooltip>
+                      icon="fa-solid fa-flask"
+                      color="primary"
+                      class="ml-3"
+                      :class="{ 'mr-2': isRTL }"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <span
+                    >{{ $t('trans.formSettings.experimental') }}
+                    <a
+                      :href="githubLinkCopyFromExistingFeature"
+                      class="preview_info_link_field_white"
+                      :target="'_blank'"
+                    >
+                      {{ $t('trans.formSettings.learnMore') }}
+                      <font-awesome-icon
+                        icon="fa-solid fa-square-arrow-up-right" /></a
+                  ></span>
+                </v-tooltip>
+              </div>
             </template>
           </v-checkbox>
         </BasePanel>
@@ -320,49 +326,65 @@
             :class="{ 'dir-rtl': isRTL }"
           >
             <template #label>
-              <span :class="{ 'mr-2': isRTL }">
-                {{ $t('trans.formSettings.submissionConfirmation') }}</span
-              >
-
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                    help_outline
-                  </v-icon>
-                </template>
+              <div :class="{ 'mr-2': isRTL }">
                 <span>
-                  <span
-                    v-html="
-                      $t('trans.formSettings.submissionConfirmationToolTip')
-                    "
-                  />
-                  <ul>
-                    <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
-                    <li>
-                      {{ $t('trans.formSettings.infoB') }}
-                    </li>
-                  </ul>
-                </span>
-              </v-tooltip>
+                  {{ $t('trans.formSettings.submissionConfirmation') }}</span
+                >
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      color="primary"
+                      class="ml-3"
+                      v-bind="attrs"
+                      v-on="on"
+                      :class="{ 'mr-2': isRTL }"
+                    >
+                      help_outline
+                    </v-icon>
+                  </template>
+                  <span>
+                    <span
+                      v-html="
+                        $t('trans.formSettings.submissionConfirmationToolTip')
+                      "
+                    />
+                    <ul>
+                      <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
+                      <li>
+                        {{ $t('trans.formSettings.infoB') }}
+                      </li>
+                    </ul>
+                  </span>
+                </v-tooltip>
+              </div>
             </template>
           </v-checkbox>
 
           <v-checkbox class="my-0" v-model="sendSubRecieviedEmail">
             <template #label>
-              <span :class="{ 'mr-2': isRTL }">
-                {{ $t('trans.formSettings.emailNotificatnToTeam') }}</span
-              >
-
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                    help_outline
-                  </v-icon>
-                </template>
+              <div :class="{ 'mr-2': isRTL }">
                 <span>
-                  {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
-                </span>
-              </v-tooltip>
+                  {{ $t('trans.formSettings.emailNotificatnToTeam') }}</span
+                >
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      color="primary"
+                      class="ml-3"
+                      v-bind="attrs"
+                      v-on="on"
+                      :class="{ 'mr-2': isRTL }"
+                    >
+                      help_outline
+                    </v-icon>
+                  </template>
+                  <span>
+                    {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
+                  </span>
+                </v-tooltip>
+              </div>
             </template>
           </v-checkbox>
 
@@ -427,10 +449,11 @@
                       outlined
                       :rules="scheduleOpenDate"
                       :class="{ 'dir-rtl': isRTL }"
-                    ></v-text-field>
+                    />
                   </template>
                   <v-date-picker
                     @change="openDateTypeChanged"
+                    :class="{ 'mr-2': isRTL }"
                     v-model="schedule.openSubmissionDateTime"
                     data-test="picker-form-openSubmissionDateDraw"
                     @input="openSubmissionDateDraw = false"
@@ -455,21 +478,43 @@
                     >
                       <v-radio
                         class="mx-2"
-                        :label="
-                          $t('trans.formSettings.keepSubmissnOpenTilUnplished')
-                        "
+                        :class="{ 'mr-2': isRTL }"
                         :value="SCHEDULE_TYPE.MANUAL"
-                      />
+                      >
+                        <template #label>
+                          <span :class="{ 'mr-2': isRTL }"
+                            >{{
+                              $t(
+                                'trans.formSettings.keepSubmissnOpenTilUnplished'
+                              )
+                            }}
+                          </span>
+                        </template>
+                      </v-radio>
                       <v-radio
                         class="mx-2"
-                        :label="$t('trans.formSettings.submissionsClosingDate')"
+                        :class="{ 'mr-2': isRTL }"
                         :value="SCHEDULE_TYPE.CLOSINGDATE"
-                      />
+                      >
+                        <template #label>
+                          <span :class="{ 'mr-2': isRTL }"
+                            >{{
+                              $t('trans.formSettings.submissionsClosingDate')
+                            }}
+                          </span>
+                        </template>
+                      </v-radio>
                       <v-radio
                         class="mx-2"
-                        :label="$t('trans.formSettings.submissionPeriod')"
+                        :class="{ 'mr-2': isRTL }"
                         :value="SCHEDULE_TYPE.PERIOD"
-                      />
+                      >
+                        <template #label>
+                          <span :class="{ 'mr-2': isRTL }"
+                            >{{ $t('trans.formSettings.submissionPeriod') }}
+                          </span>
+                        </template>
+                      </v-radio>
                     </v-radio-group>
                   </v-row>
                 </v-expand-transition>
@@ -502,7 +547,7 @@
                       outlined
                       :rules="scheduleCloseDate"
                       :class="{ 'dir-rtl': isRTL }"
-                    ></v-text-field>
+                    />
                   </template>
                   <v-date-picker
                     v-model="schedule.closeSubmissionDateTime"
@@ -531,7 +576,7 @@
                   class="m-0 p-0"
                   :rules="roundNumber"
                   :class="{ 'dir-rtl': isRTL }"
-                ></v-text-field>
+                />
               </v-col>
 
               <v-col
@@ -550,7 +595,8 @@
                   class="mr-2 pl-2"
                   v-model="schedule.keepOpenForInterval"
                   :rules="intervalType"
-                ></v-select>
+                  :class="{ 'dir-rtl': isRTL }"
+                />
               </v-col>
             </v-row>
 
@@ -565,22 +611,27 @@
               :rules="allowLateSubmissionRule"
             >
               <template #label>
-                {{ $t('trans.formSettings.allowLateSubmissions') }}
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon
-                      color="primary"
-                      class="ml-3"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      help_outline
-                    </v-icon>
-                  </template>
+                <div :class="{ 'mr-2': isRTL }">
                   <span>
-                    {{ $t('trans.formSettings.allowLateSubmissionsInfoTip') }}
+                    {{ $t('trans.formSettings.allowLateSubmissions') }}
                   </span>
-                </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        color="primary"
+                        class="ml-3"
+                        v-bind="attrs"
+                        v-on="on"
+                        :class="{ 'mr-2': isRTL }"
+                      >
+                        help_outline
+                      </v-icon>
+                    </template>
+                    <span>
+                      {{ $t('trans.formSettings.allowLateSubmissionsInfoTip') }}
+                    </span>
+                  </v-tooltip>
+                </div>
               </template>
             </v-checkbox>
 
@@ -607,8 +658,7 @@
                     class="m-0 p-0"
                     :rules="roundNumber"
                     :class="{ 'dir-rtl': isRTL }"
-                  >
-                  </v-text-field>
+                  />
                 </v-col>
                 <v-col cols="4" md="4" class="m-0 p-0">
                   <v-select
@@ -619,9 +669,10 @@
                     solid
                     outlined
                     class="mr-1 pl-2"
+                    :class="{ 'dir-rtl': isRTL }"
                     v-model="schedule.allowLateSubmissions.forNext.intervalType"
                     :rules="intervalType"
-                  ></v-select>
+                  />
                 </v-col>
               </v-row>
             </v-expand-transition>
@@ -633,7 +684,9 @@
               v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD"
             >
               <template #label>
-                {{ $t('trans.formSettings.repeatPeriod') }}
+                <span :class="{ 'mr-2': isRTL }">
+                  {{ $t('trans.formSettings.repeatPeriod') }}
+                </span>
               </template>
             </v-checkbox>
 
@@ -657,21 +710,22 @@
                     class="m-0 p-0"
                     :rules="repeatTerm"
                     :class="{ 'dir-rtl': isRTL }"
-                  ></v-text-field>
+                  />
                 </v-col>
 
                 <v-col cols="4" class="m-0 p-0">
                   <v-select
                     :items="AVAILABLE_PERIOD_OPTIONS"
-                    :label="$t('trans.formSettings.period')"
                     dense
                     flat
                     solid
                     outlined
                     class="mr-2 pl-2"
+                    :class="{ 'dir-rtl': isRTL }"
                     v-model="schedule.repeatSubmission.everyIntervalType"
                     :rules="repeatIntervalType"
-                  ></v-select>
+                    :label="$t('trans.formSettings.period')"
+                  />
                 </v-col>
 
                 <v-col cols="4" class="m-0 p-0">
@@ -690,13 +744,13 @@
                         :placeholder="$t('trans.date.date')"
                         append-icon="event"
                         v-on:click:append="repeatUntil = true"
-                        :label="$t('trans.formSettings.repeatUntil')"
                         v-on="on"
                         dense
                         outlined
                         :rules="repeatUntilDate"
+                        :label="$t('trans.formSettings.repeatUntil')"
                         :class="{ 'dir-rtl': isRTL }"
-                      ></v-text-field>
+                      />
                     </template>
                     <v-date-picker
                       v-model="schedule.repeatSubmission.repeatUntil"
@@ -792,6 +846,7 @@
                         class="ml-3"
                         v-bind="attrs"
                         v-on="on"
+                        :class="{ 'mr-2': isRTL }"
                       >
                         help_outline
                       </v-icon>
@@ -853,24 +908,29 @@
                   v-model="schedule.closingMessageEnabled"
                 >
                   <template #label>
-                    {{ $t('trans.formSettings.customClosingMessage') }}
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                          color="primary"
-                          class="ml-3"
-                          v-bind="attrs"
-                          v-on="on"
-                        >
-                          help_outline
-                        </v-icon>
-                      </template>
-                      <span>
-                        {{
-                          $t('trans.formSettings.customClosingMessageToolTip')
-                        }}
+                    <div>
+                      <span :class="{ 'mr-2': isRTL }">
+                        {{ $t('trans.formSettings.customClosingMessage') }}
                       </span>
-                    </v-tooltip>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-icon
+                            color="primary"
+                            class="ml-3"
+                            v-bind="attrs"
+                            v-on="on"
+                            :class="{ 'mr-2': isRTL }"
+                          >
+                            help_outline
+                          </v-icon>
+                        </template>
+                        <span>
+                          {{
+                            $t('trans.formSettings.customClosingMessageToolTip')
+                          }}
+                        </span>
+                      </v-tooltip>
+                    </div>
                   </template>
                 </v-checkbox>
               </v-col>
@@ -892,6 +952,7 @@
                         data-test="text-name"
                         v-model="schedule.closingMessage"
                         :rules="closeMessage"
+                        :class="{ 'dir-rtl': isRTL }"
                       />
                     </v-col>
                   </v-row>
@@ -919,35 +980,40 @@
                         v-model="reminder_enabled"
                       >
                         <template #label>
-                          {{ $t('trans.formSettings.sendReminderEmail') }}
-                          <v-tooltip close-delay="2500" bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-icon
-                                color="primary"
-                                class="ml-3"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                help_outline
-                              </v-icon>
-                            </template>
+                          <div :class="{ 'mr-2': isRTL }">
                             <span>
-                              {{
-                                $t(
-                                  'trans.formSettings.autoReminderNotificatnToolTip'
-                                )
-                              }}
-                              <a
-                                :href="githubLinkScheduleAndReminderFeature"
-                                class="preview_info_link_field_white"
-                                :target="'_blank'"
-                              >
-                                {{ $t('trans.formSettings.learnMore') }}
-                                <font-awesome-icon
-                                  icon="fa-solid fa-square-arrow-up-right"
-                              /></a>
+                              {{ $t('trans.formSettings.sendReminderEmail') }}
                             </span>
-                          </v-tooltip>
+                            <v-tooltip close-delay="2500" bottom>
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-icon
+                                  color="primary"
+                                  class="ml-3"
+                                  v-bind="attrs"
+                                  v-on="on"
+                                  :class="{ 'mr-2': isRTL }"
+                                >
+                                  help_outline
+                                </v-icon>
+                              </template>
+                              <span>
+                                {{
+                                  $t(
+                                    'trans.formSettings.autoReminderNotificatnToolTip'
+                                  )
+                                }}
+                                <a
+                                  :href="githubLinkScheduleAndReminderFeature"
+                                  class="preview_info_link_field_white"
+                                  :target="'_blank'"
+                                >
+                                  {{ $t('trans.formSettings.learnMore') }}
+                                  <font-awesome-icon
+                                    icon="fa-solid fa-square-arrow-up-right"
+                                /></a>
+                              </span>
+                            </v-tooltip>
+                          </div>
                         </template>
                       </v-checkbox>
                     </v-col>

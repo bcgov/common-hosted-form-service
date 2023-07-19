@@ -41,7 +41,11 @@
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
-            <v-btn class="mr-5" color="primary" @click="updateSettings">
+            <v-btn
+              :class="isRTL ? 'ml-5' : 'mr-5'"
+              color="primary"
+              @click="updateSettings"
+            >
               <span>{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
             <v-btn outlined @click="cancelSettingsEdit">

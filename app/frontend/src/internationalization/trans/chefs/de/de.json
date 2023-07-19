@@ -53,6 +53,7 @@
     "cancel": "Stornieren"
   },
   "formSettings": {
+    "allowMultiDraft": "Erlauben Sie das Hochladen von <strong>mehreren Entwürfen</strong>",
     "formTitle": "Formulartitel",
     "formDescription": "Formularbeschreibung",
     "formAccess": "Formularzugriff",

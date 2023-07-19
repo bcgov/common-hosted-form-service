@@ -55,7 +55,6 @@ export default {
         { title: '日本語 (Japanese)', keyword: 'ja' },
         { title: '한국어 (Korean)', keyword: 'ko' },
         { title: 'ਪੰਜਾਬੀ (Punjabi - Gurmukhi)', keyword: 'pa' },
-        { title: 'Punjabi - Shahmukhi', keyword: 'pu' },
         { title: 'Portuguese (Portugal)', keyword: 'pt' },
         { title: 'Русский (Russian)', keyword: 'ru' },
         { title: 'Tagalog (Filipino)', keyword: 'tl' },

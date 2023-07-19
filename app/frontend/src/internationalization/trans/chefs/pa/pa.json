@@ -53,6 +53,7 @@
     "cancel": "ਰੱਦ ਕਰੋ"
   },
   "formSettings": {
+    "allowMultiDraft": "<strong> ਮਲਟੀਪਲ ਡਰਾਫਟ</strong> ਅੱਪਲੋਡ ਕਰਨ ਦਿਓ",
     "formTitle": "ਫਾਰਮ ਦਾ ਸਿਰਲੇਖ",
     "formDescription": "ਫਾਰਮ ਦਾ ਵੇਰਵਾ",
     "formAccess": "ਫਾਰਮ ਪਹੁੰਚ",

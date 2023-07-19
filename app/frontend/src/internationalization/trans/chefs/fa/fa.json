@@ -53,6 +53,7 @@
     "cancel": "لغو کنید"
   },
   "formSettings": {
+    "allowMultiDraft": "آپلود <strong> پیش نویس چندگانه</strong> مجاز است",
     "formTitle": "عنوان فرم",
     "formDescription": "توضیحات فرم",
     "formAccess": "دسترسی به فرم",
