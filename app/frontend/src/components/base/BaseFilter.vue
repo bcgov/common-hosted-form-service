@@ -192,12 +192,6 @@ export default {
   font-family: BCSans !important;
   color: #000000 !important;
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
-
 .hr {
   height: 1px;
   border: none;

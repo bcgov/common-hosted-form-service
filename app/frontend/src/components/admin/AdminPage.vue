@@ -42,9 +42,3 @@ export default {
   },
 };
 </script>
-<style lang="css">
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
-</style>

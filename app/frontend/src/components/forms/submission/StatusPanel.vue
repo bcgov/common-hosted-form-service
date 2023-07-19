@@ -480,9 +480,4 @@ export default {
   width: 100%;
   white-space: normal;
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 </style>

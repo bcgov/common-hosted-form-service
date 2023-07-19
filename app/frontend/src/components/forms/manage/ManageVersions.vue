@@ -487,10 +487,7 @@ export default {
 .submissions-table {
   clear: both;
 }
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
+
 @media (max-width: 1263px) {
   .submissions-table >>> th {
     vertical-align: top;

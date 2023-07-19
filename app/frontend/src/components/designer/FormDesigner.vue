@@ -805,10 +805,6 @@ export default {
 
   position: -webkit-sticky;
 }
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 .formSetting {
   position: sticky;
   top: 0;

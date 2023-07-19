@@ -522,9 +522,4 @@ export default {
   text-align: center;
   word-break: break-word;
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 </style>

@@ -296,9 +296,4 @@ export default {
   color: white !important;
   font-weight: bold;
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 </style>

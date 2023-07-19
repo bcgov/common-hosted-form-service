@@ -216,9 +216,4 @@ export default {
 .v-expansion-panel:not(.v-expansion-panel--active) {
   margin-bottom: 20px;
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right !important;
-}
 </style>
