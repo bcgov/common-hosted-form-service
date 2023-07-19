@@ -53,6 +53,7 @@
     "cancel": "취소"
   },
   "formSettings": {
+    "allowMultiDraft": "<strong> 여러 초안</strong> 업로드 허용",
     "formTitle": "양식 제목",
     "formDescription": "양식 설명",
     "formAccess": "양식 액세스",

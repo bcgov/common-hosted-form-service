@@ -53,6 +53,7 @@
     "cancel": "取消"
   },
   "formSettings": {
+    "allowMultiDraft": "允許<strong>多草稿</strong>上傳",
     "formTitle": "表格標題",
     "formDescription": "表格說明",
     "formAccess": "表單訪問",

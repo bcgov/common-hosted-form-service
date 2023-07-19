@@ -53,6 +53,7 @@
     "cancel": "Cancelar"
   },
   "formSettings": {
+    "allowMultiDraft": "Permitir upload de <strong> vários rascunhos</strong>",
     "formTitle": "Título do formulário",
     "formDescription": "Descrição do formulário",
     "formAccess": "Acesso ao formulário",

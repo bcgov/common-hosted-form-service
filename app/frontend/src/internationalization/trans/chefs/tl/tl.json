@@ -53,6 +53,7 @@
     "cancel": "Kanselahin"
   },
   "formSettings": {
+    "allowMultiDraft": "Payagan ang pag-upload ng <strong> maramihang draft</strong>",
     "formTitle": "Pamagat ng Form",
     "formDescription": "Paglalarawan ng Form",
     "formAccess": "Pag-access sa Form",
