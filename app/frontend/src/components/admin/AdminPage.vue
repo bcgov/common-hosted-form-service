@@ -33,10 +33,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL']),
   },
   watch: {
-    multiLanguage() {
+    isRTL() {
       this.tab = null;
     },
   },
