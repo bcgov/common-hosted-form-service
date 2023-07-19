@@ -43,9 +43,3 @@ export default {
   },
 };
 </script>
-<style lang="css" scoped>
-.dir-rtl {
-  direction: rtl !important;
-  column-gap: 8px;
-}
-</style>

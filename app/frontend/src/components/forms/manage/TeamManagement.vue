@@ -598,10 +598,6 @@ export default {
 </script>
 
 <style scoped>
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 .role-col {
   width: 12%;
 }

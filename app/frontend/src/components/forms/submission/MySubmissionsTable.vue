@@ -365,11 +365,6 @@ export default {
     padding-right: 16px;
   }
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 .submissions-table {
   clear: both;
 }

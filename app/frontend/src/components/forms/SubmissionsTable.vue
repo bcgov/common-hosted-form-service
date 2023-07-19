@@ -71,17 +71,27 @@
         <v-checkbox
           class="pl-3"
           v-model="deletedOnly"
-          :label="$t('trans.submissionsTable.showDeletedSubmissions')"
           @click="refreshSubmissions"
-        />
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
       </div>
       <div>
         <v-checkbox
           class="pl-3"
           v-model="currentUserOnly"
-          :label="$t('trans.submissionsTable.showMySubmissions')"
           @click="refreshSubmissions"
-        />
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.submissionsTable.showMySubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
       </div>
       <div>
         <!-- search input -->
@@ -781,10 +791,7 @@ export default {
     vertical-align: top;
   }
 }
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
+
 /* Want to use scss but the world hates me */
 .submissions-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;

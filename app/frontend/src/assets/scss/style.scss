@@ -605,3 +605,8 @@ a,
 .flex-xs-column {
   flex-direction: column;
 }
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}

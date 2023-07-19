@@ -1190,10 +1190,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 @import '~font-awesome/css/font-awesome.min.css';
 @import '~formiojs/dist/formio.form.min.css';
 
