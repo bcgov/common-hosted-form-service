@@ -56,9 +56,4 @@ export default {
 .target-notification >>> .v-alert__icon.v-icon:after {
   display: none;
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 </style>

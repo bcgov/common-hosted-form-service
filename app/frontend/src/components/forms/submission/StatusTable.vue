@@ -81,10 +81,6 @@ export default {
 </script>
 
 <style scoped>
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 .status-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;
 }

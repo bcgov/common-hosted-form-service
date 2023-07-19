@@ -148,10 +148,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 .note-heading {
   color: #003366;
 }

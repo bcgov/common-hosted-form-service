@@ -173,8 +173,4 @@ ul#menu li.active {
     float: right;
   }
 }
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 </style>

@@ -182,11 +182,6 @@ export default {
     max-height: 250px;
   }
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 .close-dlg {
   margin-top: 50px;
 }

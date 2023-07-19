@@ -234,9 +234,4 @@ export default {
     color: #003366;
   }
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 </style>

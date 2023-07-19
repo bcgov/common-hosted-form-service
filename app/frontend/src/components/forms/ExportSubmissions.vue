@@ -590,11 +590,6 @@ export default {
   color: #000000 !important;
 }
 
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
-
 .subTitleObjectStyle {
   text-align: left !important;
   font-style: normal !important;
@@ -639,10 +634,6 @@ export default {
   letter-spacing: 0px !important;
   color: #ffffff !important;
   text-transform: capitalize !important;
-}
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
 }
 .cancelButtonStyle {
   width: 80px !important;

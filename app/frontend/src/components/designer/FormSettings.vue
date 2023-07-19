@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>{{ $t('trans.formSettings.formTitle') }}</template>
+          <template #title>{{ $t('trans.formSettings.formTitle') }} </template>
           <v-text-field
             dense
             flat
@@ -43,9 +43,14 @@
             <v-radio
               class="mb-4"
               :class="{ 'dir-rtl': isRTL }"
-              :label="$t('trans.formSettings.public')"
               :value="ID_MODE.PUBLIC"
-            />
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }">
+                  {{ $t('trans.formSettings.public') }}
+                </span>
+              </template>
+            </v-radio>
 
             <v-expand-transition>
               <BaseInfoCard v-if="userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
@@ -65,30 +70,45 @@
                 </p>
               </BaseInfoCard>
             </v-expand-transition>
-            <v-radio
-              class="mb-4"
-              :class="{ 'dir-rtl': isRTL }"
-              :label="$t('trans.formSettings.loginRequired')"
-              value="login"
-            />
+            <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="login">
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }">
+                  {{ $t('trans.formSettings.loginRequired') }}
+                </span>
+              </template>
+            </v-radio>
             <v-expand-transition>
               <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6">
                 <v-radio-group class="my-0" v-model="idps[0]">
                   <v-radio
                     class="mx-2"
+                    :class="{ 'dir-rtl': isRTL }"
                     label="IDIR"
                     :value="ID_PROVIDERS.IDIR"
-                  />
+                  >
+                    <template #label>
+                      <span :class="{ 'mr-2': isRTL }"> Business BCeID </span>
+                    </template>
+                  </v-radio>
                   <v-radio
                     class="mx-2"
+                    :class="{ 'dir-rtl': isRTL }"
                     label="Basic BCeID"
                     :value="ID_PROVIDERS.BCEIDBASIC"
-                  />
+                  >
+                    <template #label>
+                      <span :class="{ 'mr-2': isRTL }"> Business BCeIDs </span>
+                    </template>
+                  </v-radio>
                   <v-radio
                     class="mx-2"
-                    label="Business BCeID"
+                    :class="{ 'dir-rtl': isRTL }"
                     :value="ID_PROVIDERS.BCEIDBUSINESS"
-                  />
+                  >
+                    <template #label>
+                      <span :class="{ 'mr-2': isRTL }"> Business BCeID </span>
+                    </template>
+                  </v-radio>
                   <!-- Mandatory BCeID process notification -->
                   <v-expand-transition>
                     <BaseInfoCard
@@ -128,7 +148,13 @@
               :class="{ 'dir-rtl': isRTL }"
               :label="$t('trans.formSettings.specificTeamMembers')"
               value="team"
-            />
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }">
+                  {{ $t('trans.formSettings.public') }}
+                </span>
+              </template>
+            </v-radio>
           </v-radio-group>
         </BasePanel>
       </v-col>
@@ -1352,9 +1378,3 @@ export default {
   },
 };
 </script>
-<style lang="css" scoped>
-.dir-rtl {
-  direction: rtl !important;
-  column-gap: 8px;
-}
-</style>

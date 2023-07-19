@@ -28,9 +28,4 @@ export default {
   margin-top: 15px;
   width: 50%;
 }
-
-.dir-rtl {
-  direction: rtl !important;
-  text-align: right;
-}
 </style>
