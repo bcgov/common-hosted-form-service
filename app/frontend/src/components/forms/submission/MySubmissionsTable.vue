@@ -7,12 +7,12 @@
     >
       <v-row class="mt-6" no-gutters>
         <!-- page title -->
-        <v-col cols="10">
+        <v-col cols="12" sm="9">
           <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
           <h3>{{ formId ? form.name : 'All Forms' }}</h3>
         </v-col>
         <!-- buttons -->
-        <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="2">
+        <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="12" sm="3">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn

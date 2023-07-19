@@ -38,7 +38,7 @@
 
               <v-checkbox :rules="disclaimerRules" required>
                 <template #label>
-                  <span :class="isRTL ? 'mr-2' : null">{{
+                  <span :class="{ 'mr-2': isRTL }">{{
                     $t('trans.create.disclaimerStmt')
                   }}</span>
                 </template>
