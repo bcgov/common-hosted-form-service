@@ -92,7 +92,7 @@
           :to="{ name: 'FormManage', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">settings</v-icon>
+            <v-icon :class="isRTL ? 'ml-1' : 'mr-1'">settings</v-icon>
             <span class="d-none d-sm-flex">{{
               $t('trans.formsTable.manage')
             }}</span>
@@ -104,7 +104,7 @@
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">list_alt</v-icon>
+            <v-icon :class="isRTL ? 'ml-1' : 'mr-1'">list_alt</v-icon>
             <span class="d-none d-sm-flex">{{
               $t('trans.formsTable.submissions')
             }}</span>

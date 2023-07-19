@@ -6,10 +6,16 @@
           class="pl-3"
           :class="isRTL ? 'float-right' : 'float-left'"
           v-model="activeOnly"
-          :label="$t('trans.adminFormsTable.showDeletedForms')"
           @click="refeshForms"
-        />
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.adminFormsTable.showDeletedForms') }}
+            </span>
+          </template>
+        </v-checkbox>
       </v-col>
+
       <v-col cols="12" sm="4">
         <!-- search input -->
         <div
