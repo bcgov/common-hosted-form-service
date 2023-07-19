@@ -46,7 +46,8 @@
     "totalVersions": "Versions totales",
     "status": "Statut",
     "update": "Mise à jour",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "eventSubscription": "Abonnement à l'événement"
   },
   "formSettings": {
     "formTitle": "Titre du formulaire",
@@ -135,7 +136,13 @@
     "eventAssignment": "Mission",
     "eventStatusChange": "Changement de statut",
     "endpointToken": "Jeton de point de terminaison",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Sauvegarder",
+    "text": "texte",
+    "password": "mot de passe",
+    "hideSecret": "Cacher le secret",
+    "showSecret": "Afficher le secret",
+    "key" : "Clé"
   },
   "apiKey": {
     "disclaimer": "Clause de non-responsabilité",
@@ -892,7 +899,13 @@
       "listFCPHErrMsg": "Une erreur s'est produite lors de la récupération des composants du générateur de formulaires",
       "listFCPHConsErrMsg": "Erreur lors de l'obtention des composants du générateur de formulaire : {error}",
       "downloadFileErrMsg": "Une erreur s'est produite lors du téléchargement du fichier",
-      "downloadFileConsErrMsg": "Erreur lors du téléchargement du fichier : erreur"
+      "downloadFileConsErrMsg": "Erreur lors du téléchargement du fichier : erreur",
+      "readSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative de récupération des paramètres d'abonnement.",
+      "readSubscriptionSettingsConsErrMsg": "Erreur lors de l'obtention des paramètres d'abonnement pour le formulaire {formId} : {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Les paramètres d'abonnement pour ce formulaire ont été enregistrés.",
+      "saveSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement des paramètres d'abonnement.",
+      "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
+      
     }
   }
 }

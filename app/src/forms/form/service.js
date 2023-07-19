@@ -21,6 +21,7 @@ const {
   IdentityProvider,
   SubmissionMetadata,
   FormComponentsProactiveHelp,
+  FormSubscription,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -392,9 +393,10 @@ const service = {
 
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
-
-      if (subscribe && subscribe.enabled && subscribe.eventSubmission) {
-        service.postSubscriptionEvent(subscribe, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
+      if (subscribe && subscribe.enabled) {
+        const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
+        const config = Object.assign({},subscribe,subscribeConfig);
+        service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
       }
 
       // does this submission contain any file uploads?
@@ -659,7 +661,7 @@ const service = {
 
         axiosInstance.interceptors.request.use(
           (cfg) => {
-            cfg.headers = { 'x-api-key': `${subscribe.endpointToken}` };
+            cfg.headers = { [subscribe.key]: `${subscribe.endpointToken}` };
             return Promise.resolve(cfg);
           },
           (error) => {
@@ -707,6 +709,40 @@ const service = {
       }, Object.create(null));
     }
     return {};
+  },
+    // Get the current subscription settings for a form
+  readFormSubscriptionDetails: (formId) => {
+    return FormSubscription.query().modify('filterFormId', formId).first();
+  },
+  // Update subscription settings for a form
+  createOrUpdateSubscriptionDetails: async (formId, subscriptionData, currentUser) => {
+    let trx;
+    try {
+      const subscriptionDetails = await service.readFormSubscriptionDetails(formId);
+      console.log(subscriptionDetails);
+      trx = await FormSubscription.startTransaction();
+
+      if (subscriptionDetails) {
+        // Update new subscription settings for a form
+        await FormSubscription.query(trx).modify('filterFormId', formId).update({
+          ...subscriptionData,
+          updatedBy: currentUser.usernameIdp,
+        });
+      } else {
+        // Add new subscription settings for the form
+        await FormSubscription.query(trx).insert({
+          id: uuidv4(),
+          ...subscriptionData,
+          createdBy: currentUser.usernameIdp,
+        });
+      }
+
+      await trx.commit();
+      return service.readFormSubscriptionDetails(formId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
 };
 

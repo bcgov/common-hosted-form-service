@@ -129,4 +129,16 @@ describe('form mutations', () => {
     expect(state.fcProactiveHelpImageUrl).toEqual('');
     expect(state.fcProactiveHelpImageUrl).toEqual(obj);
   });
+
+  it('SET_SUBSCRIPTION_DATA should update subscriptionData state', () => {
+    const obj = {  
+      subscribeEvent: 'test',
+      endpointUrl: 'http://localhost.com',
+      endpointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
+     };
+    store.mutations.SET_SUBSCRIPTION_DATA(state, obj);
+
+    expect(state.subscriptionData).toBeTruthy();
+    expect(state.subscriptionData).toEqual(expect.objectContaining(obj));
+  });
 });

@@ -46,7 +46,8 @@
     "totalVersions": "Kabuuang Mga Bersyon",
     "status": "Katayuan",
     "update": "Update",
-    "cancel": "Kanselahin"
+    "cancel": "Kanselahin",
+    "eventSubscription": "Subscription sa Kaganapan"
   },
   "formSettings": {
     "formTitle": "Pamagat ng Form",
@@ -135,7 +136,13 @@
     "eventAssignment": "Assignment",
     "eventStatusChange": "Pagbabago ng Katayuan",
     "endpointToken": "Endpoint Token",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "I-save",
+    "text": "text",
+    "password": "password",
+    "hideSecret": "Itago ang Lihim",
+    "showSecret": "Ipakita ang Lihim",
+    "key" : "Susi"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -892,7 +899,13 @@
       "listFCPHErrMsg": "May naganap na error habang kinukuha ang mga bahagi ng tagabuo ng form",
       "listFCPHConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}",
       "downloadFileErrMsg": "Nagkaroon ng error habang nagda-download ng file",
-      "downloadFileConsErrMsg": "Error sa pag-download ng file: error"
+      "downloadFileConsErrMsg": "Error sa pag-download ng file: error",
+      "readSubscriptionSettingsErrMsg": "Nagkaroon ng error habang sinusubukang kunin ang mga setting ng subscription.",
+      "readSubscriptionSettingsConsErrMsg": "Error sa pagkuha ng mga setting ng subscription para sa form {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Nai-save na ang mga setting ng subscription para sa form na ito.",
+      "saveSubscriptionSettingsErrMsg": "May naganap na error habang sinusubukang i-save ang mga setting ng subscription.",
+      "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
+      
     }
   }
 }

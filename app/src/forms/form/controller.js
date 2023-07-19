@@ -270,4 +270,21 @@ module.exports = {
       next(error);
     }
   },
+  readFormSubscriptionDetails: async (req, res, next) => {
+    try {
+      const response = await service.readFormSubscriptionDetails(req.params.formId, req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  createOrUpdateSubscriptionDetails: async (req, res, next) => {
+    try {
+      console.log(req.body)
+      const response = await service.createOrUpdateSubscriptionDetails(req.params.formId,req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

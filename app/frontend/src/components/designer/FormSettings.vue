@@ -933,66 +933,6 @@
           </BasePanel>
         </v-col>
       </v-expand-transition>
-      <v-expand-transition>
-        <v-col cols="12" md="6" v-if="subscribe.enabled">
-          <BasePanel class="fill-height">
-            <template #title>{{
-              $t('trans.formSettings.eventSubscription')
-            }}</template>
-            <v-row class="m-0">
-              <v-col cols="6" md="4" class="pl-0 pr-0 pb-0">
-                <v-checkbox
-                  class="my-0 pt-0"
-                  v-model="subscribe.eventSubmission"
-                >
-                  <template #label>
-                    {{ $t('trans.subscribeEvent.eventSubmission') }}
-                  </template>
-                </v-checkbox>
-                <v-checkbox
-                  class="my-0 pt-0"
-                  v-model="subscribe.eventAssignment"
-                >
-                  <template #label>
-                    {{ $t('trans.subscribeEvent.eventAssignment') }}
-                  </template>
-                </v-checkbox>
-                <v-checkbox
-                  class="my-0 pt-0"
-                  v-model="subscribe.eventStatusChange"
-                >
-                  <template #label>
-                    {{ $t('trans.subscribeEvent.eventStatusChange') }}
-                  </template>
-                </v-checkbox>
-              </v-col>
-              <v-col cols="6" md="6" class="pl-0 pr-0 pb-0">
-                <v-text-field
-                  :label="$t('trans.subscribeEvent.endpointUrl')"
-                  :placeholder="$t('trans.subscribeEvent.urlPlaceholder')"
-                  dense
-                  flat
-                  solid
-                  outlined
-                  v-model="subscribe.endpointUrl"
-                  class="m-0 p-0"
-                  :rules="endpointUrlRules"
-                ></v-text-field>
-                <v-text-field
-                  :label="$t('trans.subscribeEvent.endpointToken')"
-                  dense
-                  flat
-                  solid
-                  outlined
-                  v-model="subscribe.endpointToken"
-                  class="m-0 p-0"
-                  :rules="endpointTokenRules"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </BasePanel>
-        </v-col>
-      </v-expand-transition>
     </v-row>
   </v-container>
 </template>

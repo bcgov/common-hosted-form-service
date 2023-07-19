@@ -46,7 +46,8 @@
     "totalVersions": "Gesamtversionen",
     "status": "Status",
     "update": "Aktualisieren",
-    "cancel": "Stornieren"
+    "cancel": "Stornieren",
+    "eventSubscription" : "Ereignisabonnement"
   },
   "formSettings": {
     "formTitle": "Formulartitel",
@@ -135,7 +136,13 @@
     "eventAssignment": "Zuordnung",
     "eventStatusChange": "Statusänderung",
     "endpointToken": "Endpunkttoken",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Speichern",
+    "text": "Text",
+    "password": "Passwort",
+    "hideSecret": "Geheimnis verbergen",
+    "showSecret": "Geheimnis anzeigen",
+    "key" : "Taste"
   },
   "apiKey": {
     "disclaimer": "Haftungsausschluss",
@@ -892,7 +899,12 @@
       "listFCPHErrMsg": "Beim Abrufen der Form Builder-Komponenten ist ein Fehler aufgetreten",
       "listFCPHConsErrMsg": "Fehler beim Abrufen der Formular-Builder-Komponenten: {error}",
       "downloadFileErrMsg": "Beim Herunterladen der Datei ist ein Fehler aufgetreten",
-      "downloadFileConsErrMsg": "Fehler beim Herunterladen der Datei: Fehler"
+      "downloadFileConsErrMsg": "Fehler beim Herunterladen der Datei: Fehler",
+      "readSubscriptionSettingsErrMsg": "Beim Versuch, die Abonnementeinstellungen abzurufen, ist ein Fehler aufgetreten.",
+      "readSubscriptionSettingsConsErrMsg": "Fehler beim Abrufen der Abonnementeinstellungen für das Formular {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Die Abonnementeinstellungen für dieses Formular wurden gespeichert.",
+      "saveSubscriptionSettingsErrMsg": "Beim Versuch, die Abonnementeinstellungen zu speichern, ist ein Fehler aufgetreten.",
+      "saveSubscriptionSettingsConsErrMsg": "Fehler beim Speichern der Abonnementeinstellungen für das Formular {formId}: {error}"
     }
   }
 }

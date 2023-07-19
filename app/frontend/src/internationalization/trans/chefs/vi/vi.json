@@ -46,7 +46,8 @@
     "totalVersions": "Tổng số phiên bản",
     "status": "Trạng thái",
     "update": "Cập nhật",
-    "cancel": "Hủy bỏ"
+    "cancel": "Hủy bỏ",
+    "eventSubscription": "Đăng ký sự kiện"
   },
   "formSettings": {
     "formTitle": "Tiêu đề mẫu",
@@ -135,7 +136,13 @@
     "eventAssignment": "Phân công",
     "eventStatusChange": "Thay đổi trạng thái",
     "endpointToken": "Mã thông báo điểm cuối",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Cứu",
+    "text": "chữ",
+    "password": "mật khẩu",
+    "hideSecret": "Ẩn bí mật",
+    "showSecret": "Hiển thị bí mật",
+    "key" : "Chìa khóa"
   },
   "apiKey": {
     "disclaimer": "từ chối trách nhiệm",
@@ -892,7 +899,12 @@
       "listFCPHErrMsg": "Đã xảy ra lỗi khi tìm nạp các thành phần của trình tạo biểu mẫu",
       "listFCPHConsErrMsg": "Lỗi khi nhận các thành phần của trình tạo biểu mẫu: {error}",
       "downloadFileErrMsg": "Đã xảy ra lỗi khi tải xuống tệp",
-      "downloadFileConsErrMsg": "Lỗi khi tải xuống tệp: lỗi"
+      "downloadFileConsErrMsg": "Lỗi khi tải xuống tệp: lỗi",
+      "readSubscriptionSettingsErrMsg": "Đã xảy ra lỗi khi cố tìm nạp cài đặt đăng ký.",
+      "readSubscriptionSettingsConsErrMsg": "Lỗi nhận cài đặt đăng ký cho biểu mẫu {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Cài đặt đăng ký cho biểu mẫu này đã được lưu.",
+      "saveSubscriptionSettingsErrMsg": "Đã xảy ra lỗi khi cố lưu cài đặt đăng ký.",
+      "saveSubscriptionSettingsConsErrMsg": "Lỗi khi lưu cài đặt đăng ký cho biểu mẫu {formId}: {error}"
     }
   }
 }

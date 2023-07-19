@@ -46,7 +46,8 @@
     "totalVersions": "مجموع نسخه ها",
     "status": "وضعیت",
     "update": "به روز رسانی",
-    "cancel": "لغو کنید"
+    "cancel": "لغو کنید",
+    "eventSubscription": "اشتراک رویداد"
   },
   "formSettings": {
     "formTitle": "عنوان فرم",
@@ -135,7 +136,13 @@
     "eventAssignment": "وظیفه",
     "eventStatusChange": "تغییر وضعیت",
     "endpointToken": "نشانه نقطه پایانی",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "صرفه جویی",
+    "text": "متن",
+    "password": "کلمه عبور",
+    "hideSecret": "پنهان کردن راز",
+    "showSecret": "نمایش راز",
+    "key" : "کلید"
   },
   "apiKey": {
     "disclaimer": "سلب مسئولیت",
@@ -892,7 +899,13 @@
       "listFCPHErrMsg": "هنگام واکشی اجزای سازنده فرم خطایی روی داد",
       "listFCPHConsErrMsg": "خطا در دریافت اجزای فرم ساز: {error}",
       "downloadFileErrMsg": "هنگام دانلود فایل خطایی روی داد",
-      "downloadFileConsErrMsg": "خطا در دانلود فایل: خطا"
+      "downloadFileConsErrMsg": "خطا در دانلود فایل: خطا",
+      "readSubscriptionSettingsErrMsg": "هنگام تلاش برای واکشی تنظیمات اشتراک خطایی روی داد.",
+      "readSubscriptionSettingsConsErrMsg": "خطا در تنظیمات اشتراک برای فرم {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "تنظیمات اشتراک برای این فرم ذخیره شده است.",
+      "saveSubscriptionSettingsErrMsg": "هنگام تلاش برای ذخیره تنظیمات اشتراک خطایی روی داد.",
+      "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
+
     }
   }
 }

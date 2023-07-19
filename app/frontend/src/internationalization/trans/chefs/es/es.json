@@ -46,7 +46,8 @@
     "totalVersions": "Versiones totales",
     "status": "Estado",
     "update": "Actualizar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "eventSubscription" : "Suscripción a eventos"
   },
   "formSettings": {
     "formTitle": "Título del formulario",
@@ -135,7 +136,13 @@
     "eventAssignment": "Asignación",
     "eventStatusChange": "Cambio de estado",
     "endpointToken": "Token de punto final",
-    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/"
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Ahorrar",
+    "text": "texto",
+    "password": "contraseña",
+    "hideSecret": "Ocultar secreto",
+    "showSecret": "Mostrar secreto",
+    "key" : "Llave"
   },
   "apiKey": {
     "disclaimer": "Descargo de responsabilidad",
@@ -892,7 +899,12 @@
       "listFCPHErrMsg": "Se produjo un error al obtener los componentes del generador de formularios",
       "listFCPHConsErrMsg": "Error al obtener los componentes del generador de formularios: {error}",
       "downloadFileErrMsg": "Ocurrió un error al descargar el archivo",
-      "downloadFileConsErrMsg": "Error al descargar el archivo: error"
+      "downloadFileConsErrMsg": "Error al descargar el archivo: error",
+      "readSubscriptionSettingsErrMsg": "Se produjo un error al intentar obtener la configuración de la suscripción.",
+      "readSubscriptionSettingsConsErrMsg": "Error al obtener la configuración de suscripción para el formulario {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Se ha guardado la configuración de suscripción para este formulario.",
+      "saveSubscriptionSettingsErrMsg": "Se produjo un error al intentar guardar la configuración de la suscripción.",
+      "saveSubscriptionSettingsConsErrMsg": "Error al guardar la configuración de suscripción para el formulario {formId}: {error}"
     }
   }
 }
