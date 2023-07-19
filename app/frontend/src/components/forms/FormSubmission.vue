@@ -6,9 +6,11 @@
       :class="{ 'dir-rtl': isRTL }"
     />
     <div v-else :class="{ 'dir-rtl': isRTL }">
-      <v-row class="mt-6" no-gutters>
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
+      >
         <!-- page title -->
-        <v-col cols="12" sm="8">
+        <div>
           <h1>{{ form.name }}</h1>
           <p>
             <strong>{{ $t('trans.formSubmission.submitted') }}</strong>
@@ -21,14 +23,9 @@
             {{ formSubmission.createdBy }}
             <br />
           </p>
-        </v-col>
+        </div>
         <!-- buttons -->
-        <v-col
-          class="d-print-none"
-          :class="isRTL ? 'text-left' : 'text-right'"
-          cols="12"
-          sm="4"
-        >
+        <div class="d-print-none">
           <span>
             <PrintOptions :submissionId="submissionId" />
           </span>
@@ -53,8 +50,8 @@
             </v-tooltip>
           </span>
           <DeleteSubmission @deleted="onDelete" :submissionId="submissionId" />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
     </div>
     <br />
     <v-row>
@@ -237,6 +234,7 @@ export default {
     color: #003366;
   }
 }
+
 .dir-rtl {
   direction: rtl !important;
   text-align: right;
