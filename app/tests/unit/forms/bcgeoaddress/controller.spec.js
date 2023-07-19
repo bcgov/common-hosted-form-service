@@ -5,8 +5,24 @@ const req = {
   query: { brief: true, autocomplete: true, matchAccuracy: 100, addressString: 25, url: 'test Url' },
 };
 
-describe('earch BCGEO Address', () => {
+describe('search BCGEO Address', () => {
   it('should call searchBCGeoAddress method ', async () => {
+    let res = jest.fn();
+    let next = jest.fn();
+    service.searchBCGeoAddress = jest.fn().mockReturnValue({
+      features: [
+        {
+          geometry: { coordinates: [-118.4683663, 49.0257091] },
+          properties: { fullAddress: '25th St, Grand Forks, BC' },
+        },
+      ],
+    });
+    await controller.searchBCGeoAddress(req, res, next);
+    expect(service.searchBCGeoAddress).toHaveBeenCalledTimes(1);
+  });
+});
+describe('search BCGEO Address', () => {
+  it('should call advancedSearchBCGeoAddress method ', async () => {
     let res = jest.fn();
     let next = jest.fn();
     service.searchBCGeoAddress = jest.fn().mockReturnValue({
