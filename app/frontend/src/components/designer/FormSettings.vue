@@ -148,7 +148,7 @@
           >
             <template #label>
               <span
-                :class="isRTL ? 'mr-2' : null"
+                :class="{ 'mr-2': isRTL }"
                 v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
               >
               </span>
@@ -158,7 +158,7 @@
           <v-checkbox class="my-0" v-model="enableStatusUpdates">
             <template #label>
               <span
-                :class="isRTL ? 'mr-2' : null"
+                :class="{ 'mr-2': isRTL }"
                 v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
               >
               </span>
@@ -172,7 +172,7 @@
             :disabled="userType === ID_MODE.PUBLIC"
           >
             <template #label>
-              <span :class="isRTL ? 'mr-2' : null">
+              <span :class="{ 'mr-2': isRTL }">
                 Allow <strong> multiple draft</strong> upload
                 <v-tooltip close-delay="3000" bottom>
                   <template v-slot:activator="{ on, attrs }">
@@ -203,7 +203,7 @@
 
           <v-checkbox v-if="!isFormPublished" disabled class="my-0">
             <template #label>
-              <span :class="isRTL ? 'mr-2' : null"
+              <span :class="{ 'mr-2': isRTL }"
                 >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
               </span>
             </template>
@@ -215,7 +215,7 @@
             v-model="schedule.enabled"
           >
             <template #label>
-              <span :class="isRTL ? 'mr-2' : null">{{
+              <span :class="{ 'mr-2': isRTL }">{{
                 $t('trans.formSettings.formSubmissionsSchedule')
               }}</span>
               <v-tooltip bottom close-delay="2500">
@@ -250,7 +250,7 @@
           >
             <template #label>
               <span
-                :class="isRTL ? 'mr-2' : null"
+                :class="{ 'mr-2': isRTL }"
                 style="max-width: 80%"
                 v-html="
                   $t('trans.formSettings.submitterCanCopyExistingSubmissn')
@@ -294,7 +294,7 @@
             :class="{ 'dir-rtl': isRTL }"
           >
             <template #label>
-              <span :class="isRTL ? 'mr-2' : null">
+              <span :class="{ 'mr-2': isRTL }">
                 {{ $t('trans.formSettings.submissionConfirmation') }}</span
               >
 
@@ -323,7 +323,7 @@
 
           <v-checkbox class="my-0" v-model="sendSubRecieviedEmail">
             <template #label>
-              <span :class="isRTL ? 'mr-2' : null">
+              <span :class="{ 'mr-2': isRTL }">
                 {{ $t('trans.formSettings.emailNotificatnToTeam') }}</span
               >
 

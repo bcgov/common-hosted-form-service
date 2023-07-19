@@ -612,6 +612,13 @@ export default {
 .team-table {
   clear: both;
 }
+@media only screen and (max-width: 600px) {
+  .container {
+    display: flex; /* displays flex-items (children) inline by default */
+    flex-direction: column; /* new */
+    justify-content: space-between;
+  }
+}
 @media (max-width: 1263px) {
   .team-table >>> th {
     vertical-align: top;

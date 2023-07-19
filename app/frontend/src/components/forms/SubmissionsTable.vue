@@ -2,12 +2,15 @@
   <div :class="{ 'dir-rtl': isRTL }">
     <v-row class="mt-6" no-gutters>
       <!-- page title -->
-      <v-col cols="10">
+      <v-col cols="12" sm="8">
         <h1>Submissions</h1>
       </v-col>
       <!-- buttons -->
-      <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="2">
-        <span v-if="checkFormManage">
+      <v-col cols="12" sm="4">
+        <span
+          :class="isRTL ? 'float-left' : 'float-right'"
+          v-if="checkFormManage"
+        >
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn

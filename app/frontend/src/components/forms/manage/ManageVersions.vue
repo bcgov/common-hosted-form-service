@@ -66,7 +66,7 @@
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
         >
           <template #label>
-            <span :class="isRTL ? 'mr-2' : null">
+            <span :class="{ 'mr-2': isRTL }">
               {{
                 item.published
                   ? $t('trans.manageVersions.published')
