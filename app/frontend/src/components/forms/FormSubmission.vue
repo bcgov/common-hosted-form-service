@@ -8,7 +8,7 @@
     <div v-else :class="{ 'dir-rtl': isRTL }">
       <v-row class="mt-6" no-gutters>
         <!-- page title -->
-        <v-col cols="10">
+        <v-col cols="12" sm="8">
           <h1>{{ form.name }}</h1>
           <p>
             <strong>{{ $t('trans.formSubmission.submitted') }}</strong>
@@ -26,7 +26,8 @@
         <v-col
           class="d-print-none"
           :class="isRTL ? 'text-left' : 'text-right'"
-          cols="2"
+          cols="12"
+          sm="4"
         >
           <span>
             <PrintOptions :submissionId="submissionId" />

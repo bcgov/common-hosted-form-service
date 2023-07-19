@@ -1,7 +1,7 @@
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <v-row no-gutters>
-      <v-col cols="6">
+      <v-col cols="12" sm="8">
         <v-checkbox
           class="pl-3"
           :class="isRTL ? 'float-right' : 'float-left'"
@@ -10,7 +10,7 @@
           @click="refeshForms"
         />
       </v-col>
-      <v-col cols="6">
+      <v-col cols="12" sm="4">
         <!-- search input -->
         <div
           class="submissions-search"

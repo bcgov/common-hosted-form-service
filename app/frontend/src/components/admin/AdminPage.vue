@@ -1,5 +1,5 @@
 <template>
-  <v-tabs :class="{ 'dir-rtl': isRTL }">
+  <v-tabs :class="{ 'dir-rtl': isRTL }" v-model="tab">
     <v-tab>{{ $t('trans.adminPage.forms') }}</v-tab>
     <v-tab>{{ $t('trans.adminPage.users') }}</v-tab>
     <v-tab>{{ $t('trans.adminPage.developer') }}</v-tab>
@@ -28,11 +28,17 @@ export default {
   },
   data() {
     return {
+      tab: null,
       adminDashboardUrl: this.$config.adminDashboardUrl,
     };
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+  },
+  watch: {
+    multiLanguage() {
+      this.tab = null;
+    },
   },
 };
 </script>
