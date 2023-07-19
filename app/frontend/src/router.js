@@ -303,6 +303,7 @@ export default function getRouter(basePath = '/') {
               breadcrumbTitle: 'View Submission',
               requiresAuth: true,
               hasLogin: true,
+              formSubmitMode: true,
             },
             props: createProps,
           },

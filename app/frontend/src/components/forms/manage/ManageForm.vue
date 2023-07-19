@@ -18,7 +18,6 @@ export default {
     return {
       apiKeyPanel: 1,
       formSettingsDisabled: true,
-      settingsForm: null,
       settingsFormValid: false,
       settingsPanel: 1,
       versionsPanel: 0,
@@ -78,7 +77,7 @@ export default {
 
     async updateSettings() {
       try {
-        const { valid } = await this.settingsForm.validate();
+        const { valid } = await this.$refs.settingsForm.validate();
 
         if (valid) {
           await this.updateForm();

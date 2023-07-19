@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash';
 import { mapActions, mapState } from 'pinia';
 import { Form } from '@formio/vue';
 
@@ -69,7 +70,6 @@ export default {
       allowSubmitterToUploadFile: false,
       block: false,
       bulkFile: false,
-      chefForm: null,
       confirmSubmit: false,
       currentForm: {},
       doYouWantToSaveTheDraft: false,
@@ -263,9 +263,9 @@ export default {
       } catch (error) {
         this.addNotification({
           text: i18n.t('trans.formViewer.getUsersSubmissionsErrMsg'),
-          consoleError: i18n.t(
+          consoleError: `${i18n.t(
             'trans.formViewer.getUsersSubmissionsConsoleErrMsg'
-          ),
+          )} ${error}`,
         });
       } finally {
         this.loadingSubmission = false;
@@ -359,8 +359,8 @@ export default {
     },
     jsonManager() {
       this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
-      if (this.chefForm?.formio) {
-        this.formElement = this.chefForm.formio;
+      if (this.$refs.chefForm?.formio) {
+        this.formElement = this.$refs.chefForm.formio;
         this.json_csv.data = [
           JSON.parse(JSON.stringify(this.formElement._data)),
           JSON.parse(JSON.stringify(this.formElement._data)),

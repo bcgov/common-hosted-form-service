@@ -413,7 +413,6 @@ export default {
                         density="compact"
                         variant="outlined"
                         :rules="startDateRules"
-                        v-bind="props"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
@@ -425,7 +424,6 @@ export default {
                         density="compact"
                         variant="outlined"
                         :rules="endDateRules"
-                        v-bind="props"
                       ></v-text-field>
                     </v-col>
                   </v-row>

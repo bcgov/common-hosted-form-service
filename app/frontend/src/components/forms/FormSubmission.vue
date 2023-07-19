@@ -30,7 +30,6 @@ export default {
     return {
       isDraft: true,
       loading: true,
-      notesPanel: null,
       reRenderSubmission: 0,
       submissionReadOnly: true,
     };
@@ -61,7 +60,7 @@ export default {
       });
     },
     refreshNotes() {
-      this.notesPanel.getNotes();
+      this.$fefs.notesPanel.getNotes();
     },
 
     setDraft(status) {
