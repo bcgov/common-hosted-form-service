@@ -250,7 +250,9 @@ const service = {
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
       .modify('orderDefault');
-
+    if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
+      query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
+    }
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
 
     if (params.fields && params.fields.length) {
