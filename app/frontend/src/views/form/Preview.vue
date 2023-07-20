@@ -1,6 +1,6 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
-    <h1>
+    <h1 :class="{ 'dir-rtl': isRTL }" style="text-align: left !important">
       {{ $t('trans.preview.preview') }}
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
@@ -19,7 +19,7 @@
 
 <script>
 import FormViewer from '@/components/designer/FormViewer.vue';
-
+import { mapGetters } from 'vuex';
 import { IdentityProviders } from '@/utils/constants';
 
 export default {
@@ -33,6 +33,7 @@ export default {
     FormViewer,
   },
   computed: {
+    ...mapGetters('form', ['isRTL']),
     IDP: () => IdentityProviders,
   },
 };

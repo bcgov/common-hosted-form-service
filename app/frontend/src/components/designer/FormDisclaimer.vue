@@ -1,21 +1,21 @@
 <template>
-  <div>
-    <h3 class="mb-5" :class="{ 'dir-rtl': isRTL }">
+  <div :class="{ 'dir-rtl': isRTL }">
+    <h3 class="mb-5">
       {{ $t('trans.formDisclaimer.disclaimerAndStatement') }}
     </h3>
     <ul :class="isRTL ? 'mr-6' : null">
       <li>
-        <span :class="{ 'dir-rtl': isRTL }">
+        <span>
           {{ $t('trans.formDisclaimer.privacyLaw') }}
         </span>
       </li>
       <li>
-        <span :class="{ 'dir-rtl': isRTL }">
+        <span>
           {{ $t('trans.formDisclaimer.disclosure') }}
         </span>
       </li>
       <li>
-        <span :class="{ 'dir-rtl': isRTL }">
+        <span>
           {{ $t('trans.formDisclaimer.consent') }}
         </span>
       </li>

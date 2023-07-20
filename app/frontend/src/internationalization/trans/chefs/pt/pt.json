@@ -791,7 +791,7 @@
   "sucess": {
     "sucessFormSubmissn": "Seu formulário foi submetido com sucesso",
     "keepRecord": "Se você deseja manter um registro desta submissão, você pode manter o seguinte",
-    "confirmationId": "ID de confirmação:"
+    "confirmationId": "ID de confirmação"
   },
   "permissionUtils": {
     "formNotAvailable": "O formulário está indisponível no momento. Isso pode ocorrer devido a um link incorreto ou o formulário pode ter sido excluído pelo proprietário.",

@@ -1,9 +1,5 @@
 <template>
-  <v-skeleton-loader
-    :loading="loading"
-    type="list-item-two-line"
-    :class="{ 'dir-rtl': isRTL }"
-  >
+  <v-skeleton-loader :loading="loading" type="list-item-two-line">
     <v-row no-gutters>
       <v-col cols="11" sm="6">
         <h2 class="note-heading">{{ $t('trans.notesPanel.notes') }}</h2>
