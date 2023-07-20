@@ -117,7 +117,7 @@ export default {
             variant="underlined"
             append-inner-icon="mdi-magnify"
             single-line
-            :label="$t('trans.formsTable.createNewForm')"
+            :label="$t('trans.formsTable.search')"
             class="pb-5"
           />
         </div>
