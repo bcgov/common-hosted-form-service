@@ -138,7 +138,7 @@
 </template>
 <script>
 import { mapActions } from 'vuex';
-import { Formio } from 'vue-formio';
+import { Formio, Utils } from 'vue-formio';
 // import { nextTick } from 'process';
 export default {
   name: 'FormViewerDownloadButton',
@@ -309,6 +309,65 @@ export default {
         this.progress = true;
         this.$emit('toggleBlock', true);
         const formHtml = document.getElementById('validateForm');
+        //Add custom validation to the Components those are not covered by FormIO Validation class
+        await Utils.eachComponent(
+          this.formSchema.components,
+          function (component) {
+            //Need to cover Validation parts those are not performed by FormIO validate funciton
+            switch (component.type) {
+              case 'number':
+                component.validate.custom =
+                  "valid = _.isNumber(input) ? true : 'Only number allowed on a number field';" +
+                  component.validate.custom;
+                break;
+
+              case 'simplenumber':
+                component.validate.custom =
+                  "valid = _.isNumber(input) ? true : 'Only number allowed on a simple number field';" +
+                  component.validate.custom;
+                break;
+
+              case 'simplenumberadvanced':
+                component.validate.custom =
+                  "valid = _.isNumber(input) ? true : 'Only number allowed on a simple number advanced field';" +
+                  component.validate.custom;
+                break;
+
+              case 'simpledatetimeadvanced':
+                component.validate.custom =
+                  "valid = moment(input).format('" +
+                  component.format +
+                  "') === 'Invalid date' ? 'Wrong DateTime format. (Example:" +
+                  component.format +
+                  ")' : true;" +
+                  component.validate.custom;
+                break;
+
+              case 'simpledatetime':
+                component.validate.custom =
+                  "valid = moment(input).format('" +
+                  component.format +
+                  "') === 'Invalid date' ? 'Wrong Date/Time format. (Example:" +
+                  component.format +
+                  ")' : true;" +
+                  component.validate.custom;
+                break;
+
+              case 'simpletimeadvanced':
+                component.validate.custom =
+                  "valid = moment(input).format('" +
+                  component.format +
+                  "') === 'Invalid date' ? 'Wrong Time format. (Example:" +
+                  component.format +
+                  ")' : true;" +
+                  component.validate.custom;
+                break;
+
+              default:
+                break;
+            }
+          }
+        );
         this.vForm = await Formio.createForm(formHtml, this.formSchema, {
           highlightErrors: true,
           alwaysDirty: true,
