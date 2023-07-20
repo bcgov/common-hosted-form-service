@@ -1,24 +1,22 @@
 <template>
   <div>
     <div :class="{ 'dir-rtl': isRTL }">
-      <v-row class="mt-6" no-gutters>
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+      >
         <!-- page title -->
-        <v-col cols="11">
-          <v-row>
-            <v-col cols="12">
-              <h1>
-                {{ $t('trans.formDesigner.formDesign') }}
-              </h1>
-              <h3 v-if="name">{{ name }}</h3>
-              <em
-                >{{ $t('trans.formDesigner.version') }} :
-                {{ this.displayVersion }}</em
-              >
-            </v-col>
-          </v-row>
-        </v-col>
+        <div>
+          <h1>
+            {{ $t('trans.formDesigner.formDesign') }}
+          </h1>
+          <h3 v-if="name">{{ name }}</h3>
+          <em
+            >{{ $t('trans.formDesigner.version') }} :
+            {{ this.displayVersion }}</em
+          >
+        </div>
         <!-- buttons -->
-        <v-col cols="1">
+        <div>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -56,9 +54,9 @@
             </template>
             <span>{{ $t('trans.formDesigner.importDesign') }}</span>
           </v-tooltip>
-        </v-col>
+        </div>
         <!-- form name -->
-      </v-row>
+      </div>
     </div>
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
       <h4 class="primary--text">
