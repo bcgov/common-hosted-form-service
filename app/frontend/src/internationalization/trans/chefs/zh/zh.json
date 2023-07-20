@@ -791,7 +791,7 @@
   "sucess": {
     "sucessFormSubmissn": "您的表单已成功提交",
     "keepRecord": "如果您希望保留此提交的记录，您可以保留以下内容",
-    "confirmationId": "确认编号："
+    "confirmationId": "确认编号"
   },
   "permissionUtils": {
     "formNotAvailable": "该表格目前不可用。这可能是由于链接不正确，或者表单可能已被其所有者删除。",

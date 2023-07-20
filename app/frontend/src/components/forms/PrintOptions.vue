@@ -13,7 +13,7 @@
           <v-icon>print</v-icon>
         </v-btn>
       </template>
-      <span>{{ $t('trans.printOptions.print') }}</span>
+      <span>{{ $t('trans.printOptions.print') }} </span>
     </v-tooltip>
 
     <v-dialog
@@ -73,7 +73,6 @@
             <v-tooltip top>
               <template #activator="{ on }">
                 <v-btn
-                  :class="{ 'dir-rtl': isRTL }"
                   color="primary"
                   class="btn-file-input-submit"
                   :disabled="!templateForm.files"

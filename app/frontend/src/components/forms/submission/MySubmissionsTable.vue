@@ -1,10 +1,6 @@
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <v-skeleton-loader
-      :loading="loading"
-      type="heading"
-      :class="{ 'dir-rtl': isRTL }"
-    >
+    <v-skeleton-loader :loading="loading" type="heading">
       <div
         class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
       >
@@ -71,7 +67,7 @@
             single-line
             hide-details
             class="pb-5"
-            :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            :class="{ label: isRTL }"
           />
         </div>
       </v-col>

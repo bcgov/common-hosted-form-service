@@ -791,7 +791,7 @@
   "sucess": {
     "sucessFormSubmissn": "フォームは正常に送信されました",
     "keepRecord": "この提出の記録を保存したい場合は、以下を保存できます。",
-    "confirmationId": "確認ID："
+    "confirmationId": "確認ID"
   },
   "permissionUtils": {
     "formNotAvailable": "現在フォームはご利用いただけません。これは、リンクが間違っているか、フォームが所有者によって削除されたことが原因である可能性があります。",

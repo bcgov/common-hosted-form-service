@@ -790,7 +790,7 @@
   "sucess": {
     "sucessFormSubmissn": "Your form has been submitted successfully",
     "keepRecord": "If you wish to keep a record of this submission, you can keep the following",
-    "confirmationId": "Confirmation ID:"
+    "confirmationId": "Confirmation ID"
   },
   "bcGovAlertBanner": {
     "defaultErrMsg": "Error: Something went wrong",

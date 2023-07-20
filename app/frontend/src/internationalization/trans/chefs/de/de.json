@@ -746,6 +746,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Sie können niemanden finden? Möglicherweise haben sie sich nicht bei CHEFS angemeldet.<br /> Bitte senden Sie ihnen einen Link zu CHEFS und bitten Sie sie, sich anzumelden.",
     "cancel": "Stornieren",
+    "add": "Hinzufügen",
     "mustSelectAUser": "Sie müssen mindestens eine Rolle auswählen, um diesen Benutzer hinzuzufügen.",
     "addNewMember": "Fügen Sie ein neues Mitglied hinzu",
     "enterUsername": "Geben Sie einen Namen, eine E-Mail-Adresse oder einen Benutzernamen ein",
@@ -790,7 +791,7 @@
   "sucess": {
     "sucessFormSubmissn": "Ihr Formular wurde erfolgreich übermittelt",
     "keepRecord": "Wenn Sie diese Einreichung protokollieren möchten, können Sie Folgendes aufbewahren",
-    "confirmationId": "Bestätigungs-ID:"
+    "confirmationId": "Bestätigungs-ID"
   },
   "permissionUtils": {
     "formNotAvailable": "Das Formular ist derzeit nicht verfügbar. Dies kann an einem falschen Link liegen oder das Formular wurde vom Eigentümer gelöscht.",

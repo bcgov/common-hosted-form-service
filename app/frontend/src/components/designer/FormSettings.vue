@@ -595,7 +595,6 @@
                   class="mr-2 pl-2"
                   v-model="schedule.keepOpenForInterval"
                   :rules="intervalType"
-                  :class="{ 'dir-rtl': isRTL }"
                 />
               </v-col>
             </v-row>
@@ -669,7 +668,6 @@
                     solid
                     outlined
                     class="mr-1 pl-2"
-                    :class="{ 'dir-rtl': isRTL }"
                     v-model="schedule.allowLateSubmissions.forNext.intervalType"
                     :rules="intervalType"
                   />
@@ -709,7 +707,7 @@
                     v-model="schedule.repeatSubmission.everyTerm"
                     class="m-0 p-0"
                     :rules="repeatTerm"
-                    :class="{ 'dir-rtl': isRTL }"
+                    :class="{ 'dir-rtl': isRTL, label: isRTL }"
                   />
                 </v-col>
 
@@ -721,7 +719,6 @@
                     solid
                     outlined
                     class="mr-2 pl-2"
-                    :class="{ 'dir-rtl': isRTL }"
                     v-model="schedule.repeatSubmission.everyIntervalType"
                     :rules="repeatIntervalType"
                     :label="$t('trans.formSettings.period')"
@@ -749,7 +746,7 @@
                         outlined
                         :rules="repeatUntilDate"
                         :label="$t('trans.formSettings.repeatUntil')"
-                        :class="{ 'dir-rtl': isRTL }"
+                        :class="{ 'dir-rtl': isRTL, label: isRTL }"
                       />
                     </template>
                     <v-date-picker
@@ -952,7 +949,7 @@
                         data-test="text-name"
                         v-model="schedule.closingMessage"
                         :rules="closeMessage"
-                        :class="{ 'dir-rtl': isRTL }"
+                        :class="{ 'dir-rtl': isRTL, label: isRTL }"
                       />
                     </v-col>
                   </v-row>

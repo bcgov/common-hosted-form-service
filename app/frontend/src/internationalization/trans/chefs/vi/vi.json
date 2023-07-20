@@ -791,7 +791,7 @@
   "sucess": {
     "sucessFormSubmissn": "Biểu mẫu của bạn đã được gửi thành công",
     "keepRecord": "Nếu bạn muốn giữ một bản ghi của bài nộp này, bạn có thể giữ như sau",
-    "confirmationId": "ID xác nhận:"
+    "confirmationId": "ID xác nhận"
   },
   "permissionUtils": {
     "formNotAvailable": "Các hình thức hiện không có sẵn. Điều này có thể là do một liên kết không chính xác hoặc biểu mẫu có thể đã bị xóa bởi chủ sở hữu của nó.",
