@@ -2,8 +2,6 @@ name: Pull Request Opened
 
 env:
   ACRONYM: chefs
-  APP_NAME: common-hosted-form-service
-  NAMESPACE_PREFIX: a12c97
 
 on:
   pull_request:
@@ -31,7 +29,7 @@ jobs:
         uses: ./.github/actions/build-push-container
         with:
           context: .
-          image_name: ${{ env.APP_NAME }}
+          image_name: ${{ vars.APP_NAME }}
           github_username: ${{ github.repository_owner }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           app_title: Common Hosted Forms - PR-${{ github.event.number }}
@@ -52,11 +50,11 @@ jobs:
       - name: Deploy to Dev
         uses: ./.github/actions/deploy-to-environment
         with:
-          app_name: ${{ env.APP_NAME }}
+          app_name: ${{ vars.APP_NAME }}
           acronym: ${{ env.ACRONYM }}
           environment: pr
           job_name: pr-${{ github.event.number }}
-          namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
+          namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
           namespace_environment: dev
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
