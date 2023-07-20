@@ -791,7 +791,7 @@
   "sucess": {
     "sucessFormSubmissn": "Il tuo modulo è stato inviato con successo",
     "keepRecord": "Se desideri conservare una registrazione di questa presentazione, puoi conservare quanto segue",
-    "confirmationId": "ID di conferma:"
+    "confirmationId": "ID di conferma"
   },
   "permissionUtils": {
     "formNotAvailable": "Il modulo non è al momento disponibile. Ciò potrebbe essere dovuto a un collegamento errato o il modulo potrebbe essere stato eliminato dal suo proprietario.",

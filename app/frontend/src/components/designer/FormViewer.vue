@@ -67,11 +67,11 @@
           "
           transition="scale-transition"
         >
-          <div v-if="saving" :class="[isRTL ? 'mr-1' : '']">
+          <div v-if="saving" :class="{ 'mr-1': isRTL }">
             <v-progress-linear indeterminate />
-            {{ $t('trans.formVewer.saving') }}
+            {{ $t('trans.formViewer.saving') }}
           </div>
-          <div v-else :class="[isRTL ? 'mr-1' : '']">
+          <div v-else :class="{ 'mr-1': isRTL }">
             {{ $t('trans.formViewer.draftSaved') }}
           </div>
         </v-alert>
