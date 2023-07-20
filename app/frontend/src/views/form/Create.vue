@@ -97,7 +97,7 @@ export default {
     return {
       creatorStep: 1,
       settingsFormValid: false,
-      disclaimerRules: [(v) => !!v || this.$t('trans.create.confirmPageNav')],
+      disclaimerRules: [(v) => !!v || this.$t('trans.create.agreementErrMsg')],
     };
   },
   methods: {
@@ -124,7 +124,7 @@ export default {
   },
   beforeRouteLeave(_to, _from, next) {
     this.isDirty
-      ? next(window.confirm(this.$t('trans.create.agreementErrMsg')))
+      ? next(window.confirm(this.$t('trans.create.confirmPageNav')))
       : next();
   },
 };
