@@ -791,7 +791,7 @@
   "sucess": {
     "sucessFormSubmissn": "Ang iyong form ay matagumpay na naisumite",
     "keepRecord": "Kung nais mong panatilihin ang isang talaan ng pagsusumiteng ito, maaari mong panatilihin ang mga sumusunod",
-    "confirmationId": "ID ng Pagkumpirma:"
+    "confirmationId": "ID ng Pagkumpirma"
   },
   "permissionUtils": {
     "formNotAvailable": "Kasalukuyang hindi available ang form. Ito ay maaaring dahil sa isang maling link, o ang form ay maaaring tinanggal ng may-ari nito.",

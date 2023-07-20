@@ -20,7 +20,7 @@
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
         </v-card-title>
         <v-card-subtitle class="mt-1">
-          <v-radio-group v-model="yselectedIdp" row>
+          <v-radio-group v-model="selectedIdp" row>
             <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
             <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
             <v-radio

@@ -791,7 +791,7 @@
   "sucess": {
     "sucessFormSubmissn": "Votre formulaire a été soumis avec succès",
     "keepRecord": "Si vous souhaitez conserver une trace de cette soumission, vous pouvez conserver les éléments suivants",
-    "confirmationId": "Identifiant de confirmation :"
+    "confirmationId": "Identifiant de confirmation"
   },
   "permissionUtils": {
     "formNotAvailable": "Le formulaire est actuellement indisponible. Cela peut être dû à un lien incorrect, ou le formulaire a peut-être été supprimé par son propriétaire.",
