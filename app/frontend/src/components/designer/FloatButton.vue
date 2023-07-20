@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="{ 'dir-rtl': true }"
+    :class="{ 'dir-rtl': isRTL }"
     :style="[
       {
         display: 'flex',
