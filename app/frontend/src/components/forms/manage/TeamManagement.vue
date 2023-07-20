@@ -92,6 +92,11 @@ export default {
         )
         .concat({ title: '', key: 'actions', width: '1rem', sortable: false });
     },
+    FILTER_HEADERS() {
+      return this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      );
+    },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
       if (this.filterData.length > 0) {
@@ -104,13 +109,9 @@ export default {
       return headers;
     },
     PRESELECTED_DATA() {
-      let headers = this.DEFAULT_HEADERS.filter((h) =>
-        this.filterIgnore.some((fd) => fd.key !== h.key)
-      );
-      if (this.filterData.length > 0) {
-        headers = headers.filter((h) => this.filterData.includes(h.key));
-      }
-      return headers;
+      return this.filterData.length === 0
+        ? this.FILTER_HEADERS
+        : this.filterData;
     },
   },
   mounted() {
@@ -607,11 +608,8 @@ export default {
         "
         input-item-key="key"
         :input-save-button-text="$t('trans.teamManagement.save')"
-        :input-data="
-          DEFAULT_HEADERS.filter((h) =>
-            filterIgnore.some((fd) => fd.key !== h.key)
-          )
-        "
+        :input-data="FILTER_HEADERS"
+        :reset-data="FILTER_HEADERS"
         :preselected-data="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"

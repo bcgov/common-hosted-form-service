@@ -12,8 +12,8 @@ export const AddressComponentMode = {
 
 const ParentComponent = (Components as any).components.address;
 
-const ID = 'bcaddress';
-const DISPLAY = 'BC Address';
+const ID = 'simplebcaddress';
+const DISPLAY = 'Simple BC Address';
 
 export default class Component extends (ParentComponent as any) {
     static schema(...extend) {
@@ -25,8 +25,7 @@ export default class Component extends (ParentComponent as any) {
             provider: 'custom',
             providerOptions: {
                 queryProperty: 'addressString',
-
-              url: import.meta.env.VITE_CHEFS_ADVANCE_GEO_ADDRESS_APIURL},
+              url:process.env.VUE_APP_CHEFS_GEO_ADDRESS_APIURL},
 
             queryParameters:{"echo": false,
             "brief": true,
@@ -48,19 +47,9 @@ export default class Component extends (ParentComponent as any) {
             icon: 'address-book',
             weight: 90,
             documentation: Constants.DEFAULT_HELP_LINK,
-            schema: Component.schema()
+            schema: Component.schema(),
+
         };
-    }
-
-    mergeSchema(component = {}) {
-
-      let components = component['components'];
-
-      if (components) {
-        return _.omit(component, 'components');
-      }
-
-      return component;
     }
 
     public static editForm = editForm;
@@ -76,7 +65,9 @@ export default class Component extends (ParentComponent as any) {
             let {
                 providerOptions,
                 queryParameters,
+
             } = this.component;
+
             if(providerOptions) {
                 if(!providerOptions.params) {
                     providerOptions["params"]={}
@@ -90,6 +81,18 @@ export default class Component extends (ParentComponent as any) {
             console.log(`This error is from Custom BC Address component in form.io: Failed to acquire configuration: ${err.message}`);
         }
     }
+
+    mergeSchema(component = {}) {
+
+      let components = component['components'];
+
+      if (components) {
+        return _.omit(component, 'components');
+      }
+
+      return component;
+    }
+
 
 }
 export {};

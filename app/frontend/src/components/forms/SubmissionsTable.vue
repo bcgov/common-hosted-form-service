@@ -82,7 +82,6 @@ export default {
           key: 'confirmationId',
         },
       ];
-
       if (this.userFormPreferences?.preferences?.columns) {
         if (this.userFormPreferences.preferences.columns.includes('date')) {
           headers = [
@@ -151,19 +150,6 @@ export default {
         ];
       }
 
-      // Add any custom columns if the user has them
-      const maxHeaderLength = 25;
-      this.userColumns.forEach((col) => {
-        headers.push({
-          title:
-            col.length > maxHeaderLength
-              ? `${col.substring(0, maxHeaderLength)}...`
-              : col,
-          align: 'end',
-          key: col,
-        });
-      });
-
       // Actions column at the end
       headers.push({
         title: i18n.t('trans.submissionsTable.view'),
@@ -183,69 +169,81 @@ export default {
         sortable: false,
         width: '40px',
       });
-
-      return headers.filter((x) => x.key !== 'updatedAt' || this.deletedOnly);
-    },
-    HEADERS() {
-      let headers = this.DEFAULT_HEADERS;
-      if (this.filterData.length > 0)
-        headers = headers.filter(
-          (h) =>
-            this.filterData.some((fd) => fd.key === h.key) ||
-            this.filterIgnore.some((ign) => ign.key === h.key)
-        );
       return headers;
     },
-    FILTER_HEADERS() {
-      let filteredHeader = this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      ).concat(
+
+    SELECT_COLUMNS_HEADERS() {
+      return [...this.FILTER_HEADERS].concat(
         this.formFields.map((ff) => {
           return { title: ff, key: ff, align: 'end' };
         })
       );
+    },
 
-      filteredHeader = [
-        {
-          title: i18n.t('trans.submissionsTable.submissionDate'),
-          align: 'start',
-          key: 'date',
-        },
-        {
-          title: i18n.t('trans.submissionsTable.submitter'),
-          align: 'start',
-          key: 'submitter',
-        },
-        {
-          title: i18n.t('trans.submissionsTable.status'),
-          align: 'start',
-          key: 'status',
-        },
-        ...filteredHeader,
-      ];
+    HEADERS() {
+      let headers = [...this.DEFAULT_HEADERS];
 
-      return filteredHeader.filter(function (item, index, inputArray) {
-        return (
-          inputArray.findIndex((arrayItem) => arrayItem.key === item.key) ==
-          index
-        );
-      });
+      if (headers.length > 1) {
+        headers.splice(1, 0, ...this.USER_PREFERENCES);
+      } else {
+        headers = headers.concat(this.USER_PREFERENCES);
+      }
+      return headers.filter(
+        (item, idx, inputArray) =>
+          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
+          idx
+      );
+    },
+
+    FILTER_HEADERS() {
+      return [...this.DEFAULT_HEADERS].filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
     },
     PRESELECTED_DATA() {
+      let headers = [...this.FILTER_HEADERS];
+      if (headers.length > 1) {
+        headers.splice(1, 0, ...this.USER_PREFERENCES);
+      } else {
+        headers = headers.concat(this.USER_PREFERENCES);
+      }
+      return headers.filter(
+        (item, idx, inputArray) =>
+          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
+          idx
+      );
+    },
+    USER_PREFERENCES() {
       let preselectedData = [];
       if (this.userFormPreferences?.preferences?.columns) {
         preselectedData = this.userFormPreferences.preferences.columns.map(
           (column) => {
-            return {
-              title: column,
-              align: 'end',
-              key: column,
-            };
+            if (column === 'date') {
+              return {
+                text: this.$t('trans.submissionsTable.submissionDate'),
+                align: 'start',
+                value: 'date',
+              };
+            } else if (column === 'submitter') {
+              return {
+                text: this.$t('trans.submissionsTable.submitter'),
+                align: 'start',
+                value: 'submitter',
+              };
+            } else if (column === 'status') {
+              return {
+                text: this.$t('trans.submissionsTable.status'),
+                align: 'start',
+                value: 'status',
+              };
+            } else {
+              return {
+                align: 'start',
+                text: column,
+                value: column,
+              };
+            }
           }
-        );
-      } else {
-        preselectedData = this.DEFAULT_HEADERS.filter(
-          (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
         );
       }
       return preselectedData;
@@ -417,6 +415,7 @@ export default {
       this.selectedSubmissions = [];
     },
     async updateFilter(data) {
+      this.showColumnsDialog = false;
       this.filterData = data;
       let preferences = {
         columns: [],
@@ -429,7 +428,7 @@ export default {
         formId: this.form.id,
         preferences: preferences,
       });
-      this.showColumnsDialog = false;
+
       await this.populateSubmissionsTable();
     },
   },
@@ -707,8 +706,9 @@ export default {
         "
         input-item-key="key"
         :input-save-button-text="$t('trans.submissionsTable.save')"
-        :input-data="FILTER_HEADERS"
-        :preselected-data="PRESELECTED_DATA"
+        :input-data="SELECT_COLUMNS_HEADERS"
+        :preselected-data="preSelectedData"
+        :reset-data="FILTER_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >

@@ -29,6 +29,7 @@ export default {
         },
       ],
       loading: true,
+      preSelectedData: [],
       search: '',
       showColumnsDialog: false,
       submissionsTable: [],
@@ -96,12 +97,7 @@ export default {
     },
     HEADERS() {
       return this.filterData.length === 0
-        ? this.DEFAULT_HEADERS
-        : this.filterData;
-    },
-    PRESELECTED_DATA() {
-      return this.filterData.length === 0
-        ? this.DEFAULT_HEADERS
+        ? this.FILTER_HEADERS
         : this.filterData;
     },
     showDraftLastEdited() {
@@ -141,6 +137,12 @@ export default {
         if (submittedStatus) return submittedStatus.createdAt;
       }
       return '';
+    },
+
+    onShowColumnDialog() {
+      this.preSelectedData =
+        this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
+      this.showColumnsDialog = true;
     },
 
     async populateSubmissionsTable() {
@@ -200,7 +202,7 @@ export default {
                 icon
                 size="small"
                 v-bind="props"
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
               >
                 <v-icon icon="mdi:mdi-view-column"></v-icon>
               </v-btn>
@@ -292,8 +294,9 @@ export default {
         "
         input-item-key="key"
         :input-save-button-text="$t('trans.mySubmissionsTable.save')"
-        :input-data="FILTER_HEADERS"
-        :preselected-data="PRESELECTED_DATA"
+        :input-data="SELECT_COLUMNS_HEADERS"
+        :preselected-data="preSelectedData"
+        :reset-data="FILTER_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >

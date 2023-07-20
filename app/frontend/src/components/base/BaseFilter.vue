@@ -22,6 +22,10 @@ export default {
         { title: i18n.t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
       ],
     },
+    resetData: {
+      type: Array,
+      default: () => [],
+    },
     // The default selected data
     preselectedData: {
       type: Array,
@@ -49,15 +53,32 @@ export default {
     return {
       selectedData: this.preselectedData,
       inputFilter: '',
+      tableData: this.inputData,
     };
+  },
+  watch: {
+    selectedData() {
+      let filteredData = this.inputData.filter(
+        (item) =>
+          !this.selectedData.find(
+            (selectedItem) => selectedItem.text === item.text
+          )
+      );
+      this.tableData = this.selectedData.concat(filteredData);
+    },
   },
   methods: {
     savingFilterData() {
       this.inputFilter = '';
       this.$emit('saving-filter-data', this.selectedData);
     },
+    onResetColumns() {
+      this.selectedData = this.resetData;
+      this.inputFilter = '';
+    },
     cancelFilterData() {
-      this.$emit('cancel-filter-data');
+      (this.selectedData = this.preselectedData),
+        this.$emit('cancel-filter-data');
     },
   },
 };
@@ -88,6 +109,24 @@ export default {
           class="mt-3"
         >
         </v-text-field>
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <v-btn
+              color="primary"
+              class="mx-1 align-self-center mb-3"
+              icon
+              v-bind="props"
+              @click="onResetColumns"
+            >
+              <v-icon
+                style="pointer-events: none"
+                icon="mdi:mdi-repeat"
+                size="xl"
+              />
+            </v-btn>
+          </template>
+          <span>Reset Columns</span>
+        </v-tooltip>
       </div>
       <v-data-table
         v-model="selectedData"
@@ -97,7 +136,7 @@ export default {
         hide-default-footer
         height="300px"
         :headers="inputHeaders"
-        :items="inputData"
+        :items="tableData"
         :item-value="inputItemKey"
         :search="inputFilter"
         class="bg-grey-lighten-5"
