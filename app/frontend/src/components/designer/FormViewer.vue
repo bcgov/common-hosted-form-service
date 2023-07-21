@@ -112,7 +112,7 @@
               height="5"
             ></v-progress-linear>
             <span :class="{ 'mr-2': isRTL }">
-              {{ $t('trans.formViewer.formLoading') }}s
+              {{ $t('trans.formViewer.formLoading') }}
             </span>
           </div>
         </v-alert>
