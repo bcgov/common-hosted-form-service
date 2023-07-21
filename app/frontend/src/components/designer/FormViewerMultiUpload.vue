@@ -317,49 +317,61 @@ export default {
             switch (component.type) {
               case 'number':
                 component.validate.custom =
-                  "valid = _.isNumber(input) ? true : 'Only number allowed on a number field';" +
+                  "if(component.validate.required === true){valid = _.isNumber(input) ? true : 'Only number allowed on a number field';} else if(input){valid = _.isNumber(input) ? true : 'Only number allowed on a number field.';}" +
                   component.validate.custom;
                 break;
 
               case 'simplenumber':
                 component.validate.custom =
-                  "valid = _.isNumber(input) ? true : 'Only number allowed on a simple number field';" +
+                  "if(component.validate.required === true){valid = _.isNumber(input) ? true : 'Only number allowed on a simple number field';} else if(input){valid = _.isNumber(input) ? true : 'Only number allowed on a simple number field';}" +
                   component.validate.custom;
                 break;
 
               case 'simplenumberadvanced':
                 component.validate.custom =
-                  "valid = _.isNumber(input) ? true : 'Only number allowed on a simple number advanced field';" +
+                  "if(component.validate.required === true){valid = _.isNumber(input) ? true : 'Only number allowed on a simple number advanced field';} else if(input){valid = _.isNumber(input) ? true : 'Only number allowed on a simple number advanced field';}" +
                   component.validate.custom;
                 break;
 
               case 'simpledatetimeadvanced':
                 component.validate.custom =
-                  "valid = moment(input).format('" +
+                  "if(component.validate.required === true){valid = moment(input).format('" +
                   component.format +
                   "') === 'Invalid date' ? 'Wrong DateTime format. (Example:" +
                   component.format +
-                  ")' : true;" +
+                  ")' : true;} else if(input){valid = moment(input).format('" +
+                  component.format +
+                  "') === 'Invalid date' ? 'Wrong DateTime format. (Example:" +
+                  component.format +
+                  ")' : true;}" +
                   component.validate.custom;
                 break;
 
               case 'simpledatetime':
                 component.validate.custom =
-                  "valid = moment(input).format('" +
+                  "if(component.validate.required === true){valid = moment(input).format('" +
                   component.format +
                   "') === 'Invalid date' ? 'Wrong Date/Time format. (Example:" +
                   component.format +
-                  ")' : true;" +
+                  ")' : true;}else if(input){valid = moment(input).format('" +
+                  component.format +
+                  "') === 'Invalid date' ? 'Wrong Date/Time format. (Example:" +
+                  component.format +
+                  ')' +
                   component.validate.custom;
                 break;
 
               case 'simpletimeadvanced':
                 component.validate.custom =
-                  "valid = moment(input).format('" +
+                  "if(component.validate.required === true){valid = moment(input).format('" +
                   component.format +
                   "') === 'Invalid date' ? 'Wrong Time format. (Example:" +
                   component.format +
-                  ")' : true;" +
+                  ")' : true;}else if(input){valid = moment(input).format('" +
+                  component.format +
+                  "') === 'Invalid date' ? 'Wrong Time format. (Example:" +
+                  component.format +
+                  ")' : true;}" +
                   component.validate.custom;
                 break;
 
