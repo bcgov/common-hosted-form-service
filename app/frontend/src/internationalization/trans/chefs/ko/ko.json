@@ -53,6 +53,7 @@
     "cancel": "취소"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "여러 이메일 주소를 추가하려면 <kbd>enter</kbd> 또는 <kbd>,</kbd> 또는 <kbd>space</kbd>를 누르세요.",
     "allowMultiDraft": "<strong> 여러 초안</strong> 업로드 허용",
     "formTitle": "양식 제목",
     "formDescription": "양식 설명",
@@ -354,6 +355,7 @@
     "emailRequired": "이메일이 필요합니다"
   },
   "submissionsTable": {
+    "submissions": "제출물",
     "submissionsTable": "제출물표",
     "selectColumns": "열 선택",
     "manageForm": "양식 관리",
@@ -726,7 +728,7 @@
     "createCustomFormTitle": "CHEFS 양식 작성기로 사용자 정의 양식 만들기",
     "createCustomFormSub1": "CHEFS를 사용하면 직관적인 끌어서 놓기 인터페이스로 안전한 양식을 만들 수 있습니다. 양식 구성 요소를 추가하고 재정렬하고 다른 레이아웃 구성에 놓을 수 있습니다.",
     "chefsHowToTitle": "셰프 사용법 비디오",
-    "chefsHowToSub": "빠른 시작 가이드는 CHEFS의 기본 기능 중 일부를 소개합니다. 시작하다!",
+    "chefsHowToSub": "빠른 시작 가이드는 CHEFS의 기본 기능 중 일부를 소개합니다.",
     "getStartedToChefs": "CHEFS를 사용하여 시작하기",
     "createOnlineTitle": "클라이언트로부터 정보를 수집하고 작업 흐름을 개선하기 위한 온라인 양식을 만드십시오.",
     "getStarted": "시작하다"

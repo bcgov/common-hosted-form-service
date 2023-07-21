@@ -53,6 +53,7 @@
     "cancel": "Annulla"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
     "allowMultiDraft": "Consenti il ​​caricamento di <strong> più bozze</strong>",
     "formTitle": "Titolo del modulo",
     "formDescription": "Descrizione del modulo",
@@ -354,6 +355,7 @@
     "emailRequired": "L'e-mail è obbligatoria"
   },
   "submissionsTable": {
+    "submissions": "Contributi",
     "submissionsTable": "Tabella degli invii",
     "selectColumns": "Seleziona Colonne",
     "manageForm": "Gestisci modulo",
@@ -726,7 +728,7 @@
     "createCustomFormTitle": "Crea moduli personalizzati con il generatore di moduli CHEFS",
     "createCustomFormSub1": "Con CHEFS, puoi creare moduli sicuri con un'intuitiva interfaccia drag-and-drop. È possibile aggiungere componenti del modulo, riorganizzarli e rilasciarli in diverse configurazioni di layout.",
     "chefsHowToTitle": "Video dimostrativi per CHEF",
-    "chefsHowToSub": "La nostra guida rapida ti introdurrà ad alcune delle funzioni di base di CHEFS. Iniziare!",
+    "chefsHowToSub": "La nostra guida rapida ti introdurrà ad alcune delle funzioni di base di CHEFS.",
     "getStartedToChefs": "Inizia a usare CHEFS",
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
     "getStarted": "Iniziare"

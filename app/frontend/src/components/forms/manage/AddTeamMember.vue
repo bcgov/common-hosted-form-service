@@ -41,12 +41,13 @@
               :loading="isLoading"
               return-object
               :search-input.sync="searchUsers"
-              :class="{ 'dir-rtl': isRTL, label: isRTL }"
+              :class="{ label: isRTL }"
             >
               <!-- no data -->
               <template #no-data>
                 <div
                   class="px-2"
+                  :class="{ 'text-right': isRTL }"
                   v-html="$t('trans.addTeamMember.cantFindChefsUsers')"
                 ></div>
               </template>

@@ -13,7 +13,6 @@
             data-test="text-name"
             v-model="name"
             :rules="nameRules"
-            :class="{ 'dir-rtl': isRTL }"
           />
 
           <v-text-field
@@ -25,7 +24,6 @@
             data-test="text-description"
             v-model="description"
             :rules="descriptionRules"
-            :class="{ 'dir-rtl': isRTL }"
           />
         </BasePanel>
       </v-col>
@@ -53,7 +51,11 @@
             </v-radio>
 
             <v-expand-transition>
-              <BaseInfoCard v-if="userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
+              <BaseInfoCard
+                v-if="userType == ID_MODE.PUBLIC"
+                class="mr-4 mb-3"
+                :class="{ 'dir-rtl': isRTL }"
+              >
                 <h4 class="primary--text">
                   <v-icon class="mr-1" color="primary">info</v-icon
                   >{{ $t('trans.formSettings.important') }}!
@@ -70,7 +72,7 @@
                 </p>
               </BaseInfoCard>
             </v-expand-transition>
-            <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="login">
+            <v-radio class="mb-4" value="login">
               <template #label>
                 <span :class="{ 'mr-2': isRTL }">
                   {{ $t('trans.formSettings.loginRequired') }}
@@ -80,19 +82,13 @@
             <v-expand-transition>
               <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6">
                 <v-radio-group class="my-0" v-model="idps[0]">
-                  <v-radio
-                    class="mx-2"
-                    :class="{ 'dir-rtl': isRTL }"
-                    label="IDIR"
-                    :value="ID_PROVIDERS.IDIR"
-                  >
+                  <v-radio class="mx-2" label="IDIR" :value="ID_PROVIDERS.IDIR">
                     <template #label>
                       <span :class="{ 'mr-2': isRTL }"> Business BCeID </span>
                     </template>
                   </v-radio>
                   <v-radio
                     class="mx-2"
-                    :class="{ 'dir-rtl': isRTL }"
                     label="Basic BCeID"
                     :value="ID_PROVIDERS.BCEIDBASIC"
                   >
@@ -100,11 +96,7 @@
                       <span :class="{ 'mr-2': isRTL }"> Business BCeIDs </span>
                     </template>
                   </v-radio>
-                  <v-radio
-                    class="mx-2"
-                    :class="{ 'dir-rtl': isRTL }"
-                    :value="ID_PROVIDERS.BCEIDBUSINESS"
-                  >
+                  <v-radio class="mx-2" :value="ID_PROVIDERS.BCEIDBUSINESS">
                     <template #label>
                       <span :class="{ 'mr-2': isRTL }"> Business BCeID </span>
                     </template>
@@ -120,6 +112,7 @@
                         ].includes(idps[0])
                       "
                       class="mr-4"
+                      :class="{ 'dir-rtl': isRTL }"
                     >
                       <h4 class="primary--text">
                         <v-icon class="mr-1" color="primary">info</v-icon
@@ -145,13 +138,12 @@
               </v-row>
             </v-expand-transition>
             <v-radio
-              :class="{ 'dir-rtl': isRTL }"
               :label="$t('trans.formSettings.specificTeamMembers')"
               value="team"
             >
               <template #label>
                 <span :class="{ 'mr-2': isRTL }">
-                  {{ $t('trans.formSettings.public') }}
+                  {{ $t('trans.formSettings.specificTeamMembers') }}
                 </span>
               </template>
             </v-radio>
@@ -410,8 +402,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>
-                    Press <kbd>enter</kbd> or <kbd>,</kbd> or
-                    <kbd>space</kbd> to add multiple email addresses
+                    {{ $t('trans.formSettings.pressToAddMultiEmail') }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -1068,99 +1059,6 @@ export default {
       enableReminderDraw: true,
       valid: false,
       // Validation
-      loginRequiredRules: [
-        (v) =>
-          v !== 'login' ||
-          this.idps.length === 1 ||
-          this.$t('trans.formSettings.selectLoginType'),
-      ],
-      descriptionRules: [
-        (v) =>
-          !v ||
-          v.length <= 255 ||
-          this.$t('trans.formSettings.formDescriptnMaxChars'),
-      ],
-      nameRules: [
-        (v) => !!v || this.$t('trans.formSettings.formTitleReq'),
-        (v) =>
-          (v && v.length <= 255) ||
-          this.$t('trans.formSettings.formTitlemaxChars'),
-      ],
-      emailArrayRules: [
-        (v) =>
-          !this.sendSubRecieviedEmail ||
-          v.length > 0 ||
-          this.$t('trans.formSettings.atLeastOneEmailReq'),
-        (v) =>
-          !this.sendSubRecieviedEmail ||
-          v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
-          this.$t('trans.formSettings.validEmailRequired'),
-      ],
-      scheduleOpenDate: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-        (v) =>
-          (v &&
-            new RegExp(
-              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-            ).test(v)) ||
-          this.$t('trans.formSettings.correctDateFormat'),
-      ],
-      scheduleCloseDate: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-        (v) =>
-          (v &&
-            new RegExp(
-              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-            ).test(v)) ||
-          this.$t('trans.formSettings.correctDateFormat'),
-        (v) =>
-          moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') ||
-          this.$t('trans.formSettings.dateDiffMsg'),
-      ],
-      roundNumber: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-        (v) =>
-          (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
-          this.$t('trans.formSettings.valueMustBeNumber'),
-      ],
-      repeatTerm: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-        (v) =>
-          (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
-          this.$t('trans.formSettings.valueMustBeNumber'),
-      ],
-      scheduleTypedRules: [
-        (v) => !!v || this.$t('trans.formSettings.selectAnOptions'),
-      ],
-      allowLateSubmissionRule: [
-        // (v) => !!v || 'This field is required'
-      ],
-      intervalType: [(v) => !!v || this.$t('trans.formSettings.fieldRequired')],
-      repeatIntervalType: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-        (v) =>
-          this.AVAILABLE_PERIOD_OPTIONS.includes(v) ||
-          this.$t('trans.formSettings.validInterval'),
-      ],
-      repeatIntervalTypeReminder: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequiredAndInterval'),
-        (v) =>
-          this.AVAILABLE_PERIOD_INTERVAL.includes(v) ||
-          this.$t('trans.formSettings.fieldRequiredAndInterval'),
-      ],
-      closeMessage: [(v) => !!v || this.$t('trans.formSettings.fieldRequired')],
-      repeatUntilDate: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-        (v) =>
-          (v &&
-            new RegExp(
-              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-            ).test(v)) ||
-          this.$t('trans.formSettings.correctDateFormat'),
-        (v) =>
-          moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') ||
-          this.$t('trans.formSettings.dateGrtOpenSubmissnDate'),
-      ],
     };
   },
   computed: {
@@ -1194,6 +1092,127 @@ export default {
         this.versions.length &&
         this.versions.some((v) => v.published)
       );
+    },
+    loginRequiredRules() {
+      return [
+        (v) =>
+          v !== 'login' ||
+          this.idps.length === 1 ||
+          this.$t('trans.formSettings.selectLoginType'),
+      ];
+    },
+    descriptionRules() {
+      return [
+        (v) =>
+          !v ||
+          v.length <= 255 ||
+          this.$t('trans.formSettings.formDescriptnMaxChars'),
+      ];
+    },
+    nameRules() {
+      return [
+        (v) => !!v || this.$t('trans.formSettings.formTitleReq'),
+        (v) =>
+          (v && v.length <= 255) ||
+          this.$t('trans.formSettings.formTitlemaxChars'),
+      ];
+    },
+    emailArrayRules() {
+      return [
+        (v) =>
+          !this.sendSubRecieviedEmail ||
+          v.length > 0 ||
+          this.$t('trans.formSettings.atLeastOneEmailReq'),
+        (v) =>
+          !this.sendSubRecieviedEmail ||
+          v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
+          this.$t('trans.formSettings.validEmailRequired'),
+      ];
+    },
+    scheduleOpenDate() {
+      return [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          this.$t('trans.formSettings.correctDateFormat'),
+      ];
+    },
+    scheduleCloseDate() {
+      return [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          this.$t('trans.formSettings.correctDateFormat'),
+        (v) =>
+          moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') ||
+          this.$t('trans.formSettings.dateDiffMsg'),
+      ];
+    },
+    roundNumber() {
+      return [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
+        (v) =>
+          (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
+          this.$t('trans.formSettings.valueMustBeNumber'),
+      ];
+    },
+    repeatTerm() {
+      return [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
+        (v) =>
+          (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
+          this.$t('trans.formSettings.valueMustBeNumber'),
+      ];
+    },
+    scheduleTypedRules() {
+      return [(v) => !!v || this.$t('trans.formSettings.selectAnOptions')];
+    },
+    allowLateSubmissionRule() {
+      return [
+        // (v) => !!v || 'This field is required'
+      ];
+    },
+    intervalType() {
+      return [(v) => !!v || this.$t('trans.formSettings.fieldRequired')];
+    },
+    repeatIntervalType() {
+      return [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
+        (v) =>
+          this.AVAILABLE_PERIOD_OPTIONS.includes(v) ||
+          this.$t('trans.formSettings.validInterval'),
+      ];
+    },
+    repeatIntervalTypeReminder() {
+      return [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequiredAndInterval'),
+        (v) =>
+          this.AVAILABLE_PERIOD_INTERVAL.includes(v) ||
+          this.$t('trans.formSettings.fieldRequiredAndInterval'),
+      ];
+    },
+    closeMessage() {
+      return [(v) => !!v || this.$t('trans.formSettings.fieldRequired')];
+    },
+    repeatUntilDate() {
+      return [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          this.$t('trans.formSettings.correctDateFormat'),
+        (v) =>
+          moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') ||
+          this.$t('trans.formSettings.dateGrtOpenSubmissnDate'),
+      ];
     },
     AVAILABLE_DATES() {
       //return [];

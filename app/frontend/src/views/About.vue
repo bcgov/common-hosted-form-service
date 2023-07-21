@@ -1,25 +1,18 @@
 <template>
   <div class="about-layout" :class="{ 'dir-rtl': isRTL }">
-    <v-sheet
-      class="help-highlight pa-5 text-center"
-      :class="{ 'dir-rtl': isRTL }"
-    >
+    <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h1 class="my-5 d-block" :class="{ 'dir-rtl': isRTL }">
+          <h1 class="my-5 d-block">
             {{ $t('trans.homePage.title') }}
           </h1>
-          <p :class="{ 'dir-rtl': isRTL }">
-            {{ $t('trans.homePage.subTitle') }}<br />
-          </p>
+          <p dir="rtl">{{ $t('trans.homePage.subTitle') }}<br /></p>
 
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span :class="{ 'dir-rtl': isRTL }" v-if="!authenticated">{{
+            <span v-if="!authenticated">{{
               $t('trans.homePage.loginToStart')
             }}</span>
-            <span :class="{ 'dir-rtl': isRTL }" v-else>{{
-              $t('trans.homePage.createFormLabel')
-            }}</span>
+            <span v-else>{{ $t('trans.homePage.createFormLabel') }}</span>
           </v-btn>
 
           <h2 id="video" class="pt-5">
@@ -34,7 +27,6 @@
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
-              :class="{ 'dir-rtl': isRTL }"
             >
             </iframe>
           </div>
@@ -44,10 +36,10 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2 :class="{ 'dir-rtl': isRTL }">
+        <h2>
           {{ $t('trans.homePage.chefsHowToTitle') }}
         </h2>
-        <p :class="{ 'dir-rtl': isRTL }">
+        <p>
           {{ $t('trans.homePage.chefsHowToSub') }}
           <a :href="howToVideoUrl" target="_blank"
             >{{ $t('trans.homePage.getStarted') }}!</a
@@ -59,17 +51,16 @@
           alt="Drag and Drop demo"
           src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/quickstart.png"
           width="600px"
-          :class="{ 'dir-rtl': isRTL }"
         />
       </v-col>
     </v-row>
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2 :class="{ 'dir-rtl': isRTL }">
+        <h2>
           {{ $t('trans.homePage.createCustomFormTitle') }}
         </h2>
-        <p :class="{ 'dir-rtl': isRTL }">
+        <p>
           {{ $t('trans.homePage.createCustomFormSub1') }}
         </p>
       </v-col>
@@ -78,20 +69,19 @@
           alt="Drag and Drop demo"
           src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/drag_drop.png"
           width="600px"
-          :class="{ 'dir-rtl': isRTL }"
         />
       </v-col>
     </v-row>
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2 :class="{ 'dir-rtl': isRTL }">
+        <h2>
           {{ $t('trans.homePage.manageAccessTitle') }}
         </h2>
-        <p :class="{ 'dir-rtl': isRTL }">
+        <p>
           {{ $t('trans.homePage.manageAccessSub1') }}
         </p>
-        <p :class="{ 'dir-rtl': isRTL }">
+        <p>
           {{ $t('trans.homePage.manageAccessSub2') }}
         </p>
       </v-col>
@@ -114,7 +104,7 @@
             {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span :class="{ 'dir-rtl': isRTL }" v-if="!authenticated">{{
+            <span v-if="!authenticated">{{
               $t('trans.homePage.logInToGetStarted')
             }}</span>
             <span v-else>{{ $t('trans.homePage.createFormLabel') }}</span>
