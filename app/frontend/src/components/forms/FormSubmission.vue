@@ -24,6 +24,7 @@
             <br />
           </p>
         </div>
+
         <!-- buttons -->
         <div class="d-print-none">
           <span>
@@ -139,7 +140,7 @@
         order-md="last"
       >
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
-          <h2 class="review-heading">
+          <h2 class="review-heading" :class="{ 'dir-rtl': isRTL }">
             {{ $t('trans.formSubmission.status') }}
           </h2>
           <StatusPanel

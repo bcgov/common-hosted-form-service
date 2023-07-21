@@ -18,9 +18,8 @@
           filled
           dense
           class="mt-3"
-          :class="{ 'dir-rtl': isRTL, label: isRTL }"
-        >
-        </v-text-field>
+          :class="{ label: isRTL }"
+        />
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -64,7 +63,7 @@
       <v-btn
         @click="cancelFilterData"
         class="mt-3 primary--text"
-        :class="isRTL ? 'mr-3' : 'ml-3'"
+        :class="{ 'mr-3': isRTL }"
         outlined
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >

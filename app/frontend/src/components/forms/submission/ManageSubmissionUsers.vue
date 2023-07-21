@@ -35,7 +35,7 @@
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
-                  :class="{ 'dir-rtl': isRTL, label: isRTL }"
+                  :class="{ label: isRTL }"
                   autocomplete="autocomplete_off"
                   v-model="userSearchSelection"
                   clearable
@@ -51,7 +51,6 @@
                   <!-- no data -->
                   <template #no-data>
                     <div
-                      :class="{ 'dir-rtl': isRTL }"
                       class="px-2"
                       v-html="
                         $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
@@ -61,7 +60,6 @@
                   <!-- selected user -->
                   <template #selection="data">
                     <span
-                      :class="{ 'dir-rtl': isRTL }"
                       v-bind="data.attrs"
                       :input-value="data.selected"
                       close
@@ -73,13 +71,10 @@
                   <!-- users found in dropdown -->
                   <template #item="data">
                     <template v-if="typeof data.item !== 'object'">
-                      <v-list-item-content
-                        v-text="data.item"
-                        :class="{ 'dir-rtl': isRTL }"
-                      />
+                      <v-list-item-content v-text="data.item" />
                     </template>
                     <template v-else>
-                      <v-list-item-content :class="{ 'dir-rtl': isRTL }">
+                      <v-list-item-content>
                         <v-list-item-title>
                           {{ data.item.fullName }}
                         </v-list-item-title>
@@ -102,17 +97,15 @@
                 :loading="isLoadingDropdown"
                 @click="addUser"
               >
-                <span :class="{ 'dir-rtl': isRTL }">{{
-                  $t('trans.manageSubmissionUsers.add')
-                }}</span>
+                <span>{{ $t('trans.manageSubmissionUsers.add') }} </span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else :class="{ 'dir-rtl': isRTL }">
+          <div v-else>
             {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
-          <p class="mt-5" :class="{ 'dir-rtl': isRTL }">
+          <p class="mt-5">
             <strong
               >{{
                 $t('trans.manageSubmissionUsers.submissionTeamMembers')
@@ -121,20 +114,23 @@
           </p>
 
           <v-skeleton-loader :loading="isLoadingTable" type="table-row">
-            <v-simple-table dense :class="{ 'dir-rtl': isRTL }">
+            <v-simple-table dense>
               <template>
                 <thead>
                   <tr>
-                    <th class="text-left">
+                    <th :class="isRTL ? 'text-right' : 'text-left'">
                       {{ $t('trans.manageSubmissionUsers.name') }}
                     </th>
-                    <th class="text-left">
+                    <th :class="isRTL ? 'text-right' : 'text-left'">
                       {{ $t('trans.manageSubmissionUsers.username') }}
                     </th>
-                    <th class="text-left">
+                    <th :class="isRTL ? 'text-right' : 'text-left'">
                       {{ $t('trans.manageSubmissionUsers.email') }}
                     </th>
-                    <th class="text-left" v-if="isDraft">
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      v-if="isDraft"
+                    >
                       {{ $t('trans.manageSubmissionUsers.actions') }}
                     </th>
                   </tr>
@@ -163,9 +159,7 @@
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span :class="{ 'dir-rtl': isRTL }">
-              {{ $t('trans.manageSubmissionUsers.close') }}</span
-            >
+            <span> {{ $t('trans.manageSubmissionUsers.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -181,21 +175,17 @@
         "
       >
         <template #title
-          ><span :class="{ 'dir-rtl': isRTL }"
-            >Remove {{ userToDelete.username }}</span
-          ></template
+          ><span>Remove {{ userToDelete.username }}</span></template
         >
         <template #text>
-          <span :class="{ 'dir-rtl': isRTL }">
+          <span>
             {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
             <strong>{{ userToDelete.username }}</strong
             >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
           </span>
         </template>
         <template #button-text-continue>
-          <span :class="{ 'dir-rtl': isRTL }">{{
-            $t('trans.manageSubmissionUsers.remove')
-          }}</span>
+          <span>{{ $t('trans.manageSubmissionUsers.remove') }}</span>
         </template>
       </BaseDialog>
     </v-dialog>

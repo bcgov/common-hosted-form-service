@@ -53,6 +53,7 @@
     "cancel": "Kanselahin"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Pindutin ang <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",
     "allowMultiDraft": "Payagan ang pag-upload ng <strong> maramihang draft</strong>",
     "formTitle": "Pamagat ng Form",
     "formDescription": "Paglalarawan ng Form",
@@ -354,6 +355,7 @@
     "emailRequired": "Kinakailangan ang e-mail"
   },
   "submissionsTable": {
+    "submissions": "Mga pagsusumite",
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
     "manageForm": "Pamahalaan ang Form",
@@ -726,7 +728,7 @@
     "createCustomFormTitle": "Gumawa ng mga custom na form gamit ang CHEFS form builder",
     "createCustomFormSub1": "Sa CHEFS, makakagawa ka ng mga secure na form na may intuitive na drag-and-drop na interface. Maaari kang magdagdag ng mga bahagi ng form, muling ayusin ang mga ito, at i-drop ang mga ito sa iba't ibang mga configuration ng layout.",
     "chefsHowToTitle": "Mga Video na How-to ng CHEFS",
-    "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS. Magsimula!",
+    "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS.",
     "getStartedToChefs": "Magsimula sa paggamit ng CHEFS",
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
     "getStarted": "Magsimula"

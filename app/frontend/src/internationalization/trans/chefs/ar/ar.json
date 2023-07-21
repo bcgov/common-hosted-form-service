@@ -53,6 +53,7 @@
     "cancel": "يلغي"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "اضغط على <kbd> أدخل </kbd> أو <kbd> أو </kbd> أو <kbd> مسافة </ kbd> لإضافة عناوين بريد إلكتروني متعددة",
     "allowMultiDraft": "السماح بتحميل <strong> مسودة متعددة </ strong>",
     "formTitle": "عنوان النموذج",
     "formDescription": "وصف النموذج",
@@ -354,6 +355,7 @@
     "emailRequired": "البريد الالكتروني مطلوب"
   },
   "submissionsTable": {
+    "submissions": "التقديمات",
     "submissionsTable": "الجدول",
     "selectColumns": "حدد الأعمدة",
     "manageForm": "إدارة النموذج",
@@ -726,7 +728,7 @@
     "createCustomFormTitle": "قم بإنشاء نماذج مخصصة باستخدام أداة إنشاء النماذج CHEFS",
     "createCustomFormSub1": "مع CHEFS ، يمكنك إنشاء نماذج آمنة بواجهة سحب وإفلات سهلة. يمكنك إضافة مكونات النموذج وإعادة ترتيبها وإفلاتها في تكوينات تخطيطات مختلفة.",
     "chefsHowToTitle": "فيديوهات شيفس إرشادية",
-    "chefsHowToSub": "سيقدم لك دليل البدء السريع بعض الوظائف الأساسية لـ CHEFS. البدء!",
+    "chefsHowToSub": "سيقدم لك دليل البدء السريع بعض الوظائف الأساسية لـ CHEFS.",
     "getStartedToChefs": "ابدأ باستخدام CHEFS",
     "createOnlineTitle": "قم بإنشاء نماذج عبر الإنترنت لجمع المعلومات من عملائك وتحسين سير العمل الخاص بك.",
     "getStarted": "البدء"

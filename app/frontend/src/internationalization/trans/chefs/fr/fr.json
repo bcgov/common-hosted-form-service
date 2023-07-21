@@ -53,6 +53,7 @@
     "cancel": "Annuler"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Appuyez sur <kbd>entrée</kbd> ou <kbd>,</kbd> ou <kbd>espace</kbd> pour ajouter plusieurs adresses e-mail",
     "allowMultiDraft": "Autoriser le téléchargement de <strong> plusieurs brouillons</strong>",
     "formTitle": "Titre du formulaire",
     "formDescription": "Description du formulaire",
@@ -354,6 +355,7 @@
     "emailRequired": "L'e-mail est requis"
   },
   "submissionsTable": {
+    "submissions": "Soumissions",
     "submissionsTable": "Tableau des soumissions",
     "selectColumns": "Sélectionnez les colonnes",
     "manageForm": "Gérer le formulaire",
@@ -726,7 +728,7 @@
     "createCustomFormTitle": "Créez des formulaires personnalisés avec le générateur de formulaires CHEFS",
     "createCustomFormSub1": "Avec CHEFS, vous pouvez créer des formulaires sécurisés avec une interface intuitive par glisser-déposer. Vous pouvez ajouter des composants de formulaire, les réorganiser et les déposer dans différentes configurations de mise en page.",
     "chefsHowToTitle": "CHEFS Vidéos explicatives",
-    "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS. Commencer!",
+    "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS.",
     "getStartedToChefs": "Commencez à utiliser CHEFS",
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
     "getStarted": "Commencer"

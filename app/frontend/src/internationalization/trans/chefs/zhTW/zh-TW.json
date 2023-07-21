@@ -53,6 +53,7 @@
     "cancel": "取消"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "按 <kbd>enter</kbd> 或 <kbd>、</kbd> 或 <kbd>空格</kbd> 添加多個電子郵件地址",
     "allowMultiDraft": "允許<strong>多草稿</strong>上傳",
     "formTitle": "表格標題",
     "formDescription": "表格說明",
@@ -354,6 +355,7 @@
     "emailRequired": "電子郵件是必需的"
   },
   "submissionsTable": {
+    "submissions": "意見書",
     "submissionsTable": "提交表",
     "selectColumns": "選擇列",
     "manageForm": "管理表格",
@@ -726,7 +728,7 @@
     "createCustomFormTitle": "使用 CHEFS 表單生成器創建自定義表單",
     "createCustomFormSub1": "借助 CHEFS，您可以使用直觀的拖放界面創建安全表單。您可以添加表單組件，重新排列它們，並將它們放入不同的佈局配置中。",
     "chefsHowToTitle": "CHEFS 操作視頻",
-    "chefsHowToSub": "我們的快速入門指南將向您介紹 CHEFS 的一些基本功能。開始吧！",
+    "chefsHowToSub": "我們的快速入門指南將向您介紹 CHEFS 的一些基本功能。",
     "getStartedToChefs": "開始使用 CHEFS",
     "createOnlineTitle": "創建在線表格以從您的客戶那裡收集信息並改進您的工作流程。",
     "getStarted": "開始吧"

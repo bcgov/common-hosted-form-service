@@ -1,19 +1,14 @@
 <template>
   <div class="forms-table" :class="{ 'dir-rtl': isRTL }">
-    <v-row class="mt-6" no-gutters>
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
+      <div>
         <h1>{{ $t('trans.formsTable.myForms') }}</h1>
-      </v-col>
+      </div>
       <!-- buttons -->
-      <v-col
-        v-if="user.idp === ID_PROVIDERS.IDIR"
-        :class="isRTL ? 'text-left' : 'text-right'"
-        cols="12"
-        sm="6"
-        order="1"
-        order-sm="2"
-      >
+      <div v-if="user.idp === ID_PROVIDERS.IDIR">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <router-link :to="{ name: 'FormCreate' }">
@@ -24,14 +19,14 @@
           </template>
           <span>{{ $t('trans.formsTable.createNewForm') }} </span>
         </v-tooltip>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <v-row no-gutters>
       <v-spacer />
       <v-col cols="12">
         <!-- search input -->
-        <div class="submissions-search" :class="{ 'dir-rtl': isRTL }">
+        <div class="submissions-search">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -39,7 +34,7 @@
             single-line
             hide-details
             class="pb-5"
-            :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            :class="{ label: isRTL }"
           />
         </div>
       </v-col>

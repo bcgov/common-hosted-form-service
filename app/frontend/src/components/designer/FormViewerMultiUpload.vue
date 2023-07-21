@@ -3,7 +3,7 @@
     <v-row>
       <BaseInfoCard v-if="json_csv.data" class="mb-4">
         <h4 class="primary--text">
-          <v-icon class="mr-1" color="primary" :class="isRTL ? 'ml-2' : 'mr-2'"
+          <v-icon class="mr-1" color="primary" :class="{ 'ml-2': isRTL }"
             >info</v-icon
           >{{ $t('trans.formViewerMultiUpload.important') }}!
         </h4>
